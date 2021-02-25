@@ -1,5 +1,13 @@
 const DDGAutofill = require('./DDGAutofill')
-const {isApp, isDDGApp, isAndroid, isDDGDomain, sendAndWaitForAnswer, setValue} = require('./autofill-utils')
+const {
+    isApp,
+    notifyWebApp,
+    isDDGApp,
+    isAndroid,
+    isDDGDomain,
+    sendAndWaitForAnswer,
+    setValue
+} = require('./autofill-utils')
 const scanForInputs = require('./scanForInputs.js')
 
 const SIGN_IN_MSG = {
@@ -120,6 +128,10 @@ class AndroidInterface {
 
 class AppleDeviceInterface {
     constructor () {
+        if (isDDGDomain()) {
+            // Tell the web app whether we're in the app
+            notifyWebApp({isApp})
+        }
         this.getAlias = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
                 requiresUserPermission: !isApp
