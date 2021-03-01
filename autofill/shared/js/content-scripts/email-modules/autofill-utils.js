@@ -1,4 +1,5 @@
 let isApp = false
+// Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
 // INJECT isApp HERE
 
 const isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp
