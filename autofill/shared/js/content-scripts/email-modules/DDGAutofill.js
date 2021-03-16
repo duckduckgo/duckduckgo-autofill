@@ -11,7 +11,7 @@ class DDGAutofill {
 
         const includeStyles = isApp
             ? `<style>${require('./DDGAutofill-styles.js')}</style>`
-            : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/email-autofill.css')}">`
+            : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/email-autofill.css')}" crossorigin="anonymous">`
 
         shadow.innerHTML = `
 ${includeStyles}
