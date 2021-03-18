@@ -3,6 +3,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-exec')
     grunt.loadNpmTasks('grunt-eslint')
+    grunt.loadNpmTasks('grunt-githooks')
     grunt.loadNpmTasks('grunt-browserify')
     grunt.loadNpmTasks('grunt-contrib-watch')
 
@@ -29,6 +30,12 @@ module.exports = function (grunt) {
         },
         exec: {
             excludeBuild: 'git update-index --assume-unchanged dist/autofill.js'
+        },
+        githooks: {
+            all: {
+                // Will create `./git/hooks/pre-commit`. It will build and commit the output file.
+                'pre-push': 'npm run build && git add -f dist/autofill.js && git commit -m "Add build file" && grunt exec:excludeBuild'
+            }
         },
         /**
          * Run predefined tasks whenever watched files are added,
