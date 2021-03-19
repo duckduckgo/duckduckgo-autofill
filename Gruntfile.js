@@ -1,9 +1,9 @@
 module.exports = function (grunt) {
     'use strict'
 
-    grunt.loadNpmTasks('grunt-exec')
+    // grunt.loadNpmTasks('grunt-exec')
     grunt.loadNpmTasks('grunt-eslint')
-    grunt.loadNpmTasks('grunt-githooks')
+    // grunt.loadNpmTasks('grunt-githooks')
     grunt.loadNpmTasks('grunt-browserify')
     grunt.loadNpmTasks('grunt-contrib-watch')
 
@@ -49,6 +49,6 @@ module.exports = function (grunt) {
         }
     })
 
-    grunt.registerTask('default', ['exec:excludeBuild', 'browserify', 'eslint'])
-    grunt.registerTask('dev', ['exec:excludeBuild', 'browserify', 'eslint', 'watch'])
+    grunt.registerTask('default', ['eslint', 'browserify'])
+    grunt.registerTask('dev', ['eslint', 'browserify', 'watch'])
 }
