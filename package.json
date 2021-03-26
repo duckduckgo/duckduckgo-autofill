@@ -1,7 +1,6 @@
 {
   "name": "duckduckgo-autofill",
   "version": "1.0.0",
-  "description": "",
   "main": "src/autofill.js",
   "engines": {
     "node": "^10"
@@ -11,8 +10,7 @@
     "build": "grunt",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
