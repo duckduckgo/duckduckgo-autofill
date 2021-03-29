@@ -2,7 +2,7 @@
 
 This code is imported as a subrepo by our [extension](https://github.com/duckduckgo/duckduckgo-privacy-extension) and native apps ([iOS](https://github.com/duckduckgo/iOS) and [Android](https://github.com/duckduckgo/Android)).
 
-This software is licensed under the terms of the Apache License, Version 2.0 (see [LICENSE](LICENSE)). Copyright ©️ 2012 - 2021 [duckduckgo.com](https://duckduckgo.com)
+DuckDuckGo Autofill is distributed under the Apache 2.0 [License](LICENSE.md).
 
 ## How to add this repo to another project
 ###### [See the docs](https://git-scm.com/book/en/v2/Git-Tools-Submodules#_starting_submodules)
