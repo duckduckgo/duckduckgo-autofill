@@ -37,7 +37,7 @@ cd ..
 git submodule update --remote --merge # or --rebase
 ```
 
-If don't pass `--merge` or `--rebase`, Git will revert to a detached HEAD with the remote content. Don't worry, though, your changes are still in your branch and you can check it out again.
+If you don't pass `--merge` or `--rebase`, Git will revert to a detached HEAD with the remote content. Don't worry, though, your changes are still in your branch and you can check it out again.
 
 ## How to push the changes upstream
 ###### [See the docs](https://git-scm.com/book/en/v2/Git-Tools-Submodules#_publishing_submodules)
