@@ -1261,6 +1261,7 @@ var SIGN_IN_MSG = {
 var createAttachTooltip = function createAttachTooltip(getAlias, refreshAlias) {
   return function (form, input) {
     if (isDDGApp && !isApp) {
+      form.activeInput = input;
       getAlias().then(function (alias) {
         if (alias) form.autofill(alias);else form.activeInput.focus();
       });

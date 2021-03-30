@@ -14,6 +14,7 @@ const SIGN_IN_MSG = { signMeIn: true }
 
 const createAttachTooltip = (getAlias, refreshAlias) => (form, input) => {
     if (isDDGApp && !isApp) {
+        form.activeInput = input
         getAlias().then((alias) => {
             if (alias) form.autofill(alias)
             else form.activeInput.focus()
