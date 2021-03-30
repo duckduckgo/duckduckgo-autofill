@@ -38,7 +38,7 @@ class Form {
         })
 
         this.removeTooltip = (e) => {
-            if (e && (e.target === this.activeInput || e.target === this.tooltip.host)) {
+            if (e && e.target === this.tooltip.host) {
                 return
             }
             this.tooltip.remove()
@@ -72,7 +72,6 @@ class Form {
             if (this.activeInput) this.activeInput.focus()
         }
         this.dismissTooltip = () => {
-            this.resetAllInputs()
             this.removeTooltip()
         }
 

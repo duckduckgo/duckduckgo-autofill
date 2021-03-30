@@ -14,7 +14,6 @@ const SIGN_IN_MSG = { signMeIn: true }
 
 const createAttachTooltip = (getAlias, refreshAlias) => (form, input) => {
     if (isDDGApp && !isApp) {
-        form.activeInput = input
         getAlias().then((alias) => {
             if (alias) form.autofill(alias)
             else form.activeInput.focus()
@@ -22,6 +21,7 @@ const createAttachTooltip = (getAlias, refreshAlias) => (form, input) => {
     } else {
         if (form.tooltip) return
 
+        form.activeInput = input
         form.tooltip = new DDGAutofill(input, form, getAlias, refreshAlias)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
