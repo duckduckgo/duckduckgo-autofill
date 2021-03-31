@@ -1267,6 +1267,7 @@ var createAttachTooltip = function createAttachTooltip(getAlias, refreshAlias) {
       });
     } else {
       if (form.tooltip) return;
+      form.activeInput = input;
       form.tooltip = new DDGAutofill(input, form, getAlias, refreshAlias);
       form.intObs.observe(input);
       window.addEventListener('mousedown', form.removeTooltip, {
@@ -1568,7 +1569,7 @@ var Form = /*#__PURE__*/function () {
     });
 
     this.removeTooltip = function (e) {
-      if (e && (e.target === _this.activeInput || e.target === _this.tooltip.host)) {
+      if (e && e.target === _this.tooltip.host) {
         return;
       }
 
@@ -1622,8 +1623,6 @@ var Form = /*#__PURE__*/function () {
     };
 
     this.dismissTooltip = function () {
-      _this.resetAllInputs();
-
       _this.removeTooltip();
     };
 

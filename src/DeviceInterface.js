@@ -22,6 +22,7 @@ const createAttachTooltip = (getAlias, refreshAlias) => (form, input) => {
     } else {
         if (form.tooltip) return
 
+        form.activeInput = input
         form.tooltip = new DDGAutofill(input, form, getAlias, refreshAlias)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
