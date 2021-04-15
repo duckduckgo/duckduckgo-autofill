@@ -38,7 +38,13 @@ class ExtensionInterface {
 
         this.refreshAlias = () => chrome.runtime.sendMessage({refreshAlias: true})
 
-        this.isDeviceSignedIn = () => this.getAlias()
+        this.isDeviceSignedIn = () => this.getAlias().then(alias => {
+            if (alias) {
+                notifyWebApp({ deviceSignedIn: {value: true, shouldLog: false} })
+                return true
+            }
+            return false
+        })
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
@@ -61,6 +67,7 @@ class ExtensionInterface {
 
                 switch (message.type) {
                 case 'ddgUserReady':
+                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog: true} })
                     scanForInputs(this)
                     break
                 case 'contextualAutofill':
@@ -102,8 +109,13 @@ class AndroidInterface {
 
         this.refreshAlias = () => {}
 
-        this.isDeviceSignedIn = () => new Promise(resolve =>
-            resolve((window.EmailInterface.isSignedIn() === 'true')))
+        this.isDeviceSignedIn = () => new Promise(resolve => {
+            const signedIn = window.EmailInterface.isSignedIn() === 'true'
+            if (signedIn) {
+                notifyWebApp({ deviceSignedIn: {value: true, shouldLog: false} })
+            }
+            resolve(signedIn)
+        })
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
@@ -111,6 +123,7 @@ class AndroidInterface {
                     .then(data => {
                         // This call doesn't send a response, so we can't know if it succeded
                         this.storeUserData(data)
+                        notifyWebApp({ deviceSignedIn: {value: true, shouldLog: true} })
                         scanForInputs(this)
                     })
             }
@@ -144,7 +157,13 @@ class AppleDeviceInterface {
         this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
         'checkExtensionSignedInCallback'
-        ).then(data => data.isAppSignedIn)
+        ).then(data => {
+            if (data.isAppSignedIn) {
+                notifyWebApp({ deviceSignedIn: {value: true, shouldLog: false} })
+                return true
+            }
+            return false
+        })
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
@@ -152,6 +171,7 @@ class AppleDeviceInterface {
                     .then(data => {
                         // This call doesn't send a response, so we can't know if it succeded
                         this.storeUserData(data)
+                        notifyWebApp({ deviceSignedIn: {value: true, shouldLog: true} })
                         scanForInputs(this)
                     })
             }
@@ -160,15 +180,7 @@ class AppleDeviceInterface {
         this.storeUserData = ({addUserData: {token, userName}}) =>
             window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({ token, username: userName })
 
-        this.addDeviceListeners = () => {
-            window.addEventListener('message', (e) => {
-                if (e.origin !== window.origin) return
-
-                if (e.data.ddgUserReady) {
-                    scanForInputs(this)
-                }
-            })
-        }
+        this.addDeviceListeners = () => {}
 
         this.addLogoutListener = () => {}
 

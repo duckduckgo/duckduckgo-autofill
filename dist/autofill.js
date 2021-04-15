@@ -1300,7 +1300,19 @@ var ExtensionInterface = function ExtensionInterface() {
   };
 
   this.isDeviceSignedIn = function () {
-    return _this.getAlias();
+    return _this.getAlias().then(function (alias) {
+      if (alias) {
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog: false
+          }
+        });
+        return true;
+      }
+
+      return false;
+    });
   };
 
   this.trySigningIn = function () {
@@ -1326,6 +1338,12 @@ var ExtensionInterface = function ExtensionInterface() {
 
       switch (message.type) {
         case 'ddgUserReady':
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: true
+            }
+          });
           scanForInputs(_this);
           break;
 
@@ -1379,7 +1397,18 @@ var AndroidInterface = function AndroidInterface() {
 
   this.isDeviceSignedIn = function () {
     return new Promise(function (resolve) {
-      return resolve(window.EmailInterface.isSignedIn() === 'true');
+      var signedIn = window.EmailInterface.isSignedIn() === 'true';
+
+      if (signedIn) {
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog: false
+          }
+        });
+      }
+
+      resolve(signedIn);
     });
   };
 
@@ -1389,6 +1418,12 @@ var AndroidInterface = function AndroidInterface() {
         // This call doesn't send a response, so we can't know if it succeded
         _this2.storeUserData(data);
 
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog: true
+          }
+        });
         scanForInputs(_this2);
       });
     }
@@ -1440,7 +1475,17 @@ var AppleDeviceInterface = function AppleDeviceInterface() {
     return sendAndWaitForAnswer(function () {
       return window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({});
     }, 'checkExtensionSignedInCallback').then(function (data) {
-      return data.isAppSignedIn;
+      if (data.isAppSignedIn) {
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog: false
+          }
+        });
+        return true;
+      }
+
+      return false;
     });
   };
 
@@ -1450,6 +1495,12 @@ var AppleDeviceInterface = function AppleDeviceInterface() {
         // This call doesn't send a response, so we can't know if it succeded
         _this3.storeUserData(data);
 
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog: true
+          }
+        });
         scanForInputs(_this3);
       });
     }
@@ -1465,15 +1516,7 @@ var AppleDeviceInterface = function AppleDeviceInterface() {
     });
   };
 
-  this.addDeviceListeners = function () {
-    window.addEventListener('message', function (e) {
-      if (e.origin !== window.origin) return;
-
-      if (e.data.ddgUserReady) {
-        scanForInputs(_this3);
-      }
-    });
-  };
+  this.addDeviceListeners = function () {};
 
   this.addLogoutListener = function () {};
 
@@ -2211,11 +2254,6 @@ var _require = require('./autofill-utils'),
 
 
 var scanForInputs = function scanForInputs(DeviceInterface) {
-  notifyWebApp({
-    deviceSignedIn: {
-      value: true
-    }
-  });
   var forms = new Map();
   var EMAIL_SELECTOR = "\n            input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n            input[type=text][aria-label*=mail i],\n            input:not([type])[aria-label*=mail i],\n            input[type=text][placeholder*=mail i]:not([readonly])\n        ";
 

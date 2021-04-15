@@ -3,8 +3,6 @@ const {notifyWebApp} = require('./autofill-utils')
 
 // Accepts the DeviceInterface as an explicit dependency
 const scanForInputs = (DeviceInterface) => {
-    notifyWebApp({ deviceSignedIn: {value: true} })
-
     const forms = new Map()
 
     const EMAIL_SELECTOR = `
