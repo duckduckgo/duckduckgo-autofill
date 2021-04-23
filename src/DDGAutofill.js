@@ -1,12 +1,12 @@
-const {daxSvg} = require('./logo-svg')
 const { isApp, getDaxBoundingBox, safeExecute } = require('./autofill-utils')
 
 class DDGAutofill {
-    constructor (input, associatedForm, getAlias, refreshAlias) {
+    constructor (input, associatedForm, getAddresses, refreshAlias, addresses) {
         const shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
         this.host = shadow.host
         this.input = input
         this.associatedForm = associatedForm
+        this.addresses = addresses
         this.animationFrame = null
 
         const includeStyles = isApp
@@ -17,39 +17,37 @@ class DDGAutofill {
 ${includeStyles}
 <div class="wrapper">
     <div class="tooltip" hidden>
-        <h2 class="tooltip__title">Use a Private Duck Address</h2>
-        <p>Protect your personal address, block trackers, and forward to your regular inbox. </p>
-        <div class="tooltip__alias-container">
-            ${daxSvg}<span><strong class="alias">${this.nextAlias}</strong>@duck.com</span>
-        </div>
-        <div class="tooltip__button-container">
-            <button class="tooltip__button tooltip__button--secondary js-dismiss">Don’t use</button>
-            <button class="tooltip__button tooltip__button--primary js-confirm">Use Address</button>
-        </div>
+        <button class="tooltip__button tooltip__button--secondary js-use-personal">
+            <span class="tooltip__button__primary-text">
+                Use <span class="address">${this.addresses.personalAddress}</span>@duck.com
+            </span>
+            <span class="tooltip__button__secondary-text">Blocks email trackers</span>
+        </button>
+        <button class="tooltip__button tooltip__button--primary js-use-private">
+            <span class="tooltip__button__primary-text">Use a Private Address</span>
+            <span class="tooltip__button__secondary-text">Blocks email trackers and hides your address</span>
+        </button>
     </div>
 </div>`
         this.wrapper = shadow.querySelector('.wrapper')
         this.tooltip = shadow.querySelector('.tooltip')
-        this.dismissButton = shadow.querySelector('.js-dismiss')
-        this.confirmButton = shadow.querySelector('.js-confirm')
-        this.aliasEl = shadow.querySelector('.alias')
+        this.usePersonalButton = shadow.querySelector('.js-use-personal')
+        this.usePrivateButton = shadow.querySelector('.js-use-private')
+        this.addressEl = shadow.querySelector('.address')
         this.stylesheet = shadow.querySelector('link, style')
         // Un-hide once the style is loaded, to avoid flashing unstyled content
         this.stylesheet.addEventListener('load', () =>
             this.tooltip.removeAttribute('hidden'))
 
-        this.updateAliasInTooltip = () => {
-            const [alias] = this.nextAlias.split('@')
-            this.aliasEl.textContent = alias
+        this.updateAddresses = (addresses) => {
+            if (addresses) {
+                this.addresses = addresses
+                this.addressEl.textContent = addresses.personalAddress
+            }
         }
 
         // Get the alias from the extension
-        getAlias().then((alias) => {
-            if (alias) {
-                this.nextAlias = alias
-                this.updateAliasInTooltip()
-            }
-        })
+        getAddresses().then(this.updateAddresses)
 
         this.top = 0
         this.left = 0
@@ -94,10 +92,10 @@ ${includeStyles}
             }
 
             this.animationFrame = window.requestAnimationFrame(() => {
-                const {left, top} = getDaxBoundingBox(this.input)
+                const {left, bottom} = getDaxBoundingBox(this.input)
 
-                if (left !== this.left || top !== this.top) {
-                    this.updatePosition({left, top})
+                if (left !== this.left || bottom !== this.top) {
+                    this.updatePosition({left, top: bottom})
                 }
 
                 this.animationFrame = null
@@ -107,7 +105,7 @@ ${includeStyles}
         this.resObs.observe(document.body)
         this.count = 0
         this.ensureIsLastInDOM = () => {
-            // If DDG el is not the last in the doc, move them there
+            // If DDG el is not the last in the doc, move it there
             if (document.body.lastElementChild !== this.host) {
                 this.lift()
 
@@ -139,18 +137,20 @@ ${includeStyles}
         this.mutObs.observe(document.body, {childList: true, subtree: true, attributes: true})
         window.addEventListener('scroll', this.checkPosition, {passive: true, capture: true})
 
-        this.dismissButton.addEventListener('click', (e) => {
+        this.usePersonalButton.addEventListener('click', (e) => {
             if (!e.isTrusted) return
-
             e.stopImmediatePropagation()
-            this.associatedForm.dismissTooltip()
+
+            safeExecute(this.usePersonalButton, () => {
+                this.associatedForm.autofill(this.addresses.personalAddress + '@duck.com')
+            })
         })
-        this.confirmButton.addEventListener('click', (e) => {
+        this.usePrivateButton.addEventListener('click', (e) => {
             if (!e.isTrusted) return
             e.stopImmediatePropagation()
 
-            safeExecute(this.confirmButton, () => {
-                this.associatedForm.autofill(this.nextAlias)
+            safeExecute(this.usePersonalButton, () => {
+                this.associatedForm.autofill(this.addresses.privateAddress + '@duck.com')
                 refreshAlias()
             })
         })
