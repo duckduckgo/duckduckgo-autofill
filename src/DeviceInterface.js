@@ -12,10 +12,10 @@ const scanForInputs = require('./scanForInputs.js')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
-const createAttachTooltip = (getAlias, refreshAlias) => (form, input) => {
+const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form, input) => {
     if (isDDGApp && !isApp) {
         form.activeInput = input
-        getAlias().then((alias) => {
+        getAutofillData().then((alias) => {
             if (alias) form.autofill(alias)
             else form.activeInput.focus()
         })
@@ -23,28 +23,55 @@ const createAttachTooltip = (getAlias, refreshAlias) => (form, input) => {
         if (form.tooltip) return
 
         form.activeInput = input
-        form.tooltip = new DDGAutofill(input, form, getAlias, refreshAlias)
+        form.tooltip = new DDGAutofill(input, form, getAutofillData, refreshAlias, addresses)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
     }
 }
 
-class ExtensionInterface {
+class InterfacePrototype {
+    init () {
+        this.addDeviceListeners()
+        this.setupAutofill()
+    }
+    setupAutofill () {}
+    getAddresses () {}
+    refreshAlias () {}
+    trySigningIn () {}
+    storeUserData () {}
+    addDeviceListeners () {}
+    addLogoutListener () {}
+    attachTooltip () {}
+
+    // TODO: deprecated?
+    isDeviceSignedIn () {}
+    getAlias () {}
+}
+
+class ExtensionInterface extends InterfacePrototype {
     constructor () {
-        this.getAlias = () => new Promise(resolve => chrome.runtime.sendMessage(
-            {getAlias: true},
-            ({alias}) => resolve(alias)
+        super()
+
+        this.getAddresses = () => new Promise(resolve => chrome.runtime.sendMessage(
+            {getAddresses: true},
+            (data) => resolve(data)
         ))
 
-        this.refreshAlias = () => chrome.runtime.sendMessage({refreshAlias: true})
+        this.refreshAlias = () => chrome.runtime.sendMessage(
+            {refreshAlias: true},
+            (addresses) => { this.addresses = addresses })
 
-        this.isDeviceSignedIn = () => this.getAlias().then(alias => {
-            if (alias) {
-                notifyWebApp({ deviceSignedIn: {value: true, shouldLog: false} })
-                return true
-            }
-            return false
-        })
+        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
+            this.getAddresses().then(addresses => {
+                if (addresses?.privateAddress && addresses?.personalAddress) {
+                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
+                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                    scanForInputs(this)
+                } else {
+                    this.trySigningIn()
+                }
+            })
+        }
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
@@ -67,11 +94,10 @@ class ExtensionInterface {
 
                 switch (message.type) {
                 case 'ddgUserReady':
-                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog: true} })
-                    scanForInputs(this)
+                    this.setupAutofill({shouldLog: true})
                     break
                 case 'contextualAutofill':
-                    setValue(activeEl, message.alias)
+                    setValue(activeEl, message.alias + '@duck.com')
                     activeEl.classList.add('ddg-autofilled')
                     this.refreshAlias()
 
@@ -96,26 +122,32 @@ class ExtensionInterface {
                 }
             })
         }
-
-        this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias)
     }
 }
 
-class AndroidInterface {
+class AndroidInterface extends InterfacePrototype {
     constructor () {
+        super()
+
         this.getAlias = () => sendAndWaitForAnswer(() =>
             window.EmailInterface.showTooltip(), 'getAliasResponse')
             .then(({alias}) => alias)
 
-        this.refreshAlias = () => {}
-
         this.isDeviceSignedIn = () => new Promise(resolve => {
-            const signedIn = window.EmailInterface.isSignedIn() === 'true'
-            if (signedIn) {
-                notifyWebApp({ deviceSignedIn: {value: true, shouldLog: false} })
-            }
-            resolve(signedIn)
+            resolve(window.EmailInterface.isSignedIn() === 'true')
         })
+
+        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
+            this.isDeviceSignedIn().then((signedIn) => {
+                console.log(signedIn)
+                if (signedIn) {
+                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                    scanForInputs(this)
+                } else {
+                    this.trySigningIn()
+                }
+            })
+        }
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
@@ -123,8 +155,7 @@ class AndroidInterface {
                     .then(data => {
                         // This call doesn't send a response, so we can't know if it succeded
                         this.storeUserData(data)
-                        notifyWebApp({ deviceSignedIn: {value: true, shouldLog: true} })
-                        scanForInputs(this)
+                        this.setupAutofill({shouldLog: true})
                     })
             }
         }
@@ -132,16 +163,13 @@ class AndroidInterface {
         this.storeUserData = ({addUserData: {token, userName}}) =>
             window.EmailInterface.storeCredentials(token, userName)
 
-        this.addDeviceListeners = () => {}
-
-        this.addLogoutListener = () => {}
-
         this.attachTooltip = createAttachTooltip(this.getAlias)
     }
 }
 
-class AppleDeviceInterface {
+class AppleDeviceInterface extends InterfacePrototype {
     constructor () {
+        super()
         if (isDDGDomain()) {
             // Tell the web app whether we're in the app
             notifyWebApp({isApp})
@@ -154,35 +182,35 @@ class AppleDeviceInterface {
 
         this.refreshAlias = () => window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({})
 
+        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
+            this.isDeviceSignedIn().then((signedIn) => {
+                if (signedIn) {
+                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                    scanForInputs(this)
+                } else {
+                    this.trySigningIn()
+                }
+            })
+        }
+
         this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
         'checkExtensionSignedInCallback'
-        ).then(data => {
-            if (data.isAppSignedIn) {
-                notifyWebApp({ deviceSignedIn: {value: true, shouldLog: false} })
-                return true
-            }
-            return false
-        })
+        ).then(data => !!data.isAppSignedIn)
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
                 sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                     .then(data => {
-                        // This call doesn't send a response, so we can't know if it succeded
+                        // This call doesn't send a response, so we can't know if it succeeded
                         this.storeUserData(data)
-                        notifyWebApp({ deviceSignedIn: {value: true, shouldLog: true} })
-                        scanForInputs(this)
+                        this.setupAutofill({shouldLog: true})
                     })
             }
         }
 
         this.storeUserData = ({addUserData: {token, userName}}) =>
             window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({ token, username: userName })
-
-        this.addDeviceListeners = () => {}
-
-        this.addLogoutListener = () => {}
 
         this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias)
     }
