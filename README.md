@@ -10,7 +10,7 @@ DuckDuckGo Autofill is distributed under the Apache 2.0 [License](LICENSE.md).
 To add this repo as a submodule, run:
 
 ```shell
-git submodule add https://github.com/more-duckduckgo-org/duckduckgo-autofill
+git submodule add https://github.com/duckduckgo/duckduckgo-autofill
 git config -f .gitmodules submodule.duckduckgo-autofill.branch main
 ```
 
