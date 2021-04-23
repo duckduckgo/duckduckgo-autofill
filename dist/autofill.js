@@ -1017,36 +1017,25 @@ window.IntersectionObserverEntry = IntersectionObserverEntry;
 },{}],2:[function(require,module,exports){
 "use strict";
 
-module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    z-index: 2147483647;\n}\n.tooltip {\n    position: absolute;\n    bottom: calc(100% + 15px);\n    right: calc(100% - 60px);\n    width: 350px;\n    max-width: calc(100vw - 25px);\n    padding: 25px;\n    border: 1px solid #D0D0D0;\n    border-radius: 20px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    color: #333333;\n    line-height: 1.4;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n    z-index: 2147483647;\n}\n.tooltip::before {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-top: 12px solid #D0D0D0;\n    position: absolute;\n    right: 34px;\n    bottom: -12px;\n}\n.tooltip::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-top: 12px solid #FFFFFF;\n    position: absolute;\n    right: 34px;\n    bottom: -10px;\n}\n.tooltip__title {\n    margin: -4px 0 4px;\n    font-size: 16px;\n    font-weight: bold;\n    line-height: 1.3;\n}\n.tooltip p {\n    margin: 4px 0 12px;\n}\n.tooltip strong {\n    font-weight: bold;\n}\n.tooltip__alias-container {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    margin: 10px auto 15px;\n    font-size: 16px;\n}\n.alias {\n    padding-left: 4px;\n}\n.tooltip__button-container {\n    display: flex;\n}\n.tooltip__button {\n    flex: 1;\n    height: 40px;\n    padding: 0 8px;\n    background-color: #332FF3;\n    color: #FFFFFF;\n    font-family: inherit;\n    font-size: 16px;\n    font-weight: bold;\n    border: none;\n    border-radius: 10px;\n}\n.tooltip__button:last-child {\n    margin-left: 12px;\n}\n.tooltip__button--secondary {\n    background-color: #EEEEEE;\n    color: #332FF3;\n}\n";
+module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    z-index: 2147483647;\n}\n.tooltip {\n    position: absolute;\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    color: #333333;\n    line-height: 1.3;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n    z-index: 2147483647;\n}\n.tooltip::before,\n.tooltip::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n.tooltip__button {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    width: 100%;\n    padding: 4px 8px 7px;\n    font-family: inherit;\n    font-size: 14px;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button:hover {\n    background-color: #3969EF;\n    color: #FFFFFF;\n}\n.tooltip__button__primary-text {\n    font-weight: bold;\n}\n.tooltip__button__secondary-text {\n    font-size: 12px;\n}\n";
 
 },{}],3:[function(require,module,exports){
 "use strict";
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _require = require('./logo-svg'),
-    daxSvg = _require.daxSvg;
+var _require = require('./autofill-utils'),
+    isApp = _require.isApp,
+    getDaxBoundingBox = _require.getDaxBoundingBox,
+    safeExecute = _require.safeExecute;
 
-var _require2 = require('./autofill-utils'),
-    isApp = _require2.isApp,
-    getDaxBoundingBox = _require2.getDaxBoundingBox,
-    safeExecute = _require2.safeExecute;
-
-var DDGAutofill = function DDGAutofill(input, associatedForm, getAlias, refreshAlias) {
+var DDGAutofill = function DDGAutofill(input, associatedForm, getAddresses, refreshAlias, addresses) {
   var _this = this;
 
   _classCallCheck(this, DDGAutofill);
@@ -1057,36 +1046,30 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAlias, refreshA
   this.host = shadow.host;
   this.input = input;
   this.associatedForm = associatedForm;
+  this.addresses = addresses;
   this.animationFrame = null;
   var includeStyles = isApp ? "<style>".concat(require('./DDGAutofill-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/email-autofill.css'), "\" crossorigin=\"anonymous\">");
-  shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper\">\n    <div class=\"tooltip\" hidden>\n        <h2 class=\"tooltip__title\">Use a Private Duck Address</h2>\n        <p>Protect your personal address, block trackers, and forward to your regular inbox. </p>\n        <div class=\"tooltip__alias-container\">\n            ").concat(daxSvg, "<span><strong class=\"alias\">").concat(this.nextAlias, "</strong>@duck.com</span>\n        </div>\n        <div class=\"tooltip__button-container\">\n            <button class=\"tooltip__button tooltip__button--secondary js-dismiss\">Don\u2019t use</button>\n            <button class=\"tooltip__button tooltip__button--primary js-confirm\">Use Address</button>\n        </div>\n    </div>\n</div>");
+  shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper\">\n    <div class=\"tooltip\" hidden>\n        <button class=\"tooltip__button tooltip__button--secondary js-use-personal\">\n            <span class=\"tooltip__button__primary-text\">\n                Use <span class=\"address\">").concat(this.addresses.personalAddress, "</span>@duck.com\n            </span>\n            <span class=\"tooltip__button__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--primary js-use-private\">\n            <span class=\"tooltip__button__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
   this.wrapper = shadow.querySelector('.wrapper');
   this.tooltip = shadow.querySelector('.tooltip');
-  this.dismissButton = shadow.querySelector('.js-dismiss');
-  this.confirmButton = shadow.querySelector('.js-confirm');
-  this.aliasEl = shadow.querySelector('.alias');
+  this.usePersonalButton = shadow.querySelector('.js-use-personal');
+  this.usePrivateButton = shadow.querySelector('.js-use-private');
+  this.addressEl = shadow.querySelector('.address');
   this.stylesheet = shadow.querySelector('link, style'); // Un-hide once the style is loaded, to avoid flashing unstyled content
 
   this.stylesheet.addEventListener('load', function () {
     return _this.tooltip.removeAttribute('hidden');
   });
 
-  this.updateAliasInTooltip = function () {
-    var _this$nextAlias$split = _this.nextAlias.split('@'),
-        _this$nextAlias$split2 = _slicedToArray(_this$nextAlias$split, 1),
-        alias = _this$nextAlias$split2[0];
-
-    _this.aliasEl.textContent = alias;
+  this.updateAddresses = function (addresses) {
+    if (addresses) {
+      _this.addresses = addresses;
+      _this.addressEl.textContent = addresses.personalAddress;
+    }
   }; // Get the alias from the extension
 
 
-  getAlias().then(function (alias) {
-    if (alias) {
-      _this.nextAlias = alias;
-
-      _this.updateAliasInTooltip();
-    }
-  });
+  getAddresses().then(this.updateAddresses);
   this.top = 0;
   this.left = 0;
   this.transformRuleIndex = null;
@@ -1144,12 +1127,12 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAlias, refreshA
     _this.animationFrame = window.requestAnimationFrame(function () {
       var _getDaxBoundingBox = getDaxBoundingBox(_this.input),
           left = _getDaxBoundingBox.left,
-          top = _getDaxBoundingBox.top;
+          bottom = _getDaxBoundingBox.bottom;
 
-      if (left !== _this.left || top !== _this.top) {
+      if (left !== _this.left || bottom !== _this.top) {
         _this.updatePosition({
           left: left,
-          top: top
+          top: bottom
         });
       }
 
@@ -1164,7 +1147,7 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAlias, refreshA
   this.count = 0;
 
   this.ensureIsLastInDOM = function () {
-    // If DDG el is not the last in the doc, move them there
+    // If DDG el is not the last in the doc, move it there
     if (document.body.lastElementChild !== _this.host) {
       _this.lift(); // Try up to 5 times to avoid infinite loop in case someone is doing the same
 
@@ -1217,17 +1200,18 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAlias, refreshA
     passive: true,
     capture: true
   });
-  this.dismissButton.addEventListener('click', function (e) {
+  this.usePersonalButton.addEventListener('click', function (e) {
     if (!e.isTrusted) return;
     e.stopImmediatePropagation();
-
-    _this.associatedForm.dismissTooltip();
+    safeExecute(_this.usePersonalButton, function () {
+      _this.associatedForm.autofill(_this.addresses.personalAddress + '@duck.com');
+    });
   });
-  this.confirmButton.addEventListener('click', function (e) {
+  this.usePrivateButton.addEventListener('click', function (e) {
     if (!e.isTrusted) return;
     e.stopImmediatePropagation();
-    safeExecute(_this.confirmButton, function () {
-      _this.associatedForm.autofill(_this.nextAlias);
+    safeExecute(_this.usePersonalButton, function () {
+      _this.associatedForm.autofill(_this.addresses.privateAddress + '@duck.com');
 
       refreshAlias();
     });
@@ -1236,10 +1220,30 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAlias, refreshA
 
 module.exports = DDGAutofill;
 
-},{"./DDGAutofill-styles.js":2,"./autofill-utils":7,"./logo-svg":9}],4:[function(require,module,exports){
+},{"./DDGAutofill-styles.js":2,"./autofill-utils":7}],4:[function(require,module,exports){
 "use strict";
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var DDGAutofill = require('./DDGAutofill');
 
@@ -1258,17 +1262,17 @@ var SIGN_IN_MSG = {
   signMeIn: true
 };
 
-var createAttachTooltip = function createAttachTooltip(getAlias, refreshAlias) {
+var createAttachTooltip = function createAttachTooltip(getAutofillData, refreshAlias, addresses) {
   return function (form, input) {
     if (isDDGApp && !isApp) {
       form.activeInput = input;
-      getAlias().then(function (alias) {
+      getAutofillData().then(function (alias) {
         if (alias) form.autofill(alias);else form.activeInput.focus();
       });
     } else {
       if (form.tooltip) return;
       form.activeInput = input;
-      form.tooltip = new DDGAutofill(input, form, getAlias, refreshAlias);
+      form.tooltip = new DDGAutofill(input, form, getAutofillData, refreshAlias, addresses);
       form.intObs.observe(input);
       window.addEventListener('mousedown', form.removeTooltip, {
         capture: true
@@ -1277,251 +1281,339 @@ var createAttachTooltip = function createAttachTooltip(getAlias, refreshAlias) {
   };
 };
 
-var ExtensionInterface = function ExtensionInterface() {
-  var _this = this;
+var InterfacePrototype = /*#__PURE__*/function () {
+  function InterfacePrototype() {
+    _classCallCheck(this, InterfacePrototype);
+  }
 
-  _classCallCheck(this, ExtensionInterface);
-
-  this.getAlias = function () {
-    return new Promise(function (resolve) {
-      return chrome.runtime.sendMessage({
-        getAlias: true
-      }, function (_ref) {
-        var alias = _ref.alias;
-        return resolve(alias);
-      });
-    });
-  };
-
-  this.refreshAlias = function () {
-    return chrome.runtime.sendMessage({
-      refreshAlias: true
-    });
-  };
-
-  this.isDeviceSignedIn = function () {
-    return _this.getAlias().then(function (alias) {
-      if (alias) {
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog: false
-          }
-        });
-        return true;
-      }
-
-      return false;
-    });
-  };
-
-  this.trySigningIn = function () {
-    if (isDDGDomain()) {
-      sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-        return _this.storeUserData(data);
-      });
+  _createClass(InterfacePrototype, [{
+    key: "init",
+    value: function init() {
+      this.addDeviceListeners();
+      this.setupAutofill();
     }
-  };
+  }, {
+    key: "setupAutofill",
+    value: function setupAutofill() {}
+  }, {
+    key: "getAddresses",
+    value: function getAddresses() {}
+  }, {
+    key: "refreshAlias",
+    value: function refreshAlias() {}
+  }, {
+    key: "trySigningIn",
+    value: function trySigningIn() {}
+  }, {
+    key: "storeUserData",
+    value: function storeUserData() {}
+  }, {
+    key: "addDeviceListeners",
+    value: function addDeviceListeners() {}
+  }, {
+    key: "addLogoutListener",
+    value: function addLogoutListener() {}
+  }, {
+    key: "attachTooltip",
+    value: function attachTooltip() {} // TODO: deprecated?
 
-  this.storeUserData = function (data) {
-    return chrome.runtime.sendMessage(data);
-  };
+  }, {
+    key: "isDeviceSignedIn",
+    value: function isDeviceSignedIn() {}
+  }, {
+    key: "getAlias",
+    value: function getAlias() {}
+  }]);
 
-  this.addDeviceListeners = function () {
-    // Add contextual menu listeners
-    var activeEl = null;
-    document.addEventListener('contextmenu', function (e) {
-      activeEl = e.target;
-    });
-    chrome.runtime.onMessage.addListener(function (message, sender) {
-      if (sender.id !== chrome.runtime.id) return;
+  return InterfacePrototype;
+}();
 
-      switch (message.type) {
-        case 'ddgUserReady':
+var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
+  _inherits(ExtensionInterface, _InterfacePrototype);
+
+  var _super = _createSuper(ExtensionInterface);
+
+  function ExtensionInterface() {
+    var _this;
+
+    _classCallCheck(this, ExtensionInterface);
+
+    _this = _super.call(this);
+
+    _this.getAddresses = function () {
+      return new Promise(function (resolve) {
+        return chrome.runtime.sendMessage({
+          getAddresses: true
+        }, function (data) {
+          return resolve(data);
+        });
+      });
+    };
+
+    _this.refreshAlias = function () {
+      return chrome.runtime.sendMessage({
+        refreshAlias: true
+      }, function (addresses) {
+        _this.addresses = addresses;
+      });
+    };
+
+    _this.setupAutofill = function () {
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref.shouldLog;
+
+      _this.getAddresses().then(function (addresses) {
+        if (addresses !== null && addresses !== void 0 && addresses.privateAddress && addresses !== null && addresses !== void 0 && addresses.personalAddress) {
+          _this.attachTooltip = createAttachTooltip(_this.getAddresses, _this.refreshAlias, addresses);
           notifyWebApp({
             deviceSignedIn: {
               value: true,
-              shouldLog: true
+              shouldLog: shouldLog
             }
           });
-          scanForInputs(_this);
-          break;
-
-        case 'contextualAutofill':
-          setValue(activeEl, message.alias);
-          activeEl.classList.add('ddg-autofilled');
-
-          _this.refreshAlias(); // If the user changes the alias, remove the decoration
-
-
-          activeEl.addEventListener('input', function (e) {
-            return e.target.classList.remove('ddg-autofilled');
-          }, {
-            once: true
-          });
-          break;
-
-        default:
-          break;
-      }
-    });
-  };
-
-  this.addLogoutListener = function (handler) {
-    // Cleanup on logout events
-    chrome.runtime.onMessage.addListener(function (message, sender) {
-      if (sender.id === chrome.runtime.id && message.type === 'logout') {
-        handler();
-      }
-    });
-  };
-
-  this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias);
-};
-
-var AndroidInterface = function AndroidInterface() {
-  var _this2 = this;
-
-  _classCallCheck(this, AndroidInterface);
-
-  this.getAlias = function () {
-    return sendAndWaitForAnswer(function () {
-      return window.EmailInterface.showTooltip();
-    }, 'getAliasResponse').then(function (_ref2) {
-      var alias = _ref2.alias;
-      return alias;
-    });
-  };
-
-  this.refreshAlias = function () {};
-
-  this.isDeviceSignedIn = function () {
-    return new Promise(function (resolve) {
-      var signedIn = window.EmailInterface.isSignedIn() === 'true';
-
-      if (signedIn) {
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog: false
-          }
-        });
-      }
-
-      resolve(signedIn);
-    });
-  };
-
-  this.trySigningIn = function () {
-    if (isDDGDomain()) {
-      sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-        // This call doesn't send a response, so we can't know if it succeded
-        _this2.storeUserData(data);
-
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog: true
-          }
-        });
-        scanForInputs(_this2);
+          scanForInputs(_assertThisInitialized(_this));
+        } else {
+          _this.trySigningIn();
+        }
       });
-    }
-  };
+    };
 
-  this.storeUserData = function (_ref3) {
-    var _ref3$addUserData = _ref3.addUserData,
-        token = _ref3$addUserData.token,
-        userName = _ref3$addUserData.userName;
-    return window.EmailInterface.storeCredentials(token, userName);
-  };
+    _this.trySigningIn = function () {
+      if (isDDGDomain()) {
+        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
+          return _this.storeUserData(data);
+        });
+      }
+    };
 
-  this.addDeviceListeners = function () {};
+    _this.storeUserData = function (data) {
+      return chrome.runtime.sendMessage(data);
+    };
 
-  this.addLogoutListener = function () {};
+    _this.addDeviceListeners = function () {
+      // Add contextual menu listeners
+      var activeEl = null;
+      document.addEventListener('contextmenu', function (e) {
+        activeEl = e.target;
+      });
+      chrome.runtime.onMessage.addListener(function (message, sender) {
+        if (sender.id !== chrome.runtime.id) return;
 
-  this.attachTooltip = createAttachTooltip(this.getAlias);
-};
+        switch (message.type) {
+          case 'ddgUserReady':
+            _this.setupAutofill({
+              shouldLog: true
+            });
 
-var AppleDeviceInterface = function AppleDeviceInterface() {
-  var _this3 = this;
+            break;
 
-  _classCallCheck(this, AppleDeviceInterface);
+          case 'contextualAutofill':
+            setValue(activeEl, message.alias + '@duck.com');
+            activeEl.classList.add('ddg-autofilled');
 
-  if (isDDGDomain()) {
-    // Tell the web app whether we're in the app
-    notifyWebApp({
-      isApp: isApp
-    });
+            _this.refreshAlias(); // If the user changes the alias, remove the decoration
+
+
+            activeEl.addEventListener('input', function (e) {
+              return e.target.classList.remove('ddg-autofilled');
+            }, {
+              once: true
+            });
+            break;
+
+          default:
+            break;
+        }
+      });
+    };
+
+    _this.addLogoutListener = function (handler) {
+      // Cleanup on logout events
+      chrome.runtime.onMessage.addListener(function (message, sender) {
+        if (sender.id === chrome.runtime.id && message.type === 'logout') {
+          handler();
+        }
+      });
+    };
+
+    return _this;
   }
 
-  this.getAlias = function () {
-    return sendAndWaitForAnswer(function () {
-      return window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
-        requiresUserPermission: !isApp,
-        shouldConsumeAliasIfProvided: !isApp
+  return ExtensionInterface;
+}(InterfacePrototype);
+
+var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
+  _inherits(AndroidInterface, _InterfacePrototype2);
+
+  var _super2 = _createSuper(AndroidInterface);
+
+  function AndroidInterface() {
+    var _this2;
+
+    _classCallCheck(this, AndroidInterface);
+
+    _this2 = _super2.call(this);
+
+    _this2.getAlias = function () {
+      return sendAndWaitForAnswer(function () {
+        return window.EmailInterface.showTooltip();
+      }, 'getAliasResponse').then(function (_ref2) {
+        var alias = _ref2.alias;
+        return alias;
       });
-    }, 'getAliasResponse').then(function (_ref4) {
-      var alias = _ref4.alias;
-      return alias;
-    });
-  };
+    };
 
-  this.refreshAlias = function () {
-    return window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({});
-  };
+    _this2.isDeviceSignedIn = function () {
+      return new Promise(function (resolve) {
+        resolve(window.EmailInterface.isSignedIn() === 'true');
+      });
+    };
 
-  this.isDeviceSignedIn = function () {
-    return sendAndWaitForAnswer(function () {
-      return window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({});
-    }, 'checkExtensionSignedInCallback').then(function (data) {
-      if (data.isAppSignedIn) {
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog: false
-          }
-        });
-        return true;
-      }
+    _this2.setupAutofill = function () {
+      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref3.shouldLog;
 
-      return false;
-    });
-  };
+      _this2.isDeviceSignedIn().then(function (signedIn) {
+        console.log(signedIn);
 
-  this.trySigningIn = function () {
-    if (isDDGDomain()) {
-      sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-        // This call doesn't send a response, so we can't know if it succeded
-        _this3.storeUserData(data);
+        if (signedIn) {
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: shouldLog
+            }
+          });
+          scanForInputs(_assertThisInitialized(_this2));
+        } else {
+          _this2.trySigningIn();
+        }
+      });
+    };
 
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
+    _this2.trySigningIn = function () {
+      if (isDDGDomain()) {
+        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
+          // This call doesn't send a response, so we can't know if it succeded
+          _this2.storeUserData(data);
+
+          _this2.setupAutofill({
             shouldLog: true
-          }
+          });
         });
-        scanForInputs(_this3);
+      }
+    };
+
+    _this2.storeUserData = function (_ref4) {
+      var _ref4$addUserData = _ref4.addUserData,
+          token = _ref4$addUserData.token,
+          userName = _ref4$addUserData.userName;
+      return window.EmailInterface.storeCredentials(token, userName);
+    };
+
+    _this2.attachTooltip = createAttachTooltip(_this2.getAlias);
+    return _this2;
+  }
+
+  return AndroidInterface;
+}(InterfacePrototype);
+
+var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
+  _inherits(AppleDeviceInterface, _InterfacePrototype3);
+
+  var _super3 = _createSuper(AppleDeviceInterface);
+
+  function AppleDeviceInterface() {
+    var _this3;
+
+    _classCallCheck(this, AppleDeviceInterface);
+
+    _this3 = _super3.call(this);
+
+    if (isDDGDomain()) {
+      // Tell the web app whether we're in the app
+      notifyWebApp({
+        isApp: isApp
       });
     }
-  };
 
-  this.storeUserData = function (_ref5) {
-    var _ref5$addUserData = _ref5.addUserData,
-        token = _ref5$addUserData.token,
-        userName = _ref5$addUserData.userName;
-    return window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({
-      token: token,
-      username: userName
-    });
-  };
+    _this3.getAlias = function () {
+      return sendAndWaitForAnswer(function () {
+        return window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
+          requiresUserPermission: !isApp,
+          shouldConsumeAliasIfProvided: !isApp
+        });
+      }, 'getAliasResponse').then(function (_ref5) {
+        var alias = _ref5.alias;
+        return alias;
+      });
+    };
 
-  this.addDeviceListeners = function () {};
+    _this3.refreshAlias = function () {
+      return window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({});
+    };
 
-  this.addLogoutListener = function () {};
+    _this3.setupAutofill = function () {
+      var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref6.shouldLog;
 
-  this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias);
-};
+      _this3.isDeviceSignedIn().then(function (signedIn) {
+        if (signedIn) {
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: shouldLog
+            }
+          });
+          scanForInputs(_assertThisInitialized(_this3));
+        } else {
+          _this3.trySigningIn();
+        }
+      });
+    };
+
+    _this3.isDeviceSignedIn = function () {
+      return sendAndWaitForAnswer(function () {
+        return window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({});
+      }, 'checkExtensionSignedInCallback').then(function (data) {
+        return !!data.isAppSignedIn;
+      });
+    };
+
+    _this3.trySigningIn = function () {
+      if (isDDGDomain()) {
+        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
+          // This call doesn't send a response, so we can't know if it succeeded
+          _this3.storeUserData(data);
+
+          _this3.setupAutofill({
+            shouldLog: true
+          });
+        });
+      }
+    };
+
+    _this3.storeUserData = function (_ref7) {
+      var _ref7$addUserData = _ref7.addUserData,
+          token = _ref7$addUserData.token,
+          userName = _ref7$addUserData.userName;
+      return window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({
+        token: token,
+        username: userName
+      });
+    };
+
+    _this3.attachTooltip = createAttachTooltip(_this3.getAlias, _this3.refreshAlias);
+    return _this3;
+  }
+
+  return AppleDeviceInterface;
+}(InterfacePrototype);
 
 var DeviceInterface = function () {
   if (isDDGApp) {
@@ -1567,7 +1659,7 @@ var getDaxImg = isDDGApp ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg
 var getDaxStyles = function getDaxStyles(input) {
   return {
     // Height must be > 0 to account for fields initially hidden
-    'background-size': "auto ".concat(input.offsetHeight <= 30 && input.offsetHeight > 0 ? '100%' : '24px'),
+    'background-size': "auto ".concat(input.offsetHeight <= 30 && input.offsetHeight > 0 ? '100%' : '26px'),
     'background-position': 'center right',
     'background-repeat': 'no-repeat',
     'background-origin': 'content-box',
@@ -2177,25 +2269,14 @@ module.exports = {
 
   var DeviceInterface = require('./DeviceInterface');
 
-  var scanForInputs = require('./scanForInputs.js');
-
-  DeviceInterface.addDeviceListeners();
-  DeviceInterface.isDeviceSignedIn().then(function (deviceSignedIn) {
-    if (deviceSignedIn) {
-      scanForInputs(DeviceInterface);
-    } else {
-      DeviceInterface.trySigningIn();
-    }
-  });
+  DeviceInterface.init();
 })();
 
-},{"./DeviceInterface":4,"./requestIdleCallback":10,"./scanForInputs.js":11,"intersection-observer":1}],9:[function(require,module,exports){
+},{"./DeviceInterface":4,"./requestIdleCallback":10,"intersection-observer":1}],9:[function(require,module,exports){
 "use strict";
 
-var daxSvg = '<svg fill="none" height="24" viewBox="0 0 44 44" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><linearGradient id="a"><stop offset=".01" stop-color="#6176b9"/><stop offset=".69" stop-color="#394a9f"/></linearGradient><linearGradient id="b" gradientUnits="userSpaceOnUse" x1="13.9297" x2="17.072" xlink:href="#a" y1="16.398" y2="16.398"/><linearGradient id="c" gradientUnits="userSpaceOnUse" x1="23.8115" x2="26.6752" xlink:href="#a" y1="14.9679" y2="14.9679"/><mask id="d" height="40" maskUnits="userSpaceOnUse" width="40" x="2" y="2"><path clip-rule="evenodd" d="m22.0003 41.0669c10.5302 0 19.0666-8.5364 19.0666-19.0666 0-10.5303-8.5364-19.06671-19.0666-19.06671-10.5303 0-19.06671 8.53641-19.06671 19.06671 0 10.5302 8.53641 19.0666 19.06671 19.0666z" fill="#fff" fill-rule="evenodd"/></mask><path clip-rule="evenodd" d="m22 44c12.1503 0 22-9.8497 22-22 0-12.15026-9.8497-22-22-22-12.15026 0-22 9.84974-22 22 0 12.1503 9.84974 22 22 22z" fill="#de5833" fill-rule="evenodd"/><g mask="url(#d)"><path clip-rule="evenodd" d="m26.0813 41.6386c-.9203-1.7893-1.8003-3.4356-2.3466-4.5246-1.452-2.9077-2.9114-7.007-2.2477-9.6507.121-.4803-1.3677-17.78699-2.42-18.34432-1.1697-.62333-3.7107-1.44467-5.027-1.66467-.9167-.14666-1.1257.11-1.5107.16867.363.03667 2.09.88733 2.4237.935-.3337.22733-1.32-.00733-1.9507.27133-.319.14667-.5573.68934-.55.946 1.7967-.18333 4.6054-.00366 6.27.73329-1.3236.1504-3.333.319-4.1983.7737-2.508 1.32-3.6153 4.411-2.9553 8.1143.6563 3.696 3.564 17.1784 4.4916 21.681.924 4.499 11.5537 3.5567 10.0174.561z" fill="#d5d7d8" fill-rule="evenodd"/><path d="m22.2865 26.8439c-.66 2.6436.792 6.7393 2.2476 9.6506.4891.9727 1.2438 2.3921 2.0558 3.9637-1.894.4693-6.4895 1.1264-9.7191 0-.924-4.4917-3.8317-17.9777-4.4953-21.681-.66-3.7033 0-6.347 2.5153-7.667.8617-.4547 2.0937-.7847 3.4137-.9313-1.6647-.7407-3.6374-1.0267-5.4414-.84336-.0073-.76267 1.3384-.71867 1.8444-1.06334-.3337-.04766-1.1624-.79566-1.529-.83233 2.2883-.39244 4.6423-.02138 6.699 1.056 1.0486.561 1.7893 1.16233 2.2476 1.79303 1.1954.2273 2.2514.66 2.9407 1.3493 2.1193 2.1157 4.0113 6.952 3.2193 9.7313-.2236.77-.7333 1.331-1.3713 1.7967-1.2393.902-1.0193-1.045-4.103.9717-.3997.2603-.3997 2.2256-.5243 2.706z" fill="#fff"/></g><g clip-rule="evenodd" fill-rule="evenodd"><path d="m16.6724 20.354c.7675 0 1.3896-.6221 1.3896-1.3896s-.6221-1.3897-1.3896-1.3897-1.3897.6222-1.3897 1.3897.6222 1.3896 1.3897 1.3896z" fill="#2d4f8e"/><path d="m17.2924 18.8617c.1985 0 .3594-.1608.3594-.3593s-.1609-.3593-.3594-.3593c-.1984 0-.3593.1608-.3593.3593s.1609.3593.3593.3593z" fill="#fff"/><path d="m25.9568 19.3311c.6581 0 1.1917-.5335 1.1917-1.1917 0-.6581-.5336-1.1916-1.1917-1.1916s-1.1917.5335-1.1917 1.1916c0 .6582.5336 1.1917 1.1917 1.1917z" fill="#2d4f8e"/><path d="m26.4882 18.0511c.1701 0 .308-.1379.308-.308s-.1379-.308-.308-.308-.308.1379-.308.308.1379.308.308.308z" fill="#fff"/><path d="m17.072 14.942s-1.0486-.4766-2.0643.165c-1.0157.638-.979 1.2907-.979 1.2907s-.539-1.2027.8983-1.793c1.441-.5867 2.145.3373 2.145.3373z" fill="url(#b)"/><path d="m26.6752 14.8467s-.7517-.429-1.3383-.4217c-1.199.0147-1.5254.5427-1.5254.5427s.2017-1.2614 1.7344-1.0084c.4997.0914.9223.4234 1.1293.8874z" fill="url(#c)"/><path d="m20.9258 24.321c.1393-.8433 2.31-2.431 3.85-2.53 1.54-.0953 2.0167-.0733 3.3-.3813 1.287-.3043 4.598-1.1293 5.511-1.5547.9167-.4216 4.8033.209 2.0643 1.738-1.1843.6637-4.378 1.881-6.6623 2.563-2.2807.682-3.663-.6526-4.422.4694-.6013.891-.121 2.112 2.6033 2.365 3.6814.341 7.2087-1.6574 7.5974-.594.3886 1.0633-3.1607 2.3833-5.324 2.4273-2.1634.0403-6.5194-1.43-7.172-1.8847-.6564-.451-1.5254-1.5143-1.3457-2.618z" fill="#fdd20a"/><path d="m28.8825 31.8386c-.7773-.1724-4.312 2.5006-4.312 2.5006h.0037l-.165 2.0534s4.0406 1.6536 4.73 1.397c.6893-.264.517-5.775-.2567-5.951zm-11.5463 1.034c.0843-1.1184 5.2543 1.6426 5.2543 1.6426l.0037-.0036.2566 2.156s-4.3083 2.5813-4.9133 2.2366c-.6013-.3446-.6893-4.9096-.6013-6.0316z" fill="#65bc46"/><path d="m21.34 34.8049c0 1.8077-.2604 2.585.5133 2.7574.7773.1723 2.2403 0 2.761-.3447.5133-.3447.0843-2.6693-.088-3.102s-3.19-.088-3.19.6893z" fill="#43a244"/><path d="m21.6701 34.4051c0 1.8076-.2604 2.5813.5133 2.7536.7737.176 2.2367 0 2.7573-.3446.517-.3447.088-2.6694-.0843-3.102-.1723-.4327-3.19-.0844-3.19.6893z" fill="#65bc46"/><path d="m22.0002 40.4481c10.1885 0 18.4479-8.2594 18.4479-18.4479s-8.2594-18.44795-18.4479-18.44795-18.44795 8.25945-18.44795 18.44795 8.25945 18.4479 18.44795 18.4479zm0 1.7187c11.1377 0 20.1666-9.0289 20.1666-20.1666 0-11.1378-9.0289-20.1667-20.1666-20.1667-11.1378 0-20.1667 9.0289-20.1667 20.1667 0 11.1377 9.0289 20.1666 20.1667 20.1666z" fill="#fff"/></g></svg>';
 var daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 module.exports = {
-  daxSvg: daxSvg,
   daxBase64: daxBase64
 };
 
