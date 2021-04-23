@@ -7,7 +7,7 @@ const getDaxImg = isDDGApp ? daxBase64 : chrome.runtime.getURL('img/logo-small.s
 
 const getDaxStyles = input => ({
     // Height must be > 0 to account for fields initially hidden
-    'background-size': `auto ${input.offsetHeight <= 30 && input.offsetHeight > 0 ? '100%' : '24px'}`,
+    'background-size': `auto ${input.offsetHeight <= 30 && input.offsetHeight > 0 ? '100%' : '26px'}`,
     'background-position': 'center right',
     'background-repeat': 'no-repeat',
     'background-origin': 'content-box',
