@@ -1,7 +1,7 @@
 {
   "name": "duckduckgo-autofill",
   "version": "1.0.0",
-  "main": "src/autofill.js",
+  "main": "dist/autofill.js",
   "engines": {
     "node": "^14"
   },
