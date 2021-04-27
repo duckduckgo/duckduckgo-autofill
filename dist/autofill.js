@@ -1479,8 +1479,6 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
           shouldLog = _ref3.shouldLog;
 
       _this2.isDeviceSignedIn().then(function (signedIn) {
-        console.log(signedIn);
-
         if (signedIn) {
           notifyWebApp({
             deviceSignedIn: {
