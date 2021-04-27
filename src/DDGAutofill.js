@@ -1,4 +1,4 @@
-const { isApp, getDaxBoundingBox, safeExecute } = require('./autofill-utils')
+const { isApp, getDaxBoundingBox, safeExecute, escapeXML } = require('./autofill-utils')
 
 class DDGAutofill {
     constructor (input, associatedForm, getAddresses, refreshAlias, addresses) {
@@ -19,7 +19,7 @@ ${includeStyles}
     <div class="tooltip" hidden>
         <button class="tooltip__button tooltip__button--secondary js-use-personal">
             <span class="tooltip__button__primary-text">
-                Use <span class="address">${this.addresses.personalAddress}</span>@duck.com
+                Use <span class="address">${escapeXML(this.addresses.personalAddress)}</span>@duck.com
             </span>
             <span class="tooltip__button__secondary-text">Blocks email trackers</span>
         </button>

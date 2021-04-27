@@ -104,6 +104,16 @@ const addInlineStyles = (el, styles) => Object.entries(styles)
 const removeInlineStyles = (el, styles) => Object.keys(styles)
     .forEach(property => el.style.removeProperty(property))
 
+/**
+ * Escapes any occurrences of &, ", <, > or / with XML entities.
+ * @param {string} str The string to escape.
+ * @return {string} The escaped string.
+ */
+function escapeXML (str) {
+    const replacements = { '&': '&amp;', '"': '&quot;', "'": '&apos;', '<': '&lt;', '>': '&gt;', '/': '&#x2F;' }
+    return String(str).replace(/[&"'<>/]/g, m => replacements[m])
+}
+
 module.exports = {
     isApp,
     isDDGApp,
@@ -117,5 +127,6 @@ module.exports = {
     getDaxBoundingBox,
     isEventWithinDax,
     addInlineStyles,
-    removeInlineStyles
+    removeInlineStyles,
+    escapeXML
 }
