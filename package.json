@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "dist/autofill.js",
   "engines": {
-    "node": "^14"
+    "node": "^14",
+    "npm": "~6.14.12"
   },
   "scripts": {
     "start": "grunt dev",
