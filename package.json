@@ -1,5 +1,5 @@
 {
-  "name": "@duckduckgo-autofill",
+  "name": "@duckduckgo/autofill",
   "version": "1.0.0",
   "main": "dist/autofill.js",
   "engines": {
