@@ -2,7 +2,9 @@ const FormAnalyzer = require('./FormAnalyzer')
 const {addInlineStyles, removeInlineStyles, isDDGApp, setValue, isEventWithinDax} = require('./autofill-utils')
 const {daxBase64} = require('./logo-svg')
 
-const getDaxImg = isDDGApp ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
+// In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+const isFirefox = navigator.userAgent.includes('Firefox')
+const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
 
 const getDaxStyles = input => ({
     // Height must be > 0 to account for fields initially hidden
