@@ -6,7 +6,8 @@ const {
     isAndroid,
     isDDGDomain,
     sendAndWaitForAnswer,
-    setValue
+    setValue,
+    formatAddress
 } = require('./autofill-utils')
 const scanForInputs = require('./scanForInputs.js')
 
@@ -97,7 +98,7 @@ class ExtensionInterface extends InterfacePrototype {
                     this.setupAutofill({shouldLog: true})
                     break
                 case 'contextualAutofill':
-                    setValue(activeEl, message.alias + '@duck.com')
+                    setValue(activeEl, formatAddress(message.alias))
                     activeEl.classList.add('ddg-autofilled')
                     this.refreshAlias()
 

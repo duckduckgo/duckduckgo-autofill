@@ -104,6 +104,14 @@ const addInlineStyles = (el, styles) => Object.entries(styles)
 const removeInlineStyles = (el, styles) => Object.keys(styles)
     .forEach(property => el.style.removeProperty(property))
 
+const ADDRESS_DOMAIN = '@duck.com'
+/**
+ * Given a username, returns the full email address
+ * @param {string} address
+ * @returns {string}
+ */
+const formatAddress = (address) => address + ADDRESS_DOMAIN
+
 /**
  * Escapes any occurrences of &, ", <, > or / with XML entities.
  * @param {string} str The string to escape.
@@ -128,5 +136,7 @@ module.exports = {
     isEventWithinDax,
     addInlineStyles,
     removeInlineStyles,
+    ADDRESS_DOMAIN,
+    formatAddress,
     escapeXML
 }

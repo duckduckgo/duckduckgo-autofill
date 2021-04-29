@@ -1,4 +1,10 @@
-const { isApp, getDaxBoundingBox, safeExecute, escapeXML } = require('./autofill-utils')
+const {
+    isApp,
+    formatAddress,
+    getDaxBoundingBox,
+    safeExecute,
+    escapeXML
+} = require('./autofill-utils')
 
 class DDGAutofill {
     constructor (input, associatedForm, getAddresses, refreshAlias, addresses) {
@@ -19,7 +25,7 @@ ${includeStyles}
     <div class="tooltip" hidden>
         <button class="tooltip__button tooltip__button--secondary js-use-personal">
             <span class="tooltip__button__primary-text">
-                Use <span class="address">${escapeXML(this.addresses.personalAddress)}</span>@duck.com
+                Use <span class="address">${formatAddress(escapeXML(this.addresses.personalAddress))}</span>
             </span>
             <span class="tooltip__button__secondary-text">Blocks email trackers</span>
         </button>
@@ -42,7 +48,7 @@ ${includeStyles}
         this.updateAddresses = (addresses) => {
             if (addresses) {
                 this.addresses = addresses
-                this.addressEl.textContent = addresses.personalAddress
+                this.addressEl.textContent = formatAddress(addresses.personalAddress)
             }
         }
 
@@ -142,7 +148,7 @@ ${includeStyles}
             e.stopImmediatePropagation()
 
             safeExecute(this.usePersonalButton, () => {
-                this.associatedForm.autofill(this.addresses.personalAddress + '@duck.com')
+                this.associatedForm.autofill(formatAddress(this.addresses.personalAddress))
             })
         })
         this.usePrivateButton.addEventListener('click', (e) => {
@@ -150,7 +156,7 @@ ${includeStyles}
             e.stopImmediatePropagation()
 
             safeExecute(this.usePersonalButton, () => {
-                this.associatedForm.autofill(this.addresses.privateAddress + '@duck.com')
+                this.associatedForm.autofill(formatAddress(this.addresses.privateAddress))
                 refreshAlias()
             })
         })
