@@ -9,7 +9,6 @@ class FormAnalyzer {
 
         this.evaluateElAttributes(input, 3, true)
         form ? this.evaluateForm() : this.evaluatePage()
-        console.log(this.autofillSignal, this, this.signals)
         return this
     }
 
