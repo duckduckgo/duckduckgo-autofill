@@ -1032,6 +1032,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var _require = require('./autofill-utils'),
     isApp = _require.isApp,
+    formatAddress = _require.formatAddress,
     getDaxBoundingBox = _require.getDaxBoundingBox,
     safeExecute = _require.safeExecute,
     escapeXML = _require.escapeXML;
@@ -1050,12 +1051,12 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAddresses, refr
   this.addresses = addresses;
   this.animationFrame = null;
   var includeStyles = isApp ? "<style>".concat(require('./DDGAutofill-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/email-autofill.css'), "\" crossorigin=\"anonymous\">");
-  shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper\">\n    <div class=\"tooltip\" hidden>\n        <button class=\"tooltip__button tooltip__button--secondary js-use-personal\">\n            <span class=\"tooltip__button__primary-text\">\n                Use <span class=\"address\">").concat(escapeXML(this.addresses.personalAddress), "</span>@duck.com\n            </span>\n            <span class=\"tooltip__button__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--primary js-use-private\">\n            <span class=\"tooltip__button__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
+  shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper\">\n    <div class=\"tooltip\" hidden>\n        <button class=\"tooltip__button tooltip__button--secondary js-use-personal\">\n            <span class=\"tooltip__button__primary-text\">\n                Use <span class=\"js-address\">").concat(formatAddress(escapeXML(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--primary js-use-private\">\n            <span class=\"tooltip__button__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
   this.wrapper = shadow.querySelector('.wrapper');
   this.tooltip = shadow.querySelector('.tooltip');
   this.usePersonalButton = shadow.querySelector('.js-use-personal');
   this.usePrivateButton = shadow.querySelector('.js-use-private');
-  this.addressEl = shadow.querySelector('.address');
+  this.addressEl = shadow.querySelector('.js-address');
   this.stylesheet = shadow.querySelector('link, style'); // Un-hide once the style is loaded, to avoid flashing unstyled content
 
   this.stylesheet.addEventListener('load', function () {
@@ -1065,7 +1066,7 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAddresses, refr
   this.updateAddresses = function (addresses) {
     if (addresses) {
       _this.addresses = addresses;
-      _this.addressEl.textContent = addresses.personalAddress;
+      _this.addressEl.textContent = formatAddress(addresses.personalAddress);
     }
   }; // Get the alias from the extension
 
@@ -1205,14 +1206,14 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAddresses, refr
     if (!e.isTrusted) return;
     e.stopImmediatePropagation();
     safeExecute(_this.usePersonalButton, function () {
-      _this.associatedForm.autofill(_this.addresses.personalAddress + '@duck.com');
+      _this.associatedForm.autofill(formatAddress(_this.addresses.personalAddress));
     });
   });
   this.usePrivateButton.addEventListener('click', function (e) {
     if (!e.isTrusted) return;
     e.stopImmediatePropagation();
     safeExecute(_this.usePersonalButton, function () {
-      _this.associatedForm.autofill(_this.addresses.privateAddress + '@duck.com');
+      _this.associatedForm.autofill(formatAddress(_this.addresses.privateAddress));
 
       refreshAlias();
     });
@@ -1255,7 +1256,8 @@ var _require = require('./autofill-utils'),
     isAndroid = _require.isAndroid,
     isDDGDomain = _require.isDDGDomain,
     sendAndWaitForAnswer = _require.sendAndWaitForAnswer,
-    setValue = _require.setValue;
+    setValue = _require.setValue,
+    formatAddress = _require.formatAddress;
 
 var scanForInputs = require('./scanForInputs.js');
 
@@ -1411,7 +1413,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
             break;
 
           case 'contextualAutofill':
-            setValue(activeEl, message.alias + '@duck.com');
+            setValue(activeEl, formatAddress(message.alias));
             activeEl.classList.add('ddg-autofilled');
 
             _this.refreshAlias(); // If the user changes the alias, remove the decoration
@@ -1643,17 +1645,17 @@ var FormAnalyzer = require('./FormAnalyzer');
 
 var _require = require('./autofill-utils'),
     addInlineStyles = _require.addInlineStyles,
-    removeInlineStyles = _require.removeInlineStyles;
+    removeInlineStyles = _require.removeInlineStyles,
+    isDDGApp = _require.isDDGApp,
+    setValue = _require.setValue,
+    isEventWithinDax = _require.isEventWithinDax;
 
 var _require2 = require('./logo-svg'),
-    daxBase64 = _require2.daxBase64;
+    daxBase64 = _require2.daxBase64; // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 
-var _require3 = require('./autofill-utils'),
-    isDDGApp = _require3.isDDGApp,
-    setValue = _require3.setValue,
-    isEventWithinDax = _require3.isEventWithinDax;
 
-var getDaxImg = isDDGApp ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
+var isFirefox = navigator.userAgent.includes('Firefox');
+var getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
 
 var getDaxStyles = function getDaxStyles(input) {
   return {
@@ -1874,7 +1876,6 @@ var FormAnalyzer = /*#__PURE__*/function () {
     if (window.location.href.match(/^https:\/\/.+\.duckduckgo\.com\/email\/signup/i)) return this;
     this.evaluateElAttributes(input, 3, true);
     form ? this.evaluateForm() : this.evaluatePage();
-    console.log(this.autofillSignal, this, this.signals);
     return this;
   }
 
@@ -2240,6 +2241,17 @@ var removeInlineStyles = function removeInlineStyles(el, styles) {
     return el.style.removeProperty(property);
   });
 };
+
+var ADDRESS_DOMAIN = '@duck.com';
+/**
+ * Given a username, returns the full email address
+ * @param {string} address
+ * @returns {string}
+ */
+
+var formatAddress = function formatAddress(address) {
+  return address + ADDRESS_DOMAIN;
+};
 /**
  * Escapes any occurrences of &, ", <, > or / with XML entities.
  * @param {string} str The string to escape.
@@ -2275,6 +2287,8 @@ module.exports = {
   isEventWithinDax: isEventWithinDax,
   addInlineStyles: addInlineStyles,
   removeInlineStyles: removeInlineStyles,
+  ADDRESS_DOMAIN: ADDRESS_DOMAIN,
+  formatAddress: formatAddress,
   escapeXML: escapeXML
 };
 
@@ -2282,14 +2296,31 @@ module.exports = {
 "use strict";
 
 (function () {
-  // Polyfills/shims
-  require('intersection-observer');
+  var inject = function inject() {
+    // Polyfills/shims
+    require('intersection-observer');
 
-  require('./requestIdleCallback');
+    require('./requestIdleCallback');
 
-  var DeviceInterface = require('./DeviceInterface');
+    var DeviceInterface = require('./DeviceInterface');
 
-  DeviceInterface.init();
+    DeviceInterface.init();
+  }; // chrome is only present in desktop browsers
+
+
+  if (typeof chrome === 'undefined') {
+    inject();
+  } else {
+    // Check if the site is marked to skip autofill
+    chrome.runtime.sendMessage({
+      registeredTempAutofillContentScript: true
+    }, function (response) {
+      var _response$site, _response$site$broken;
+
+      if (response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill')) return;
+      inject();
+    });
+  }
 })();
 
 },{"./DeviceInterface":4,"./requestIdleCallback":10,"intersection-observer":1}],9:[function(require,module,exports){
