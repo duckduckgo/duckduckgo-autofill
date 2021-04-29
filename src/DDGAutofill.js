@@ -25,7 +25,7 @@ ${includeStyles}
     <div class="tooltip" hidden>
         <button class="tooltip__button tooltip__button--secondary js-use-personal">
             <span class="tooltip__button__primary-text">
-                Use <span class="address">${formatAddress(escapeXML(this.addresses.personalAddress))}</span>
+                Use <span class="js-address">${formatAddress(escapeXML(this.addresses.personalAddress))}</span>
             </span>
             <span class="tooltip__button__secondary-text">Blocks email trackers</span>
         </button>
@@ -39,7 +39,7 @@ ${includeStyles}
         this.tooltip = shadow.querySelector('.tooltip')
         this.usePersonalButton = shadow.querySelector('.js-use-personal')
         this.usePrivateButton = shadow.querySelector('.js-use-private')
-        this.addressEl = shadow.querySelector('.address')
+        this.addressEl = shadow.querySelector('.js-address')
         this.stylesheet = shadow.querySelector('link, style')
         // Un-hide once the style is loaded, to avoid flashing unstyled content
         this.stylesheet.addEventListener('load', () =>
