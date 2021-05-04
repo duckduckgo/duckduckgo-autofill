@@ -30,8 +30,5 @@
     "grunt-eslint": "^23.0.0",
     "grunt-exec": "^3.0.0",
     "load-grunt-tasks": "^5.1.0"
-  },
-  "dependencies": {
-    "intersection-observer": "^0.12.0"
   }
 }
