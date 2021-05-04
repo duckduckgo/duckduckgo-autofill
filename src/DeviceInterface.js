@@ -153,7 +153,7 @@ class AndroidInterface extends InterfacePrototype {
             if (isDDGDomain()) {
                 sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                     .then(data => {
-                        // This call doesn't send a response, so we can't know if it succeded
+                        // This call doesn't send a response, so we can't know if it succeeded
                         this.storeUserData(data)
                         this.setupAutofill({shouldLog: true})
                     })
