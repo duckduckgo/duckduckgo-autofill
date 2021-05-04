@@ -191,6 +191,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         this.refreshAlias = () => window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({})
 
+        // TODO: deprecated
         this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
         'checkExtensionSignedInCallback'
