@@ -174,6 +174,16 @@ class AppleDeviceInterface extends InterfacePrototype {
             // Tell the web app whether we're in the app
             notifyWebApp({isApp})
         }
+
+        this.getAddresses = () => {
+            if (!isApp) return this.getAlias()
+
+            return sendAndWaitForAnswer(() =>
+                window.webkit.messageHandlers['emailHandlerGetAddresses'].postMessage({}),
+            'getAddressesResponse'
+            )
+        }
+
         this.getAlias = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
                 requiresUserPermission: !isApp,
