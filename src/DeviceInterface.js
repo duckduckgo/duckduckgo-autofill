@@ -180,7 +180,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             return sendAndWaitForAnswer(() =>
                 window.webkit.messageHandlers['emailHandlerGetAddresses'].postMessage({}),
             'getAddressesResponse'
-            )
+            ).then(({addresses}) => addresses)
         }
 
         this.getAlias = () => sendAndWaitForAnswer(() =>
