@@ -35,7 +35,18 @@ class InterfacePrototype {
         this.addDeviceListeners()
         this.setupAutofill()
     }
-    setupAutofill () {}
+    // Default setup used on extensions and Apple devices
+    setupAutofill ({shouldLog} = {shouldLog: false}) {
+        this.getAddresses().then(addresses => {
+            if (addresses?.privateAddress && addresses?.personalAddress) {
+                this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
+                notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                scanForInputs(this)
+            } else {
+                this.trySigningIn()
+            }
+        })
+    }
     getAddresses () {}
     refreshAlias () {}
     trySigningIn () {}
@@ -61,18 +72,6 @@ class ExtensionInterface extends InterfacePrototype {
         this.refreshAlias = () => chrome.runtime.sendMessage(
             {refreshAlias: true},
             (addresses) => { this.addresses = addresses })
-
-        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
-            this.getAddresses().then(addresses => {
-                if (addresses?.privateAddress && addresses?.personalAddress) {
-                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
-                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                    scanForInputs(this)
-                } else {
-                    this.trySigningIn()
-                }
-            })
-        }
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
@@ -191,17 +190,6 @@ class AppleDeviceInterface extends InterfacePrototype {
             }), 'getAliasResponse').then(({alias}) => alias)
 
         this.refreshAlias = () => window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({})
-
-        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
-            this.isDeviceSignedIn().then((signedIn) => {
-                if (signedIn) {
-                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                    scanForInputs(this)
-                } else {
-                    this.trySigningIn()
-                }
-            })
-        }
 
         this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
