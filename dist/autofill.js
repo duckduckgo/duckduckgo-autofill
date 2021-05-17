@@ -917,13 +917,13 @@ var FormAnalyzer = /*#__PURE__*/function () {
       var signalStrength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
       var isInput = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       Array.from(el.attributes).forEach(function (attr) {
-        if (attr.nodeName === 'style') return;
-        var attributeString = "".concat(attr.nodeName, "=").concat(attr.nodeValue);
+        if (attr.name === 'style') return;
+        var attributeString = "".concat(attr.name, "=").concat(attr.value);
 
         _this.updateSignal({
           string: attributeString,
           strength: signalStrength,
-          signalType: "".concat(el.nodeName, " attr: ").concat(attributeString),
+          signalType: "".concat(el.name, " attr: ").concat(attributeString),
           shouldCheckUnifiedForm: isInput
         });
       });

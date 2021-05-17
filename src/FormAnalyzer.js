@@ -61,14 +61,13 @@ class FormAnalyzer {
 
     evaluateElAttributes (el, signalStrength = 3, isInput = false) {
         Array.from(el.attributes).forEach(attr => {
+            if (attr.name === 'style') return
 
-            if (attr.nodeName === 'style') return
-
-            const attributeString = `${attr.nodeName}=${attr.nodeValue}`
+            const attributeString = `${attr.name}=${attr.value}`
             this.updateSignal({
                 string: attributeString,
                 strength: signalStrength,
-                signalType: `${el.nodeName} attr: ${attributeString}`,
+                signalType: `${el.name} attr: ${attributeString}`,
                 shouldCheckUnifiedForm: isInput
             })
         })
