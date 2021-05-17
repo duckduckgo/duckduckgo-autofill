@@ -34,7 +34,7 @@ class FormAnalyzer {
     }) {
         const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in/i)
         const positiveRegex = new RegExp(
-            /sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order/i
+            /sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate/i
         )
         const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
         const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i)
@@ -61,11 +61,13 @@ class FormAnalyzer {
 
     evaluateElAttributes (el, signalStrength = 3, isInput = false) {
         Array.from(el.attributes).forEach(attr => {
-            const attributeString = `${attr.nodeName}=${attr.nodeValue}`
+            if (attr.name === 'style') return
+
+            const attributeString = `${attr.name}=${attr.value}`
             this.updateSignal({
                 string: attributeString,
                 strength: signalStrength,
-                signalType: `${el.nodeName} attr: ${attributeString}`,
+                signalType: `${el.name} attr: ${attributeString}`,
                 shouldCheckUnifiedForm: isInput
             })
         })

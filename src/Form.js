@@ -117,8 +117,10 @@ class Form {
             if (e.button !== 0) return
 
             if (this.shouldOpenTooltip(e, e.target)) {
-                e.preventDefault()
-                e.stopImmediatePropagation()
+                if (isEventWithinDax(e, e.target)) {
+                    e.preventDefault()
+                    e.stopImmediatePropagation()
+                }
 
                 this.touched.add(e.target)
                 this.attachTooltip(this, e.target)
