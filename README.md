@@ -1,10 +1,19 @@
 # DuckDuckGo Autofill
 
-This code is imported as a subrepo by our [extension](https://github.com/duckduckgo/duckduckgo-privacy-extension) and native apps ([iOS](https://github.com/duckduckgo/iOS) and [Android](https://github.com/duckduckgo/Android)).
+This code is imported as an `npm` module by our [extension](https://github.com/duckduckgo/duckduckgo-privacy-extension) and as a subrepo by native apps ([iOS](https://github.com/duckduckgo/iOS) and [Android](https://github.com/duckduckgo/Android)).
 
 DuckDuckGo Autofill is distributed under the Apache 2.0 [License](LICENSE.md).
 
-## How to add this repo to another project
+## How to develop and test within the context of the extensions
+
+To simplify development workflows, you can use [`npm-link`](https://docs.npmjs.com/cli/v6/commands/npm-link). `npm-link` creates a symlink to the source repo and links it to local package usages. It's a two-step process.
+
+1. In the source repo (this folder), run `npm link`. This must be done only once.
+1. In the client repo (the extension folder), run `npm link @duckduckgo/autofill`. Do this every time you start working on the extension repo.
+
+Now you can run `npm start` in this repo and the changes will be picked up automatically in the client 🎉.
+
+## How to add this as a subrepo to another project
 ###### [See the docs](https://git-scm.com/book/en/v2/Git-Tools-Submodules#_starting_submodules)
 
 To add this repo as a submodule, run:
