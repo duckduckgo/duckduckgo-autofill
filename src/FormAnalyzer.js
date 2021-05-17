@@ -61,6 +61,9 @@ class FormAnalyzer {
 
     evaluateElAttributes (el, signalStrength = 3, isInput = false) {
         Array.from(el.attributes).forEach(attr => {
+
+            if (attr.nodeName === 'style') return
+
             const attributeString = `${attr.nodeName}=${attr.nodeValue}`
             this.updateSignal({
                 string: attributeString,
