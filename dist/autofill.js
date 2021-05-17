@@ -264,6 +264,9 @@ var createAttachTooltip = function createAttachTooltip(getAutofillData, refreshA
       window.addEventListener('mousedown', form.removeTooltip, {
         capture: true
       });
+      window.addEventListener('input', form.removeTooltip, {
+        once: true
+      });
     }
   };
 };
@@ -790,8 +793,10 @@ var Form = /*#__PURE__*/function () {
         if (e.button !== 0) return;
 
         if (_this2.shouldOpenTooltip(e, e.target)) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
+          if (isEventWithinDax(e, e.target)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }
 
           _this2.touched.add(e.target);
 
@@ -882,7 +887,7 @@ var FormAnalyzer = /*#__PURE__*/function () {
           _ref$shouldBeConserva = _ref.shouldBeConservative,
           shouldBeConservative = _ref$shouldBeConserva === void 0 ? false : _ref$shouldBeConserva;
       var negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in/i);
-      var positiveRegex = new RegExp(/sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order/i);
+      var positiveRegex = new RegExp(/sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate/i);
       var conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
       var strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
       var matchesNegative = string.match(negativeRegex); // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
@@ -912,6 +917,7 @@ var FormAnalyzer = /*#__PURE__*/function () {
       var signalStrength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
       var isInput = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       Array.from(el.attributes).forEach(function (attr) {
+        if (attr.nodeName === 'style') return;
         var attributeString = "".concat(attr.nodeName, "=").concat(attr.nodeValue);
 
         _this.updateSignal({
