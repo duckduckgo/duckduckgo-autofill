@@ -37,17 +37,7 @@ class InterfacePrototype {
         this.setupAutofill()
     }
     // Default setup used on extensions and Apple devices
-    setupAutofill ({shouldLog} = {shouldLog: false}) {
-        this.getAddresses().then(addresses => {
-            if (addresses?.privateAddress && addresses?.personalAddress) {
-                this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
-                notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                scanForInputs(this)
-            } else {
-                this.trySigningIn()
-            }
-        })
-    }
+    setupAutofill () {}
     getAddresses () {}
     refreshAlias () {}
     trySigningIn () {}
@@ -55,8 +45,6 @@ class InterfacePrototype {
     addDeviceListeners () {}
     addLogoutListener () {}
     attachTooltip () {}
-
-    // TODO: deprecated?
     isDeviceSignedIn () {}
     getAlias () {}
 }
@@ -64,6 +52,18 @@ class InterfacePrototype {
 class ExtensionInterface extends InterfacePrototype {
     constructor () {
         super()
+
+        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
+            this.getAddresses().then(addresses => {
+                if (addresses?.privateAddress && addresses?.personalAddress) {
+                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
+                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                    scanForInputs(this)
+                } else {
+                    this.trySigningIn()
+                }
+            })
+        }
 
         this.getAddresses = () => new Promise(resolve => chrome.runtime.sendMessage(
             {getAddresses: true},
@@ -175,6 +175,18 @@ class AppleDeviceInterface extends InterfacePrototype {
             notifyWebApp({isApp})
         }
 
+        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
+            this.isDeviceSignedIn().then(signedIn => {
+                if (signedIn) {
+                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
+                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                    scanForInputs(this)
+                } else {
+                    this.trySigningIn()
+                }
+            })
+        }
+
         this.getAddresses = () => {
             if (!isApp) return this.getAlias()
 
@@ -192,10 +204,9 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         this.refreshAlias = () => window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({})
 
-        // TODO: deprecated
         this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
-        'checkExtensionSignedInCallback'
+        'emailHandlerCheckAppSignedInStatusResponse'
         ).then(data => !!data.isAppSignedIn)
 
         this.trySigningIn = () => {
