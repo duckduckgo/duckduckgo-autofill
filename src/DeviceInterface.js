@@ -65,6 +65,18 @@ class ExtensionInterface extends InterfacePrototype {
     constructor () {
         super()
 
+        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
+            this.getAddresses().then(addresses => {
+                if (addresses?.privateAddress && addresses?.personalAddress) {
+                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
+                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                    scanForInputs(this)
+                } else {
+                    this.trySigningIn()
+                }
+            })
+        }
+
         this.getAddresses = () => new Promise(resolve => chrome.runtime.sendMessage(
             {getAddresses: true},
             (data) => resolve(data)
@@ -175,6 +187,18 @@ class AppleDeviceInterface extends InterfacePrototype {
             notifyWebApp({isApp})
         }
 
+        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
+            this.isDeviceSignedIn().then(signedIn => {
+                if (signedIn) {
+                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
+                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                    scanForInputs(this)
+                } else {
+                    this.trySigningIn()
+                }
+            })
+        }
+
         this.getAddresses = () => {
             if (!isApp) return this.getAlias()
 
@@ -192,7 +216,6 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         this.refreshAlias = () => window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({})
 
-        // TODO: deprecated
         this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
         'checkExtensionSignedInCallback'

@@ -353,6 +353,28 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
 
     _this2 = _super.call(this);
 
+    _this2.setupAutofill = function () {
+      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref2.shouldLog;
+
+      _this2.getAddresses().then(function (addresses) {
+        if (addresses !== null && addresses !== void 0 && addresses.privateAddress && addresses !== null && addresses !== void 0 && addresses.personalAddress) {
+          _this2.attachTooltip = createAttachTooltip(_this2.getAddresses, _this2.refreshAlias, addresses);
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: shouldLog
+            }
+          });
+          scanForInputs(_assertThisInitialized(_this2));
+        } else {
+          _this2.trySigningIn();
+        }
+      });
+    };
+
     _this2.getAddresses = function () {
       return new Promise(function (resolve) {
         return chrome.runtime.sendMessage({
@@ -450,8 +472,8 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
     _this3.getAlias = function () {
       return sendAndWaitForAnswer(function () {
         return window.EmailInterface.showTooltip();
-      }, 'getAliasResponse').then(function (_ref2) {
-        var alias = _ref2.alias;
+      }, 'getAliasResponse').then(function (_ref3) {
+        var alias = _ref3.alias;
         return alias;
       });
     };
@@ -463,10 +485,10 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
     };
 
     _this3.setupAutofill = function () {
-      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+      var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
         shouldLog: false
       },
-          shouldLog = _ref3.shouldLog;
+          shouldLog = _ref4.shouldLog;
 
       _this3.isDeviceSignedIn().then(function (signedIn) {
         if (signedIn) {
@@ -496,10 +518,10 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
       }
     };
 
-    _this3.storeUserData = function (_ref4) {
-      var _ref4$addUserData = _ref4.addUserData,
-          token = _ref4$addUserData.token,
-          userName = _ref4$addUserData.userName;
+    _this3.storeUserData = function (_ref5) {
+      var _ref5$addUserData = _ref5.addUserData,
+          token = _ref5$addUserData.token,
+          userName = _ref5$addUserData.userName;
       return window.EmailInterface.storeCredentials(token, userName);
     };
 
@@ -529,12 +551,34 @@ var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
       });
     }
 
+    _this4.setupAutofill = function () {
+      var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref6.shouldLog;
+
+      _this4.isDeviceSignedIn().then(function (signedIn) {
+        if (signedIn) {
+          _this4.attachTooltip = createAttachTooltip(_this4.getAddresses, _this4.refreshAlias, {});
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: shouldLog
+            }
+          });
+          scanForInputs(_assertThisInitialized(_this4));
+        } else {
+          _this4.trySigningIn();
+        }
+      });
+    };
+
     _this4.getAddresses = function () {
       if (!isApp) return _this4.getAlias();
       return sendAndWaitForAnswer(function () {
         return window.webkit.messageHandlers['emailHandlerGetAddresses'].postMessage({});
-      }, 'getAddressesResponse').then(function (_ref5) {
-        var addresses = _ref5.addresses;
+      }, 'getAddressesResponse').then(function (_ref7) {
+        var addresses = _ref7.addresses;
         return addresses;
       });
     };
@@ -545,16 +589,15 @@ var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
           requiresUserPermission: !isApp,
           shouldConsumeAliasIfProvided: !isApp
         });
-      }, 'getAliasResponse').then(function (_ref6) {
-        var alias = _ref6.alias;
+      }, 'getAliasResponse').then(function (_ref8) {
+        var alias = _ref8.alias;
         return alias;
       });
     };
 
     _this4.refreshAlias = function () {
       return window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({});
-    }; // TODO: deprecated
-
+    };
 
     _this4.isDeviceSignedIn = function () {
       return sendAndWaitForAnswer(function () {
@@ -577,10 +620,10 @@ var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
       }
     };
 
-    _this4.storeUserData = function (_ref7) {
-      var _ref7$addUserData = _ref7.addUserData,
-          token = _ref7$addUserData.token,
-          userName = _ref7$addUserData.userName;
+    _this4.storeUserData = function (_ref9) {
+      var _ref9$addUserData = _ref9.addUserData,
+          token = _ref9$addUserData.token,
+          userName = _ref9$addUserData.userName;
       return window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({
         token: token,
         username: userName
