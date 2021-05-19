@@ -37,17 +37,7 @@ class InterfacePrototype {
         this.setupAutofill()
     }
     // Default setup used on extensions and Apple devices
-    setupAutofill ({shouldLog} = {shouldLog: false}) {
-        this.getAddresses().then(addresses => {
-            if (addresses?.privateAddress && addresses?.personalAddress) {
-                this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
-                notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                scanForInputs(this)
-            } else {
-                this.trySigningIn()
-            }
-        })
-    }
+    setupAutofill () {}
     getAddresses () {}
     refreshAlias () {}
     trySigningIn () {}
@@ -55,8 +45,6 @@ class InterfacePrototype {
     addDeviceListeners () {}
     addLogoutListener () {}
     attachTooltip () {}
-
-    // TODO: deprecated?
     isDeviceSignedIn () {}
     getAlias () {}
 }
