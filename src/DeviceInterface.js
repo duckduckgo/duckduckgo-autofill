@@ -206,7 +206,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
-        'checkExtensionSignedInCallback'
+        'emailHandlerCheckAppSignedInStatusResponse'
         ).then(data => !!data.isAppSignedIn)
 
         this.trySigningIn = () => {
