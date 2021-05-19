@@ -285,29 +285,7 @@ var InterfacePrototype = /*#__PURE__*/function () {
 
   }, {
     key: "setupAutofill",
-    value: function setupAutofill() {
-      var _this = this;
-
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        shouldLog: false
-      },
-          shouldLog = _ref.shouldLog;
-
-      this.getAddresses().then(function (addresses) {
-        if (addresses !== null && addresses !== void 0 && addresses.privateAddress && addresses !== null && addresses !== void 0 && addresses.personalAddress) {
-          _this.attachTooltip = createAttachTooltip(_this.getAddresses, _this.refreshAlias, addresses);
-          notifyWebApp({
-            deviceSignedIn: {
-              value: true,
-              shouldLog: shouldLog
-            }
-          });
-          scanForInputs(_this);
-        } else {
-          _this.trySigningIn();
-        }
-      });
-    }
+    value: function setupAutofill() {}
   }, {
     key: "getAddresses",
     value: function getAddresses() {}
@@ -328,8 +306,7 @@ var InterfacePrototype = /*#__PURE__*/function () {
     value: function addLogoutListener() {}
   }, {
     key: "attachTooltip",
-    value: function attachTooltip() {} // TODO: deprecated?
-
+    value: function attachTooltip() {}
   }, {
     key: "isDeviceSignedIn",
     value: function isDeviceSignedIn() {}
@@ -347,35 +324,35 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
   var _super = _createSuper(ExtensionInterface);
 
   function ExtensionInterface() {
-    var _this2;
+    var _this;
 
     _classCallCheck(this, ExtensionInterface);
 
-    _this2 = _super.call(this);
+    _this = _super.call(this);
 
-    _this2.setupAutofill = function () {
-      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+    _this.setupAutofill = function () {
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
         shouldLog: false
       },
-          shouldLog = _ref2.shouldLog;
+          shouldLog = _ref.shouldLog;
 
-      _this2.getAddresses().then(function (addresses) {
+      _this.getAddresses().then(function (addresses) {
         if (addresses !== null && addresses !== void 0 && addresses.privateAddress && addresses !== null && addresses !== void 0 && addresses.personalAddress) {
-          _this2.attachTooltip = createAttachTooltip(_this2.getAddresses, _this2.refreshAlias, addresses);
+          _this.attachTooltip = createAttachTooltip(_this.getAddresses, _this.refreshAlias, addresses);
           notifyWebApp({
             deviceSignedIn: {
               value: true,
               shouldLog: shouldLog
             }
           });
-          scanForInputs(_assertThisInitialized(_this2));
+          scanForInputs(_assertThisInitialized(_this));
         } else {
-          _this2.trySigningIn();
+          _this.trySigningIn();
         }
       });
     };
 
-    _this2.getAddresses = function () {
+    _this.getAddresses = function () {
       return new Promise(function (resolve) {
         return chrome.runtime.sendMessage({
           getAddresses: true
@@ -385,27 +362,27 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    _this2.refreshAlias = function () {
+    _this.refreshAlias = function () {
       return chrome.runtime.sendMessage({
         refreshAlias: true
       }, function (addresses) {
-        _this2.addresses = addresses;
+        _this.addresses = addresses;
       });
     };
 
-    _this2.trySigningIn = function () {
+    _this.trySigningIn = function () {
       if (isDDGDomain()) {
         sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-          return _this2.storeUserData(data);
+          return _this.storeUserData(data);
         });
       }
     };
 
-    _this2.storeUserData = function (data) {
+    _this.storeUserData = function (data) {
       return chrome.runtime.sendMessage(data);
     };
 
-    _this2.addDeviceListeners = function () {
+    _this.addDeviceListeners = function () {
       // Add contextual menu listeners
       var activeEl = null;
       document.addEventListener('contextmenu', function (e) {
@@ -416,7 +393,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
 
         switch (message.type) {
           case 'ddgUserReady':
-            _this2.setupAutofill({
+            _this.setupAutofill({
               shouldLog: true
             });
 
@@ -426,7 +403,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
             setValue(activeEl, formatAddress(message.alias));
             activeEl.classList.add('ddg-autofilled');
 
-            _this2.refreshAlias(); // If the user changes the alias, remove the decoration
+            _this.refreshAlias(); // If the user changes the alias, remove the decoration
 
 
             activeEl.addEventListener('input', function (e) {
@@ -442,7 +419,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    _this2.addLogoutListener = function (handler) {
+    _this.addLogoutListener = function (handler) {
       // Cleanup on logout events
       chrome.runtime.onMessage.addListener(function (message, sender) {
         if (sender.id === chrome.runtime.id && message.type === 'logout') {
@@ -451,7 +428,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    return _this2;
+    return _this;
   }
 
   return ExtensionInterface;
@@ -463,35 +440,103 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
   var _super2 = _createSuper(AndroidInterface);
 
   function AndroidInterface() {
-    var _this3;
+    var _this2;
 
     _classCallCheck(this, AndroidInterface);
 
-    _this3 = _super2.call(this);
+    _this2 = _super2.call(this);
 
-    _this3.getAlias = function () {
+    _this2.getAlias = function () {
       return sendAndWaitForAnswer(function () {
         return window.EmailInterface.showTooltip();
-      }, 'getAliasResponse').then(function (_ref3) {
-        var alias = _ref3.alias;
+      }, 'getAliasResponse').then(function (_ref2) {
+        var alias = _ref2.alias;
         return alias;
       });
     };
 
-    _this3.isDeviceSignedIn = function () {
+    _this2.isDeviceSignedIn = function () {
       return new Promise(function (resolve) {
         resolve(window.EmailInterface.isSignedIn() === 'true');
       });
     };
 
-    _this3.setupAutofill = function () {
-      var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+    _this2.setupAutofill = function () {
+      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
         shouldLog: false
       },
-          shouldLog = _ref4.shouldLog;
+          shouldLog = _ref3.shouldLog;
+
+      _this2.isDeviceSignedIn().then(function (signedIn) {
+        if (signedIn) {
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: shouldLog
+            }
+          });
+          scanForInputs(_assertThisInitialized(_this2));
+        } else {
+          _this2.trySigningIn();
+        }
+      });
+    };
+
+    _this2.trySigningIn = function () {
+      if (isDDGDomain()) {
+        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
+          // This call doesn't send a response, so we can't know if it succeeded
+          _this2.storeUserData(data);
+
+          _this2.setupAutofill({
+            shouldLog: true
+          });
+        });
+      }
+    };
+
+    _this2.storeUserData = function (_ref4) {
+      var _ref4$addUserData = _ref4.addUserData,
+          token = _ref4$addUserData.token,
+          userName = _ref4$addUserData.userName;
+      return window.EmailInterface.storeCredentials(token, userName);
+    };
+
+    _this2.attachTooltip = createAttachTooltip(_this2.getAlias);
+    return _this2;
+  }
+
+  return AndroidInterface;
+}(InterfacePrototype);
+
+var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
+  _inherits(AppleDeviceInterface, _InterfacePrototype3);
+
+  var _super3 = _createSuper(AppleDeviceInterface);
+
+  function AppleDeviceInterface() {
+    var _this3;
+
+    _classCallCheck(this, AppleDeviceInterface);
+
+    _this3 = _super3.call(this);
+
+    if (isDDGDomain()) {
+      // Tell the web app whether we're in the app
+      notifyWebApp({
+        isApp: isApp
+      });
+    }
+
+    _this3.setupAutofill = function () {
+      var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref5.shouldLog;
 
       _this3.isDeviceSignedIn().then(function (signedIn) {
         if (signedIn) {
+          _this3.attachTooltip = createAttachTooltip(_this3.getAddresses, _this3.refreshAlias, {});
           notifyWebApp({
             deviceSignedIn: {
               value: true,
@@ -502,6 +547,40 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
         } else {
           _this3.trySigningIn();
         }
+      });
+    };
+
+    _this3.getAddresses = function () {
+      if (!isApp) return _this3.getAlias();
+      return sendAndWaitForAnswer(function () {
+        return window.webkit.messageHandlers['emailHandlerGetAddresses'].postMessage({});
+      }, 'getAddressesResponse').then(function (_ref6) {
+        var addresses = _ref6.addresses;
+        return addresses;
+      });
+    };
+
+    _this3.getAlias = function () {
+      return sendAndWaitForAnswer(function () {
+        return window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
+          requiresUserPermission: !isApp,
+          shouldConsumeAliasIfProvided: !isApp
+        });
+      }, 'getAliasResponse').then(function (_ref7) {
+        var alias = _ref7.alias;
+        return alias;
+      });
+    };
+
+    _this3.refreshAlias = function () {
+      return window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({});
+    };
+
+    _this3.isDeviceSignedIn = function () {
+      return sendAndWaitForAnswer(function () {
+        return window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({});
+      }, 'emailHandlerCheckAppSignedInStatusResponse').then(function (data) {
+        return !!data.isAppSignedIn;
       });
     };
 
@@ -518,120 +597,18 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
       }
     };
 
-    _this3.storeUserData = function (_ref5) {
-      var _ref5$addUserData = _ref5.addUserData,
-          token = _ref5$addUserData.token,
-          userName = _ref5$addUserData.userName;
-      return window.EmailInterface.storeCredentials(token, userName);
-    };
-
-    _this3.attachTooltip = createAttachTooltip(_this3.getAlias);
-    return _this3;
-  }
-
-  return AndroidInterface;
-}(InterfacePrototype);
-
-var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
-  _inherits(AppleDeviceInterface, _InterfacePrototype3);
-
-  var _super3 = _createSuper(AppleDeviceInterface);
-
-  function AppleDeviceInterface() {
-    var _this4;
-
-    _classCallCheck(this, AppleDeviceInterface);
-
-    _this4 = _super3.call(this);
-
-    if (isDDGDomain()) {
-      // Tell the web app whether we're in the app
-      notifyWebApp({
-        isApp: isApp
-      });
-    }
-
-    _this4.setupAutofill = function () {
-      var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        shouldLog: false
-      },
-          shouldLog = _ref6.shouldLog;
-
-      _this4.isDeviceSignedIn().then(function (signedIn) {
-        if (signedIn) {
-          _this4.attachTooltip = createAttachTooltip(_this4.getAddresses, _this4.refreshAlias, {});
-          notifyWebApp({
-            deviceSignedIn: {
-              value: true,
-              shouldLog: shouldLog
-            }
-          });
-          scanForInputs(_assertThisInitialized(_this4));
-        } else {
-          _this4.trySigningIn();
-        }
-      });
-    };
-
-    _this4.getAddresses = function () {
-      if (!isApp) return _this4.getAlias();
-      return sendAndWaitForAnswer(function () {
-        return window.webkit.messageHandlers['emailHandlerGetAddresses'].postMessage({});
-      }, 'getAddressesResponse').then(function (_ref7) {
-        var addresses = _ref7.addresses;
-        return addresses;
-      });
-    };
-
-    _this4.getAlias = function () {
-      return sendAndWaitForAnswer(function () {
-        return window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
-          requiresUserPermission: !isApp,
-          shouldConsumeAliasIfProvided: !isApp
-        });
-      }, 'getAliasResponse').then(function (_ref8) {
-        var alias = _ref8.alias;
-        return alias;
-      });
-    };
-
-    _this4.refreshAlias = function () {
-      return window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({});
-    };
-
-    _this4.isDeviceSignedIn = function () {
-      return sendAndWaitForAnswer(function () {
-        return window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({});
-      }, 'checkExtensionSignedInCallback').then(function (data) {
-        return !!data.isAppSignedIn;
-      });
-    };
-
-    _this4.trySigningIn = function () {
-      if (isDDGDomain()) {
-        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-          // This call doesn't send a response, so we can't know if it succeeded
-          _this4.storeUserData(data);
-
-          _this4.setupAutofill({
-            shouldLog: true
-          });
-        });
-      }
-    };
-
-    _this4.storeUserData = function (_ref9) {
-      var _ref9$addUserData = _ref9.addUserData,
-          token = _ref9$addUserData.token,
-          userName = _ref9$addUserData.userName;
+    _this3.storeUserData = function (_ref8) {
+      var _ref8$addUserData = _ref8.addUserData,
+          token = _ref8$addUserData.token,
+          userName = _ref8$addUserData.userName;
       return window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({
         token: token,
         username: userName
       });
     };
 
-    _this4.attachTooltip = createAttachTooltip(_this4.getAlias, _this4.refreshAlias);
-    return _this4;
+    _this3.attachTooltip = createAttachTooltip(_this3.getAlias, _this3.refreshAlias);
+    return _this3;
   }
 
   return AppleDeviceInterface;
