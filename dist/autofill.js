@@ -1119,9 +1119,11 @@ var wkSend = function wkSend(handler) {
 
 var wkSendAndWait = function wkSendAndWait(handler) {
   var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  return sendAndWaitForAnswer(function () {
-    return wkSend(handler, data);
-  }, handler + 'Response');
+  var call = wkSend(handler, data); // Newer os versions return a promise
+
+  if (typeof (call === null || call === void 0 ? void 0 : call.then) === 'function') return call.then(function (data) {
+    return data;
+  }); // Older versions
 }; // Access the original setter (needed to bypass React's implementation on mobile)
 
 
@@ -1294,7 +1296,30 @@ module.exports = {
 
     var DeviceInterface = require('./DeviceInterface');
 
-    DeviceInterface.init();
+    console.log(window.ratto);
+    console.log('ratto', window.crypto.subtle.exportKey());
+    /*
+    Export the given key and write it into the "exported-key" space.
+    */
+
+    function exportCryptoKey(key) {
+      return window.crypto.subtle.exportKey('raw', key).then(function (exported) {
+        var exportedKeyBuffer = new Uint8Array(exported);
+        console.log(exportedKeyBuffer);
+      });
+    }
+    /*
+    Generate an encrypt/decrypt secret key,
+    then set up an event listener on the "Export" button.
+    */
+
+
+    window.crypto.subtle.generateKey({
+      name: 'AES-GCM',
+      length: 256
+    }, true, ['encrypt', 'decrypt']).then(function (key) {
+      exportCryptoKey(key);
+    }); // DeviceInterface.init()
   }; // chrome is only present in desktop browsers
 
 
