@@ -240,6 +240,8 @@ var _require = require('./autofill-utils'),
     isAndroid = _require.isAndroid,
     isDDGDomain = _require.isDDGDomain,
     sendAndWaitForAnswer = _require.sendAndWaitForAnswer,
+    wkSend = _require.wkSend,
+    wkSendAndWait = _require.wkSendAndWait,
     setValue = _require.setValue,
     formatAddress = _require.formatAddress;
 
@@ -264,9 +266,6 @@ var createAttachTooltip = function createAttachTooltip(getAutofillData, refreshA
       window.addEventListener('mousedown', form.removeTooltip, {
         capture: true
       });
-      window.addEventListener('input', form.removeTooltip, {
-        once: true
-      });
     }
   };
 };
@@ -285,7 +284,29 @@ var InterfacePrototype = /*#__PURE__*/function () {
 
   }, {
     key: "setupAutofill",
-    value: function setupAutofill() {}
+    value: function setupAutofill() {
+      var _this = this;
+
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref.shouldLog;
+
+      this.getAddresses().then(function (addresses) {
+        if (addresses !== null && addresses !== void 0 && addresses.privateAddress && addresses !== null && addresses !== void 0 && addresses.personalAddress) {
+          _this.attachTooltip = createAttachTooltip(_this.getAddresses, _this.refreshAlias, addresses);
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: shouldLog
+            }
+          });
+          scanForInputs(_this);
+        } else {
+          _this.trySigningIn();
+        }
+      });
+    }
   }, {
     key: "getAddresses",
     value: function getAddresses() {}
@@ -306,7 +327,8 @@ var InterfacePrototype = /*#__PURE__*/function () {
     value: function addLogoutListener() {}
   }, {
     key: "attachTooltip",
-    value: function attachTooltip() {}
+    value: function attachTooltip() {} // TODO: deprecated?
+
   }, {
     key: "isDeviceSignedIn",
     value: function isDeviceSignedIn() {}
@@ -324,35 +346,13 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
   var _super = _createSuper(ExtensionInterface);
 
   function ExtensionInterface() {
-    var _this;
+    var _this2;
 
     _classCallCheck(this, ExtensionInterface);
 
-    _this = _super.call(this);
+    _this2 = _super.call(this);
 
-    _this.setupAutofill = function () {
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        shouldLog: false
-      },
-          shouldLog = _ref.shouldLog;
-
-      _this.getAddresses().then(function (addresses) {
-        if (addresses !== null && addresses !== void 0 && addresses.privateAddress && addresses !== null && addresses !== void 0 && addresses.personalAddress) {
-          _this.attachTooltip = createAttachTooltip(_this.getAddresses, _this.refreshAlias, addresses);
-          notifyWebApp({
-            deviceSignedIn: {
-              value: true,
-              shouldLog: shouldLog
-            }
-          });
-          scanForInputs(_assertThisInitialized(_this));
-        } else {
-          _this.trySigningIn();
-        }
-      });
-    };
-
-    _this.getAddresses = function () {
+    _this2.getAddresses = function () {
       return new Promise(function (resolve) {
         return chrome.runtime.sendMessage({
           getAddresses: true
@@ -362,27 +362,27 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    _this.refreshAlias = function () {
+    _this2.refreshAlias = function () {
       return chrome.runtime.sendMessage({
         refreshAlias: true
       }, function (addresses) {
-        _this.addresses = addresses;
+        _this2.addresses = addresses;
       });
     };
 
-    _this.trySigningIn = function () {
+    _this2.trySigningIn = function () {
       if (isDDGDomain()) {
         sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-          return _this.storeUserData(data);
+          return _this2.storeUserData(data);
         });
       }
     };
 
-    _this.storeUserData = function (data) {
+    _this2.storeUserData = function (data) {
       return chrome.runtime.sendMessage(data);
     };
 
-    _this.addDeviceListeners = function () {
+    _this2.addDeviceListeners = function () {
       // Add contextual menu listeners
       var activeEl = null;
       document.addEventListener('contextmenu', function (e) {
@@ -393,7 +393,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
 
         switch (message.type) {
           case 'ddgUserReady':
-            _this.setupAutofill({
+            _this2.setupAutofill({
               shouldLog: true
             });
 
@@ -403,7 +403,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
             setValue(activeEl, formatAddress(message.alias));
             activeEl.classList.add('ddg-autofilled');
 
-            _this.refreshAlias(); // If the user changes the alias, remove the decoration
+            _this2.refreshAlias(); // If the user changes the alias, remove the decoration
 
 
             activeEl.addEventListener('input', function (e) {
@@ -419,7 +419,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    _this.addLogoutListener = function (handler) {
+    _this2.addLogoutListener = function (handler) {
       // Cleanup on logout events
       chrome.runtime.onMessage.addListener(function (message, sender) {
         if (sender.id === chrome.runtime.id && message.type === 'logout') {
@@ -428,7 +428,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    return _this;
+    return _this2;
   }
 
   return ExtensionInterface;
@@ -440,13 +440,13 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
   var _super2 = _createSuper(AndroidInterface);
 
   function AndroidInterface() {
-    var _this2;
+    var _this3;
 
     _classCallCheck(this, AndroidInterface);
 
-    _this2 = _super2.call(this);
+    _this3 = _super2.call(this);
 
-    _this2.getAlias = function () {
+    _this3.getAlias = function () {
       return sendAndWaitForAnswer(function () {
         return window.EmailInterface.showTooltip();
       }, 'getAliasResponse').then(function (_ref2) {
@@ -455,88 +455,20 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
       });
     };
 
-    _this2.isDeviceSignedIn = function () {
+    _this3.isDeviceSignedIn = function () {
       return new Promise(function (resolve) {
         resolve(window.EmailInterface.isSignedIn() === 'true');
       });
     };
 
-    _this2.setupAutofill = function () {
+    _this3.setupAutofill = function () {
       var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
         shouldLog: false
       },
           shouldLog = _ref3.shouldLog;
 
-      _this2.isDeviceSignedIn().then(function (signedIn) {
-        if (signedIn) {
-          notifyWebApp({
-            deviceSignedIn: {
-              value: true,
-              shouldLog: shouldLog
-            }
-          });
-          scanForInputs(_assertThisInitialized(_this2));
-        } else {
-          _this2.trySigningIn();
-        }
-      });
-    };
-
-    _this2.trySigningIn = function () {
-      if (isDDGDomain()) {
-        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-          // This call doesn't send a response, so we can't know if it succeeded
-          _this2.storeUserData(data);
-
-          _this2.setupAutofill({
-            shouldLog: true
-          });
-        });
-      }
-    };
-
-    _this2.storeUserData = function (_ref4) {
-      var _ref4$addUserData = _ref4.addUserData,
-          token = _ref4$addUserData.token,
-          userName = _ref4$addUserData.userName;
-      return window.EmailInterface.storeCredentials(token, userName);
-    };
-
-    _this2.attachTooltip = createAttachTooltip(_this2.getAlias);
-    return _this2;
-  }
-
-  return AndroidInterface;
-}(InterfacePrototype);
-
-var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
-  _inherits(AppleDeviceInterface, _InterfacePrototype3);
-
-  var _super3 = _createSuper(AppleDeviceInterface);
-
-  function AppleDeviceInterface() {
-    var _this3;
-
-    _classCallCheck(this, AppleDeviceInterface);
-
-    _this3 = _super3.call(this);
-
-    if (isDDGDomain()) {
-      // Tell the web app whether we're in the app
-      notifyWebApp({
-        isApp: isApp
-      });
-    }
-
-    _this3.setupAutofill = function () {
-      var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        shouldLog: false
-      },
-          shouldLog = _ref5.shouldLog;
-
       _this3.isDeviceSignedIn().then(function (signedIn) {
         if (signedIn) {
-          _this3.attachTooltip = createAttachTooltip(_this3.getAddresses, _this3.refreshAlias, {});
           notifyWebApp({
             deviceSignedIn: {
               value: true,
@@ -547,40 +479,6 @@ var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
         } else {
           _this3.trySigningIn();
         }
-      });
-    };
-
-    _this3.getAddresses = function () {
-      if (!isApp) return _this3.getAlias();
-      return sendAndWaitForAnswer(function () {
-        return window.webkit.messageHandlers['emailHandlerGetAddresses'].postMessage({});
-      }, 'getAddressesResponse').then(function (_ref6) {
-        var addresses = _ref6.addresses;
-        return addresses;
-      });
-    };
-
-    _this3.getAlias = function () {
-      return sendAndWaitForAnswer(function () {
-        return window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
-          requiresUserPermission: !isApp,
-          shouldConsumeAliasIfProvided: !isApp
-        });
-      }, 'getAliasResponse').then(function (_ref7) {
-        var alias = _ref7.alias;
-        return alias;
-      });
-    };
-
-    _this3.refreshAlias = function () {
-      return window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({});
-    };
-
-    _this3.isDeviceSignedIn = function () {
-      return sendAndWaitForAnswer(function () {
-        return window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({});
-      }, 'emailHandlerCheckAppSignedInStatusResponse').then(function (data) {
-        return !!data.isAppSignedIn;
       });
     };
 
@@ -597,18 +495,86 @@ var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
       }
     };
 
-    _this3.storeUserData = function (_ref8) {
-      var _ref8$addUserData = _ref8.addUserData,
-          token = _ref8$addUserData.token,
-          userName = _ref8$addUserData.userName;
-      return window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({
+    _this3.storeUserData = function (_ref4) {
+      var _ref4$addUserData = _ref4.addUserData,
+          token = _ref4$addUserData.token,
+          userName = _ref4$addUserData.userName;
+      return window.EmailInterface.storeCredentials(token, userName);
+    };
+
+    _this3.attachTooltip = createAttachTooltip(_this3.getAlias);
+    return _this3;
+  }
+
+  return AndroidInterface;
+}(InterfacePrototype);
+
+var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
+  _inherits(AppleDeviceInterface, _InterfacePrototype3);
+
+  var _super3 = _createSuper(AppleDeviceInterface);
+
+  function AppleDeviceInterface() {
+    var _this4;
+
+    _classCallCheck(this, AppleDeviceInterface);
+
+    _this4 = _super3.call(this);
+
+    if (isDDGDomain()) {
+      // Tell the web app whether we're in the app
+      notifyWebApp({
+        isApp: isApp
+      });
+    }
+
+    _this4.getAddresses = function () {
+      if (!isApp) return _this4.getAlias();
+      return wkSendAndWait('emailHandlerGetAddresses').then(function (_ref5) {
+        var addresses = _ref5.addresses;
+        return addresses;
+      });
+    };
+
+    _this4.getAlias = function () {
+      return wkSendAndWait('emailHandlerGetAlias', {
+        requiresUserPermission: !isApp,
+        shouldConsumeAliasIfProvided: !isApp
+      }).then(function (_ref6) {
+        var alias = _ref6.alias;
+        return alias;
+      });
+    };
+
+    _this4.refreshAlias = function () {
+      return wkSend('emailHandlerRefreshAlias');
+    };
+
+    _this4.trySigningIn = function () {
+      if (isDDGDomain()) {
+        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
+          // This call doesn't send a response, so we can't know if it succeeded
+          _this4.storeUserData(data);
+
+          _this4.setupAutofill({
+            shouldLog: true
+          });
+        });
+      }
+    };
+
+    _this4.storeUserData = function (_ref7) {
+      var _ref7$addUserData = _ref7.addUserData,
+          token = _ref7$addUserData.token,
+          userName = _ref7$addUserData.userName;
+      return wkSend('emailHandlerStoreToken', {
         token: token,
         username: userName
       });
     };
 
-    _this3.attachTooltip = createAttachTooltip(_this3.getAlias, _this3.refreshAlias);
-    return _this3;
+    _this4.attachTooltip = createAttachTooltip(_this4.getAlias, _this4.refreshAlias);
+    return _this4;
   }
 
   return AppleDeviceInterface;
@@ -813,10 +779,8 @@ var Form = /*#__PURE__*/function () {
         if (e.button !== 0) return;
 
         if (_this2.shouldOpenTooltip(e, e.target)) {
-          if (isEventWithinDax(e, e.target)) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-          }
+          e.preventDefault();
+          e.stopImmediatePropagation();
 
           _this2.touched.add(e.target);
 
@@ -907,7 +871,7 @@ var FormAnalyzer = /*#__PURE__*/function () {
           _ref$shouldBeConserva = _ref.shouldBeConservative,
           shouldBeConservative = _ref$shouldBeConserva === void 0 ? false : _ref$shouldBeConserva;
       var negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in/i);
-      var positiveRegex = new RegExp(/sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate/i);
+      var positiveRegex = new RegExp(/sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order/i);
       var conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
       var strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
       var matchesNegative = string.match(negativeRegex); // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
@@ -937,13 +901,12 @@ var FormAnalyzer = /*#__PURE__*/function () {
       var signalStrength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
       var isInput = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       Array.from(el.attributes).forEach(function (attr) {
-        if (attr.name === 'style') return;
-        var attributeString = "".concat(attr.name, "=").concat(attr.value);
+        var attributeString = "".concat(attr.nodeName, "=").concat(attr.nodeValue);
 
         _this.updateSignal({
           string: attributeString,
           strength: signalStrength,
-          signalType: "".concat(el.name, " attr: ").concat(attributeString),
+          signalType: "".concat(el.nodeName, " attr: ").concat(attributeString),
           shouldCheckUnifiedForm: isInput
         });
       });
@@ -1112,7 +1075,7 @@ var notifyWebApp = function notifyWebApp(message) {
  * Sends a message and returns a Promise that resolves with the response
  * @param {{} | Function} msgOrFn - a fn to call or an object to send via postMessage
  * @param {String} expectedResponse - the name of the response
- * @returns {Promise<unknown>}
+ * @returns {Promise<*>}
  */
 
 
@@ -1133,6 +1096,32 @@ var sendAndWaitForAnswer = function sendAndWaitForAnswer(msgOrFn, expectedRespon
 
     window.addEventListener('message', handler);
   });
+};
+/**
+ * Sends message to the webkit layer
+ * @param {String} handler
+ * @param {*} data
+ * @returns {*}
+ */
+
+
+var wkSend = function wkSend(handler) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return window.webkit.messageHandlers[handler].postMessage(data);
+};
+/**
+ * Sends message to the webkit layer and waits for the specified response
+ * @param {String} handler
+ * @param {*} data
+ * @returns {Promise<*>}
+ */
+
+
+var wkSendAndWait = function wkSendAndWait(handler) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return sendAndWaitForAnswer(function () {
+    return wkSend(handler, data);
+  }, handler + 'Response');
 }; // Access the original setter (needed to bypass React's implementation on mobile)
 
 
@@ -1282,6 +1271,8 @@ module.exports = {
   isDDGDomain: isDDGDomain,
   notifyWebApp: notifyWebApp,
   sendAndWaitForAnswer: sendAndWaitForAnswer,
+  wkSend: wkSend,
+  wkSendAndWait: wkSendAndWait,
   setValue: setValue,
   safeExecute: safeExecute,
   getDaxBoundingBox: getDaxBoundingBox,

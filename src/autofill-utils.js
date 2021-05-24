@@ -20,7 +20,7 @@ const notifyWebApp = (message) => {
  * Sends a message and returns a Promise that resolves with the response
  * @param {{} | Function} msgOrFn - a fn to call or an object to send via postMessage
  * @param {String} expectedResponse - the name of the response
- * @returns {Promise<unknown>}
+ * @returns {Promise<*>}
  */
 const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     if (typeof msgOrFn === 'function') {
@@ -40,6 +40,24 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
         window.addEventListener('message', handler)
     })
 }
+
+/**
+ * Sends message to the webkit layer
+ * @param {String} handler
+ * @param {*} data
+ * @returns {*}
+ */
+const wkSend = (handler, data = {}) =>
+    window.webkit.messageHandlers[handler].postMessage(data)
+
+/**
+ * Sends message to the webkit layer and waits for the specified response
+ * @param {String} handler
+ * @param {*} data
+ * @returns {Promise<*>}
+ */
+const wkSendAndWait = (handler, data = {}) =>
+    sendAndWaitForAnswer(() => wkSend(handler, data), handler + 'Response')
 
 // Access the original setter (needed to bypass React's implementation on mobile)
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
@@ -130,6 +148,8 @@ module.exports = {
     isDDGDomain,
     notifyWebApp,
     sendAndWaitForAnswer,
+    wkSend,
+    wkSendAndWait,
     setValue,
     safeExecute,
     getDaxBoundingBox,

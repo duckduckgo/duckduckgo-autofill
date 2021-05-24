@@ -6,6 +6,8 @@ const {
     isAndroid,
     isDDGDomain,
     sendAndWaitForAnswer,
+    wkSend,
+    wkSendAndWait,
     setValue,
     formatAddress
 } = require('./autofill-utils')
@@ -190,19 +192,20 @@ class AppleDeviceInterface extends InterfacePrototype {
         this.getAddresses = () => {
             if (!isApp) return this.getAlias()
 
-            return sendAndWaitForAnswer(() =>
-                window.webkit.messageHandlers['emailHandlerGetAddresses'].postMessage({}),
-            'getAddressesResponse'
-            ).then(({addresses}) => addresses)
+            return wkSendAndWait('emailHandlerGetAddresses')
+                .then(({addresses}) => addresses)
         }
 
-        this.getAlias = () => sendAndWaitForAnswer(() =>
-            window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
-                requiresUserPermission: !isApp,
-                shouldConsumeAliasIfProvided: !isApp
-            }), 'getAliasResponse').then(({alias}) => alias)
+        this.getAlias = () =>
+            wkSendAndWait(
+                'emailHandlerGetAlias',
+                {
+                    requiresUserPermission: !isApp,
+                    shouldConsumeAliasIfProvided: !isApp
+                }
+            ).then(({alias}) => alias)
 
-        this.refreshAlias = () => window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({})
+        this.refreshAlias = () => wkSend('emailHandlerRefreshAlias')
 
         this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
             window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
@@ -221,7 +224,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
 
         this.storeUserData = ({addUserData: {token, userName}}) =>
-            window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({ token, username: userName })
+            wkSend('emailHandlerStoreToken', { token, username: userName })
 
         this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias)
     }
