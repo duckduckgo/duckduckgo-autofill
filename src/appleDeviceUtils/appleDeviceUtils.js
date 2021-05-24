@@ -24,7 +24,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
         // Use proxy to ensure stringification isn't possible
         value: new Proxy(function () {}, {
             apply (target, thisArg, args) {
-                callback(args)
+                callback(...args)
                 delete ddgGlobals.window[randomMethodName]
             }
         })
@@ -43,7 +43,7 @@ const wkSendAndWait = async (handler, data = {}) => {
 
     // Older versions
     const randMethodName = createRandMethodName()
-    const key = createRandKey()
+    const key = await createRandKey()
     const iv = createRandIv()
 
     const encryptedResponse = await new Promise((resolve) => {
@@ -51,13 +51,11 @@ const wkSendAndWait = async (handler, data = {}) => {
         data.messageHandling = {
             methodName: randMethodName,
             secret,
-            key,
+            key: Array.from(key),
             iv: Array.from(iv)
         }
         wkSend(handler, data)
     })
-
-    // console.log('encryptedResponse', key, encryptedResponse)
 
     return decrypt(encryptedResponse, key, iv)
 }
@@ -71,18 +69,16 @@ const createRandMethodName = () => '_' + randomString()
 
 const algoObj = {name: 'AES-GCM', length: 256}
 
-// const createRandKey = () => ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt'])
-//     .then(key => ddgGlobals.exportKey('raw', key))
-//     .then(exportedKeyBuffer => new ddgGlobals.Uint8Array(exportedKeyBuffer).toString())
-
-const createRandKey = () => randomString()
+const createRandKey = () => ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt'])
+    .then(key => ddgGlobals.exportKey('raw', key))
+    .then(exportedKey => new Uint8Array(exportedKey))
 
 const createRandIv = () => ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12))
 
 const decrypt = async (ciphertext, key, iv) => {
-    const cryptoKey = await ddgGlobals.importKey('raw', key, 'AES-GCM', false, ['decrypt'])
+    const keyBuffer = new ddgGlobals.Uint8Array(key)
+    const cryptoKey = await ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['decrypt'])
     const U8iv = new ddgGlobals.Uint8Array(iv)
-    console.log('cryptoKey', cryptoKey)
     let decrypted = await ddgGlobals.decrypt(
         {
             name: 'AES-GCM',

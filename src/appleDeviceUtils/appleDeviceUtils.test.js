@@ -8,11 +8,11 @@ const webkitMock = jest.fn(async (data) => {
 
     if (messageHandling.secret !== 'PLACEHOLDER_SECRET') return
 
-    const message = {test: 'test'}
+    const message = {data: 'test'}
 
     const iv = new ddgGlobals.Uint8Array(messageHandling.iv)
-    // const keyBuffer = new ddgGlobals.Uint8Array(messageHandling.key)
-    const key = await ddgGlobals.importKey('raw', messageHandling.key, 'AES-GCM', false, ['encrypt'])
+    const keyBuffer = new ddgGlobals.Uint8Array(messageHandling.key)
+    const key = await ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['encrypt'])
 
     function encrypt (message) {
         let enc = new ddgGlobals.TextEncoder()
@@ -26,16 +26,15 @@ const webkitMock = jest.fn(async (data) => {
         )
     }
 
-    encrypt(message).then((encryptedMsg) => {
-        console.log('encryptedMsg', encryptedMsg)
-        return window[messageHandling.methodName](encryptedMsg)
-    })
+    encrypt(JSON.stringify(message)).then((encryptedMsg) =>
+        window[messageHandling.methodName](encryptedMsg))
 })
 window.webkit = {messageHandlers: {
     testMock: {postMessage: webkitMock}
 }}
 
-test('test', async () => {
-    await wkSendAndWait('testMock')
-    expect('working')
+it('test', async () => {
+    const response = await wkSendAndWait('testMock')
+    console.log(response)
+    expect(JSON.parse(response).data).toBe('test')
 })
