@@ -16,7 +16,8 @@ module.exports = function (grunt) {
                     ]
                 },
                 files: {
-                    'dist/autofill.js': ['src/**/*.js']
+                    'dist/autofill.js': ['src/**/*.js'],
+                    'dist/capture-ddg-globals.js': 'src/capture-ddg-globals.js'
                 }
             }
         },
