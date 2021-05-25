@@ -59,8 +59,8 @@ const wkSendAndWait = async (handler, data = {}) => {
         data.messageHandling = {
             methodName: randMethodName,
             secret,
-            key: Array.from(key),
-            iv: Array.from(iv)
+            key: ddgGlobals.Arrayfrom(key),
+            iv: ddgGlobals.Arrayfrom(iv)
         }
         wkSend(handler, data)
     })

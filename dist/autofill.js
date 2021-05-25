@@ -1175,8 +1175,8 @@ var wkSendAndWait = /*#__PURE__*/function () {
               data.messageHandling = {
                 methodName: randMethodName,
                 secret: secret,
-                key: Array.from(key),
-                iv: Array.from(iv)
+                key: ddgGlobals.Arrayfrom(key),
+                iv: ddgGlobals.Arrayfrom(iv)
               };
               wkSend(handler, data);
             });
@@ -1545,7 +1545,8 @@ require('./captureDdgGlobals');
     Uint16Array: Uint16Array,
     Uint32Array: Uint32Array,
     JSONstringify: window.JSON.stringify,
-    JSONparse: window.JSON.parse
+    JSONparse: window.JSON.parse,
+    Arrayfrom: window.Array.from
   };
   Object.defineProperty(window.navigator, 'ddgGlobals', {
     enumerable: false,
