@@ -2,8 +2,10 @@
 let hasModernWebkitAPI = false
 // INJECT hasModernWebkitAPI HERE
 
-const ddgGlobals = window.navigator.ddgGlobals
+// The native layer will inject a randomised secret here and use it to verify the origin
 const secret = 'PLACEHOLDER_SECRET'
+
+const ddgGlobals = window.navigator.ddgGlobals
 
 /**
  * Sends message to the webkit layer
