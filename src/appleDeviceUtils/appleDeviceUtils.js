@@ -66,7 +66,7 @@ const wkSendAndWait = async (handler, data = {}) => {
     })
 
     return decrypt(encryptedResponse, key, iv)
-        .then(decrypted => JSON.parse(decrypted))
+        .then(decrypted => ddgGlobals.JSONparse(decrypted))
         .catch(e => { console.log(e); return {error: e} })
 }
 

@@ -25,7 +25,7 @@ const webkitMock = jest.fn(async (data) => {
         )
     }
 
-    encrypt(JSON.stringify(message)).then((encryptedMsg) =>
+    encrypt(ddgGlobals.JSONstringify(message)).then((encryptedMsg) =>
         window[messageHandling.methodName](encryptedMsg))
 })
 window.webkit = {messageHandlers: {

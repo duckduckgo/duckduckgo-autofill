@@ -13,7 +13,9 @@
         TextDecoder,
         Uint8Array,
         Uint16Array,
-        Uint32Array
+        Uint32Array,
+        JSONstringify: window.JSON.stringify,
+        JSONparse: window.JSON.parse
     }
 
     Object.defineProperty(window.navigator, 'ddgGlobals', {

@@ -1184,7 +1184,7 @@ var wkSendAndWait = /*#__PURE__*/function () {
           case 10:
             encryptedResponse = _context.sent;
             return _context.abrupt("return", decrypt(encryptedResponse, key, iv).then(function (decrypted) {
-              return JSON.parse(decrypted);
+              return ddgGlobals.JSONparse(decrypted);
             })["catch"](function (e) {
               console.log(e);
               return {
@@ -1543,7 +1543,9 @@ require('./captureDdgGlobals');
     TextDecoder: TextDecoder,
     Uint8Array: Uint8Array,
     Uint16Array: Uint16Array,
-    Uint32Array: Uint32Array
+    Uint32Array: Uint32Array,
+    JSONstringify: window.JSON.stringify,
+    JSONparse: window.JSON.parse
   };
   Object.defineProperty(window.navigator, 'ddgGlobals', {
     enumerable: false,
