@@ -207,10 +207,9 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         this.refreshAlias = () => wkSend('emailHandlerRefreshAlias')
 
-        this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
-            window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
-        'emailHandlerCheckAppSignedInStatusResponse'
-        ).then(data => !!data.isAppSignedIn)
+        this.isDeviceSignedIn = () =>
+            wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+                .then(data => !!data.isAppSignedIn)
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
