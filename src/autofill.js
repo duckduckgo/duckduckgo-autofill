@@ -1,5 +1,5 @@
 // TODO: this must be injected at page start, not here. Remove it once ready.
-require('./capture-ddg-globals');
+require('./captureDdgGlobals');
 
 (() => {
     const inject = () => {

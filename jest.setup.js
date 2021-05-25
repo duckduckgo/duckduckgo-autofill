@@ -10,4 +10,4 @@ Object.defineProperty(global.self, 'crypto', {
     }
 })
 
-require('./src/capture-ddg-globals')
+require('./src/captureDdgGlobals')
