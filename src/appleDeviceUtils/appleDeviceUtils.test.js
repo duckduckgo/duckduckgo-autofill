@@ -32,7 +32,9 @@ window.webkit = {messageHandlers: {
     testMock: {postMessage: webkitMock}
 }}
 
-it('test', async () => {
-    const response = await wkSendAndWait('testMock')
-    expect(response.data).toBe('test')
+describe('wkSendAndWait', () => {
+    it('returns the expected unencrypted data', async () => {
+        const response = await wkSendAndWait('testMock')
+        expect(response.data).toBe('test')
+    })
 })

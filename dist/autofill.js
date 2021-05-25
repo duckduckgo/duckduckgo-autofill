@@ -1098,7 +1098,7 @@ var hasModernWebkitAPI = false; // INJECT hasModernWebkitAPI HERE
 var secret = 'PLACEHOLDER_SECRET';
 var ddgGlobals = window.navigator.ddgGlobals;
 /**
- * Sends message to the webkit layer
+ * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
  * @returns {*}
@@ -1109,7 +1109,8 @@ var wkSend = function wkSend(handler) {
   return window.webkit.messageHandlers[handler].postMessage(data);
 };
 /**
- *
+ * Generate a random method name and adds it to the global scope
+ * The native layer will use this method to send the response
  * @param {String} randomMethodName
  * @param {Function} callback
  */
@@ -1184,6 +1185,11 @@ var wkSendAndWait = /*#__PURE__*/function () {
             encryptedResponse = _context.sent;
             return _context.abrupt("return", decrypt(encryptedResponse, key, iv).then(function (decrypted) {
               return JSON.parse(decrypted);
+            })["catch"](function (e) {
+              console.log(e);
+              return {
+                error: e
+              };
             }));
 
           case 12:

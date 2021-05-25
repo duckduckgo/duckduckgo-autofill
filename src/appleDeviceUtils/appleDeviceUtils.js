@@ -8,7 +8,7 @@ const secret = 'PLACEHOLDER_SECRET'
 const ddgGlobals = window.navigator.ddgGlobals
 
 /**
- * Sends message to the webkit layer
+ * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
  * @returns {*}
@@ -17,7 +17,8 @@ const wkSend = (handler, data = {}) =>
     window.webkit.messageHandlers[handler].postMessage(data)
 
 /**
- *
+ * Generate a random method name and adds it to the global scope
+ * The native layer will use this method to send the response
  * @param {String} randomMethodName
  * @param {Function} callback
  */
@@ -64,7 +65,9 @@ const wkSendAndWait = async (handler, data = {}) => {
         wkSend(handler, data)
     })
 
-    return decrypt(encryptedResponse, key, iv).then(decrypted => JSON.parse(decrypted))
+    return decrypt(encryptedResponse, key, iv)
+        .then(decrypted => JSON.parse(decrypted))
+        .catch(e => { console.log(e); return {error: e} })
 }
 
 const randomString = () => {
