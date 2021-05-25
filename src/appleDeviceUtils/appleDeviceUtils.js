@@ -1,3 +1,7 @@
+// Do not remove -- Apple devices change this when they support modern webkit messaging
+let hasModernWebkitAPI = false
+// INJECT hasModernWebkitAPI HERE
+
 const ddgGlobals = window.navigator.ddgGlobals
 const secret = 'PLACEHOLDER_SECRET'
 
@@ -38,8 +42,9 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * @returns {Promise<*>}
  */
 const wkSendAndWait = async (handler, data = {}) => {
-    // if newer versions
-    // return wkSend(handler, data).then(data => data)
+    if (hasModernWebkitAPI) {
+        return wkSend(handler, data)
+    }
 
     // Older versions
     const randMethodName = createRandMethodName()
