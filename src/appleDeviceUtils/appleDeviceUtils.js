@@ -57,7 +57,7 @@ const wkSendAndWait = async (handler, data = {}) => {
         wkSend(handler, data)
     })
 
-    return decrypt(encryptedResponse, key, iv)
+    return decrypt(encryptedResponse, key, iv).then(decrypted => JSON.parse(decrypted))
 }
 
 const randomString = () => {
