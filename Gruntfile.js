@@ -28,9 +28,7 @@ module.exports = function (grunt) {
             },
             target: 'src/**/*.js'
         },
-        exec: {
-            copyToXcodeProject: 'cp dist/autofill.js /Users/gsv/Library/Developer/Xcode/DerivedData/DuckDuckGo-haizebgdqbgftvgezodmsliomuvw/SourcePackages/checkouts/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/'
-        },
+        exec: {},
         /**
          * Run predefined tasks whenever watched files are added,
          * modified or deleted.
@@ -38,7 +36,7 @@ module.exports = function (grunt) {
         watch: {
             scripts: {
                 files: ['src/**/*.js'],
-                tasks: ['browserify', 'exec:copyToXcodeProject']
+                tasks: ['browserify']
             }
         }
     })
