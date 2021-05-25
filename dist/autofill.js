@@ -206,7 +206,7 @@ var DDGAutofill = function DDGAutofill(input, associatedForm, getAddresses, refr
 
 module.exports = DDGAutofill;
 
-},{"./DDGAutofill-styles.js":1,"./autofill-utils":6}],3:[function(require,module,exports){
+},{"./DDGAutofill-styles.js":1,"./autofill-utils":9}],3:[function(require,module,exports){
 "use strict";
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -266,6 +266,9 @@ var createAttachTooltip = function createAttachTooltip(getAutofillData, refreshA
       window.addEventListener('mousedown', form.removeTooltip, {
         capture: true
       });
+      window.addEventListener('input', form.removeTooltip, {
+        once: true
+      });
     }
   };
 };
@@ -284,29 +287,7 @@ var InterfacePrototype = /*#__PURE__*/function () {
 
   }, {
     key: "setupAutofill",
-    value: function setupAutofill() {
-      var _this = this;
-
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        shouldLog: false
-      },
-          shouldLog = _ref.shouldLog;
-
-      this.getAddresses().then(function (addresses) {
-        if (addresses !== null && addresses !== void 0 && addresses.privateAddress && addresses !== null && addresses !== void 0 && addresses.personalAddress) {
-          _this.attachTooltip = createAttachTooltip(_this.getAddresses, _this.refreshAlias, addresses);
-          notifyWebApp({
-            deviceSignedIn: {
-              value: true,
-              shouldLog: shouldLog
-            }
-          });
-          scanForInputs(_this);
-        } else {
-          _this.trySigningIn();
-        }
-      });
-    }
+    value: function setupAutofill() {}
   }, {
     key: "getAddresses",
     value: function getAddresses() {}
@@ -327,8 +308,7 @@ var InterfacePrototype = /*#__PURE__*/function () {
     value: function addLogoutListener() {}
   }, {
     key: "attachTooltip",
-    value: function attachTooltip() {} // TODO: deprecated?
-
+    value: function attachTooltip() {}
   }, {
     key: "isDeviceSignedIn",
     value: function isDeviceSignedIn() {}
@@ -346,13 +326,35 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
   var _super = _createSuper(ExtensionInterface);
 
   function ExtensionInterface() {
-    var _this2;
+    var _this;
 
     _classCallCheck(this, ExtensionInterface);
 
-    _this2 = _super.call(this);
+    _this = _super.call(this);
 
-    _this2.getAddresses = function () {
+    _this.setupAutofill = function () {
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref.shouldLog;
+
+      _this.getAddresses().then(function (addresses) {
+        if (addresses !== null && addresses !== void 0 && addresses.privateAddress && addresses !== null && addresses !== void 0 && addresses.personalAddress) {
+          _this.attachTooltip = createAttachTooltip(_this.getAddresses, _this.refreshAlias, addresses);
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: shouldLog
+            }
+          });
+          scanForInputs(_assertThisInitialized(_this));
+        } else {
+          _this.trySigningIn();
+        }
+      });
+    };
+
+    _this.getAddresses = function () {
       return new Promise(function (resolve) {
         return chrome.runtime.sendMessage({
           getAddresses: true
@@ -362,27 +364,27 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    _this2.refreshAlias = function () {
+    _this.refreshAlias = function () {
       return chrome.runtime.sendMessage({
         refreshAlias: true
       }, function (addresses) {
-        _this2.addresses = addresses;
+        _this.addresses = addresses;
       });
     };
 
-    _this2.trySigningIn = function () {
+    _this.trySigningIn = function () {
       if (isDDGDomain()) {
         sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-          return _this2.storeUserData(data);
+          return _this.storeUserData(data);
         });
       }
     };
 
-    _this2.storeUserData = function (data) {
+    _this.storeUserData = function (data) {
       return chrome.runtime.sendMessage(data);
     };
 
-    _this2.addDeviceListeners = function () {
+    _this.addDeviceListeners = function () {
       // Add contextual menu listeners
       var activeEl = null;
       document.addEventListener('contextmenu', function (e) {
@@ -393,7 +395,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
 
         switch (message.type) {
           case 'ddgUserReady':
-            _this2.setupAutofill({
+            _this.setupAutofill({
               shouldLog: true
             });
 
@@ -403,7 +405,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
             setValue(activeEl, formatAddress(message.alias));
             activeEl.classList.add('ddg-autofilled');
 
-            _this2.refreshAlias(); // If the user changes the alias, remove the decoration
+            _this.refreshAlias(); // If the user changes the alias, remove the decoration
 
 
             activeEl.addEventListener('input', function (e) {
@@ -419,7 +421,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    _this2.addLogoutListener = function (handler) {
+    _this.addLogoutListener = function (handler) {
       // Cleanup on logout events
       chrome.runtime.onMessage.addListener(function (message, sender) {
         if (sender.id === chrome.runtime.id && message.type === 'logout') {
@@ -428,7 +430,7 @@ var ExtensionInterface = /*#__PURE__*/function (_InterfacePrototype) {
       });
     };
 
-    return _this2;
+    return _this;
   }
 
   return ExtensionInterface;
@@ -440,13 +442,13 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
   var _super2 = _createSuper(AndroidInterface);
 
   function AndroidInterface() {
-    var _this3;
+    var _this2;
 
     _classCallCheck(this, AndroidInterface);
 
-    _this3 = _super2.call(this);
+    _this2 = _super2.call(this);
 
-    _this3.getAlias = function () {
+    _this2.getAlias = function () {
       return sendAndWaitForAnswer(function () {
         return window.EmailInterface.showTooltip();
       }, 'getAliasResponse').then(function (_ref2) {
@@ -455,20 +457,88 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
       });
     };
 
-    _this3.isDeviceSignedIn = function () {
+    _this2.isDeviceSignedIn = function () {
       return new Promise(function (resolve) {
         resolve(window.EmailInterface.isSignedIn() === 'true');
       });
     };
 
-    _this3.setupAutofill = function () {
+    _this2.setupAutofill = function () {
       var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
         shouldLog: false
       },
           shouldLog = _ref3.shouldLog;
 
+      _this2.isDeviceSignedIn().then(function (signedIn) {
+        if (signedIn) {
+          notifyWebApp({
+            deviceSignedIn: {
+              value: true,
+              shouldLog: shouldLog
+            }
+          });
+          scanForInputs(_assertThisInitialized(_this2));
+        } else {
+          _this2.trySigningIn();
+        }
+      });
+    };
+
+    _this2.trySigningIn = function () {
+      if (isDDGDomain()) {
+        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
+          // This call doesn't send a response, so we can't know if it succeeded
+          _this2.storeUserData(data);
+
+          _this2.setupAutofill({
+            shouldLog: true
+          });
+        });
+      }
+    };
+
+    _this2.storeUserData = function (_ref4) {
+      var _ref4$addUserData = _ref4.addUserData,
+          token = _ref4$addUserData.token,
+          userName = _ref4$addUserData.userName;
+      return window.EmailInterface.storeCredentials(token, userName);
+    };
+
+    _this2.attachTooltip = createAttachTooltip(_this2.getAlias);
+    return _this2;
+  }
+
+  return AndroidInterface;
+}(InterfacePrototype);
+
+var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
+  _inherits(AppleDeviceInterface, _InterfacePrototype3);
+
+  var _super3 = _createSuper(AppleDeviceInterface);
+
+  function AppleDeviceInterface() {
+    var _this3;
+
+    _classCallCheck(this, AppleDeviceInterface);
+
+    _this3 = _super3.call(this);
+
+    if (isDDGDomain()) {
+      // Tell the web app whether we're in the app
+      notifyWebApp({
+        isApp: isApp
+      });
+    }
+
+    _this3.setupAutofill = function () {
+      var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        shouldLog: false
+      },
+          shouldLog = _ref5.shouldLog;
+
       _this3.isDeviceSignedIn().then(function (signedIn) {
         if (signedIn) {
+          _this3.attachTooltip = createAttachTooltip(_this3.getAddresses, _this3.refreshAlias, {});
           notifyWebApp({
             deviceSignedIn: {
               value: true,
@@ -479,6 +549,34 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
         } else {
           _this3.trySigningIn();
         }
+      });
+    };
+
+    _this3.getAddresses = function () {
+      if (!isApp) return _this3.getAlias();
+      return wkSendAndWait('emailHandlerGetAddresses').then(function (_ref6) {
+        var addresses = _ref6.addresses;
+        return addresses;
+      });
+    };
+
+    _this3.getAlias = function () {
+      return wkSendAndWait('emailHandlerGetAlias', {
+        requiresUserPermission: !isApp,
+        shouldConsumeAliasIfProvided: !isApp
+      }).then(function (_ref7) {
+        var alias = _ref7.alias;
+        return alias;
+      });
+    };
+
+    _this3.refreshAlias = function () {
+      return wkSend('emailHandlerRefreshAlias');
+    };
+
+    _this3.isDeviceSignedIn = function () {
+      return wkSendAndWait('emailHandlerCheckAppSignedInStatus').then(function (data) {
+        return !!data.isAppSignedIn;
       });
     };
 
@@ -495,86 +593,18 @@ var AndroidInterface = /*#__PURE__*/function (_InterfacePrototype2) {
       }
     };
 
-    _this3.storeUserData = function (_ref4) {
-      var _ref4$addUserData = _ref4.addUserData,
-          token = _ref4$addUserData.token,
-          userName = _ref4$addUserData.userName;
-      return window.EmailInterface.storeCredentials(token, userName);
-    };
-
-    _this3.attachTooltip = createAttachTooltip(_this3.getAlias);
-    return _this3;
-  }
-
-  return AndroidInterface;
-}(InterfacePrototype);
-
-var AppleDeviceInterface = /*#__PURE__*/function (_InterfacePrototype3) {
-  _inherits(AppleDeviceInterface, _InterfacePrototype3);
-
-  var _super3 = _createSuper(AppleDeviceInterface);
-
-  function AppleDeviceInterface() {
-    var _this4;
-
-    _classCallCheck(this, AppleDeviceInterface);
-
-    _this4 = _super3.call(this);
-
-    if (isDDGDomain()) {
-      // Tell the web app whether we're in the app
-      notifyWebApp({
-        isApp: isApp
-      });
-    }
-
-    _this4.getAddresses = function () {
-      if (!isApp) return _this4.getAlias();
-      return wkSendAndWait('emailHandlerGetAddresses').then(function (_ref5) {
-        var addresses = _ref5.addresses;
-        return addresses;
-      });
-    };
-
-    _this4.getAlias = function () {
-      return wkSendAndWait('emailHandlerGetAlias', {
-        requiresUserPermission: !isApp,
-        shouldConsumeAliasIfProvided: !isApp
-      }).then(function (_ref6) {
-        var alias = _ref6.alias;
-        return alias;
-      });
-    };
-
-    _this4.refreshAlias = function () {
-      return wkSend('emailHandlerRefreshAlias');
-    };
-
-    _this4.trySigningIn = function () {
-      if (isDDGDomain()) {
-        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(function (data) {
-          // This call doesn't send a response, so we can't know if it succeeded
-          _this4.storeUserData(data);
-
-          _this4.setupAutofill({
-            shouldLog: true
-          });
-        });
-      }
-    };
-
-    _this4.storeUserData = function (_ref7) {
-      var _ref7$addUserData = _ref7.addUserData,
-          token = _ref7$addUserData.token,
-          userName = _ref7$addUserData.userName;
+    _this3.storeUserData = function (_ref8) {
+      var _ref8$addUserData = _ref8.addUserData,
+          token = _ref8$addUserData.token,
+          userName = _ref8$addUserData.userName;
       return wkSend('emailHandlerStoreToken', {
         token: token,
         username: userName
       });
     };
 
-    _this4.attachTooltip = createAttachTooltip(_this4.getAlias, _this4.refreshAlias);
-    return _this4;
+    _this3.attachTooltip = createAttachTooltip(_this3.getAlias, _this3.refreshAlias);
+    return _this3;
   }
 
   return AppleDeviceInterface;
@@ -590,7 +620,7 @@ var DeviceInterface = function () {
 
 module.exports = DeviceInterface;
 
-},{"./DDGAutofill":2,"./autofill-utils":6,"./scanForInputs.js":10}],4:[function(require,module,exports){
+},{"./DDGAutofill":2,"./autofill-utils":9,"./scanForInputs.js":14}],4:[function(require,module,exports){
 "use strict";
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -779,8 +809,10 @@ var Form = /*#__PURE__*/function () {
         if (e.button !== 0) return;
 
         if (_this2.shouldOpenTooltip(e, e.target)) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
+          if (isEventWithinDax(e, e.target)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }
 
           _this2.touched.add(e.target);
 
@@ -820,7 +852,7 @@ var Form = /*#__PURE__*/function () {
 
 module.exports = Form;
 
-},{"./FormAnalyzer":5,"./autofill-utils":6,"./logo-svg":8}],5:[function(require,module,exports){
+},{"./FormAnalyzer":5,"./autofill-utils":9,"./logo-svg":12}],5:[function(require,module,exports){
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -871,7 +903,7 @@ var FormAnalyzer = /*#__PURE__*/function () {
           _ref$shouldBeConserva = _ref.shouldBeConservative,
           shouldBeConservative = _ref$shouldBeConserva === void 0 ? false : _ref$shouldBeConserva;
       var negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in/i);
-      var positiveRegex = new RegExp(/sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order/i);
+      var positiveRegex = new RegExp(/sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate/i);
       var conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
       var strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
       var matchesNegative = string.match(negativeRegex); // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
@@ -901,12 +933,13 @@ var FormAnalyzer = /*#__PURE__*/function () {
       var signalStrength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
       var isInput = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       Array.from(el.attributes).forEach(function (attr) {
-        var attributeString = "".concat(attr.nodeName, "=").concat(attr.nodeValue);
+        if (attr.name === 'style') return;
+        var attributeString = "".concat(attr.name, "=").concat(attr.value);
 
         _this.updateSignal({
           string: attributeString,
           strength: signalStrength,
-          signalType: "".concat(el.nodeName, " attr: ").concat(attributeString),
+          signalType: "".concat(el.name, " attr: ").concat(attributeString),
           shouldCheckUnifiedForm: isInput
         });
       });
@@ -1040,6 +1073,487 @@ module.exports = FormAnalyzer;
 },{}],6:[function(require,module,exports){
 "use strict";
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+// Do not remove -- Apple devices change this when they support modern webkit messaging
+var hasModernWebkitAPI = false; // INJECT hasModernWebkitAPI HERE
+
+var ddgGlobals = window.navigator.ddgGlobals;
+var secret = 'PLACEHOLDER_SECRET';
+/**
+ * Sends message to the webkit layer
+ * @param {String} handler
+ * @param {*} data
+ * @returns {*}
+ */
+
+var wkSend = function wkSend(handler) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return window.webkit.messageHandlers[handler].postMessage(data);
+};
+/**
+ *
+ * @param {String} randomMethodName
+ * @param {Function} callback
+ */
+
+
+var generateRandomMethod = function generateRandomMethod(randomMethodName, callback) {
+  Object.defineProperty(ddgGlobals.window, randomMethodName, {
+    enumerable: false,
+    // configurable, To allow for deletion later
+    configurable: true,
+    writable: false,
+    // Use proxy to ensure stringification isn't possible
+    value: new Proxy(function () {}, {
+      apply: function apply(target, thisArg, args) {
+        callback.apply(void 0, _toConsumableArray(args));
+        delete ddgGlobals.window[randomMethodName];
+      }
+    })
+  });
+};
+/**
+ * Sends message to the webkit layer and waits for the specified response
+ * @param {String} handler
+ * @param {*} data
+ * @returns {Promise<*>}
+ */
+
+
+var wkSendAndWait = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(handler) {
+    var data,
+        randMethodName,
+        key,
+        iv,
+        encryptedResponse,
+        _args = arguments;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            data = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
+
+            if (!hasModernWebkitAPI) {
+              _context.next = 3;
+              break;
+            }
+
+            return _context.abrupt("return", wkSend(handler, data));
+
+          case 3:
+            // Older versions
+            randMethodName = createRandMethodName();
+            _context.next = 6;
+            return createRandKey();
+
+          case 6:
+            key = _context.sent;
+            iv = createRandIv();
+            _context.next = 10;
+            return new Promise(function (resolve) {
+              generateRandomMethod(randMethodName, resolve);
+              data.messageHandling = {
+                methodName: randMethodName,
+                secret: secret,
+                key: Array.from(key),
+                iv: Array.from(iv)
+              };
+              wkSend(handler, data);
+            });
+
+          case 10:
+            encryptedResponse = _context.sent;
+            return _context.abrupt("return", decrypt(encryptedResponse, key, iv).then(function (decrypted) {
+              return JSON.parse(decrypted);
+            }));
+
+          case 12:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function wkSendAndWait(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var randomString = function randomString() {
+  var num = ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0] / Math.pow(2, 32);
+  return num.toString().replace('0.', '');
+};
+
+var createRandMethodName = function createRandMethodName() {
+  return '_' + randomString();
+};
+
+var algoObj = {
+  name: 'AES-GCM',
+  length: 256
+};
+
+var createRandKey = function createRandKey() {
+  return ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt']).then(function (key) {
+    return ddgGlobals.exportKey('raw', key);
+  }).then(function (exportedKey) {
+    return new Uint8Array(exportedKey);
+  });
+};
+
+var createRandIv = function createRandIv() {
+  return ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12));
+};
+
+var decrypt = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(ciphertext, key, iv) {
+    var keyBuffer, cryptoKey, U8iv, decrypted, dec;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            keyBuffer = new ddgGlobals.Uint8Array(key);
+            _context2.next = 3;
+            return ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['decrypt']);
+
+          case 3:
+            cryptoKey = _context2.sent;
+            U8iv = new ddgGlobals.Uint8Array(iv);
+            _context2.next = 7;
+            return ddgGlobals.decrypt({
+              name: 'AES-GCM',
+              iv: U8iv
+            }, cryptoKey, ciphertext);
+
+          case 7:
+            decrypted = _context2.sent;
+            dec = new ddgGlobals.TextDecoder();
+            return _context2.abrupt("return", dec.decode(decrypted));
+
+          case 10:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function decrypt(_x2, _x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+module.exports = {
+  wkSend: wkSend,
+  wkSendAndWait: wkSendAndWait
+};
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+// Do not remove -- Apple devices change this when they support modern webkit messaging
+var hasModernWebkitAPI = false; // INJECT hasModernWebkitAPI HERE
+
+var ddgGlobals = window.navigator.ddgGlobals;
+var secret = 'PLACEHOLDER_SECRET';
+/**
+ * Sends message to the webkit layer
+ * @param {String} handler
+ * @param {*} data
+ * @returns {*}
+ */
+
+var wkSend = function wkSend(handler) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return window.webkit.messageHandlers[handler].postMessage(data);
+};
+/**
+ *
+ * @param {String} randomMethodName
+ * @param {Function} callback
+ */
+
+
+var generateRandomMethod = function generateRandomMethod(randomMethodName, callback) {
+  Object.defineProperty(ddgGlobals.window, randomMethodName, {
+    enumerable: false,
+    // configurable, To allow for deletion later
+    configurable: true,
+    writable: false,
+    // Use proxy to ensure stringification isn't possible
+    value: new Proxy(function () {}, {
+      apply: function apply(target, thisArg, args) {
+        callback.apply(void 0, _toConsumableArray(args));
+        delete ddgGlobals.window[randomMethodName];
+      }
+    })
+  });
+};
+/**
+ * Sends message to the webkit layer and waits for the specified response
+ * @param {String} handler
+ * @param {*} data
+ * @returns {Promise<*>}
+ */
+
+
+var wkSendAndWait = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(handler) {
+    var data,
+        randMethodName,
+        key,
+        iv,
+        encryptedResponse,
+        _args = arguments;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            data = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
+
+            if (!hasModernWebkitAPI) {
+              _context.next = 3;
+              break;
+            }
+
+            return _context.abrupt("return", wkSend(handler, data));
+
+          case 3:
+            // Older versions
+            randMethodName = createRandMethodName();
+            _context.next = 6;
+            return createRandKey();
+
+          case 6:
+            key = _context.sent;
+            iv = createRandIv();
+            _context.next = 10;
+            return new Promise(function (resolve) {
+              generateRandomMethod(randMethodName, resolve);
+              data.messageHandling = {
+                methodName: randMethodName,
+                secret: secret,
+                key: Array.from(key),
+                iv: Array.from(iv)
+              };
+              wkSend(handler, data);
+            });
+
+          case 10:
+            encryptedResponse = _context.sent;
+            return _context.abrupt("return", decrypt(encryptedResponse, key, iv).then(function (decrypted) {
+              return JSON.parse(decrypted);
+            }));
+
+          case 12:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function wkSendAndWait(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var randomString = function randomString() {
+  var num = ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0] / Math.pow(2, 32);
+  return num.toString().replace('0.', '');
+};
+
+var createRandMethodName = function createRandMethodName() {
+  return '_' + randomString();
+};
+
+var algoObj = {
+  name: 'AES-GCM',
+  length: 256
+};
+
+var createRandKey = function createRandKey() {
+  return ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt']).then(function (key) {
+    return ddgGlobals.exportKey('raw', key);
+  }).then(function (exportedKey) {
+    return new Uint8Array(exportedKey);
+  });
+};
+
+var createRandIv = function createRandIv() {
+  return ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12));
+};
+
+var decrypt = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(ciphertext, key, iv) {
+    var keyBuffer, cryptoKey, U8iv, decrypted, dec;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            keyBuffer = new ddgGlobals.Uint8Array(key);
+            _context2.next = 3;
+            return ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['decrypt']);
+
+          case 3:
+            cryptoKey = _context2.sent;
+            U8iv = new ddgGlobals.Uint8Array(iv);
+            _context2.next = 7;
+            return ddgGlobals.decrypt({
+              name: 'AES-GCM',
+              iv: U8iv
+            }, cryptoKey, ciphertext);
+
+          case 7:
+            decrypted = _context2.sent;
+            dec = new ddgGlobals.TextDecoder();
+            return _context2.abrupt("return", dec.decode(decrypted));
+
+          case 10:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function decrypt(_x2, _x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+module.exports = {
+  wkSend: wkSend,
+  wkSendAndWait: wkSendAndWait
+};
+
+},{}],8:[function(require,module,exports){
+"use strict";
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+var _require = require('./AppleDeviceUtils'),
+    wkSendAndWait = _require.wkSendAndWait;
+
+var ddgGlobals = window.navigator.ddgGlobals;
+var webkitMock = jest.fn( /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data) {
+    var messageHandling, message, iv, keyBuffer, key, encrypt;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            messageHandling = data.messageHandling;
+
+            if (!(messageHandling.secret !== 'PLACEHOLDER_SECRET')) {
+              _context.next = 3;
+              break;
+            }
+
+            return _context.abrupt("return");
+
+          case 3:
+            message = {
+              data: 'test'
+            };
+            iv = new ddgGlobals.Uint8Array(messageHandling.iv);
+            keyBuffer = new ddgGlobals.Uint8Array(messageHandling.key);
+            _context.next = 8;
+            return ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['encrypt']);
+
+          case 8:
+            key = _context.sent;
+
+            encrypt = function encrypt(message) {
+              var enc = new ddgGlobals.TextEncoder();
+              return ddgGlobals.encrypt({
+                name: 'AES-GCM',
+                iv: iv
+              }, key, enc.encode(message));
+            };
+
+            encrypt(JSON.stringify(message)).then(function (encryptedMsg) {
+              return window[messageHandling.methodName](encryptedMsg);
+            });
+
+          case 11:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function (_x) {
+    return _ref.apply(this, arguments);
+  };
+}());
+window.webkit = {
+  messageHandlers: {
+    testMock: {
+      postMessage: webkitMock
+    }
+  }
+};
+it('test', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+  var response;
+  return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          _context2.next = 2;
+          return wkSendAndWait('testMock');
+
+        case 2:
+          response = _context2.sent;
+          expect(response.data).toBe('test');
+
+        case 4:
+        case "end":
+          return _context2.stop();
+      }
+    }
+  }, _callee2);
+})));
+
+},{"./AppleDeviceUtils":6}],9:[function(require,module,exports){
+"use strict";
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1096,34 +1610,6 @@ var sendAndWaitForAnswer = function sendAndWaitForAnswer(msgOrFn, expectedRespon
 
     window.addEventListener('message', handler);
   });
-};
-/**
- * Sends message to the webkit layer
- * @param {String} handler
- * @param {*} data
- * @returns {*}
- */
-
-
-var wkSend = function wkSend(handler) {
-  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  return window.webkit.messageHandlers[handler].postMessage(data);
-};
-/**
- * Sends message to the webkit layer and waits for the specified response
- * @param {String} handler
- * @param {*} data
- * @returns {Promise<*>}
- */
-
-
-var wkSendAndWait = function wkSendAndWait(handler) {
-  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var call = wkSend(handler, data); // Newer os versions return a promise
-
-  if (typeof (call === null || call === void 0 ? void 0 : call.then) === 'function') return call.then(function (data) {
-    return data;
-  }); // Older versions
 }; // Access the original setter (needed to bypass React's implementation on mobile)
 
 
@@ -1273,8 +1759,6 @@ module.exports = {
   isDDGDomain: isDDGDomain,
   notifyWebApp: notifyWebApp,
   sendAndWaitForAnswer: sendAndWaitForAnswer,
-  wkSend: wkSend,
-  wkSendAndWait: wkSendAndWait,
   setValue: setValue,
   safeExecute: safeExecute,
   getDaxBoundingBox: getDaxBoundingBox,
@@ -1286,8 +1770,11 @@ module.exports = {
   escapeXML: escapeXML
 };
 
-},{}],7:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
+
+// TODO: this must be injected at page start, not here. Remove it once ready.
+require('./captureDdgGlobals');
 
 (function () {
   var inject = function inject() {
@@ -1296,30 +1783,7 @@ module.exports = {
 
     var DeviceInterface = require('./DeviceInterface');
 
-    console.log(window.ratto);
-    console.log('ratto', window.crypto.subtle.exportKey());
-    /*
-    Export the given key and write it into the "exported-key" space.
-    */
-
-    function exportCryptoKey(key) {
-      return window.crypto.subtle.exportKey('raw', key).then(function (exported) {
-        var exportedKeyBuffer = new Uint8Array(exported);
-        console.log(exportedKeyBuffer);
-      });
-    }
-    /*
-    Generate an encrypt/decrypt secret key,
-    then set up an event listener on the "Export" button.
-    */
-
-
-    window.crypto.subtle.generateKey({
-      name: 'AES-GCM',
-      length: 256
-    }, true, ['encrypt', 'decrypt']).then(function (key) {
-      exportCryptoKey(key);
-    }); // DeviceInterface.init()
+    DeviceInterface.init();
   }; // chrome is only present in desktop browsers
 
 
@@ -1338,7 +1802,35 @@ module.exports = {
   }
 })();
 
-},{"./DeviceInterface":3,"./requestIdleCallback":9}],8:[function(require,module,exports){
+},{"./DeviceInterface":3,"./captureDdgGlobals":11,"./requestIdleCallback":13}],11:[function(require,module,exports){
+"use strict";
+
+(function () {
+  // Capture globals before the page overrides them
+  var secretGlobals = {
+    window: window,
+    // Methods must be bound to their interface, otherwise they throw Illegal invocation
+    encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
+    decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
+    generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
+    exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
+    importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
+    getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
+    TextEncoder: TextEncoder,
+    TextDecoder: TextDecoder,
+    Uint8Array: Uint8Array,
+    Uint16Array: Uint16Array,
+    Uint32Array: Uint32Array
+  };
+  Object.defineProperty(window.navigator, 'ddgGlobals', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: Object.freeze(secretGlobals)
+  });
+})();
+
+},{}],12:[function(require,module,exports){
 "use strict";
 
 var daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
@@ -1346,7 +1838,7 @@ module.exports = {
   daxBase64: daxBase64
 };
 
-},{}],9:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 /*!
@@ -1385,7 +1877,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
   clearTimeout(id);
 };
 
-},{}],10:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -1477,4 +1969,4 @@ var scanForInputs = function scanForInputs(DeviceInterface) {
 
 module.exports = scanForInputs;
 
-},{"./Form":4,"./autofill-utils":6}]},{},[6,7,1,2,3,4,5,8,9,10]);
+},{"./Form":4,"./autofill-utils":9}]},{},[7,8,9,10,11,1,2,3,4,5,12,13,14]);
