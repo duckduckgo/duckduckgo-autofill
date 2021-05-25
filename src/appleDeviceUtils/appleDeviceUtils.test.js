@@ -4,7 +4,6 @@ const ddgGlobals = window.navigator.ddgGlobals
 
 const webkitMock = jest.fn(async (data) => {
     const {messageHandling} = data
-    // delete data.messageHandling
 
     if (messageHandling.secret !== 'PLACEHOLDER_SECRET') return
 
@@ -14,7 +13,7 @@ const webkitMock = jest.fn(async (data) => {
     const keyBuffer = new ddgGlobals.Uint8Array(messageHandling.key)
     const key = await ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['encrypt'])
 
-    function encrypt (message) {
+    const encrypt = (message) => {
         let enc = new ddgGlobals.TextEncoder()
         return ddgGlobals.encrypt(
             {
@@ -35,6 +34,5 @@ window.webkit = {messageHandlers: {
 
 it('test', async () => {
     const response = await wkSendAndWait('testMock')
-    console.log(response)
-    expect(JSON.parse(response).data).toBe('test')
+    expect(response.data).toBe('test')
 })
