@@ -6,11 +6,13 @@ const {
     isAndroid,
     isDDGDomain,
     sendAndWaitForAnswer,
-    wkSend,
-    wkSendAndWait,
     setValue,
     formatAddress
 } = require('./autofill-utils')
+const {
+    wkSend,
+    wkSendAndWait
+} = require('./appleDeviceUtils/appleDeviceUtils')
 const scanForInputs = require('./scanForInputs.js')
 
 const SIGN_IN_MSG = { signMeIn: true }
