@@ -16,7 +16,8 @@
         Uint32Array,
         JSONstringify: window.JSON.stringify,
         JSONparse: window.JSON.parse,
-        Arrayfrom: window.Array.from
+        Arrayfrom: window.Array.from,
+        Promise: window.Promise
     }
 
     Object.defineProperty(window.navigator, 'ddgGlobals', {

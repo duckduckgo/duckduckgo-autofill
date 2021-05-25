@@ -1170,7 +1170,7 @@ var wkSendAndWait = /*#__PURE__*/function () {
             key = _context.sent;
             iv = createRandIv();
             _context.next = 10;
-            return new Promise(function (resolve) {
+            return new ddgGlobals.Promise(function (resolve) {
               generateRandomMethod(randMethodName, resolve);
               data.messageHandling = {
                 methodName: randMethodName,
@@ -1546,7 +1546,8 @@ require('./captureDdgGlobals');
     Uint32Array: Uint32Array,
     JSONstringify: window.JSON.stringify,
     JSONparse: window.JSON.parse,
-    Arrayfrom: window.Array.from
+    Arrayfrom: window.Array.from,
+    Promise: window.Promise
   };
   Object.defineProperty(window.navigator, 'ddgGlobals', {
     enumerable: false,

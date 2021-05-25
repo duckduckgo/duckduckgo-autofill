@@ -54,7 +54,7 @@ const wkSendAndWait = async (handler, data = {}) => {
     const key = await createRandKey()
     const iv = createRandIv()
 
-    const encryptedResponse = await new Promise((resolve) => {
+    const encryptedResponse = await new ddgGlobals.Promise((resolve) => {
         generateRandomMethod(randMethodName, resolve)
         data.messageHandling = {
             methodName: randMethodName,
