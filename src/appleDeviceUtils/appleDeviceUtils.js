@@ -82,7 +82,7 @@ const algoObj = {name: 'AES-GCM', length: 256}
 
 const createRandKey = () => ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt'])
     .then(key => ddgGlobals.exportKey('raw', key))
-    .then(exportedKey => new Uint8Array(exportedKey))
+    .then(exportedKey => new ddgGlobals.Uint8Array(exportedKey))
 
 const createRandIv = () => ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12))
 
