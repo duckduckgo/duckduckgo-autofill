@@ -15,14 +15,7 @@ const webkitMock = jest.fn(async (data) => {
 
     const encrypt = (message) => {
         let enc = new ddgGlobals.TextEncoder()
-        return ddgGlobals.encrypt(
-            {
-                name: 'AES-GCM',
-                iv
-            },
-            key,
-            enc.encode(message)
-        )
+        return ddgGlobals.encrypt({name: 'AES-GCM', iv}, key, enc.encode(message))
     }
 
     encrypt(ddgGlobals.JSONstringify(message)).then((encryptedMsg) =>

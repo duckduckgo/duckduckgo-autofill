@@ -49,7 +49,6 @@ const wkSendAndWait = async (handler, data = {}) => {
         return wkSend(handler, data)
     }
 
-    // Older versions
     const randMethodName = createRandMethodName()
     const key = await createRandKey()
     const iv = createRandIv()
@@ -70,16 +69,12 @@ const wkSendAndWait = async (handler, data = {}) => {
         .catch(e => { console.log(e); return {error: e} })
 }
 
-const randomString = () => {
-    const num = ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0] / 2 ** 32
-    // cast to string to avoid tampering with Number.toString
-    return ddgGlobals.stringReplace(num + '', '0.', '')
-}
+const randomString = () =>
+    '' + ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0] / 2 ** 32
 
 const createRandMethodName = () => '_' + randomString()
 
 const algoObj = {name: 'AES-GCM', length: 256}
-
 const createRandKey = () => ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt'])
     .then(key => ddgGlobals.exportKey('raw', key))
     .then(exportedKey => new ddgGlobals.Uint8Array(exportedKey))
@@ -90,14 +85,8 @@ const decrypt = async (ciphertext, key, iv) => {
     const keyBuffer = new ddgGlobals.Uint8Array(key)
     const cryptoKey = await ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['decrypt'])
     const U8iv = new ddgGlobals.Uint8Array(iv)
-    let decrypted = await ddgGlobals.decrypt(
-        {
-            name: 'AES-GCM',
-            iv: U8iv
-        },
-        cryptoKey,
-        ciphertext
-    )
+    const algo = { name: 'AES-GCM', iv: U8iv }
+    let decrypted = await ddgGlobals.decrypt(algo, cryptoKey, ciphertext)
 
     let dec = new ddgGlobals.TextDecoder()
     return dec.decode(decrypted)
