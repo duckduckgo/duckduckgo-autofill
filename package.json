@@ -5,6 +5,11 @@
   "engines": {
     "node": "^16"
   },
+  "browserslist": [
+    "> 0.25%",
+    "not dead",
+    "not ie 11"
+  ],
   "scripts": {
     "start": "grunt dev",
     "build": "grunt",
