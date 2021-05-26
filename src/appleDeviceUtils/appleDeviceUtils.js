@@ -70,7 +70,7 @@ const wkSendAndWait = async (handler, data = {}) => {
 }
 
 const randomString = () =>
-    '' + ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0] / 2 ** 32
+    '' + ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0]
 
 const createRandMethodName = () => '_' + randomString()
 
