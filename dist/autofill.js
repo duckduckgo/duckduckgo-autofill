@@ -1206,8 +1206,9 @@ var wkSendAndWait = /*#__PURE__*/function () {
 }();
 
 var randomString = function randomString() {
-  var num = ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0] / Math.pow(2, 32);
-  return num.toString().replace('0.', '');
+  var num = ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0] / Math.pow(2, 32); // cast to string to avoid tampering with Number.toString
+
+  return ddgGlobals.stringReplace(num + '', '0.', '');
 };
 
 var createRandMethodName = function createRandMethodName() {
@@ -1547,7 +1548,10 @@ require('./captureDdgGlobals');
     JSONstringify: window.JSON.stringify,
     JSONparse: window.JSON.parse,
     Arrayfrom: window.Array.from,
-    Promise: window.Promise
+    Promise: window.Promise,
+    stringReplace: function stringReplace(string, toSearch, toReplace) {
+      return window.String.prototype.replace.call(string, toSearch, toReplace);
+    }
   };
   Object.defineProperty(window.navigator, 'ddgGlobals', {
     enumerable: false,

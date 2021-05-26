@@ -20,7 +20,10 @@
     JSONstringify: window.JSON.stringify,
     JSONparse: window.JSON.parse,
     Arrayfrom: window.Array.from,
-    Promise: window.Promise
+    Promise: window.Promise,
+    stringReplace: function stringReplace(string, toSearch, toReplace) {
+      return window.String.prototype.replace.call(string, toSearch, toReplace);
+    }
   };
   Object.defineProperty(window.navigator, 'ddgGlobals', {
     enumerable: false,

@@ -72,7 +72,8 @@ const wkSendAndWait = async (handler, data = {}) => {
 
 const randomString = () => {
     const num = ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0] / 2 ** 32
-    return num.toString().replace('0.', '')
+    // cast to string to avoid tampering with Number.toString
+    return ddgGlobals.stringReplace((num + ''), '0.', '')
 }
 
 const createRandMethodName = () => '_' + randomString()
