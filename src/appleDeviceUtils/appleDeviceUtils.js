@@ -3,7 +3,10 @@ let hasModernWebkitAPI = false
 // INJECT hasModernWebkitAPI HERE
 
 // The native layer will inject a randomised secret here and use it to verify the origin
-const secret = 'PLACEHOLDER_SECRET'
+let secret = 'PLACEHOLDER_SECRET'
+
+// The native layer will inject a 128-bit tag here and we'll use it for decryption
+let additionalData = 'PLACEHOLDER_DATA'
 
 const ddgGlobals = require('../captureDdgGlobals')
 
@@ -82,7 +85,7 @@ const decrypt = async (ciphertext, key, iv) => {
     const keyBuffer = new ddgGlobals.Uint8Array(key)
     const cryptoKey = await ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['decrypt'])
     const U8iv = new ddgGlobals.Uint8Array(iv)
-    const algo = { name: 'AES-GCM', iv: U8iv }
+    const algo = { name: 'AES-GCM', iv: U8iv, additionalData }
     let decrypted = await ddgGlobals.decrypt(algo, cryptoKey, ciphertext)
 
     let dec = new ddgGlobals.TextDecoder()
