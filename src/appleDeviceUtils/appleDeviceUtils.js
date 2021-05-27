@@ -28,13 +28,10 @@ const generateRandomMethod = (randomMethodName, callback) => {
         // configurable, To allow for deletion later
         configurable: true,
         writable: false,
-        // Use proxy to ensure stringification isn't possible
-        value: new Proxy(function () {}, {
-            apply (target, thisArg, args) {
-                callback(...args)
-                delete ddgGlobals.window[randomMethodName]
-            }
-        })
+        value: (...args) => {
+            callback(...args)
+            delete ddgGlobals.window[randomMethodName]
+        }
     })
 }
 
