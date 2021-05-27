@@ -224,8 +224,16 @@ const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form,
 
 class InterfacePrototype {
   init() {
-    this.addDeviceListeners();
-    this.setupAutofill();
+    const start = () => {
+      this.addDeviceListeners();
+      this.setupAutofill();
+    };
+
+    if (document.readyState === 'complete') {
+      start();
+    } else {
+      window.addEventListener('load', start);
+    }
   } // Default setup used on extensions and Apple devices
 
 
@@ -1257,9 +1265,8 @@ const scanForInputs = DeviceInterface => {
     } else {
       context.querySelectorAll(EMAIL_SELECTOR).forEach(addInput);
     }
-  };
+  }; // For all DOM mutations, search for new eligible inputs and update existing inputs positions
 
-  findEligibleInput(document); // For all DOM mutations, search for new eligible inputs and update existing inputs positions
 
   const mutObs = new MutationObserver(mutationList => {
     for (const mutationRecord of mutationList) {
@@ -1276,10 +1283,6 @@ const scanForInputs = DeviceInterface => {
         });
       }
     }
-  });
-  mutObs.observe(document.body, {
-    childList: true,
-    subtree: true
   });
 
   const logoutHandler = () => {
@@ -1298,6 +1301,13 @@ const scanForInputs = DeviceInterface => {
   };
 
   DeviceInterface.addLogoutListener(logoutHandler);
+  window.requestIdleCallback(() => {
+    findEligibleInput(document);
+    mutObs.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  });
 };
 
 module.exports = scanForInputs;

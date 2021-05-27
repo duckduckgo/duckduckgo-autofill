@@ -37,8 +37,15 @@ const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form,
 
 class InterfacePrototype {
     init () {
-        this.addDeviceListeners()
-        this.setupAutofill()
+        const start = () => {
+            this.addDeviceListeners()
+            this.setupAutofill()
+        }
+        if (document.readyState === 'complete') {
+            start()
+        } else {
+            window.addEventListener('load', start)
+        }
     }
     // Default setup used on extensions and Apple devices
     setupAutofill () {}
