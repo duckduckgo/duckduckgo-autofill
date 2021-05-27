@@ -853,13 +853,15 @@ let hasModernWebkitAPI = false; // INJECT hasModernWebkitAPI HERE
 // The native layer will inject a randomised secret here and use it to verify the origin
 
 const secret = 'PLACEHOLDER_SECRET';
-const ddgGlobals = window.navigator.ddgGlobals;
+
+const ddgGlobals = require('../captureDdgGlobals');
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
  * @returns {*}
  */
+
 
 const wkSend = (handler, data = {}) => window.webkit.messageHandlers[handler].postMessage(data);
 /**
@@ -947,7 +949,7 @@ module.exports = {
   wkSendAndWait
 };
 
-},{}],7:[function(require,module,exports){
+},{"../captureDdgGlobals":9}],7:[function(require,module,exports){
 "use strict";
 
 let isApp = false; // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
@@ -1126,9 +1128,6 @@ module.exports = {
 },{}],8:[function(require,module,exports){
 "use strict";
 
-// TODO: this must be injected at page start, not here. Remove it once ready.
-require('./captureDdgGlobals');
-
 (() => {
   const inject = () => {
     // Polyfills/shims
@@ -1155,53 +1154,30 @@ require('./captureDdgGlobals');
   }
 })();
 
-},{"./DeviceInterface":3,"./captureDdgGlobals":9,"./requestIdleCallback":11}],9:[function(require,module,exports){
+},{"./DeviceInterface":3,"./requestIdleCallback":11}],9:[function(require,module,exports){
 "use strict";
 
-(() => {
-  // Capture globals before the page overrides them
-  const secretGlobals = {
-    window,
-    // Methods must be bound to their interface, otherwise they throw Illegal invocation
-    encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
-    decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
-    generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
-    exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
-    importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
-    getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
-    TextEncoder,
-    TextDecoder,
-    Uint8Array,
-    Uint16Array,
-    Uint32Array,
-    JSONstringify: window.JSON.stringify,
-    JSONparse: window.JSON.parse,
-    Arrayfrom: window.Array.from,
-    Promise: window.Promise,
-    ddgEncrypt: async (message, messageHandling) => {
-      const ddgGlobals = window.navigator.ddgGlobals;
-      const iv = new ddgGlobals.Uint8Array(messageHandling.iv);
-      const keyBuffer = new ddgGlobals.Uint8Array(messageHandling.key);
-      const key = await ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['encrypt']);
-
-      const encrypt = message => {
-        let enc = new ddgGlobals.TextEncoder();
-        return ddgGlobals.encrypt({
-          name: 'AES-GCM',
-          iv
-        }, key, enc.encode(message));
-      };
-
-      encrypt(ddgGlobals.JSONstringify(message)).then(encryptedMsg => window[messageHandling.methodName](encryptedMsg));
-    }
-  };
-  Object.defineProperty(window.navigator, 'ddgGlobals', {
-    enumerable: false,
-    configurable: false,
-    writable: false,
-    value: Object.freeze(secretGlobals)
-  });
-})();
+// Capture the globals we need on page start
+const secretGlobals = {
+  window,
+  // Methods must be bound to their interface, otherwise they throw Illegal invocation
+  encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
+  decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
+  generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
+  exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
+  importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
+  getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
+  TextEncoder,
+  TextDecoder,
+  Uint8Array,
+  Uint16Array,
+  Uint32Array,
+  JSONstringify: window.JSON.stringify,
+  JSONparse: window.JSON.parse,
+  Arrayfrom: window.Array.from,
+  Promise: window.Promise
+};
+module.exports = secretGlobals;
 
 },{}],10:[function(require,module,exports){
 "use strict";

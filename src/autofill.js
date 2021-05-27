@@ -1,6 +1,3 @@
-// TODO: this must be injected at page start, not here. Remove it once ready.
-require('./captureDdgGlobals');
-
 (() => {
     const inject = () => {
         // Polyfills/shims
