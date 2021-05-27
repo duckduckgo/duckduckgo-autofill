@@ -860,18 +860,18 @@ module.exports = FormAnalyzer;
 let hasModernWebkitAPI = false; // INJECT hasModernWebkitAPI HERE
 // The native layer will inject a randomised secret here and use it to verify the origin
 
-let secret = 'PLACEHOLDER_SECRET'; // The native layer will inject a 128-bit tag here and we'll use it for decryption
+let secret = 'PLACEHOLDER_SECRET';
 
-let additionalData = 'PLACEHOLDER_DATA';
+const ddgGlobals = require('../captureDdgGlobals'); // The native layer will inject a 128-bit tag here and we'll use it for decryption
 
-const ddgGlobals = require('../captureDdgGlobals');
+
+let additionalData = new ddgGlobals.Uint8Array('PLACEHOLDER_AUTH_DATA');
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
  * @returns {*}
  */
-
 
 const wkSend = (handler, data = {}) => window.webkit.messageHandlers[handler].postMessage(data);
 /**
