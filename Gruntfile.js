@@ -16,15 +16,13 @@ module.exports = function (grunt) {
                     ]
                 },
                 files: {
-                    'dist/autofill.js': ['src/autofill.js'],
-                    'dist/captureDdgGlobals.js': 'src/captureDdgGlobals.js'
+                    'dist/autofill.js': ['src/autofill.js']
                 }
             }
         },
         eslint: {
             options: {
-                configFile: '.eslintrc',
-                useEslintrc: false // avoid conflicts with parent repo
+                configFile: '.eslintrc'
             },
             target: 'src/**/*.js'
         },
