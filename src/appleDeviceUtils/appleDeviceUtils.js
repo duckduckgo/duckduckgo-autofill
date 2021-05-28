@@ -14,7 +14,7 @@ const ddgGlobals = require('../captureDdgGlobals')
  * @returns {*}
  */
 const wkSend = (handler, data = {}) =>
-    window.webkit.messageHandlers[handler].postMessage(data)
+    window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret}})
 
 /**
  * Generate a random method name and adds it to the global scope
@@ -50,7 +50,7 @@ const wkSendAndWait = async (handler, data = {}) => {
     const key = await createRandKey()
     const iv = createRandIv()
 
-    const encryptedResponse = await new ddgGlobals.Promise((resolve) => {
+    const { ciphertext, tag } = await new ddgGlobals.Promise((resolve) => {
         generateRandomMethod(randMethodName, resolve)
         data.messageHandling = {
             methodName: randMethodName,
@@ -61,9 +61,11 @@ const wkSendAndWait = async (handler, data = {}) => {
         wkSend(handler, data)
     })
 
-    return decrypt(encryptedResponse, key, iv)
+    const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag])
+
+    return decrypt(cipher, key, iv)
         .then(decrypted => ddgGlobals.JSONparse(decrypted))
-        .catch(e => { console.log(e); return {error: e} })
+        .catch(e => { console.log('decryption failed', e); return {error: e} })
 }
 
 const randomString = () =>
@@ -79,10 +81,9 @@ const createRandKey = () => ddgGlobals.generateKey(algoObj, true, ['encrypt', 'd
 const createRandIv = () => ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12))
 
 const decrypt = async (ciphertext, key, iv) => {
-    const keyBuffer = new ddgGlobals.Uint8Array(key)
-    const cryptoKey = await ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['decrypt'])
-    const U8iv = new ddgGlobals.Uint8Array(iv)
-    const algo = { name: 'AES-GCM', iv: U8iv, additionalData }
+    const cryptoKey = await ddgGlobals.importKey('raw', key, 'AES-GCM', false, ['decrypt'])
+    const algo = { name: 'AES-GCM', iv }
+
     let decrypted = await ddgGlobals.decrypt(algo, cryptoKey, ciphertext)
 
     let dec = new ddgGlobals.TextDecoder()

@@ -1,7 +1,7 @@
 const {wkSendAndWait} = require('./AppleDeviceUtils')
 
 const webkitMock = jest.fn(async (data) => {
-    const {messageHandling} = data
+    const { messageHandling } = data
 
     if (messageHandling.secret !== 'PLACEHOLDER_SECRET') return
 
@@ -16,8 +16,13 @@ const webkitMock = jest.fn(async (data) => {
         return crypto.subtle.encrypt({name: 'AES-GCM', iv}, key, enc.encode(message))
     }
 
-    return encrypt(JSON.stringify(message)).then((encryptedMsg) =>
-        window[messageHandling.methodName](encryptedMsg))
+    return encrypt(JSON.stringify(message))
+        .then((ciphertext) =>
+            window[messageHandling.methodName]({
+                ciphertext: new Uint8Array(ciphertext),
+                tag: []
+            })
+        )
 })
 window.webkit = {messageHandlers: {
     testMock: {postMessage: webkitMock}
