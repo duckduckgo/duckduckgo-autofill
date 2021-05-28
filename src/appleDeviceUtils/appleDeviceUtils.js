@@ -7,9 +7,6 @@ let secret = 'PLACEHOLDER_SECRET'
 
 const ddgGlobals = require('../captureDdgGlobals')
 
-// The native layer will inject a 128-bit tag here and we'll use it for decryption
-let additionalData = new ddgGlobals.Uint8Array('PLACEHOLDER_AUTH_DATA')
-
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
