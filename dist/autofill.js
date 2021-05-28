@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
-module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    z-index: 2147483647;\n}\n.tooltip {\n    position: absolute;\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    color: #333333;\n    line-height: 1.3;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n    z-index: 2147483647;\n}\n.tooltip::before,\n.tooltip::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n.tooltip__button {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    width: 100%;\n    padding: 4px 8px 7px;\n    font-family: inherit;\n    font-size: 14px;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button:hover {\n    background-color: #3969EF;\n    color: #FFFFFF;\n}\n.tooltip__button__primary-text {\n    font-weight: bold;\n}\n.tooltip__button__secondary-text {\n    font-size: 12px;\n}\n";
+module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n.tooltip {\n    position: absolute;\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    color: #333333;\n    line-height: 1.3;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n    z-index: 2147483647;\n}\n.tooltip::before,\n.tooltip::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n.tooltip__button {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    width: 100%;\n    padding: 4px 8px 7px;\n    font-family: inherit;\n    font-size: 14px;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button:hover {\n    background-color: #3969EF;\n    color: #FFFFFF;\n}\n.tooltip__button__primary-text {\n    font-weight: bold;\n}\n.tooltip__button__secondary-text {\n    font-size: 12px;\n}\n";
 
 },{}],2:[function(require,module,exports){
 "use strict";
@@ -862,10 +862,7 @@ let hasModernWebkitAPI = false; // INJECT hasModernWebkitAPI HERE
 
 let secret = 'PLACEHOLDER_SECRET';
 
-const ddgGlobals = require('../captureDdgGlobals'); // The native layer will inject a 128-bit tag here and we'll use it for decryption
-
-
-let additionalData = new ddgGlobals.Uint8Array('PLACEHOLDER_AUTH_DATA');
+const ddgGlobals = require('../captureDdgGlobals');
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
@@ -873,7 +870,12 @@ let additionalData = new ddgGlobals.Uint8Array('PLACEHOLDER_AUTH_DATA');
  * @returns {*}
  */
 
-const wkSend = (handler, data = {}) => window.webkit.messageHandlers[handler].postMessage(data);
+
+const wkSend = (handler, data = {}) => window.webkit.messageHandlers[handler].postMessage({ ...data,
+  messageHandling: { ...data.messageHandling,
+    secret
+  }
+});
 /**
  * Generate a random method name and adds it to the global scope
  * The native layer will use this method to send the response
@@ -910,7 +912,10 @@ const wkSendAndWait = async (handler, data = {}) => {
   const randMethodName = createRandMethodName();
   const key = await createRandKey();
   const iv = createRandIv();
-  const encryptedResponse = await new ddgGlobals.Promise(resolve => {
+  const {
+    ciphertext,
+    tag
+  } = await new ddgGlobals.Promise(resolve => {
     generateRandomMethod(randMethodName, resolve);
     data.messageHandling = {
       methodName: randMethodName,
@@ -920,8 +925,9 @@ const wkSendAndWait = async (handler, data = {}) => {
     };
     wkSend(handler, data);
   });
-  return decrypt(encryptedResponse, key, iv).then(decrypted => ddgGlobals.JSONparse(decrypted)).catch(e => {
-    console.log(e);
+  const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag]);
+  return decrypt(cipher, key, iv).then(decrypted => ddgGlobals.JSONparse(decrypted)).catch(e => {
+    console.log('decryption failed', e);
     return {
       error: e
     };
@@ -942,13 +948,10 @@ const createRandKey = () => ddgGlobals.generateKey(algoObj, true, ['encrypt', 'd
 const createRandIv = () => ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12));
 
 const decrypt = async (ciphertext, key, iv) => {
-  const keyBuffer = new ddgGlobals.Uint8Array(key);
-  const cryptoKey = await ddgGlobals.importKey('raw', keyBuffer, 'AES-GCM', false, ['decrypt']);
-  const U8iv = new ddgGlobals.Uint8Array(iv);
+  const cryptoKey = await ddgGlobals.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
   const algo = {
     name: 'AES-GCM',
-    iv: U8iv,
-    additionalData
+    iv
   };
   let decrypted = await ddgGlobals.decrypt(algo, cryptoKey, ciphertext);
   let dec = new ddgGlobals.TextDecoder();
