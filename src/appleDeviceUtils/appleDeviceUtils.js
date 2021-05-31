@@ -43,7 +43,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
  */
 const wkSendAndWait = async (handler, data = {}) => {
     if (hasModernWebkitAPI) {
-        return wkSend(handler, data)
+        return wkSend(handler, data).then(res => ddgGlobals.JSONparse(res))
     }
 
     const randMethodName = createRandMethodName()
