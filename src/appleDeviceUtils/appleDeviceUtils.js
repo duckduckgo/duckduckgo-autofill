@@ -43,29 +43,33 @@ const generateRandomMethod = (randomMethodName, callback) => {
  */
 const wkSendAndWait = async (handler, data = {}) => {
     if (hasModernWebkitAPI) {
-        return wkSend(handler, data).then(res => ddgGlobals.JSONparse(res))
+        const response = await wkSend(handler, data)
+        return ddgGlobals.JSONparse(response)
     }
 
-    const randMethodName = createRandMethodName()
-    const key = await createRandKey()
-    const iv = createRandIv()
+    try {
+        const randMethodName = createRandMethodName()
+        const key = await createRandKey()
+        const iv = createRandIv()
 
-    const { ciphertext, tag } = await new ddgGlobals.Promise((resolve) => {
-        generateRandomMethod(randMethodName, resolve)
-        data.messageHandling = {
-            methodName: randMethodName,
-            secret,
-            key: ddgGlobals.Arrayfrom(key),
-            iv: ddgGlobals.Arrayfrom(iv)
-        }
-        wkSend(handler, data)
-    })
+        const {ciphertext, tag} = await new ddgGlobals.Promise((resolve) => {
+            generateRandomMethod(randMethodName, resolve)
+            data.messageHandling = {
+                methodName: randMethodName,
+                secret,
+                key: ddgGlobals.Arrayfrom(key),
+                iv: ddgGlobals.Arrayfrom(iv)
+            }
+            wkSend(handler, data)
+        })
 
-    const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag])
-
-    return decrypt(cipher, key, iv)
-        .then(decrypted => ddgGlobals.JSONparse(decrypted))
-        .catch(e => { console.log('decryption failed', e); return {error: e} })
+        const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag])
+        const decrypted = await decrypt(cipher, key, iv)
+        return ddgGlobals.JSONparse(decrypted)
+    } catch (e) {
+        console.error('decryption failed', e)
+        return {error: e}
+    }
 }
 
 const randomString = () =>
@@ -74,9 +78,11 @@ const randomString = () =>
 const createRandMethodName = () => '_' + randomString()
 
 const algoObj = {name: 'AES-GCM', length: 256}
-const createRandKey = () => ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt'])
-    .then(key => ddgGlobals.exportKey('raw', key))
-    .then(exportedKey => new ddgGlobals.Uint8Array(exportedKey))
+const createRandKey = async () => {
+    const key = await ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt'])
+    const exportedKey = await ddgGlobals.exportKey('raw', key)
+    return new ddgGlobals.Uint8Array(exportedKey)
+}
 
 const createRandIv = () => ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12))
 

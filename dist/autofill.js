@@ -244,7 +244,21 @@ class InterfacePrototype {
 
   refreshAlias() {}
 
-  trySigningIn() {}
+  async trySigningIn() {
+    if (isDDGDomain()) {
+      if (attempts < 10) {
+        attempts++;
+        const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
+
+        this.storeUserData(data);
+        this.setupAutofill({
+          shouldLog: true
+        });
+      } else {
+        console.warn('max attempts reached, bailing');
+      }
+    }
+  }
 
   storeUserData() {}
 
@@ -379,23 +393,6 @@ class AndroidInterface extends InterfacePrototype {
       });
     };
 
-    this.trySigningIn = () => {
-      if (isDDGDomain()) {
-        if (attempts < 10) {
-          attempts++;
-          sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(data => {
-            // This call doesn't send a response, so we can't know if it succeeded
-            this.storeUserData(data);
-            this.setupAutofill({
-              shouldLog: true
-            });
-          });
-        } else {
-          console.warn('max attempts reached, bailing');
-        }
-      }
-    };
-
     this.storeUserData = ({
       addUserData: {
         token,
@@ -419,60 +416,52 @@ class AppleDeviceInterface extends InterfacePrototype {
       });
     }
 
-    this.setupAutofill = ({
+    this.setupAutofill = async ({
       shouldLog
     } = {
       shouldLog: false
     }) => {
-      this.isDeviceSignedIn().then(signedIn => {
-        if (signedIn) {
-          this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {});
-          notifyWebApp({
-            deviceSignedIn: {
-              value: true,
-              shouldLog
-            }
-          });
-          scanForInputs(this);
-        } else {
-          this.trySigningIn();
-        }
-      });
+      const signedIn = await this.isDeviceSignedIn();
+
+      if (signedIn) {
+        this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {});
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog
+          }
+        });
+        scanForInputs(this);
+      } else {
+        this.trySigningIn();
+      }
     };
 
-    this.getAddresses = () => {
+    this.getAddresses = async () => {
       if (!isApp) return this.getAlias();
-      return wkSendAndWait('emailHandlerGetAddresses').then(({
+      const {
         addresses
-      }) => addresses);
+      } = await wkSendAndWait('emailHandlerGetAddresses');
+      return addresses;
     };
 
-    this.getAlias = () => wkSendAndWait('emailHandlerGetAlias', {
-      requiresUserPermission: !isApp,
-      shouldConsumeAliasIfProvided: !isApp
-    }).then(({
-      alias
-    }) => alias);
+    this.getAlias = async () => {
+      const {
+        alias
+      } = await wkSendAndWait('emailHandlerGetAlias', {
+        requiresUserPermission: !isApp,
+        shouldConsumeAliasIfProvided: !isApp
+      });
+      return alias;
+    };
 
     this.refreshAlias = () => wkSend('emailHandlerRefreshAlias');
 
-    this.isDeviceSignedIn = () => wkSendAndWait('emailHandlerCheckAppSignedInStatus').then(data => !!data.isAppSignedIn);
-
-    this.trySigningIn = () => {
-      if (isDDGDomain()) {
-        if (attempts < 10) {
-          attempts++;
-          sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(data => {
-            // This call doesn't send a response, so we can't know if it succeeded
-            this.storeUserData(data);
-            this.setupAutofill({
-              shouldLog: true
-            });
-          });
-        } else {
-          console.warn('max attempts reached, bailing');
-        }
-      }
+    this.isDeviceSignedIn = async () => {
+      const {
+        isAppSignedIn
+      } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
+      return !!isAppSignedIn;
     };
 
     this.storeUserData = ({
@@ -917,32 +906,36 @@ const generateRandomMethod = (randomMethodName, callback) => {
 
 const wkSendAndWait = async (handler, data = {}) => {
   if (hasModernWebkitAPI) {
-    return wkSend(handler, data).then(res => ddgGlobals.JSONparse(res));
+    const response = await wkSend(handler, data);
+    return ddgGlobals.JSONparse(response);
   }
 
-  const randMethodName = createRandMethodName();
-  const key = await createRandKey();
-  const iv = createRandIv();
-  const {
-    ciphertext,
-    tag
-  } = await new ddgGlobals.Promise(resolve => {
-    generateRandomMethod(randMethodName, resolve);
-    data.messageHandling = {
-      methodName: randMethodName,
-      secret,
-      key: ddgGlobals.Arrayfrom(key),
-      iv: ddgGlobals.Arrayfrom(iv)
-    };
-    wkSend(handler, data);
-  });
-  const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag]);
-  return decrypt(cipher, key, iv).then(decrypted => ddgGlobals.JSONparse(decrypted)).catch(e => {
-    console.log('decryption failed', e);
+  try {
+    const randMethodName = createRandMethodName();
+    const key = await createRandKey();
+    const iv = createRandIv();
+    const {
+      ciphertext,
+      tag
+    } = await new ddgGlobals.Promise(resolve => {
+      generateRandomMethod(randMethodName, resolve);
+      data.messageHandling = {
+        methodName: randMethodName,
+        secret,
+        key: ddgGlobals.Arrayfrom(key),
+        iv: ddgGlobals.Arrayfrom(iv)
+      };
+      wkSend(handler, data);
+    });
+    const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag]);
+    const decrypted = await decrypt(cipher, key, iv);
+    return ddgGlobals.JSONparse(decrypted);
+  } catch (e) {
+    console.error('decryption failed', e);
     return {
       error: e
     };
-  });
+  }
 };
 
 const randomString = () => '' + ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0];
@@ -954,7 +947,11 @@ const algoObj = {
   length: 256
 };
 
-const createRandKey = () => ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt']).then(key => ddgGlobals.exportKey('raw', key)).then(exportedKey => new ddgGlobals.Uint8Array(exportedKey));
+const createRandKey = async () => {
+  const key = await ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt']);
+  const exportedKey = await ddgGlobals.exportKey('raw', key);
+  return new ddgGlobals.Uint8Array(exportedKey);
+};
 
 const createRandIv = () => ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12));
 

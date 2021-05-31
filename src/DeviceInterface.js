@@ -52,7 +52,19 @@ class InterfacePrototype {
     setupAutofill () {}
     getAddresses () {}
     refreshAlias () {}
-    trySigningIn () {}
+    async trySigningIn () {
+        if (isDDGDomain()) {
+            if (attempts < 10) {
+                attempts++
+                const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
+                // This call doesn't send a response, so we can't know if it succeeded
+                this.storeUserData(data)
+                this.setupAutofill({shouldLog: true})
+            } else {
+                console.warn('max attempts reached, bailing')
+            }
+        }
+    }
     storeUserData () {}
     addDeviceListeners () {}
     addLogoutListener () {}
@@ -161,22 +173,6 @@ class AndroidInterface extends InterfacePrototype {
             })
         }
 
-        this.trySigningIn = () => {
-            if (isDDGDomain()) {
-                if (attempts < 10) {
-                    attempts++
-                    sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
-                        .then(data => {
-                            // This call doesn't send a response, so we can't know if it succeeded
-                            this.storeUserData(data)
-                            this.setupAutofill({shouldLog: true})
-                        })
-                } else {
-                    console.warn('max attempts reached, bailing')
-                }
-            }
-        }
-
         this.storeUserData = ({addUserData: {token, userName}}) =>
             window.EmailInterface.storeCredentials(token, userName)
 
@@ -192,54 +188,40 @@ class AppleDeviceInterface extends InterfacePrototype {
             notifyWebApp({isApp})
         }
 
-        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
-            this.isDeviceSignedIn().then(signedIn => {
-                if (signedIn) {
-                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
-                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                    scanForInputs(this)
-                } else {
-                    this.trySigningIn()
-                }
-            })
+        this.setupAutofill = async ({shouldLog} = {shouldLog: false}) => {
+            const signedIn = await this.isDeviceSignedIn()
+            if (signedIn) {
+                this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
+                notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                scanForInputs(this)
+            } else {
+                this.trySigningIn()
+            }
         }
 
-        this.getAddresses = () => {
+        this.getAddresses = async () => {
             if (!isApp) return this.getAlias()
 
-            return wkSendAndWait('emailHandlerGetAddresses')
-                .then(({addresses}) => addresses)
+            const {addresses} = await wkSendAndWait('emailHandlerGetAddresses')
+            return addresses
         }
 
-        this.getAlias = () =>
-            wkSendAndWait(
+        this.getAlias = async () => {
+            const {alias} = await wkSendAndWait(
                 'emailHandlerGetAlias',
                 {
                     requiresUserPermission: !isApp,
                     shouldConsumeAliasIfProvided: !isApp
                 }
-            ).then(({alias}) => alias)
+            )
+            return alias
+        }
 
         this.refreshAlias = () => wkSend('emailHandlerRefreshAlias')
 
-        this.isDeviceSignedIn = () =>
-            wkSendAndWait('emailHandlerCheckAppSignedInStatus')
-                .then(data => !!data.isAppSignedIn)
-
-        this.trySigningIn = () => {
-            if (isDDGDomain()) {
-                if (attempts < 10) {
-                    attempts++
-                    sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
-                        .then(data => {
-                            // This call doesn't send a response, so we can't know if it succeeded
-                            this.storeUserData(data)
-                            this.setupAutofill({shouldLog: true})
-                        })
-                } else {
-                    console.warn('max attempts reached, bailing')
-                }
-            }
+        this.isDeviceSignedIn = async () => {
+            const {isAppSignedIn} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+            return !!isAppSignedIn
         }
 
         this.storeUserData = ({addUserData: {token, userName}}) =>
