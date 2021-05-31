@@ -222,6 +222,8 @@ const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form,
   }
 };
 
+let attempts = 0;
+
 class InterfacePrototype {
   init() {
     const start = () => {
@@ -234,8 +236,7 @@ class InterfacePrototype {
     } else {
       window.addEventListener('load', start);
     }
-  } // Default setup used on extensions and Apple devices
-
+  }
 
   setupAutofill() {}
 
@@ -380,13 +381,18 @@ class AndroidInterface extends InterfacePrototype {
 
     this.trySigningIn = () => {
       if (isDDGDomain()) {
-        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(data => {
-          // This call doesn't send a response, so we can't know if it succeeded
-          this.storeUserData(data);
-          this.setupAutofill({
-            shouldLog: true
+        if (attempts < 10) {
+          attempts++;
+          sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(data => {
+            // This call doesn't send a response, so we can't know if it succeeded
+            this.storeUserData(data);
+            this.setupAutofill({
+              shouldLog: true
+            });
           });
-        });
+        } else {
+          console.warn('max attempts reached, bailing');
+        }
       }
     };
 
@@ -454,13 +460,18 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     this.trySigningIn = () => {
       if (isDDGDomain()) {
-        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(data => {
-          // This call doesn't send a response, so we can't know if it succeeded
-          this.storeUserData(data);
-          this.setupAutofill({
-            shouldLog: true
+        if (attempts < 10) {
+          attempts++;
+          sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(data => {
+            // This call doesn't send a response, so we can't know if it succeeded
+            this.storeUserData(data);
+            this.setupAutofill({
+              shouldLog: true
+            });
           });
-        });
+        } else {
+          console.warn('max attempts reached, bailing');
+        }
       }
     };
 
