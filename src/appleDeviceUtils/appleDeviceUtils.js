@@ -23,7 +23,7 @@ const wkSend = (handler, data = {}) =>
  * @param {Function} callback
  */
 const generateRandomMethod = (randomMethodName, callback) => {
-    Object.defineProperty(ddgGlobals.window, randomMethodName, {
+    ddgGlobals.ObjectDefineProperty(ddgGlobals.window, randomMethodName, {
         enumerable: false,
         // configurable, To allow for deletion later
         configurable: true,

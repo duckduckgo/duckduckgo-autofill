@@ -16,7 +16,8 @@ const secretGlobals = {
     JSONstringify: window.JSON.stringify,
     JSONparse: window.JSON.parse,
     Arrayfrom: window.Array.from,
-    Promise: window.Promise
+    Promise: window.Promise,
+    ObjectDefineProperty: window.Object.defineProperty
 }
 
 module.exports = secretGlobals

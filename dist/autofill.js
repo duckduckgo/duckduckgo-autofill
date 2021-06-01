@@ -881,7 +881,7 @@ const wkSend = (handler, data = {}) => window.webkit.messageHandlers[handler].po
 
 
 const generateRandomMethod = (randomMethodName, callback) => {
-  Object.defineProperty(ddgGlobals.window, randomMethodName, {
+  ddgGlobals.ObjectDefineProperty(ddgGlobals.window, randomMethodName, {
     enumerable: false,
     // configurable, To allow for deletion later
     configurable: true,
@@ -988,7 +988,8 @@ const secretGlobals = {
   JSONstringify: window.JSON.stringify,
   JSONparse: window.JSON.parse,
   Arrayfrom: window.Array.from,
-  Promise: window.Promise
+  Promise: window.Promise,
+  ObjectDefineProperty: window.Object.defineProperty
 };
 module.exports = secretGlobals;
 
