@@ -214,7 +214,7 @@ class AppleDeviceInterface extends InterfacePrototype {
                     shouldConsumeAliasIfProvided: !isApp
                 }
             )
-            return alias
+            return formatAddress(alias)
         }
 
         this.refreshAlias = () => wkSend('emailHandlerRefreshAlias')
