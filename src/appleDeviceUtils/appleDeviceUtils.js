@@ -5,7 +5,7 @@ let hasModernWebkitAPI = false
 // The native layer will inject a randomised secret here and use it to verify the origin
 let secret = 'PLACEHOLDER_SECRET'
 
-const ddgGlobals = require('../captureDdgGlobals')
+const ddgGlobals = require('./captureDdgGlobals')
 
 /**
  * Sends message to the webkit layer (fire and forget)

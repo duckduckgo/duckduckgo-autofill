@@ -9,5 +9,3 @@ Object.defineProperty(global.self, 'crypto', {
         getRandomValues: arr => crypto.randomFillSync(arr)
     }
 })
-
-require('./src/captureDdgGlobals')
