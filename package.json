@@ -2,9 +2,6 @@
   "name": "@duckduckgo/autofill",
   "version": "2.0.0",
   "main": "dist/autofill.js",
-  "engines": {
-    "node": "^16"
-  },
   "browserslist": [
     "> 0.25%",
     "not dead",
