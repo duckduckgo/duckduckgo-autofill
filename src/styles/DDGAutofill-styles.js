@@ -11,6 +11,8 @@ module.exports = `
     BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
+    /* move it offscreen to avoid flashing */
+    transform: translate(-1000px);
     z-index: 2147483647;
 }
 .tooltip {

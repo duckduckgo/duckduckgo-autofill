@@ -1,5 +1,5 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {addInlineStyles, removeInlineStyles, isDDGApp, setValue, isEventWithinDax} = require('./autofill-utils')
+const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('./autofill-utils')
 const {daxBase64} = require('./logo-svg')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
@@ -117,7 +117,7 @@ class Form {
             if (e.button !== 0) return
 
             if (this.shouldOpenTooltip(e, e.target)) {
-                if (isEventWithinDax(e, e.target)) {
+                if (isEventWithinDax(e, e.target) || (isDDGApp && !isApp)) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
                 }

@@ -1,9 +1,8 @@
 module.exports = function (grunt) {
     'use strict'
 
-    // grunt.loadNpmTasks('grunt-exec')
+    grunt.loadNpmTasks('grunt-exec')
     grunt.loadNpmTasks('grunt-eslint')
-    // grunt.loadNpmTasks('grunt-githooks')
     grunt.loadNpmTasks('grunt-browserify')
     grunt.loadNpmTasks('grunt-contrib-watch')
 
@@ -17,25 +16,21 @@ module.exports = function (grunt) {
                     ]
                 },
                 files: {
-                    'dist/autofill.js': ['src/**/*.js']
+                    'dist/autofill.js': ['src/autofill.js']
                 }
             }
         },
         eslint: {
             options: {
-                configFile: '.eslintrc',
-                useEslintrc: false // avoid conflicts with parent repo
+                configFile: '.eslintrc'
             },
             target: 'src/**/*.js'
         },
         exec: {
-            excludeBuild: 'git update-index --assume-unchanged dist/autofill.js'
-        },
-        githooks: {
-            all: {
-                // Will create `./git/hooks/pre-commit`. It will build and commit the output file.
-                'pre-push': 'npm run build && git add dist/autofill.js && git commit -m "Add build file"'
-            }
+            copyAutofillStylesToCSS: 'cp src/styles/DDGAutofill-styles.js dist/autofill.css && sed -i "" \'/`/d\' dist/autofill.css',
+            copyHostStyles: 'cp src/styles/autofill-host-styles.css dist/autofill-host-styles_chrome.css && cp src/styles/autofill-host-styles.css dist/autofill-host-styles_firefox.css',
+            // Firefox and Chrome treat relative url differently in injected scripts. This fixes it.
+            updateFirefoxRelativeUrl: `sed -i "" "s/chrome-extension:\\/\\/__MSG_@@extension_id__\\/public/../g" dist/autofill-host-styles_firefox.css`,
         },
         /**
          * Run predefined tasks whenever watched files are added,
@@ -45,10 +40,20 @@ module.exports = function (grunt) {
             scripts: {
                 files: ['src/**/*.js'],
                 tasks: ['browserify']
+            },
+            styles: {
+                files: ['src/**/*.css'],
+                tasks: ['exec:copyAutofillStylesToCSS', 'exec:copyHostStyles', 'exec:updateFirefoxRelativeUrl']
             }
         }
     })
 
-    grunt.registerTask('default', ['eslint', 'browserify'])
-    grunt.registerTask('dev', ['eslint', 'browserify', 'watch'])
+    grunt.registerTask('default', [
+        'eslint',
+        'browserify',
+        'exec:copyAutofillStylesToCSS',
+        'exec:copyHostStyles',
+        'exec:updateFirefoxRelativeUrl'
+    ])
+    grunt.registerTask('dev', ['default', 'watch'])
 }

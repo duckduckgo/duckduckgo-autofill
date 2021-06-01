@@ -20,7 +20,7 @@ const notifyWebApp = (message) => {
  * Sends a message and returns a Promise that resolves with the response
  * @param {{} | Function} msgOrFn - a fn to call or an object to send via postMessage
  * @param {String} expectedResponse - the name of the response
- * @returns {Promise<unknown>}
+ * @returns {Promise<*>}
  */
 const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     if (typeof msgOrFn === 'function') {

@@ -9,6 +9,10 @@ const {
     setValue,
     formatAddress
 } = require('./autofill-utils')
+const {
+    wkSend,
+    wkSendAndWait
+} = require('./appleDeviceUtils/appleDeviceUtils')
 const scanForInputs = require('./scanForInputs.js')
 
 const SIGN_IN_MSG = { signMeIn: true }
@@ -31,16 +35,36 @@ const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form,
     }
 }
 
+let attempts = 0
+
 class InterfacePrototype {
     init () {
-        this.addDeviceListeners()
-        this.setupAutofill()
+        const start = () => {
+            this.addDeviceListeners()
+            this.setupAutofill()
+        }
+        if (document.readyState === 'complete') {
+            start()
+        } else {
+            window.addEventListener('load', start)
+        }
     }
-    // Default setup used on extensions and Apple devices
     setupAutofill () {}
     getAddresses () {}
     refreshAlias () {}
-    trySigningIn () {}
+    async trySigningIn () {
+        if (isDDGDomain()) {
+            if (attempts < 10) {
+                attempts++
+                const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
+                // This call doesn't send a response, so we can't know if it succeeded
+                this.storeUserData(data)
+                this.setupAutofill({shouldLog: true})
+            } else {
+                console.warn('max attempts reached, bailing')
+            }
+        }
+    }
     storeUserData () {}
     addDeviceListeners () {}
     addLogoutListener () {}
@@ -149,17 +173,6 @@ class AndroidInterface extends InterfacePrototype {
             })
         }
 
-        this.trySigningIn = () => {
-            if (isDDGDomain()) {
-                sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
-                    .then(data => {
-                        // This call doesn't send a response, so we can't know if it succeeded
-                        this.storeUserData(data)
-                        this.setupAutofill({shouldLog: true})
-                    })
-            }
-        }
-
         this.storeUserData = ({addUserData: {token, userName}}) =>
             window.EmailInterface.storeCredentials(token, userName)
 
@@ -175,53 +188,44 @@ class AppleDeviceInterface extends InterfacePrototype {
             notifyWebApp({isApp})
         }
 
-        this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
-            this.isDeviceSignedIn().then(signedIn => {
-                if (signedIn) {
-                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
-                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                    scanForInputs(this)
-                } else {
-                    this.trySigningIn()
-                }
-            })
-        }
-
-        this.getAddresses = () => {
-            if (!isApp) return this.getAlias()
-
-            return sendAndWaitForAnswer(() =>
-                window.webkit.messageHandlers['emailHandlerGetAddresses'].postMessage({}),
-            'getAddressesResponse'
-            ).then(({addresses}) => addresses)
-        }
-
-        this.getAlias = () => sendAndWaitForAnswer(() =>
-            window.webkit.messageHandlers['emailHandlerGetAlias'].postMessage({
-                requiresUserPermission: !isApp,
-                shouldConsumeAliasIfProvided: !isApp
-            }), 'getAliasResponse').then(({alias}) => alias)
-
-        this.refreshAlias = () => window.webkit.messageHandlers['emailHandlerRefreshAlias'].postMessage({})
-
-        this.isDeviceSignedIn = () => sendAndWaitForAnswer(() =>
-            window.webkit.messageHandlers['emailHandlerCheckAppSignedInStatus'].postMessage({}),
-        'emailHandlerCheckAppSignedInStatusResponse'
-        ).then(data => !!data.isAppSignedIn)
-
-        this.trySigningIn = () => {
-            if (isDDGDomain()) {
-                sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
-                    .then(data => {
-                        // This call doesn't send a response, so we can't know if it succeeded
-                        this.storeUserData(data)
-                        this.setupAutofill({shouldLog: true})
-                    })
+        this.setupAutofill = async ({shouldLog} = {shouldLog: false}) => {
+            const signedIn = await this.isDeviceSignedIn()
+            if (signedIn) {
+                this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
+                notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                scanForInputs(this)
+            } else {
+                this.trySigningIn()
             }
         }
 
+        this.getAddresses = async () => {
+            if (!isApp) return this.getAlias()
+
+            const {addresses} = await wkSendAndWait('emailHandlerGetAddresses')
+            return addresses
+        }
+
+        this.getAlias = async () => {
+            const {alias} = await wkSendAndWait(
+                'emailHandlerGetAlias',
+                {
+                    requiresUserPermission: !isApp,
+                    shouldConsumeAliasIfProvided: !isApp
+                }
+            )
+            return formatAddress(alias)
+        }
+
+        this.refreshAlias = () => wkSend('emailHandlerRefreshAlias')
+
+        this.isDeviceSignedIn = async () => {
+            const {isAppSignedIn} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+            return !!isAppSignedIn
+        }
+
         this.storeUserData = ({addUserData: {token, userName}}) =>
-            window.webkit.messageHandlers['emailHandlerStoreToken'].postMessage({ token, username: userName })
+            wkSend('emailHandlerStoreToken', { token, username: userName })
 
         this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias)
     }

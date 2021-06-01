@@ -16,8 +16,8 @@ class DDGAutofill {
         this.animationFrame = null
 
         const includeStyles = isApp
-            ? `<style>${require('./DDGAutofill-styles.js')}</style>`
-            : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/email-autofill.css')}" crossorigin="anonymous">`
+            ? `<style>${require('./styles/DDGAutofill-styles.js')}</style>`
+            : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
 
         shadow.innerHTML = `
 ${includeStyles}
