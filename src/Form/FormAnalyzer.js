@@ -60,6 +60,8 @@ class FormAnalyzer {
     }
 
     evaluateElAttributes (el, signalStrength = 3, isInput = false) {
+        if (el.nodeName === 'INPUT' && el.type === 'password') {}
+
         Array.from(el.attributes).forEach(attr => {
             if (attr.name === 'style') return
 

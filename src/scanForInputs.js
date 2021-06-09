@@ -1,4 +1,4 @@
-const Form = require('./Form')
+const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
 
 // Accepts the DeviceInterface as an explicit dependency

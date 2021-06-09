@@ -1,5 +1,5 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('./autofill-utils')
+const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
@@ -25,7 +25,8 @@ class Form {
         this.form = form
         this.formAnalyzer = new FormAnalyzer(form, input)
         this.attachTooltip = attachTooltip
-        this.relevantInputs = new Set()
+        this.emailInputs = new Set()
+        this.passwordInputs = new Set()
         this.touched = new Set()
         this.listeners = new Set()
         this.addInput(input)
@@ -80,11 +81,17 @@ class Form {
     }
 
     execOnInputs (fn) {
-        this.relevantInputs.forEach(fn)
+        this.emailInputs.forEach(fn)
     }
 
     addInput (input) {
-        this.relevantInputs.add(input)
+        if (input.type === 'password') {
+            console.log('password input found ')
+            this.passwordInputs.add(input)
+        } else {
+            this.emailInputs.add(input)
+        }
+
         if (this.formAnalyzer.autofillSignal > 0) this.decorateInput(input)
         return this
     }
