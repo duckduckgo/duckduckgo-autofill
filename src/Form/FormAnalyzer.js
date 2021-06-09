@@ -1,3 +1,5 @@
+const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./selectors')
+
 class FormAnalyzer {
     constructor (form, input) {
         this.form = form
@@ -132,11 +134,7 @@ class FormAnalyzer {
         const string = this.getText(el)
 
         // check button contents
-        if (
-            (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) ||
-            (this.elementIs(el, 'BUTTON') && el.type === 'submit') ||
-            ((el.getAttribute('role') || '').toUpperCase() === 'BUTTON')
-        ) {
+        if (el.matches(SUBMIT_BUTTON_SELECTOR)) {
             this.updateSignal({string, strength: 2, signalType: `submit: ${string}`})
         }
         // if a link points to relevant urls or contain contents outside the page…

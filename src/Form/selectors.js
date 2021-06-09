@@ -16,4 +16,6 @@ const EMAIL_SELECTOR = `
 
 const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])`
 
-module.exports = {EMAIL_SELECTOR, PASSWORD_SELECTOR}
+const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button[type=submit], [role=button]'
+
+module.exports = {EMAIL_SELECTOR, PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR}
