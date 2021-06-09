@@ -228,6 +228,53 @@ class AppleDeviceInterface extends InterfacePrototype {
             wkSend('emailHandlerStoreToken', { token, username: userName })
 
         this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias)
+
+        /**
+         * PM endpoints
+         */
+
+        /**
+         * @typedef {{
+         *      id: Number
+         *      username: String
+         *      password?: String
+         *      lastUpdated: String
+         * }} CredentialsObject
+         */
+
+        /**
+         * Sends credentials to the native layer
+         * @param {{username: String, password: String}} credentials
+         */
+        this.storeCredentials = (credentials) =>
+            wkSend('pmHandlerStoreCredentials', credentials)
+
+        /**
+         * Gets a list of credentials for the current site
+         * @returns {Promise<{ success: [CredentialsObject], error?: String }>}
+         */
+        this.getCredentials = () => wkSendAndWait('pmHandlerGetCredentials')
+            .then((response) => {
+                console.log(response)
+                return response
+            })
+
+        /**
+         * Gets credentials ready for autofill
+         * @param {Number} id - the credential id
+         * @returns {Promise<{ success: CredentialsObject, error?: String }>}
+         */
+        this.getAutofillCredentials = (id) =>
+            wkSendAndWait('pmHandlerGetAutofillCredentials', {id})
+                .then((response) => {
+                    console.log(response)
+                    return response
+                })
+
+        /**
+         * Opens the native UI for managing passwords
+         */
+        this.openManagePasswords = () => wkSend('pmHandlerOpenManagePasswords')
     }
 }
 
