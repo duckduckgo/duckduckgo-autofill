@@ -62,7 +62,23 @@ class FormAnalyzer {
     }
 
     evaluateElAttributes (el, signalStrength = 3, isInput = false) {
-        if (el.nodeName === 'INPUT' && el.type === 'password') {}
+        if (el.matches(PASSWORD_SELECTOR)) {
+            // These are explicit signals by the web author, so we weigh them heavily
+            if (el.getAttribute('autocomplete')?.includes('current-password')) {
+                this.updateSignal({
+                    string: 'current-password',
+                    strength: -20,
+                    signalType: 'current-password'
+                })
+            }
+            if (el.getAttribute('autocomplete')?.includes('new-password')) {
+                this.updateSignal({
+                    string: 'new-password',
+                    strength: 20,
+                    signalType: 'new-password'
+                })
+            }
+        }
 
         Array.from(el.attributes).forEach(attr => {
             if (attr.name === 'style') return
