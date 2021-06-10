@@ -86,13 +86,12 @@ class Form {
 
     addInput (input) {
         if (input.type === 'password') {
-            console.log('password input found ')
             this.passwordInputs.add(input)
         } else {
             this.emailInputs.add(input)
+            if (this.formAnalyzer.isSignup) this.decorateInput(input)
         }
 
-        if (this.formAnalyzer.autofillSignal > 0) this.decorateInput(input)
         return this
     }
 

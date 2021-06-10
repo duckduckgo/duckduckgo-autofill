@@ -14,6 +14,14 @@ class FormAnalyzer {
         return this
     }
 
+    get isLogin () {
+        return this.autofillSignal < 0
+    }
+
+    get isSignup () {
+        return this.autofillSignal > 0
+    }
+
     increaseSignalBy (strength, signal) {
         this.autofillSignal += strength
         this.signals.push(`${signal}: +${strength}`)
