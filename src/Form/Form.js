@@ -1,4 +1,5 @@
 const FormAnalyzer = require('./FormAnalyzer')
+const {PASSWORD_SELECTOR} = require("./selectors");
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 
@@ -87,6 +88,7 @@ class Form {
 
     execOnInputs (fn) {
         this.emailInputs.forEach(fn)
+        this.passwordInputs.forEach(fn)
     }
 
     addInput (input) {
@@ -146,14 +148,29 @@ class Form {
         return (!this.touched.has(input) && this.areAllInputsEmpty()) || isEventWithinDax(e, input)
     }
 
-    autofill (alias) {
-        this.execOnInputs((input) => {
-            setValue(input, alias)
-            input.classList.add('ddg-autofilled')
-            addInlineStyles(input, INLINE_AUTOFILLED_STYLES)
+    autofillInput = (input, string) => {
+        setValue(input, string)
+        input.classList.add('ddg-autofilled')
+        addInlineStyles(input, INLINE_AUTOFILLED_STYLES)
 
-            // If the user changes the alias, remove the decoration
-            input.addEventListener('input', this.removeAllHighlights, {once: true})
+        // If the user changes the alias, remove the decoration
+        input.addEventListener('input', this.removeAllHighlights, {once: true})
+    }
+
+    autofillEmail (alias) {
+        this.execOnInputs((input) => !input.matches(PASSWORD_SELECTOR) && this.autofillInput(input, alias))
+        if (this.tooltip) {
+            this.removeTooltip()
+        }
+    }
+
+    autofillCredentials (credentials) {
+        this.execOnInputs((input) => {
+            if (input.matches(PASSWORD_SELECTOR)) {
+                this.autofillInput(input, credentials.password)
+            } else {
+                this.autofillInput(input, credentials.username)
+            }
         })
         if (this.tooltip) {
             this.removeTooltip()

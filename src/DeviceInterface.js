@@ -23,7 +23,7 @@ const attachTooltip = function (form, input) {
     if (isDDGApp && !isApp) {
         form.activeInput = input
         this.getAlias().then((alias) => {
-            if (alias) form.autofill(alias)
+            if (alias) form.autofillEmail(alias)
             else form.activeInput.focus()
         })
     } else {

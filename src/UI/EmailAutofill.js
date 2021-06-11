@@ -49,7 +49,7 @@ ${includeStyles}
             e.stopImmediatePropagation()
 
             safeExecute(this.usePersonalButton, () => {
-                this.associatedForm.autofill(formatAddress(this.addresses.personalAddress))
+                this.associatedForm.autofillEmail(formatAddress(this.addresses.personalAddress))
             })
         })
         this.usePrivateButton.addEventListener('click', (e) => {
@@ -57,7 +57,7 @@ ${includeStyles}
             e.stopImmediatePropagation()
 
             safeExecute(this.usePersonalButton, () => {
-                this.associatedForm.autofill(formatAddress(this.addresses.privateAddress))
+                this.associatedForm.autofillEmail(formatAddress(this.addresses.privateAddress))
                 this.interface.refreshAlias()
             })
         })
