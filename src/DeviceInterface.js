@@ -17,10 +17,10 @@ const scanForInputs = require('./scanForInputs.js')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
-const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form, input) => {
+const createAttachTooltip = (Interface) => (form, input) => {
     if (isDDGApp && !isApp) {
         form.activeInput = input
-        getAutofillData().then((alias) => {
+        Interface.getAlias().then((alias) => {
             if (alias) form.autofill(alias)
             else form.activeInput.focus()
         })
@@ -28,7 +28,7 @@ const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form,
         if (form.tooltip) return
 
         form.activeInput = input
-        form.tooltip = new DDGAutofill(input, form, getAutofillData, refreshAlias, addresses)
+        form.tooltip = new DDGAutofill(input, form, Interface)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})
@@ -102,8 +102,7 @@ class ExtensionInterface extends InterfacePrototype {
 
         this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
             this.getAddresses().then(addresses => {
-                if (addresses?.privateAddress && addresses?.personalAddress) {
-                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
+                if (this.hasLocalAddresses) {
                     notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
                     scanForInputs(this)
                 } else {
@@ -174,6 +173,8 @@ class ExtensionInterface extends InterfacePrototype {
                 }
             })
         }
+
+        this.attachTooltip = createAttachTooltip(this)
     }
 }
 
@@ -203,7 +204,7 @@ class AndroidInterface extends InterfacePrototype {
         this.storeUserData = ({addUserData: {token, userName}}) =>
             window.EmailInterface.storeCredentials(token, userName)
 
-        this.attachTooltip = createAttachTooltip(this.getAlias)
+        this.attachTooltip = createAttachTooltip(this)
     }
 }
 
@@ -218,7 +219,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         this.setupAutofill = async ({shouldLog} = {shouldLog: false}) => {
             const signedIn = await this.isDeviceSignedIn()
             if (signedIn) {
-                this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
                 await this.getAddresses()
                 notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
                 scanForInputs(this)
@@ -256,7 +256,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         this.storeUserData = ({addUserData: {token, userName}}) =>
             wkSend('emailHandlerStoreToken', { token, username: userName })
 
-        this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias)
+        this.attachTooltip = createAttachTooltip(this)
 
         /**
          * PM endpoints

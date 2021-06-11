@@ -7,12 +7,12 @@ const {
 } = require('./autofill-utils')
 
 class DDGAutofill {
-    constructor (input, associatedForm, getAddresses, refreshAlias, addresses) {
+    constructor (input, associatedForm, Interface) {
         const shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
         this.host = shadow.host
         this.input = input
         this.associatedForm = associatedForm
-        this.addresses = addresses
+        this.addresses = Interface.getLocalAddresses()
         this.animationFrame = null
 
         const includeStyles = isApp
@@ -53,7 +53,7 @@ ${includeStyles}
         }
 
         // Get the alias from the extension
-        getAddresses().then(this.updateAddresses)
+        Interface.getAddresses().then(this.updateAddresses)
 
         this.top = 0
         this.left = 0
@@ -157,7 +157,7 @@ ${includeStyles}
 
             safeExecute(this.usePersonalButton, () => {
                 this.associatedForm.autofill(formatAddress(this.addresses.privateAddress))
-                refreshAlias()
+                Interface.refreshAlias()
             })
         })
     }
