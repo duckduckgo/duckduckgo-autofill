@@ -8,12 +8,9 @@ const Tooltip = require('./Tooltip')
 
 class EmailAutofill extends Tooltip {
     constructor (input, associatedForm, Interface) {
-        super()
-        this.shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
-        this.host = this.shadow.host
-        this.input = input
-        this.associatedForm = associatedForm
-        this.addresses = Interface.getLocalAddresses()
+        super(input, associatedForm, Interface)
+
+        this.addresses = this.interface.getLocalAddresses()
 
         const includeStyles = isApp
             ? `<style>${require('./styles/DDGAutofill-styles.js')}</style>`
@@ -61,18 +58,14 @@ ${includeStyles}
 
             safeExecute(this.usePersonalButton, () => {
                 this.associatedForm.autofill(formatAddress(this.addresses.privateAddress))
-                Interface.refreshAlias()
+                this.interface.refreshAlias()
             })
         })
 
         // Get the alias from the extension
-        Interface.getAddresses().then(this.updateAddresses)
+        this.interface.getAddresses().then(this.updateAddresses)
 
         this.init()
-        this.append()
-        this.resObs.observe(document.body)
-        this.mutObs.observe(document.body, {childList: true, subtree: true, attributes: true})
-        window.addEventListener('scroll', this.checkPosition, {passive: true, capture: true})
     }
 }
 

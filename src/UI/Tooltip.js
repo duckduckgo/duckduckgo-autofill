@@ -55,6 +55,13 @@ const ensureIsLastInDOM = function () {
 }
 
 class Tooltip {
+    constructor (input, associatedForm, Interface) {
+        this.shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
+        this.host = this.shadow.host
+        this.input = input
+        this.associatedForm = associatedForm
+        this.interface = Interface
+    }
     append () {
         document.body.appendChild(this.host)
     }
@@ -96,6 +103,11 @@ class Tooltip {
         // Un-hide once the style is loaded, to avoid flashing unstyled content
         this.stylesheet.addEventListener('load', () =>
             this.tooltip.removeAttribute('hidden'))
+
+        this.append()
+        this.resObs.observe(document.body)
+        this.mutObs.observe(document.body, {childList: true, subtree: true, attributes: true})
+        window.addEventListener('scroll', this.checkPosition, {passive: true, capture: true})
     }
     setupStylesheet () {
         this.stylesheet = this.shadow.querySelector('link, style')
