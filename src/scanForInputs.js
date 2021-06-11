@@ -1,6 +1,6 @@
 const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
-const {EMAIL_SELECTOR, PASSWORD_SELECTOR} = require('./Form/selectors')
+const {FIELD_SELECTOR} = require('./Form/selectors')
 
 // Accepts the DeviceInterface as an explicit dependency
 const scanForInputs = (DeviceInterface) => {
@@ -18,10 +18,10 @@ const scanForInputs = (DeviceInterface) => {
     }
 
     const findEligibleInput = context => {
-        if (context.nodeName === 'INPUT' && context.matches(EMAIL_SELECTOR)) {
+        if (context.nodeName === 'INPUT' && context.matches(FIELD_SELECTOR)) {
             addInput(context)
         } else {
-            context.querySelectorAll(EMAIL_SELECTOR).forEach(addInput)
+            context.querySelectorAll(FIELD_SELECTOR).forEach(addInput)
         }
     }
 
