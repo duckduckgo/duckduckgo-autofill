@@ -67,6 +67,10 @@ class Form {
             this.execOnInputs(this.removeInputDecoration)
             this.listeners.forEach(({el, type, fn}) => el.removeEventListener(type, fn))
         }
+        this.redecorateAllInputs = () => {
+            this.removeAllDecorations()
+            this.execOnInputs(this.decorateInput)
+        }
         this.resetAllInputs = () => {
             this.execOnInputs((input) => {
                 setValue(input, '')

@@ -2,10 +2,10 @@ const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
 const {FIELD_SELECTOR} = require('./Form/selectors')
 
+const forms = new Map()
+
 // Accepts the DeviceInterface as an explicit dependency
 const scanForInputs = (DeviceInterface) => {
-    const forms = new Map()
-
     const addInput = input => {
         const parentForm = input.form
 
@@ -62,4 +62,4 @@ const scanForInputs = (DeviceInterface) => {
     })
 }
 
-module.exports = scanForInputs
+module.exports = {scanForInputs, forms}

@@ -13,7 +13,7 @@ const {
     wkSend,
     wkSendAndWait
 } = require('./appleDeviceUtils/appleDeviceUtils')
-const scanForInputs = require('./scanForInputs.js')
+const {scanForInputs, forms} = require('./scanForInputs.js')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
