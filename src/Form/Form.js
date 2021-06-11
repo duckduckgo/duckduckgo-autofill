@@ -21,10 +21,11 @@ const INLINE_AUTOFILLED_STYLES = {
 }
 
 class Form {
-    constructor (form, input, attachTooltip) {
+    constructor (form, input, DeviceInterface) {
         this.form = form
         this.formAnalyzer = new FormAnalyzer(form, input)
-        this.attachTooltip = attachTooltip
+        this.Device = DeviceInterface
+        this.attachTooltip = DeviceInterface.attachTooltip
         this.emailInputs = new Set()
         this.passwordInputs = new Set()
         this.touched = new Set()
