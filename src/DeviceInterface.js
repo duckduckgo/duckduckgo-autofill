@@ -94,6 +94,11 @@ class InterfacePrototype {
     attachTooltip () {}
     isDeviceSignedIn () {}
     getAlias () {}
+    // PM endpoints
+    storeCredentials () {}
+    getCredentials () {}
+    getAutofillCredentials () {}
+    openManagePasswords () {}
 }
 
 class ExtensionInterface extends InterfacePrototype {
