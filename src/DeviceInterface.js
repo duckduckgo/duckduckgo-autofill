@@ -1,4 +1,6 @@
 const EmailAutofill = require('./UI/EmailAutofill')
+const CredentialsAutofill = require('./UI/CredentialsAutofill')
+const {PASSWORD_SELECTOR} = require('./Form/selectors')
 const {
     isApp,
     notifyWebApp,
@@ -17,10 +19,10 @@ const {scanForInputs, forms} = require('./scanForInputs.js')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
-const createAttachTooltip = (Interface) => (form, input) => {
+const attachTooltip = function (form, input) {
     if (isDDGApp && !isApp) {
         form.activeInput = input
-        Interface.getAlias().then((alias) => {
+        this.getAlias().then((alias) => {
             if (alias) form.autofill(alias)
             else form.activeInput.focus()
         })
@@ -28,7 +30,9 @@ const createAttachTooltip = (Interface) => (form, input) => {
         if (form.tooltip) return
 
         form.activeInput = input
-        form.tooltip = new EmailAutofill(input, form, Interface)
+        form.tooltip = input.matches(PASSWORD_SELECTOR)
+            ? new CredentialsAutofill(input, form, this)
+            : new EmailAutofill(input, form, this)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})
@@ -62,6 +66,7 @@ class InterfacePrototype {
     }
 
     init () {
+        this.attachTooltip = attachTooltip.bind(this)
         const start = () => {
             this.addDeviceListeners()
             this.setupAutofill()
@@ -178,8 +183,6 @@ class ExtensionInterface extends InterfacePrototype {
                 }
             })
         }
-
-        this.attachTooltip = createAttachTooltip(this)
     }
 }
 
@@ -208,8 +211,6 @@ class AndroidInterface extends InterfacePrototype {
 
         this.storeUserData = ({addUserData: {token, userName}}) =>
             window.EmailInterface.storeCredentials(token, userName)
-
-        this.attachTooltip = createAttachTooltip(this)
     }
 }
 
@@ -266,8 +267,6 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         this.storeUserData = ({addUserData: {token, userName}}) =>
             wkSend('emailHandlerStoreToken', { token, username: userName })
-
-        this.attachTooltip = createAttachTooltip(this)
 
         /**
          * PM endpoints
