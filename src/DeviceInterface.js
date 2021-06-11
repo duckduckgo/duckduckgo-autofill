@@ -1,4 +1,4 @@
-const DDGAutofill = require('./DDGAutofill')
+const DDGAutofill = require('./UI/DDGAutofill')
 const {
     isApp,
     notifyWebApp,

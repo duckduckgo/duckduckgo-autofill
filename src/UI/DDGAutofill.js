@@ -4,7 +4,7 @@ const {
     getDaxBoundingBox,
     safeExecute,
     escapeXML
-} = require('./autofill-utils')
+} = require('../autofill-utils')
 
 class DDGAutofill {
     constructor (input, associatedForm, Interface) {
