@@ -38,6 +38,29 @@ const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form,
 let attempts = 0
 
 class InterfacePrototype {
+    // Data
+    #addresses = {}
+    get hasLocalAddresses () {
+        return this.#addresses.privateAddress && this.#addresses.personalAddress
+    }
+    getLocalAddresses () {
+        return this.#addresses
+    }
+    storeLocalAddresses (addresses) {
+        this.#addresses = addresses
+    }
+
+    #credentials = []
+    get hasLocalCredentials () {
+        return this.#credentials.length
+    }
+    getLocalCredentials () {
+        return this.#credentials.map(cred => delete cred.password && cred)
+    }
+    storeLocalCredentials (credentials) {
+        this.#credentials = credentials.map(cred => delete cred.password && cred)
+    }
+
     init () {
         const start = () => {
             this.addDeviceListeners()
@@ -91,12 +114,16 @@ class ExtensionInterface extends InterfacePrototype {
 
         this.getAddresses = () => new Promise(resolve => chrome.runtime.sendMessage(
             {getAddresses: true},
-            (data) => resolve(data)
+            (data) => {
+                this.storeLocalAddresses(data)
+                return resolve(data)
+            }
         ))
 
         this.refreshAlias = () => chrome.runtime.sendMessage(
             {refreshAlias: true},
-            (addresses) => { this.addresses = addresses })
+            (addresses) => this.storeLocalAddresses(addresses)
+        )
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
@@ -192,6 +219,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             const signedIn = await this.isDeviceSignedIn()
             if (signedIn) {
                 this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
+                await this.getAddresses()
                 notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
                 scanForInputs(this)
             } else {
@@ -203,6 +231,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             if (!isApp) return this.getAlias()
 
             const {addresses} = await wkSendAndWait('emailHandlerGetAddresses')
+            this.storeLocalAddresses(addresses)
             return addresses
         }
 
@@ -253,11 +282,12 @@ class AppleDeviceInterface extends InterfacePrototype {
          * Gets a list of credentials for the current site
          * @returns {Promise<{ success: [CredentialsObject], error?: String }>}
          */
-        this.getCredentials = () => wkSendAndWait('pmHandlerGetCredentials')
-            .then((response) => {
-                console.log(response)
-                return response
-            })
+        this.getCredentials = () =>
+            wkSendAndWait('pmHandlerGetCredentials')
+                .then((response) => {
+                    this.storeLocalCredentials(response.success)
+                    return response
+                })
 
         /**
          * Gets credentials ready for autofill
