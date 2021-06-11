@@ -37,18 +37,18 @@ const checkPosition = function () {
 }
 
 const ensureIsLastInDOM = function () {
+    this.count = this.count || 0
     // If DDG el is not the last in the doc, move it there
     if (document.body.lastElementChild !== this.host) {
-        this.lift()
-
         // Try up to 5 times to avoid infinite loop in case someone is doing the same
         if (this.count < 15) {
+            this.lift()
             this.append()
             this.checkPosition()
             this.count++
         } else {
-            // Reset count so we can resume normal flow
-            this.count = 0
+            // Remove the tooltip from the form to cleanup listeners and observers
+            this.associatedForm.removeTooltip()
             console.info(`DDG autofill bailing out`)
         }
     }
@@ -72,6 +72,7 @@ class Tooltip {
     checkPosition = checkPosition.bind(this)
     updatePosition = updatePosition.bind(this)
     ensureIsLastInDOM = ensureIsLastInDOM.bind(this)
+    resObs = new ResizeObserver(entries => entries.forEach(this.checkPosition))
     mutObs = new MutationObserver((mutationList) => {
         for (const mutationRecord of mutationList) {
             if (mutationRecord.type === 'childList') {
@@ -90,9 +91,6 @@ class Tooltip {
         this.top = 0
         this.left = 0
         this.transformRuleIndex = null
-
-        this.resObs = new ResizeObserver(entries => entries.forEach(this.checkPosition))
-        this.count = 0
 
         this.stylesheet = this.shadow.querySelector('link, style')
         // Un-hide once the style is loaded, to avoid flashing unstyled content
