@@ -1,4 +1,4 @@
-const DDGAutofill = require('./UI/DDGAutofill')
+const EmailAutofill = require('./UI/EmailAutofill')
 const {
     isApp,
     notifyWebApp,
@@ -28,7 +28,7 @@ const createAttachTooltip = (Interface) => (form, input) => {
         if (form.tooltip) return
 
         form.activeInput = input
-        form.tooltip = new DDGAutofill(input, form, Interface)
+        form.tooltip = new EmailAutofill(input, form, Interface)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})
