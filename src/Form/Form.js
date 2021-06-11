@@ -92,9 +92,11 @@ class Form {
     addInput (input) {
         if (input.type === 'password') {
             this.passwordInputs.add(input)
+            if (this.formAnalyzer.isLogin && this.Device.hasLocalCredentials) this.decorateInput(input)
         } else {
             this.emailInputs.add(input)
             if (this.formAnalyzer.isSignup) this.decorateInput(input)
+            if (this.formAnalyzer.isSignup && this.Device.hasLocalAddresses) this.decorateInput(input)
         }
 
         return this

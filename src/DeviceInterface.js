@@ -217,14 +217,20 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
 
         this.setupAutofill = async ({shouldLog} = {shouldLog: false}) => {
+            if (isApp) {
+                await this.getCredentials()
+            }
+
             const signedIn = await this.isDeviceSignedIn()
             if (signedIn) {
                 await this.getAddresses()
                 notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                scanForInputs(this)
+                forms.forEach(form => form.redecorateAllInputs)
             } else {
                 this.trySigningIn()
             }
+
+            scanForInputs(this)
         }
 
         this.getAddresses = async () => {
