@@ -1,6 +1,5 @@
 const {
     isApp,
-    formatAddress,
     safeExecute,
     escapeXML
 } = require('../autofill-utils')

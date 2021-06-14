@@ -1,5 +1,5 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {PASSWORD_SELECTOR} = require("./selectors");
+const {PASSWORD_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 
@@ -97,7 +97,6 @@ class Form {
             if (this.formAnalyzer.isLogin && this.Device.hasLocalCredentials) this.decorateInput(input)
         } else {
             this.emailInputs.add(input)
-            if (this.formAnalyzer.isSignup) this.decorateInput(input)
             if (this.formAnalyzer.isSignup && this.Device.hasLocalAddresses) this.decorateInput(input)
         }
 
