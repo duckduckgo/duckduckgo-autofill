@@ -1,6 +1,5 @@
 const EmailAutofill = require('./UI/EmailAutofill')
 const CredentialsAutofill = require('./UI/CredentialsAutofill')
-const {PASSWORD_SELECTOR} = require('./Form/selectors')
 const {
     isApp,
     notifyWebApp,
@@ -30,7 +29,7 @@ const attachTooltip = function (form, input) {
         if (form.tooltip) return
 
         form.activeInput = input
-        form.tooltip = input.matches(PASSWORD_SELECTOR)
+        form.tooltip = form.isLogin
             ? new CredentialsAutofill(input, form, this)
             : new EmailAutofill(input, form, this)
         form.intObs.observe(input)

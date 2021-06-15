@@ -26,7 +26,9 @@ const checkPosition = function () {
     }
 
     this.animationFrame = window.requestAnimationFrame(() => {
-        const {left, bottom} = getDaxBoundingBox(this.input)
+        const {left, bottom} = this.associatedForm.isLogin
+            ? this.input.getBoundingClientRect()
+            : getDaxBoundingBox(this.input)
 
         if (left !== this.left || bottom !== this.top) {
             this.updatePosition({left, top: bottom})
@@ -108,12 +110,6 @@ class Tooltip {
         this.resObs.observe(document.body)
         this.mutObs.observe(document.body, {childList: true, subtree: true, attributes: true})
         window.addEventListener('scroll', this.checkPosition, {passive: true, capture: true})
-    }
-    setupStylesheet () {
-        this.stylesheet = this.shadow.querySelector('link, style')
-        // Un-hide once the style is loaded, to avoid flashing unstyled content
-        this.stylesheet.addEventListener('load', () =>
-            this.tooltip.removeAttribute('hidden'))
     }
 }
 

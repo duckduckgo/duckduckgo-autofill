@@ -2,12 +2,15 @@ const FormAnalyzer = require('./FormAnalyzer')
 const {PASSWORD_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
+const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
+const {EMAIL_SELECTOR} = require('./selectors')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
 const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
+const getPasswordIcon = (variant = 'ddgPasswordIconBase') => ddgPasswordIcons[variant]
 
-const getDaxStyles = input => ({
+const getDaxStyles = (input) => ({
     // Height must be > 0 to account for fields initially hidden
     'background-size': `auto ${input.offsetHeight <= 30 && input.offsetHeight > 0 ? '100%' : '26px'}`,
     'background-position': 'center right',
@@ -16,15 +19,31 @@ const getDaxStyles = input => ({
     'background-image': `url(${getDaxImg})`
 })
 
-const INLINE_AUTOFILLED_STYLES = {
+const getPasswordStyles = (input) => ({
+    ...getDaxStyles(input),
+    'background-image': `url(${getPasswordIcon()})`
+})
+
+const getPasswordAutofilledStyles = (input) => ({
+    ...getDaxStyles(input),
+    'background-image': `url(${getPasswordIcon('ddgPasswordIconFilled')})`,
     'background-color': '#F8F498',
     'color': '#333333'
-}
+})
+
+const getInlineAutofilledStyles = (input, isLogin) => isLogin
+    ? getPasswordAutofilledStyles(input)
+    : {
+        'background-color': '#F8F498',
+        'color': '#333333'
+    }
 
 class Form {
     constructor (form, input, DeviceInterface) {
         this.form = form
         this.formAnalyzer = new FormAnalyzer(form, input)
+        this.isLogin = this.formAnalyzer.isLogin
+        this.isSignup = this.formAnalyzer.isSignup
         this.Device = DeviceInterface
         this.attachTooltip = DeviceInterface.attachTooltip
         this.emailInputs = new Set()
@@ -51,8 +70,9 @@ class Form {
             window.removeEventListener('mousedown', this.removeTooltip, {capture: true})
         }
         this.removeInputHighlight = (input) => {
-            removeInlineStyles(input, INLINE_AUTOFILLED_STYLES)
+            removeInlineStyles(input, getInlineAutofilledStyles(input, this.isLogin))
             input.classList.remove('ddg-autofilled')
+            this.addAutofillStyles(input)
         }
         this.removeAllHighlights = (e) => {
             // This ensures we are not removing the highlight ourselves when autofilling more than once
@@ -92,12 +112,12 @@ class Form {
     }
 
     addInput (input) {
-        if (input.type === 'password') {
+        if (this.isLogin) {
             this.passwordInputs.add(input)
-            if (this.formAnalyzer.isLogin && this.Device.hasLocalCredentials) this.decorateInput(input)
+            if (this.Device.hasLocalCredentials) this.decorateInput(input)
         } else {
             this.emailInputs.add(input)
-            if (this.formAnalyzer.isSignup && this.Device.hasLocalAddresses) this.decorateInput(input)
+            if (this.Device.hasLocalAddresses && input.matches(EMAIL_SELECTOR)) this.decorateInput(input)
         }
 
         return this
@@ -116,9 +136,14 @@ class Form {
         this.listeners.add({el, type, fn})
     }
 
+    addAutofillStyles (input) {
+        const styles = this.isLogin ? getPasswordStyles(input) : getDaxStyles(input)
+        addInlineStyles(input, styles)
+    }
+
     decorateInput (input) {
         input.setAttribute('data-ddg-autofill', 'true')
-        addInlineStyles(input, getDaxStyles(input))
+        this.addAutofillStyles(input)
         this.addListener(input, 'mousemove', (e) => {
             if (isEventWithinDax(e, e.target)) {
                 e.target.style.setProperty('cursor', 'pointer', 'important')
@@ -150,7 +175,7 @@ class Form {
     autofillInput = (input, string) => {
         setValue(input, string)
         input.classList.add('ddg-autofilled')
-        addInlineStyles(input, INLINE_AUTOFILLED_STYLES)
+        addInlineStyles(input, getInlineAutofilledStyles(input, this.isLogin))
 
         // If the user changes the alias, remove the decoration
         input.addEventListener('input', this.removeAllHighlights, {once: true})
