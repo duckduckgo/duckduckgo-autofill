@@ -12,7 +12,7 @@ class CredentialsAutofill extends Tooltip {
         this.credentials = this.interface.getLocalCredentials()
 
         const includeStyles = isApp
-            ? `<style>${require('./styles/DDGAutofill-styles.js')}</style>`
+            ? `<style>${require('./styles/credentials-autofill-styles.js')}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
 
         this.shadow.innerHTML = `

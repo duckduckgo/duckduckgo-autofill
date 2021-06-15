@@ -13,7 +13,7 @@ class EmailAutofill extends Tooltip {
         this.addresses = this.interface.getLocalAddresses()
 
         const includeStyles = isApp
-            ? `<style>${require('./styles/DDGAutofill-styles.js')}</style>`
+            ? `<style>${require('./styles/email-autofill-styles.js')}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
 
         this.shadow.innerHTML = `
