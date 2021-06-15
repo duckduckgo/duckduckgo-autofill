@@ -21,7 +21,8 @@ ${includeStyles}
     <div class="tooltip" hidden>
         <button class="tooltip__button tooltip__button--secondary js-autofill-button">
             <span class="tooltip__button__primary-text">
-                Use <span class="js-address">${escapeXML(this.credentials[0].username)}</span>
+                <span class="js-address">${escapeXML(this.credentials[0].username)}</span><br />
+                <span class="tooltip__button__password">•••••••••••••••</span>
             </span>
         </button>
     </div>
