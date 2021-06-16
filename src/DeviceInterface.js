@@ -100,7 +100,7 @@ class InterfacePrototype {
     getAlias () {}
     // PM endpoints
     storeCredentials () {}
-    getCredentials () {}
+    getAccounts () {}
     getAutofillCredentials () {}
     openManagePasswords () {}
 }
@@ -223,7 +223,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         this.setupAutofill = async ({shouldLog} = {shouldLog: false}) => {
             if (isApp) {
-                await this.getCredentials()
+                await this.getAccounts()
             }
 
             const signedIn = await this.isDeviceSignedIn()
@@ -291,8 +291,8 @@ class AppleDeviceInterface extends InterfacePrototype {
          * Gets a list of credentials for the current site
          * @returns {Promise<{ success: [CredentialsObject], error?: String }>}
          */
-        this.getCredentials = () =>
-            wkSendAndWait('pmHandlerGetCredentials')
+        this.getAccounts = () =>
+            wkSendAndWait('pmHandlerGetAccounts')
                 .then((response) => {
                     this.storeLocalCredentials(response.success)
                     return response
