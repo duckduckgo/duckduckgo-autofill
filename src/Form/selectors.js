@@ -11,7 +11,8 @@ const EMAIL_SELECTOR = `
     input[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
     input[type=text][aria-label*=mail i],
     input:not([type])[aria-label*=mail i],
-    input[type=text][placeholder*=mail i]:not([readonly])
+    input[type=text][placeholder*=mail i]:not([readonly]),
+    input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])
 `
 
 const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])`
