@@ -108,7 +108,9 @@ class Form {
 
     execOnInputs (fn) {
         this.emailInputs.forEach(fn)
-        this.passwordInputs.forEach(fn)
+        if (this.isLogin) {
+            this.passwordInputs.forEach(fn)
+        }
     }
 
     addInput (input) {
@@ -116,8 +118,10 @@ class Form {
             this.passwordInputs.add(input)
             if (this.Device.hasLocalCredentials) this.decorateInput(input)
         } else {
-            this.emailInputs.add(input)
-            if (this.Device.hasLocalAddresses && input.matches(EMAIL_SELECTOR)) this.decorateInput(input)
+            if (this.Device.hasLocalAddresses && !input.matches(PASSWORD_SELECTOR)) {
+                this.emailInputs.add(input)
+                this.decorateInput(input)
+            }
         }
 
         return this
