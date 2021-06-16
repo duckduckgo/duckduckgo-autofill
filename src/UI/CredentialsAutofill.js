@@ -19,28 +19,32 @@ class CredentialsAutofill extends Tooltip {
 ${includeStyles}
 <div class="wrapper wrapper--credentials">
     <div class="tooltip tooltip--credentials" hidden>
-        <button class="tooltip__button tooltip__button--credentials js-autofill-button">
-            <span>
-                <span class="js-address">${escapeXML(this.credentials[0].username)}</span><br />
-                <span class="tooltip__button__password">•••••••••••••••</span>
-            </span>
-        </button>
+        ${this.credentials.map(({username, id}) => `
+            <button class="tooltip__button tooltip__button--credentials js-autofill-button" id="${id}">
+                <span>
+                    <span class="js-address">${escapeXML(username)}</span><br />
+                    <span class="tooltip__button__password">•••••••••••••••</span>
+                </span>
+            </button>
+        `).join('')}
     </div>
 </div>`
         this.wrapper = this.shadow.querySelector('.wrapper')
         this.tooltip = this.shadow.querySelector('.tooltip')
-        this.autofillButton = this.shadow.querySelector('.js-autofill-button')
+        this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button')
 
-        this.autofillButton.addEventListener('click', (e) => {
-            if (!e.isTrusted) return
-            e.stopImmediatePropagation()
+        this.autofillButtons.forEach(
+            btn => btn.addEventListener('click', (e) => {
+                if (!e.isTrusted) return
+                e.stopImmediatePropagation()
 
-            safeExecute(this.autofillButton, () => {
-                this.interface.getAutofillCredentials().then(({success, error}) => {
-                    if (success) this.associatedForm.autofillCredentials(success)
+                safeExecute(btn, () => {
+                    this.interface.getAutofillCredentials(btn.id).then(({success, error}) => {
+                        if (success) this.associatedForm.autofillCredentials(success)
+                    })
                 })
-            })
-        })
+            }, true)
+        )
 
         this.init()
     }
