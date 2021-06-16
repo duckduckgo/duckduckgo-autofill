@@ -12,15 +12,15 @@ class CredentialsAutofill extends Tooltip {
         this.credentials = this.interface.getLocalCredentials()
 
         const includeStyles = isApp
-            ? `<style>${require('./styles/credentials-autofill-styles.js')}</style>`
+            ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
 
         this.shadow.innerHTML = `
 ${includeStyles}
-<div class="wrapper">
-    <div class="tooltip" hidden>
-        <button class="tooltip__button tooltip__button--secondary js-autofill-button">
-            <span class="tooltip__button__primary-text">
+<div class="wrapper wrapper--credentials">
+    <div class="tooltip tooltip--credentials" hidden>
+        <button class="tooltip__button tooltip__button--credentials js-autofill-button">
+            <span>
                 <span class="js-address">${escapeXML(this.credentials[0].username)}</span><br />
                 <span class="tooltip__button__password">•••••••••••••••</span>
             </span>

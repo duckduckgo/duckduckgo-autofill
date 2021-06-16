@@ -27,7 +27,7 @@ module.exports = function (grunt) {
             target: 'src/**/*.js'
         },
         exec: {
-            copyAutofillStylesToCSS: 'cp src/UI/styles/DDGAutofill-styles.js dist/autofill.css && sed -i "" \'/`/d\' dist/autofill.css',
+            copyAutofillStylesToCSS: 'cp src/UI/styles/autofill-tooltip-styles.js dist/autofill.css && sed -i "" \'/`/d\' dist/autofill.css',
             copyHostStyles: 'cp src/UI/styles/autofill-host-styles.css dist/autofill-host-styles_chrome.css && cp src/UI/styles/autofill-host-styles.css dist/autofill-host-styles_firefox.css',
             // Firefox and Chrome treat relative url differently in injected scripts. This fixes it.
             updateFirefoxRelativeUrl: `sed -i "" "s/chrome-extension:\\/\\/__MSG_@@extension_id__\\/public/../g" dist/autofill-host-styles_firefox.css`
