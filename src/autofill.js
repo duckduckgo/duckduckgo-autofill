@@ -9,6 +9,7 @@
 
     // chrome is only present in desktop browsers
     if (typeof chrome === 'undefined') {
+        require('./Form/existing-login-detection.js')
         inject()
     } else {
         // Check if the site is marked to skip autofill
