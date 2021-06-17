@@ -46,8 +46,8 @@ class Form {
         this.isSignup = this.formAnalyzer.isSignup
         this.Device = DeviceInterface
         this.attachTooltip = DeviceInterface.attachTooltip
-        this.emailInputs = new Set()
-        this.passwordInputs = new Set()
+        this.signupInputs = new Set()
+        this.loginInputs = new Set()
         this.touched = new Set()
         this.listeners = new Set()
         this.addInput(input)
@@ -107,19 +107,19 @@ class Form {
     }
 
     execOnInputs (fn) {
-        this.emailInputs.forEach(fn)
+        this.signupInputs.forEach(fn)
         if (this.isLogin) {
-            this.passwordInputs.forEach(fn)
+            this.loginInputs.forEach(fn)
         }
     }
 
     addInput (input) {
         if (this.isLogin) {
-            this.passwordInputs.add(input)
+            this.loginInputs.add(input)
             if (this.Device.hasLocalCredentials) this.decorateInput(input)
         } else {
             if (this.Device.hasLocalAddresses && !input.matches(PASSWORD_SELECTOR)) {
-                this.emailInputs.add(input)
+                this.signupInputs.add(input)
                 this.decorateInput(input)
             }
         }
