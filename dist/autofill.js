@@ -454,11 +454,7 @@ const {
   daxBase64
 } = require('./logo-svg');
 
-const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon');
-
-const {
-  EMAIL_SELECTOR
-} = require('./selectors'); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon'); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 
 
 const isFirefox = navigator.userAgent.includes('Firefox');
@@ -934,12 +930,12 @@ module.exports = FormAnalyzer;
   } // Set `logger = console` to print messages to the web inspector console
 
 
-  const logger = duckduckgoDebugMessaging;
+  const logger = window.duckduckgoDebugMessaging;
 
   function loginAttemptDetected() {
     try {
       logger.log('Possible login attempt detected');
-      webkit.messageHandlers.loginFormDetected.postMessage({});
+      window.webkit.messageHandlers.loginFormDetected.postMessage({});
     } catch (error) {}
   }
 
@@ -972,7 +968,7 @@ module.exports = FormAnalyzer;
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs.item(i);
 
-      if (input.type == 'password' && inputVisible(input)) {
+      if (input.type === 'password' && inputVisible(input)) {
         password = input.value;
         loginAttemptDetected();
       }
@@ -1070,7 +1066,7 @@ module.exports = FormAnalyzer;
   try {
     const observer = new PerformanceObserver((list, observer) => {
       const entries = list.getEntries().filter(entry => {
-        var found = entry.initiatorType == 'xmlhttprequest' && entry.name.split('?')[0].match(/login|sign-in|signin|session/);
+        var found = entry.initiatorType === 'xmlhttprequest' && entry.name.split('?')[0].match(/login|sign-in|signin|session/);
 
         if (found) {
           logger.log('XHR: observed login - ' + entry.name.split('?')[0]);
@@ -1079,14 +1075,14 @@ module.exports = FormAnalyzer;
         return found;
       });
 
-      if (entries.length == 0) {
+      if (entries.length === 0) {
         return;
       }
 
       logger.log('XHR: checking forms - IN');
       var forms = document.forms;
 
-      if (!forms || forms.length == 0) {
+      if (!forms || forms.length === 0) {
         logger.log('XHR: No forms found');
         return;
       }

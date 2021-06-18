@@ -3,7 +3,6 @@ const {PASSWORD_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {EMAIL_SELECTOR} = require('./selectors')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
