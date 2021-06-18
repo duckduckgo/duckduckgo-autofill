@@ -1727,7 +1727,13 @@ module.exports = {
 
 
   if (typeof chrome === 'undefined') {
-    require('./Form/existing-login-detection.js');
+    const {
+      isApp
+    } = require('./autofill-utils');
+
+    if (isApp) {
+      require('./Form/existing-login-detection.js');
+    }
 
     inject();
   } else {
@@ -1743,7 +1749,7 @@ module.exports = {
   }
 })();
 
-},{"./DeviceInterface":1,"./Form/existing-login-detection.js":4,"./requestIdleCallback":16}],16:[function(require,module,exports){
+},{"./DeviceInterface":1,"./Form/existing-login-detection.js":4,"./autofill-utils":14,"./requestIdleCallback":16}],16:[function(require,module,exports){
 "use strict";
 
 /*!
