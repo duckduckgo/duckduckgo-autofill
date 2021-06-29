@@ -119,9 +119,8 @@ class Form {
         this.allInputs.add(input)
         if (input.matches(PASSWORD_SELECTOR)) {
             this.passwordInputs.add(input)
-            // If we have a password, try finding a matching username field
-            // TODO: could cause false-positives in settings forms
-            if (!this.emailInputs.size) {
+            // If it's a login form, try finding a matching username field
+            if (this.isLogin && !this.emailInputs.size) {
                 this.form.querySelectorAll(USERNAME_SELECTOR).forEach((input) => this.addInput(input))
             }
         } else {
