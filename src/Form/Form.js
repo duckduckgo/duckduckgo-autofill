@@ -1,5 +1,5 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {PASSWORD_SELECTOR} = require('./selectors')
+const {PASSWORD_SELECTOR, USERNAME_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
@@ -119,6 +119,11 @@ class Form {
         this.allInputs.add(input)
         if (input.matches(PASSWORD_SELECTOR)) {
             this.passwordInputs.add(input)
+            // If we have a password, try finding a matching username field
+            // TODO: could cause false-positives in settings forms
+            if (!this.emailInputs.size) {
+                this.form.querySelectorAll(USERNAME_SELECTOR).forEach((input) => this.addInput(input))
+            }
         } else {
             this.emailInputs.add(input)
         }
