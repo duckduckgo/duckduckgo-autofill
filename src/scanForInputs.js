@@ -1,6 +1,6 @@
 const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
-const {FIELD_SELECTOR} = require('./Form/selectors')
+const {FIELD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./Form/selectors')
 
 const forms = new Map()
 
@@ -11,8 +11,10 @@ const getParentForm = (input) => {
     // traverse the DOM to search for related inputs
     while (element !== document.body) {
         element = element.parentElement
-        let inputs = element.querySelectorAll(FIELD_SELECTOR)
-        if (inputs.length > 1) {
+        const inputs = element.querySelectorAll(FIELD_SELECTOR)
+        const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+        // If we find a button or another input, we assume that's our form
+        if (inputs.length > 1 || buttons.length) {
             // found related input, return common ancestor
             return element
         }
