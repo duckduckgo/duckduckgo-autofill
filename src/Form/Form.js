@@ -114,6 +114,8 @@ class Form {
     }
 
     addInput (input) {
+        if (this.allInputs.has(input)) return this
+
         this.allInputs.add(input)
         if (input.matches(PASSWORD_SELECTOR)) {
             this.passwordInputs.add(input)

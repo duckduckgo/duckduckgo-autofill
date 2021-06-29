@@ -4,16 +4,33 @@ const {FIELD_SELECTOR} = require('./Form/selectors')
 
 const forms = new Map()
 
+const getParentForm = (input) => {
+    if (input.form) return input.form
+
+    let element = input
+    // traverse the DOM to search for related inputs
+    while (element !== document.body) {
+        element = element.parentElement
+        let inputs = element.querySelectorAll(FIELD_SELECTOR)
+        if (inputs.length > 1) {
+            // found related input, return common ancestor
+            return element
+        }
+    }
+
+    return input
+}
+
 // Accepts the DeviceInterface as an explicit dependency
 const scanForInputs = (DeviceInterface) => {
     const addInput = input => {
-        const parentForm = input.form
+        const parentForm = getParentForm(input)
 
         if (forms.has(parentForm)) {
             // If we've already met the form, add the input
             forms.get(parentForm).addInput(input)
         } else {
-            forms.set(parentForm || input, new Form(parentForm, input, DeviceInterface))
+            forms.set(parentForm, new Form(parentForm, input, DeviceInterface))
         }
     }
 
