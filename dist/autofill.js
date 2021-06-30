@@ -407,7 +407,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     this.getAutofillCredentials = id => wkSendAndWait('pmHandlerGetAutofillCredentials', {
       id
     }).then(response => {
-      console.log(response);
       return response;
     });
     /**
