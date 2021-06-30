@@ -438,7 +438,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 const FormAnalyzer = require('./FormAnalyzer');
 
 const {
-  PASSWORD_SELECTOR
+  PASSWORD_SELECTOR,
+  USERNAME_SELECTOR
 } = require('./selectors');
 
 const {
@@ -586,10 +587,15 @@ class Form {
   }
 
   addInput(input) {
+    if (this.allInputs.has(input)) return this;
     this.allInputs.add(input);
 
     if (input.matches(PASSWORD_SELECTOR)) {
-      this.passwordInputs.add(input);
+      this.passwordInputs.add(input); // If it's a login form, try finding a matching username field
+
+      if (this.isLogin && !this.emailInputs.size) {
+        this.form.querySelectorAll(USERNAME_SELECTOR).forEach(input => this.addInput(input));
+      }
     } else {
       this.emailInputs.add(input);
     }
@@ -1116,14 +1122,17 @@ module.exports = {
 },{}],6:[function(require,module,exports){
 "use strict";
 
-const EMAIL_SELECTOR = "\n    input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][aria-label*=mail i],\n    input:not([type])[aria-label*=mail i],\n    input[type=text][placeholder*=mail i]:not([readonly]),\n    input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])\n";
+const EMAIL_SELECTOR = "\n    input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][aria-label*=mail i],\n    input:not([type])[aria-label*=mail i],\n    input[type=text][placeholder*=mail i]:not([readonly]),\n    input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled]),\n    input[autocomplete=username]:not([readonly]):not([hidden]):not([disabled])\n";
 const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])";
-const FIELD_SELECTOR = [PASSWORD_SELECTOR, EMAIL_SELECTOR].join(', ');
-const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button[type=submit], [role=button]';
+const FIELD_SELECTOR = [PASSWORD_SELECTOR, EMAIL_SELECTOR].join(', '); // This is more generic, used only when we have identified a form
+
+const USERNAME_SELECTOR = "input:not([type]), input[type=\"\"], input[type=text], input[type=email]";
+const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button, [role=button]';
 module.exports = {
   EMAIL_SELECTOR,
   PASSWORD_SELECTOR,
   FIELD_SELECTOR,
+  USERNAME_SELECTOR,
   SUBMIT_BUTTON_SELECTOR
 };
 
@@ -1798,20 +1807,40 @@ const {
 } = require('./autofill-utils');
 
 const {
-  FIELD_SELECTOR
+  FIELD_SELECTOR,
+  SUBMIT_BUTTON_SELECTOR
 } = require('./Form/selectors');
 
-const forms = new Map(); // Accepts the DeviceInterface as an explicit dependency
+const forms = new Map();
+
+const getParentForm = input => {
+  if (input.form) return input.form;
+  let element = input; // traverse the DOM to search for related inputs
+
+  while (element !== document.body) {
+    element = element.parentElement;
+    const inputs = element.querySelectorAll(FIELD_SELECTOR);
+    const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
+
+    if (inputs.length > 1 || buttons.length) {
+      // found related input, return common ancestor
+      return element;
+    }
+  }
+
+  return input;
+}; // Accepts the DeviceInterface as an explicit dependency
+
 
 const scanForInputs = DeviceInterface => {
   const addInput = input => {
-    const parentForm = input.form;
+    const parentForm = getParentForm(input);
 
     if (forms.has(parentForm)) {
       // If we've already met the form, add the input
       forms.get(parentForm).addInput(input);
     } else {
-      forms.set(parentForm || input, new Form(parentForm, input, DeviceInterface));
+      forms.set(parentForm, new Form(parentForm, input, DeviceInterface));
     }
   };
 
