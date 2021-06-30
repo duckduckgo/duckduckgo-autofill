@@ -51,8 +51,14 @@ const setValue = (el, val) => {
         el.focus()
     }
     originalSet.call(el, val)
-    const ev = new Event('input', {bubbles: true})
-    el.dispatchEvent(ev)
+
+    const events = [
+        new Event('keydown', {bubbles: true}),
+        new Event('keyup', {bubbles: true}),
+        new Event('input', {bubbles: true}),
+        new Event('change', {bubbles: true})
+    ]
+    events.forEach((ev) => el.dispatchEvent(ev))
     el.blur()
 }
 

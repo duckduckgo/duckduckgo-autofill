@@ -1605,10 +1605,16 @@ const setValue = (el, val) => {
   }
 
   originalSet.call(el, val);
-  const ev = new Event('input', {
+  const events = [new Event('keydown', {
     bubbles: true
-  });
-  el.dispatchEvent(ev);
+  }), new Event('keyup', {
+    bubbles: true
+  }), new Event('input', {
+    bubbles: true
+  }), new Event('change', {
+    bubbles: true
+  })];
+  events.forEach(ev => el.dispatchEvent(ev));
   el.blur();
 };
 /**
