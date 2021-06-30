@@ -977,6 +977,12 @@ module.exports = FormAnalyzer;
       if (input.type === 'password' && inputVisible(input)) {
         password = input.value;
         loginAttemptDetected();
+      } // If inputs have this attribute, it means we have autofilled and the user hasn't changed the values
+      // so we return to avoid prompting unnecessarily
+
+
+      if (form.querySelector('[data-ddg-autofill]')) {
+        return;
       }
 
       if (input.type === 'email' || input.type === 'text') {
