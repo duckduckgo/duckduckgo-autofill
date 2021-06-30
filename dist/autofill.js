@@ -980,7 +980,7 @@ module.exports = FormAnalyzer;
       // so we return to avoid prompting unnecessarily
 
 
-      if (form.querySelector('[data-ddg-autofill]')) {
+      if (form.querySelector('.ddg-autofilled')) {
         return;
       }
 

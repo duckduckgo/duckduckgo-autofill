@@ -75,7 +75,7 @@
 
             // If inputs have this attribute, it means we have autofilled and the user hasn't changed the values
             // so we return to avoid prompting unnecessarily
-            if (form.querySelector('[data-ddg-autofill]')) {
+            if (form.querySelector('.ddg-autofilled')) {
                 return
             }
 
