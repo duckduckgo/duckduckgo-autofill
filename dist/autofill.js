@@ -90,6 +90,8 @@ class InterfacePrototype {
   storeLocalAddresses(addresses) {
     _classPrivateFieldSet(this, _addresses, addresses);
   }
+  /** @type {[CredentialsObject]} */
+
 
   get hasLocalCredentials() {
     return _classPrivateFieldGet(this, _credentials).length;

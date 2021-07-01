@@ -41,7 +41,7 @@ const attachTooltip = function (form, input) {
 let attempts = 0
 
 class InterfacePrototype {
-    // Data
+    /** @type {{privateAddress: String, personalAddress: String}} */
     #addresses = {}
     get hasLocalAddresses () {
         return this.#addresses.privateAddress && this.#addresses.personalAddress
@@ -53,6 +53,7 @@ class InterfacePrototype {
         this.#addresses = addresses
     }
 
+    /** @type {[CredentialsObject]} */
     #credentials = []
     get hasLocalCredentials () {
         return this.#credentials.length
