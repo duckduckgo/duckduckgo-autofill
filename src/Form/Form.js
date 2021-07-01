@@ -1,8 +1,9 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {PASSWORD_SELECTOR, USERNAME_SELECTOR} = require('./selectors')
+const {EMAIL_SELECTOR, PASSWORD_SELECTOR, USERNAME_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
+const listenForGlobalFormSubmission = require('./listenForFormSubmission')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
@@ -53,6 +54,35 @@ class Form {
         this.addInput(input)
         this.tooltip = null
         this.activeInput = null
+        // TODO: try to filter down to only submit buttons?
+        this.submitButtons = form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+        this.formSubmissionListenerSet = false
+        this.handlerExecuted = false
+        this.shouldPromptToStoreCredentials = true
+
+        this.submitHandler = () => {
+            if (this.handlerExecuted) return
+
+            const credentials = this.getValues()
+            if (credentials.password) {
+                // ask to store credentials and/or fireproof
+                if (this.shouldPromptToStoreCredentials) {
+                    this.Device.storeCredentials(credentials)
+                }
+            }
+            this.handlerExecuted = true
+        }
+
+        this.getValues = () => {
+            const username = [...this.emailInputs][0]?.value
+            const password = [...this.passwordInputs][0]?.value
+            return {username, password}
+        }
+
+        this.hasValues = () => {
+            const {username, password} = this.getValues()
+            return username && password
+        }
 
         this.intObs = new IntersectionObserver((entries) => {
             for (const entry of entries) {
@@ -77,6 +107,9 @@ class Form {
         this.removeAllHighlights = (e) => {
             // This ensures we are not removing the highlight ourselves when autofilling more than once
             if (e && !e.isTrusted) return
+
+            // If the user has changed the value, we prompt to update the stored creds
+            this.shouldPromptToStoreCredentials = true
 
             this.execOnInputs(this.removeInputHighlight)
         }
@@ -113,16 +146,33 @@ class Form {
         }
     }
 
+    listenForSubmission () {
+        if (!isApp || this.formSubmissionListenerSet) return
+
+        this.form.addEventListener('submit', this.submitHandler)
+        this.submitButtons.forEach((btn) => btn.addEventListener('click', this.submitHandler))
+
+        listenForGlobalFormSubmission()
+        this.formSubmissionListenerSet = true
+    }
+
     addInput (input) {
         if (this.allInputs.has(input)) return this
 
         this.allInputs.add(input)
         if (input.matches(PASSWORD_SELECTOR)) {
             this.passwordInputs.add(input)
-            // If it's a login form, try finding a matching username field
-            if (this.isLogin && !this.emailInputs.size) {
-                this.form.querySelectorAll(USERNAME_SELECTOR).forEach((input) => this.addInput(input))
+            // Try finding a matching username field
+            if (!this.emailInputs.size) {
+                let possibleUsernameFields = this.form.querySelectorAll(EMAIL_SELECTOR)
+                // if our stringent email selector fails, try with the broader username selector
+                if (!possibleUsernameFields) {
+                    possibleUsernameFields = this.form.querySelectorAll(USERNAME_SELECTOR)
+                    // TODO: Try to filter down to username fields?
+                }
+                possibleUsernameFields.forEach((input) => this.addInput(input))
             }
+            this.listenForSubmission()
         } else {
             this.emailInputs.add(input)
         }
@@ -204,6 +254,7 @@ class Form {
     }
 
     autofillCredentials (credentials) {
+        this.shouldPromptToStoreCredentials = false
         this.execOnInputs((input) => {
             if (input.matches(PASSWORD_SELECTOR)) {
                 this.autofillInput(input, credentials.password)
