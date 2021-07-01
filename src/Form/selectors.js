@@ -18,10 +18,10 @@ const EMAIL_SELECTOR = `
 
 const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])`
 
-const FIELD_SELECTOR = [PASSWORD_SELECTOR, EMAIL_SELECTOR].join(', ')
-
 // This is more generic, used only when we have identified a form
 const USERNAME_SELECTOR = `input:not([type]), input[type=""], input[type=text], input[type=email]`
+
+const FIELD_SELECTOR = [PASSWORD_SELECTOR, USERNAME_SELECTOR].join(', ')
 
 const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button, [role=button]'
 
