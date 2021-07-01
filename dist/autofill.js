@@ -437,8 +437,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 const FormAnalyzer = require('./FormAnalyzer');
 
 const {
+  EMAIL_SELECTOR,
   PASSWORD_SELECTOR,
-  USERNAME_SELECTOR
+  USERNAME_SELECTOR,
+  SUBMIT_BUTTON_SELECTOR
 } = require('./selectors');
 
 const {
@@ -454,7 +456,9 @@ const {
   daxBase64
 } = require('./logo-svg');
 
-const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon'); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon');
+
+const listenForGlobalFormSubmission = require('./listenForFormSubmission'); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 
 
 const isFirefox = navigator.userAgent.includes('Firefox');
@@ -511,7 +515,46 @@ class Form {
     this.listeners = new Set();
     this.addInput(_input);
     this.tooltip = null;
-    this.activeInput = null;
+    this.activeInput = null; // TODO: try to filter down to only submit buttons?
+
+    this.submitButtons = form.querySelectorAll(SUBMIT_BUTTON_SELECTOR);
+    this.formSubmissionListenerSet = false;
+    this.handlerExecuted = false;
+    this.shouldPromptToStoreCredentials = true;
+
+    this.submitHandler = () => {
+      if (this.handlerExecuted) return;
+      const credentials = this.getValues();
+
+      if (credentials.password) {
+        // ask to store credentials and/or fireproof
+        if (this.shouldPromptToStoreCredentials) {
+          this.Device.storeCredentials(credentials);
+        }
+      }
+
+      this.handlerExecuted = true;
+    };
+
+    this.getValues = () => {
+      var _, _2;
+
+      const username = (_ = [...this.emailInputs][0]) === null || _ === void 0 ? void 0 : _.value;
+      const password = (_2 = [...this.passwordInputs][0]) === null || _2 === void 0 ? void 0 : _2.value;
+      return {
+        username,
+        password
+      };
+    };
+
+    this.hasValues = () => {
+      const {
+        username,
+        password
+      } = this.getValues();
+      return username && password;
+    };
+
     this.intObs = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) this.removeTooltip();
@@ -539,7 +582,9 @@ class Form {
 
     this.removeAllHighlights = e => {
       // This ensures we are not removing the highlight ourselves when autofilling more than once
-      if (e && !e.isTrusted) return;
+      if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
+
+      this.shouldPromptToStoreCredentials = true;
       this.execOnInputs(this.removeInputHighlight);
     };
 
@@ -585,16 +630,32 @@ class Form {
     }
   }
 
+  listenForSubmission() {
+    if (!isApp || this.formSubmissionListenerSet) return;
+    this.form.addEventListener('submit', this.submitHandler);
+    this.submitButtons.forEach(btn => btn.addEventListener('click', this.submitHandler));
+    listenForGlobalFormSubmission();
+    this.formSubmissionListenerSet = true;
+  }
+
   addInput(input) {
     if (this.allInputs.has(input)) return this;
     this.allInputs.add(input);
 
     if (input.matches(PASSWORD_SELECTOR)) {
-      this.passwordInputs.add(input); // If it's a login form, try finding a matching username field
+      this.passwordInputs.add(input); // Try finding a matching username field
 
-      if (this.isLogin && !this.emailInputs.size) {
-        this.form.querySelectorAll(USERNAME_SELECTOR).forEach(input => this.addInput(input));
+      if (!this.emailInputs.size) {
+        let possibleUsernameFields = this.form.querySelectorAll(EMAIL_SELECTOR); // if our stringent email selector fails, try with the broader username selector
+
+        if (!possibleUsernameFields) {
+          possibleUsernameFields = this.form.querySelectorAll(USERNAME_SELECTOR); // TODO: Try to filter down to username fields?
+        }
+
+        possibleUsernameFields.forEach(input => this.addInput(input));
       }
+
+      this.listenForSubmission();
     } else {
       this.emailInputs.add(input);
     }
@@ -672,6 +733,7 @@ class Form {
   }
 
   autofillCredentials(credentials) {
+    this.shouldPromptToStoreCredentials = false;
     this.execOnInputs(input => {
       if (input.matches(PASSWORD_SELECTOR)) {
         this.autofillInput(input, credentials.password);
@@ -689,7 +751,7 @@ class Form {
 
 module.exports = Form;
 
-},{"../UI/img/ddgPasswordIcon":10,"../autofill-utils":14,"./FormAnalyzer":3,"./logo-svg":5,"./selectors":6}],3:[function(require,module,exports){
+},{"../UI/img/ddgPasswordIcon":10,"../autofill-utils":14,"./FormAnalyzer":3,"./listenForFormSubmission":4,"./logo-svg":5,"./selectors":6}],3:[function(require,module,exports){
 "use strict";
 
 const {
@@ -905,207 +967,38 @@ class FormAnalyzer {
 module.exports = FormAnalyzer;
 
 },{"./selectors":6}],4:[function(require,module,exports){
-//
-//  login-detection.js
-//
-//  Copyright © 2021 DuckDuckGo. All rights reserved.
-//
-//  Licensed under the Apache License, Version 2.0 (the "License");
-//  you may not use this file except in compliance with the License.
-//  You may obtain a copy of the License at
-//
-//  http://www.apache.org/licenses/LICENSE-2.0
-//
-//  Unless required by applicable law or agreed to in writing, software
-//  distributed under the License is distributed on an "AS IS" BASIS,
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//  See the License for the specific language governing permissions and
-//  limitations under the License.
-//
-'use strict';
+"use strict";
 
-(function () {
-  if (!window.__ddg__) {
-    Object.defineProperty(window, '__ddg__', {
-      enumerable: false,
-      configurable: false,
-      writable: false,
-      value: {}
-    });
-  } // Set `logger = console` to print messages to the web inspector console
+// temporary to avoid errors when the swift layer tries to call this
+const isApp = require('../autofill-utils');
 
+if (isApp) {
+  window.__ddg__ = {
+    scanForPasswordField: () => {}
+  };
+}
 
-  const logger = window.duckduckgoDebugMessaging;
+const submitHandler = () => {
+  const {
+    forms
+  } = require('../scanForInputs');
 
-  function loginAttemptDetected() {
-    try {
-      logger.log('Possible login attempt detected');
-      window.webkit.messageHandlers.loginFormDetected.postMessage({});
-    } catch (error) {}
-  }
+  if (!forms.size) return;
+  const filledForm = [...forms.values()].find(form => form.hasValues());
+  filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler();
+};
 
-  function inputVisible(input) {
-    return !(input.offsetWidth === 0 && input.offsetHeight === 0) && !input.hidden && input.value !== '';
-  }
+let listening = false;
 
-  function validatePasswordField(passwords) {
-    for (var i = 0; i < passwords.length; i++) {
-      var password = passwords[i];
-      var found = inputVisible(password);
-
-      if (found) {
-        loginAttemptDetected();
-        return found;
-      }
-    }
-  }
-
-  function checkIsLoginForm(form) {
-    logger.log('Checking for login form ' + form);
-    var inputs = form.getElementsByTagName('input');
-
-    if (!inputs) {
-      return;
-    }
-
-    let username, password;
-
-    for (var i = 0; i < inputs.length; i++) {
-      var input = inputs.item(i);
-
-      if (input.type === 'password' && inputVisible(input)) {
-        password = input.value;
-        loginAttemptDetected();
-      } // If inputs have this attribute, it means we have autofilled and the user hasn't changed the values
-      // so we return to avoid prompting unnecessarily
-
-
-      if (form.querySelector('.ddg-autofilled')) {
-        return;
-      }
-
-      if (input.type === 'email' || input.type === 'text') {
-        username = input.value;
-      }
-
-      if (password && username) {
-        window.webkit.messageHandlers.pmHandlerStoreCredentials.postMessage({
-          username,
-          password
-        });
-      }
-
-      if (password) return true;
-    }
-
-    logger.log('No password field in form ' + form);
-    return false;
-  }
-
-  function scanPasswordFieldsInIFrame() {
-    logger.log('Scanning for iframes');
-    var iframes = document.querySelectorAll('iframe');
-
-    for (var i = 0; i < iframes.length; i++) {
-      var iframeDoc = iframes[i].contentWindow.document;
-      var passwords = iframeDoc.querySelectorAll('input[type=password]');
-      var found = validatePasswordField(passwords);
-
-      if (found) {
-        return found;
-      }
-    }
-
-    return false;
-  }
-
-  function submitHandler(event) {
-    checkIsLoginForm(event.target);
-  }
-
-  function scanForForms() {
-    logger.log('Scanning for forms');
-    var forms = document.forms;
-
-    if (!forms || forms.length === 0) {
-      logger.log('No forms found');
-      return;
-    }
-
-    for (var i = 0; i < forms.length; i++) {
-      var form = forms[i];
-      form.removeEventListener('submit', submitHandler);
-      form.addEventListener('submit', submitHandler);
-      logger.log('Adding form handler for form #' + i);
-    }
-  }
-
-  function scanForPasswordField() {
-    logger.log('Scanning DOM for password fields');
-    var passwords = document.querySelectorAll('input[type=password]');
-
-    if (passwords.length === 0) {
-      var found = scanPasswordFieldsInIFrame();
-
-      if (!found) {
-        logger.log('No password fields found');
-      }
-
-      return found;
-    }
-
-    return validatePasswordField(passwords);
-  } // Allow the `scanForPasswordField` function to be called from the client.
-
-
-  Object.defineProperty(window.__ddg__, 'scanForPasswordField', {
-    enumerable: false,
-    configurable: false,
-    writable: false,
-    value: scanForPasswordField
-  }); // Register event listeners:
-
-  logger.log('Installing loginDetection.js - IN');
-  window.addEventListener('DOMContentLoaded', function (event) {
-    logger.log('Adding login detection to DOM');
-    setTimeout(scanForForms, 1000);
-  });
-  window.addEventListener('click', scanForForms);
-  window.addEventListener('beforeunload', scanForForms);
+const listenForGlobalFormSubmission = () => {
+  if (listening) return;
   window.addEventListener('submit', submitHandler);
 
   try {
-    const observer = new PerformanceObserver((list, observer) => {
-      const entries = list.getEntries().filter(entry => {
-        var found = entry.initiatorType === 'xmlhttprequest' && entry.name.split('?')[0].match(/login|sign-in|signin|session/);
-
-        if (found) {
-          logger.log('XHR: observed login - ' + entry.name.split('?')[0]);
-        }
-
-        return found;
-      });
-
-      if (entries.length === 0) {
-        return;
-      }
-
-      logger.log('XHR: checking forms - IN');
-      var forms = document.forms;
-
-      if (!forms || forms.length === 0) {
-        logger.log('XHR: No forms found');
-        return;
-      }
-
-      for (var i = 0; i < forms.length; i++) {
-        if (checkIsLoginForm(forms[i])) {
-          logger.log('XHR: found login form');
-          break;
-        }
-      }
-
-      logger.log('XHR: checking forms - OUT');
+    const observer = new PerformanceObserver(list => {
+      const entries = list.getEntries().filter(entry => entry.initiatorType === 'xmlhttprequest' && entry.name.split('?')[0].match(/login|sign-in|signin|session/));
+      if (!entries.length) return;
+      submitHandler();
     });
     observer.observe({
       entryTypes: ['resource']
@@ -1113,10 +1006,12 @@ module.exports = FormAnalyzer;
   } catch (error) {// no-op
   }
 
-  logger.log('Installing loginDetection.js - OUT');
-})();
+  listening = true;
+};
 
-},{}],5:[function(require,module,exports){
+module.exports = listenForGlobalFormSubmission;
+
+},{"../autofill-utils":14,"../scanForInputs":17}],5:[function(require,module,exports){
 "use strict";
 
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
@@ -1128,10 +1023,10 @@ module.exports = {
 "use strict";
 
 const EMAIL_SELECTOR = "\n    input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][aria-label*=mail i],\n    input:not([type])[aria-label*=mail i],\n    input[type=text][placeholder*=mail i]:not([readonly]),\n    input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled]),\n    input[autocomplete=username]:not([readonly]):not([hidden]):not([disabled])\n";
-const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])";
-const FIELD_SELECTOR = [PASSWORD_SELECTOR, EMAIL_SELECTOR].join(', '); // This is more generic, used only when we have identified a form
+const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])"; // This is more generic, used only when we have identified a form
 
 const USERNAME_SELECTOR = "input:not([type]), input[type=\"\"], input[type=text], input[type=email]";
+const FIELD_SELECTOR = [PASSWORD_SELECTOR, USERNAME_SELECTOR].join(', ');
 const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button, [role=button]';
 module.exports = {
   EMAIL_SELECTOR,
@@ -1747,14 +1642,6 @@ module.exports = {
 
 
   if (typeof chrome === 'undefined') {
-    const {
-      isApp
-    } = require('./autofill-utils');
-
-    if (isApp) {
-      require('./Form/existing-login-detection.js');
-    }
-
     inject();
   } else {
     // Check if the site is marked to skip autofill
@@ -1769,7 +1656,7 @@ module.exports = {
   }
 })();
 
-},{"./DeviceInterface":1,"./Form/existing-login-detection.js":4,"./autofill-utils":14,"./requestIdleCallback":16}],16:[function(require,module,exports){
+},{"./DeviceInterface":1,"./requestIdleCallback":16}],16:[function(require,module,exports){
 "use strict";
 
 /*!
@@ -1818,33 +1705,41 @@ const {
 } = require('./autofill-utils');
 
 const {
+  EMAIL_SELECTOR,
+  PASSWORD_SELECTOR,
   FIELD_SELECTOR,
   SUBMIT_BUTTON_SELECTOR
 } = require('./Form/selectors');
 
-const forms = new Map();
-
-const getParentForm = input => {
-  if (input.form) return input.form;
-  let element = input; // traverse the DOM to search for related inputs
-
-  while (element !== document.body) {
-    element = element.parentElement;
-    const inputs = element.querySelectorAll(FIELD_SELECTOR);
-    const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
-
-    if (inputs.length > 1 || buttons.length) {
-      // found related input, return common ancestor
-      return element;
-    }
-  }
-
-  return input;
-}; // Accepts the DeviceInterface as an explicit dependency
-
+const forms = new Map(); // Accepts the DeviceInterface as an explicit dependency
 
 const scanForInputs = DeviceInterface => {
+  const getParentForm = input => {
+    if (input.form) return input.form;
+    let element = input; // traverse the DOM to search for related inputs
+
+    while (element !== document.body) {
+      element = element.parentElement;
+      const inputs = element.querySelectorAll(FIELD_SELECTOR);
+      const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
+
+      if (inputs.length > 1 || buttons.length) {
+        // found related input, return common ancestor
+        return element;
+      }
+    }
+
+    return input;
+  };
+
+  const isRelevantInput = input => {
+    if (input.matches(EMAIL_SELECTOR) || input.matches(PASSWORD_SELECTOR)) return true; // this is a generic text input, let's find out more
+
+    return !![...input.labels].filter(label => /.mail/i.test(label.textContent)).length;
+  };
+
   const addInput = input => {
+    if (!isRelevantInput(input)) return;
     const parentForm = getParentForm(input);
 
     if (forms.has(parentForm)) {
