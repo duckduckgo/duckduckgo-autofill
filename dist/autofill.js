@@ -1737,7 +1737,7 @@ const scanForInputs = DeviceInterface => {
   };
 
   const isRelevantInput = input => {
-    if (input.matches(EMAIL_SELECTOR) || input.matches(PASSWORD_SELECTOR)) return true; // this is a generic text input, let's find out more
+    if (input.matches(EMAIL_SELECTOR) || input.matches(PASSWORD_SELECTOR)) return true; // this is a generic text input, let's see if the labels tells us more
 
     return !![...input.labels].filter(label => /.mail/i.test(label.textContent)).length;
   };
