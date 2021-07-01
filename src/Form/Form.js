@@ -150,7 +150,7 @@ class Form {
         if (!isApp || this.formSubmissionListenerSet) return
 
         this.form.addEventListener('submit', this.submitHandler)
-        this.submitButtons.forEach((btn) => btn.addEventListener('click', this.submitHandler))
+        this.submitButtons?.forEach((btn) => btn.addEventListener('click', this.submitHandler))
 
         listenForGlobalFormSubmission()
         this.formSubmissionListenerSet = true

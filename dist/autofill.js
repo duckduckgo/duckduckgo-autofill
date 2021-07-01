@@ -633,9 +633,11 @@ class Form {
   }
 
   listenForSubmission() {
+    var _this$submitButtons;
+
     if (!isApp || this.formSubmissionListenerSet) return;
     this.form.addEventListener('submit', this.submitHandler);
-    this.submitButtons.forEach(btn => btn.addEventListener('click', this.submitHandler));
+    (_this$submitButtons = this.submitButtons) === null || _this$submitButtons === void 0 ? void 0 : _this$submitButtons.forEach(btn => btn.addEventListener('click', this.submitHandler));
     listenForGlobalFormSubmission();
     this.formSubmissionListenerSet = true;
   }
