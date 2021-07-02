@@ -42,7 +42,7 @@ const ensureIsLastInDOM = function () {
     this.count = this.count || 0
     // If DDG el is not the last in the doc, move it there
     if (document.body.lastElementChild !== this.host) {
-        // Try up to 5 times to avoid infinite loop in case someone is doing the same
+        // Try up to 15 times to avoid infinite loop in case someone is doing the same
         if (this.count < 15) {
             this.lift()
             this.append()
