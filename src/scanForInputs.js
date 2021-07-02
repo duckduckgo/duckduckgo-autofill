@@ -1,42 +1,55 @@
-const Form = require('./Form')
+const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
+const {EMAIL_SELECTOR, PASSWORD_SELECTOR, FIELD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./Form/selectors')
+
+const forms = new Map()
 
 // Accepts the DeviceInterface as an explicit dependency
 const scanForInputs = (DeviceInterface) => {
-    const forms = new Map()
+    const getParentForm = (input) => {
+        if (input.form) return input.form
 
-    const EMAIL_SELECTOR = `
-            input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input[type=""][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input[type=""][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input[type=""][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
-            input[type=text][aria-label*=mail i],
-            input:not([type])[aria-label*=mail i],
-            input[type=text][placeholder*=mail i]:not([readonly])
-        `
+        let element = input
+        // traverse the DOM to search for related inputs
+        while (element !== document.body) {
+            element = element.parentElement
+            const inputs = element.querySelectorAll(FIELD_SELECTOR)
+            const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+            // If we find a button or another input, we assume that's our form
+            if (inputs.length > 1 || buttons.length) {
+                // found related input, return common ancestor
+                return element
+            }
+        }
 
-    const addInput = input => {
-        const parentForm = input.form
+        return input
+    }
+
+    const isRelevantInput = (input) => {
+        if (input.matches(EMAIL_SELECTOR) || input.matches(PASSWORD_SELECTOR)) return true
+
+        // this is a generic text input, let's see if the labels tells us more
+        return [...input.labels].filter(label => /.mail/i.test(label.textContent)).length > 0
+    }
+
+    const addInput = (input) => {
+        if (!isRelevantInput(input)) return
+
+        const parentForm = getParentForm(input)
 
         if (forms.has(parentForm)) {
             // If we've already met the form, add the input
             forms.get(parentForm).addInput(input)
         } else {
-            forms.set(parentForm || input, new Form(parentForm, input, DeviceInterface.attachTooltip))
+            forms.set(parentForm, new Form(parentForm, input, DeviceInterface))
         }
     }
 
-    const findEligibleInput = context => {
-        if (context.nodeName === 'INPUT' && context.matches(EMAIL_SELECTOR)) {
+    const findEligibleInput = (context) => {
+        if (context.nodeName === 'INPUT' && context.matches(FIELD_SELECTOR)) {
             addInput(context)
         } else {
-            context.querySelectorAll(EMAIL_SELECTOR).forEach(addInput)
+            context.querySelectorAll(FIELD_SELECTOR).forEach(addInput)
         }
     }
 
@@ -77,4 +90,4 @@ const scanForInputs = (DeviceInterface) => {
     })
 }
 
-module.exports = scanForInputs
+module.exports = {scanForInputs, forms}

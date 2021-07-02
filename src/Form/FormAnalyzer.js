@@ -1,3 +1,5 @@
+const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./selectors')
+
 class FormAnalyzer {
     constructor (form, input) {
         this.form = form
@@ -10,6 +12,14 @@ class FormAnalyzer {
         this.evaluateElAttributes(input, 3, true)
         form ? this.evaluateForm() : this.evaluatePage()
         return this
+    }
+
+    get isLogin () {
+        return this.autofillSignal < 0
+    }
+
+    get isSignup () {
+        return this.autofillSignal > 0
     }
 
     increaseSignalBy (strength, signal) {
@@ -60,6 +70,24 @@ class FormAnalyzer {
     }
 
     evaluateElAttributes (el, signalStrength = 3, isInput = false) {
+        if (el.matches(PASSWORD_SELECTOR)) {
+            // These are explicit signals by the web author, so we weigh them heavily
+            if (el.getAttribute('autocomplete')?.includes('current-password')) {
+                this.updateSignal({
+                    string: 'current-password',
+                    strength: -20,
+                    signalType: 'current-password'
+                })
+            }
+            if (el.getAttribute('autocomplete')?.includes('new-password')) {
+                this.updateSignal({
+                    string: 'new-password',
+                    strength: 20,
+                    signalType: 'new-password'
+                })
+            }
+        }
+
         Array.from(el.attributes).forEach(attr => {
             if (attr.name === 'style') return
 
@@ -130,11 +158,7 @@ class FormAnalyzer {
         const string = this.getText(el)
 
         // check button contents
-        if (
-            (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) ||
-            (this.elementIs(el, 'BUTTON') && el.type === 'submit') ||
-            ((el.getAttribute('role') || '').toUpperCase() === 'BUTTON')
-        ) {
+        if (el.matches(SUBMIT_BUTTON_SELECTOR)) {
             this.updateSignal({string, strength: 2, signalType: `submit: ${string}`})
         }
         // if a link points to relevant urls or contain contents outside the page…

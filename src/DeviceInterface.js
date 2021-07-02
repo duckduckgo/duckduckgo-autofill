@@ -1,4 +1,5 @@
-const DDGAutofill = require('./DDGAutofill')
+const EmailAutofill = require('./UI/EmailAutofill')
+const CredentialsAutofill = require('./UI/CredentialsAutofill')
 const {
     isApp,
     notifyWebApp,
@@ -13,22 +14,24 @@ const {
     wkSend,
     wkSendAndWait
 } = require('./appleDeviceUtils/appleDeviceUtils')
-const scanForInputs = require('./scanForInputs.js')
+const {scanForInputs, forms} = require('./scanForInputs.js')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
-const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form, input) => {
+const attachTooltip = function (form, input) {
     if (isDDGApp && !isApp) {
         form.activeInput = input
-        getAutofillData().then((alias) => {
-            if (alias) form.autofill(alias)
+        this.getAlias().then((alias) => {
+            if (alias) form.autofillEmail(alias)
             else form.activeInput.focus()
         })
     } else {
         if (form.tooltip) return
 
         form.activeInput = input
-        form.tooltip = new DDGAutofill(input, form, getAutofillData, refreshAlias, addresses)
+        form.tooltip = form.isLogin
+            ? new CredentialsAutofill(input, form, this)
+            : new EmailAutofill(input, form, this)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})
@@ -38,7 +41,32 @@ const createAttachTooltip = (getAutofillData, refreshAlias, addresses) => (form,
 let attempts = 0
 
 class InterfacePrototype {
+    /** @type {{privateAddress: String, personalAddress: String}} */
+    #addresses = {}
+    get hasLocalAddresses () {
+        return !!(this.#addresses.privateAddress && this.#addresses.personalAddress)
+    }
+    getLocalAddresses () {
+        return this.#addresses
+    }
+    storeLocalAddresses (addresses) {
+        this.#addresses = addresses
+    }
+
+    /** @type {[CredentialsObject]} */
+    #credentials = []
+    get hasLocalCredentials () {
+        return this.#credentials.length > 0
+    }
+    getLocalCredentials () {
+        return this.#credentials.map(cred => delete cred.password && cred)
+    }
+    storeLocalCredentials (credentials) {
+        this.#credentials = credentials.map(cred => delete cred.password && cred)
+    }
+
     init () {
+        this.attachTooltip = attachTooltip.bind(this)
         const start = () => {
             this.addDeviceListeners()
             this.setupAutofill()
@@ -71,6 +99,11 @@ class InterfacePrototype {
     attachTooltip () {}
     isDeviceSignedIn () {}
     getAlias () {}
+    // PM endpoints
+    storeCredentials () {}
+    getAccounts () {}
+    getAutofillCredentials () {}
+    openManagePasswords () {}
 }
 
 class ExtensionInterface extends InterfacePrototype {
@@ -79,8 +112,7 @@ class ExtensionInterface extends InterfacePrototype {
 
         this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
             this.getAddresses().then(addresses => {
-                if (addresses?.privateAddress && addresses?.personalAddress) {
-                    this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, addresses)
+                if (this.hasLocalAddresses) {
                     notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
                     scanForInputs(this)
                 } else {
@@ -91,12 +123,16 @@ class ExtensionInterface extends InterfacePrototype {
 
         this.getAddresses = () => new Promise(resolve => chrome.runtime.sendMessage(
             {getAddresses: true},
-            (data) => resolve(data)
+            (data) => {
+                this.storeLocalAddresses(data)
+                return resolve(data)
+            }
         ))
 
         this.refreshAlias = () => chrome.runtime.sendMessage(
             {refreshAlias: true},
-            (addresses) => { this.addresses = addresses })
+            (addresses) => this.storeLocalAddresses(addresses)
+        )
 
         this.trySigningIn = () => {
             if (isDDGDomain()) {
@@ -175,8 +211,6 @@ class AndroidInterface extends InterfacePrototype {
 
         this.storeUserData = ({addUserData: {token, userName}}) =>
             window.EmailInterface.storeCredentials(token, userName)
-
-        this.attachTooltip = createAttachTooltip(this.getAlias)
     }
 }
 
@@ -189,20 +223,27 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
 
         this.setupAutofill = async ({shouldLog} = {shouldLog: false}) => {
+            if (isApp) {
+                await this.getAccounts()
+            }
+
             const signedIn = await this.isDeviceSignedIn()
             if (signedIn) {
-                this.attachTooltip = createAttachTooltip(this.getAddresses, this.refreshAlias, {})
+                await this.getAddresses()
                 notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                scanForInputs(this)
+                forms.forEach(form => form.redecorateAllInputs())
             } else {
                 this.trySigningIn()
             }
+
+            scanForInputs(this)
         }
 
         this.getAddresses = async () => {
             if (!isApp) return this.getAlias()
 
             const {addresses} = await wkSendAndWait('emailHandlerGetAddresses')
+            this.storeLocalAddresses(addresses)
             return addresses
         }
 
@@ -227,7 +268,49 @@ class AppleDeviceInterface extends InterfacePrototype {
         this.storeUserData = ({addUserData: {token, userName}}) =>
             wkSend('emailHandlerStoreToken', { token, username: userName })
 
-        this.attachTooltip = createAttachTooltip(this.getAlias, this.refreshAlias)
+        /**
+         * PM endpoints
+         */
+
+        /**
+         * @typedef {{
+         *      id: Number
+         *      username: String
+         *      password?: String
+         *      lastUpdated: String
+         * }} CredentialsObject
+         */
+
+        /**
+         * Sends credentials to the native layer
+         * @param {{username: String, password: String}} credentials
+         */
+        this.storeCredentials = (credentials) =>
+            wkSend('pmHandlerStoreCredentials', credentials)
+
+        /**
+         * Gets a list of credentials for the current site
+         * @returns {Promise<{ success: [CredentialsObject], error?: String }>}
+         */
+        this.getAccounts = () =>
+            wkSendAndWait('pmHandlerGetAccounts')
+                .then((response) => {
+                    this.storeLocalCredentials(response.success)
+                    return response
+                })
+
+        /**
+         * Gets credentials ready for autofill
+         * @param {Number} id - the credential id
+         * @returns {Promise<{ success: CredentialsObject, error?: String }>}
+         */
+        this.getAutofillCredentials = (id) =>
+            wkSendAndWait('pmHandlerGetAutofillCredentials', {id})
+
+        /**
+         * Opens the native UI for managing passwords
+         */
+        this.openManagePasswords = () => wkSend('pmHandlerOpenManagePasswords')
     }
 }
 
