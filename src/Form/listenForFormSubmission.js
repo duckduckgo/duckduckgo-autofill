@@ -17,7 +17,7 @@ let listening = false
 const listenForGlobalFormSubmission = () => {
     if (listening) return
 
-    window.addEventListener('submit', submitHandler)
+    window.addEventListener('submit', submitHandler, true)
 
     try {
         const observer = new PerformanceObserver((list) => {
