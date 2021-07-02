@@ -19,6 +19,10 @@ const listenForGlobalFormSubmission = () => {
 
     window.addEventListener('submit', submitHandler, true)
 
+    // This is rather heavy-handed and likely to capture false-positives
+    // TODO: use a better solution for capturing events rather than this unload event
+    window.addEventListener('unload', submitHandler)
+
     try {
         const observer = new PerformanceObserver((list) => {
             const entries = list.getEntries().filter((entry) =>
