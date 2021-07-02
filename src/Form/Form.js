@@ -3,12 +3,11 @@ const {EMAIL_SELECTOR, PASSWORD_SELECTOR, USERNAME_SELECTOR, SUBMIT_BUTTON_SELEC
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const listenForGlobalFormSubmission = require('./listenForFormSubmission')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
 const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
-const getPasswordIcon = (variant = 'ddgPasswordIconBase') => ddgPasswordIcons[variant]
+const getPasswordIcon = (variant) => ddgPasswordIcons[variant] || ddgPasswordIcons.ddgPasswordIconBase
 
 const getDaxStyles = (input) => ({
     // Height must be > 0 to account for fields initially hidden
@@ -81,7 +80,7 @@ class Form {
 
         this.hasValues = () => {
             const {username, password} = this.getValues()
-            return username && password
+            return !!(username && password)
         }
 
         this.intObs = new IntersectionObserver((entries) => {
@@ -165,7 +164,7 @@ class Form {
             if (!this.emailInputs.size) {
                 let possibleUsernameFields = this.form.querySelectorAll(EMAIL_SELECTOR)
                 // if our stringent email selector fails, try with the broader username selector
-                if (!possibleUsernameFields) {
+                if (possibleUsernameFields.length === 0) {
                     possibleUsernameFields = this.form.querySelectorAll(USERNAME_SELECTOR)
                     // TODO: Try to filter down to username fields?
                 }
@@ -217,7 +216,8 @@ class Form {
         })
         this.addListener(input, 'mousedown', (e) => {
             if (!e.isTrusted) return
-            if (e.button !== 0) return
+            const isMainMouseButton = e.button === 0
+            if (!isMainMouseButton) return
 
             if (this.shouldOpenTooltip(e, e.target)) {
                 if (isEventWithinDax(e, e.target) || (isDDGApp && !isApp)) {
