@@ -69,8 +69,8 @@ class Form {
                 if (this.shouldPromptToStoreCredentials) {
                     this.Device.storeCredentials(credentials)
                 }
+                this.handlerExecuted = true
             }
-            this.handlerExecuted = true
         }
 
         this.getValues = () => {
