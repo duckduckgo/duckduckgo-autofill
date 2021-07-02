@@ -90,7 +90,10 @@ class Form {
         })
 
         this.removeTooltip = (e) => {
-            if (e && e.target === this.tooltip.host) {
+            if (
+                !this.tooltip ||
+                (e && e.target === this.tooltip.host)
+            ) {
                 return
             }
             this.tooltip.remove()
