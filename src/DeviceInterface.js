@@ -44,7 +44,7 @@ class InterfacePrototype {
     /** @type {{privateAddress: String, personalAddress: String}} */
     #addresses = {}
     get hasLocalAddresses () {
-        return this.#addresses.privateAddress && this.#addresses.personalAddress
+        return !!(this.#addresses.privateAddress && this.#addresses.personalAddress)
     }
     getLocalAddresses () {
         return this.#addresses
@@ -56,7 +56,7 @@ class InterfacePrototype {
     /** @type {[CredentialsObject]} */
     #credentials = []
     get hasLocalCredentials () {
-        return this.#credentials.length
+        return this.#credentials.length > 0
     }
     getLocalCredentials () {
         return this.#credentials.map(cred => delete cred.password && cred)
@@ -231,7 +231,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             if (signedIn) {
                 await this.getAddresses()
                 notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                forms.forEach(form => form.redecorateAllInputs)
+                forms.forEach(form => form.redecorateAllInputs())
             } else {
                 this.trySigningIn()
             }
@@ -306,9 +306,6 @@ class AppleDeviceInterface extends InterfacePrototype {
          */
         this.getAutofillCredentials = (id) =>
             wkSendAndWait('pmHandlerGetAutofillCredentials', {id})
-                .then((response) => {
-                    return response
-                })
 
         /**
          * Opens the native UI for managing passwords
