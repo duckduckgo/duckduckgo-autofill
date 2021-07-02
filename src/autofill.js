@@ -1,3 +1,5 @@
+const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission');
+
 (() => {
     const inject = () => {
         // Polyfills/shims
@@ -9,6 +11,7 @@
 
     // chrome is only present in desktop browsers
     if (typeof chrome === 'undefined') {
+        listenForGlobalFormSubmission()
         inject()
     } else {
         // Check if the site is marked to skip autofill

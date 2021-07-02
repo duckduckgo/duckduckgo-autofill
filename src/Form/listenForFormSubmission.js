@@ -15,7 +15,7 @@ const submitHandler = () => {
 let listening = false
 
 const listenForGlobalFormSubmission = () => {
-    if (listening) return
+    if (listening || !isApp) return
 
     window.addEventListener('submit', submitHandler, true)
 
