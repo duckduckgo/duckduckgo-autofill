@@ -1,11 +1,7 @@
-// temporary to avoid errors when the swift layer tries to call this
+const {forms} = require('../scanForInputs')
 const isApp = require('../autofill-utils')
-if (isApp) {
-    window.__ddg__ = {scanForPasswordField: () => {}}
-}
 
 const submitHandler = () => {
-    const {forms} = require('../scanForInputs')
     if (!forms.size) return
 
     const filledForm = [...forms.values()].find(form => form.hasValues())
@@ -36,7 +32,7 @@ const listenForGlobalFormSubmission = () => {
         })
         observer.observe({entryTypes: ['resource']})
     } catch (error) {
-        // no-op
+        // Unable to detect form submissions using AJAX calls
     }
     listening = true
 }
