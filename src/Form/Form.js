@@ -181,7 +181,7 @@ class Form {
         if (this.isLogin) {
             if (this.Device.hasLocalCredentials) this.decorateInput(input)
         } else {
-            if (this.Device.hasLocalAddresses && !input.matches(PASSWORD_SELECTOR)) {
+            if (this.Device.isDeviceSignedIn() && !input.matches(PASSWORD_SELECTOR)) {
                 this.decorateInput(input)
             }
         }

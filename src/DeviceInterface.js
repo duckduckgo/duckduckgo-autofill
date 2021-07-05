@@ -110,6 +110,8 @@ class ExtensionInterface extends InterfacePrototype {
     constructor () {
         super()
 
+        this.isDeviceSignedIn = () => this.hasLocalAddresses
+
         this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
             this.getAddresses().then(addresses => {
                 if (this.hasLocalAddresses) {
@@ -194,19 +196,15 @@ class AndroidInterface extends InterfacePrototype {
             window.EmailInterface.showTooltip(), 'getAliasResponse')
             .then(({alias}) => alias)
 
-        this.isDeviceSignedIn = () => new Promise(resolve => {
-            resolve(window.EmailInterface.isSignedIn() === 'true')
-        })
+        this.isDeviceSignedIn = () => window.EmailInterface.isSignedIn() === 'true'
 
         this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
-            this.isDeviceSignedIn().then((signedIn) => {
-                if (signedIn) {
-                    notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                    scanForInputs(this)
-                } else {
-                    this.trySigningIn()
-                }
-            })
+            if (this.isDeviceSignedIn()) {
+                notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
+                scanForInputs(this)
+            } else {
+                this.trySigningIn()
+            }
         }
 
         this.storeUserData = ({addUserData: {token, userName}}) =>
@@ -227,9 +225,11 @@ class AppleDeviceInterface extends InterfacePrototype {
                 await this.getAccounts()
             }
 
-            const signedIn = await this.isDeviceSignedIn()
+            const signedIn = await this._checkDeviceSignedIn()
             if (signedIn) {
-                await this.getAddresses()
+                if (isApp) {
+                    await this.getAddresses()
+                }
                 notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
                 forms.forEach(form => form.redecorateAllInputs())
             } else {
@@ -260,8 +260,9 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         this.refreshAlias = () => wkSend('emailHandlerRefreshAlias')
 
-        this.isDeviceSignedIn = async () => {
+        this._checkDeviceSignedIn = async () => {
             const {isAppSignedIn} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+            this.isDeviceSignedIn = () => !!isAppSignedIn
             return !!isAppSignedIn
         }
 

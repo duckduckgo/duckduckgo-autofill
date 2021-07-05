@@ -169,6 +169,8 @@ class ExtensionInterface extends InterfacePrototype {
   constructor() {
     super();
 
+    this.isDeviceSignedIn = () => this.hasLocalAddresses;
+
     this.setupAutofill = ({
       shouldLog
     } = {
@@ -260,28 +262,24 @@ class AndroidInterface extends InterfacePrototype {
       alias
     }) => alias);
 
-    this.isDeviceSignedIn = () => new Promise(resolve => {
-      resolve(window.EmailInterface.isSignedIn() === 'true');
-    });
+    this.isDeviceSignedIn = () => window.EmailInterface.isSignedIn() === 'true';
 
     this.setupAutofill = ({
       shouldLog
     } = {
       shouldLog: false
     }) => {
-      this.isDeviceSignedIn().then(signedIn => {
-        if (signedIn) {
-          notifyWebApp({
-            deviceSignedIn: {
-              value: true,
-              shouldLog
-            }
-          });
-          scanForInputs(this);
-        } else {
-          this.trySigningIn();
-        }
-      });
+      if (this.isDeviceSignedIn()) {
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog
+          }
+        });
+        scanForInputs(this);
+      } else {
+        this.trySigningIn();
+      }
     };
 
     this.storeUserData = ({
@@ -314,10 +312,13 @@ class AppleDeviceInterface extends InterfacePrototype {
         await this.getAccounts();
       }
 
-      const signedIn = await this.isDeviceSignedIn();
+      const signedIn = await this._checkDeviceSignedIn();
 
       if (signedIn) {
-        await this.getAddresses();
+        if (isApp) {
+          await this.getAddresses();
+        }
+
         notifyWebApp({
           deviceSignedIn: {
             value: true,
@@ -353,10 +354,13 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     this.refreshAlias = () => wkSend('emailHandlerRefreshAlias');
 
-    this.isDeviceSignedIn = async () => {
+    this._checkDeviceSignedIn = async () => {
       const {
         isAppSignedIn
       } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
+
+      this.isDeviceSignedIn = () => !!isAppSignedIn;
+
       return !!isAppSignedIn;
     };
 
@@ -662,7 +666,7 @@ class Form {
     if (this.isLogin) {
       if (this.Device.hasLocalCredentials) this.decorateInput(input);
     } else {
-      if (this.Device.hasLocalAddresses && !input.matches(PASSWORD_SELECTOR)) {
+      if (this.Device.isDeviceSignedIn() && !input.matches(PASSWORD_SELECTOR)) {
         this.decorateInput(input);
       }
     }
@@ -763,9 +767,7 @@ class FormAnalyzer {
   constructor(form, input) {
     this.form = form;
     this.autofillSignal = 0;
-    this.signals = []; // Avoid autofill on our signup page
-
-    if (window.location.href.match(/^https:\/\/.+\.duckduckgo\.com\/email\/signup/i)) return this;
+    this.signals = [];
     this.evaluateElAttributes(input, 3, true);
     form ? this.evaluateForm() : this.evaluatePage();
     return this;
@@ -1713,6 +1715,9 @@ const {
 const forms = new Map(); // Accepts the DeviceInterface as an explicit dependency
 
 const scanForInputs = DeviceInterface => {
+  // Avoid autofill on our signup page
+  if (window.location.href.match(/^https:\/\/.+\.duckduckgo\.com\/email\/choose-address/i)) return;
+
   const getParentForm = input => {
     if (input.form) return input.form;
     let element = input; // traverse the DOM to search for related inputs
