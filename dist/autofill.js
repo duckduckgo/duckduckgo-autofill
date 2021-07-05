@@ -767,9 +767,7 @@ class FormAnalyzer {
   constructor(form, input) {
     this.form = form;
     this.autofillSignal = 0;
-    this.signals = []; // Avoid autofill on our signup page
-
-    if (window.location.href.match(/^https:\/\/.+\.duckduckgo\.com\/email\/signup/i)) return this;
+    this.signals = [];
     this.evaluateElAttributes(input, 3, true);
     form ? this.evaluateForm() : this.evaluatePage();
     return this;
@@ -1717,6 +1715,9 @@ const {
 const forms = new Map(); // Accepts the DeviceInterface as an explicit dependency
 
 const scanForInputs = DeviceInterface => {
+  // Avoid autofill on our signup page
+  if (window.location.href.match(/^https:\/\/.+\.duckduckgo\.com\/email\/choose-address/i)) return;
+
   const getParentForm = input => {
     if (input.form) return input.form;
     let element = input; // traverse the DOM to search for related inputs
