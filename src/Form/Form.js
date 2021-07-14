@@ -73,8 +73,8 @@ class Form {
         }
 
         this.getValues = () => {
-            const username = [...this.emailInputs][0]?.value
-            const password = [...this.passwordInputs][0]?.value
+            const username = [...this.emailInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '')
+            const password = [...this.passwordInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '')
             return {username, password}
         }
 
