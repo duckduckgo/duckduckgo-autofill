@@ -207,8 +207,8 @@ class AndroidInterface extends InterfacePrototype {
             }
         }
 
-        this.storeUserData = ({addUserData: {token, userName}}) =>
-            window.EmailInterface.storeCredentials(token, userName)
+        this.storeUserData = ({addUserData: {token, userName, cohort}}) =>
+            window.EmailInterface.storeCredentials(token, userName, cohort)
     }
 }
 
@@ -266,8 +266,8 @@ class AppleDeviceInterface extends InterfacePrototype {
             return !!isAppSignedIn
         }
 
-        this.storeUserData = ({addUserData: {token, userName}}) =>
-            wkSend('emailHandlerStoreToken', { token, username: userName })
+        this.storeUserData = ({addUserData: {token, userName, cohort}}) =>
+            wkSend('emailHandlerStoreToken', { token, username: userName, cohort })
 
         /**
          * PM endpoints
