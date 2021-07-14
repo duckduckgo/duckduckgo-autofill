@@ -1,11 +1,27 @@
 (() => {
     try {
         const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission')
+        const {forms} = require('./scanForInputs')
 
         const inject = () => {
             // Polyfills/shims
             require('./requestIdleCallback')
             const DeviceInterface = require('./DeviceInterface')
+
+            // Global listener for event delegation
+            window.addEventListener('click', (e) => {
+                if (!e.isTrusted) return
+
+                if (e.target.nodeName === 'DDG-AUTOFILL') {
+                    e.preventDefault()
+                    e.stopImmediatePropagation()
+
+                    const activeForm = [...forms.values()].find((form) => form.tooltip)
+                    if (activeForm) {
+                        activeForm.tooltip.dispatchClick()
+                    }
+                }
+            }, true)
 
             DeviceInterface.init()
         }

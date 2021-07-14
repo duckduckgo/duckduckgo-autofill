@@ -1,3 +1,4 @@
+const {safeExecute} = require('../autofill-utils')
 const {getDaxBoundingBox} = require('../autofill-utils')
 
 const updatePosition = function ({left, top}) {
@@ -95,6 +96,25 @@ class Tooltip {
         }
         this.checkPosition()
     })
+    setActiveButton (e) {
+        this.activeButton = e.target
+    }
+    unsetActiveButton (e) {
+        this.activeButton = null
+    }
+    clickableButtons = new Map()
+    registerClickableButton (btn, handler) {
+        this.clickableButtons.set(btn, handler)
+        // Needed because clicks within the shadow dom don't provide this info to the outside
+        btn.addEventListener('mouseenter', (e) => this.setActiveButton(e))
+        btn.addEventListener('mouseleave', (e) => this.unsetActiveButton(e))
+    }
+    dispatchClick () {
+        const handler = this.clickableButtons.get(this.activeButton)
+        if (handler) {
+            safeExecute(this.activeButton, handler)
+        }
+    }
     init () {
         this.animationFrame = null
         this.top = 0
