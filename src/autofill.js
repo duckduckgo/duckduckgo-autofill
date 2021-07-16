@@ -1,5 +1,7 @@
 (() => {
     try {
+        if (!window.isSecureContext) return
+
         const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission')
         const {forms} = require('./scanForInputs')
         const {isApp} = require('./autofill-utils')
