@@ -285,9 +285,10 @@ class AndroidInterface extends InterfacePrototype {
     this.storeUserData = ({
       addUserData: {
         token,
-        userName
+        userName,
+        cohort
       }
-    }) => window.EmailInterface.storeCredentials(token, userName);
+    }) => window.EmailInterface.storeCredentials(token, userName, cohort);
   }
 
 }
@@ -367,11 +368,13 @@ class AppleDeviceInterface extends InterfacePrototype {
     this.storeUserData = ({
       addUserData: {
         token,
-        userName
+        userName,
+        cohort
       }
     }) => wkSend('emailHandlerStoreToken', {
       token,
-      username: userName
+      username: userName,
+      cohort
     });
     /**
      * PM endpoints
