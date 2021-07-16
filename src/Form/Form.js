@@ -53,8 +53,6 @@ class Form {
         this.addInput(input)
         this.tooltip = null
         this.activeInput = null
-        // TODO: try to filter down to only submit buttons?
-        this.submitButtons = form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
         this.handlerExecuted = false
         this.shouldPromptToStoreCredentials = true
 
@@ -138,6 +136,11 @@ class Form {
         }
 
         return this
+    }
+
+    // TODO: try to filter down to only submit buttons
+    get submitButtons () {
+        return this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
     }
 
     execOnInputs (fn) {
