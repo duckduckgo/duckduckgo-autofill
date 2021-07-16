@@ -55,7 +55,6 @@ class Form {
         this.activeInput = null
         // TODO: try to filter down to only submit buttons?
         this.submitButtons = form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
-        this.formSubmissionListenerSet = false
         this.handlerExecuted = false
         this.shouldPromptToStoreCredentials = true
 
@@ -148,15 +147,6 @@ class Form {
         }
     }
 
-    listenForSubmission () {
-        if (!isApp || this.formSubmissionListenerSet) return
-
-        this.form.addEventListener('submit', this.submitHandler, true)
-        this.submitButtons?.forEach((btn) => btn.addEventListener('click', this.submitHandler, true))
-
-        this.formSubmissionListenerSet = true
-    }
-
     addInput (input) {
         if (this.allInputs.has(input)) return this
 
@@ -173,7 +163,6 @@ class Form {
                 }
                 possibleUsernameFields.forEach((input) => this.addInput(input))
             }
-            this.listenForSubmission()
         } else {
             this.emailInputs.add(input)
         }

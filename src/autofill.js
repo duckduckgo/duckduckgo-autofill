@@ -2,6 +2,7 @@
     try {
         const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission')
         const {forms} = require('./scanForInputs')
+        const {isApp} = require('./autofill-utils')
 
         const inject = () => {
             // Polyfills/shims
@@ -21,7 +22,21 @@
                         activeForm.tooltip.dispatchClick()
                     }
                 }
+
+                if (!isApp) return
+
+                // Check for clicks on submit buttons
+                const matchingForm = [...forms.values()].find(
+                    (form) => [...form.submitButtons].includes(e.target)
+                )
+                matchingForm?.submitHandler()
             }, true)
+
+            if (isApp) {
+                window.addEventListener('submit', (e) =>
+                    forms.get(e.target)?.submitHandler(),
+                true)
+            }
 
             DeviceInterface.init()
         }
