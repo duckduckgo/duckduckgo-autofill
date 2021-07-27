@@ -520,10 +520,7 @@ class Form {
     this.listeners = new Set();
     this.addInput(_input);
     this.tooltip = null;
-    this.activeInput = null; // TODO: try to filter down to only submit buttons?
-
-    this.submitButtons = form.querySelectorAll(SUBMIT_BUTTON_SELECTOR);
-    this.formSubmissionListenerSet = false;
+    this.activeInput = null;
     this.handlerExecuted = false;
     this.shouldPromptToStoreCredentials = true;
 
@@ -542,10 +539,8 @@ class Form {
     };
 
     this.getValues = () => {
-      var _, _2;
-
-      const username = (_ = [...this.emailInputs][0]) === null || _ === void 0 ? void 0 : _.value;
-      const password = (_2 = [...this.passwordInputs][0]) === null || _2 === void 0 ? void 0 : _2.value;
+      const username = [...this.emailInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '');
+      const password = [...this.passwordInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '');
       return {
         username,
         password
@@ -625,6 +620,11 @@ class Form {
     };
 
     return this;
+  } // TODO: try to filter down to only submit buttons
+
+
+  get submitButtons() {
+    return this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR);
   }
 
   execOnInputs(fn) {
@@ -633,15 +633,6 @@ class Form {
     if (this.isLogin) {
       this.passwordInputs.forEach(fn);
     }
-  }
-
-  listenForSubmission() {
-    var _this$submitButtons;
-
-    if (!isApp || this.formSubmissionListenerSet) return;
-    this.form.addEventListener('submit', this.submitHandler, true);
-    (_this$submitButtons = this.submitButtons) === null || _this$submitButtons === void 0 ? void 0 : _this$submitButtons.forEach(btn => btn.addEventListener('click', this.submitHandler, true));
-    this.formSubmissionListenerSet = true;
   }
 
   addInput(input) {
@@ -660,8 +651,6 @@ class Form {
 
         possibleUsernameFields.forEach(input => this.addInput(input));
       }
-
-      this.listenForSubmission();
     } else {
       this.emailInputs.add(input);
     }
@@ -985,34 +974,21 @@ const {
 
 const isApp = require('../autofill-utils');
 
-const submitHandler = () => {
-  if (!forms.size) return;
-  const filledForm = [...forms.values()].find(form => form.hasValues());
-  filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler();
-};
-
-let listening = false;
-
 const listenForGlobalFormSubmission = () => {
-  if (listening || !isApp) return;
-  window.addEventListener('submit', submitHandler, true); // This is rather heavy-handed and likely to capture false-positives
-  // TODO: use a better solution for capturing events rather than this unload event
-
-  window.addEventListener('unload', submitHandler);
+  if (!isApp) return;
 
   try {
     const observer = new PerformanceObserver(list => {
-      const entries = list.getEntries().filter(entry => entry.initiatorType === 'xmlhttprequest' && entry.name.split('?')[0].match(/login|sign-in|signin|session/));
+      const entries = list.getEntries().filter(entry => ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && entry.name.match(/login|sign-in|signin|session/));
       if (!entries.length) return;
-      submitHandler();
+      const filledForm = [...forms.values()].find(form => form.hasValues());
+      filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler();
     });
     observer.observe({
       entryTypes: ['resource']
     });
   } catch (error) {// Unable to detect form submissions using AJAX calls
   }
-
-  listening = true;
 };
 
 module.exports = listenForGlobalFormSubmission;
@@ -1047,7 +1023,6 @@ module.exports = {
 
 const {
   isApp,
-  safeExecute,
   escapeXML
 } = require('../autofill-utils');
 
@@ -1065,10 +1040,8 @@ class CredentialsAutofill extends Tooltip {
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
-    this.autofillButtons.forEach(btn => btn.addEventListener('click', e => {
-      if (!e.isTrusted) return;
-      e.stopImmediatePropagation();
-      safeExecute(btn, () => {
+    this.autofillButtons.forEach(btn => {
+      this.registerClickableButton(btn, () => {
         this.interface.getAutofillCredentials(btn.id).then(({
           success,
           error
@@ -1076,7 +1049,7 @@ class CredentialsAutofill extends Tooltip {
           if (success) this.associatedForm.autofillCredentials(success);
         });
       });
-    }, true));
+    });
     this.init();
   }
 
@@ -1090,7 +1063,6 @@ module.exports = CredentialsAutofill;
 const {
   isApp,
   formatAddress,
-  safeExecute,
   escapeXML
 } = require('../autofill-utils');
 
@@ -1115,20 +1087,12 @@ class EmailAutofill extends Tooltip {
       }
     };
 
-    this.usePersonalButton.addEventListener('click', e => {
-      if (!e.isTrusted) return;
-      e.stopImmediatePropagation();
-      safeExecute(this.usePersonalButton, () => {
-        this.associatedForm.autofillEmail(formatAddress(this.addresses.personalAddress));
-      });
+    this.registerClickableButton(this.usePersonalButton, () => {
+      this.associatedForm.autofillEmail(formatAddress(this.addresses.personalAddress));
     });
-    this.usePrivateButton.addEventListener('click', e => {
-      if (!e.isTrusted) return;
-      e.stopImmediatePropagation();
-      safeExecute(this.usePersonalButton, () => {
-        this.associatedForm.autofillEmail(formatAddress(this.addresses.privateAddress));
-        this.interface.refreshAlias();
-      });
+    this.registerClickableButton(this.usePrivateButton, () => {
+      this.associatedForm.autofillEmail(formatAddress(this.addresses.privateAddress));
+      this.interface.refreshAlias();
     }); // Get the alias from the extension
 
     this.interface.getAddresses().then(this.updateAddresses);
@@ -1143,6 +1107,10 @@ module.exports = EmailAutofill;
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+const {
+  safeExecute
+} = require('../autofill-utils');
 
 const {
   getDaxBoundingBox
@@ -1234,6 +1202,8 @@ class Tooltip {
       this.checkPosition();
     }));
 
+    _defineProperty(this, "clickableButtons", new Map());
+
     this.shadow = document.createElement('ddg-autofill').attachShadow({
       mode: 'closed'
     });
@@ -1261,6 +1231,29 @@ class Tooltip {
     this.left = null;
     this.top = null;
     document.body.removeChild(this.host);
+  }
+
+  setActiveButton(e) {
+    this.activeButton = e.target;
+  }
+
+  unsetActiveButton(e) {
+    this.activeButton = null;
+  }
+
+  registerClickableButton(btn, handler) {
+    this.clickableButtons.set(btn, handler); // Needed because clicks within the shadow dom don't provide this info to the outside
+
+    btn.addEventListener('mouseenter', e => this.setActiveButton(e));
+    btn.addEventListener('mouseleave', e => this.unsetActiveButton(e));
+  }
+
+  dispatchClick() {
+    const handler = this.clickableButtons.get(this.activeButton);
+
+    if (handler) {
+      safeExecute(this.activeButton, handler);
+    }
   }
 
   init() {
@@ -1636,36 +1629,77 @@ module.exports = {
 },{}],15:[function(require,module,exports){
 "use strict";
 
-const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission');
-
 (() => {
-  const inject = () => {
-    // Polyfills/shims
-    require('./requestIdleCallback');
+  try {
+    if (!window.isSecureContext) return;
 
-    const DeviceInterface = require('./DeviceInterface');
+    const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission');
 
-    DeviceInterface.init();
-  }; // chrome is only present in desktop browsers
+    const {
+      forms
+    } = require('./scanForInputs');
+
+    const {
+      isApp
+    } = require('./autofill-utils');
+
+    const inject = () => {
+      // Polyfills/shims
+      require('./requestIdleCallback');
+
+      const DeviceInterface = require('./DeviceInterface'); // Global listener for event delegation
 
 
-  if (typeof chrome === 'undefined') {
-    listenForGlobalFormSubmission();
-    inject();
-  } else {
-    // Check if the site is marked to skip autofill
-    chrome.runtime.sendMessage({
-      registeredTempAutofillContentScript: true
-    }, response => {
-      var _response$site, _response$site$broken;
+      window.addEventListener('click', e => {
+        if (!e.isTrusted) return;
 
-      if (response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill')) return;
+        if (e.target.nodeName === 'DDG-AUTOFILL') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          const activeForm = [...forms.values()].find(form => form.tooltip);
+
+          if (activeForm) {
+            activeForm.tooltip.dispatchClick();
+          }
+        }
+
+        if (!isApp) return; // Check for clicks on submit buttons
+
+        const matchingForm = [...forms.values()].find(form => [...form.submitButtons].includes(e.target));
+        matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
+      }, true);
+
+      if (isApp) {
+        window.addEventListener('submit', e => {
+          var _forms$get;
+
+          return (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler();
+        }, true);
+      }
+
+      DeviceInterface.init();
+    }; // chrome is only present in desktop browsers
+
+
+    if (typeof chrome === 'undefined') {
+      listenForGlobalFormSubmission();
       inject();
-    });
+    } else {
+      // Check if the site is marked to skip autofill
+      chrome.runtime.sendMessage({
+        registeredTempAutofillContentScript: true
+      }, response => {
+        var _response$site, _response$site$broken;
+
+        if (response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill')) return;
+        inject();
+      });
+    }
+  } catch (e) {// Noop, we errored
   }
 })();
 
-},{"./DeviceInterface":1,"./Form/listenForFormSubmission":4,"./requestIdleCallback":16}],16:[function(require,module,exports){
+},{"./DeviceInterface":1,"./Form/listenForFormSubmission":4,"./autofill-utils":14,"./requestIdleCallback":16,"./scanForInputs":17}],16:[function(require,module,exports){
 "use strict";
 
 /*!
@@ -1727,7 +1761,7 @@ const scanForInputs = DeviceInterface => {
     if (input.form) return input.form;
     let element = input; // traverse the DOM to search for related inputs
 
-    while (element !== document.body) {
+    while (element.parentNode && element !== document.body) {
       element = element.parentElement;
       const inputs = element.querySelectorAll(FIELD_SELECTOR);
       const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form

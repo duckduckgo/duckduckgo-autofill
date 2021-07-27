@@ -1,7 +1,6 @@
 const {
     isApp,
     formatAddress,
-    safeExecute,
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
@@ -44,22 +43,12 @@ ${includeStyles}
                 this.addressEl.textContent = formatAddress(addresses.personalAddress)
             }
         }
-        this.usePersonalButton.addEventListener('click', (e) => {
-            if (!e.isTrusted) return
-            e.stopImmediatePropagation()
-
-            safeExecute(this.usePersonalButton, () => {
-                this.associatedForm.autofillEmail(formatAddress(this.addresses.personalAddress))
-            })
+        this.registerClickableButton(this.usePersonalButton, () => {
+            this.associatedForm.autofillEmail(formatAddress(this.addresses.personalAddress))
         })
-        this.usePrivateButton.addEventListener('click', (e) => {
-            if (!e.isTrusted) return
-            e.stopImmediatePropagation()
-
-            safeExecute(this.usePersonalButton, () => {
-                this.associatedForm.autofillEmail(formatAddress(this.addresses.privateAddress))
-                this.interface.refreshAlias()
-            })
+        this.registerClickableButton(this.usePrivateButton, () => {
+            this.associatedForm.autofillEmail(formatAddress(this.addresses.privateAddress))
+            this.interface.refreshAlias()
         })
 
         // Get the alias from the extension

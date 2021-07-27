@@ -1,6 +1,5 @@
 const {
     isApp,
-    safeExecute,
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
@@ -33,18 +32,13 @@ ${includeStyles}
         this.tooltip = this.shadow.querySelector('.tooltip')
         this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button')
 
-        this.autofillButtons.forEach(
-            btn => btn.addEventListener('click', (e) => {
-                if (!e.isTrusted) return
-                e.stopImmediatePropagation()
-
-                safeExecute(btn, () => {
-                    this.interface.getAutofillCredentials(btn.id).then(({success, error}) => {
-                        if (success) this.associatedForm.autofillCredentials(success)
-                    })
+        this.autofillButtons.forEach((btn) => {
+            this.registerClickableButton(btn, () => {
+                this.interface.getAutofillCredentials(btn.id).then(({success, error}) => {
+                    if (success) this.associatedForm.autofillCredentials(success)
                 })
-            }, true)
-        )
+            })
+        })
 
         this.init()
     }

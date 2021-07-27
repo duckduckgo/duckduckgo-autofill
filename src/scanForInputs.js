@@ -11,7 +11,7 @@ const scanForInputs = (DeviceInterface) => {
 
         let element = input
         // traverse the DOM to search for related inputs
-        while (element !== document.body) {
+        while (element.parentNode && element !== document.body) {
             element = element.parentElement
             const inputs = element.querySelectorAll(FIELD_SELECTOR)
             const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
