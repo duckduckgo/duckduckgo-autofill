@@ -29,7 +29,12 @@
 
                 // Check for clicks on submit buttons
                 const matchingForm = [...forms.values()].find(
-                    (form) => [...form.submitButtons].includes(e.target)
+                    (form) => {
+                        const btns = [...form.submitButtons]
+                        if (btns.includes(e.target)) return true
+
+                        if (btns.find((btn) => btn.contains(e.target))) return true
+                    }
                 )
                 matchingForm?.submitHandler()
             }, true)
