@@ -6,9 +6,6 @@ const forms = new Map()
 
 // Accepts the DeviceInterface as an explicit dependency
 const scanForInputs = (DeviceInterface) => {
-    // Avoid autofill on our signup page
-    if (window.location.href.match(/^https:\/\/.+\.duckduckgo\.com\/email\/choose-address/i)) return
-
     const getParentForm = (input) => {
         if (input.form) return input.form
 
