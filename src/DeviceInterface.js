@@ -275,10 +275,10 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         /**
          * @typedef {{
-         *      id: Number
-         *      username: String
-         *      password?: String
-         *      lastUpdated: String
+         *      id: Number,
+         *      username: String,
+         *      password?: String,
+         *      lastUpdated: String,
          * }} CredentialsObject
          */
 

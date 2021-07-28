@@ -382,10 +382,10 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * @typedef {{
-     *      id: Number
-     *      username: String
-     *      password?: String
-     *      lastUpdated: String
+     *      id: Number,
+     *      username: String,
+     *      password?: String,
+     *      lastUpdated: String,
      * }} CredentialsObject
      */
 
@@ -1665,7 +1665,11 @@ module.exports = {
 
         if (!isApp) return; // Check for clicks on submit buttons
 
-        const matchingForm = [...forms.values()].find(form => [...form.submitButtons].includes(e.target));
+        const matchingForm = [...forms.values()].find(form => {
+          const btns = [...form.submitButtons];
+          if (btns.includes(e.target)) return true;
+          if (btns.find(btn => btn.contains(e.target))) return true;
+        });
         matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
       }, true);
 
