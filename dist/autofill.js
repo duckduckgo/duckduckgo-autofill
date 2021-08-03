@@ -264,7 +264,7 @@ class AndroidInterface extends InterfacePrototype {
 
     this.isDeviceSignedIn = () => {
       // isDeviceSignedIn is only available on DDG domains...
-      if (isDDGDomain()) return window.EmailSignInInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
+      if (isDDGDomain()) return window.EmailInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
 
       return true;
     };
@@ -293,7 +293,7 @@ class AndroidInterface extends InterfacePrototype {
         userName,
         cohort
       }
-    }) => window.EmailSignInInterface.storeCredentials(token, userName, cohort);
+    }) => window.EmailInterface.storeCredentials(token, userName, cohort);
   }
 
 }
