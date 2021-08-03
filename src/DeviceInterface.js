@@ -196,7 +196,11 @@ class AndroidInterface extends InterfacePrototype {
             window.EmailInterface.showTooltip(), 'getAliasResponse')
             .then(({alias}) => alias)
 
-        this.isDeviceSignedIn = () => window.EmailInterface.isSignedIn() === 'true'
+        this.isDeviceSignedIn = () => {
+            if (isDDGDomain()) return window.EmailInterface.isSignedIn() === 'true'
+
+            return true
+        }
 
         this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
             if (this.isDeviceSignedIn()) {
