@@ -197,8 +197,10 @@ class AndroidInterface extends InterfacePrototype {
             .then(({alias}) => alias)
 
         this.isDeviceSignedIn = () => {
-            if (isDDGDomain()) return window.EmailInterface.isSignedIn() === 'true'
+            // isDeviceSignedIn is only available on DDG domains...
+            if (isDDGDomain()) return window.EmailSignInInterface.isSignedIn() === 'true'
 
+            // ...on other domains we assume true because the script wouldn't exist otherwise
             return true
         }
 
@@ -212,7 +214,7 @@ class AndroidInterface extends InterfacePrototype {
         }
 
         this.storeUserData = ({addUserData: {token, userName, cohort}}) =>
-            window.EmailInterface.storeCredentials(token, userName, cohort)
+            window.EmailSignInInterface.storeCredentials(token, userName, cohort)
     }
 }
 
