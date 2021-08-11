@@ -1457,7 +1457,7 @@ let isApp = false; // Do not modify or remove the next line -- the app code will
 
 const isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp;
 const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
-const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com/);
+const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
 
 const isDDGDomain = () => window.origin.match(DDG_DOMAIN_REGEX); // Send a message to the web app (only on DDG domains)
 

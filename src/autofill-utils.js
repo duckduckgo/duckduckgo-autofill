@@ -6,7 +6,7 @@ const isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.nav
 
 const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent)
 
-const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com/)
+const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
 
 const isDDGDomain = () => window.origin.match(DDG_DOMAIN_REGEX)
 
