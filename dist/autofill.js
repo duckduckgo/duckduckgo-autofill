@@ -1696,7 +1696,8 @@ module.exports = {
     } else {
       // Check if the site is marked to skip autofill
       chrome.runtime.sendMessage({
-        registeredTempAutofillContentScript: true
+        registeredTempAutofillContentScript: true,
+        documentUrl: window.location.href
       }, response => {
         var _response$site, _response$site$broken;
 
