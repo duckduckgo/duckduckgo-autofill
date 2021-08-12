@@ -1696,12 +1696,14 @@ module.exports = {
     } else {
       // Check if the site is marked to skip autofill
       chrome.runtime.sendMessage({
-        registeredTempAutofillContentScript: true
+        registeredTempAutofillContentScript: true,
+        documentUrl: window.location.href
       }, response => {
         var _response$site, _response$site$broken;
 
-        if (response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill')) return;
-        inject();
+        if (!(response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill'))) {
+          inject();
+        }
       });
     }
   } catch (e) {// Noop, we errored

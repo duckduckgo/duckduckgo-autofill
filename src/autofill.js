@@ -54,11 +54,17 @@
             inject()
         } else {
             // Check if the site is marked to skip autofill
-            chrome.runtime.sendMessage({registeredTempAutofillContentScript: true}, (response) => {
-                if (response?.site?.brokenFeatures?.includes('autofill')) return
-
-                inject()
-            })
+            chrome.runtime.sendMessage(
+                {
+                    registeredTempAutofillContentScript: true,
+                    documentUrl: window.location.href
+                },
+                (response) => {
+                    if (!response?.site?.brokenFeatures?.includes('autofill')) {
+                        inject()
+                    }
+                }
+            )
         }
     } catch (e) {
         // Noop, we errored
