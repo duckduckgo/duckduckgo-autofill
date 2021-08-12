@@ -1699,9 +1699,9 @@ module.exports = {
         registeredTempAutofillContentScript: true,
         documentUrl: window.location.href
       }, response => {
-        var _response$site;
+        var _response$site, _response$site$broken;
 
-        if (response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && _response$site.brokenFeatures && !response.site.brokenFeatures.includes('autofill')) {
+        if (!(response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill'))) {
           inject();
         }
       });

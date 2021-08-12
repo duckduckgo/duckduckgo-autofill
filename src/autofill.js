@@ -60,7 +60,7 @@
                     documentUrl: window.location.href
                 },
                 (response) => {
-                    if (response?.site?.brokenFeatures && !response.site.brokenFeatures.includes('autofill')) {
+                    if (!response?.site?.brokenFeatures?.includes('autofill')) {
                         inject()
                     }
                 }
