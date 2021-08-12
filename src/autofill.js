@@ -60,9 +60,9 @@
                     documentUrl: window.location.href
                 },
                 (response) => {
-                    if (response?.site?.brokenFeatures?.includes('autofill')) return
-
-                    inject()
+                    if (response?.site?.brokenFeatures && !response.site.brokenFeatures.includes('autofill')) {
+                        inject()
+                    }
                 }
             )
         }
