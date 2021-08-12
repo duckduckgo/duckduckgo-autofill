@@ -9,7 +9,7 @@ const updatePosition = function ({left, top}) {
     this.left = left
     this.top = top
 
-    if (this.transformRuleIndex && shadow.styleSheets[this.transformRuleIndex]) {
+    if (this.transformRuleIndex && shadow.styleSheets[0].rules[this.transformRuleIndex]) {
         // If we have already set the rule, remove it…
         shadow.styleSheets[0].deleteRule(this.transformRuleIndex)
     } else {
