@@ -221,12 +221,13 @@ class AndroidInterface extends InterfacePrototype {
 class AppleDeviceInterface extends InterfacePrototype {
     constructor () {
         super()
-        if (isDDGDomain()) {
-            // Tell the web app whether we're in the app
-            notifyWebApp({isApp})
-        }
 
         this.setupAutofill = async ({shouldLog} = {shouldLog: false}) => {
+            if (isDDGDomain()) {
+                // Tell the web app whether we're in the app
+                notifyWebApp({isApp})
+            }
+
             if (isApp) {
                 await this.getAccounts()
             }
