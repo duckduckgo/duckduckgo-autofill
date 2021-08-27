@@ -44,7 +44,7 @@ class InterfacePrototype {
     /** @type {{privateAddress: String, personalAddress: String}} */
     #addresses = {}
     get hasLocalAddresses () {
-        return !!(this.#addresses.privateAddress && this.#addresses.personalAddress)
+        return !!(this.#addresses?.privateAddress && this.#addresses?.personalAddress)
     }
     getLocalAddresses () {
         return this.#addresses

@@ -80,7 +80,9 @@ class InterfacePrototype {
   }
 
   get hasLocalAddresses() {
-    return !!(_classPrivateFieldGet(this, _addresses).privateAddress && _classPrivateFieldGet(this, _addresses).personalAddress);
+    var _classPrivateFieldGet2, _classPrivateFieldGet3;
+
+    return !!((_classPrivateFieldGet2 = _classPrivateFieldGet(this, _addresses)) !== null && _classPrivateFieldGet2 !== void 0 && _classPrivateFieldGet2.privateAddress && (_classPrivateFieldGet3 = _classPrivateFieldGet(this, _addresses)) !== null && _classPrivateFieldGet3 !== void 0 && _classPrivateFieldGet3.personalAddress);
   }
 
   getLocalAddresses() {
