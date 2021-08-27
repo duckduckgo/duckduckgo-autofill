@@ -44,7 +44,7 @@ class InterfacePrototype {
     /** @type {{privateAddress: String, personalAddress: String}} */
     #addresses = {}
     get hasLocalAddresses () {
-        return !!(this.#addresses.privateAddress && this.#addresses.personalAddress)
+        return !!(this.#addresses?.privateAddress && this.#addresses?.personalAddress)
     }
     getLocalAddresses () {
         return this.#addresses
@@ -221,12 +221,13 @@ class AndroidInterface extends InterfacePrototype {
 class AppleDeviceInterface extends InterfacePrototype {
     constructor () {
         super()
-        if (isDDGDomain()) {
-            // Tell the web app whether we're in the app
-            notifyWebApp({isApp})
-        }
 
         this.setupAutofill = async ({shouldLog} = {shouldLog: false}) => {
+            if (isDDGDomain()) {
+                // Tell the web app whether we're in the app
+                notifyWebApp({isApp})
+            }
+
             if (isApp) {
                 await this.getAccounts()
             }
