@@ -35,6 +35,8 @@ const duplicateTemplateTask = () => {
 const run = async () => {
     setupAsana()
 
+    console.info('Asana on. Duplicating template task...')
+
     const { new_task } = await duplicateTemplateTask()
 
     const { html_notes: notes } = await asana.tasks.getTask(new_task.gid, { opt_fields: 'html_notes' })
@@ -45,11 +47,17 @@ const run = async () => {
             .replace('[[release_url]]', `<a href="${releaseUrl}">${releaseUrl}</a>`)
             .replace('[[notes]]', releaseNotes)
 
+    console.info('Updating task and moving to Release section...')
+
     await asana.tasks.updateTask(new_task.gid, {html_notes: updatedNotes})
 
     await asana.tasks.addProjectForTask(new_task.gid, { project: autofillProjectGid, section: releaseSectionGid })
 
+    console.info('Getting subtasks...')
+
     const { data: subtasks } = await asana.tasks.getSubtasksForTask(new_task.gid, {opt_fields: 'name,html_notes'})
+
+    console.info('Updating subtasks and moving to appropriate projects...')
 
     for (const subtask of subtasks) {
         const {gid, name, html_notes} = subtask
@@ -67,6 +75,8 @@ const run = async () => {
             await asana.tasks.addProjectForTask(gid, { project: projectGid, insert_after: null })
         }
     }
+
+    console.info('All done. Enjoy! 🎉')
 }
 
 run().catch((e) => {
