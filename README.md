@@ -16,6 +16,8 @@ Now you can run `npm start` in this repo and the changes will be picked up autom
 ## How to add this as a subrepo to another project
 ###### [See the docs](https://git-scm.com/book/en/v2/Git-Tools-Submodules#_starting_submodules)
 
+> Note: if you can use a package manager like `npm` it's probably better to go that route. Use submodules only if necessary.
+
 To add this repo as a submodule, run:
 
 ```shell
@@ -56,3 +58,14 @@ Once you check out a specific branch, the submodule works as a normal git repo. 
 Parent projects are setup to track the `main` branch of this repo, so just follow the usual workflow of opening a PR against `main`.
 
 Once merged, consumer projects will run `git submodule update --remote --merge` to include these new changes.
+
+## Start a release using the CI pipeline
+
+We have GitHub Action to facilitate releases. Remember to test on all platforms before proceeding. 
+
+1. [Draft a new release in GitHub](https://github.com/duckduckgo/duckduckgo-autofill/releases/new)
+2. Add a tag using the [semver convention](https://semver.org/) (like `3.2.4`) and use the same tag as a title
+3. Add release notes (these will be included in the Asana task)
+4. Publish!
+
+This will create the relevant tasks in the [Autofill Project](https://app.asana.com/0/1198964220583541/1200878329826704) in Asana and add the subtasks to relevant projects.
