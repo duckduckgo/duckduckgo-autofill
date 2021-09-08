@@ -7,6 +7,7 @@ const commit = GITHUB_SHA
 const version = github.event.release.tag_name
 const releaseUrl = github.event.release.html_url
 const releaseNotes = github.event.release.body
+
 const templateTaskGid = '1200547430029363'
 const autofillProjectGid = '1198964220583541'
 const releaseSectionGid = '1200559726959935'
@@ -22,7 +23,7 @@ const setupAsana = () => {
     }).useAccessToken(ASANA_ACCESS_TOKEN)
 }
 
-const duplicateTemplateTask = () => {
+const duplicateTemplateTask = (templateTaskGid) => {
     const duplicateOption = {
         include: ['notes', 'assignee', 'subtasks', 'projects'],
         name: `Autofill Release ${version}`,
@@ -37,7 +38,7 @@ const run = async () => {
 
     console.info('Asana on. Duplicating template task...')
 
-    const { new_task } = await duplicateTemplateTask()
+    const { new_task } = await duplicateTemplateTask(templateTaskGid)
 
     const { html_notes: notes } = await asana.tasks.getTask(new_task.gid, { opt_fields: 'html_notes' })
 
