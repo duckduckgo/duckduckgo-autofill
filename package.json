@@ -1,6 +1,5 @@
 {
   "name": "@duckduckgo/autofill",
-  "version": "2.0.0",
   "main": "dist/autofill.js",
   "browserslist": [
     "> 0.25%",
