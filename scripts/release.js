@@ -1,12 +1,15 @@
 /* eslint-disable no-undef */
 /* eslint-disable camelcase */
 const Asana = require('asana')
+const MarkdownIt = require('markdown-it')
+const md = new MarkdownIt()
 
 const ASANA_ACCESS_TOKEN = process.env.ASANA_ACCESS_TOKEN
 const commit = process.env.GITHUB_SHA
 const version = process.env.VERSION
 const releaseUrl = process.env.RELEASE_URL
-const releaseNotes = process.env.RELEASE_NOTES
+const releaseNotesRaw = process.env.RELEASE_NOTES
+const releaseNotes = md.render(releaseNotesRaw)
 
 const templateTaskGid = '1200547430029363'
 const autofillProjectGid = '1198964220583541'
