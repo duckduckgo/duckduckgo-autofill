@@ -2,11 +2,11 @@
 /* eslint-disable camelcase */
 const Asana = require('asana')
 
-const ASANA_ACCESS_TOKEN = env.ASANA_ACCESS_TOKEN
-const commit = GITHUB_SHA
-const version = github.event.release.tag_name
-const releaseUrl = github.event.release.html_url
-const releaseNotes = github.event.release.body
+const ASANA_ACCESS_TOKEN = process.env.ASANA_ACCESS_TOKEN
+const commit = process.env.GITHUB_SHA
+const version = process.env.VERSION
+const releaseUrl = process.env.RELEASE_URL
+const releaseNotes = process.env.RELEASE_NOTES
 
 const templateTaskGid = '1200547430029363'
 const autofillProjectGid = '1198964220583541'
