@@ -15,4 +15,6 @@ jobs:
       with:
         node-version: 16.x
     - name: Asana Workflow
-      run: node scripts/release.js
+      run: |
+        npm install
+        node scripts/release.js
