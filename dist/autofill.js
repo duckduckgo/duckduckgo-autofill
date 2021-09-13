@@ -1657,7 +1657,7 @@ module.exports = {
       const DeviceInterface = require('./DeviceInterface'); // Global listener for event delegation
 
 
-      window.addEventListener('click', e => {
+      window.addEventListener('mousedown', e => {
         if (!e.isTrusted) return;
 
         if (e.target.nodeName === 'DDG-AUTOFILL') {
