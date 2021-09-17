@@ -51,7 +51,6 @@ class Form {
         this.passwordInputs = new Set()
         this.usernameInputs = new Set()
         this.allInputs = new Set()
-        this.categorizeInputs()
 
         this.touched = new Set()
         this.listeners = new Set()
@@ -138,20 +137,13 @@ class Form {
         this.dismissTooltip = () => {
             this.removeTooltip()
         }
+        this.categorizeInputs()
 
         return this
     }
 
     categorizeInputs () {
         this.form.querySelectorAll(GENERIC_TEXT_FIELD).forEach(input => this.addInput(input))
-
-        if (this.isLogin) {
-            if (this.Device.hasLocalCredentials) this.execOnInputs((input) => this.decorateInput(input))
-        } else {
-            if (this.Device.isDeviceSignedIn()) {
-                this.execOnInputs((input) => this.decorateInput(input))
-            }
-        }
     }
 
     // TODO: try to filter down to only submit buttons
@@ -176,6 +168,14 @@ class Form {
         if (isEmail(input)) this.emailInputs.add(input)
 
         if (isUserName(input)) this.usernameInputs.add(input)
+
+        if (this.isLogin) {
+            if (this.Device.hasLocalCredentials) this.decorateInput(input)
+        } else {
+            if (this.Device.isDeviceSignedIn() && isEmail(input)) {
+                this.decorateInput(input)
+            }
+        }
 
         return this
     }

@@ -1,6 +1,6 @@
 const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
-const {GENERIC_TEXT_FIELD, FIELD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./Form/selectors')
+const {FIELD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./Form/selectors')
 
 const forms = new Map()
 
