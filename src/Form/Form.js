@@ -16,7 +16,8 @@ const getDaxStyles = (input) => ({
     'background-position': 'center right',
     'background-repeat': 'no-repeat',
     'background-origin': 'content-box',
-    'background-image': `url(${getDaxImg})`
+    'background-image': `url(${getDaxImg})`,
+    'transition': 'background 0s'
 })
 
 const getPasswordStyles = (input) => ({
