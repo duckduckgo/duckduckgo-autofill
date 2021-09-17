@@ -50,7 +50,7 @@ class FormAnalyzer {
         )
         const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
         const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i)
-        const matchesNegative = string.match(negativeRegex)
+        const matchesNegative = string === 'current-password' || string.match(negativeRegex)
 
         // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
         if (shouldCheckUnifiedForm && matchesNegative && string.match(strictPositiveRegex)) {
@@ -58,7 +58,7 @@ class FormAnalyzer {
             return this
         }
 
-        const matchesPositive = string.match(shouldBeConservative ? conservativePositiveRegex : positiveRegex)
+        const matchesPositive = string === 'new-password' || string.match(shouldBeConservative ? conservativePositiveRegex : positiveRegex)
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -72,24 +72,6 @@ class FormAnalyzer {
     }
 
     evaluateElAttributes (el, signalStrength = 3, isInput = false) {
-        if (el.matches(PASSWORD_SELECTOR)) {
-            // These are explicit signals by the web author, so we weigh them heavily
-            if (el.getAttribute('autocomplete')?.includes('current-password')) {
-                this.updateSignal({
-                    string: 'current-password',
-                    strength: -20,
-                    signalType: 'current-password'
-                })
-            }
-            if (el.getAttribute('autocomplete')?.includes('new-password')) {
-                this.updateSignal({
-                    string: 'new-password',
-                    strength: 20,
-                    signalType: 'new-password'
-                })
-            }
-        }
-
         Array.from(el.attributes).forEach(attr => {
             if (attr.name === 'style') return
 
@@ -158,6 +140,15 @@ class FormAnalyzer {
 
     evaluateElement (el) {
         const string = this.getText(el)
+
+        if (el.matches(PASSWORD_SELECTOR)) {
+            // These are explicit signals by the web author, so we weigh them heavily
+            this.updateSignal({
+                string: el.getAttribute('autocomplete') || '',
+                strength: 20,
+                signalType: `explicit: ${el.getAttribute('autocomplete')}`
+            })
+        }
 
         // check button contents
         if (el.matches(SUBMIT_BUTTON_SELECTOR)) {
