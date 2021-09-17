@@ -1,8 +1,9 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {EMAIL_SELECTOR, PASSWORD_SELECTOR, USERNAME_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./selectors')
+const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, GENERIC_TEXT_FIELD} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
+const {isPassword, isEmail, isUserName} = require('./input-classifiers')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
@@ -47,10 +48,12 @@ class Form {
         this.attachTooltip = DeviceInterface.attachTooltip
         this.emailInputs = new Set()
         this.passwordInputs = new Set()
+        this.usernameInputs = new Set()
         this.allInputs = new Set()
+        this.categorizeInputs()
+
         this.touched = new Set()
         this.listeners = new Set()
-        this.addInput(input)
         this.tooltip = null
         this.activeInput = null
         this.handlerExecuted = false
@@ -138,6 +141,18 @@ class Form {
         return this
     }
 
+    categorizeInputs () {
+        this.form.querySelectorAll(GENERIC_TEXT_FIELD).forEach(input => this.addInput(input))
+
+        if (this.isLogin) {
+            if (this.Device.hasLocalCredentials) this.execOnInputs((input) => this.decorateInput(input))
+        } else {
+            if (this.Device.isDeviceSignedIn()) {
+                this.execOnInputs((input) => this.decorateInput(input))
+            }
+        }
+    }
+
     // TODO: try to filter down to only submit buttons
     get submitButtons () {
         return this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
@@ -154,29 +169,12 @@ class Form {
         if (this.allInputs.has(input)) return this
 
         this.allInputs.add(input)
-        if (input.matches(PASSWORD_SELECTOR)) {
-            this.passwordInputs.add(input)
-            // Try finding a matching username field
-            if (!this.emailInputs.size) {
-                let possibleUsernameFields = this.form.querySelectorAll(EMAIL_SELECTOR)
-                // if our stringent email selector fails, try with the broader username selector
-                if (possibleUsernameFields.length === 0) {
-                    possibleUsernameFields = this.form.querySelectorAll(USERNAME_SELECTOR)
-                    // TODO: Try to filter down to username fields?
-                }
-                possibleUsernameFields.forEach((input) => this.addInput(input))
-            }
-        } else {
-            this.emailInputs.add(input)
-        }
 
-        if (this.isLogin) {
-            if (this.Device.hasLocalCredentials) this.decorateInput(input)
-        } else {
-            if (this.Device.isDeviceSignedIn() && !input.matches(PASSWORD_SELECTOR)) {
-                this.decorateInput(input)
-            }
-        }
+        if (isPassword(input)) this.passwordInputs.add(input)
+
+        if (isEmail(input)) this.emailInputs.add(input)
+
+        if (isUserName(input)) this.usernameInputs.add(input)
 
         return this
     }
