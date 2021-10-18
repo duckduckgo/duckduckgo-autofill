@@ -65,6 +65,36 @@ class InterfacePrototype {
         this.#credentials = credentials.map(cred => delete cred.password && cred)
     }
 
+    /** @type { PMData } */
+    #data = {
+        credentials: [],
+        creditCards: [],
+        identities: []
+    }
+
+    /**
+     * Stores init data coming from the device
+     * @param { PMData } data
+     */
+    storeLocalData (data) {
+        console.log('init data', data)
+        data.credentials.forEach((cred) => delete cred.password)
+        data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        this.#data = data
+    }
+    get hasIdentities () {
+        return this.#data.identities.length
+    }
+    getIdentities () {
+        return this.#data.identities
+    }
+    get hasCreditCards () {
+        return this.#data.creditCards.length
+    }
+    getCreditCards () {
+        return this.#data.creditCards
+    }
+
     init () {
         this.attachTooltip = attachTooltip.bind(this)
         const start = () => {
@@ -287,6 +317,42 @@ class AppleDeviceInterface extends InterfacePrototype {
          *      password?: String,
          *      lastUpdated: String,
          * }} CredentialsObject
+         *
+         * @typedef {{
+         *      id: Number,
+         *      title: String,
+         *      firstName?: String,
+         *      middleName?: String,
+         *      lastName?: String,
+         *      birthdayDay?: Number,
+         *      birthdayMonth?: Number,
+         *      birthdayYear?: Number,
+         *      addressStreet?: String,
+         *      addressStreet2?: String,
+         *      addressCity?: String,
+         *      addressProvince?: String,
+         *      addressPostalCode?: String,
+         *      addressCountryCode?: String,
+         *      phone?: String,
+         *      emailAddress?: String,
+         * }} IdentityObject
+         *
+         * @typedef {{
+         *      id: Number,
+         *      title: String,
+         *      displayNumber: String,
+         *      cardName?: String,
+         *      cardNumber?: String,
+         *      cardSecurityCode?: String,
+         *      expirationMonth?: Number,
+         *      expirationYear?: Number,
+         * }} CreditCardObject
+         *
+         * @typedef {{
+         *      credentials: [ CredentialsObject ],
+         *      creditCards: [ CreditCardObject ],
+         *      identities: [ IdentityObject ],
+         * }} PMData
          */
 
         /**
@@ -295,6 +361,14 @@ class AppleDeviceInterface extends InterfacePrototype {
          */
         this.storeCredentials = (credentials) =>
             wkSend('pmHandlerStoreCredentials', credentials)
+
+        /**
+         * Gets the init data from the device
+         * @returns {Promise<{ success: PMData, error?: String }>}
+         */
+        this.getAutofillInitData = () =>
+            wkSendAndWait('pmHandlerGetAutofillInitData')
+                .then((response) => this.storeLocalData(response.success))
 
         /**
          * Gets a list of credentials for the current site
@@ -313,12 +387,38 @@ class AppleDeviceInterface extends InterfacePrototype {
          * @returns {Promise<{ success: CredentialsObject, error?: String }>}
          */
         this.getAutofillCredentials = (id) =>
-            wkSendAndWait('pmHandlerGetAutofillCredentials', {id})
+            wkSendAndWait('pmHandlerGetAutofillCredentials', { id })
 
         /**
          * Opens the native UI for managing passwords
          */
         this.openManagePasswords = () => wkSend('pmHandlerOpenManagePasswords')
+
+        /**
+         * Opens the native UI for managing identities
+         */
+        this.openManageIdentities = () => wkSend('pmHandlerOpenManageIdentities')
+
+        /**
+         * Opens the native UI for managing credit cards
+         */
+        this.openManageCreditCards = () => wkSend('pmHandlerOpenManageCreditCards')
+
+        /**
+         * Gets a single identity obj once the user requests it
+         * @param {Number} id
+         * @returns {Promise<{ success: IdentityObject, error?: String }>}
+         */
+        this.getIdentity = (id) =>
+            wkSendAndWait('pmHandlerGetIdentity', { id })
+
+        /**
+         * Gets a single complete credit card obj once the user requests it
+         * @param {Number} id
+         * @returns {Promise<{ success: CreditCardObject, error?: String }>}
+         */
+        this.getCreditCard = (id) =>
+            wkSendAndWait('pmHandlerGetCreditCard', { id })
     }
 }
 
