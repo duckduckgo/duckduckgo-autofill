@@ -42,8 +42,59 @@ const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([aut
 // This is more generic, used only when we have identified a form
 const USERNAME_SELECTOR = `${GENERIC_TEXT_FIELD}[autocomplete^=user]`
 
+const CC_NAME_SELECTOR = '[autocomplete="cc-name"],[autocomplete="ccname"],[name="ccname"],[name="cc-name"]'
+
+const CC_NUMBER_SELECTOR = `
+[autocomplete="cc-number"],
+[autocomplete="ccnumber"],
+[autocomplete="cardnumber"],
+[autocomplete="card-number"],
+[name="ccnumber"],
+[name="cc-number"],
+[name="cardnumber"],
+[name="card-number"]`
+
+const CC_CVC_SELECTOR = `
+[autocomplete="cc-csc"],
+[autocomplete="csc"],
+[autocomplete="cc-cvc"],
+[autocomplete="cvc"],
+[name="cvc"],
+[name="cc-cvc"],
+[name="cc-csc"],
+[name="csc"]`
+
+const CC_MONTH_SELECTOR = '[autocomplete="cc-exp-month"],[name="ccmonth"]'
+
+const CC_YEAR_SELECTOR = '[autocomplete="cc-exp-year"],[name="ccyear"]'
+
+const CC_EXP_SELECTOR = '[autocomplete="cc-exp"],[name="exp-date"]'
+
+const CC_FIELD_SELECTOR = [
+    CC_NAME_SELECTOR,
+    CC_NUMBER_SELECTOR,
+    CC_CVC_SELECTOR,
+    CC_MONTH_SELECTOR,
+    CC_YEAR_SELECTOR,
+    CC_EXP_SELECTOR
+].join(', ')
+
 const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR].join(', ')
 
 const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button, [role=button]'
 
-module.exports = {EMAIL_SELECTOR, GENERIC_TEXT_FIELD, PASSWORD_SELECTOR, FIELD_SELECTOR, USERNAME_SELECTOR, SUBMIT_BUTTON_SELECTOR}
+module.exports = {
+    EMAIL_SELECTOR,
+    GENERIC_TEXT_FIELD,
+    PASSWORD_SELECTOR,
+    FIELD_SELECTOR,
+    CC_NAME_SELECTOR,
+    CC_NUMBER_SELECTOR,
+    CC_CVC_SELECTOR,
+    CC_MONTH_SELECTOR,
+    CC_YEAR_SELECTOR,
+    CC_EXP_SELECTOR,
+    CC_FIELD_SELECTOR,
+    USERNAME_SELECTOR,
+    SUBMIT_BUTTON_SELECTOR
+}
