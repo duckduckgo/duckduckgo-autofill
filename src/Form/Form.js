@@ -38,6 +38,7 @@ const getInlineAutofilledStyles = (input, isLogin) => isLogin
         'background-color': '#F8F498',
         'color': '#333333'
     }
+const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = require('../constants')
 
 class Form {
     constructor (form, input, DeviceInterface) {
@@ -117,7 +118,7 @@ class Form {
         }
         this.removeInputDecoration = (input) => {
             removeInlineStyles(input, getDaxStyles(input))
-            input.removeAttribute('data-ddg-autofill')
+            input.removeAttribute(ATTR_AUTOFILL)
         }
         this.removeAllDecorations = () => {
             this.execOnInputs(this.removeInputDecoration)
@@ -199,8 +200,8 @@ class Form {
     }
 
     decorateInput (input) {
-        input.setAttribute('data-ddg-autofill', 'true')
         this.addAutofillStyles(input)
+        input.setAttribute(ATTR_AUTOFILL, 'true')
         this.addListener(input, 'mousemove', (e) => {
             if (isEventWithinDax(e, e.target)) {
                 e.target.style.setProperty('cursor', 'pointer', 'important')
