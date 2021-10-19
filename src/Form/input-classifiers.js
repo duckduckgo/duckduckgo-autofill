@@ -21,10 +21,10 @@ const findLabels = (el) => {
  * Tries to infer input type, with checks in decreasing order of reliability
  * @param {HTMLInputElement} el
  * @param {String} selector - a css selector
- * @param {RegExp} regex
+ * @param {RegExp} [regex] - defaults to a regex that never matches https://stackoverflow.com/a/1723207/1948947
  * @returns {boolean}
  */
-const checkMatch = (el, selector, regex) => {
+const checkMatch = (el, selector, regex = new RegExp('(?!)')) => {
     if (
         el.matches(selector) ||
         [...el.labels].filter(label => regex.test(label.textContent)).length > 0 ||
