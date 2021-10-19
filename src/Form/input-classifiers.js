@@ -1,4 +1,4 @@
-const {PASSWORD_SELECTOR, EMAIL_SELECTOR, USERNAME_SELECTOR} = require('./selectors')
+const {PASSWORD_SELECTOR, EMAIL_SELECTOR, USERNAME_SELECTOR, CC_FIELD_SELECTOR} = require('./selectors')
 
 /**
  * Tries to get labels even when they're not explicitly set with for="id"
@@ -59,8 +59,25 @@ const isEmail = (input) =>
 const isUserName = (input) =>
     checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?/i)
 
+const isCCField = (input) =>
+    checkMatch(input, CC_FIELD_SELECTOR)
+
+const getInputType = (input) => {
+    if (isPassword(input)) return 'password'
+
+    if (isEmail(input)) return 'email'
+
+    if (isUserName(input)) return 'username'
+
+    if (isCCField(input)) return 'cc'
+
+    return 'unknown'
+}
+
 module.exports = {
     isPassword,
     isEmail,
-    isUserName
+    isUserName,
+    isCCField,
+    getInputType
 }
