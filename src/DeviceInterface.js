@@ -15,6 +15,7 @@ const {
     wkSendAndWait
 } = require('./appleDeviceUtils/appleDeviceUtils')
 const {scanForInputs, forms} = require('./scanForInputs.js')
+const getInputConfig = require('./Form/inputTypeConfig')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -29,9 +30,10 @@ const attachTooltip = function (form, input) {
         if (form.tooltip) return
 
         form.activeInput = input
-        form.tooltip = form.isLogin
-            ? new CredentialsAutofill(input, form, this)
-            : new EmailAutofill(input, form, this)
+        const inputType = getInputConfig(input).type
+        form.tooltip = inputType === 'emailNew'
+            ? new EmailAutofill(input, form, this)
+            : new DataAutofill(input, form, this)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})

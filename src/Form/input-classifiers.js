@@ -59,13 +59,24 @@ const isEmail = (input) =>
 const isUserName = (input) =>
     checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?/i)
 
+/**
+ * Tries to infer if input is for credit card
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
 const isCCField = (input) =>
     checkMatch(input, CC_FIELD_SELECTOR)
 
-const getInputType = (input) => {
+/**
+ * Returns the input type
+ * @param {HTMLInputElement} input
+ * @param {boolean} isLogin
+ * @returns {SupportedTypes}
+ */
+const getInputType = (input, isLogin) => {
     if (isPassword(input)) return 'password'
 
-    if (isEmail(input)) return 'email'
+    if (isEmail(input)) return isLogin ? 'emailLogin' : 'emailNew'
 
     if (isUserName(input)) return 'username'
 

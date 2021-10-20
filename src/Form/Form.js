@@ -2,9 +2,9 @@ const FormAnalyzer = require('./FormAnalyzer')
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, GENERIC_TEXT_FIELD} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {getInputType} = require('./input-classifiers')
-const inputTypeConfig = require('./inputTypeConfig')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = require('../constants')
+const getInputConfig = require('./inputTypeConfig')
 
 class Form {
     constructor (form, input, DeviceInterface) {
@@ -15,7 +15,8 @@ class Form {
         this.Device = DeviceInterface
         this.attachTooltip = DeviceInterface.attachTooltip
         this.allInputs = new Set()
-        this.emailInputs = new Set()
+        this.emailNewInputs = new Set()
+        this.emailLoginInputs = new Set()
         this.passwordInputs = new Set()
         this.usernameInputs = new Set()
         this.ccInputs = new Set()
@@ -24,7 +25,8 @@ class Form {
         this.inputs = new Map([
             ['all', this.allInputs],
             ['passwords', this.passwordInputs],
-            ['emails', this.emailInputs],
+            ['emailNew', this.emailNewInputs],
+            ['emailLogin', this.emailLoginInputs],
             ['usernames', this.usernameInputs],
             ['ccInputs', this.ccInputs],
             ['unknownInputs', this.unknownInputs]
@@ -51,7 +53,10 @@ class Form {
         }
 
         this.getValues = () => {
-            const username = [...this.emailInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '')
+            const username =
+                [...this.usernameInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '') ||
+                [...this.emailNewInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '') ||
+                [...this.emailLoginInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '')
             const password = [...this.passwordInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '')
             return {username, password}
         }
@@ -130,9 +135,9 @@ class Form {
     }
 
     execOnInputs (fn) {
-        this.emailInputs.forEach(fn)
-        if (this.isLogin) {
-            this.passwordInputs.forEach(fn)
+        for (const input of this.allInputs) {
+            const {shouldDecorate} = getInputConfig(input)
+            if (shouldDecorate(this.isLogin, this.Device)) fn(input)
         }
     }
 
@@ -141,7 +146,7 @@ class Form {
 
         this.allInputs.add(input)
 
-        const inputType = getInputType(input)
+        const inputType = getInputType(input, this.isLogin)
 
         this[`${inputType}Inputs`].add(input)
 
@@ -169,10 +174,7 @@ class Form {
     }
 
     decorateInput (input, inputType) {
-        // bail if we couldn't classify the input
-        if (inputType === 'unknown') return this
-
-        const config = inputTypeConfig[inputType]
+        const config = getInputConfig(input, inputType)
 
         if (!config.shouldDecorate(this.isLogin, this.Device)) return this
 

@@ -21,7 +21,7 @@ ${includeStyles}
         ${this.credentials.map(({username, id}) => `
             <button class="tooltip__button tooltip__button--credentials js-autofill-button" id="${id}">
                 <span>
-                    <span class="js-address">${escapeXML(username)}</span><br />
+                    <span>${escapeXML(username)}</span><br />
                     <span class="tooltip__button__password">•••••••••••••••</span>
                 </span>
             </button>

@@ -1,5 +1,4 @@
-const inputTypeConfig = require('./inputTypeConfig')
-const {ATTR_INPUT_TYPE} = require('../constants')
+const getTypeConfig = require('./inputTypeConfig')
 
 /**
  * Get inline styles for the injected icon, base state
@@ -7,8 +6,8 @@ const {ATTR_INPUT_TYPE} = require('../constants')
  * @param {boolean} isLogin
  */
 const getIconStylesBase = (input, isLogin) => {
-    const inputType = input.getAttribute(ATTR_INPUT_TYPE)
-    const icon = inputTypeConfig[inputType].getIconBase(isLogin)
+    const config = getTypeConfig(input)
+    const icon = config.getIconBase()
 
     return {
         // Height must be > 0 to account for fields initially hidden
@@ -27,8 +26,8 @@ const getIconStylesBase = (input, isLogin) => {
  * @param {boolean} isLogin
  */
 const getIconStylesAutofilled = (input, isLogin) => {
-    const inputType = input.getAttribute(ATTR_INPUT_TYPE)
-    const icon = inputTypeConfig[inputType].getIconFilled(isLogin)
+    const config = getTypeConfig(input)
+    const icon = config.getIconBase()
 
     return {
         'background-image': `url(${icon}`,
