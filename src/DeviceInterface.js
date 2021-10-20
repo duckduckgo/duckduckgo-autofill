@@ -83,13 +83,13 @@ class InterfacePrototype {
         this.#data = data
     }
     get hasIdentities () {
-        return this.#data.identities.length
+        return this.#data.identities.length > 0
     }
     getIdentities () {
         return this.#data.identities
     }
     get hasCreditCards () {
-        return this.#data.creditCards.length
+        return this.#data.creditCards.length > 0
     }
     getCreditCards () {
         return this.#data.creditCards
