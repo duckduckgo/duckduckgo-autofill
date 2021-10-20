@@ -1,5 +1,5 @@
 const EmailAutofill = require('./UI/EmailAutofill')
-const CredentialsAutofill = require('./UI/CredentialsAutofill')
+const DataAutofill = require('./UI/DataAutofill')
 const {
     isApp,
     notifyWebApp,

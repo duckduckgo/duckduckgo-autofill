@@ -3,10 +3,13 @@ const {
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
+const getInputConfig = require('../Form/inputTypeConfig')
 
-class CredentialsAutofill extends Tooltip {
+class DataAutofill extends Tooltip {
     constructor (input, associatedForm, Interface) {
         super(input, associatedForm, Interface)
+
+        const inputType = getInputConfig(input).type
 
         this.credentials = this.interface.getLocalCredentials()
 
@@ -44,4 +47,4 @@ ${includeStyles}
     }
 }
 
-module.exports = CredentialsAutofill
+module.exports = DataAutofill
