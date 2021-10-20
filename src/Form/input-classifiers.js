@@ -68,12 +68,12 @@ const isCCField = (input) =>
     checkMatch(input, CC_FIELD_SELECTOR)
 
 /**
- * Returns the input type
+ * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {boolean} isLogin
  * @returns {SupportedTypes}
  */
-const getInputType = (input, isLogin) => {
+const inferInputType = (input, isLogin) => {
     if (isPassword(input)) return 'password'
 
     if (isEmail(input)) return isLogin ? 'emailLogin' : 'emailNew'
@@ -90,5 +90,5 @@ module.exports = {
     isEmail,
     isUserName,
     isCCField,
-    getInputType
+    inferInputType
 }

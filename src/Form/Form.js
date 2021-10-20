@@ -1,7 +1,7 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, GENERIC_TEXT_FIELD} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
-const {getInputType} = require('./input-classifiers')
+const {inferInputType} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = require('../constants')
 const getInputConfig = require('./inputTypeConfig')
@@ -146,7 +146,7 @@ class Form {
 
         this.allInputs.add(input)
 
-        const inputType = getInputType(input, this.isLogin)
+        const inputType = inferInputType(input, this.isLogin)
 
         this[`${inputType}Inputs`].add(input)
 
