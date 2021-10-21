@@ -1,5 +1,6 @@
 const {safeExecute} = require('../autofill-utils')
 const {getDaxBoundingBox} = require('../autofill-utils')
+const {getInputMainType} = require('../Form/input-classifiers')
 
 const updatePosition = function ({left, top}) {
     const shadow = this.shadow
@@ -27,9 +28,9 @@ const checkPosition = function () {
     }
 
     this.animationFrame = window.requestAnimationFrame(() => {
-        const {left, bottom} = this.associatedForm.isLogin
-            ? this.input.getBoundingClientRect()
-            : getDaxBoundingBox(this.input)
+        const {left, bottom} = getInputMainType(this.input) === 'emailNew'
+            ? getDaxBoundingBox(this.input)
+            : this.input.getBoundingClientRect()
 
         if (left !== this.left || bottom !== this.top) {
             this.updatePosition({left, top: bottom})

@@ -1,7 +1,7 @@
 const {isDDGApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {ATTR_INPUT_TYPE} = require('../constants')
+const {getInputMainType} = require('./input-classifiers')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
@@ -12,7 +12,7 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
  *    'emailLogin' |
  *    'username' |
  *    'password' |
- *    'cc' |
+ *    'creditCard' |
  *    'unknown'
  *  } SupportedTypes */
 
@@ -20,7 +20,10 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
  *    type: SupportedTypes,
  *    getIconFilled: () => string,
  *    getIconBase: () => string,
- *    shouldDecorate: (function(boolean, InterfacePrototype): boolean)
+ *    shouldDecorate: (function(boolean, InterfacePrototype): boolean),
+ *    dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities',
+ *    displayTitlePropName: string,
+ *    displaySubtitlePropName: string,
  *  }} InputTypeConfig
  */
 
@@ -33,49 +36,46 @@ const inputTypeConfig = {
         type: 'emailNew',
         getIconBase: () => getDaxImg,
         getIconFilled: () => getDaxImg,
-        shouldDecorate: (isLogin, device) => device.hasLocalAddresses
+        shouldDecorate: (isLogin, device) => device.hasLocalAddresses,
+        dataType: 'Addresses'
     },
-    emailLogin: {
-        type: 'emailLogin',
+    credentials: {
+        type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (isLogin, device) => device.hasLocalCredentials
+        shouldDecorate: (isLogin, device) => isLogin && device.hasLocalCredentials,
+        dataType: 'Credentials',
+        displayTitlePropName: 'username',
+        displaySubtitlePropName: '•••••••••••••••',
+        autofillMethod: 'getAutofillCredentials'
     },
-    username: {
-        type: 'username',
-        getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
-        getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (isLogin, device) => isLogin && device.hasLocalCredentials
-    },
-    password: {
-        type: 'password',
-        getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
-        getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (isLogin, device) => isLogin && device.hasLocalCredentials
-    },
-    cc: {
-        type: 'cc',
+    creditCard: {
+        type: 'creditCard',
         getIconBase: () => ddgPasswordIcons.ddgCcIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgCcIconFilled,
-        shouldDecorate: (isLogin, device) => device.hasCreditCards
+        shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
+        dataType: 'CreditCards',
+        displayTitlePropName: 'title',
+        displaySubtitlePropName: 'displayNumber',
+        autofillMethod: 'getAutofillCreditCard'
     },
     unknown: {
         type: 'unknown',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: () => false
+        shouldDecorate: () => false,
+        dataType: ''
     }
 }
 
 /**
  * Retrieves configs from an input el
  * @param {HTMLInputElement} input
- * @param {SupportedTypes} [initialType='unknown'] - pass if input hasn't been decorated yet
  * @returns {InputTypeConfig}
  */
-const getInputConfig = (input, initialType = 'unknown') => {
-    const inputType = input.getAttribute(ATTR_INPUT_TYPE)
-    return inputTypeConfig[inputType || initialType]
+const getInputConfig = (input) => {
+    const inputType = getInputMainType(input)
+    return inputTypeConfig[inputType || 'unknown']
 }
 
 module.exports = getInputConfig

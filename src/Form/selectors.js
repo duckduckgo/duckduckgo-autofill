@@ -70,14 +70,17 @@ const CC_YEAR_SELECTOR = '[autocomplete="cc-exp-year"],[name="ccyear"]'
 
 const CC_EXP_SELECTOR = '[autocomplete="cc-exp"],[name="exp-date"]'
 
-const CC_FIELD_SELECTOR = [
-    CC_NAME_SELECTOR,
-    CC_NUMBER_SELECTOR,
-    CC_CVC_SELECTOR,
-    CC_MONTH_SELECTOR,
-    CC_YEAR_SELECTOR,
-    CC_EXP_SELECTOR
-].join(', ')
+/* This is used to map a selector with the data type we store for credit cards */
+const CC_SELECTORS_MAP = {
+    [CC_NAME_SELECTOR]: 'cardName',
+    [CC_NUMBER_SELECTOR]: 'cardNumber',
+    [CC_CVC_SELECTOR]: 'cardSecurityCode',
+    [CC_MONTH_SELECTOR]: 'expirationMonth',
+    [CC_YEAR_SELECTOR]: 'expirationYear',
+    [CC_EXP_SELECTOR]: 'expiration'
+}
+
+const CC_FIELD_SELECTOR = Object.keys(CC_SELECTORS_MAP).join(', ')
 
 const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR].join(', ')
 
@@ -87,14 +90,15 @@ module.exports = {
     EMAIL_SELECTOR,
     GENERIC_TEXT_FIELD,
     PASSWORD_SELECTOR,
-    FIELD_SELECTOR,
     CC_NAME_SELECTOR,
     CC_NUMBER_SELECTOR,
     CC_CVC_SELECTOR,
     CC_MONTH_SELECTOR,
     CC_YEAR_SELECTOR,
     CC_EXP_SELECTOR,
+    CC_SELECTORS_MAP,
     CC_FIELD_SELECTOR,
+    FIELD_SELECTOR,
     USERNAME_SELECTOR,
     SUBMIT_BUTTON_SELECTOR
 }

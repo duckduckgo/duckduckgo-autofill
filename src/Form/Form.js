@@ -1,9 +1,9 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, GENERIC_TEXT_FIELD} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
-const {inferInputType} = require('./input-classifiers')
+const {getInputSubtype, setInputType, getInputMainType} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
-const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = require('../constants')
+const {ATTR_AUTOFILL} = require('../constants')
 const getInputConfig = require('./inputTypeConfig')
 
 class Form {
@@ -16,21 +16,9 @@ class Form {
         this.attachTooltip = DeviceInterface.attachTooltip
         this.allInputs = new Set()
         this.emailNewInputs = new Set()
-        this.emailLoginInputs = new Set()
-        this.passwordInputs = new Set()
-        this.usernameInputs = new Set()
-        this.ccInputs = new Set()
+        this.credentialsInputs = new Set()
+        this.creditCardInputs = new Set()
         this.unknownInputs = new Set()
-
-        this.inputs = new Map([
-            ['all', this.allInputs],
-            ['passwords', this.passwordInputs],
-            ['emailNew', this.emailNewInputs],
-            ['emailLogin', this.emailLoginInputs],
-            ['usernames', this.usernameInputs],
-            ['ccInputs', this.ccInputs],
-            ['unknownInputs', this.unknownInputs]
-        ])
 
         this.touched = new Set()
         this.listeners = new Set()
@@ -53,12 +41,11 @@ class Form {
         }
 
         this.getValues = () => {
-            const username =
-                [...this.usernameInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '') ||
-                [...this.emailNewInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '') ||
-                [...this.emailLoginInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '')
-            const password = [...this.passwordInputs].reduce((prev, curr) => curr.value ? curr.value : prev, '')
-            return {username, password}
+            return [...this.credentialsInputs].reduce((output, input) => {
+                const subtype = getInputSubtype(input)
+                output[subtype] = input.value || output[subtype]
+                return output
+            }, {username: '', password: ''})
         }
 
         this.hasValues = () => {
@@ -89,14 +76,14 @@ class Form {
             input.classList.remove('ddg-autofilled')
             this.addAutofillStyles(input)
         }
-        this.removeAllHighlights = (e) => {
+        this.removeAllHighlights = (e, dataType) => {
             // This ensures we are not removing the highlight ourselves when autofilling more than once
             if (e && !e.isTrusted) return
 
             // If the user has changed the value, we prompt to update the stored creds
             this.shouldPromptToStoreCredentials = true
 
-            this.execOnInputs(this.removeInputHighlight)
+            this.execOnInputs(this.removeInputHighlight, dataType)
         }
         this.removeInputDecoration = (input) => {
             removeInlineStyles(input, getIconStylesBase(input, this.isLogin))
@@ -134,8 +121,9 @@ class Form {
         return this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
     }
 
-    execOnInputs (fn) {
-        for (const input of this.allInputs) {
+    execOnInputs (fn, inputType = 'all') {
+        const inputs = this[`${inputType}Inputs`]
+        for (const input of inputs) {
             const {shouldDecorate} = getInputConfig(input)
             if (shouldDecorate(this.isLogin, this.Device)) fn(input)
         }
@@ -146,11 +134,12 @@ class Form {
 
         this.allInputs.add(input)
 
-        const inputType = inferInputType(input, this.isLogin)
+        setInputType(input, this.isLogin)
 
-        this[`${inputType}Inputs`].add(input)
+        const mainInputType = getInputMainType(input)
+        this[`${mainInputType}Inputs`].add(input)
 
-        this.decorateInput(input, inputType)
+        this.decorateInput(input)
 
         return this
     }
@@ -173,13 +162,12 @@ class Form {
         addInlineStyles(input, styles)
     }
 
-    decorateInput (input, inputType) {
-        const config = getInputConfig(input, inputType)
+    decorateInput (input) {
+        const config = getInputConfig(input)
 
         if (!config.shouldDecorate(this.isLogin, this.Device)) return this
 
         input.setAttribute(ATTR_AUTOFILL, 'true')
-        input.setAttribute(ATTR_INPUT_TYPE, inputType)
         this.addAutofillStyles(input, config)
         this.addListener(input, 'mousemove', (e) => {
             if (isEventWithinDax(e, e.target)) {
@@ -210,31 +198,33 @@ class Form {
         return (!this.touched.has(input) && this.areAllInputsEmpty()) || isEventWithinDax(e, input)
     }
 
-    autofillInput = (input, string) => {
+    autofillInput = (input, string, dataType) => {
         setValue(input, string)
         input.classList.add('ddg-autofilled')
         addInlineStyles(input, getIconStylesAutofilled(input, this.isLogin))
 
         // If the user changes the alias, remove the decoration
-        input.addEventListener('input', this.removeAllHighlights, {once: true})
+        input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
     }
 
-    autofillEmail (alias) {
-        this.execOnInputs((input) => !input.matches(PASSWORD_SELECTOR) && this.autofillInput(input, alias))
+    autofillEmail (alias, dataType = 'emailNew') {
+        this.execOnInputs(
+            (input) => !input.matches(PASSWORD_SELECTOR) && this.autofillInput(input, alias, dataType),
+            dataType
+        )
         if (this.tooltip) {
             this.removeTooltip()
         }
     }
 
-    autofillCredentials (credentials) {
+    autofillData (data, dataType) {
         this.shouldPromptToStoreCredentials = false
+
         this.execOnInputs((input) => {
-            if (input.matches(PASSWORD_SELECTOR)) {
-                this.autofillInput(input, credentials.password)
-            } else {
-                this.autofillInput(input, credentials.username)
-            }
-        })
+            const inputSubtype = getInputSubtype(input)
+            if (data[inputSubtype]) this.autofillInput(input, data[inputSubtype], dataType)
+        }, dataType)
+
         if (this.tooltip) {
             this.removeTooltip()
         }

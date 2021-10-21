@@ -1,4 +1,11 @@
-const {PASSWORD_SELECTOR, EMAIL_SELECTOR, USERNAME_SELECTOR, CC_FIELD_SELECTOR} = require('./selectors')
+const {
+    PASSWORD_SELECTOR,
+    EMAIL_SELECTOR,
+    USERNAME_SELECTOR,
+    CC_FIELD_SELECTOR,
+    CC_SELECTORS_MAP
+} = require('./selectors')
+const {ATTR_INPUT_TYPE} = require('../constants')
 
 /**
  * Tries to get labels even when they're not explicitly set with for="id"
@@ -68,27 +75,74 @@ const isCCField = (input) =>
     checkMatch(input, CC_FIELD_SELECTOR)
 
 /**
+ * Get a subtype based on the matching selector
+ * @param {HTMLInputElement} input
+ */
+const getCCFieldSubtype = (input) => {
+    const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => input.matches(selector))
+    return CC_SELECTORS_MAP[matchingSelector]
+}
+
+/**
  * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {boolean} isLogin
  * @returns {SupportedTypes}
  */
 const inferInputType = (input, isLogin) => {
-    if (isPassword(input)) return 'password'
+    const presetType = input.getAttribute(ATTR_INPUT_TYPE)
+    if (presetType) return presetType
 
-    if (isEmail(input)) return isLogin ? 'emailLogin' : 'emailNew'
+    if (isPassword(input)) return 'credentials.password'
 
-    if (isUserName(input)) return 'username'
+    if (isEmail(input)) return isLogin ? 'credentials.username' : 'emailNew'
 
-    if (isCCField(input)) return 'cc'
+    if (isUserName(input)) return 'credentials.username'
+
+    if (isCCField(input)) {
+        const subtype = getCCFieldSubtype(input)
+        return `creditCard.${subtype}`
+    }
 
     return 'unknown'
 }
+
+/**
+ * Sets the input type as a data attribute to the element and returns it
+ * @param {HTMLInputElement} input
+ * @param {boolean} isLogin
+ * @returns {SupportedTypes}
+ */
+const setInputType = (input, isLogin) => {
+    const type = inferInputType(input, isLogin)
+    input.setAttribute(ATTR_INPUT_TYPE, type)
+    return type
+}
+
+/**
+ * Retrieves the input main type
+ * @param {HTMLInputElement} input
+ * @returns {SupportedTypes}
+ */
+const getInputMainType = (input) =>
+    input.getAttribute(ATTR_INPUT_TYPE).split('.')[0]
+
+/**
+ * Retrieves the input subtype
+ * @param {HTMLInputElement} input
+ * @returns {String}
+ */
+const getInputSubtype = (input) =>
+    input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] ||
+    input.getAttribute(ATTR_INPUT_TYPE).split('.')[0]
 
 module.exports = {
     isPassword,
     isEmail,
     isUserName,
     isCCField,
-    inferInputType
+    inferInputType,
+    setInputType,
+    getInputMainType,
+    getInputSubtype
 }

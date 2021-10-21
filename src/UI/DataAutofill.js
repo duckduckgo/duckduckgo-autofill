@@ -9,9 +9,9 @@ class DataAutofill extends Tooltip {
     constructor (input, associatedForm, Interface) {
         super(input, associatedForm, Interface)
 
-        const inputType = getInputConfig(input).type
+        const config = getInputConfig(input)
 
-        this.credentials = this.interface.getLocalCredentials()
+        this.data = this.interface[`getLocal${config.dataType}`]()
 
         const includeStyles = isApp
             ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
@@ -21,8 +21,8 @@ class DataAutofill extends Tooltip {
 ${includeStyles}
 <div class="wrapper wrapper--credentials">
     <div class="tooltip tooltip--credentials" hidden>
-        ${this.credentials.map(({username, id}) => `
-            <button class="tooltip__button tooltip__button--credentials js-autofill-button" id="${id}">
+        ${this.data.map((singleData) => `
+            <button class="tooltip__button tooltip__button--credentials js-autofill-button" id="${singleData.id}">
                 <span>
                     <span>${escapeXML(username)}</span><br />
                     <span class="tooltip__button__password">•••••••••••••••</span>
@@ -37,8 +37,8 @@ ${includeStyles}
 
         this.autofillButtons.forEach((btn) => {
             this.registerClickableButton(btn, () => {
-                this.interface.getAutofillCredentials(btn.id).then(({success, error}) => {
-                    if (success) this.associatedForm.autofillCredentials(success)
+                this.interface[`${config.autofillMethod}`](btn.id).then(({success, error}) => {
+                    if (success) this.associatedForm.autofillData(success, config.type)
                 })
             })
         })
