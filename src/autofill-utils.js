@@ -45,7 +45,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
 
 // This ensures that the value is set properly and dispatches events to simulate a real user action
-const setValue = (el, val) => {
+const setValueForInput = (el, val) => {
     // Avoid keyboard flashing on Android
     if (!isAndroid) {
         el.focus()
@@ -62,6 +62,33 @@ const setValue = (el, val) => {
     // We call this again to make sure all forms are happy
     originalSet.call(el, val)
     el.blur()
+}
+
+// We assume Select is only used for dates, i.e. in the credit card
+const setValueForSelect = (el, val) => {
+    for (const option of el.options) {
+        const optValue = Number(option.value || option.innerText)
+        if (optValue === val) {
+            const events = [
+                new Event('mousedown', {bubbles: true}),
+                new Event('focus', {bubbles: true}),
+                new Event('change', {bubbles: true}),
+                new Event('mouseup', {bubbles: true}),
+                new Event('click', {bubbles: true})
+            ]
+            option.selected = true
+            // Events fire on the select el, not option
+            events.forEach((ev) => el.dispatchEvent(ev))
+            option.selected = true
+            option.blur()
+            return
+        }
+    }
+}
+
+const setValue = (el, val) => {
+    if (el.nodeName === 'INPUT') setValueForInput(el, val)
+    if (el.nodeName === 'SELECT') setValueForSelect(el, val)
 }
 
 /**
