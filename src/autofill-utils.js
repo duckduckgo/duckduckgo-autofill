@@ -59,6 +59,8 @@ const setValue = (el, val) => {
         new Event('change', {bubbles: true})
     ]
     events.forEach((ev) => el.dispatchEvent(ev))
+    // We call this again to make sure all forms are happy
+    originalSet.call(el, val)
     el.blur()
 }
 
