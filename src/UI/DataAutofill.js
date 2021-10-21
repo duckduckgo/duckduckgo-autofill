@@ -24,8 +24,10 @@ ${includeStyles}
         ${this.data.map((singleData) => `
             <button class="tooltip__button tooltip__button--credentials js-autofill-button" id="${singleData.id}">
                 <span>
-                    <span>${escapeXML(username)}</span><br />
-                    <span class="tooltip__button__password">•••••••••••••••</span>
+                    <span>${escapeXML(singleData[config.displayTitlePropName])}</span><br />
+                    <span class="tooltip__button__secondary-text">
+${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitlePropName)}
+                    </span>
                 </span>
             </button>
         `).join('')}
