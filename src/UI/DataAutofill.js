@@ -19,10 +19,13 @@ class DataAutofill extends Tooltip {
 
         this.shadow.innerHTML = `
 ${includeStyles}
-<div class="wrapper wrapper--credentials">
-    <div class="tooltip tooltip--credentials" hidden>
+<div class="wrapper wrapper--data">
+    <div class="tooltip tooltip--data" hidden>
         ${this.data.map((singleData) => `
-            <button class="tooltip__button tooltip__button--credentials js-autofill-button" id="${singleData.id}">
+            <button
+                class="tooltip__button tooltip__button--data tooltip__button--data--${config.type} js-autofill-button"
+                id="${singleData.id}"
+            >
                 <span>
                     <span>${escapeXML(singleData[config.displayTitlePropName])}</span><br />
                     <span class="tooltip__button__secondary-text">
