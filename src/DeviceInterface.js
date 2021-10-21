@@ -84,16 +84,16 @@ class InterfacePrototype {
         data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
         this.#data = data
     }
-    get hasIdentities () {
+    get hasLocalIdentities () {
         return this.#data.identities.length > 0
     }
-    getIdentities () {
+    getLocalIdentities () {
         return this.#data.identities
     }
-    get hasCreditCards () {
+    get hasLocalCreditCards () {
         return this.#data.creditCards.length > 0
     }
-    getCreditCards () {
+    getLocalCreditCards () {
         return this.#data.creditCards
     }
 
@@ -411,7 +411,7 @@ class AppleDeviceInterface extends InterfacePrototype {
          * @param {Number} id
          * @returns {Promise<{ success: IdentityObject, error?: String }>}
          */
-        this.getIdentity = (id) =>
+        this.getAutofillIdentity = (id) =>
             wkSendAndWait('pmHandlerGetIdentity', { id })
 
         /**
@@ -419,7 +419,7 @@ class AppleDeviceInterface extends InterfacePrototype {
          * @param {Number} id
          * @returns {Promise<{ success: CreditCardObject, error?: String }>}
          */
-        this.getCreditCard = (id) =>
+        this.getAutofillCreditCard = (id) =>
             wkSendAndWait('pmHandlerGetCreditCard', { id })
     }
 }
