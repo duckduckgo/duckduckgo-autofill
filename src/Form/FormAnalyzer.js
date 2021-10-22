@@ -152,7 +152,9 @@ class FormAnalyzer {
 
         // check button contents
         if (el.matches(SUBMIT_BUTTON_SELECTOR)) {
-            this.updateSignal({string, strength: 2, signalType: `submit: ${string}`})
+            // If we're sure this is a submit button, it's a stronger signal
+            const strength = el.getAttribute('type') === 'submit' ? 10 : 2
+            this.updateSignal({string, strength, signalType: `submit: ${string}`})
         }
         // if a link points to relevant urls or contain contents outside the page…
         if (
