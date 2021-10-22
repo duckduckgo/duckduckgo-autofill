@@ -1,4 +1,4 @@
-const {safeExecute} = require('../autofill-utils')
+const {safeExecute, addInlineStyles} = require('../autofill-utils')
 const {getDaxBoundingBox} = require('../autofill-utils')
 const {getInputMainType} = require('../Form/input-classifiers')
 
@@ -62,6 +62,12 @@ class Tooltip {
     constructor (input, associatedForm, Interface) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
         this.host = this.shadow.host
+        const forcedVisibilityStyles = {
+            'display': 'block',
+            'visibility': 'visible',
+            'opacity': '1'
+        }
+        addInlineStyles(this.host, forcedVisibilityStyles)
         this.input = input
         this.associatedForm = associatedForm
         this.interface = Interface
