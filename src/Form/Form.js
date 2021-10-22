@@ -200,6 +200,9 @@ class Form {
     }
 
     shouldOpenTooltip (e, input) {
+        const inputType = getInputMainType(input)
+        if (inputType !== 'emailNew') return true
+
         return (!this.touched.has(input) && this.areAllInputsEmpty()) || isEventWithinDax(e, input)
     }
 
