@@ -9,6 +9,8 @@ const getIconStylesBase = (input, isLogin) => {
     const config = getTypeConfig(input)
     const icon = config.getIconBase()
 
+    if (!icon) return {}
+
     return {
         // Height must be > 0 to account for fields initially hidden
         'background-size': `auto ${input.offsetHeight <= 30 && input.offsetHeight > 0 ? '100%' : '26px'}`,
@@ -29,8 +31,10 @@ const getIconStylesAutofilled = (input, isLogin) => {
     const config = getTypeConfig(input)
     const icon = config.getIconBase()
 
+    const iconStyle = icon ? {'background-image': `url(${icon}`} : {}
+
     return {
-        'background-image': `url(${icon}`,
+        ...iconStyle,
         'background-color': '#F8F498',
         'color': '#333333'
     }

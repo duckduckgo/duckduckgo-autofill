@@ -51,8 +51,8 @@ const inputTypeConfig = {
     },
     creditCard: {
         type: 'creditCard',
-        getIconBase: () => ddgPasswordIcons.ddgCcIconBase,
-        getIconFilled: () => ddgPasswordIcons.ddgCcIconFilled,
+        getIconBase: () => false,
+        getIconFilled: () => false,
         shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
         displayTitlePropName: 'title',

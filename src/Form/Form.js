@@ -168,14 +168,19 @@ class Form {
         if (!config.shouldDecorate(this.isLogin, this.Device)) return this
 
         input.setAttribute(ATTR_AUTOFILL, 'true')
-        this.addAutofillStyles(input, config)
-        this.addListener(input, 'mousemove', (e) => {
-            if (isEventWithinDax(e, e.target)) {
-                e.target.style.setProperty('cursor', 'pointer', 'important')
-            } else {
-                e.target.style.removeProperty('cursor')
-            }
-        })
+
+        const hasIcon = !!config.getIconBase()
+        if (hasIcon) {
+            this.addAutofillStyles(input, config)
+            this.addListener(input, 'mousemove', (e) => {
+                if (isEventWithinDax(e, e.target)) {
+                    e.target.style.setProperty('cursor', 'pointer', 'important')
+                } else {
+                    e.target.style.removeProperty('cursor')
+                }
+            })
+        }
+
         this.addListener(input, 'mousedown', (e) => {
             if (!e.isTrusted) return
             const isMainMouseButton = e.button === 0
