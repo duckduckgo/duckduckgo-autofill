@@ -165,7 +165,10 @@ class FormAnalyzer {
             this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip: true})
         } else {
             // any other case
-            this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
+            // only consider the el if it's a small text to avoid noisy disclaimers
+            if (el.innerText.length < 50) {
+                this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
+            }
         }
     }
 
