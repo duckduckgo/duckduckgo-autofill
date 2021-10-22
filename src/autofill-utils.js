@@ -44,7 +44,11 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 // Access the original setter (needed to bypass React's implementation on mobile)
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
 
-// This ensures that the value is set properly and dispatches events to simulate a real user action
+/**
+ * Ensures the value is set properly and dispatches events to simulate real user action
+ * @param {HTMLInputElement} el
+ * @param {string | number} val
+ */
 const setValueForInput = (el, val) => {
     // Avoid keyboard flashing on Android
     if (!isAndroid) {
@@ -64,9 +68,15 @@ const setValueForInput = (el, val) => {
     el.blur()
 }
 
-// We assume Select is only used for dates, i.e. in the credit card
+/**
+ * Selects an option of a select element
+ * We assume Select is only used for dates, i.e. in the credit card
+ * @param {HTMLSelectElement} el
+ * @param {string | number} val
+ */
 const setValueForSelect = (el, val) => {
     for (const option of el.options) {
+        // TODO: try to match localised month names
         const optValue = Number(option.value || option.innerText)
         if (optValue === val) {
             const events = [
@@ -86,6 +96,11 @@ const setValueForSelect = (el, val) => {
     }
 }
 
+/**
+ * Sets or selects a value to a form element
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @param {string | number} val
+ */
 const setValue = (el, val) => {
     if (el.nodeName === 'INPUT') setValueForInput(el, val)
     if (el.nodeName === 'SELECT') setValueForSelect(el, val)
@@ -112,6 +127,11 @@ const safeExecute = (el, fn) => {
     intObs.observe(el)
 }
 
+/**
+ * Gets the bounding box of the icon
+ * @param {HTMLInputElement} input
+ * @returns {{top: number, left: number, bottom: number, width: number, x: number, y: number, right: number, height: number}}
+ */
 const getDaxBoundingBox = (input) => {
     const {right: inputRight, top: inputTop, height: inputHeight} = input.getBoundingClientRect()
     const inputRightPadding = parseInt(getComputedStyle(input).paddingRight)
@@ -125,6 +145,12 @@ const getDaxBoundingBox = (input) => {
     return {bottom, height, left, right, top, width, x: left, y: top}
 }
 
+/**
+ * Check if a mouse event is within the icon
+ * @param {MouseEvent} e
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
 const isEventWithinDax = (e, input) => {
     const {left, right, top, bottom} = getDaxBoundingBox(input)
     const withinX = e.clientX >= left && e.clientX <= right
@@ -133,9 +159,19 @@ const isEventWithinDax = (e, input) => {
     return withinX && withinY
 }
 
+/**
+ * Adds inline styles from a prop:value object
+ * @param {HTMLElement} el
+ * @param {Object<string, string>} styles
+ */
 const addInlineStyles = (el, styles) => Object.entries(styles)
     .forEach(([property, val]) => el.style.setProperty(property, val, 'important'))
 
+/**
+ * Removes inline styles from a prop:value object
+ * @param {HTMLElement} el
+ * @param {Object<string, string>} styles
+ */
 const removeInlineStyles = (el, styles) => Object.keys(styles)
     .forEach(property => el.style.removeProperty(property))
 
