@@ -42,7 +42,12 @@ const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([aut
 // This is more generic, used only when we have identified a form
 const USERNAME_SELECTOR = `${GENERIC_TEXT_FIELD}[autocomplete^=user]`
 
-const CC_NAME_SELECTOR = '[autocomplete="cc-name"],[autocomplete="ccname"],[name="ccname"],[name="cc-name"]'
+const CC_NAME_SELECTOR = `
+[autocomplete="cc-name"],
+[autocomplete="ccname"],
+[name="ccname"],
+[name="cc-name"],
+[name="ppw-accountHolderName"]`
 
 const CC_NUMBER_SELECTOR = `
 [autocomplete="cc-number"],
@@ -52,7 +57,9 @@ const CC_NUMBER_SELECTOR = `
 [name="ccnumber"],
 [name="cc-number"],
 [name="cardnumber"],
-[name="card-number"]`
+[name="card-number"],
+[name="creditCardNumber"],
+[name="addCreditCardNumber"]`
 
 const CC_CVC_SELECTOR = `
 [autocomplete="cc-csc"],
@@ -62,13 +69,23 @@ const CC_CVC_SELECTOR = `
 [name="cvc"],
 [name="cc-cvc"],
 [name="cc-csc"],
-[name="csc"]`
+[name="csc"],
+[name="securityCode"]`
 
-const CC_MONTH_SELECTOR = '[autocomplete="cc-exp-month"],[name="ccmonth"]'
+const CC_MONTH_SELECTOR = `
+[autocomplete="cc-exp-month"],
+[name="ccmonth"],
+[name="ppw-expirationDate_month"]`
 
-const CC_YEAR_SELECTOR = '[autocomplete="cc-exp-year"],[name="ccyear"]'
+const CC_YEAR_SELECTOR = `
+[autocomplete="cc-exp-year"],
+[name="ccyear"],
+[name="ppw-expirationDate_year"]`
 
-const CC_EXP_SELECTOR = '[autocomplete="cc-exp"],[name="exp-date"]'
+const CC_EXP_SELECTOR = `
+[autocomplete="cc-exp"],
+[name="exp-date"],
+[name="expirationDate"]`
 
 /* This is used to map a selector with the data type we store for credit cards */
 const CC_SELECTORS_MAP = {
@@ -82,7 +99,7 @@ const CC_SELECTORS_MAP = {
 
 const CC_FIELD_SELECTOR = Object.keys(CC_SELECTORS_MAP).join(', ')
 
-const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR].join(', ')
+const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR].join(', ')
 
 const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button, [role=button]'
 
