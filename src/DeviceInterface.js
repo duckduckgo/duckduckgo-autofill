@@ -55,18 +55,6 @@ class InterfacePrototype {
         this.#addresses = addresses
     }
 
-    /** @type {[CredentialsObject]} */
-    #credentials = []
-    get hasLocalCredentials () {
-        return this.#credentials.length > 0
-    }
-    getLocalCredentials () {
-        return this.#credentials.map(cred => delete cred.password && cred)
-    }
-    storeLocalCredentials (credentials) {
-        this.#credentials = credentials.map(cred => delete cred.password && cred)
-    }
-
     /** @type { PMData } */
     #data = {
         credentials: [],
@@ -83,6 +71,12 @@ class InterfacePrototype {
         data.credentials.forEach((cred) => delete cred.password)
         data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
         this.#data = data
+    }
+    get hasLocalCredentials () {
+        return this.#data.credentials.length > 0
+    }
+    getLocalCredentials () {
+        return this.#data.credentials.map(cred => delete cred.password && cred)
     }
     get hasLocalIdentities () {
         return this.#data.identities.length > 0
@@ -261,7 +255,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
 
             if (isApp) {
-                await this.getAccounts()
+                await this.getAutofillInitData()
             }
 
             const signedIn = await this._checkDeviceSignedIn()
