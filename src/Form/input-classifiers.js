@@ -93,16 +93,16 @@ const inferInputType = (input, isLogin) => {
     const presetType = input.getAttribute(ATTR_INPUT_TYPE)
     if (presetType) return presetType
 
+    if (isCCField(input)) {
+        const subtype = getCCFieldSubtype(input)
+        return `creditCard.${subtype}`
+    }
+
     if (isPassword(input)) return 'credentials.password'
 
     if (isEmail(input)) return isLogin ? 'credentials.username' : 'emailNew'
 
     if (isUserName(input)) return 'credentials.username'
-
-    if (isCCField(input)) {
-        const subtype = getCCFieldSubtype(input)
-        return `creditCard.${subtype}`
-    }
 
     return 'unknown'
 }
