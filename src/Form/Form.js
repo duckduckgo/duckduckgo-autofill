@@ -1,5 +1,5 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, GENERIC_TEXT_FIELD} = require('./selectors')
+const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
 const {getInputSubtype, setInputType, getInputMainType} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
@@ -113,7 +113,7 @@ class Form {
     }
 
     categorizeInputs () {
-        this.form.querySelectorAll(GENERIC_TEXT_FIELD).forEach(input => this.addInput(input))
+        this.form.querySelectorAll(FIELD_SELECTOR).forEach(input => this.addInput(input))
     }
 
     // TODO: try to filter down to only submit buttons
