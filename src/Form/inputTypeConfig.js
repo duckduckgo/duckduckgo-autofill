@@ -7,26 +7,6 @@ const {getInputMainType} = require('./input-classifiers')
 const isFirefox = navigator.userAgent.includes('Firefox')
 const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
 
-/** @typedef {
- *    'emailNew' |
- *    'emailLogin' |
- *    'username' |
- *    'password' |
- *    'creditCard' |
- *    'unknown'
- *  } SupportedTypes */
-
-/** @typedef {{
- *    type: SupportedTypes,
- *    getIconFilled: () => string,
- *    getIconBase: () => string,
- *    shouldDecorate: (function(boolean, InterfacePrototype): boolean),
- *    dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities',
- *    displayTitlePropName: string,
- *    displaySubtitlePropName: string,
- *  }} InputTypeConfig
- */
-
 /**
  * A map of config objects. These help by centralising here some of the complexity
  * @type {Object.<SupportedTypes, InputTypeConfig>}
