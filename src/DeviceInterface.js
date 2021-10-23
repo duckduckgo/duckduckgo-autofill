@@ -307,51 +307,6 @@ class AppleDeviceInterface extends InterfacePrototype {
          */
 
         /**
-         * @typedef {{
-         *      id: Number,
-         *      username: String,
-         *      password?: String,
-         *      lastUpdated: String,
-         * }} CredentialsObject
-         *
-         * @typedef {{
-         *      id: Number,
-         *      title: String,
-         *      firstName?: String,
-         *      middleName?: String,
-         *      lastName?: String,
-         *      birthdayDay?: Number,
-         *      birthdayMonth?: Number,
-         *      birthdayYear?: Number,
-         *      addressStreet?: String,
-         *      addressStreet2?: String,
-         *      addressCity?: String,
-         *      addressProvince?: String,
-         *      addressPostalCode?: String,
-         *      addressCountryCode?: String,
-         *      phone?: String,
-         *      emailAddress?: String,
-         * }} IdentityObject
-         *
-         * @typedef {{
-         *      id: Number,
-         *      title: String,
-         *      displayNumber: String,
-         *      cardName?: String,
-         *      cardNumber?: String,
-         *      cardSecurityCode?: String,
-         *      expirationMonth?: Number,
-         *      expirationYear?: Number,
-         * }} CreditCardObject
-         *
-         * @typedef {{
-         *      credentials: [ CredentialsObject ],
-         *      creditCards: [ CreditCardObject ],
-         *      identities: [ IdentityObject ],
-         * }} PMData
-         */
-
-        /**
          * Sends credentials to the native layer
          * @param {{username: String, password: String}} credentials
          */
@@ -360,27 +315,19 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         /**
          * Gets the init data from the device
-         * @returns {Promise<{ success: PMData, error?: String }>}
+         * @returns {APIResponse<PMData>}
          */
         this.getAutofillInitData = () =>
             wkSendAndWait('pmHandlerGetAutofillInitData')
-                .then((response) => this.storeLocalData(response.success))
-
-        /**
-         * Gets a list of credentials for the current site
-         * @returns {Promise<{ success: [CredentialsObject], error?: String }>}
-         */
-        this.getAccounts = () =>
-            wkSendAndWait('pmHandlerGetAccounts')
                 .then((response) => {
-                    this.storeLocalCredentials(response.success)
+                    this.storeLocalData(response.success)
                     return response
                 })
 
         /**
          * Gets credentials ready for autofill
          * @param {Number} id - the credential id
-         * @returns {Promise<{ success: CredentialsObject, error?: String }>}
+         * @returns {APIResponse<CredentialsObject>}
          */
         this.getAutofillCredentials = (id) =>
             wkSendAndWait('pmHandlerGetAutofillCredentials', { id })
@@ -403,7 +350,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         /**
          * Gets a single identity obj once the user requests it
          * @param {Number} id
-         * @returns {Promise<{ success: IdentityObject, error?: String }>}
+         * @returns {APIResponse<IdentityObject>}
          */
         this.getAutofillIdentity = (id) =>
             wkSendAndWait('pmHandlerGetIdentity', { id })
@@ -411,7 +358,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         /**
          * Gets a single complete credit card obj once the user requests it
          * @param {Number} id
-         * @returns {Promise<{ success: CreditCardObject, error?: String }>}
+         * @returns {APIResponse<CreditCardObject>}
          */
         this.getAutofillCreditCard = (id) =>
             wkSendAndWait('pmHandlerGetCreditCard', { id })
