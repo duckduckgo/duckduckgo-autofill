@@ -181,10 +181,15 @@ class Form {
             })
         }
 
-        this.addListener(input, 'mousedown', (e) => {
-            if (!e.isTrusted) return
-            const isMainMouseButton = e.button === 0
-            if (!isMainMouseButton) return
+        const handler = (e) => {
+            if (this.tooltip) return
+
+            // Checks for mousedown event
+            if (e.type === 'mousedown') {
+                if (!e.isTrusted) return
+                const isMainMouseButton = e.button === 0
+                if (!isMainMouseButton) return
+            }
 
             if (this.shouldOpenTooltip(e, e.target)) {
                 if (isEventWithinDax(e, e.target) || (isDDGApp && !isApp)) {
@@ -195,7 +200,11 @@ class Form {
                 this.touched.add(e.target)
                 this.attachTooltip(this, e.target)
             }
-        })
+        }
+
+        // TODO: on mobile, focus could open keyboard before tooltip
+        ['mousedown', 'focus']
+            .forEach((ev) => this.addListener(input, ev, handler, true))
         return this
     }
 
