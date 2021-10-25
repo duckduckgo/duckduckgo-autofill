@@ -28,10 +28,14 @@ const scanForInputs = (DeviceInterface) => {
     const addInput = (input) => {
         const parentForm = getParentForm(input)
 
-        if (forms.has(parentForm)) {
-            // If we've already met the form, add the input
+        if ([...forms.keys()].find((form) => form.contains(parentForm))) {
+            // If we've already met the form or a descendant, add the input
             forms.get(parentForm).addInput(input)
         } else {
+            // if this form is an ancestor of an existing form, remove that before adding this
+            const childForm = [...forms.keys()].find((form) => parentForm.contains(form))
+            forms.delete(childForm)
+
             forms.set(parentForm, new Form(parentForm, input, DeviceInterface))
         }
     }
