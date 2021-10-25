@@ -67,7 +67,6 @@ class InterfacePrototype {
      * @param { PMData } data
      */
     storeLocalData (data) {
-        console.log('init data', data)
         data.credentials.forEach((cred) => delete cred.password)
         data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
         this.#data = data
