@@ -134,7 +134,7 @@ class Form {
 
         this.allInputs.add(input)
 
-        setInputType(input, this.isLogin)
+        setInputType(input, this)
 
         const mainInputType = getInputMainType(input)
         this[`${mainInputType}Inputs`].add(input)

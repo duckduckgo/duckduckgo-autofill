@@ -89,12 +89,30 @@ const CC_EXP_SELECTOR = `
 
 /* This is used to map a selector with the data type we store for credit cards */
 const CC_SELECTORS_MAP = {
-    [CC_NAME_SELECTOR]: 'cardName',
-    [CC_NUMBER_SELECTOR]: 'cardNumber',
-    [CC_CVC_SELECTOR]: 'cardSecurityCode',
-    [CC_MONTH_SELECTOR]: 'expirationMonth',
-    [CC_YEAR_SELECTOR]: 'expirationYear',
-    [CC_EXP_SELECTOR]: 'expiration'
+    [CC_NAME_SELECTOR]: {
+        ccType: 'cardName',
+        regex: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i
+    },
+    [CC_NUMBER_SELECTOR]: {
+        ccType: 'cardNumber',
+        regex: /card.*number|number.*card/i
+    },
+    [CC_CVC_SELECTOR]: {
+        ccType: 'cardSecurityCode',
+        regex: /security.?code|cvv|csc|cvc/i
+    },
+    [CC_MONTH_SELECTOR]: {
+        ccType: 'expirationMonth',
+        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(mo(nth)?|mm)/i
+    },
+    [CC_YEAR_SELECTOR]: {
+        ccType: 'expirationYear',
+        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i
+    },
+    [CC_EXP_SELECTOR]: {
+        ccType: 'expiration',
+        regex: /exp(iry|iration)?/i
+    }
 }
 
 const CC_FIELD_SELECTOR = Object.keys(CC_SELECTORS_MAP).join(', ')

@@ -33,7 +33,7 @@ const findLabels = (el) => {
  */
 const checkMatch = (el, selector, regex = new RegExp('(?!)')) => {
     if (
-        el.matches(selector) ||
+        (selector && el.matches(selector)) ||
         [...el.labels].filter(label => regex.test(label.textContent)).length > 0 ||
         regex.test(el.getAttribute('aria-label')) ||
         el.id?.match(regex)
@@ -67,6 +67,29 @@ const isUserName = (input) =>
     checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?/i)
 
 /**
+ * Tries to infer if it's a credit card form
+ * @param {HTMLElement} form
+ * @returns {boolean}
+ */
+const isCCForm = (form) => {
+    const hasCCSelectorChild = form.querySelector(CC_FIELD_SELECTOR)
+    // If the form contains one of the specific selectors, we have high confidence
+    if (hasCCSelectorChild) return true
+
+    // Read form attributes to find a signal
+    const hasCCAttribute = Array.from(form.attributes).some(({name, value}) => {
+        /(credit)?card|cc/i.test(`${name}=${value}`)
+    })
+    if (hasCCAttribute) return true
+
+    // Match form innerText against common cc fields
+    const textMatches = form.innerText.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
+
+    // We check for more than one to minimise false positives
+    return textMatches?.length > 1
+}
+
+/**
  * Tries to infer if input is for credit card
  * @param {HTMLInputElement} input
  * @returns {boolean}
@@ -75,32 +98,42 @@ const isCCField = (input) =>
     checkMatch(input, CC_FIELD_SELECTOR)
 
 /**
- * Get a subtype based on the matching selector
+ * Get a CC subtype based on selectors and regexes
  * @param {HTMLInputElement} input
+ * @return {string}
  */
 const getCCFieldSubtype = (input) => {
     const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => input.matches(selector))
-    return CC_SELECTORS_MAP[matchingSelector]
+    if (matchingSelector) return CC_SELECTORS_MAP[matchingSelector].ccType
+
+    // Loop through types until something matches
+    for (const {ccType, regex} of Object.values(CC_SELECTORS_MAP)) {
+        if (checkMatch(input, '', regex)) return ccType
+    }
+
+    return ''
 }
 
 /**
  * Tries to infer the input type
  * @param {HTMLInputElement} input
- * @param {boolean} isLogin
+ * @param {Form} form
  * @returns {SupportedTypes}
  */
-const inferInputType = (input, isLogin) => {
+const inferInputType = (input, form) => {
     const presetType = input.getAttribute(ATTR_INPUT_TYPE)
     if (presetType) return presetType
 
-    if (isCCField(input)) {
+    // For CC forms we run aggressive matches, so we want to make sure we only
+    // run them on actual CC forms to avoid false positives and expensive loops
+    if (isCCForm(form.form)) {
         const subtype = getCCFieldSubtype(input)
-        return `creditCard.${subtype}`
+        if (subtype) return `creditCard.${subtype}`
     }
 
     if (isPassword(input)) return 'credentials.password'
 
-    if (isEmail(input)) return isLogin ? 'credentials.username' : 'emailNew'
+    if (isEmail(input)) return form.isLogin ? 'credentials.username' : 'emailNew'
 
     if (isUserName(input)) return 'credentials.username'
 
@@ -110,11 +143,11 @@ const inferInputType = (input, isLogin) => {
 /**
  * Sets the input type as a data attribute to the element and returns it
  * @param {HTMLInputElement} input
- * @param {boolean} isLogin
+ * @param {Form} form
  * @returns {SupportedTypes}
  */
-const setInputType = (input, isLogin) => {
-    const type = inferInputType(input, isLogin)
+const setInputType = (input, form) => {
+    const type = inferInputType(input, form)
     input.setAttribute(ATTR_INPUT_TYPE, type)
     return type
 }
