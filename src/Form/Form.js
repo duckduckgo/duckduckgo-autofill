@@ -1,7 +1,7 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
-const {getInputSubtype, setInputType, getInputMainType} = require('./input-classifiers')
+const {getInputSubtype, setInputType, getInputMainType, formatCCYear} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const getInputConfig = require('./inputTypeConfig')
@@ -239,7 +239,15 @@ class Form {
 
         this.execOnInputs((input) => {
             const inputSubtype = getInputSubtype(input)
-            if (data[inputSubtype]) this.autofillInput(input, data[inputSubtype], dataType)
+            let autofillData = data[inputSubtype]
+
+            if (!autofillData) return
+
+            if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
+                autofillData = formatCCYear(input, autofillData)
+            }
+
+            this.autofillInput(input, autofillData, dataType)
         }, dataType)
 
         if (this.tooltip) {

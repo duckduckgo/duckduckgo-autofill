@@ -169,6 +169,23 @@ const getInputSubtype = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] ||
     input.getAttribute(ATTR_INPUT_TYPE).split('.')[0]
 
+const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
+/**
+ * Format the cc year to best adapt to the input requirements (YY vs YYYY)
+ * @param {HTMLInputElement} input
+ * @param {number} year
+ * @returns {number}
+ */
+const formatCCYear = (input, year) => {
+    if (
+        input.maxLength === 4 ||
+        fourDigitYearRegex.test(input.placeholder) ||
+        [...input.labels].some((label) => fourDigitYearRegex.test(label))
+    ) return 2000 + year
+
+    return year
+}
+
 module.exports = {
     isPassword,
     isEmail,
@@ -177,5 +194,6 @@ module.exports = {
     inferInputType,
     setInputType,
     getInputMainType,
-    getInputSubtype
+    getInputSubtype,
+    formatCCYear,
 }
