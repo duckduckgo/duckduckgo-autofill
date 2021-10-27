@@ -522,7 +522,8 @@ const {
   getInputSubtype,
   setInputType,
   getInputMainType,
-  formatCCYear
+  formatCCYear,
+  getUnifiedExpiryDate
 } = require('./input-classifiers');
 
 const {
@@ -664,6 +665,7 @@ class Form {
     };
 
     this.categorizeInputs();
+    console.log('form: ', this);
     return this;
   }
 
@@ -780,13 +782,16 @@ class Form {
     this.execOnInputs(input => {
       const inputSubtype = getInputSubtype(input);
       let autofillData = data[inputSubtype];
-      if (!autofillData) return;
+
+      if (inputSubtype === 'expiration') {
+        autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear);
+      }
 
       if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
         autofillData = formatCCYear(input, autofillData);
       }
 
-      this.autofillInput(input, autofillData, dataType);
+      if (autofillData) this.autofillInput(input, autofillData, dataType);
     }, dataType);
 
     if (this.tooltip) {
@@ -1110,7 +1115,7 @@ const isCCForm = form => {
   });
   if (hasCCAttribute) return true; // Match form innerText against common cc fields
 
-  const textMatches = form.innerText.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
+  const textMatches = form.textContent.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
 
   return (textMatches === null || textMatches === void 0 ? void 0 : textMatches.length) > 1;
 };
@@ -1194,8 +1199,30 @@ const getInputMainType = input => input.getAttribute(ATTR_INPUT_TYPE).split('.')
 
 
 const getInputSubtype = input => input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] || input.getAttribute(ATTR_INPUT_TYPE).split('.')[0];
+/**
+ * Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
+ * @type {RegExp}
+ */
+
 
 const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i;
+/**
+ * Check if a given input matches a regex
+ * @param {HTMLInputElement} input
+ * @param {RegExp} regex
+ * @returns {boolean}
+ */
+
+const checkPlaceholderAndLabels = (input, regex) => regex.test(input.placeholder) || [...input.labels].some(label => regex.test(label.innerText));
+/**
+ * Find a regex match for a given input
+ * @param {HTMLInputElement} input
+ * @param {RegExp} regex
+ * @returns {RegExpMatchArray|null}
+ */
+
+
+const findInPlaceholderAndLabels = (input, regex) => input.placeholder.match(regex) || [...input.labels].find(label => label.innerText.match(regex));
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
@@ -1203,9 +1230,27 @@ const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i;
  * @returns {number}
  */
 
+
 const formatCCYear = (input, year) => {
-  if (input.maxLength === 4 || fourDigitYearRegex.test(input.placeholder) || [...input.labels].some(label => fourDigitYearRegex.test(label))) return 2000 + year;
-  return year;
+  if (input.maxLength === 4 || checkPlaceholderAndLabels(input, fourDigitYearRegex)) return year;
+  return year - 2000;
+};
+/**
+ * Get a unified expiry date with separator
+ * @param {HTMLInputElement} input
+ * @param {number} month
+ * @param {number} year
+ * @returns {string}
+ */
+
+
+const getUnifiedExpiryDate = (input, month, year) => {
+  var _findInPlaceholderAnd, _findInPlaceholderAnd2;
+
+  const formattedYear = formatCCYear(input, year);
+  const separatorRegex = /\w\w(?<separator>[/\s.\-_—–])\w\w/i;
+  const separator = ((_findInPlaceholderAnd = findInPlaceholderAndLabels(input, separatorRegex)) === null || _findInPlaceholderAnd === void 0 ? void 0 : (_findInPlaceholderAnd2 = _findInPlaceholderAnd.groups) === null || _findInPlaceholderAnd2 === void 0 ? void 0 : _findInPlaceholderAnd2.separator) || '/';
+  return "".concat(month).concat(separator).concat(formattedYear);
 };
 
 module.exports = {
@@ -1217,7 +1262,8 @@ module.exports = {
   setInputType,
   getInputMainType,
   getInputSubtype,
-  formatCCYear
+  formatCCYear,
+  getUnifiedExpiryDate
 };
 
 },{"../constants":19,"./selectors":9}],5:[function(require,module,exports){
@@ -1388,12 +1434,12 @@ const GENERIC_TEXT_FIELD = "\ninput:not([type=button],\n[type=checkbox],\n[type=
 const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])"; // This is more generic, used only when we have identified a form
 
 const USERNAME_SELECTOR = "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]");
-const CC_NAME_SELECTOR = "\n[autocomplete=\"cc-name\"],\n[autocomplete=\"ccname\"],\n[name=\"ccname\"],\n[name=\"cc-name\"],\n[name=\"ppw-accountHolderName\"]";
-const CC_NUMBER_SELECTOR = "\n[autocomplete=\"cc-number\"],\n[autocomplete=\"ccnumber\"],\n[autocomplete=\"cardnumber\"],\n[autocomplete=\"card-number\"],\n[name=\"ccnumber\"],\n[name=\"cc-number\"],\n[name=\"cardnumber\"],\n[name=\"card-number\"],\n[name=\"creditCardNumber\"],\n[name=\"addCreditCardNumber\"]";
-const CC_CVC_SELECTOR = "\n[autocomplete=\"cc-csc\"],\n[autocomplete=\"csc\"],\n[autocomplete=\"cc-cvc\"],\n[autocomplete=\"cvc\"],\n[name=\"cvc\"],\n[name=\"cc-cvc\"],\n[name=\"cc-csc\"],\n[name=\"csc\"],\n[name=\"securityCode\"]";
+const CC_NAME_SELECTOR = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
+const CC_NUMBER_SELECTOR = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name=\"cardnumber\"],\ninput[name=\"card-number\"],\ninput[name=\"creditCardNumber\"],\ninput[name=\"addCreditCardNumber\"],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
+const CC_CVC_SELECTOR = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name=\"securityCode\"]";
 const CC_MONTH_SELECTOR = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"]";
 const CC_YEAR_SELECTOR = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"]";
-const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"]";
+const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i],\nselect[id*=expiration i]";
 /* This is used to map a selector with the data type we store for credit cards */
 
 const CC_SELECTORS_MAP = {
@@ -2217,7 +2263,9 @@ module.exports = {
         }
       });
     }
-  } catch (e) {// Noop, we errored
+  } catch (e) {
+    // Noop, we errored
+    console.error(e);
   }
 })();
 
@@ -2304,11 +2352,13 @@ const scanForInputs = DeviceInterface => {
   };
 
   const addInput = input => {
-    const parentForm = getParentForm(input);
+    const parentForm = getParentForm(input); // Note that el.contains returns true for el itself
 
-    if ([...forms.keys()].find(form => form.contains(parentForm))) {
+    const previouslyFoundParent = [...forms.keys()].find(form => form.contains(parentForm));
+
+    if (previouslyFoundParent) {
       // If we've already met the form or a descendant, add the input
-      forms.get(parentForm).addInput(input);
+      forms.get(previouslyFoundParent).addInput(input);
     } else {
       // if this form is an ancestor of an existing form, remove that before adding this
       const childForm = [...forms.keys()].find(form => parentForm.contains(form));
