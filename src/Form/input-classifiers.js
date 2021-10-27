@@ -83,7 +83,7 @@ const isCCForm = (form) => {
     if (hasCCAttribute) return true
 
     // Match form innerText against common cc fields
-    const textMatches = form.innerText.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
+    const textMatches = form.textContent.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
 
     // We check for more than one to minimise false positives
     return textMatches?.length > 1
