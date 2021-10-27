@@ -169,7 +169,32 @@ const getInputSubtype = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] ||
     input.getAttribute(ATTR_INPUT_TYPE).split('.')[0]
 
+/**
+ * Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
+ * @type {RegExp}
+ */
 const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
+
+/**
+ * Check if a given input matches a regex
+ * @param {HTMLInputElement} input
+ * @param {RegExp} regex
+ * @returns {boolean}
+ */
+const checkPlaceholderAndLabels = (input, regex) =>
+    regex.test(input.placeholder) ||
+    [...input.labels].some((label) => regex.test(label.innerText))
+
+/**
+ * Find a regex match for a given input
+ * @param {HTMLInputElement} input
+ * @param {RegExp} regex
+ * @returns {RegExpMatchArray|null}
+ */
+const findInPlaceholderAndLabels = (input, regex) =>
+    input.placeholder.match(regex) ||
+    [...input.labels].find((label) => label.innerText.match(regex))
+
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
@@ -179,11 +204,25 @@ const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
 const formatCCYear = (input, year) => {
     if (
         input.maxLength === 4 ||
-        fourDigitYearRegex.test(input.placeholder) ||
-        [...input.labels].some((label) => fourDigitYearRegex.test(label))
-    ) return 2000 + year
+        checkPlaceholderAndLabels(input, fourDigitYearRegex)
+    ) return year
 
-    return year
+    return year - 2000
+}
+
+/**
+ * Get a unified expiry date with separator
+ * @param {HTMLInputElement} input
+ * @param {number} month
+ * @param {number} year
+ * @returns {string}
+ */
+const getUnifiedExpiryDate = (input, month, year) => {
+    const formattedYear = formatCCYear(input, year)
+    const separatorRegex = /\w\w(?<separator>[/\s.\-_—–])\w\w/i
+    const separator = findInPlaceholderAndLabels(input, separatorRegex)?.groups?.separator || '/'
+
+    return `${month}${separator}${formattedYear}`
 }
 
 module.exports = {
@@ -196,4 +235,5 @@ module.exports = {
     getInputMainType,
     getInputSubtype,
     formatCCYear,
+    getUnifiedExpiryDate
 }
