@@ -43,34 +43,40 @@ const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([aut
 const USERNAME_SELECTOR = `${GENERIC_TEXT_FIELD}[autocomplete^=user]`
 
 const CC_NAME_SELECTOR = `
-[autocomplete="cc-name"],
-[autocomplete="ccname"],
-[name="ccname"],
-[name="cc-name"],
-[name="ppw-accountHolderName"]`
+input[autocomplete="cc-name"],
+input[autocomplete="ccname"],
+input[name="ccname"],
+input[name="cc-name"],
+input[name="ppw-accountHolderName"],
+input[id*=cardname i],
+input[id*=card-name i],
+input[id*=card_name i]`
 
 const CC_NUMBER_SELECTOR = `
-[autocomplete="cc-number"],
-[autocomplete="ccnumber"],
-[autocomplete="cardnumber"],
-[autocomplete="card-number"],
-[name="ccnumber"],
-[name="cc-number"],
-[name="cardnumber"],
-[name="card-number"],
-[name="creditCardNumber"],
-[name="addCreditCardNumber"]`
+input[autocomplete="cc-number"],
+input[autocomplete="ccnumber"],
+input[autocomplete="cardnumber"],
+input[autocomplete="card-number"],
+input[name="ccnumber"],
+input[name="cc-number"],
+input[name="cardnumber"],
+input[name="card-number"],
+input[name="creditCardNumber"],
+input[name="addCreditCardNumber"],
+input[id*=cardnumber i],
+input[id*=card-number i],
+input[id*=card_number i]`
 
 const CC_CVC_SELECTOR = `
-[autocomplete="cc-csc"],
-[autocomplete="csc"],
-[autocomplete="cc-cvc"],
-[autocomplete="cvc"],
-[name="cvc"],
-[name="cc-cvc"],
-[name="cc-csc"],
-[name="csc"],
-[name="securityCode"]`
+input[autocomplete="cc-csc"],
+input[autocomplete="csc"],
+input[autocomplete="cc-cvc"],
+input[autocomplete="cvc"],
+input[name="cvc"],
+input[name="cc-cvc"],
+input[name="cc-csc"],
+input[name="csc"],
+input[name="securityCode"]`
 
 const CC_MONTH_SELECTOR = `
 [autocomplete="cc-exp-month"],
@@ -85,7 +91,9 @@ const CC_YEAR_SELECTOR = `
 const CC_EXP_SELECTOR = `
 [autocomplete="cc-exp"],
 [name="exp-date"],
-[name="expirationDate"]`
+[name="expirationDate"],
+input[id*=expiration i],
+select[id*=expiration i]`
 
 /* This is used to map a selector with the data type we store for credit cards */
 const CC_SELECTORS_MAP = {
