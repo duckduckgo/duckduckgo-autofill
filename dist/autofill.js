@@ -1111,7 +1111,7 @@ const isCCForm = form => {
     name,
     value
   }) => /(credit)?card|cc/i.test("".concat(name, "=").concat(value)));
-  if (hasCCAttribute) return true; // Match form innerText against common cc fields
+  if (hasCCAttribute) return true; // Match form textContent against common cc fields (includes hidden labels)
 
   const textMatches = form.textContent.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
 
