@@ -219,7 +219,7 @@ const formatCCYear = (input, year) => {
  */
 const getUnifiedExpiryDate = (input, month, year) => {
     const formattedYear = formatCCYear(input, year)
-    const separatorRegex = /\w\w(?<separator>[/\s.\-_—–])\w\w/i
+    const separatorRegex = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
     const separator = findInPlaceholderAndLabels(input, separatorRegex)?.groups?.separator || '/'
 
     return `${month}${separator}${formattedYear}`

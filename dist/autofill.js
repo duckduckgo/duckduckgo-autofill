@@ -1246,7 +1246,7 @@ const getUnifiedExpiryDate = (input, month, year) => {
   var _findInPlaceholderAnd, _findInPlaceholderAnd2;
 
   const formattedYear = formatCCYear(input, year);
-  const separatorRegex = /\w\w(?<separator>[/\s.\-_—–])\w\w/i;
+  const separatorRegex = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i;
   const separator = ((_findInPlaceholderAnd = findInPlaceholderAndLabels(input, separatorRegex)) === null || _findInPlaceholderAnd === void 0 ? void 0 : (_findInPlaceholderAnd2 = _findInPlaceholderAnd.groups) === null || _findInPlaceholderAnd2 === void 0 ? void 0 : _findInPlaceholderAnd2.separator) || '/';
   return "".concat(month).concat(separator).concat(formattedYear);
 };
