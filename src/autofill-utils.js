@@ -90,7 +90,7 @@ const setValueForSelect = (el, val) => {
             // Events fire on the select el, not option
             events.forEach((ev) => el.dispatchEvent(ev))
             option.selected = true
-            option.blur()
+            el.blur()
             return
         }
     }

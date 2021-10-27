@@ -2030,7 +2030,7 @@ const setValueForSelect = (el, val) => {
 
       events.forEach(ev => el.dispatchEvent(ev));
       option.selected = true;
-      option.blur();
+      el.blur();
       return;
     }
   }
