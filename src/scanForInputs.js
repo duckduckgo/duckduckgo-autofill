@@ -1,6 +1,6 @@
 const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
-const {EMAIL_SELECTOR, PASSWORD_SELECTOR, FIELD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./Form/selectors')
+const {FIELD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./Form/selectors')
 
 const forms = new Map()
 
@@ -25,22 +25,20 @@ const scanForInputs = (DeviceInterface) => {
         return input
     }
 
-    const isRelevantInput = (input) => {
-        if (input.matches(EMAIL_SELECTOR) || input.matches(PASSWORD_SELECTOR)) return true
-
-        // this is a generic text input, let's see if the labels tells us more
-        return [...input.labels].filter(label => /.mail/i.test(label.textContent)).length > 0
-    }
-
     const addInput = (input) => {
-        if (!isRelevantInput(input)) return
-
         const parentForm = getParentForm(input)
 
-        if (forms.has(parentForm)) {
-            // If we've already met the form, add the input
-            forms.get(parentForm).addInput(input)
+        // Note that el.contains returns true for el itself
+        const previouslyFoundParent = [...forms.keys()].find((form) => form.contains(parentForm))
+
+        if (previouslyFoundParent) {
+            // If we've already met the form or a descendant, add the input
+            forms.get(previouslyFoundParent).addInput(input)
         } else {
+            // if this form is an ancestor of an existing form, remove that before adding this
+            const childForm = [...forms.keys()].find((form) => parentForm.contains(form))
+            forms.delete(childForm)
+
             forms.set(parentForm, new Form(parentForm, input, DeviceInterface))
         }
     }

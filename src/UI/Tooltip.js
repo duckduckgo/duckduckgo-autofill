@@ -1,5 +1,5 @@
-const {safeExecute} = require('../autofill-utils')
-const {getDaxBoundingBox} = require('../autofill-utils')
+const {safeExecute, addInlineStyles, getDaxBoundingBox} = require('../autofill-utils')
+const {getInputMainType} = require('../Form/input-classifiers')
 
 const updatePosition = function ({left, top}) {
     const shadow = this.shadow
@@ -27,9 +27,11 @@ const checkPosition = function () {
     }
 
     this.animationFrame = window.requestAnimationFrame(() => {
-        const {left, bottom} = this.associatedForm.isLogin
-            ? this.input.getBoundingClientRect()
-            : getDaxBoundingBox(this.input)
+        const isEmailInput = getInputMainType(this.input) === 'emailNew'
+        // Placement for the email autofill tooltip is relative to the position of the Dax icon
+        const position = isEmailInput ? getDaxBoundingBox(this.input)
+            : this.input.getBoundingClientRect()
+        const {left, bottom} = position
 
         if (left !== this.left || bottom !== this.top) {
             this.updatePosition({left, top: bottom})
@@ -61,6 +63,12 @@ class Tooltip {
     constructor (input, associatedForm, Interface) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
         this.host = this.shadow.host
+        const forcedVisibilityStyles = {
+            'display': 'block',
+            'visibility': 'visible',
+            'opacity': '1'
+        }
+        addInlineStyles(this.host, forcedVisibilityStyles)
         this.input = input
         this.associatedForm = associatedForm
         this.interface = Interface

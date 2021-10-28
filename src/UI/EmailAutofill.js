@@ -20,14 +20,14 @@ ${includeStyles}
 <div class="wrapper wrapper--email">
     <div class="tooltip tooltip--email" hidden>
         <button class="tooltip__button tooltip__button--email js-use-personal">
-            <span class="tooltip__button__primary-text">
+            <span class="tooltip__button--email__primary-text">
                 Use <span class="js-address">${formatAddress(escapeXML(this.addresses.personalAddress))}</span>
             </span>
-            <span class="tooltip__button__secondary-text">Blocks email trackers</span>
+            <span class="tooltip__button--email__secondary-text">Blocks email trackers</span>
         </button>
         <button class="tooltip__button tooltip__button--email js-use-private">
-            <span class="tooltip__button__primary-text">Use a Private Address</span>
-            <span class="tooltip__button__secondary-text">Blocks email trackers and hides your address</span>
+            <span class="tooltip__button--email__primary-text">Use a Private Address</span>
+            <span class="tooltip__button--email__secondary-text">Blocks email trackers and hides your address</span>
         </button>
     </div>
 </div>`

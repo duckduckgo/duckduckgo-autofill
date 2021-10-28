@@ -12,7 +12,7 @@
             const DeviceInterface = require('./DeviceInterface')
 
             // Global listener for event delegation
-            window.addEventListener('click', (e) => {
+            window.addEventListener('pointerdown', (e) => {
                 if (!e.isTrusted) return
 
                 if (e.target.nodeName === 'DDG-AUTOFILL') {

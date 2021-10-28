@@ -50,7 +50,7 @@ class FormAnalyzer {
         )
         const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
         const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i)
-        const matchesNegative = string.match(negativeRegex)
+        const matchesNegative = string === 'current-password' || string.match(negativeRegex)
 
         // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
         if (shouldCheckUnifiedForm && matchesNegative && string.match(strictPositiveRegex)) {
@@ -58,7 +58,7 @@ class FormAnalyzer {
             return this
         }
 
-        const matchesPositive = string.match(shouldBeConservative ? conservativePositiveRegex : positiveRegex)
+        const matchesPositive = string === 'new-password' || string.match(shouldBeConservative ? conservativePositiveRegex : positiveRegex)
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -72,24 +72,6 @@ class FormAnalyzer {
     }
 
     evaluateElAttributes (el, signalStrength = 3, isInput = false) {
-        if (el.matches(PASSWORD_SELECTOR)) {
-            // These are explicit signals by the web author, so we weigh them heavily
-            if (el.getAttribute('autocomplete')?.includes('current-password')) {
-                this.updateSignal({
-                    string: 'current-password',
-                    strength: -20,
-                    signalType: 'current-password'
-                })
-            }
-            if (el.getAttribute('autocomplete')?.includes('new-password')) {
-                this.updateSignal({
-                    string: 'new-password',
-                    strength: 20,
-                    signalType: 'new-password'
-                })
-            }
-        }
-
         Array.from(el.attributes).forEach(attr => {
             if (attr.name === 'style') return
 
@@ -159,9 +141,20 @@ class FormAnalyzer {
     evaluateElement (el) {
         const string = this.getText(el)
 
+        if (el.matches(PASSWORD_SELECTOR)) {
+            // These are explicit signals by the web author, so we weigh them heavily
+            this.updateSignal({
+                string: el.getAttribute('autocomplete') || '',
+                strength: 20,
+                signalType: `explicit: ${el.getAttribute('autocomplete')}`
+            })
+        }
+
         // check button contents
         if (el.matches(SUBMIT_BUTTON_SELECTOR)) {
-            this.updateSignal({string, strength: 2, signalType: `submit: ${string}`})
+            // If we're sure this is a submit button, it's a stronger signal
+            const strength = el.getAttribute('type') === 'submit' ? 20 : 2
+            this.updateSignal({string, strength, signalType: `submit: ${string}`})
         }
         // if a link points to relevant urls or contain contents outside the page…
         if (
@@ -172,7 +165,10 @@ class FormAnalyzer {
             this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip: true})
         } else {
             // any other case
-            this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
+            // only consider the el if it's a small text to avoid noisy disclaimers
+            if (el.innerText?.length < 50) {
+                this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
+            }
         }
     }
 
@@ -184,7 +180,13 @@ class FormAnalyzer {
         this.evaluateElAttributes(this.form)
 
         // Check form contents (skip select and option because they contain too much noise)
-        this.form.querySelectorAll('*:not(select):not(option)').forEach(el => this.evaluateElement(el))
+        this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+            // Check if element is not hidden. Note that we can't use offsetHeight
+            // nor intersectionObserver, because the element could be outside the
+            // viewport or its parent hidden
+            const displayValue = window.getComputedStyle(el, null).getPropertyValue('display')
+            if (displayValue !== 'none') this.evaluateElement(el)
+        })
 
         // If we can't decide at this point, try reading page headings
         if (this.autofillSignal === 0) {

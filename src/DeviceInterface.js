@@ -1,5 +1,5 @@
 const EmailAutofill = require('./UI/EmailAutofill')
-const CredentialsAutofill = require('./UI/CredentialsAutofill')
+const DataAutofill = require('./UI/DataAutofill')
 const {
     isApp,
     notifyWebApp,
@@ -15,6 +15,7 @@ const {
     wkSendAndWait
 } = require('./appleDeviceUtils/appleDeviceUtils')
 const {scanForInputs, forms} = require('./scanForInputs.js')
+const getInputConfig = require('./Form/inputTypeConfig')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -29,9 +30,10 @@ const attachTooltip = function (form, input) {
         if (form.tooltip) return
 
         form.activeInput = input
-        form.tooltip = form.isLogin
-            ? new CredentialsAutofill(input, form, this)
-            : new EmailAutofill(input, form, this)
+        const inputType = getInputConfig(input).type
+        form.tooltip = inputType === 'emailNew'
+            ? new EmailAutofill(input, form, this)
+            : new DataAutofill(input, form, this)
         form.intObs.observe(input)
         window.addEventListener('mousedown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})
@@ -53,16 +55,39 @@ class InterfacePrototype {
         this.#addresses = addresses
     }
 
-    /** @type {[CredentialsObject]} */
-    #credentials = []
+    /** @type { PMData } */
+    #data = {
+        credentials: [],
+        creditCards: [],
+        identities: []
+    }
+
+    /**
+     * Stores init data coming from the device
+     * @param { PMData } data
+     */
+    storeLocalData (data) {
+        data.credentials.forEach((cred) => delete cred.password)
+        data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        this.#data = data
+    }
     get hasLocalCredentials () {
-        return this.#credentials.length > 0
+        return this.#data.credentials.length > 0
     }
     getLocalCredentials () {
-        return this.#credentials.map(cred => delete cred.password && cred)
+        return this.#data.credentials.map(cred => delete cred.password && cred)
     }
-    storeLocalCredentials (credentials) {
-        this.#credentials = credentials.map(cred => delete cred.password && cred)
+    get hasLocalIdentities () {
+        return this.#data.identities.length > 0
+    }
+    getLocalIdentities () {
+        return this.#data.identities
+    }
+    get hasLocalCreditCards () {
+        return this.#data.creditCards.length > 0
+    }
+    getLocalCreditCards () {
+        return this.#data.creditCards
     }
 
     init () {
@@ -229,7 +254,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
 
             if (isApp) {
-                await this.getAccounts()
+                await this.getAutofillInitData()
             }
 
             const signedIn = await this._checkDeviceSignedIn()
@@ -281,15 +306,6 @@ class AppleDeviceInterface extends InterfacePrototype {
          */
 
         /**
-         * @typedef {{
-         *      id: Number,
-         *      username: String,
-         *      password?: String,
-         *      lastUpdated: String,
-         * }} CredentialsObject
-         */
-
-        /**
          * Sends credentials to the native layer
          * @param {{username: String, password: String}} credentials
          */
@@ -297,28 +313,54 @@ class AppleDeviceInterface extends InterfacePrototype {
             wkSend('pmHandlerStoreCredentials', credentials)
 
         /**
-         * Gets a list of credentials for the current site
-         * @returns {Promise<{ success: [CredentialsObject], error?: String }>}
+         * Gets the init data from the device
+         * @returns {APIResponse<PMData>}
          */
-        this.getAccounts = () =>
-            wkSendAndWait('pmHandlerGetAccounts')
+        this.getAutofillInitData = () =>
+            wkSendAndWait('pmHandlerGetAutofillInitData')
                 .then((response) => {
-                    this.storeLocalCredentials(response.success)
+                    this.storeLocalData(response.success)
                     return response
                 })
 
         /**
          * Gets credentials ready for autofill
          * @param {Number} id - the credential id
-         * @returns {Promise<{ success: CredentialsObject, error?: String }>}
+         * @returns {APIResponse<CredentialsObject>}
          */
         this.getAutofillCredentials = (id) =>
-            wkSendAndWait('pmHandlerGetAutofillCredentials', {id})
+            wkSendAndWait('pmHandlerGetAutofillCredentials', { id })
 
         /**
          * Opens the native UI for managing passwords
          */
         this.openManagePasswords = () => wkSend('pmHandlerOpenManagePasswords')
+
+        /**
+         * Opens the native UI for managing identities
+         */
+        this.openManageIdentities = () => wkSend('pmHandlerOpenManageIdentities')
+
+        /**
+         * Opens the native UI for managing credit cards
+         */
+        this.openManageCreditCards = () => wkSend('pmHandlerOpenManageCreditCards')
+
+        /**
+         * Gets a single identity obj once the user requests it
+         * @param {Number} id
+         * @returns {APIResponse<IdentityObject>}
+         */
+        this.getAutofillIdentity = (id) =>
+            wkSendAndWait('pmHandlerGetIdentity', { id })
+
+        /**
+         * Gets a single complete credit card obj once the user requests it
+         * @param {Number} id
+         * @returns {APIResponse<CreditCardObject>}
+         */
+        this.getAutofillCreditCard = (id) =>
+            wkSendAndWait('pmHandlerGetCreditCard', { id })
     }
 }
 

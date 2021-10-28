@@ -13,5 +13,6 @@
         "browser": true,
         "jasmine": true,
         "jest": true
-    }
+    },
+    "ignorePatterns": ["src/**/*.d.ts", "dist/*"]
 }
