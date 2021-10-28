@@ -28,9 +28,11 @@ const checkPosition = function () {
     }
 
     this.animationFrame = window.requestAnimationFrame(() => {
-        const {left, bottom} = getInputMainType(this.input) === 'emailNew'
-            ? getDaxBoundingBox(this.input)
+        const isEmailInput = getInputMainType(this.input) === 'emailNew'
+        // Placement for the email autofill tooltip is relative to the position of the Dax icon
+        const position = isEmailInput ? getDaxBoundingBox(this.input)
             : this.input.getBoundingClientRect()
+        const {left, bottom} = position
 
         if (left !== this.left || bottom !== this.top) {
             this.updatePosition({left, top: bottom})
