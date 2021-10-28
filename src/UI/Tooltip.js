@@ -1,5 +1,4 @@
-const {safeExecute, addInlineStyles} = require('../autofill-utils')
-const {getDaxBoundingBox} = require('../autofill-utils')
+const {safeExecute, addInlineStyles, getDaxBoundingBox} = require('../autofill-utils')
 const {getInputMainType} = require('../Form/input-classifiers')
 
 const updatePosition = function ({left, top}) {

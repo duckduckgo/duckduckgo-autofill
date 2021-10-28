@@ -14,9 +14,11 @@ const {ATTR_INPUT_TYPE} = require('../constants')
  */
 const findLabels = (el) => {
     const parentNode = el.parentNode
-    const inputsInScope = parentNode?.querySelectorAll('input')
+    if (!parentNode) return []
+
+    const inputsInScope = parentNode.querySelectorAll('input')
     // To avoid noise, ensure that our input is the only in scope
-    if (inputsInScope?.length === 1) {
+    if (inputsInScope.length === 1) {
         const labels = parentNode.querySelectorAll('label')
         // If no label, recurse
         return labels.length ? labels : findLabels(parentNode)
@@ -28,12 +30,15 @@ const findLabels = (el) => {
  * Tries to infer input type, with checks in decreasing order of reliability
  * @param {HTMLInputElement} el
  * @param {String} selector - a css selector
- * @param {RegExp} [regex] - defaults to a regex that never matches https://stackoverflow.com/a/1723207/1948947
+ * @param {RegExp} [regex]
  * @returns {boolean}
  */
-const checkMatch = (el, selector, regex = new RegExp('(?!)')) => {
+const checkMatch = (el, selector, regex) => {
+    if (selector && el.matches(selector)) return true
+
+    if (!regex) return false
+
     if (
-        (selector && el.matches(selector)) ||
         [...el.labels].filter(label => regex.test(label.textContent)).length > 0 ||
         regex.test(el.getAttribute('aria-label')) ||
         el.id?.match(regex)
@@ -64,7 +69,7 @@ const isEmail = (input) =>
  * @returns {boolean}
  */
 const isUserName = (input) =>
-    checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?/i)
+    checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?$/i)
 
 /**
  * Tries to infer if it's a credit card form
@@ -111,7 +116,7 @@ const getCCFieldSubtype = (input) => {
         if (checkMatch(input, '', regex)) return ccType
     }
 
-    return ''
+    return undefined
 }
 
 /**
@@ -158,7 +163,8 @@ const setInputType = (input, form) => {
  * @returns {SupportedTypes}
  */
 const getInputMainType = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE).split('.')[0]
+    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
+    'unknown'
 
 /**
  * Retrieves the input subtype
@@ -167,23 +173,14 @@ const getInputMainType = (input) =>
  */
 const getInputSubtype = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] ||
-    input.getAttribute(ATTR_INPUT_TYPE).split('.')[0]
+    input.getAttribute(ATTR_INPUT_TYPE).split('.')[0] ||
+    'unknown'
 
 /**
  * Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
  * @type {RegExp}
  */
 const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
-
-/**
- * Check if a given input matches a regex
- * @param {HTMLInputElement} input
- * @param {RegExp} regex
- * @returns {boolean}
- */
-const checkPlaceholderAndLabels = (input, regex) =>
-    regex.test(input.placeholder) ||
-    [...input.labels].some((label) => regex.test(label.innerText))
 
 /**
  * Find a regex match for a given input
@@ -194,6 +191,15 @@ const checkPlaceholderAndLabels = (input, regex) =>
 const findInPlaceholderAndLabels = (input, regex) =>
     input.placeholder.match(regex) ||
     [...input.labels].find((label) => label.innerText.match(regex))
+
+/**
+ * Check if a given input matches a regex
+ * @param {HTMLInputElement} input
+ * @param {RegExp} regex
+ * @returns {boolean}
+ */
+const checkPlaceholderAndLabels = (input, regex) =>
+    !!findInPlaceholderAndLabels(input, regex)
 
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
