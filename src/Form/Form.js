@@ -14,11 +14,15 @@ class Form {
         this.isSignup = this.formAnalyzer.isSignup
         this.Device = DeviceInterface
         this.attachTooltip = DeviceInterface.attachTooltip
-        this.allInputs = new Set()
-        this.emailNewInputs = new Set()
-        this.credentialsInputs = new Set()
-        this.creditCardInputs = new Set()
-        this.unknownInputs = new Set()
+
+        /** @type Object<'all' | SupportedMainTypes, Set> */
+        this.inputs = {
+            all: new Set(),
+            emailNew: new Set(),
+            credentials: new Set(),
+            creditCard: new Set(),
+            unknown: new Set()
+        }
 
         this.touched = new Set()
         this.listeners = new Set()
@@ -41,7 +45,7 @@ class Form {
         }
 
         this.getValues = () => {
-            return [...this.credentialsInputs].reduce((output, input) => {
+            return [...this.inputs.credentials].reduce((output, input) => {
                 const subtype = getInputSubtype(input)
                 output[subtype] = input.value || output[subtype]
                 return output
@@ -122,7 +126,7 @@ class Form {
     }
 
     execOnInputs (fn, inputType = 'all') {
-        const inputs = this[`${inputType}Inputs`]
+        const inputs = this.inputs[inputType]
         for (const input of inputs) {
             const {shouldDecorate} = getInputConfig(input)
             if (shouldDecorate(this.isLogin, this.Device)) fn(input)
@@ -130,14 +134,14 @@ class Form {
     }
 
     addInput (input) {
-        if (this.allInputs.has(input)) return this
+        if (this.inputs.all.has(input)) return this
 
-        this.allInputs.add(input)
+        this.inputs.all.add(input)
 
         setInputType(input, this)
 
         const mainInputType = getInputMainType(input)
-        this[`${mainInputType}Inputs`].add(input)
+        this.inputs[mainInputType].add(input)
 
         this.decorateInput(input)
 
