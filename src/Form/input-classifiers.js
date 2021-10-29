@@ -123,7 +123,7 @@ const getCCFieldSubtype = (input) => {
  * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {Form} form
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 const inferInputType = (input, form) => {
     const presetType = input.getAttribute(ATTR_INPUT_TYPE)
@@ -149,7 +149,7 @@ const inferInputType = (input, form) => {
  * Sets the input type as a data attribute to the element and returns it
  * @param {HTMLInputElement} input
  * @param {Form} form
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 const setInputType = (input, form) => {
     const type = inferInputType(input, form)
@@ -160,7 +160,7 @@ const setInputType = (input, form) => {
 /**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 const getInputMainType = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
@@ -169,7 +169,7 @@ const getInputMainType = (input) =>
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement} input
- * @returns {String}
+ * @returns {SupportedSubTypes}
  */
 const getInputSubtype = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] ||
