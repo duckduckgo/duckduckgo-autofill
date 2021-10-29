@@ -1,12 +1,12 @@
-const getTypeConfig = require('./inputTypeConfig')
+const getInputConfig = require('./inputTypeConfig.js')
 
 /**
  * Get inline styles for the injected icon, base state
  * @param {HTMLInputElement} input
- * @param {boolean} isLogin
+ * @return {Object<string, string>}
  */
-const getIconStylesBase = (input, isLogin) => {
-    const config = getTypeConfig(input)
+const getIconStylesBase = (input) => {
+    const config = getInputConfig(input)
     const icon = config.getIconBase()
 
     if (!icon) return {}
@@ -25,10 +25,9 @@ const getIconStylesBase = (input, isLogin) => {
 /**
  * Get inline styles for the injected icon, autofilled state
  * @param {HTMLInputElement} input
- * @param {boolean} isLogin
  */
-const getIconStylesAutofilled = (input, isLogin) => {
-    const config = getTypeConfig(input)
+const getIconStylesAutofilled = (input) => {
+    const config = getInputConfig(input)
     const icon = config.getIconBase()
 
     const iconStyle = icon ? {'background-image': `url(${icon}`} : {}
