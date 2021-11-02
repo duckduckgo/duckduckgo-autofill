@@ -172,8 +172,8 @@ const getInputMainType = (input) =>
  * @returns {SupportedSubTypes}
  */
 const getInputSubtype = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] ||
-    input.getAttribute(ATTR_INPUT_TYPE).split('.')[0] ||
+    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[1] ||
+    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
     'unknown'
 
 /**
