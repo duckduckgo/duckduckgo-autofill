@@ -188,9 +188,17 @@ const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
  * @param {RegExp} regex
  * @returns {RegExpMatchArray|null}
  */
-const findInPlaceholderAndLabels = (input, regex) =>
-    input.placeholder.match(regex) ||
-    [...input.labels].find((label) => label.innerText.match(regex))
+const findInPlaceholderAndLabels = (input, regex) => {
+    let match = input.placeholder.match(regex)
+    if (match) return match
+
+    for (const label of [...input.labels]) {
+        match = label.textContent.match(regex)
+        if (match) return match
+    }
+
+    return null
+}
 
 /**
  * Check if a given input matches a regex
