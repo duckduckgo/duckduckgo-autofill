@@ -192,7 +192,7 @@ const findInPlaceholderAndLabels = (input, regex) => {
     let match = input.placeholder.match(regex)
     if (match) return match
 
-    for (const label of [...input.labels]) {
+    for (const label of input.labels) {
         match = label.textContent.match(regex)
         if (match) return match
     }
