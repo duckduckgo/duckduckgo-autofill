@@ -244,6 +244,7 @@ module.exports = {
     isEmail,
     isUserName,
     isCCField,
+    getCCFieldSubtype,
     inferInputType,
     setInputType,
     getInputMainType,
