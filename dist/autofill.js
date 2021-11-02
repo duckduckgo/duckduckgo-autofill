@@ -535,14 +535,14 @@ const {
   ATTR_AUTOFILL
 } = require('../constants');
 
-const getInputConfig = require('./inputTypeConfig');
+const getInputConfig = require('./inputTypeConfig.js');
 
 class Form {
   constructor(form, _input, DeviceInterface) {
     _defineProperty(this, "autofillInput", (input, string, dataType) => {
       setValue(input, string);
       input.classList.add('ddg-autofilled');
-      addInlineStyles(input, getIconStylesAutofilled(input, this.isLogin)); // If the user changes the alias, remove the decoration
+      addInlineStyles(input, getIconStylesAutofilled(input)); // If the user changes the alias, remove the decoration
 
       input.addEventListener('input', e => this.removeAllHighlights(e, dataType), {
         once: true
@@ -555,11 +555,15 @@ class Form {
     this.isSignup = this.formAnalyzer.isSignup;
     this.Device = DeviceInterface;
     this.attachTooltip = DeviceInterface.attachTooltip;
-    this.allInputs = new Set();
-    this.emailNewInputs = new Set();
-    this.credentialsInputs = new Set();
-    this.creditCardInputs = new Set();
-    this.unknownInputs = new Set();
+    /** @type Object<'all' | SupportedMainTypes, Set> */
+
+    this.inputs = {
+      all: new Set(),
+      emailNew: new Set(),
+      credentials: new Set(),
+      creditCard: new Set(),
+      unknown: new Set()
+    };
     this.touched = new Set();
     this.listeners = new Set();
     this.tooltip = null;
@@ -582,7 +586,7 @@ class Form {
     };
 
     this.getValues = () => {
-      return [...this.credentialsInputs].reduce((output, input) => {
+      return [...this.inputs.credentials].reduce((output, input) => {
         const subtype = getInputSubtype(input);
         output[subtype] = input.value || output[subtype];
         return output;
@@ -620,7 +624,7 @@ class Form {
     };
 
     this.removeInputHighlight = input => {
-      removeInlineStyles(input, getIconStylesAutofilled(input, this.isLogin));
+      removeInlineStyles(input, getIconStylesAutofilled(input));
       input.classList.remove('ddg-autofilled');
       this.addAutofillStyles(input);
     };
@@ -634,7 +638,7 @@ class Form {
     };
 
     this.removeInputDecoration = input => {
-      removeInlineStyles(input, getIconStylesBase(input, this.isLogin));
+      removeInlineStyles(input, getIconStylesBase(input));
       input.removeAttribute(ATTR_AUTOFILL);
     };
 
@@ -678,7 +682,7 @@ class Form {
   }
 
   execOnInputs(fn, inputType = 'all') {
-    const inputs = this["".concat(inputType, "Inputs")];
+    const inputs = this.inputs[inputType];
 
     for (const input of inputs) {
       const {
@@ -689,11 +693,11 @@ class Form {
   }
 
   addInput(input) {
-    if (this.allInputs.has(input)) return this;
-    this.allInputs.add(input);
+    if (this.inputs.all.has(input)) return this;
+    this.inputs.all.add(input);
     setInputType(input, this);
     const mainInputType = getInputMainType(input);
-    this["".concat(mainInputType, "Inputs")].add(input);
+    this.inputs[mainInputType].add(input);
     this.decorateInput(input);
     return this;
   }
@@ -716,7 +720,7 @@ class Form {
   }
 
   addAutofillStyles(input) {
-    const styles = getIconStylesBase(input, this.isLogin);
+    const styles = getIconStylesBase(input);
     addInlineStyles(input, styles);
   }
 
@@ -802,7 +806,7 @@ class Form {
 
 module.exports = Form;
 
-},{"../autofill-utils":17,"../constants":19,"./FormAnalyzer":3,"./input-classifiers":4,"./inputStyles":5,"./inputTypeConfig":6,"./selectors":9}],3:[function(require,module,exports){
+},{"../autofill-utils":17,"../constants":19,"./FormAnalyzer":3,"./input-classifiers":4,"./inputStyles":5,"./inputTypeConfig.js":6,"./selectors":9}],3:[function(require,module,exports){
 "use strict";
 
 const {
@@ -1151,7 +1155,7 @@ const getCCFieldSubtype = input => {
  * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {Form} form
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 
 
@@ -1174,7 +1178,7 @@ const inferInputType = (input, form) => {
  * Sets the input type as a data attribute to the element and returns it
  * @param {HTMLInputElement} input
  * @param {Form} form
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 
 
@@ -1186,7 +1190,7 @@ const setInputType = (input, form) => {
 /**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 
 
@@ -1198,11 +1202,15 @@ const getInputMainType = input => {
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement} input
- * @returns {String}
+ * @returns {SupportedSubTypes}
  */
 
 
-const getInputSubtype = input => input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] || input.getAttribute(ATTR_INPUT_TYPE).split('.')[0] || 'unknown';
+const getInputSubtype = input => {
+  var _input$getAttribute2, _input$getAttribute3;
+
+  return ((_input$getAttribute2 = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute2 === void 0 ? void 0 : _input$getAttribute2.split('.')[1]) || ((_input$getAttribute3 = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute3 === void 0 ? void 0 : _input$getAttribute3.split('.')[0]) || 'unknown';
+};
 /**
  * Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
  * @type {RegExp}
@@ -1217,7 +1225,17 @@ const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i;
  * @returns {RegExpMatchArray|null}
  */
 
-const findInPlaceholderAndLabels = (input, regex) => input.placeholder.match(regex) || [...input.labels].find(label => label.innerText.match(regex));
+const findInPlaceholderAndLabels = (input, regex) => {
+  let match = input.placeholder.match(regex);
+  if (match) return match;
+
+  for (const label of [...input.labels]) {
+    match = label.textContent.match(regex);
+    if (match) return match;
+  }
+
+  return null;
+};
 /**
  * Check if a given input matches a regex
  * @param {HTMLInputElement} input
@@ -1262,6 +1280,7 @@ module.exports = {
   isEmail,
   isUserName,
   isCCField,
+  getCCFieldSubtype,
   inferInputType,
   setInputType,
   getInputMainType,
@@ -1273,16 +1292,16 @@ module.exports = {
 },{"../constants":19,"./selectors":9}],5:[function(require,module,exports){
 "use strict";
 
-const getTypeConfig = require('./inputTypeConfig');
+const getInputConfig = require('./inputTypeConfig.js');
 /**
  * Get inline styles for the injected icon, base state
  * @param {HTMLInputElement} input
- * @param {boolean} isLogin
+ * @return {Object<string, string>}
  */
 
 
-const getIconStylesBase = (input, isLogin) => {
-  const config = getTypeConfig(input);
+const getIconStylesBase = input => {
+  const config = getInputConfig(input);
   const icon = config.getIconBase();
   if (!icon) return {};
   return {
@@ -1298,12 +1317,11 @@ const getIconStylesBase = (input, isLogin) => {
 /**
  * Get inline styles for the injected icon, autofilled state
  * @param {HTMLInputElement} input
- * @param {boolean} isLogin
  */
 
 
-const getIconStylesAutofilled = (input, isLogin) => {
-  const config = getTypeConfig(input);
+const getIconStylesAutofilled = input => {
+  const config = getInputConfig(input);
   const icon = config.getIconBase();
   const iconStyle = icon ? {
     'background-image': "url(".concat(icon)
@@ -1319,7 +1337,7 @@ module.exports = {
   getIconStylesAutofilled
 };
 
-},{"./inputTypeConfig":6}],6:[function(require,module,exports){
+},{"./inputTypeConfig.js":6}],6:[function(require,module,exports){
 "use strict";
 
 const {
@@ -1341,7 +1359,7 @@ const isFirefox = navigator.userAgent.includes('Firefox');
 const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
 /**
  * A map of config objects. These help by centralising here some of the complexity
- * @type {Object.<SupportedTypes, InputTypeConfig>}
+ * @type {Object<SupportedMainTypes, InputTypeConfig>}
  */
 
 const inputTypeConfig = {
@@ -1350,7 +1368,10 @@ const inputTypeConfig = {
     getIconBase: () => getDaxImg,
     getIconFilled: () => getDaxImg,
     shouldDecorate: (isLogin, device) => device.hasLocalAddresses,
-    dataType: 'Addresses'
+    dataType: 'Addresses',
+    displayTitlePropName: '',
+    displaySubtitlePropName: '',
+    autofillMethod: ''
   },
   credentials: {
     type: 'credentials',
@@ -1364,8 +1385,8 @@ const inputTypeConfig = {
   },
   creditCard: {
     type: 'creditCard',
-    getIconBase: () => false,
-    getIconFilled: () => false,
+    getIconBase: () => '',
+    getIconFilled: () => '',
     shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
     dataType: 'CreditCards',
     displayTitlePropName: 'title',
@@ -1377,7 +1398,10 @@ const inputTypeConfig = {
     getIconBase: () => '',
     getIconFilled: () => '',
     shouldDecorate: () => false,
-    dataType: ''
+    dataType: '',
+    displayTitlePropName: '',
+    displaySubtitlePropName: '',
+    autofillMethod: ''
   }
 };
 /**
@@ -1598,7 +1622,11 @@ const updatePosition = function ({
 }) {
   const shadow = this.shadow; // If the stylesheet is not loaded wait for load (Chrome bug)
 
-  if (!shadow.styleSheets.length) return this.stylesheet.addEventListener('load', this.checkPosition);
+  if (!shadow.styleSheets.length) {
+    this.stylesheet.addEventListener('load', this.checkPosition);
+    return;
+  }
+
   this.left = left;
   this.top = top;
 
@@ -1687,6 +1715,7 @@ class Tooltip {
       mode: 'closed'
     });
     this.host = this.shadow.host;
+    this.tooltip = null;
     const forcedVisibilityStyles = {
       'display': 'block',
       'visibility': 'visible',
@@ -1722,7 +1751,7 @@ class Tooltip {
     this.activeButton = e.target;
   }
 
-  unsetActiveButton(e) {
+  unsetActiveButton() {
     this.activeButton = null;
   }
 
