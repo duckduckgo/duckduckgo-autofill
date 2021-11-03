@@ -1,6 +1,6 @@
 const {getCCFieldSubtype, getUnifiedExpiryDate} = require('./input-classifiers')
 
-const createElements = () => {
+const renderInputWithLabel = () => {
     const input = document.createElement('input')
     input.id = 'inputId'
     const label = document.createElement('label')
@@ -13,7 +13,7 @@ const testRegexForCCLabels = (cases) => {
     Object.entries(cases).forEach(([expectedType, arr]) => {
         arr.forEach(({text, shouldMatch = true}) => {
             it(`"${text}" should ${shouldMatch ? '' : 'not '}match regex for ${expectedType}`, () => {
-                const {input, label} = createElements()
+                const {input, label} = renderInputWithLabel()
                 label.textContent = text
 
                 const subtype = getCCFieldSubtype(input)
@@ -27,31 +27,13 @@ const testRegexForCCLabels = (cases) => {
     })
 }
 
-const testUnifiedExpirationDate = (cases) => {
-    cases.forEach(({text = '', expectedResult}) => {
-        it(`test date format for ${text}`, () => {
-            const {label, input} = createElements()
-            input.autocomplete = 'cc-exp'
-            if (Math.random() < 0.5) {
-                input.placeholder = text
-            } else {
-                label.textContent = text
-            }
-
-            expect(getCCFieldSubtype(input)).toBe('expiration')
-
-            expect(getUnifiedExpiryDate(input, 12, 2025)).toBe(expectedResult)
-        })
-    })
-}
-
 afterEach(() => {
     document.body.innerHTML = null
 })
 
-describe('test', () => {
+describe('Input Classifiers', () => {
     it('should match the selector for cardNumber', () => {
-        const {input} = createElements()
+        const {input} = renderInputWithLabel()
         input.autocomplete = 'cc-number'
         expect(getCCFieldSubtype(input)).toBe('cardNumber')
     })
@@ -95,18 +77,40 @@ describe('test', () => {
     }
     testRegexForCCLabels(ccLabeltestCases)
 
-    const unifiedExpirationDateCases = [
-        {text: 'mm-yyyy', expectedResult: '12-2025'},
-        {text: 'mm/yyyy', expectedResult: '12/2025'},
-        {text: '__-____', expectedResult: '12-2025'},
-        {text: 'mm-yy', expectedResult: '12-25'},
-        {text: 'i.e. 10-2022', expectedResult: '12-2025'},
-        {text: 'MM-AAAA', expectedResult: '12-2025'},
-        {text: 'mm_jj', expectedResult: '12_25'},
-        {text: 'mm.yy', expectedResult: '12.25'},
-        {text: 'mm - yy', expectedResult: '12-25'},
-        {text: 'mm yy', expectedResult: '12 25'},
-        {text: 'ie: 08.22', expectedResult: '12.25'}
-    ]
-    testUnifiedExpirationDate(unifiedExpirationDateCases)
+    describe('Unified Expiration Date', () => {
+        describe.each([
+            { text: 'mm-yyyy', expectedResult: '12-2025' },
+            { text: 'mm/yyyy', expectedResult: '12/2025' },
+            { text: '__-____', expectedResult: '12-2025' },
+            { text: 'mm-yy', expectedResult: '12-25' },
+            { text: 'i.e. 10-2022', expectedResult: '12-2025' },
+            { text: 'MM-AAAA', expectedResult: '12-2025' },
+            { text: 'mm_jj', expectedResult: '12_25' },
+            { text: 'mm.yy', expectedResult: '12.25' },
+            { text: 'mm - yy', expectedResult: '12-25' },
+            { text: 'mm yy', expectedResult: '12 25' },
+            { text: 'ie: 08.22', expectedResult: '12.25' }
+        ])('when checking for $text', ({ text, expectedResult }) => {
+            let elements
+
+            beforeEach(() => {
+                elements = renderInputWithLabel()
+                elements.input.autocomplete = 'cc-exp'
+            })
+
+            it('matches for placeholder text', () => {
+                elements.input.placeholder = text
+
+                expect(getCCFieldSubtype(elements.input)).toBe('expiration')
+                expect(getUnifiedExpiryDate(elements.input, 12, 2025)).toBe(expectedResult)
+            })
+
+            it('matches for label text', () => {
+                elements.label.textContent = text
+
+                expect(getCCFieldSubtype(elements.input)).toBe('expiration')
+                expect(getUnifiedExpiryDate(elements.input, 12, 2025)).toBe(expectedResult)
+            })
+        })
+    })
 })
