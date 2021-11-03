@@ -83,7 +83,7 @@ const isCCForm = (form) => {
 
     // Read form attributes to find a signal
     const hasCCAttribute = Array.from(form.attributes).some(({name, value}) =>
-        /(credit)?card|cc/i.test(`${name}=${value}`)
+        /(credit|payment).?card/i.test(`${name}=${value}`)
     )
     if (hasCCAttribute) return true
 
