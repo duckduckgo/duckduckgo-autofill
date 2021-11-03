@@ -1,10 +1,11 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
-const {getInputSubtype, setInputType, getInputMainType, formatCCYear, getUnifiedExpiryDate} = require('./input-classifiers')
+const {getInputSubtype, setInputType, getInputMainType,
+    formatCCYear, getUnifiedExpiryDate} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
-const getInputConfig = require('./inputTypeConfig')
+const getInputConfig = require('./inputTypeConfig.js')
 
 class Form {
     constructor (form, input, DeviceInterface) {
@@ -14,11 +15,15 @@ class Form {
         this.isSignup = this.formAnalyzer.isSignup
         this.Device = DeviceInterface
         this.attachTooltip = DeviceInterface.attachTooltip
-        this.allInputs = new Set()
-        this.emailNewInputs = new Set()
-        this.credentialsInputs = new Set()
-        this.creditCardInputs = new Set()
-        this.unknownInputs = new Set()
+
+        /** @type Object<'all' | SupportedMainTypes, Set> */
+        this.inputs = {
+            all: new Set(),
+            emailNew: new Set(),
+            credentials: new Set(),
+            creditCard: new Set(),
+            unknown: new Set()
+        }
 
         this.touched = new Set()
         this.listeners = new Set()
@@ -41,7 +46,7 @@ class Form {
         }
 
         this.getValues = () => {
-            return [...this.credentialsInputs].reduce((output, input) => {
+            return [...this.inputs.credentials].reduce((output, input) => {
                 const subtype = getInputSubtype(input)
                 output[subtype] = input.value || output[subtype]
                 return output
@@ -72,7 +77,7 @@ class Form {
             window.removeEventListener('mousedown', this.removeTooltip, {capture: true})
         }
         this.removeInputHighlight = (input) => {
-            removeInlineStyles(input, getIconStylesAutofilled(input, this.isLogin))
+            removeInlineStyles(input, getIconStylesAutofilled(input))
             input.classList.remove('ddg-autofilled')
             this.addAutofillStyles(input)
         }
@@ -86,7 +91,7 @@ class Form {
             this.execOnInputs(this.removeInputHighlight, dataType)
         }
         this.removeInputDecoration = (input) => {
-            removeInlineStyles(input, getIconStylesBase(input, this.isLogin))
+            removeInlineStyles(input, getIconStylesBase(input))
             input.removeAttribute(ATTR_AUTOFILL)
         }
         this.removeAllDecorations = () => {
@@ -122,7 +127,7 @@ class Form {
     }
 
     execOnInputs (fn, inputType = 'all') {
-        const inputs = this[`${inputType}Inputs`]
+        const inputs = this.inputs[inputType]
         for (const input of inputs) {
             const {shouldDecorate} = getInputConfig(input)
             if (shouldDecorate(this.isLogin, this.Device)) fn(input)
@@ -130,14 +135,14 @@ class Form {
     }
 
     addInput (input) {
-        if (this.allInputs.has(input)) return this
+        if (this.inputs.all.has(input)) return this
 
-        this.allInputs.add(input)
+        this.inputs.all.add(input)
 
         setInputType(input, this)
 
         const mainInputType = getInputMainType(input)
-        this[`${mainInputType}Inputs`].add(input)
+        this.inputs[mainInputType].add(input)
 
         this.decorateInput(input)
 
@@ -158,7 +163,7 @@ class Form {
     }
 
     addAutofillStyles (input) {
-        const styles = getIconStylesBase(input, this.isLogin)
+        const styles = getIconStylesBase(input)
         addInlineStyles(input, styles)
     }
 
@@ -218,7 +223,7 @@ class Form {
     autofillInput = (input, string, dataType) => {
         setValue(input, string)
         input.classList.add('ddg-autofilled')
-        addInlineStyles(input, getIconStylesAutofilled(input, this.isLogin))
+        addInlineStyles(input, getIconStylesAutofilled(input))
 
         // If the user changes the alias, remove the decoration
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})

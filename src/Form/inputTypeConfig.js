@@ -9,7 +9,7 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
 
 /**
  * A map of config objects. These help by centralising here some of the complexity
- * @type {Object.<SupportedTypes, InputTypeConfig>}
+ * @type {Object<SupportedMainTypes, InputTypeConfig>}
  */
 const inputTypeConfig = {
     emailNew: {
@@ -17,7 +17,10 @@ const inputTypeConfig = {
         getIconBase: () => getDaxImg,
         getIconFilled: () => getDaxImg,
         shouldDecorate: (isLogin, device) => device.hasLocalAddresses,
-        dataType: 'Addresses'
+        dataType: 'Addresses',
+        displayTitlePropName: '',
+        displaySubtitlePropName: '',
+        autofillMethod: ''
     },
     credentials: {
         type: 'credentials',
@@ -31,8 +34,8 @@ const inputTypeConfig = {
     },
     creditCard: {
         type: 'creditCard',
-        getIconBase: () => false,
-        getIconFilled: () => false,
+        getIconBase: () => '',
+        getIconFilled: () => '',
         shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
         displayTitlePropName: 'title',
@@ -44,7 +47,10 @@ const inputTypeConfig = {
         getIconBase: () => '',
         getIconFilled: () => '',
         shouldDecorate: () => false,
-        dataType: ''
+        dataType: '',
+        displayTitlePropName: '',
+        displaySubtitlePropName: '',
+        autofillMethod: ''
     }
 }
 

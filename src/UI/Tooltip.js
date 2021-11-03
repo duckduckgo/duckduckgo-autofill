@@ -4,7 +4,10 @@ const {getInputMainType} = require('../Form/input-classifiers')
 const updatePosition = function ({left, top}) {
     const shadow = this.shadow
     // If the stylesheet is not loaded wait for load (Chrome bug)
-    if (!shadow.styleSheets.length) return this.stylesheet.addEventListener('load', this.checkPosition)
+    if (!shadow.styleSheets.length) {
+        this.stylesheet.addEventListener('load', this.checkPosition)
+        return
+    }
 
     this.left = left
     this.top = top
@@ -63,6 +66,7 @@ class Tooltip {
     constructor (input, associatedForm, Interface) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
         this.host = this.shadow.host
+        this.tooltip = null
         const forcedVisibilityStyles = {
             'display': 'block',
             'visibility': 'visible',
@@ -107,7 +111,7 @@ class Tooltip {
     setActiveButton (e) {
         this.activeButton = e.target
     }
-    unsetActiveButton (e) {
+    unsetActiveButton () {
         this.activeButton = null
     }
     clickableButtons = new Map()

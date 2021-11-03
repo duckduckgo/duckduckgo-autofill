@@ -83,7 +83,7 @@ const isCCForm = (form) => {
 
     // Read form attributes to find a signal
     const hasCCAttribute = Array.from(form.attributes).some(({name, value}) =>
-        /(credit)?card|cc/i.test(`${name}=${value}`)
+        /(credit|payment).?card/i.test(`${name}=${value}`)
     )
     if (hasCCAttribute) return true
 
@@ -123,7 +123,7 @@ const getCCFieldSubtype = (input) => {
  * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {Form} form
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 const inferInputType = (input, form) => {
     const presetType = input.getAttribute(ATTR_INPUT_TYPE)
@@ -149,7 +149,7 @@ const inferInputType = (input, form) => {
  * Sets the input type as a data attribute to the element and returns it
  * @param {HTMLInputElement} input
  * @param {Form} form
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 const setInputType = (input, form) => {
     const type = inferInputType(input, form)
@@ -160,7 +160,7 @@ const setInputType = (input, form) => {
 /**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedTypes}
+ * @returns {SupportedSubTypes}
  */
 const getInputMainType = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
@@ -169,11 +169,11 @@ const getInputMainType = (input) =>
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement} input
- * @returns {String}
+ * @returns {SupportedSubTypes}
  */
 const getInputSubtype = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE).split('.')[1] ||
-    input.getAttribute(ATTR_INPUT_TYPE).split('.')[0] ||
+    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[1] ||
+    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
     'unknown'
 
 /**
@@ -188,9 +188,17 @@ const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
  * @param {RegExp} regex
  * @returns {RegExpMatchArray|null}
  */
-const findInPlaceholderAndLabels = (input, regex) =>
-    input.placeholder.match(regex) ||
-    [...input.labels].find((label) => label.innerText.match(regex))
+const findInPlaceholderAndLabels = (input, regex) => {
+    let match = input.placeholder.match(regex)
+    if (match) return match
+
+    for (const label of input.labels) {
+        match = label.textContent.match(regex)
+        if (match) return match
+    }
+
+    return null
+}
 
 /**
  * Check if a given input matches a regex
@@ -236,6 +244,7 @@ module.exports = {
     isEmail,
     isUserName,
     isCCField,
+    getCCFieldSubtype,
     inferInputType,
     setInputType,
     getInputMainType,
