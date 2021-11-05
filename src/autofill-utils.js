@@ -6,6 +6,8 @@ const isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.nav
 
 const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent)
 
+const isMobileApp = isDDGApp && !isApp
+
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
 
 const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX)
@@ -197,6 +199,7 @@ module.exports = {
     isApp,
     isDDGApp,
     isAndroid,
+    isMobileApp,
     DDG_DOMAIN_REGEX,
     isDDGDomain,
     notifyWebApp,

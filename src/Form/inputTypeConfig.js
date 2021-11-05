@@ -1,4 +1,4 @@
-const {isDDGApp, isApp} = require('../autofill-utils')
+const {isDDGApp, isMobileApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
 const {getInputMainType} = require('./input-classifiers')
@@ -17,7 +17,7 @@ const inputTypeConfig = {
         getIconBase: () => getDaxImg,
         getIconFilled: () => getDaxImg,
         shouldDecorate: (isLogin, device) => {
-            if (isDDGApp && !isApp) return device.isDeviceSignedIn()
+            if (isMobileApp) return device.isDeviceSignedIn()
 
             return device.hasLocalAddresses
         },

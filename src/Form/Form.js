@@ -1,6 +1,6 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
-const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
+const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp} = require('../autofill-utils')
 const {getInputSubtype, setInputType, getInputMainType,
     formatCCYear, getUnifiedExpiryDate} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
@@ -197,7 +197,7 @@ class Form {
             }
 
             if (this.shouldOpenTooltip(e, e.target)) {
-                if (isEventWithinDax(e, e.target) || (isDDGApp && !isApp)) {
+                if (isEventWithinDax(e, e.target) || isMobileApp) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
                 }
@@ -207,9 +207,9 @@ class Form {
             }
         }
 
-        // TODO: on mobile, focus could open keyboard before tooltip
-        ['mousedown', 'focus']
-            .forEach((ev) => this.addListener(input, ev, handler, true))
+        const events = ['pointerdown']
+        if (!isMobileApp) events.push('focus')
+        events.forEach((ev) => this.addListener(input, ev, handler, true))
         return this
     }
 

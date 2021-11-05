@@ -8,7 +8,7 @@ const {
     isDDGDomain,
     sendAndWaitForAnswer,
     setValue,
-    formatAddress
+    formatAddress, isMobileApp
 } = require('./autofill-utils')
 const {
     wkSend,
@@ -20,7 +20,7 @@ const getInputConfig = require('./Form/inputTypeConfig')
 const SIGN_IN_MSG = { signMeIn: true }
 
 const attachTooltip = function (form, input) {
-    if (isDDGApp && !isApp) {
+    if (isMobileApp) {
         form.activeInput = input
         this.getAlias().then((alias) => {
             if (alias) form.autofillEmail(alias)
