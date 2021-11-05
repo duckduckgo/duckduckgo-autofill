@@ -17,11 +17,11 @@ class FormAnalyzer {
     }
 
     get isLogin () {
-        return this.autofillSignal <= 0
+        return this.autofillSignal < 0
     }
 
     get isSignup () {
-        return this.autofillSignal > 0
+        return this.autofillSignal >= 0
     }
 
     increaseSignalBy (strength, signal) {
@@ -46,7 +46,7 @@ class FormAnalyzer {
     }) {
         const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in/i)
         const positiveRegex = new RegExp(
-            /sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate/i
+            /sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i
         )
         const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
         const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i)
