@@ -35,7 +35,7 @@ const attachTooltip = function (form, input) {
             ? new EmailAutofill(input, form, this)
             : new DataAutofill(input, form, this)
         form.intObs.observe(input)
-        window.addEventListener('mousedown', form.removeTooltip, {capture: true})
+        window.addEventListener('pointerdown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})
     }
 }

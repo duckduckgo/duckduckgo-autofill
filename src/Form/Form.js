@@ -74,7 +74,7 @@ class Form {
             this.tooltip.remove()
             this.tooltip = null
             this.intObs.disconnect()
-            window.removeEventListener('mousedown', this.removeTooltip, {capture: true})
+            window.removeEventListener('pointerdown', this.removeTooltip, {capture: true})
         }
         this.removeInputHighlight = (input) => {
             removeInlineStyles(input, getIconStylesAutofilled(input))
@@ -190,7 +190,7 @@ class Form {
             if (this.tooltip) return
 
             // Checks for mousedown event
-            if (e.type === 'mousedown') {
+            if (e.type === 'pointerdown') {
                 if (!e.isTrusted) return
                 const isMainMouseButton = e.button === 0
                 if (!isMainMouseButton) return
