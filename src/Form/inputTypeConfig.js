@@ -1,4 +1,4 @@
-const {isDDGApp} = require('../autofill-utils')
+const {isDDGApp, isMobileApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
 const {getInputMainType} = require('./input-classifiers')
@@ -16,7 +16,11 @@ const inputTypeConfig = {
         type: 'emailNew',
         getIconBase: () => getDaxImg,
         getIconFilled: () => getDaxImg,
-        shouldDecorate: (isLogin, device) => device.hasLocalAddresses,
+        shouldDecorate: (isLogin, device) => {
+            if (isMobileApp) return device.isDeviceSignedIn()
+
+            return device.hasLocalAddresses
+        },
         dataType: 'Addresses',
         displayTitlePropName: '',
         displaySubtitlePropName: '',

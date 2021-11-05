@@ -10,18 +10,19 @@ const {ATTR_INPUT_TYPE} = require('../constants')
 /**
  * Tries to get labels even when they're not explicitly set with for="id"
  * @param el
+ * @param {Form} form
  * @returns {[]|NodeList}
  */
-const findLabels = (el) => {
+const findLabels = (el, form) => {
     const parentNode = el.parentNode
-    if (!parentNode) return []
+    if (!parentNode || parentNode === form.form || el === form.form) return []
 
     const inputsInScope = parentNode.querySelectorAll('input')
     // To avoid noise, ensure that our input is the only in scope
     if (inputsInScope.length === 1) {
         const labels = parentNode.querySelectorAll('label')
         // If no label, recurse
-        return labels.length ? labels : findLabels(parentNode)
+        return labels.length ? labels : findLabels(parentNode, form)
     }
     return []
 }
@@ -31,9 +32,10 @@ const findLabels = (el) => {
  * @param {HTMLInputElement} el
  * @param {String} selector - a css selector
  * @param {RegExp} [regex]
+ * @param {Form} form
  * @returns {boolean}
  */
-const checkMatch = (el, selector, regex) => {
+const checkMatch = (el, selector, regex, form) => {
     if (selector && el.matches(selector)) return true
 
     if (!regex) return false
@@ -44,32 +46,36 @@ const checkMatch = (el, selector, regex) => {
         el.id?.match(regex)
     ) return true
 
-    return [...findLabels(el)].filter(label => regex.test(label.textContent)).length > 0
+    return [...findLabels(el, form)]
+        .filter(label => regex.test(label.textContent)).length > 0
 }
 
 /**
  * Tries to infer if input is for password
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @returns {boolean}
  */
-const isPassword = (input) =>
-    checkMatch(input, PASSWORD_SELECTOR, /password/i)
+const isPassword = (input, form) =>
+    checkMatch(input, PASSWORD_SELECTOR, /password/i, form)
 
 /**
  * Tries to infer if input is for email
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @returns {boolean}
  */
-const isEmail = (input) =>
-    checkMatch(input, EMAIL_SELECTOR, /.mail/i)
+const isEmail = (input, form) =>
+    checkMatch(input, EMAIL_SELECTOR, /.mail/i, form)
 
 /**
  * Tries to infer if input is for username
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @returns {boolean}
  */
-const isUserName = (input) =>
-    checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?$/i)
+const isUserName = (input, form) =>
+    checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?$/i, form)
 
 /**
  * Tries to infer if it's a credit card form
@@ -95,25 +101,18 @@ const isCCForm = (form) => {
 }
 
 /**
- * Tries to infer if input is for credit card
- * @param {HTMLInputElement} input
- * @returns {boolean}
- */
-const isCCField = (input) =>
-    checkMatch(input, CC_FIELD_SELECTOR)
-
-/**
  * Get a CC subtype based on selectors and regexes
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @return {string}
  */
-const getCCFieldSubtype = (input) => {
+const getCCFieldSubtype = (input, form) => {
     const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => input.matches(selector))
     if (matchingSelector) return CC_SELECTORS_MAP[matchingSelector].ccType
 
     // Loop through types until something matches
     for (const {ccType, regex} of Object.values(CC_SELECTORS_MAP)) {
-        if (checkMatch(input, '', regex)) return ccType
+        if (checkMatch(input, '', regex, form)) return ccType
     }
 
     return undefined
@@ -132,15 +131,15 @@ const inferInputType = (input, form) => {
     // For CC forms we run aggressive matches, so we want to make sure we only
     // run them on actual CC forms to avoid false positives and expensive loops
     if (isCCForm(form.form)) {
-        const subtype = getCCFieldSubtype(input)
+        const subtype = getCCFieldSubtype(input, form)
         if (subtype) return `creditCard.${subtype}`
     }
 
-    if (isPassword(input)) return 'credentials.password'
+    if (isPassword(input, form)) return 'credentials.password'
 
-    if (isEmail(input)) return form.isLogin ? 'credentials.username' : 'emailNew'
+    if (isEmail(input, form)) return form.isLogin ? 'credentials.username' : 'emailNew'
 
-    if (isUserName(input)) return 'credentials.username'
+    if (isUserName(input, form)) return 'credentials.username'
 
     return 'unknown'
 }
@@ -243,7 +242,6 @@ module.exports = {
     isPassword,
     isEmail,
     isUserName,
-    isCCField,
     getCCFieldSubtype,
     inferInputType,
     setInputType,

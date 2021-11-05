@@ -23,7 +23,8 @@ const {
   isDDGDomain,
   sendAndWaitForAnswer,
   setValue,
-  formatAddress
+  formatAddress,
+  isMobileApp
 } = require('./autofill-utils');
 
 const {
@@ -43,7 +44,7 @@ const SIGN_IN_MSG = {
 };
 
 const attachTooltip = function (form, input) {
-  if (isDDGApp && !isApp) {
+  if (isMobileApp) {
     form.activeInput = input;
     this.getAlias().then(alias => {
       if (alias) form.autofillEmail(alias);else form.activeInput.focus();
@@ -54,7 +55,7 @@ const attachTooltip = function (form, input) {
     const inputType = getInputConfig(input).type;
     form.tooltip = inputType === 'emailNew' ? new EmailAutofill(input, form, this) : new DataAutofill(input, form, this);
     form.intObs.observe(input);
-    window.addEventListener('mousedown', form.removeTooltip, {
+    window.addEventListener('pointerdown', form.removeTooltip, {
       capture: true
     });
     window.addEventListener('input', form.removeTooltip, {
@@ -512,10 +513,9 @@ const {
 const {
   addInlineStyles,
   removeInlineStyles,
-  isDDGApp,
-  isApp,
   setValue,
-  isEventWithinDax
+  isEventWithinDax,
+  isMobileApp
 } = require('../autofill-utils');
 
 const {
@@ -618,7 +618,7 @@ class Form {
       this.tooltip.remove();
       this.tooltip = null;
       this.intObs.disconnect();
-      window.removeEventListener('mousedown', this.removeTooltip, {
+      window.removeEventListener('pointerdown', this.removeTooltip, {
         capture: true
       });
     };
@@ -702,11 +702,11 @@ class Form {
     return this;
   }
 
-  areAllInputsEmpty() {
+  areAllInputsEmpty(inputType) {
     let allEmpty = true;
     this.execOnInputs(input => {
       if (input.value) allEmpty = false;
-    });
+    }, inputType);
     return allEmpty;
   }
 
@@ -744,14 +744,14 @@ class Form {
     const handler = e => {
       if (this.tooltip) return; // Checks for mousedown event
 
-      if (e.type === 'mousedown') {
+      if (e.type === 'pointerdown') {
         if (!e.isTrusted) return;
         const isMainMouseButton = e.button === 0;
         if (!isMainMouseButton) return;
       }
 
       if (this.shouldOpenTooltip(e, e.target)) {
-        if (isEventWithinDax(e, e.target) || isDDGApp && !isApp) {
+        if (isEventWithinDax(e, e.target) || isMobileApp) {
           e.preventDefault();
           e.stopImmediatePropagation();
         }
@@ -759,17 +759,18 @@ class Form {
         this.touched.add(e.target);
         this.attachTooltip(this, e.target);
       }
-    }; // TODO: on mobile, focus could open keyboard before tooltip
+    };
 
-
-    ['mousedown', 'focus'].forEach(ev => this.addListener(input, ev, handler, true));
+    const events = ['pointerdown'];
+    if (!isMobileApp) events.push('focus');
+    events.forEach(ev => this.addListener(input, ev, handler, true));
     return this;
   }
 
   shouldOpenTooltip(e, input) {
     const inputType = getInputMainType(input);
     if (inputType !== 'emailNew') return true;
-    return !this.touched.has(input) && this.areAllInputsEmpty() || isEventWithinDax(e, input);
+    return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
   }
 
   autofillEmail(alias, dataType = 'emailNew') {
@@ -830,11 +831,11 @@ class FormAnalyzer {
   }
 
   get isLogin() {
-    return this.autofillSignal <= 0;
+    return this.autofillSignal < 0;
   }
 
   get isSignup() {
-    return this.autofillSignal > 0;
+    return this.autofillSignal >= 0;
   }
 
   increaseSignalBy(strength, signal) {
@@ -864,7 +865,7 @@ class FormAnalyzer {
 
   }) {
     const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in/i);
-    const positiveRegex = new RegExp(/sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate/i);
+    const positiveRegex = new RegExp(/sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i);
     const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
     const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
     const matchesNegative = string === 'current-password' || string.match(negativeRegex); // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
@@ -1043,19 +1044,20 @@ const {
 /**
  * Tries to get labels even when they're not explicitly set with for="id"
  * @param el
+ * @param {Form} form
  * @returns {[]|NodeList}
  */
 
 
-const findLabels = el => {
+const findLabels = (el, form) => {
   const parentNode = el.parentNode;
-  if (!parentNode) return [];
+  if (!parentNode || parentNode === form.form || el === form.form) return [];
   const inputsInScope = parentNode.querySelectorAll('input'); // To avoid noise, ensure that our input is the only in scope
 
   if (inputsInScope.length === 1) {
     const labels = parentNode.querySelectorAll('label'); // If no label, recurse
 
-    return labels.length ? labels : findLabels(parentNode);
+    return labels.length ? labels : findLabels(parentNode, form);
   }
 
   return [];
@@ -1065,42 +1067,46 @@ const findLabels = el => {
  * @param {HTMLInputElement} el
  * @param {String} selector - a css selector
  * @param {RegExp} [regex]
+ * @param {Form} form
  * @returns {boolean}
  */
 
 
-const checkMatch = (el, selector, regex) => {
+const checkMatch = (el, selector, regex, form) => {
   var _el$id;
 
   if (selector && el.matches(selector)) return true;
   if (!regex) return false;
   if ([...el.labels].filter(label => regex.test(label.textContent)).length > 0 || regex.test(el.getAttribute('aria-label')) || (_el$id = el.id) !== null && _el$id !== void 0 && _el$id.match(regex)) return true;
-  return [...findLabels(el)].filter(label => regex.test(label.textContent)).length > 0;
+  return [...findLabels(el, form)].filter(label => regex.test(label.textContent)).length > 0;
 };
 /**
  * Tries to infer if input is for password
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isPassword = input => checkMatch(input, PASSWORD_SELECTOR, /password/i);
+const isPassword = (input, form) => checkMatch(input, PASSWORD_SELECTOR, /password/i, form);
 /**
  * Tries to infer if input is for email
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isEmail = input => checkMatch(input, EMAIL_SELECTOR, /.mail/i);
+const isEmail = (input, form) => checkMatch(input, EMAIL_SELECTOR, /.mail/i, form);
 /**
  * Tries to infer if input is for username
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isUserName = input => checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?$/i);
+const isUserName = (input, form) => checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?$/i, form);
 /**
  * Tries to infer if it's a credit card form
  * @param {HTMLElement} form
@@ -1124,21 +1130,14 @@ const isCCForm = form => {
   return (textMatches === null || textMatches === void 0 ? void 0 : textMatches.length) > 1;
 };
 /**
- * Tries to infer if input is for credit card
- * @param {HTMLInputElement} input
- * @returns {boolean}
- */
-
-
-const isCCField = input => checkMatch(input, CC_FIELD_SELECTOR);
-/**
  * Get a CC subtype based on selectors and regexes
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @return {string}
  */
 
 
-const getCCFieldSubtype = input => {
+const getCCFieldSubtype = (input, form) => {
   const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => input.matches(selector));
   if (matchingSelector) return CC_SELECTORS_MAP[matchingSelector].ccType; // Loop through types until something matches
 
@@ -1146,7 +1145,7 @@ const getCCFieldSubtype = input => {
     ccType,
     regex
   } of Object.values(CC_SELECTORS_MAP)) {
-    if (checkMatch(input, '', regex)) return ccType;
+    if (checkMatch(input, '', regex, form)) return ccType;
   }
 
   return undefined;
@@ -1165,13 +1164,13 @@ const inferInputType = (input, form) => {
   // run them on actual CC forms to avoid false positives and expensive loops
 
   if (isCCForm(form.form)) {
-    const subtype = getCCFieldSubtype(input);
+    const subtype = getCCFieldSubtype(input, form);
     if (subtype) return "creditCard.".concat(subtype);
   }
 
-  if (isPassword(input)) return 'credentials.password';
-  if (isEmail(input)) return form.isLogin ? 'credentials.username' : 'emailNew';
-  if (isUserName(input)) return 'credentials.username';
+  if (isPassword(input, form)) return 'credentials.password';
+  if (isEmail(input, form)) return form.isLogin ? 'credentials.username' : 'emailNew';
+  if (isUserName(input, form)) return 'credentials.username';
   return 'unknown';
 };
 /**
@@ -1279,7 +1278,6 @@ module.exports = {
   isPassword,
   isEmail,
   isUserName,
-  isCCField,
   getCCFieldSubtype,
   inferInputType,
   setInputType,
@@ -1341,7 +1339,8 @@ module.exports = {
 "use strict";
 
 const {
-  isDDGApp
+  isDDGApp,
+  isMobileApp
 } = require('../autofill-utils');
 
 const {
@@ -1367,7 +1366,10 @@ const inputTypeConfig = {
     type: 'emailNew',
     getIconBase: () => getDaxImg,
     getIconFilled: () => getDaxImg,
-    shouldDecorate: (isLogin, device) => device.hasLocalAddresses,
+    shouldDecorate: (isLogin, device) => {
+      if (isMobileApp) return device.isDeviceSignedIn();
+      return device.hasLocalAddresses;
+    },
     dataType: 'Addresses',
     displayTitlePropName: '',
     displaySubtitlePropName: '',
@@ -1456,9 +1458,9 @@ module.exports = {
 },{}],9:[function(require,module,exports){
 "use strict";
 
-const EMAIL_SELECTOR = "\n    input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][aria-label*=mail i],\n    input:not([type])[aria-label*=mail i],\n    input[type=text][placeholder*=mail i]:not([readonly]),\n    input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])\n"; // We've seen non-standard types like 'user'. This selector should get them, too
+const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i],\ninput:not([type])[aria-label*=mail i],\ninput[type=text][placeholder*=mail i]:not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])"; // We've seen non-standard types like 'user'. This selector should get them, too
 
-const GENERIC_TEXT_FIELD = "\ninput:not([type=button],\n[type=checkbox],\n[type=color],\n[type=date],\n[type=datetime-local],\n[type=datetime],\n[type=file],\n[type=hidden],\n[type=month],\n[type=number],\n[type=radio],\n[type=range],\n[type=reset],\n[type=search],\n[type=submit],\n[type=tel],\n[type=time],\n[type=url],\n[type=week])";
+const GENERIC_TEXT_FIELD = "\ninput:not([type=button]),\ninput:not([type=checkbox]),\ninput:not([type=color]),\ninput:not([type=date]),\ninput:not([type=datetime-local]),\ninput:not([type=datetime]),\ninput:not([type=file]),\ninput:not([type=hidden]),\ninput:not([type=month]),\ninput:not([type=number]),\ninput:not([type=radio]),\ninput:not([type=range]),\ninput:not([type=reset]),\ninput:not([type=search]),\ninput:not([type=submit]),\ninput:not([type=tel]),\ninput:not([type=time]),\ninput:not([type=url]),\ninput:not([type=week])";
 const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])"; // This is more generic, used only when we have identified a form
 
 const USERNAME_SELECTOR = "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]");
@@ -1970,6 +1972,7 @@ let isApp = false; // Do not modify or remove the next line -- the app code will
 
 const isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp;
 const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
+const isMobileApp = isDDGApp && !isApp;
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
 
 const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX); // Send a message to the web app (only on DDG domains)
@@ -2206,6 +2209,7 @@ module.exports = {
   isApp,
   isDDGApp,
   isAndroid,
+  isMobileApp,
   DDG_DOMAIN_REGEX,
   isDDGDomain,
   notifyWebApp,

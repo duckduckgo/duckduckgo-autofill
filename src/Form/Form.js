@@ -1,6 +1,6 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
-const {addInlineStyles, removeInlineStyles, isDDGApp, isApp, setValue, isEventWithinDax} = require('../autofill-utils')
+const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp} = require('../autofill-utils')
 const {getInputSubtype, setInputType, getInputMainType,
     formatCCYear, getUnifiedExpiryDate} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
@@ -74,7 +74,7 @@ class Form {
             this.tooltip.remove()
             this.tooltip = null
             this.intObs.disconnect()
-            window.removeEventListener('mousedown', this.removeTooltip, {capture: true})
+            window.removeEventListener('pointerdown', this.removeTooltip, {capture: true})
         }
         this.removeInputHighlight = (input) => {
             removeInlineStyles(input, getIconStylesAutofilled(input))
@@ -149,11 +149,11 @@ class Form {
         return this
     }
 
-    areAllInputsEmpty () {
+    areAllInputsEmpty (inputType) {
         let allEmpty = true
         this.execOnInputs((input) => {
             if (input.value) allEmpty = false
-        })
+        }, inputType)
         return allEmpty
     }
 
@@ -190,14 +190,14 @@ class Form {
             if (this.tooltip) return
 
             // Checks for mousedown event
-            if (e.type === 'mousedown') {
+            if (e.type === 'pointerdown') {
                 if (!e.isTrusted) return
                 const isMainMouseButton = e.button === 0
                 if (!isMainMouseButton) return
             }
 
             if (this.shouldOpenTooltip(e, e.target)) {
-                if (isEventWithinDax(e, e.target) || (isDDGApp && !isApp)) {
+                if (isEventWithinDax(e, e.target) || isMobileApp) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
                 }
@@ -207,9 +207,9 @@ class Form {
             }
         }
 
-        // TODO: on mobile, focus could open keyboard before tooltip
-        ['mousedown', 'focus']
-            .forEach((ev) => this.addListener(input, ev, handler, true))
+        const events = ['pointerdown']
+        if (!isMobileApp) events.push('focus')
+        events.forEach((ev) => this.addListener(input, ev, handler, true))
         return this
     }
 
@@ -217,7 +217,7 @@ class Form {
         const inputType = getInputMainType(input)
         if (inputType !== 'emailNew') return true
 
-        return (!this.touched.has(input) && this.areAllInputsEmpty()) || isEventWithinDax(e, input)
+        return (!this.touched.has(input) && this.areAllInputsEmpty(inputType)) || isEventWithinDax(e, input)
     }
 
     autofillInput = (input, string, dataType) => {

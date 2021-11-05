@@ -8,7 +8,7 @@ const {
     isDDGDomain,
     sendAndWaitForAnswer,
     setValue,
-    formatAddress
+    formatAddress, isMobileApp
 } = require('./autofill-utils')
 const {
     wkSend,
@@ -20,7 +20,7 @@ const getInputConfig = require('./Form/inputTypeConfig')
 const SIGN_IN_MSG = { signMeIn: true }
 
 const attachTooltip = function (form, input) {
-    if (isDDGApp && !isApp) {
+    if (isMobileApp) {
         form.activeInput = input
         this.getAlias().then((alias) => {
             if (alias) form.autofillEmail(alias)
@@ -35,7 +35,7 @@ const attachTooltip = function (form, input) {
             ? new EmailAutofill(input, form, this)
             : new DataAutofill(input, form, this)
         form.intObs.observe(input)
-        window.addEventListener('mousedown', form.removeTooltip, {capture: true})
+        window.addEventListener('pointerdown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})
     }
 }
