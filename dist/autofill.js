@@ -702,11 +702,11 @@ class Form {
     return this;
   }
 
-  areAllInputsEmpty() {
+  areAllInputsEmpty(inputType) {
     let allEmpty = true;
     this.execOnInputs(input => {
       if (input.value) allEmpty = false;
-    });
+    }, inputType);
     return allEmpty;
   }
 
@@ -770,7 +770,7 @@ class Form {
   shouldOpenTooltip(e, input) {
     const inputType = getInputMainType(input);
     if (inputType !== 'emailNew') return true;
-    return !this.touched.has(input) && this.areAllInputsEmpty() || isEventWithinDax(e, input);
+    return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
   }
 
   autofillEmail(alias, dataType = 'emailNew') {
@@ -1458,9 +1458,9 @@ module.exports = {
 },{}],9:[function(require,module,exports){
 "use strict";
 
-const EMAIL_SELECTOR = "\n    input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\n    input[type=text][aria-label*=mail i],\n    input:not([type])[aria-label*=mail i],\n    input[type=text][placeholder*=mail i]:not([readonly]),\n    input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])\n"; // We've seen non-standard types like 'user'. This selector should get them, too
+const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i],\ninput:not([type])[aria-label*=mail i],\ninput[type=text][placeholder*=mail i]:not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])"; // We've seen non-standard types like 'user'. This selector should get them, too
 
-const GENERIC_TEXT_FIELD = "\ninput:not([type=button],\n[type=checkbox],\n[type=color],\n[type=date],\n[type=datetime-local],\n[type=datetime],\n[type=file],\n[type=hidden],\n[type=month],\n[type=number],\n[type=radio],\n[type=range],\n[type=reset],\n[type=search],\n[type=submit],\n[type=tel],\n[type=time],\n[type=url],\n[type=week])";
+const GENERIC_TEXT_FIELD = "\ninput:not([type=button]),\ninput:not([type=checkbox]),\ninput:not([type=color]),\ninput:not([type=date]),\ninput:not([type=datetime-local]),\ninput:not([type=datetime]),\ninput:not([type=file]),\ninput:not([type=hidden]),\ninput:not([type=month]),\ninput:not([type=number]),\ninput:not([type=radio]),\ninput:not([type=range]),\ninput:not([type=reset]),\ninput:not([type=search]),\ninput:not([type=submit]),\ninput:not([type=tel]),\ninput:not([type=time]),\ninput:not([type=url]),\ninput:not([type=week])";
 const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])"; // This is more generic, used only when we have identified a form
 
 const USERNAME_SELECTOR = "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]");
