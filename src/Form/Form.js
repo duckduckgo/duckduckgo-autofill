@@ -46,11 +46,14 @@ class Form {
         }
 
         this.getValues = () => {
-            return [...this.inputs.credentials].reduce((output, input) => {
-                const subtype = getInputSubtype(input)
+            const credentials = [...this.inputs.credentials, ...this.inputs.emailNew].reduce((output, input) => {
+                let subtype = getInputSubtype(input)
                 output[subtype] = input.value || output[subtype]
                 return output
             }, {username: '', password: ''})
+            if (credentials.emailNew && !credentials.username) credentials.username = credentials.emailNew
+            delete credentials.emailNew
+            return credentials
         }
 
         this.hasValues = () => {
