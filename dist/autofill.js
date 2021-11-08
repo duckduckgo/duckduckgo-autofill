@@ -653,7 +653,7 @@ class Form {
 
     this.redecorateAllInputs = () => {
       this.removeAllDecorations();
-      this.execOnInputs(this.decorateInput);
+      this.execOnInputs(input => this.decorateInput(input));
     };
 
     this.resetAllInputs = () => {
