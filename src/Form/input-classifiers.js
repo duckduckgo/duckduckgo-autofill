@@ -44,7 +44,7 @@ const findLabels = (el, form) => {
  *     form: Form,
  *     selector: String,
  *     regex: RegExp,
- *     negativeRegex: RegExp
+ *     negativeRegex?: RegExp
  * }}
  * @returns {boolean}
  */
