@@ -594,7 +594,11 @@ class Form {
         username: '',
         password: ''
       });
-      if (credentials.emailNew && !credentials.username) credentials.username = credentials.emailNew;
+
+      if (credentials.emailNew && !credentials.username) {
+        credentials.username = credentials.emailNew;
+      }
+
       delete credentials.emailNew;
       return credentials;
     };

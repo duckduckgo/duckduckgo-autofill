@@ -51,7 +51,9 @@ class Form {
                 output[subtype] = input.value || output[subtype]
                 return output
             }, {username: '', password: ''})
-            if (credentials.emailNew && !credentials.username) credentials.username = credentials.emailNew
+            if (credentials.emailNew && !credentials.username) {
+                credentials.username = credentials.emailNew
+            }
             delete credentials.emailNew
             return credentials
         }
