@@ -264,10 +264,11 @@ const formatCCYear = (input, year) => {
  */
 const getUnifiedExpiryDate = (input, month, year) => {
     const formattedYear = formatCCYear(input, year)
+    const paddedMonth = `${month}`.padStart(2, '0')
     const separatorRegex = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
     const separator = findInPlaceholderAndLabels(input, separatorRegex)?.groups?.separator || '/'
 
-    return `${month}${separator}${formattedYear}`
+    return `${paddedMonth}${separator}${formattedYear}`
 }
 
 module.exports = {
