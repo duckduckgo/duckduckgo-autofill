@@ -47,7 +47,7 @@ class Form {
 
         this.getValues = () => {
             const credentials = [...this.inputs.credentials, ...this.inputs.emailNew].reduce((output, input) => {
-                let subtype = getInputSubtype(input)
+                const subtype = getInputSubtype(input)
                 output[subtype] = input.value || output[subtype]
                 return output
             }, {username: '', password: ''})
