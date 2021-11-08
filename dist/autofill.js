@@ -1046,6 +1046,16 @@ const {
   ATTR_INPUT_TYPE
 } = require('../constants');
 /**
+ * Tests that a string matches a regex while not matching another
+ * @param {String} string
+ * @param {RegExp} regex
+ * @param {RegExp} negativeRegex
+ * @return {boolean}
+ */
+
+
+const testAgainstRegexes = (string = '', regex, negativeRegex) => regex.test(string) && !(negativeRegex !== null && negativeRegex !== void 0 && negativeRegex.test(string));
+/**
  * Tries to get labels even when they're not explicitly set with for="id"
  * @param el
  * @param {Form} form
@@ -1068,49 +1078,73 @@ const findLabels = (el, form) => {
 };
 /**
  * Tries to infer input type, with checks in decreasing order of reliability
- * @param {HTMLInputElement} el
- * @param {String} selector - a css selector
- * @param {RegExp} [regex]
- * @param {Form} form
+ * @param {{
+ *     el: HTMLInputElement,
+ *     form: Form,
+ *     selector: String,
+ *     regex: RegExp,
+ *     negativeRegex: RegExp
+ * }}
  * @returns {boolean}
  */
 
 
-const checkMatch = (el, selector, regex, form) => {
-  var _el$id;
-
+const checkMatch = ({
+  el,
+  form,
+  selector,
+  regex,
+  negativeRegex
+}) => {
   if (selector && el.matches(selector)) return true;
   if (!regex) return false;
-  if ([...(el.labels || [])].filter(label => regex.test(label.textContent)).length > 0 || regex.test(el.getAttribute('aria-label')) || (_el$id = el.id) !== null && _el$id !== void 0 && _el$id.match(regex)) return true;
+  if ([...(el.labels || [])].filter(label => testAgainstRegexes(label.textContent, regex, negativeRegex)).length > 0 || testAgainstRegexes(el.getAttribute('aria-label'), regex, negativeRegex) || testAgainstRegexes(el.id, regex, negativeRegex)) return true;
   return [...findLabels(el, form)].filter(label => regex.test(label.textContent)).length > 0;
 };
 /**
  * Tries to infer if input is for password
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} el
  * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isPassword = (input, form) => checkMatch(input, PASSWORD_SELECTOR, /password/i, form);
+const isPassword = (el, form) => checkMatch({
+  el,
+  form,
+  selector: PASSWORD_SELECTOR,
+  regex: /password/i
+});
 /**
  * Tries to infer if input is for email
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} el
  * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isEmail = (input, form) => checkMatch(input, EMAIL_SELECTOR, /.mail/i, form);
+const isEmail = (el, form) => checkMatch({
+  el,
+  form,
+  selector: EMAIL_SELECTOR,
+  regex: /.mail/i,
+  negativeRegex: /search/i
+});
 /**
  * Tries to infer if input is for username
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} el
  * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isUserName = (input, form) => checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?$/i, form);
+const isUserName = (el, form) => checkMatch({
+  el,
+  form,
+  selector: USERNAME_SELECTOR,
+  regex: /user((.)?name)?$/i,
+  negativeRegex: /search/i
+});
 /**
  * Tries to infer if it's a credit card form
  * @param {HTMLElement} form
@@ -1135,21 +1169,26 @@ const isCCForm = form => {
 };
 /**
  * Get a CC subtype based on selectors and regexes
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} el
  * @param {Form} form
  * @return {string}
  */
 
 
-const getCCFieldSubtype = (input, form) => {
-  const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => input.matches(selector));
+const getCCFieldSubtype = (el, form) => {
+  const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => el.matches(selector));
   if (matchingSelector) return CC_SELECTORS_MAP[matchingSelector].ccType; // Loop through types until something matches
 
   for (const {
     ccType,
     regex
   } of Object.values(CC_SELECTORS_MAP)) {
-    if (checkMatch(input, '', regex, form)) return ccType;
+    if (checkMatch({
+      el,
+      form,
+      selector: '',
+      regex
+    })) return ccType;
   }
 
   return undefined;
@@ -1232,7 +1271,7 @@ const findInPlaceholderAndLabels = (input, regex) => {
   let match = input.placeholder.match(regex);
   if (match) return match;
 
-  for (const label of input.labels) {
+  for (const label of input.labels || []) {
     match = label.textContent.match(regex);
     if (match) return match;
   }
