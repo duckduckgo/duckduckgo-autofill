@@ -674,11 +674,15 @@ class Form {
 
   categorizeInputs() {
     this.form.querySelectorAll(FIELD_SELECTOR).forEach(input => this.addInput(input));
-  } // TODO: try to filter down to only submit buttons
-
+  }
 
   get submitButtons() {
-    return this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR);
+    return [...this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)].filter(button => {
+      const content = button.textContent;
+      const ariaLabel = button.getAttribute('aria-label');
+      const title = button.title;
+      return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title);
+    });
   }
 
   execOnInputs(fn, inputType = 'all') {
@@ -1500,7 +1504,7 @@ const CC_SELECTORS_MAP = {
 };
 const CC_FIELD_SELECTOR = Object.keys(CC_SELECTORS_MAP).join(', ');
 const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR].join(', ');
-const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button, [role=button]';
+const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
 module.exports = {
   EMAIL_SELECTOR,
   GENERIC_TEXT_FIELD,

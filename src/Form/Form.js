@@ -121,9 +121,14 @@ class Form {
         this.form.querySelectorAll(FIELD_SELECTOR).forEach(input => this.addInput(input))
     }
 
-    // TODO: try to filter down to only submit buttons
     get submitButtons () {
-        return this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+        return [...this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)]
+            .filter((button) => {
+                const content = button.textContent
+                const ariaLabel = button.getAttribute('aria-label')
+                const title = button.title
+                return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
+            })
     }
 
     execOnInputs (fn, inputType = 'all') {

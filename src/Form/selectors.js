@@ -126,7 +126,11 @@ const CC_FIELD_SELECTOR = Object.keys(CC_SELECTORS_MAP).join(', ')
 
 const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR].join(', ')
 
-const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button, [role=button]'
+const SUBMIT_BUTTON_SELECTOR = `
+input[type=submit],
+input[type=button],
+button:not([role=switch]):not([role=link]),
+[role=button]`
 
 module.exports = {
     EMAIL_SELECTOR,
