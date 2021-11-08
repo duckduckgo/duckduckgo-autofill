@@ -41,7 +41,7 @@ const checkMatch = (el, selector, regex, form) => {
     if (!regex) return false
 
     if (
-        [...el.labels].filter(label => regex.test(label.textContent)).length > 0 ||
+        [...(el.labels || [])].filter(label => regex.test(label.textContent)).length > 0 ||
         regex.test(el.getAttribute('aria-label')) ||
         el.id?.match(regex)
     ) return true

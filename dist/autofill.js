@@ -1077,7 +1077,7 @@ const checkMatch = (el, selector, regex, form) => {
 
   if (selector && el.matches(selector)) return true;
   if (!regex) return false;
-  if ([...el.labels].filter(label => regex.test(label.textContent)).length > 0 || regex.test(el.getAttribute('aria-label')) || (_el$id = el.id) !== null && _el$id !== void 0 && _el$id.match(regex)) return true;
+  if ([...(el.labels || [])].filter(label => regex.test(label.textContent)).length > 0 || regex.test(el.getAttribute('aria-label')) || (_el$id = el.id) !== null && _el$id !== void 0 && _el$id.match(regex)) return true;
   return [...findLabels(el, form)].filter(label => regex.test(label.textContent)).length > 0;
 };
 /**
