@@ -51,6 +51,7 @@ class Form {
                 output[subtype] = input.value || output[subtype]
                 return output
             }, {username: '', password: ''})
+            // If we don't have a username, let's try and save the email if available.
             if (credentials.emailNew && !credentials.username) {
                 credentials.username = credentials.emailNew
             }
@@ -132,6 +133,7 @@ class Form {
                 const content = button.textContent
                 const ariaLabel = button.getAttribute('aria-label')
                 const title = button.title
+                // trying to exclude the little buttons to show and hide passwords
                 return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
             })
     }
