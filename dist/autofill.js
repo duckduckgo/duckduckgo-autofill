@@ -586,14 +586,21 @@ class Form {
     };
 
     this.getValues = () => {
-      return [...this.inputs.credentials].reduce((output, input) => {
+      const credentials = [...this.inputs.credentials, ...this.inputs.emailNew].reduce((output, input) => {
         const subtype = getInputSubtype(input);
         output[subtype] = input.value || output[subtype];
         return output;
       }, {
         username: '',
         password: ''
-      });
+      }); // If we don't have a username, let's try and save the email if available.
+
+      if (credentials.emailNew && !credentials.username) {
+        credentials.username = credentials.emailNew;
+      }
+
+      delete credentials.emailNew;
+      return credentials;
     };
 
     this.hasValues = () => {
@@ -653,7 +660,7 @@ class Form {
 
     this.redecorateAllInputs = () => {
       this.removeAllDecorations();
-      this.execOnInputs(this.decorateInput);
+      this.execOnInputs(input => this.decorateInput(input));
     };
 
     this.resetAllInputs = () => {
@@ -674,11 +681,16 @@ class Form {
 
   categorizeInputs() {
     this.form.querySelectorAll(FIELD_SELECTOR).forEach(input => this.addInput(input));
-  } // TODO: try to filter down to only submit buttons
-
+  }
 
   get submitButtons() {
-    return this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR);
+    return [...this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)].filter(button => {
+      const content = button.textContent;
+      const ariaLabel = button.getAttribute('aria-label');
+      const title = button.title; // trying to exclude the little buttons to show and hide passwords
+
+      return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title);
+    });
   }
 
   execOnInputs(fn, inputType = 'all') {
@@ -1042,6 +1054,16 @@ const {
   ATTR_INPUT_TYPE
 } = require('../constants');
 /**
+ * Tests that a string matches a regex while not matching another
+ * @param {String} string
+ * @param {RegExp} regex
+ * @param {RegExp} negativeRegex
+ * @return {boolean}
+ */
+
+
+const testAgainstRegexes = (string = '', regex, negativeRegex) => regex.test(string) && !(negativeRegex !== null && negativeRegex !== void 0 && negativeRegex.test(string));
+/**
  * Tries to get labels even when they're not explicitly set with for="id"
  * @param el
  * @param {Form} form
@@ -1064,49 +1086,73 @@ const findLabels = (el, form) => {
 };
 /**
  * Tries to infer input type, with checks in decreasing order of reliability
- * @param {HTMLInputElement} el
- * @param {String} selector - a css selector
- * @param {RegExp} [regex]
- * @param {Form} form
+ * @param {{
+ *     el: HTMLInputElement,
+ *     form: Form,
+ *     selector: String,
+ *     regex: RegExp,
+ *     negativeRegex?: RegExp
+ * }}
  * @returns {boolean}
  */
 
 
-const checkMatch = (el, selector, regex, form) => {
-  var _el$id;
-
+const checkMatch = ({
+  el,
+  form,
+  selector,
+  regex,
+  negativeRegex
+}) => {
   if (selector && el.matches(selector)) return true;
   if (!regex) return false;
-  if ([...el.labels].filter(label => regex.test(label.textContent)).length > 0 || regex.test(el.getAttribute('aria-label')) || (_el$id = el.id) !== null && _el$id !== void 0 && _el$id.match(regex)) return true;
+  if ([...(el.labels || [])].filter(label => testAgainstRegexes(label.textContent, regex, negativeRegex)).length > 0 || testAgainstRegexes(el.getAttribute('aria-label'), regex, negativeRegex) || testAgainstRegexes(el.id, regex, negativeRegex)) return true;
   return [...findLabels(el, form)].filter(label => regex.test(label.textContent)).length > 0;
 };
 /**
  * Tries to infer if input is for password
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} el
  * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isPassword = (input, form) => checkMatch(input, PASSWORD_SELECTOR, /password/i, form);
+const isPassword = (el, form) => checkMatch({
+  el,
+  form,
+  selector: PASSWORD_SELECTOR,
+  regex: /password/i
+});
 /**
  * Tries to infer if input is for email
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} el
  * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isEmail = (input, form) => checkMatch(input, EMAIL_SELECTOR, /.mail/i, form);
+const isEmail = (el, form) => checkMatch({
+  el,
+  form,
+  selector: EMAIL_SELECTOR,
+  regex: /.mail/i,
+  negativeRegex: /search/i
+});
 /**
  * Tries to infer if input is for username
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} el
  * @param {Form} form
  * @returns {boolean}
  */
 
 
-const isUserName = (input, form) => checkMatch(input, USERNAME_SELECTOR, /user((.)?name)?$/i, form);
+const isUserName = (el, form) => checkMatch({
+  el,
+  form,
+  selector: USERNAME_SELECTOR,
+  regex: /user((.)?name)?$/i,
+  negativeRegex: /search/i
+});
 /**
  * Tries to infer if it's a credit card form
  * @param {HTMLElement} form
@@ -1131,21 +1177,26 @@ const isCCForm = form => {
 };
 /**
  * Get a CC subtype based on selectors and regexes
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} el
  * @param {Form} form
  * @return {string}
  */
 
 
-const getCCFieldSubtype = (input, form) => {
-  const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => input.matches(selector));
+const getCCFieldSubtype = (el, form) => {
+  const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => el.matches(selector));
   if (matchingSelector) return CC_SELECTORS_MAP[matchingSelector].ccType; // Loop through types until something matches
 
   for (const {
     ccType,
     regex
   } of Object.values(CC_SELECTORS_MAP)) {
-    if (checkMatch(input, '', regex, form)) return ccType;
+    if (checkMatch({
+      el,
+      form,
+      selector: '',
+      regex
+    })) return ccType;
   }
 
   return undefined;
@@ -1228,7 +1279,7 @@ const findInPlaceholderAndLabels = (input, regex) => {
   let match = input.placeholder.match(regex);
   if (match) return match;
 
-  for (const label of input.labels) {
+  for (const label of input.labels || []) {
     match = label.textContent.match(regex);
     if (match) return match;
   }
@@ -1269,9 +1320,10 @@ const getUnifiedExpiryDate = (input, month, year) => {
   var _findInPlaceholderAnd, _findInPlaceholderAnd2;
 
   const formattedYear = formatCCYear(input, year);
+  const paddedMonth = "".concat(month).padStart(2, '0');
   const separatorRegex = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i;
   const separator = ((_findInPlaceholderAnd = findInPlaceholderAndLabels(input, separatorRegex)) === null || _findInPlaceholderAnd === void 0 ? void 0 : (_findInPlaceholderAnd2 = _findInPlaceholderAnd.groups) === null || _findInPlaceholderAnd2 === void 0 ? void 0 : _findInPlaceholderAnd2.separator) || '/';
-  return "".concat(month).concat(separator).concat(formattedYear);
+  return "".concat(paddedMonth).concat(separator).concat(formattedYear);
 };
 
 module.exports = {
@@ -1458,9 +1510,9 @@ module.exports = {
 },{}],9:[function(require,module,exports){
 "use strict";
 
-const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i],\ninput:not([type])[aria-label*=mail i],\ninput[type=text][placeholder*=mail i]:not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])"; // We've seen non-standard types like 'user'. This selector should get them, too
+const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])"; // We've seen non-standard types like 'user'. This selector should get them, too
 
-const GENERIC_TEXT_FIELD = "\ninput:not([type=button]),\ninput:not([type=checkbox]),\ninput:not([type=color]),\ninput:not([type=date]),\ninput:not([type=datetime-local]),\ninput:not([type=datetime]),\ninput:not([type=file]),\ninput:not([type=hidden]),\ninput:not([type=month]),\ninput:not([type=number]),\ninput:not([type=radio]),\ninput:not([type=range]),\ninput:not([type=reset]),\ninput:not([type=search]),\ninput:not([type=submit]),\ninput:not([type=tel]),\ninput:not([type=time]),\ninput:not([type=url]),\ninput:not([type=week])";
+const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=tel]):not([type=time]):not([type=url]):not([type=week])";
 const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])"; // This is more generic, used only when we have identified a form
 
 const USERNAME_SELECTOR = "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]");
@@ -1500,7 +1552,7 @@ const CC_SELECTORS_MAP = {
 };
 const CC_FIELD_SELECTOR = Object.keys(CC_SELECTORS_MAP).join(', ');
 const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR].join(', ');
-const SUBMIT_BUTTON_SELECTOR = 'input[type=submit], input[type=button], button, [role=button]';
+const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
 module.exports = {
   EMAIL_SELECTOR,
   GENERIC_TEXT_FIELD,

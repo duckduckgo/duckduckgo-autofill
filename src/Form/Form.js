@@ -46,11 +46,17 @@ class Form {
         }
 
         this.getValues = () => {
-            return [...this.inputs.credentials].reduce((output, input) => {
+            const credentials = [...this.inputs.credentials, ...this.inputs.emailNew].reduce((output, input) => {
                 const subtype = getInputSubtype(input)
                 output[subtype] = input.value || output[subtype]
                 return output
             }, {username: '', password: ''})
+            // If we don't have a username, let's try and save the email if available.
+            if (credentials.emailNew && !credentials.username) {
+                credentials.username = credentials.emailNew
+            }
+            delete credentials.emailNew
+            return credentials
         }
 
         this.hasValues = () => {
@@ -100,7 +106,7 @@ class Form {
         }
         this.redecorateAllInputs = () => {
             this.removeAllDecorations()
-            this.execOnInputs(this.decorateInput)
+            this.execOnInputs((input) => this.decorateInput(input))
         }
         this.resetAllInputs = () => {
             this.execOnInputs((input) => {
@@ -121,9 +127,15 @@ class Form {
         this.form.querySelectorAll(FIELD_SELECTOR).forEach(input => this.addInput(input))
     }
 
-    // TODO: try to filter down to only submit buttons
     get submitButtons () {
-        return this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+        return [...this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)]
+            .filter((button) => {
+                const content = button.textContent
+                const ariaLabel = button.getAttribute('aria-label')
+                const title = button.title
+                // trying to exclude the little buttons to show and hide passwords
+                return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
+            })
     }
 
     execOnInputs (fn, inputType = 'all') {
