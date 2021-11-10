@@ -76,7 +76,8 @@ const isPassword = (el, form) =>
         el,
         form,
         selector: PASSWORD_SELECTOR,
-        regex: /password/i
+        regex: /password/i,
+        negativeRegex: /captcha/i
     })
 
 /**
