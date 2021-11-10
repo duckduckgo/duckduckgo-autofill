@@ -58,7 +58,8 @@ const checkMatch = ({el, form, selector, regex, negativeRegex}) => {
             testAgainstRegexes(label.textContent, regex, negativeRegex)
         ).length > 0 ||
         testAgainstRegexes(el.getAttribute('aria-label'), regex, negativeRegex) ||
-        testAgainstRegexes(el.id, regex, negativeRegex)
+        testAgainstRegexes(el.id, regex, negativeRegex) ||
+        testAgainstRegexes(el.placeholder, regex, negativeRegex)
     ) return true
 
     return [...findLabels(el, form)]
