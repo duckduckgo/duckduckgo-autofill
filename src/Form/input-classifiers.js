@@ -3,6 +3,7 @@ const {
     EMAIL_SELECTOR,
     USERNAME_SELECTOR,
     CC_FIELD_SELECTOR,
+    DATE_SEPARATOR_REGEX,
     CC_SELECTORS_MAP
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
@@ -18,23 +19,45 @@ const testAgainstRegexes = (string = '', regex, negativeRegex) =>
     regex.test(string) && !negativeRegex?.test(string)
 
 /**
- * Tries to get labels even when they're not explicitly set with for="id"
- * @param el
- * @param {Form} form
- * @returns {[]|NodeList}
+ * Get text from all explicit labels
+ * @param {HTMLInputElement} el
+ * @return {String}
  */
-const findLabels = (el, form) => {
-    const parentNode = el.parentNode
-    if (!parentNode || parentNode === form.form || el === form.form) return []
+const getExplicitLabelsText = (el) => {
+    const text = [...(el.labels || [])].reduce((text, label) => `${text} ${label.textContent}`, '')
+    const ariaLabel = el.getAttribute('aria-label') || ''
+    const labelledByText = document.getElementById(el.getAttribute('aria-labelled'))?.textContent || ''
+    return `${text} ${ariaLabel} ${labelledByText}`
+}
 
-    const inputsInScope = parentNode.querySelectorAll('input')
+/**
+ * Get all text close to the input (useful when no labels are defined)
+ * @param {HTMLInputElement} el
+ * @param {Form} form
+ * @return {string}
+ */
+const getRelatedText = (el, form) => {
+    const container = getLargestMeaningfulContainer(el, form)
+    return container.innerText
+}
+
+/**
+ * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
+ * @param {HTMLElement} el
+ * @param {Form} form
+ * @return {HTMLElement}
+ */
+const getLargestMeaningfulContainer = (el, form) => {
+    const parentElement = el.parentElement
+    if (!form) form = el.parentElement
+    if (!parentElement || el === form.form) return el
+
+    const inputsInScope = parentElement.querySelectorAll('input, select, textarea')
     // To avoid noise, ensure that our input is the only in scope
     if (inputsInScope.length === 1) {
-        const labels = parentNode.querySelectorAll('label')
-        // If no label, recurse
-        return labels.length ? labels : findLabels(parentNode, form)
+        return getLargestMeaningfulContainer(parentElement, form)
     }
-    return []
+    return el
 }
 
 /**
@@ -53,17 +76,10 @@ const checkMatch = ({el, form, selector, regex, negativeRegex}) => {
 
     if (!regex) return false
 
-    if (
-        [...(el.labels || [])].filter(label =>
-            testAgainstRegexes(label.textContent, regex, negativeRegex)
-        ).length > 0 ||
-        testAgainstRegexes(el.getAttribute('aria-label'), regex, negativeRegex) ||
+    return testAgainstRegexes(getExplicitLabelsText(el), regex, negativeRegex) ||
         testAgainstRegexes(el.id, regex, negativeRegex) ||
-        testAgainstRegexes(el.placeholder, regex, negativeRegex)
-    ) return true
-
-    return [...findLabels(el, form)]
-        .filter(label => regex.test(label.textContent)).length > 0
+        testAgainstRegexes(el.placeholder, regex, negativeRegex) ||
+        testAgainstRegexes(getRelatedText(el, form), regex, negativeRegex)
 }
 
 /**
@@ -145,8 +161,8 @@ const getCCFieldSubtype = (el, form) => {
     if (matchingSelector) return CC_SELECTORS_MAP[matchingSelector].ccType
 
     // Loop through types until something matches
-    for (const {ccType, regex} of Object.values(CC_SELECTORS_MAP)) {
-        if (checkMatch({el, form, selector: '', regex})) return ccType
+    for (const {ccType, regex, negativeRegex} of Object.values(CC_SELECTORS_MAP)) {
+        if (checkMatch({el, form, selector: '', regex, negativeRegex})) return ccType
     }
 
     return undefined
@@ -221,16 +237,18 @@ const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
  * @param {RegExp} regex
  * @returns {RegExpMatchArray|null}
  */
-const findInPlaceholderAndLabels = (input, regex) => {
+const matchInPlaceholderAndLabels = (input, regex) => {
     let match = input.placeholder.match(regex)
     if (match) return match
 
-    for (const label of input.labels || []) {
-        match = label.textContent.match(regex)
-        if (match) return match
-    }
+    const labelsText = getExplicitLabelsText(input)
+    match = labelsText.match(regex)
+    if (match) return match
 
-    return null
+    const relatedText = getRelatedText(input)
+    match = relatedText.match(regex)
+
+    return match
 }
 
 /**
@@ -240,7 +258,7 @@ const findInPlaceholderAndLabels = (input, regex) => {
  * @returns {boolean}
  */
 const checkPlaceholderAndLabels = (input, regex) =>
-    !!findInPlaceholderAndLabels(input, regex)
+    !!matchInPlaceholderAndLabels(input, regex)
 
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
@@ -267,8 +285,7 @@ const formatCCYear = (input, year) => {
 const getUnifiedExpiryDate = (input, month, year) => {
     const formattedYear = formatCCYear(input, year)
     const paddedMonth = `${month}`.padStart(2, '0')
-    const separatorRegex = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
-    const separator = findInPlaceholderAndLabels(input, separatorRegex)?.groups?.separator || '/'
+    const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX)?.groups?.separator || '/'
 
     return `${paddedMonth}${separator}${formattedYear}`
 }

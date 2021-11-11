@@ -16,7 +16,7 @@ input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])`
 
 // We've seen non-standard types like 'user'. This selector should get them, too
 const GENERIC_TEXT_FIELD = `
-input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=tel]):not([type=time]):not([type=url]):not([type=week])`
+input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=tel]):not([type=time]):not([type=url]):not([type=week]):not([readonly]):not([disabled])`
 
 const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])`
 
@@ -76,6 +76,9 @@ const CC_EXP_SELECTOR = `
 input[id*=expiration i],
 select[id*=expiration i]`
 
+// Matches strings like mm/yy, mm-yyyy, mm-aa
+const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
+
 /* This is used to map a selector with the data type we store for credit cards */
 const CC_SELECTORS_MAP = {
     [CC_NAME_SELECTOR]: {
@@ -92,11 +95,13 @@ const CC_SELECTORS_MAP = {
     },
     [CC_MONTH_SELECTOR]: {
         ccType: 'expirationMonth',
-        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(mo(nth)?|mm)/i
+        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i,
+        negativeRegex: DATE_SEPARATOR_REGEX
     },
     [CC_YEAR_SELECTOR]: {
         ccType: 'expirationYear',
-        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i
+        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i,
+        negativeRegex: DATE_SEPARATOR_REGEX
     },
     [CC_EXP_SELECTOR]: {
         ccType: 'expiration',
@@ -125,6 +130,7 @@ module.exports = {
     CC_YEAR_SELECTOR,
     CC_EXP_SELECTOR,
     CC_SELECTORS_MAP,
+    DATE_SEPARATOR_REGEX,
     CC_FIELD_SELECTOR,
     FIELD_SELECTOR,
     USERNAME_SELECTOR,
