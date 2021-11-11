@@ -1,10 +1,6 @@
 const {
-    PASSWORD_SELECTOR,
-    EMAIL_SELECTOR,
-    USERNAME_SELECTOR,
-    CC_FIELD_SELECTOR,
-    DATE_SEPARATOR_REGEX,
-    CC_SELECTORS_LIST
+    CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST,
+    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
 
@@ -49,7 +45,6 @@ const getRelatedText = (el, form) => {
  */
 const getLargestMeaningfulContainer = (el, form) => {
     const parentElement = el.parentElement
-    if (!form) form = el.parentElement
     if (!parentElement || el === form.form) return el
 
     const inputsInScope = parentElement.querySelectorAll('input, select, textarea')
@@ -62,14 +57,7 @@ const getLargestMeaningfulContainer = (el, form) => {
 
 /**
  * Tries to infer input type, with checks in decreasing order of reliability
- * @param {{
- *     el: HTMLInputElement,
- *     form: Form,
- *     selector: String,
- *     regex: RegExp,
- *     negativeRegex?: RegExp
- * }}
- * @returns {boolean}
+ * @type ({el: HTMLInputElement, form: Form, ...Matcher}) => Boolean
  */
 const checkMatch = ({el, form, selector, regex, negativeRegex}) => {
     if (selector && el.matches(selector)) return true
@@ -84,48 +72,24 @@ const checkMatch = ({el, form, selector, regex, negativeRegex}) => {
 
 /**
  * Tries to infer if input is for password
- * @param {HTMLInputElement} el
- * @param {Form} form
- * @returns {boolean}
+ * @type (el: HTMLInputElement, form: Form) => Boolean
  */
 const isPassword = (el, form) =>
-    checkMatch({
-        el,
-        form,
-        selector: PASSWORD_SELECTOR,
-        regex: /password/i,
-        negativeRegex: /captcha/i
-    })
+    checkMatch({el, form, ...PASSWORD_MATCHER})
 
 /**
  * Tries to infer if input is for email
- * @param {HTMLInputElement} el
- * @param {Form} form
- * @returns {boolean}
+ * @type (el: HTMLInputElement, form: Form) => Boolean
  */
 const isEmail = (el, form) =>
-    checkMatch({
-        el,
-        form,
-        selector: EMAIL_SELECTOR,
-        regex: /.mail/i,
-        negativeRegex: /search/i
-    })
+    checkMatch({el, form, ...EMAIL_MATCHER})
 
 /**
  * Tries to infer if input is for username
- * @param {HTMLInputElement} el
- * @param {Form} form
- * @returns {boolean}
+ * @type (el: HTMLInputElement, form: Form) => Boolean
  */
 const isUserName = (el, form) =>
-    checkMatch({
-        el,
-        form,
-        selector: USERNAME_SELECTOR,
-        regex: /user((.)?name)?$/i,
-        negativeRegex: /search/i
-    })
+    checkMatch({el, form, ...USERNAME_MATCHER})
 
 /**
  * Tries to infer if it's a credit card form
@@ -157,7 +121,7 @@ const isCCForm = (form) => {
  * @return {string}
  */
 const getCCFieldSubtype = (el, form) =>
-    CC_SELECTORS_LIST.find((sel) => checkMatch({el, form, ...sel}))?.ccType
+    CC_MATCHERS_LIST.find((sel) => checkMatch({el, form, ...sel}))?.type
 
 /**
  * Tries to infer the input type
@@ -226,9 +190,10 @@ const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
  * Find a regex match for a given input
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
+ * @param {Form} form
  * @returns {RegExpMatchArray|null}
  */
-const matchInPlaceholderAndLabels = (input, regex) => {
+const matchInPlaceholderAndLabels = (input, regex, form) => {
     let match = input.placeholder.match(regex)
     if (match) return match
 
@@ -236,7 +201,7 @@ const matchInPlaceholderAndLabels = (input, regex) => {
     match = labelsText.match(regex)
     if (match) return match
 
-    const relatedText = getRelatedText(input)
+    const relatedText = getRelatedText(input, form)
     match = relatedText.match(regex)
 
     return match
@@ -246,21 +211,23 @@ const matchInPlaceholderAndLabels = (input, regex) => {
  * Check if a given input matches a regex
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
+ * @param {Form} form
  * @returns {boolean}
  */
-const checkPlaceholderAndLabels = (input, regex) =>
-    !!matchInPlaceholderAndLabels(input, regex)
+const checkPlaceholderAndLabels = (input, regex, form) =>
+    !!matchInPlaceholderAndLabels(input, regex, form)
 
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
  * @param {number} year
+ * @param {Form} form
  * @returns {number}
  */
-const formatCCYear = (input, year) => {
+const formatCCYear = (input, year, form) => {
     if (
         input.maxLength === 4 ||
-        checkPlaceholderAndLabels(input, fourDigitYearRegex)
+        checkPlaceholderAndLabels(input, fourDigitYearRegex, form)
     ) return year
 
     return year - 2000
@@ -271,12 +238,13 @@ const formatCCYear = (input, year) => {
  * @param {HTMLInputElement} input
  * @param {number} month
  * @param {number} year
+ * @param {Form} form
  * @returns {string}
  */
-const getUnifiedExpiryDate = (input, month, year) => {
-    const formattedYear = formatCCYear(input, year)
+const getUnifiedExpiryDate = (input, month, year, form) => {
+    const formattedYear = formatCCYear(input, year, form)
     const paddedMonth = `${month}`.padStart(2, '0')
-    const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX)?.groups?.separator || '/'
+    const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form)?.groups?.separator || '/'
 
     return `${paddedMonth}${separator}${formattedYear}`
 }

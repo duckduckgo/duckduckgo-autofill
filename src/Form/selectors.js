@@ -14,14 +14,38 @@ input:not([type])[aria-label*=mail i]:not([aria-label*=search i]),
 input[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]),
 input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])`
 
+/** @type Matcher */
+const EMAIL_MATCHER = {
+    type: 'email',
+    selector: EMAIL_SELECTOR,
+    regex: /.mail/i,
+    negativeRegex: /search/i
+}
+
 // We've seen non-standard types like 'user'. This selector should get them, too
 const GENERIC_TEXT_FIELD = `
 input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=tel]):not([type=time]):not([type=url]):not([type=week]):not([readonly]):not([disabled])`
 
 const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])`
 
+/** @type Matcher */
+const PASSWORD_MATCHER = {
+    type: 'password',
+    selector: PASSWORD_SELECTOR,
+    regex: /password/i,
+    negativeRegex: /captcha/i
+}
+
 // This is more generic, used only when we have identified a form
 const USERNAME_SELECTOR = `${GENERIC_TEXT_FIELD}[autocomplete^=user]`
+
+/** @type Matcher */
+const USERNAME_MATCHER = {
+    type: 'username',
+    selector: USERNAME_SELECTOR,
+    regex: /user((.)?name)?$/i,
+    negativeRegex: /search/i
+}
 
 const CC_NAME_SELECTOR = `
 input[autocomplete="cc-name"],
@@ -79,37 +103,40 @@ select[id*=expiration i]`
 // Matches strings like mm/yy, mm-yyyy, mm-aa
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
 
-/* This is used to map a selector with the data type we store for credit cards */
+/**
+ * This is used to map a selector with the data type we store for credit cards
+ * @type {[Matcher]}
+ */
 const CC_MATCHERS_LIST = [
     {
-        ccType: 'cardName',
+        type: 'cardName',
         selector: CC_NAME_SELECTOR,
         regex: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i
     },
     {
-        ccType: 'cardNumber',
+        type: 'cardNumber',
         selector: CC_NUMBER_SELECTOR,
         regex: /card.*number|number.*card/i
     },
     {
-        ccType: 'cardSecurityCode',
+        type: 'cardSecurityCode',
         selector: CC_CVC_SELECTOR,
         regex: /security.?code|cvv|csc|cvc/i
     },
     {
-        ccType: 'expirationMonth',
+        type: 'expirationMonth',
         selector: CC_MONTH_SELECTOR,
         regex: /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i,
         negativeRegex: DATE_SEPARATOR_REGEX
     },
     {
-        ccType: 'expirationYear',
+        type: 'expirationYear',
         selector: CC_YEAR_SELECTOR,
         regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i,
         negativeRegex: DATE_SEPARATOR_REGEX
     },
     {
-        ccType: 'expiration',
+        type: 'expiration',
         selector: CC_EXP_SELECTOR,
         regex: /exp(iry|iration)?/i
     }
@@ -127,19 +154,13 @@ button:not([role=switch]):not([role=link]),
 [role=button]`
 
 module.exports = {
-    EMAIL_SELECTOR,
-    GENERIC_TEXT_FIELD,
     PASSWORD_SELECTOR,
-    CC_NAME_SELECTOR,
-    CC_NUMBER_SELECTOR,
-    CC_CVC_SELECTOR,
-    CC_MONTH_SELECTOR,
-    CC_YEAR_SELECTOR,
-    CC_EXP_SELECTOR,
+    EMAIL_MATCHER,
+    PASSWORD_MATCHER,
+    USERNAME_MATCHER,
     CC_MATCHERS_LIST,
     DATE_SEPARATOR_REGEX,
     CC_FIELD_SELECTOR,
     FIELD_SELECTOR,
-    USERNAME_SELECTOR,
     SUBMIT_BUTTON_SELECTOR
 }
