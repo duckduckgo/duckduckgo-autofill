@@ -4,7 +4,7 @@ const {
     USERNAME_SELECTOR,
     CC_FIELD_SELECTOR,
     DATE_SEPARATOR_REGEX,
-    CC_SELECTORS_MAP
+    CC_SELECTORS_LIST
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
 
@@ -156,17 +156,8 @@ const isCCForm = (form) => {
  * @param {Form} form
  * @return {string}
  */
-const getCCFieldSubtype = (el, form) => {
-    const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => el.matches(selector))
-    if (matchingSelector) return CC_SELECTORS_MAP[matchingSelector].ccType
-
-    // Loop through types until something matches
-    for (const {ccType, regex, negativeRegex} of Object.values(CC_SELECTORS_MAP)) {
-        if (checkMatch({el, form, selector: '', regex, negativeRegex})) return ccType
-    }
-
-    return undefined
-}
+const getCCFieldSubtype = (el, form) =>
+    CC_SELECTORS_LIST.find((sel) => checkMatch({el, form, ...sel}))?.ccType
 
 /**
  * Tries to infer the input type

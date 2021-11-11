@@ -80,36 +80,43 @@ select[id*=expiration i]`
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
 
 /* This is used to map a selector with the data type we store for credit cards */
-const CC_SELECTORS_MAP = {
-    [CC_NAME_SELECTOR]: {
+const CC_MATCHERS_LIST = [
+    {
         ccType: 'cardName',
+        selector: CC_NAME_SELECTOR,
         regex: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i
     },
-    [CC_NUMBER_SELECTOR]: {
+    {
         ccType: 'cardNumber',
+        selector: CC_NUMBER_SELECTOR,
         regex: /card.*number|number.*card/i
     },
-    [CC_CVC_SELECTOR]: {
+    {
         ccType: 'cardSecurityCode',
+        selector: CC_CVC_SELECTOR,
         regex: /security.?code|cvv|csc|cvc/i
     },
-    [CC_MONTH_SELECTOR]: {
+    {
         ccType: 'expirationMonth',
+        selector: CC_MONTH_SELECTOR,
         regex: /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i,
         negativeRegex: DATE_SEPARATOR_REGEX
     },
-    [CC_YEAR_SELECTOR]: {
+    {
         ccType: 'expirationYear',
+        selector: CC_YEAR_SELECTOR,
         regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i,
         negativeRegex: DATE_SEPARATOR_REGEX
     },
-    [CC_EXP_SELECTOR]: {
+    {
         ccType: 'expiration',
+        selector: CC_EXP_SELECTOR,
         regex: /exp(iry|iration)?/i
     }
-}
+]
 
-const CC_FIELD_SELECTOR = Object.keys(CC_SELECTORS_MAP).join(', ')
+const CC_FIELD_SELECTOR = CC_MATCHERS_LIST.map(({selector}) => selector).join(', ')
+
 
 const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR].join(', ')
 
@@ -129,7 +136,7 @@ module.exports = {
     CC_MONTH_SELECTOR,
     CC_YEAR_SELECTOR,
     CC_EXP_SELECTOR,
-    CC_SELECTORS_MAP,
+    CC_MATCHERS_LIST,
     DATE_SEPARATOR_REGEX,
     CC_FIELD_SELECTOR,
     FIELD_SELECTOR,
