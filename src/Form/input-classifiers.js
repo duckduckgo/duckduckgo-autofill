@@ -1,6 +1,6 @@
 const {
     CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST,
-    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER
+    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
 
@@ -183,12 +183,6 @@ const getInputSubtype = (input) =>
     'unknown'
 
 /**
- * Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
- * @type {RegExp}
- */
-const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
-
-/**
  * Find a regex match for a given input
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
@@ -229,7 +223,7 @@ const checkPlaceholderAndLabels = (input, regex, form) =>
 const formatCCYear = (input, year, form) => {
     if (
         input.maxLength === 4 ||
-        checkPlaceholderAndLabels(input, fourDigitYearRegex, form)
+        checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form)
     ) return year
 
     return year - 2000

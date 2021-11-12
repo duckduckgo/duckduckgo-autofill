@@ -102,6 +102,8 @@ select[id*=expiration i]`
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
+// Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
+const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
 
 /**
  * This is used to map a selector with the data type we store for credit cards
@@ -138,7 +140,7 @@ const CC_MATCHERS_LIST = [
     {
         type: 'expiration',
         selector: CC_EXP_SELECTOR,
-        regex: /exp(iry|iration)?/i
+        regex: new RegExp(FOUR_DIGIT_YEAR_REGEX.source + /|exp(iry|iration)?/.source, 'i')
     }
 ]
 
@@ -158,6 +160,7 @@ module.exports = {
     EMAIL_MATCHER,
     PASSWORD_MATCHER,
     USERNAME_MATCHER,
+    FOUR_DIGIT_YEAR_REGEX,
     CC_MATCHERS_LIST,
     DATE_SEPARATOR_REGEX,
     CC_FIELD_SELECTOR,
