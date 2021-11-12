@@ -129,13 +129,13 @@ const CC_MATCHERS_LIST = [
         type: 'expirationMonth',
         selector: CC_MONTH_SELECTOR,
         regex: /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i,
-        negativeRegex: DATE_SEPARATOR_REGEX
+        negativeRegex: /mm[/\s.\-_—–]/i
     },
     {
         type: 'expirationYear',
         selector: CC_YEAR_SELECTOR,
         regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i,
-        negativeRegex: DATE_SEPARATOR_REGEX
+        negativeRegex: /mm[/\s.\-_—–]/i
     },
     {
         type: 'expiration',
