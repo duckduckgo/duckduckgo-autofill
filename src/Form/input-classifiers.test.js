@@ -41,8 +41,9 @@ describe('Input Classifiers', () => {
     })
 
     it('should match text in a nearby span', () => {
+        // Poor markup without a form proper labels and attributes
         const markup = `
-<form>
+<div class="form">
     <div>
         <span>Card Number</span>
         <input />
@@ -63,9 +64,9 @@ describe('Input Classifiers', () => {
         </span>
     </div>
     <button>Buy now</button>
-</form>`
+</div>`
         document.body.innerHTML = markup
-        const form = document.querySelector('form')
+        const form = document.querySelector('.form')
         const inputs = document.querySelectorAll('input')
 
         expect(getCCFieldSubtype(inputs[0], form)).toBe('cardNumber')
