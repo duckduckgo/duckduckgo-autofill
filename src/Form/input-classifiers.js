@@ -34,7 +34,7 @@ const getExplicitLabelsText = (el) => {
  */
 const getRelatedText = (el, form) => {
     const container = getLargestMeaningfulContainer(el, form)
-    return container.innerText
+    return container.textContent
 }
 
 /**
