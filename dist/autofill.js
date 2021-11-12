@@ -1570,7 +1570,8 @@ const CC_MATCHERS_LIST = [{
 }, {
   type: 'expiration',
   selector: CC_EXP_SELECTOR,
-  regex: new RegExp(FOUR_DIGIT_YEAR_REGEX.source + /|exp(iry|iration)?/.source, 'i')
+  regex: /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i,
+  negativeRegex: /invalid/i
 }];
 const CC_FIELD_SELECTOR = CC_MATCHERS_LIST.map(({
   selector

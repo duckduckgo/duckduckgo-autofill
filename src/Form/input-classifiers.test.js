@@ -55,6 +55,13 @@ describe('Input Classifiers', () => {
         <span>Security code</span>
         <input />
     </div>
+    <div>
+        <span>Random unrelated field</span>
+        <input />
+        <span hidden class="Error message">
+            Invalid field. Used to test that the word "invalid" doesn't trigger the expiry regex
+        </span>
+    </div>
     <button>Buy now</button>
 </form>`
         document.body.innerHTML = markup
@@ -65,6 +72,7 @@ describe('Input Classifiers', () => {
         expect(getCCFieldSubtype(inputs[1], form)).toBe('expiration')
         expect(getUnifiedExpiryDate(inputs[1], 8, 2025, form)).toBe('08-2025')
         expect(getCCFieldSubtype(inputs[2], form)).toBe('cardSecurityCode')
+        expect(getCCFieldSubtype(inputs[3], form)).toBeFalsy()
     })
 
     const ccLabeltestCases = {
