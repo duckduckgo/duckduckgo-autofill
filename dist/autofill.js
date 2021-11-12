@@ -1270,14 +1270,9 @@ const getInputSubtype = input => {
 
 
 const matchInPlaceholderAndLabels = (input, regex, form) => {
-  let match = input.placeholder.match(regex);
-  if (match) return match;
-  const labelsText = getExplicitLabelsText(input);
-  match = labelsText.match(regex);
-  if (match) return match;
-  const relatedText = getRelatedText(input, form);
-  match = relatedText.match(regex);
-  return match;
+  var _input$placeholder;
+
+  return ((_input$placeholder = input.placeholder) === null || _input$placeholder === void 0 ? void 0 : _input$placeholder.match(regex)) || getExplicitLabelsText(input).match(regex) || getRelatedText(input, form).match(regex);
 };
 /**
  * Check if a given input matches a regex

@@ -189,19 +189,10 @@ const getInputSubtype = (input) =>
  * @param {HTMLFormElement} form
  * @returns {RegExpMatchArray|null}
  */
-const matchInPlaceholderAndLabels = (input, regex, form) => {
-    let match = input.placeholder.match(regex)
-    if (match) return match
-
-    const labelsText = getExplicitLabelsText(input)
-    match = labelsText.match(regex)
-    if (match) return match
-
-    const relatedText = getRelatedText(input, form)
-    match = relatedText.match(regex)
-
-    return match
-}
+const matchInPlaceholderAndLabels = (input, regex, form) =>
+    input.placeholder?.match(regex) ||
+    getExplicitLabelsText(input).match(regex) ||
+    getRelatedText(input, form).match(regex)
 
 /**
  * Check if a given input matches a regex
