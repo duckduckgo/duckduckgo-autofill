@@ -58,7 +58,6 @@ describe('Input Classifiers', () => {
             {text: 'expiry month'},
             {text: 'expiration month'},
             {text: 'exp month'},
-            {text: 'card expiry mo'},
             {text: 'Credit Card Number', shouldMatch: false},
             {text: 'expiry year', shouldMatch: false},
             {text: 'expiration year', shouldMatch: false},
@@ -81,17 +80,17 @@ describe('Input Classifiers', () => {
 
     describe('Unified Expiration Date', () => {
         describe.each([
-            { text: 'mm-yyyy', expectedResult: '12-2025' },
-            { text: 'mm/yyyy', expectedResult: '12/2025' },
-            { text: '__-____', expectedResult: '12-2025' },
-            { text: 'mm-yy', expectedResult: '12-25' },
-            { text: 'i.e. 10-2022', expectedResult: '12-2025' },
-            { text: 'MM-AAAA', expectedResult: '12-2025' },
-            { text: 'mm_jj', expectedResult: '12_25' },
-            { text: 'mm.yy', expectedResult: '12.25' },
-            { text: 'mm - yy', expectedResult: '12-25' },
-            { text: 'mm yy', expectedResult: '12 25' },
-            { text: 'ie: 08.22', expectedResult: '12.25' }
+            { text: 'mm-yyyy', expectedResult: '08-2025' },
+            { text: 'mm/yyyy', expectedResult: '08/2025' },
+            { text: '__-____', expectedResult: '08-2025' },
+            { text: 'mm-yy', expectedResult: '08-25' },
+            { text: 'i.e. 10-2022', expectedResult: '08-2025' },
+            { text: 'MM-AAAA', expectedResult: '08-2025' },
+            { text: 'mm_jj', expectedResult: '08_25' },
+            { text: 'mm.yy', expectedResult: '08.25' },
+            { text: 'mm - yy', expectedResult: '08-25' },
+            { text: 'mm yy', expectedResult: '08 25' },
+            { text: 'ie: 08.22', expectedResult: '08.25' }
         ])('when checking for $text', ({ text, expectedResult }) => {
             let elements
 
