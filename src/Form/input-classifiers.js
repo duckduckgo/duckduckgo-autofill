@@ -29,7 +29,7 @@ const getExplicitLabelsText = (el) => {
 /**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement} el
- * @param {Form} form
+ * @param {HTMLFormElement} form
  * @return {string}
  */
 const getRelatedText = (el, form) => {
@@ -40,12 +40,12 @@ const getRelatedText = (el, form) => {
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
  * @param {HTMLElement} el
- * @param {Form} form
+ * @param {HTMLFormElement} form
  * @return {HTMLElement}
  */
 const getLargestMeaningfulContainer = (el, form) => {
     const parentElement = el.parentElement
-    if (!parentElement || el === form.form) return el
+    if (!parentElement || el === form) return el
 
     const inputsInScope = parentElement.querySelectorAll('input, select, textarea')
     // To avoid noise, ensure that our input is the only in scope
@@ -57,7 +57,7 @@ const getLargestMeaningfulContainer = (el, form) => {
 
 /**
  * Tries to infer input type, with checks in decreasing order of reliability
- * @type ({el: HTMLInputElement, form: Form, ...Matcher}) => Boolean
+ * @type ({el: HTMLInputElement, form: HTMLFormElement, ...Matcher}) => Boolean
  */
 const checkMatch = ({el, form, selector, regex, negativeRegex}) => {
     if (selector && el.matches(selector)) return true
@@ -72,28 +72,28 @@ const checkMatch = ({el, form, selector, regex, negativeRegex}) => {
 
 /**
  * Tries to infer if input is for password
- * @type (el: HTMLInputElement, form: Form) => Boolean
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isPassword = (el, form) =>
     checkMatch({el, form, ...PASSWORD_MATCHER})
 
 /**
  * Tries to infer if input is for email
- * @type (el: HTMLInputElement, form: Form) => Boolean
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isEmail = (el, form) =>
     checkMatch({el, form, ...EMAIL_MATCHER})
 
 /**
  * Tries to infer if input is for username
- * @type (el: HTMLInputElement, form: Form) => Boolean
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isUserName = (el, form) =>
     checkMatch({el, form, ...USERNAME_MATCHER})
 
 /**
  * Tries to infer if it's a credit card form
- * @param {HTMLElement} form
+ * @param {HTMLFormElement} form
  * @returns {boolean}
  */
 const isCCForm = (form) => {
@@ -102,7 +102,7 @@ const isCCForm = (form) => {
     if (hasCCSelectorChild) return true
 
     // Read form attributes to find a signal
-    const hasCCAttribute = Array.from(form.attributes).some(({name, value}) =>
+    const hasCCAttribute = [...form.attributes].some(({name, value}) =>
         /(credit|payment).?card/i.test(`${name}=${value}`)
     )
     if (hasCCAttribute) return true
@@ -117,7 +117,7 @@ const isCCForm = (form) => {
 /**
  * Get a CC subtype based on selectors and regexes
  * @param {HTMLInputElement} el
- * @param {Form} form
+ * @param {HTMLFormElement} form
  * @return {string}
  */
 const getCCFieldSubtype = (el, form) =>
@@ -133,18 +133,20 @@ const inferInputType = (input, form) => {
     const presetType = input.getAttribute(ATTR_INPUT_TYPE)
     if (presetType) return presetType
 
+    const formEl = form.form
+
     // For CC forms we run aggressive matches, so we want to make sure we only
     // run them on actual CC forms to avoid false positives and expensive loops
-    if (isCCForm(form.form)) {
-        const subtype = getCCFieldSubtype(input, form)
+    if (isCCForm(formEl)) {
+        const subtype = getCCFieldSubtype(input, formEl)
         if (subtype) return `creditCard.${subtype}`
     }
 
-    if (isPassword(input, form)) return 'credentials.password'
+    if (isPassword(input, formEl)) return 'credentials.password'
 
-    if (isEmail(input, form)) return form.isLogin ? 'credentials.username' : 'emailNew'
+    if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'emailNew'
 
-    if (isUserName(input, form)) return 'credentials.username'
+    if (isUserName(input, formEl)) return 'credentials.username'
 
     return 'unknown'
 }
@@ -190,7 +192,7 @@ const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i
  * Find a regex match for a given input
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
- * @param {Form} form
+ * @param {HTMLFormElement} form
  * @returns {RegExpMatchArray|null}
  */
 const matchInPlaceholderAndLabels = (input, regex, form) => {
@@ -211,7 +213,7 @@ const matchInPlaceholderAndLabels = (input, regex, form) => {
  * Check if a given input matches a regex
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
- * @param {Form} form
+ * @param {HTMLFormElement} form
  * @returns {boolean}
  */
 const checkPlaceholderAndLabels = (input, regex, form) =>
@@ -221,7 +223,7 @@ const checkPlaceholderAndLabels = (input, regex, form) =>
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
  * @param {number} year
- * @param {Form} form
+ * @param {HTMLFormElement} form
  * @returns {number}
  */
 const formatCCYear = (input, year, form) => {
@@ -238,7 +240,7 @@ const formatCCYear = (input, year, form) => {
  * @param {HTMLInputElement} input
  * @param {number} month
  * @param {number} year
- * @param {Form} form
+ * @param {HTMLFormElement} form
  * @returns {string}
  */
 const getUnifiedExpiryDate = (input, month, year, form) => {

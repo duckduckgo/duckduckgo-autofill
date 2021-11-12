@@ -259,11 +259,11 @@ class Form {
             let autofillData = data[inputSubtype]
 
             if (inputSubtype === 'expiration') {
-                autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this)
+                autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this.form)
             }
 
             if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
-                autofillData = formatCCYear(input, autofillData, this)
+                autofillData = formatCCYear(input, autofillData, this.form)
             }
 
             if (autofillData) this.autofillInput(input, autofillData, dataType)

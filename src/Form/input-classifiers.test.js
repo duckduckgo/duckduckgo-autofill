@@ -5,18 +5,20 @@ const renderInputWithLabel = () => {
     input.id = 'inputId'
     const label = document.createElement('label')
     label.setAttribute('for', 'inputId')
-    document.body.append(input, label)
-    return {input, label}
+    const form = document.createElement('form')
+    form.append(input, label)
+    document.body.append(form)
+    return {input, label, form}
 }
 
 const testRegexForCCLabels = (cases) => {
     Object.entries(cases).forEach(([expectedType, arr]) => {
         arr.forEach(({text, shouldMatch = true}) => {
             it(`"${text}" should ${shouldMatch ? '' : 'not '}match regex for ${expectedType}`, () => {
-                const {input, label} = renderInputWithLabel()
+                const {input, label, form} = renderInputWithLabel()
                 label.textContent = text
 
-                const subtype = getCCFieldSubtype(input)
+                const subtype = getCCFieldSubtype(input, form)
                 if (shouldMatch) {
                     expect(subtype).toBe(expectedType)
                 } else {
@@ -33,9 +35,9 @@ afterEach(() => {
 
 describe('Input Classifiers', () => {
     it('should match the selector for cardNumber', () => {
-        const {input} = renderInputWithLabel()
+        const {input, form} = renderInputWithLabel()
         input.autocomplete = 'cc-number'
-        expect(getCCFieldSubtype(input)).toBe('cardNumber')
+        expect(getCCFieldSubtype(input, form)).toBe('cardNumber')
     })
 
     const ccLabeltestCases = {
@@ -101,15 +103,15 @@ describe('Input Classifiers', () => {
             it('matches for placeholder text', () => {
                 elements.input.placeholder = text
 
-                expect(getCCFieldSubtype(elements.input)).toBe('expiration')
-                expect(getUnifiedExpiryDate(elements.input, 12, 2025)).toBe(expectedResult)
+                expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
+                expect(getUnifiedExpiryDate(elements.input, 8, 2025, elements.form)).toBe(expectedResult)
             })
 
             it('matches for label text', () => {
                 elements.label.textContent = text
 
-                expect(getCCFieldSubtype(elements.input)).toBe('expiration')
-                expect(getUnifiedExpiryDate(elements.input, 12, 2025)).toBe(expectedResult)
+                expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
+                expect(getUnifiedExpiryDate(elements.input, 8, 2025, elements.form)).toBe(expectedResult)
             })
         })
     })
