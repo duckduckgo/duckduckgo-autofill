@@ -40,6 +40,33 @@ describe('Input Classifiers', () => {
         expect(getCCFieldSubtype(input, form)).toBe('cardNumber')
     })
 
+    it('should match text in a nearby span', () => {
+        const markup = `
+<form>
+    <div>
+        <span>Card Number</span>
+        <input />
+    </div>
+    <div>
+        <span>MM-YYYY</span>
+        <input />
+    </div>
+    <div>
+        <span>Security code</span>
+        <input />
+    </div>
+    <button>Buy now</button>
+</form>`
+        document.body.innerHTML = markup
+        const form = document.querySelector('form')
+        const inputs = document.querySelectorAll('input')
+
+        expect(getCCFieldSubtype(inputs[0], form)).toBe('cardNumber')
+        expect(getCCFieldSubtype(inputs[1], form)).toBe('expiration')
+        expect(getUnifiedExpiryDate(inputs[1], 8, 2025, form)).toBe('08-2025')
+        expect(getCCFieldSubtype(inputs[2], form)).toBe('cardSecurityCode')
+    })
+
     const ccLabeltestCases = {
         cardName: [
             {text: 'credit card name'},
