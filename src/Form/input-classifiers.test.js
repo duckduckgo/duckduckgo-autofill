@@ -73,7 +73,7 @@ describe('Input Classifiers', () => {
         expect(getCCFieldSubtype(inputs[1], form)).toBe('expiration')
         expect(getUnifiedExpiryDate(inputs[1], 8, 2025, form)).toBe('08-2025')
         expect(getCCFieldSubtype(inputs[2], form)).toBe('cardSecurityCode')
-        expect(getCCFieldSubtype(inputs[3], form)).toBeFalsy()
+        expect(getCCFieldSubtype(inputs[3], form)).toBeUndefined()
     })
 
     const ccLabeltestCases = {
