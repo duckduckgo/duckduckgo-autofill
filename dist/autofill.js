@@ -1112,13 +1112,11 @@ const getLargestMeaningfulContainer = (el, form) => {
 };
 /**
  * Tries to infer input type, with checks in decreasing order of reliability
- * @type ({el: HTMLInputElement, form: HTMLFormElement, ...Matcher}) => Boolean
+ * @type (el: HTMLInputElement, form: HTMLFormElement, Matcher) => Boolean
  */
 
 
-const checkMatch = ({
-  el,
-  form,
+const checkMatch = (el, form, {
   selector,
   regex,
   negativeRegex
@@ -1133,33 +1131,21 @@ const checkMatch = ({
  */
 
 
-const isPassword = (el, form) => checkMatch({
-  el,
-  form,
-  ...PASSWORD_MATCHER
-});
+const isPassword = (el, form) => checkMatch(el, form, PASSWORD_MATCHER);
 /**
  * Tries to infer if input is for email
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 
 
-const isEmail = (el, form) => checkMatch({
-  el,
-  form,
-  ...EMAIL_MATCHER
-});
+const isEmail = (el, form) => checkMatch(el, form, EMAIL_MATCHER);
 /**
  * Tries to infer if input is for username
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 
 
-const isUserName = (el, form) => checkMatch({
-  el,
-  form,
-  ...USERNAME_MATCHER
-});
+const isUserName = (el, form) => checkMatch(el, form, USERNAME_MATCHER);
 /**
  * Tries to infer if it's a credit card form
  * @param {HTMLFormElement} form
@@ -1193,11 +1179,7 @@ const isCCForm = form => {
 const getCCFieldSubtype = (el, form) => {
   var _CC_MATCHERS_LIST$fin;
 
-  return (_CC_MATCHERS_LIST$fin = CC_MATCHERS_LIST.find(sel => checkMatch({
-    el,
-    form,
-    ...sel
-  }))) === null || _CC_MATCHERS_LIST$fin === void 0 ? void 0 : _CC_MATCHERS_LIST$fin.type;
+  return (_CC_MATCHERS_LIST$fin = CC_MATCHERS_LIST.find(sel => checkMatch(el, form, sel))) === null || _CC_MATCHERS_LIST$fin === void 0 ? void 0 : _CC_MATCHERS_LIST$fin.type;
 };
 /**
  * Tries to infer the input type
