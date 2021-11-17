@@ -505,7 +505,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 const FormAnalyzer = require('./FormAnalyzer');
 
 const {
-  PASSWORD_SELECTOR,
   SUBMIT_BUTTON_SELECTOR,
   FIELD_SELECTOR
 } = require('./selectors');
@@ -786,7 +785,7 @@ class Form {
   }
 
   autofillEmail(alias, dataType = 'emailNew') {
-    this.execOnInputs(input => !input.matches(PASSWORD_SELECTOR) && this.autofillInput(input, alias, dataType), dataType);
+    this.execOnInputs(input => this.autofillInput(input, alias, dataType), dataType);
 
     if (this.tooltip) {
       this.removeTooltip();
@@ -800,11 +799,11 @@ class Form {
       let autofillData = data[inputSubtype];
 
       if (inputSubtype === 'expiration') {
-        autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear);
+        autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this.form);
       }
 
       if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
-        autofillData = formatCCYear(input, autofillData);
+        autofillData = formatCCYear(input, autofillData, this.form);
       }
 
       if (autofillData) this.autofillInput(input, autofillData, dataType);
@@ -1043,11 +1042,13 @@ module.exports = FormAnalyzer;
 "use strict";
 
 const {
-  PASSWORD_SELECTOR,
-  EMAIL_SELECTOR,
-  USERNAME_SELECTOR,
   CC_FIELD_SELECTOR,
-  CC_SELECTORS_MAP
+  DATE_SEPARATOR_REGEX,
+  CC_MATCHERS_LIST,
+  PASSWORD_MATCHER,
+  EMAIL_MATCHER,
+  USERNAME_MATCHER,
+  FOUR_DIGIT_YEAR_REGEX
 } = require('./selectors');
 
 const {
@@ -1064,98 +1065,90 @@ const {
 
 const testAgainstRegexes = (string = '', regex, negativeRegex) => regex.test(string) && !(negativeRegex !== null && negativeRegex !== void 0 && negativeRegex.test(string));
 /**
- * Tries to get labels even when they're not explicitly set with for="id"
- * @param el
- * @param {Form} form
- * @returns {[]|NodeList}
+ * Get text from all explicit labels
+ * @param {HTMLInputElement} el
+ * @return {String}
  */
 
 
-const findLabels = (el, form) => {
-  const parentNode = el.parentNode;
-  if (!parentNode || parentNode === form.form || el === form.form) return [];
-  const inputsInScope = parentNode.querySelectorAll('input'); // To avoid noise, ensure that our input is the only in scope
+const getExplicitLabelsText = el => {
+  var _document$getElementB;
+
+  const text = [...(el.labels || [])].reduce((text, label) => "".concat(text, " ").concat(label.textContent), '');
+  const ariaLabel = el.getAttribute('aria-label') || '';
+  const labelledByText = ((_document$getElementB = document.getElementById(el.getAttribute('aria-labelled'))) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.textContent) || '';
+  return "".concat(text, " ").concat(ariaLabel, " ").concat(labelledByText);
+};
+/**
+ * Get all text close to the input (useful when no labels are defined)
+ * @param {HTMLInputElement} el
+ * @param {HTMLFormElement} form
+ * @return {string}
+ */
+
+
+const getRelatedText = (el, form) => {
+  const container = getLargestMeaningfulContainer(el, form);
+  return container.textContent;
+};
+/**
+ * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
+ * @param {HTMLElement} el
+ * @param {HTMLFormElement} form
+ * @return {HTMLElement}
+ */
+
+
+const getLargestMeaningfulContainer = (el, form) => {
+  const parentElement = el.parentElement;
+  if (!parentElement || el === form) return el;
+  const inputsInScope = parentElement.querySelectorAll('input, select, textarea'); // To avoid noise, ensure that our input is the only in scope
 
   if (inputsInScope.length === 1) {
-    const labels = parentNode.querySelectorAll('label'); // If no label, recurse
-
-    return labels.length ? labels : findLabels(parentNode, form);
+    return getLargestMeaningfulContainer(parentElement, form);
   }
 
-  return [];
+  return el;
 };
 /**
  * Tries to infer input type, with checks in decreasing order of reliability
- * @param {{
- *     el: HTMLInputElement,
- *     form: Form,
- *     selector: String,
- *     regex: RegExp,
- *     negativeRegex?: RegExp
- * }}
- * @returns {boolean}
+ * @type (el: HTMLInputElement, form: HTMLFormElement, Matcher) => Boolean
  */
 
 
-const checkMatch = ({
-  el,
-  form,
+const checkMatch = (el, form, {
   selector,
   regex,
   negativeRegex
 }) => {
   if (selector && el.matches(selector)) return true;
   if (!regex) return false;
-  if ([...(el.labels || [])].filter(label => testAgainstRegexes(label.textContent, regex, negativeRegex)).length > 0 || testAgainstRegexes(el.getAttribute('aria-label'), regex, negativeRegex) || testAgainstRegexes(el.id, regex, negativeRegex)) return true;
-  return [...findLabels(el, form)].filter(label => regex.test(label.textContent)).length > 0;
+  return testAgainstRegexes(getExplicitLabelsText(el), regex, negativeRegex) || testAgainstRegexes(el.id, regex, negativeRegex) || testAgainstRegexes(el.placeholder, regex, negativeRegex) || testAgainstRegexes(getRelatedText(el, form), regex, negativeRegex);
 };
 /**
  * Tries to infer if input is for password
- * @param {HTMLInputElement} el
- * @param {Form} form
- * @returns {boolean}
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 
 
-const isPassword = (el, form) => checkMatch({
-  el,
-  form,
-  selector: PASSWORD_SELECTOR,
-  regex: /password/i
-});
+const isPassword = (el, form) => checkMatch(el, form, PASSWORD_MATCHER);
 /**
  * Tries to infer if input is for email
- * @param {HTMLInputElement} el
- * @param {Form} form
- * @returns {boolean}
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 
 
-const isEmail = (el, form) => checkMatch({
-  el,
-  form,
-  selector: EMAIL_SELECTOR,
-  regex: /.mail/i,
-  negativeRegex: /search/i
-});
+const isEmail = (el, form) => checkMatch(el, form, EMAIL_MATCHER);
 /**
  * Tries to infer if input is for username
- * @param {HTMLInputElement} el
- * @param {Form} form
- * @returns {boolean}
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 
 
-const isUserName = (el, form) => checkMatch({
-  el,
-  form,
-  selector: USERNAME_SELECTOR,
-  regex: /user((.)?name)?$/i,
-  negativeRegex: /search/i
-});
+const isUserName = (el, form) => checkMatch(el, form, USERNAME_MATCHER);
 /**
  * Tries to infer if it's a credit card form
- * @param {HTMLElement} form
+ * @param {HTMLFormElement} form
  * @returns {boolean}
  */
 
@@ -1165,7 +1158,7 @@ const isCCForm = form => {
 
   if (hasCCSelectorChild) return true; // Read form attributes to find a signal
 
-  const hasCCAttribute = Array.from(form.attributes).some(({
+  const hasCCAttribute = [...form.attributes].some(({
     name,
     value
   }) => /(credit|payment).?card/i.test("".concat(name, "=").concat(value)));
@@ -1178,28 +1171,15 @@ const isCCForm = form => {
 /**
  * Get a CC subtype based on selectors and regexes
  * @param {HTMLInputElement} el
- * @param {Form} form
+ * @param {HTMLFormElement} form
  * @return {string}
  */
 
 
 const getCCFieldSubtype = (el, form) => {
-  const matchingSelector = Object.keys(CC_SELECTORS_MAP).find(selector => el.matches(selector));
-  if (matchingSelector) return CC_SELECTORS_MAP[matchingSelector].ccType; // Loop through types until something matches
+  var _CC_MATCHERS_LIST$fin;
 
-  for (const {
-    ccType,
-    regex
-  } of Object.values(CC_SELECTORS_MAP)) {
-    if (checkMatch({
-      el,
-      form,
-      selector: '',
-      regex
-    })) return ccType;
-  }
-
-  return undefined;
+  return (_CC_MATCHERS_LIST$fin = CC_MATCHERS_LIST.find(sel => checkMatch(el, form, sel))) === null || _CC_MATCHERS_LIST$fin === void 0 ? void 0 : _CC_MATCHERS_LIST$fin.type;
 };
 /**
  * Tries to infer the input type
@@ -1211,17 +1191,18 @@ const getCCFieldSubtype = (el, form) => {
 
 const inferInputType = (input, form) => {
   const presetType = input.getAttribute(ATTR_INPUT_TYPE);
-  if (presetType) return presetType; // For CC forms we run aggressive matches, so we want to make sure we only
+  if (presetType) return presetType;
+  const formEl = form.form; // For CC forms we run aggressive matches, so we want to make sure we only
   // run them on actual CC forms to avoid false positives and expensive loops
 
-  if (isCCForm(form.form)) {
-    const subtype = getCCFieldSubtype(input, form);
+  if (isCCForm(formEl)) {
+    const subtype = getCCFieldSubtype(input, formEl);
     if (subtype) return "creditCard.".concat(subtype);
   }
 
-  if (isPassword(input, form)) return 'credentials.password';
-  if (isEmail(input, form)) return form.isLogin ? 'credentials.username' : 'emailNew';
-  if (isUserName(input, form)) return 'credentials.username';
+  if (isPassword(input, formEl)) return 'credentials.password';
+  if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'emailNew';
+  if (isUserName(input, formEl)) return 'credentials.username';
   return 'unknown';
 };
 /**
@@ -1262,49 +1243,40 @@ const getInputSubtype = input => {
   return ((_input$getAttribute2 = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute2 === void 0 ? void 0 : _input$getAttribute2.split('.')[1]) || ((_input$getAttribute3 = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute3 === void 0 ? void 0 : _input$getAttribute3.split('.')[0]) || 'unknown';
 };
 /**
- * Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
- * @type {RegExp}
- */
-
-
-const fourDigitYearRegex = /(\D)\1{3}|\d{4}/i;
-/**
  * Find a regex match for a given input
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
+ * @param {HTMLFormElement} form
  * @returns {RegExpMatchArray|null}
  */
 
-const findInPlaceholderAndLabels = (input, regex) => {
-  let match = input.placeholder.match(regex);
-  if (match) return match;
 
-  for (const label of input.labels || []) {
-    match = label.textContent.match(regex);
-    if (match) return match;
-  }
+const matchInPlaceholderAndLabels = (input, regex, form) => {
+  var _input$placeholder;
 
-  return null;
+  return ((_input$placeholder = input.placeholder) === null || _input$placeholder === void 0 ? void 0 : _input$placeholder.match(regex)) || getExplicitLabelsText(input).match(regex) || getRelatedText(input, form).match(regex);
 };
 /**
  * Check if a given input matches a regex
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
+ * @param {HTMLFormElement} form
  * @returns {boolean}
  */
 
 
-const checkPlaceholderAndLabels = (input, regex) => !!findInPlaceholderAndLabels(input, regex);
+const checkPlaceholderAndLabels = (input, regex, form) => !!matchInPlaceholderAndLabels(input, regex, form);
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
  * @param {number} year
+ * @param {HTMLFormElement} form
  * @returns {number}
  */
 
 
-const formatCCYear = (input, year) => {
-  if (input.maxLength === 4 || checkPlaceholderAndLabels(input, fourDigitYearRegex)) return year;
+const formatCCYear = (input, year, form) => {
+  if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form)) return year;
   return year - 2000;
 };
 /**
@@ -1312,17 +1284,17 @@ const formatCCYear = (input, year) => {
  * @param {HTMLInputElement} input
  * @param {number} month
  * @param {number} year
+ * @param {HTMLFormElement} form
  * @returns {string}
  */
 
 
-const getUnifiedExpiryDate = (input, month, year) => {
-  var _findInPlaceholderAnd, _findInPlaceholderAnd2;
+const getUnifiedExpiryDate = (input, month, year, form) => {
+  var _matchInPlaceholderAn, _matchInPlaceholderAn2;
 
-  const formattedYear = formatCCYear(input, year);
+  const formattedYear = formatCCYear(input, year, form);
   const paddedMonth = "".concat(month).padStart(2, '0');
-  const separatorRegex = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i;
-  const separator = ((_findInPlaceholderAnd = findInPlaceholderAndLabels(input, separatorRegex)) === null || _findInPlaceholderAnd === void 0 ? void 0 : (_findInPlaceholderAnd2 = _findInPlaceholderAnd.groups) === null || _findInPlaceholderAnd2 === void 0 ? void 0 : _findInPlaceholderAnd2.separator) || '/';
+  const separator = ((_matchInPlaceholderAn = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form)) === null || _matchInPlaceholderAn === void 0 ? void 0 : (_matchInPlaceholderAn2 = _matchInPlaceholderAn.groups) === null || _matchInPlaceholderAn2 === void 0 ? void 0 : _matchInPlaceholderAn2.separator) || '/';
   return "".concat(paddedMonth).concat(separator).concat(formattedYear);
 };
 
@@ -1510,63 +1482,94 @@ module.exports = {
 },{}],9:[function(require,module,exports){
 "use strict";
 
-const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])"; // We've seen non-standard types like 'user'. This selector should get them, too
+const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])";
+/** @type Matcher */
 
-const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=tel]):not([type=time]):not([type=url]):not([type=week])";
-const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])"; // This is more generic, used only when we have identified a form
+const EMAIL_MATCHER = {
+  type: 'email',
+  selector: EMAIL_SELECTOR,
+  regex: /.mail/i,
+  negativeRegex: /search/i
+}; // We've seen non-standard types like 'user'. This selector should get them, too
+
+const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=tel]):not([type=time]):not([type=url]):not([type=week]):not([readonly]):not([disabled])";
+const PASSWORD_SELECTOR = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])";
+/** @type Matcher */
+
+const PASSWORD_MATCHER = {
+  type: 'password',
+  selector: PASSWORD_SELECTOR,
+  regex: /password/i,
+  negativeRegex: /captcha/i
+}; // This is more generic, used only when we have identified a form
 
 const USERNAME_SELECTOR = "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]");
+/** @type Matcher */
+
+const USERNAME_MATCHER = {
+  type: 'username',
+  selector: USERNAME_SELECTOR,
+  regex: /user((.)?name)?$/i,
+  negativeRegex: /search/i
+};
 const CC_NAME_SELECTOR = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
 const CC_NUMBER_SELECTOR = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name=\"cardnumber\"],\ninput[name=\"card-number\"],\ninput[name=\"creditCardNumber\"],\ninput[name=\"addCreditCardNumber\"],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
 const CC_CVC_SELECTOR = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name=\"securityCode\"]";
 const CC_MONTH_SELECTOR = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"]";
 const CC_YEAR_SELECTOR = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"]";
-const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i],\nselect[id*=expiration i]";
-/* This is used to map a selector with the data type we store for credit cards */
+const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i],\nselect[id*=expiration i]"; // Matches strings like mm/yy, mm-yyyy, mm-aa
 
-const CC_SELECTORS_MAP = {
-  [CC_NAME_SELECTOR]: {
-    ccType: 'cardName',
-    regex: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i
-  },
-  [CC_NUMBER_SELECTOR]: {
-    ccType: 'cardNumber',
-    regex: /card.*number|number.*card/i
-  },
-  [CC_CVC_SELECTOR]: {
-    ccType: 'cardSecurityCode',
-    regex: /security.?code|cvv|csc|cvc/i
-  },
-  [CC_MONTH_SELECTOR]: {
-    ccType: 'expirationMonth',
-    regex: /(card|cc)?.?(exp(iry|iration)?)?.?(mo(nth)?|mm)/i
-  },
-  [CC_YEAR_SELECTOR]: {
-    ccType: 'expirationYear',
-    regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i
-  },
-  [CC_EXP_SELECTOR]: {
-    ccType: 'expiration',
-    regex: /exp(iry|iration)?/i
-  }
-};
-const CC_FIELD_SELECTOR = Object.keys(CC_SELECTORS_MAP).join(', ');
+const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
+
+const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
+/**
+ * This is used to map a selector with the data type we store for credit cards
+ * @type {[Matcher]}
+ */
+
+const CC_MATCHERS_LIST = [{
+  type: 'cardName',
+  selector: CC_NAME_SELECTOR,
+  regex: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i
+}, {
+  type: 'cardNumber',
+  selector: CC_NUMBER_SELECTOR,
+  regex: /card.*number|number.*card/i
+}, {
+  type: 'cardSecurityCode',
+  selector: CC_CVC_SELECTOR,
+  regex: /security.?code|cvv|csc|cvc/i
+}, {
+  type: 'expirationMonth',
+  selector: CC_MONTH_SELECTOR,
+  regex: /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i,
+  negativeRegex: /mm[/\s.\-_—–]/i
+}, {
+  type: 'expirationYear',
+  selector: CC_YEAR_SELECTOR,
+  regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i,
+  negativeRegex: /mm[/\s.\-_—–]/i
+}, {
+  type: 'expiration',
+  selector: CC_EXP_SELECTOR,
+  regex: /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i,
+  negativeRegex: /invalid/i
+}];
+const CC_FIELD_SELECTOR = CC_MATCHERS_LIST.map(({
+  selector
+}) => selector).join(', ');
 const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR].join(', ');
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
 module.exports = {
-  EMAIL_SELECTOR,
-  GENERIC_TEXT_FIELD,
   PASSWORD_SELECTOR,
-  CC_NAME_SELECTOR,
-  CC_NUMBER_SELECTOR,
-  CC_CVC_SELECTOR,
-  CC_MONTH_SELECTOR,
-  CC_YEAR_SELECTOR,
-  CC_EXP_SELECTOR,
-  CC_SELECTORS_MAP,
+  EMAIL_MATCHER,
+  PASSWORD_MATCHER,
+  USERNAME_MATCHER,
+  FOUR_DIGIT_YEAR_REGEX,
+  CC_MATCHERS_LIST,
+  DATE_SEPARATOR_REGEX,
   CC_FIELD_SELECTOR,
   FIELD_SELECTOR,
-  USERNAME_SELECTOR,
   SUBMIT_BUTTON_SELECTOR
 };
 
@@ -2089,6 +2092,7 @@ const setValueForInput = (el, val) => {
   events.forEach(ev => el.dispatchEvent(ev)); // We call this again to make sure all forms are happy
 
   originalSet.call(el, val);
+  events.forEach(ev => el.dispatchEvent(ev));
   el.blur();
 };
 /**
@@ -2120,6 +2124,7 @@ const setValueForSelect = (el, val) => {
 
       events.forEach(ev => el.dispatchEvent(ev));
       option.selected = true;
+      events.forEach(ev => el.dispatchEvent(ev));
       el.blur();
       return;
     }

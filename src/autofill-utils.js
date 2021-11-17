@@ -67,6 +67,7 @@ const setValueForInput = (el, val) => {
     events.forEach((ev) => el.dispatchEvent(ev))
     // We call this again to make sure all forms are happy
     originalSet.call(el, val)
+    events.forEach((ev) => el.dispatchEvent(ev))
     el.blur()
 }
 
@@ -92,6 +93,7 @@ const setValueForSelect = (el, val) => {
             // Events fire on the select el, not option
             events.forEach((ev) => el.dispatchEvent(ev))
             option.selected = true
+            events.forEach((ev) => el.dispatchEvent(ev))
             el.blur()
             return
         }

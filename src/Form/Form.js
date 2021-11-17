@@ -1,5 +1,5 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
+const {SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp} = require('../autofill-utils')
 const {getInputSubtype, setInputType, getInputMainType,
     formatCCYear, getUnifiedExpiryDate} = require('./input-classifiers')
@@ -243,7 +243,7 @@ class Form {
 
     autofillEmail (alias, dataType = 'emailNew') {
         this.execOnInputs(
-            (input) => !input.matches(PASSWORD_SELECTOR) && this.autofillInput(input, alias, dataType),
+            (input) => this.autofillInput(input, alias, dataType),
             dataType
         )
         if (this.tooltip) {
@@ -259,11 +259,11 @@ class Form {
             let autofillData = data[inputSubtype]
 
             if (inputSubtype === 'expiration') {
-                autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear)
+                autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this.form)
             }
 
             if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
-                autofillData = formatCCYear(input, autofillData)
+                autofillData = formatCCYear(input, autofillData, this.form)
             }
 
             if (autofillData) this.autofillInput(input, autofillData, dataType)

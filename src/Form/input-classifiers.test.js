@@ -5,18 +5,20 @@ const renderInputWithLabel = () => {
     input.id = 'inputId'
     const label = document.createElement('label')
     label.setAttribute('for', 'inputId')
-    document.body.append(input, label)
-    return {input, label}
+    const form = document.createElement('form')
+    form.append(input, label)
+    document.body.append(form)
+    return {input, label, form}
 }
 
 const testRegexForCCLabels = (cases) => {
     Object.entries(cases).forEach(([expectedType, arr]) => {
         arr.forEach(({text, shouldMatch = true}) => {
             it(`"${text}" should ${shouldMatch ? '' : 'not '}match regex for ${expectedType}`, () => {
-                const {input, label} = renderInputWithLabel()
+                const {input, label, form} = renderInputWithLabel()
                 label.textContent = text
 
-                const subtype = getCCFieldSubtype(input)
+                const subtype = getCCFieldSubtype(input, form)
                 if (shouldMatch) {
                     expect(subtype).toBe(expectedType)
                 } else {
@@ -33,9 +35,45 @@ afterEach(() => {
 
 describe('Input Classifiers', () => {
     it('should match the selector for cardNumber', () => {
-        const {input} = renderInputWithLabel()
+        const {input, form} = renderInputWithLabel()
         input.autocomplete = 'cc-number'
-        expect(getCCFieldSubtype(input)).toBe('cardNumber')
+        expect(getCCFieldSubtype(input, form)).toBe('cardNumber')
+    })
+
+    it('should match text in a nearby span', () => {
+        // Poor markup without a form proper labels and attributes
+        const markup = `
+<div class="form">
+    <div>
+        <span>Card Number</span>
+        <input />
+    </div>
+    <div>
+        <span>MM-YYYY</span>
+        <input />
+    </div>
+    <div>
+        <span>Security code</span>
+        <input />
+    </div>
+    <div>
+        <span>Random unrelated field</span>
+        <input />
+        <span hidden class="Error message">
+            Invalid field. Used to test that the word "invalid" doesn't trigger the expiry regex
+        </span>
+    </div>
+    <button>Buy now</button>
+</div>`
+        document.body.innerHTML = markup
+        const form = document.querySelector('.form')
+        const inputs = document.querySelectorAll('input')
+
+        expect(getCCFieldSubtype(inputs[0], form)).toBe('cardNumber')
+        expect(getCCFieldSubtype(inputs[1], form)).toBe('expiration')
+        expect(getUnifiedExpiryDate(inputs[1], 8, 2025, form)).toBe('08-2025')
+        expect(getCCFieldSubtype(inputs[2], form)).toBe('cardSecurityCode')
+        expect(getCCFieldSubtype(inputs[3], form)).toBeUndefined()
     })
 
     const ccLabeltestCases = {
@@ -56,7 +94,6 @@ describe('Input Classifiers', () => {
             {text: 'expiry month'},
             {text: 'expiration month'},
             {text: 'exp month'},
-            {text: 'card expiry mo'},
             {text: 'Credit Card Number', shouldMatch: false},
             {text: 'expiry year', shouldMatch: false},
             {text: 'expiration year', shouldMatch: false},
@@ -79,17 +116,17 @@ describe('Input Classifiers', () => {
 
     describe('Unified Expiration Date', () => {
         describe.each([
-            { text: 'mm-yyyy', expectedResult: '12-2025' },
-            { text: 'mm/yyyy', expectedResult: '12/2025' },
-            { text: '__-____', expectedResult: '12-2025' },
-            { text: 'mm-yy', expectedResult: '12-25' },
-            { text: 'i.e. 10-2022', expectedResult: '12-2025' },
-            { text: 'MM-AAAA', expectedResult: '12-2025' },
-            { text: 'mm_jj', expectedResult: '12_25' },
-            { text: 'mm.yy', expectedResult: '12.25' },
-            { text: 'mm - yy', expectedResult: '12-25' },
-            { text: 'mm yy', expectedResult: '12 25' },
-            { text: 'ie: 08.22', expectedResult: '12.25' }
+            { text: 'mm-yyyy', expectedResult: '08-2025' },
+            { text: 'mm/yyyy', expectedResult: '08/2025' },
+            { text: '__-____', expectedResult: '08-2025' },
+            { text: 'mm-yy', expectedResult: '08-25' },
+            { text: 'i.e. 10-2022', expectedResult: '08-2025' },
+            { text: 'MM-AAAA', expectedResult: '08-2025' },
+            { text: 'mm_jj', expectedResult: '08_25' },
+            { text: 'mm.yy', expectedResult: '08.25' },
+            { text: 'mm - yy', expectedResult: '08-25' },
+            { text: 'mm yy', expectedResult: '08 25' },
+            { text: 'ie: 08.22', expectedResult: '08.25' }
         ])('when checking for $text', ({ text, expectedResult }) => {
             let elements
 
@@ -101,15 +138,15 @@ describe('Input Classifiers', () => {
             it('matches for placeholder text', () => {
                 elements.input.placeholder = text
 
-                expect(getCCFieldSubtype(elements.input)).toBe('expiration')
-                expect(getUnifiedExpiryDate(elements.input, 12, 2025)).toBe(expectedResult)
+                expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
+                expect(getUnifiedExpiryDate(elements.input, 8, 2025, elements.form)).toBe(expectedResult)
             })
 
             it('matches for label text', () => {
                 elements.label.textContent = text
 
-                expect(getCCFieldSubtype(elements.input)).toBe('expiration')
-                expect(getUnifiedExpiryDate(elements.input, 12, 2025)).toBe(expectedResult)
+                expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
+                expect(getUnifiedExpiryDate(elements.input, 8, 2025, elements.form)).toBe(expectedResult)
             })
         })
     })
