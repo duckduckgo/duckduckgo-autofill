@@ -27,6 +27,9 @@ interface InputTypeConfig {
     getIconBase: () => string,
     shouldDecorate: (boolean, InterfacePrototype) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
-    displayTitlePropName: string,
+    displayTitlePropName: (
+        input: HTMLInputElement,
+        data: CredentialsObject | IdentityObject | CreditCardObject
+    ) => string,
     displaySubtitlePropName: string,
 }

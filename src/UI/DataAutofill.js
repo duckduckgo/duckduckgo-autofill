@@ -27,7 +27,7 @@ ${includeStyles}
                 id="${singleData.id}"
             >
                 <span>
-                    <span>${escapeXML(singleData[config.displayTitlePropName])}</span><br />
+                    <span>${escapeXML(config.displayTitlePropName(input, singleData))}</span><br />
                     <span class="tooltip__button__secondary-text">
 ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitlePropName)}
                     </span>

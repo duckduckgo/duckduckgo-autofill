@@ -22,7 +22,7 @@ const inputTypeConfig = {
             return device.hasLocalAddresses
         },
         dataType: 'Addresses',
-        displayTitlePropName: '',
+        displayTitlePropName: () => '',
         displaySubtitlePropName: '',
         autofillMethod: ''
     },
@@ -32,7 +32,7 @@ const inputTypeConfig = {
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
         shouldDecorate: (isLogin, device) => isLogin && device.hasLocalCredentials,
         dataType: 'Credentials',
-        displayTitlePropName: 'username',
+        displayTitlePropName: (input, data) => data.username,
         displaySubtitlePropName: '•••••••••••••••',
         autofillMethod: 'getAutofillCredentials'
     },
@@ -42,7 +42,7 @@ const inputTypeConfig = {
         getIconFilled: () => '',
         shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
-        displayTitlePropName: 'title',
+        displayTitlePropName: (input, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
         autofillMethod: 'getAutofillCreditCard'
     },
