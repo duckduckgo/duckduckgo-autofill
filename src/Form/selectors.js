@@ -18,8 +18,8 @@ input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])`
 const EMAIL_MATCHER = {
     type: 'email',
     selector: EMAIL_SELECTOR,
-    regex: /.mail/i,
-    negativeRegex: /search/i
+    matcherFn: (string) =>
+        /.mail/i.test(string) && !/search/i.test(string)
 }
 
 // We've seen non-standard types like 'user'. This selector should get them, too
@@ -32,8 +32,8 @@ const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([aut
 const PASSWORD_MATCHER = {
     type: 'password',
     selector: PASSWORD_SELECTOR,
-    regex: /password/i,
-    negativeRegex: /captcha/i
+    matcherFn: (string) =>
+        /password/i.test(string) && !/captcha/i.test(string)
 }
 
 // This is more generic, used only when we have identified a form
@@ -43,8 +43,8 @@ const USERNAME_SELECTOR = `${GENERIC_TEXT_FIELD}[autocomplete^=user]`
 const USERNAME_MATCHER = {
     type: 'username',
     selector: USERNAME_SELECTOR,
-    regex: /user((.)?name)?$/i,
-    negativeRegex: /search/i
+    matcherFn: (string) =>
+        /user((.)?name)?$/i.test(string) && !/search/i.test(string)
 }
 
 const CC_NAME_SELECTOR = `
@@ -107,41 +107,49 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
 
 /**
  * This is used to map a selector with the data type we store for credit cards
- * @type {[Matcher]}
+ * @type Matcher[]
  */
 const CC_MATCHERS_LIST = [
     {
         type: 'cardName',
         selector: CC_NAME_SELECTOR,
-        regex: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i
+        matcherFn: (string) =>
+            /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i.test(string)
     },
     {
         type: 'cardNumber',
         selector: CC_NUMBER_SELECTOR,
-        regex: /card.*number|number.*card/i
+        matcherFn: (string) =>
+            /card.*number|number.*card/i.test(string)
     },
     {
         type: 'cardSecurityCode',
         selector: CC_CVC_SELECTOR,
-        regex: /security.?code|cvv|csc|cvc/i
+        matcherFn: (string) =>
+            /security.?code|cvv|csc|cvc/i.test(string)
     },
     {
         type: 'expirationMonth',
         selector: CC_MONTH_SELECTOR,
-        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i,
-        negativeRegex: /mm[/\s.\-_—–]/i
+        matcherFn: (string) =>
+            /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i.test(string) &&
+            !/mm[/\s.\-_—–]/i.test(string)
     },
     {
         type: 'expirationYear',
         selector: CC_YEAR_SELECTOR,
-        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i,
-        negativeRegex: /mm[/\s.\-_—–]/i
+        matcherFn: (string) =>
+            /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i.test(string) &&
+            !/mm[/\s.\-_—–]/i.test(string)
     },
     {
         type: 'expiration',
         selector: CC_EXP_SELECTOR,
-        regex: /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i,
-        negativeRegex: /invalid/i
+        matcherFn: (string) =>
+            /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i.test(string) &&
+            !/invalid/i.test(string) &&
+            // if there are more than six digits it could be a phone number
+            string.replace(/\D+/g, '').length <= 6
     }
 ]
 

@@ -5,16 +5,6 @@ const {
 const {ATTR_INPUT_TYPE} = require('../constants')
 
 /**
- * Tests that a string matches a regex while not matching another
- * @param {String} string
- * @param {RegExp} regex
- * @param {RegExp} negativeRegex
- * @return {boolean}
- */
-const testAgainstRegexes = (string = '', regex, negativeRegex) =>
-    regex.test(string) && !negativeRegex?.test(string)
-
-/**
  * Get text from all explicit labels
  * @param {HTMLInputElement} el
  * @return {String}
@@ -59,15 +49,12 @@ const getLargestMeaningfulContainer = (el, form) => {
  * Tries to infer input type, with checks in decreasing order of reliability
  * @type (el: HTMLInputElement, form: HTMLFormElement, Matcher) => Boolean
  */
-const checkMatch = (el, form, {selector, regex, negativeRegex}) => {
+const checkMatch = (el, form, {selector, matcherFn}) => {
     if (selector && el.matches(selector)) return true
 
-    if (!regex) return false
+    if (!matcherFn) return false
 
-    return testAgainstRegexes(getExplicitLabelsText(el), regex, negativeRegex) ||
-        testAgainstRegexes(el.id, regex, negativeRegex) ||
-        testAgainstRegexes(el.placeholder, regex, negativeRegex) ||
-        testAgainstRegexes(getRelatedText(el, form), regex, negativeRegex)
+    return [getExplicitLabelsText(el), el.id, el.placeholder, getRelatedText(el, form)].some(matcherFn)
 }
 
 /**
@@ -116,9 +103,7 @@ const isCCForm = (form) => {
 
 /**
  * Get a CC subtype based on selectors and regexes
- * @param {HTMLInputElement} el
- * @param {HTMLFormElement} form
- * @return {string}
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
  */
 const getCCFieldSubtype = (el, form) =>
     CC_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type

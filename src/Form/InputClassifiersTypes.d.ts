@@ -1,8 +1,7 @@
 interface Matcher {
     type: string,
     selector: string,
-    regex: RegExp,
-    negativeRegex?: RegExp
+    matcherFn: (string) => boolean
 }
 
 type SupportedMainTypes =
