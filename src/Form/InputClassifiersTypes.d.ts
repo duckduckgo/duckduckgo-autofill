@@ -8,6 +8,7 @@ type SupportedMainTypes =
     | 'emailNew'
     | 'credentials'
     | 'creditCard'
+    | 'identities'
     | 'unknown'
 
 type SupportedSubTypes =

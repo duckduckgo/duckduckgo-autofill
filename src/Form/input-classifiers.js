@@ -1,6 +1,6 @@
 const {
     CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST,
-    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX
+    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
 
@@ -109,6 +109,14 @@ const getCCFieldSubtype = (el, form) =>
     CC_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type
 
 /**
+ * Get an identities subtype based on selectors and regexes
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
+ */
+const getIDFieldSubtype = (el, form) =>
+    ID_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type
+// TODO: Is it worth checking all selectors first before moving to labels and stuff?
+
+/**
  * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {Form} form
@@ -132,6 +140,9 @@ const inferInputType = (input, form) => {
     if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'emailNew'
 
     if (isUserName(input, formEl)) return 'credentials.username'
+
+    const idSubtype = getIDFieldSubtype(input, form)
+    if (idSubtype) return `identities.${idSubtype}`
 
     return 'unknown'
 }
@@ -221,6 +232,9 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
     return `${paddedMonth}${separator}${formattedYear}`
 }
 
+const formatFullName = ({firstName, middleName, lastName}) =>
+    `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`
+
 module.exports = {
     isPassword,
     isEmail,
@@ -231,5 +245,6 @@ module.exports = {
     getInputMainType,
     getInputSubtype,
     formatCCYear,
-    getUnifiedExpiryDate
+    getUnifiedExpiryDate,
+    formatFullName
 }

@@ -155,7 +155,85 @@ const CC_MATCHERS_LIST = [
 
 const CC_FIELD_SELECTOR = CC_MATCHERS_LIST.map(({selector}) => selector).join(', ')
 
-const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR].join(', ')
+const ID_FIRST_NAME_SELECTOR = `
+[name*=fname i], [autocomplete*=given-name i],
+[name*=firstname i], [autocomplete*=firstname i],
+[name*=first-name i], [autocomplete*=first-name i],
+[name*=first_name i], [autocomplete*=first_name i],
+[name*=givenname i], [autocomplete*=givenname i],
+[name*=given-name i],
+[name*=given_name i], [autocomplete*=given_name i],
+[name*=forename i], [autocomplete*=forename i]`
+
+const ID_MIDDLE_NAME_SELECTOR = `
+[name*=mname i], [autocomplete*=additional-name i],
+[name*=middlename i], [autocomplete*=middlename i],
+[name*=middle-name i], [autocomplete*=middle-name i],
+[name*=middle_name i], [autocomplete*=middle_name i],
+[name*=additionalname i], [autocomplete*=additionalname i],
+[name*=additional-name i],
+[name*=additional_name i], [autocomplete*=additional_name i]`
+
+const ID_LAST_NAME_SELECTOR = `
+[name*=lname i], [autocomplete*=family-name i],
+[name*=lastname i], [autocomplete*=lastname i],
+[name*=last-name i], [autocomplete*=last-name i],
+[name*=last_name i], [autocomplete*=last_name i],
+[name*=familyname i], [autocomplete*=familyname i],
+[name*=family-name i],
+[name*=family_name i], [autocomplete*=family_name i],
+[name*=surname i], [autocomplete*=surname i]`
+
+const ID_NAME_SELECTOR = `
+[name=name], [autocomplete=name],
+[name*=fullname i], [autocomplete*=fullname i],
+[name*=full-name i], [autocomplete*=full-name i],
+[name*=full_name i], [autocomplete*=full_name i],
+[name*=your-name i], [autocomplete*=your-name i]`
+
+const ID_PHONE_SELECTOR = `
+[name*=phone i], [name*=mobile i], [autocomplete=tel],
+[type=tel]`
+
+/** @type Matcher[] */
+const ID_MATCHERS_LIST = [
+    {
+        type: 'firstName',
+        selector: ID_FIRST_NAME_SELECTOR,
+        matcherFn: (string) =>
+            /(first|given|fore).?name/i.test(string)
+    },
+    {
+        type: 'middleName',
+        selector: ID_MIDDLE_NAME_SELECTOR,
+        matcherFn: (string) =>
+            /(middle|additional).?name/i.test(string)
+    },
+    {
+        type: 'lastName',
+        selector: ID_LAST_NAME_SELECTOR,
+        matcherFn: (string) =>
+            /(last|family|sur).?name/i.test(string)
+    },
+    {
+        type: 'fullName',
+        selector: ID_NAME_SELECTOR,
+        matcherFn: (string) =>
+            /name/i.test(string) && !/company|org/i.test(string)
+    },
+    {
+        type: 'phone',
+        selector: ID_PHONE_SELECTOR,
+        matcherFn: (string) =>
+            /phone/i.test(string)
+    }
+]
+
+const ID_FIELD_SELECTOR = ID_MATCHERS_LIST.map(({selector}) => selector).join(', ')
+
+const FIELD_SELECTOR =
+    [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR,
+        CC_FIELD_SELECTOR, ID_FIELD_SELECTOR].join(', ')
 
 const SUBMIT_BUTTON_SELECTOR = `
 input[type=submit],
@@ -172,6 +250,8 @@ module.exports = {
     CC_MATCHERS_LIST,
     DATE_SEPARATOR_REGEX,
     CC_FIELD_SELECTOR,
+    ID_MATCHERS_LIST,
+    ID_FIELD_SELECTOR,
     FIELD_SELECTOR,
     SUBMIT_BUTTON_SELECTOR
 }

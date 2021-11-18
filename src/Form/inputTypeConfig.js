@@ -1,7 +1,7 @@
 const {isDDGApp, isMobileApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {getInputMainType} = require('./input-classifiers')
+const {getInputMainType, getInputSubtype, formatFullName} = require('./input-classifiers')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
@@ -45,6 +45,22 @@ const inputTypeConfig = {
         displayTitlePropName: (input, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
         autofillMethod: 'getAutofillCreditCard'
+    },
+    identities: {
+        type: 'identities',
+        getIconBase: () => '',
+        getIconFilled: () => '',
+        shouldDecorate: (isLogin, device) => device.hasLocalIdentities,
+        dataType: 'Identities',
+        displayTitlePropName: (input, data) => {
+            const subtype = getInputSubtype(input)
+            if (subtype === 'fullName') {
+                return formatFullName(data)
+            }
+            return data[subtype]
+        },
+        displaySubtitlePropName: 'title',
+        autofillMethod: 'getAutofillIdentity'
     },
     unknown: {
         type: 'unknown',
