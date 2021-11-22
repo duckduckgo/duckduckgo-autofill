@@ -1,18 +1,8 @@
 const {
     CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST,
-    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX
+    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
-
-/**
- * Tests that a string matches a regex while not matching another
- * @param {String} string
- * @param {RegExp} regex
- * @param {RegExp} negativeRegex
- * @return {boolean}
- */
-const testAgainstRegexes = (string = '', regex, negativeRegex) =>
-    regex.test(string) && !negativeRegex?.test(string)
 
 /**
  * Get text from all explicit labels
@@ -59,15 +49,12 @@ const getLargestMeaningfulContainer = (el, form) => {
  * Tries to infer input type, with checks in decreasing order of reliability
  * @type (el: HTMLInputElement, form: HTMLFormElement, Matcher) => Boolean
  */
-const checkMatch = (el, form, {selector, regex, negativeRegex}) => {
+const checkMatch = (el, form, {selector, matcherFn}) => {
     if (selector && el.matches(selector)) return true
 
-    if (!regex) return false
+    if (!matcherFn) return false
 
-    return testAgainstRegexes(getExplicitLabelsText(el), regex, negativeRegex) ||
-        testAgainstRegexes(el.id, regex, negativeRegex) ||
-        testAgainstRegexes(el.placeholder, regex, negativeRegex) ||
-        testAgainstRegexes(getRelatedText(el, form), regex, negativeRegex)
+    return [getExplicitLabelsText(el), el.id, el.placeholder, getRelatedText(el, form)].some(matcherFn)
 }
 
 /**
@@ -116,12 +103,18 @@ const isCCForm = (form) => {
 
 /**
  * Get a CC subtype based on selectors and regexes
- * @param {HTMLInputElement} el
- * @param {HTMLFormElement} form
- * @return {string}
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
  */
 const getCCFieldSubtype = (el, form) =>
     CC_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type
+
+/**
+ * Get an identities subtype based on selectors and regexes
+ * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
+ */
+const getIDFieldSubtype = (el, form) =>
+    ID_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type
+// TODO: Is it worth checking all selectors first before moving to labels and stuff?
 
 /**
  * Tries to infer the input type
@@ -147,6 +140,9 @@ const inferInputType = (input, form) => {
     if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'emailNew'
 
     if (isUserName(input, formEl)) return 'credentials.username'
+
+    const idSubtype = getIDFieldSubtype(input, form)
+    if (idSubtype) return `identities.${idSubtype}`
 
     return 'unknown'
 }
@@ -236,6 +232,9 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
     return `${paddedMonth}${separator}${formattedYear}`
 }
 
+const formatFullName = ({firstName, middleName, lastName}) =>
+    `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`
+
 module.exports = {
     isPassword,
     isEmail,
@@ -246,5 +245,6 @@ module.exports = {
     getInputMainType,
     getInputSubtype,
     formatCCYear,
-    getUnifiedExpiryDate
+    getUnifiedExpiryDate,
+    formatFullName
 }

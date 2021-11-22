@@ -18,8 +18,8 @@ input[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])`
 const EMAIL_MATCHER = {
     type: 'email',
     selector: EMAIL_SELECTOR,
-    regex: /.mail/i,
-    negativeRegex: /search/i
+    matcherFn: (string) =>
+        /.mail/i.test(string) && !/search/i.test(string)
 }
 
 // We've seen non-standard types like 'user'. This selector should get them, too
@@ -32,8 +32,8 @@ const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([aut
 const PASSWORD_MATCHER = {
     type: 'password',
     selector: PASSWORD_SELECTOR,
-    regex: /password/i,
-    negativeRegex: /captcha/i
+    matcherFn: (string) =>
+        /password/i.test(string) && !/captcha/i.test(string)
 }
 
 // This is more generic, used only when we have identified a form
@@ -43,8 +43,8 @@ const USERNAME_SELECTOR = `${GENERIC_TEXT_FIELD}[autocomplete^=user]`
 const USERNAME_MATCHER = {
     type: 'username',
     selector: USERNAME_SELECTOR,
-    regex: /user((.)?name)?$/i,
-    negativeRegex: /search/i
+    matcherFn: (string) =>
+        /user((.)?name)?$/i.test(string) && !/search/i.test(string)
 }
 
 const CC_NAME_SELECTOR = `
@@ -107,47 +107,133 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
 
 /**
  * This is used to map a selector with the data type we store for credit cards
- * @type {[Matcher]}
+ * @type Matcher[]
  */
 const CC_MATCHERS_LIST = [
     {
         type: 'cardName',
         selector: CC_NAME_SELECTOR,
-        regex: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i
+        matcherFn: (string) =>
+            /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/i.test(string)
     },
     {
         type: 'cardNumber',
         selector: CC_NUMBER_SELECTOR,
-        regex: /card.*number|number.*card/i
+        matcherFn: (string) =>
+            /card.*number|number.*card/i.test(string)
     },
     {
         type: 'cardSecurityCode',
         selector: CC_CVC_SELECTOR,
-        regex: /security.?code|cvv|csc|cvc/i
+        matcherFn: (string) =>
+            /security.?code|cvv|csc|cvc/i.test(string)
     },
     {
         type: 'expirationMonth',
         selector: CC_MONTH_SELECTOR,
-        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i,
-        negativeRegex: /mm[/\s.\-_—–]/i
+        matcherFn: (string) =>
+            /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i.test(string) &&
+            !/mm[/\s.\-_—–]/i.test(string)
     },
     {
         type: 'expirationYear',
         selector: CC_YEAR_SELECTOR,
-        regex: /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i,
-        negativeRegex: /mm[/\s.\-_—–]/i
+        matcherFn: (string) =>
+            /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i.test(string) &&
+            !/mm[/\s.\-_—–]/i.test(string)
     },
     {
         type: 'expiration',
         selector: CC_EXP_SELECTOR,
-        regex: /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i,
-        negativeRegex: /invalid/i
+        matcherFn: (string) =>
+            /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i.test(string) &&
+            !/invalid/i.test(string) &&
+            // if there are more than six digits it could be a phone number
+            string.replace(/\D+/g, '').length <= 6
     }
 ]
 
 const CC_FIELD_SELECTOR = CC_MATCHERS_LIST.map(({selector}) => selector).join(', ')
 
-const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR].join(', ')
+const ID_FIRST_NAME_SELECTOR = `
+[name*=fname i], [autocomplete*=given-name i],
+[name*=firstname i], [autocomplete*=firstname i],
+[name*=first-name i], [autocomplete*=first-name i],
+[name*=first_name i], [autocomplete*=first_name i],
+[name*=givenname i], [autocomplete*=givenname i],
+[name*=given-name i],
+[name*=given_name i], [autocomplete*=given_name i],
+[name*=forename i], [autocomplete*=forename i]`
+
+const ID_MIDDLE_NAME_SELECTOR = `
+[name*=mname i], [autocomplete*=additional-name i],
+[name*=middlename i], [autocomplete*=middlename i],
+[name*=middle-name i], [autocomplete*=middle-name i],
+[name*=middle_name i], [autocomplete*=middle_name i],
+[name*=additionalname i], [autocomplete*=additionalname i],
+[name*=additional-name i],
+[name*=additional_name i], [autocomplete*=additional_name i]`
+
+const ID_LAST_NAME_SELECTOR = `
+[name*=lname i], [autocomplete*=family-name i],
+[name*=lastname i], [autocomplete*=lastname i],
+[name*=last-name i], [autocomplete*=last-name i],
+[name*=last_name i], [autocomplete*=last_name i],
+[name*=familyname i], [autocomplete*=familyname i],
+[name*=family-name i],
+[name*=family_name i], [autocomplete*=family_name i],
+[name*=surname i], [autocomplete*=surname i]`
+
+const ID_NAME_SELECTOR = `
+[name=name], [autocomplete=name],
+[name*=fullname i], [autocomplete*=fullname i],
+[name*=full-name i], [autocomplete*=full-name i],
+[name*=full_name i], [autocomplete*=full_name i],
+[name*=your-name i], [autocomplete*=your-name i]`
+
+const ID_PHONE_SELECTOR = `
+[name*=phone i], [name*=mobile i], [autocomplete=tel],
+[type=tel]`
+
+/** @type Matcher[] */
+const ID_MATCHERS_LIST = [
+    {
+        type: 'firstName',
+        selector: ID_FIRST_NAME_SELECTOR,
+        matcherFn: (string) =>
+            /(first|given|fore).?name/i.test(string)
+    },
+    {
+        type: 'middleName',
+        selector: ID_MIDDLE_NAME_SELECTOR,
+        matcherFn: (string) =>
+            /(middle|additional).?name/i.test(string)
+    },
+    {
+        type: 'lastName',
+        selector: ID_LAST_NAME_SELECTOR,
+        matcherFn: (string) =>
+            /(last|family|sur).?name/i.test(string)
+    },
+    {
+        type: 'fullName',
+        selector: ID_NAME_SELECTOR,
+        matcherFn: (string) =>
+            /name/i.test(string) && !/company|org/i.test(string)
+    },
+    {
+        type: 'phone',
+        selector: ID_PHONE_SELECTOR,
+        matcherFn: (string) =>
+            /phone/i.test(string)
+    }
+]
+
+const ID_FIELD_SELECTOR = ID_MATCHERS_LIST.map(({selector}) => selector).join(', ')
+
+const FIELD_SELECTOR =
+    [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR,
+        CC_FIELD_SELECTOR, ID_FIELD_SELECTOR].join(', ')
 
 const SUBMIT_BUTTON_SELECTOR = `
 input[type=submit],
@@ -164,6 +250,8 @@ module.exports = {
     CC_MATCHERS_LIST,
     DATE_SEPARATOR_REGEX,
     CC_FIELD_SELECTOR,
+    ID_MATCHERS_LIST,
+    ID_FIELD_SELECTOR,
     FIELD_SELECTOR,
     SUBMIT_BUTTON_SELECTOR
 }

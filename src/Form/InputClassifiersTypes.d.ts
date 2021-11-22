@@ -1,14 +1,14 @@
 interface Matcher {
     type: string,
     selector: string,
-    regex: RegExp,
-    negativeRegex?: RegExp
+    matcherFn: (string) => boolean
 }
 
 type SupportedMainTypes =
     | 'emailNew'
     | 'credentials'
     | 'creditCard'
+    | 'identities'
     | 'unknown'
 
 type SupportedSubTypes =
@@ -28,6 +28,9 @@ interface InputTypeConfig {
     getIconBase: () => string,
     shouldDecorate: (boolean, InterfacePrototype) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
-    displayTitlePropName: string,
+    displayTitlePropName: (
+        input: HTMLInputElement,
+        data: CredentialsObject | IdentityObject | CreditCardObject
+    ) => string,
     displaySubtitlePropName: string,
 }

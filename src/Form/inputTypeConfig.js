@@ -1,7 +1,7 @@
 const {isDDGApp, isMobileApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {getInputMainType} = require('./input-classifiers')
+const {getInputMainType, getInputSubtype, formatFullName} = require('./input-classifiers')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
@@ -22,7 +22,7 @@ const inputTypeConfig = {
             return device.hasLocalAddresses
         },
         dataType: 'Addresses',
-        displayTitlePropName: '',
+        displayTitlePropName: () => '',
         displaySubtitlePropName: '',
         autofillMethod: ''
     },
@@ -32,7 +32,7 @@ const inputTypeConfig = {
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
         shouldDecorate: (isLogin, device) => isLogin && device.hasLocalCredentials,
         dataType: 'Credentials',
-        displayTitlePropName: 'username',
+        displayTitlePropName: (input, data) => data.username,
         displaySubtitlePropName: '•••••••••••••••',
         autofillMethod: 'getAutofillCredentials'
     },
@@ -42,9 +42,25 @@ const inputTypeConfig = {
         getIconFilled: () => '',
         shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
-        displayTitlePropName: 'title',
+        displayTitlePropName: (input, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
         autofillMethod: 'getAutofillCreditCard'
+    },
+    identities: {
+        type: 'identities',
+        getIconBase: () => '',
+        getIconFilled: () => '',
+        shouldDecorate: (isLogin, device) => device.hasLocalIdentities,
+        dataType: 'Identities',
+        displayTitlePropName: (input, data) => {
+            const subtype = getInputSubtype(input)
+            if (subtype === 'fullName') {
+                return formatFullName(data)
+            }
+            return data[subtype]
+        },
+        displaySubtitlePropName: 'title',
+        autofillMethod: 'getAutofillIdentity'
     },
     unknown: {
         type: 'unknown',
