@@ -24,7 +24,9 @@ const getExplicitLabelsText = (el) => {
  */
 const getRelatedText = (el, form) => {
     const container = getLargestMeaningfulContainer(el, form)
-    return container.textContent
+    // If the container has a select element, remove its contents to avoid noise
+    const selectText = container.querySelector('select')?.textContent || ''
+    return container.textContent.replace(selectText, '')
 }
 
 /**
