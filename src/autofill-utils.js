@@ -80,8 +80,7 @@ const setValueForInput = (el, val) => {
 const setValueForSelect = (el, val) => {
     for (const option of el.options) {
         // TODO: try to match localised month names
-        const optValue = option.value || option.innerText
-        if (optValue.includes(val)) {
+        if (option.value.includes(val) || option.innerText.includes(val)) {
             const events = [
                 new Event('mousedown', {bubbles: true}),
                 new Event('focus', {bubbles: true}),
