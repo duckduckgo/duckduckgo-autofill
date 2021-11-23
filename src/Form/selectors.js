@@ -195,6 +195,21 @@ const ID_PHONE_SELECTOR = `
 [name*=phone i], [name*=mobile i], [autocomplete=tel],
 [type=tel]`
 
+const ID_ADDRESS_STREET = `
+[name=address], [autocomplete=street-address], [autocomplete=address-line1]`
+
+const ID_CITY_STREET = `
+[name=city], [autocomplete=address-level2]`
+
+const ID_PROVINCE_STREET = `
+[name=province], [name=state], [autocomplete=address-level1]`
+
+const ID_POSTAL_CODE = `
+[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code]`
+
+const ID_COUNTRY = `
+[name=country] [autocomplete=country]`
+
 /** @type Matcher[] */
 const ID_MATCHERS_LIST = [
     {
@@ -226,6 +241,36 @@ const ID_MATCHERS_LIST = [
         selector: ID_PHONE_SELECTOR,
         matcherFn: (string) =>
             /phone/i.test(string)
+    },
+    {
+        type: 'addressStreet',
+        selector: ID_ADDRESS_STREET,
+        matcherFn: (string) =>
+            /address/i.test(string) && !/email|\bip\b/i.test(string)
+    },
+    {
+        type: 'addressCity',
+        selector: ID_CITY_STREET,
+        matcherFn: (string) =>
+            /city|town/i.test(string)
+    },
+    {
+        type: 'addressProvince',
+        selector: ID_PROVINCE_STREET,
+        matcherFn: (string) =>
+            /state|province|region/i.test(string) && !/country/i.test(string)
+    },
+    {
+        type: 'addressPostalCode',
+        selector: ID_POSTAL_CODE,
+        matcherFn: (string) =>
+            /\bzip\b|postal/i.test(string)
+    },
+    {
+        type: 'addressCountryCode',
+        selector: ID_COUNTRY,
+        matcherFn: (string) =>
+            /country/i.test(string)
     }
 ]
 
