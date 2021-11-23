@@ -44,7 +44,7 @@ const USERNAME_MATCHER = {
     type: 'username',
     selector: USERNAME_SELECTOR,
     matcherFn: (string) =>
-        /user((.)?name)?$/i.test(string) && !/search/i.test(string)
+        /user((.)?(name|id))?$/i.test(string) && !/search/i.test(string)
 }
 
 const CC_NAME_SELECTOR = `
