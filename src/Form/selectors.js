@@ -132,7 +132,7 @@ const CC_MATCHERS_LIST = [
         type: 'expirationMonth',
         selector: CC_MONTH_SELECTOR,
         matcherFn: (string) =>
-            /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i.test(string) &&
+            /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(month|\bmm\b(?![.\s/-]yy))/i.test(string) &&
             !/mm[/\s.\-_—–]/i.test(string)
     },
     {
@@ -219,7 +219,7 @@ const ID_MATCHERS_LIST = [
         type: 'fullName',
         selector: ID_NAME_SELECTOR,
         matcherFn: (string) =>
-            /name/i.test(string) && !/company|org/i.test(string)
+            /\bname\b/i.test(string) && !/company|org/i.test(string)
     },
     {
         type: 'phone',
