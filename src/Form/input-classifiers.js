@@ -242,6 +242,47 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
 const formatFullName = ({firstName, middleName, lastName}) =>
     `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`
 
+/**
+ * Tries to format the country code into a localised country name
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @param {string} addressCountryCode
+ */
+const getCountryName = (el, {addressCountryCode}) => {
+    // Try to infer the field language or fallback to en
+    const elLocale = el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
+    // TODO: use a fallback when Intl.DisplayNames is not available
+    const localisedRegionNames = new Intl.DisplayNames([elLocale], { type: 'region' })
+    const localisedCountryName = localisedRegionNames.of(addressCountryCode) || addressCountryCode
+
+    // If it's a select el we try to find a suitable match to autofill
+    if (el.nodeName === 'SELECT') {
+        const englishRegionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+        const englishCountryName = englishRegionNames.of(addressCountryCode) || addressCountryCode
+        const countryNameRegex = new RegExp(String.raw`${
+            localisedCountryName.replaceAll(' ', '.?')
+        }|${
+            englishCountryName.replaceAll(' ', '.?')
+        }`, 'i')
+        const countryCodeRegex = new RegExp(String.raw`\b${addressCountryCode}\b`, 'i')
+
+        // We check the country code first because it's more accurate
+        for (const option of el.options) {
+            if (countryCodeRegex.test(option.value)) {
+                return option.value
+            }
+        }
+
+        for (const option of el.options) {
+            if (
+                countryNameRegex.test(option.value) ||
+                countryNameRegex.test(option.innerText)
+            ) return option.value
+        }
+    }
+
+    return localisedCountryName
+}
+
 module.exports = {
     isPassword,
     isEmail,
@@ -253,5 +294,6 @@ module.exports = {
     getInputSubtype,
     formatCCYear,
     getUnifiedExpiryDate,
-    formatFullName
+    formatFullName,
+    getCountryName
 }
