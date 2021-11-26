@@ -2247,6 +2247,11 @@ const setValueForInput = (el, val) => {
   el.blur();
   return true;
 };
+/**
+ * Fires events on a select element to simulate user interaction
+ * @param {HTMLSelectElement} el
+ */
+
 
 const fireEventsOnSelect = el => {
   const events = [new Event('mousedown', {
