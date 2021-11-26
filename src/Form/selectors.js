@@ -139,14 +139,14 @@ const CC_MATCHERS_LIST = [
         type: 'expirationYear',
         selector: CC_YEAR_SELECTOR,
         matcherFn: (string) =>
-            /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i.test(string) &&
+            /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(year|yy)/i.test(string) &&
             !/mm[/\s.\-_—–]/i.test(string)
     },
     {
         type: 'expiration',
         selector: CC_EXP_SELECTOR,
         matcherFn: (string) =>
-            /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i.test(string) &&
+            /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid/i.test(string) &&
             !/invalid/i.test(string) &&
             // if there are more than six digits it could be a phone number
             string.replace(/\D+/g, '').length <= 6
@@ -228,7 +228,8 @@ const ID_MATCHERS_LIST = [
         type: 'lastName',
         selector: ID_LAST_NAME_SELECTOR,
         matcherFn: (string) =>
-            /(last|family|sur).?name/i.test(string)
+            // matches surname, but not Suriname, the country
+            /(last|family|sur)[^i]?name/i.test(string)
     },
     {
         type: 'fullName',
@@ -246,19 +247,19 @@ const ID_MATCHERS_LIST = [
         type: 'addressStreet',
         selector: ID_ADDRESS_STREET,
         matcherFn: (string) =>
-            /address/i.test(string) && !/email|\bip\b/i.test(string)
+            /address/i.test(string) && !/email|\bip\b|address.?2/i.test(string)
     },
     {
         type: 'addressCity',
         selector: ID_CITY_STREET,
         matcherFn: (string) =>
-            /city|town/i.test(string)
+            /city|town/i.test(string) && !/vatican/i.test(string)
     },
     {
         type: 'addressProvince',
         selector: ID_PROVINCE_STREET,
         matcherFn: (string) =>
-            /state|province|region/i.test(string) && !/country/i.test(string)
+            /state|province|region/i.test(string) && !/country|united/i.test(string)
     },
     {
         type: 'addressPostalCode',
