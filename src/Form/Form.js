@@ -1,5 +1,5 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
+const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp} = require('../autofill-utils')
 const {getInputSubtype, setInputType, getInputMainType,
     formatCCYear, getUnifiedExpiryDate, formatFullName} = require('./input-classifiers')
@@ -125,7 +125,7 @@ class Form {
     }
 
     categorizeInputs () {
-        this.form.querySelectorAll(FIELD_SELECTOR).forEach(input => this.addInput(input))
+        this.form.querySelectorAll(FORM_ELS_SELECTOR).forEach(input => this.addInput(input))
     }
 
     get submitButtons () {

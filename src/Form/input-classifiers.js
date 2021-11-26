@@ -1,6 +1,7 @@
 const {
-    CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST, PASSWORD_MATCHER,
-    EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST
+    CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST,
+    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER,
+    FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST, FORM_ELS_SELECTOR
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
 
@@ -43,7 +44,7 @@ const getLargestMeaningfulContainer = (el, form) => {
     const parentElement = el.parentElement
     if (!parentElement || el === form) return el
 
-    const inputsInScope = parentElement.querySelectorAll('input, select, textarea')
+    const inputsInScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR)
     // To avoid noise, ensure that our input is the only in scope
     if (inputsInScope.length === 1) {
         return getLargestMeaningfulContainer(parentElement, form)

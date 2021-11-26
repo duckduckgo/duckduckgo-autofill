@@ -1,3 +1,5 @@
+const FORM_ELS_SELECTOR = 'input, select, textarea'
+
 const EMAIL_SELECTOR = `
 input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
 input[type=""][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
@@ -288,6 +290,7 @@ button:not([role=switch]):not([role=link]),
 [role=button]`
 
 module.exports = {
+    FORM_ELS_SELECTOR,
     PASSWORD_SELECTOR,
     EMAIL_MATCHER,
     PASSWORD_MATCHER,
