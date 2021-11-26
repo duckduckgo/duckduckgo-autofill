@@ -177,7 +177,7 @@ const ID_MIDDLE_NAME_SELECTOR = `
 [name*=additional_name i], [autocomplete*=additional_name i]`
 
 const ID_LAST_NAME_SELECTOR = `
-[name*=lname i], [autocomplete*=family-name i],
+[name=lname i], [autocomplete*=family-name i],
 [name*=lastname i], [autocomplete*=lastname i],
 [name*=last-name i], [autocomplete*=last-name i],
 [name*=last_name i], [autocomplete*=last_name i],
@@ -198,19 +198,23 @@ const ID_PHONE_SELECTOR = `
 [type=tel]`
 
 const ID_ADDRESS_STREET = `
-[name=address], [autocomplete=street-address], [autocomplete=address-line1]`
+[name=address], [autocomplete=street-address], [autocomplete=address-line1],
+[name=ppw-line1]`
 
 const ID_CITY_STREET = `
-[name=city], [autocomplete=address-level2]`
+[name=city], [autocomplete=address-level2],
+[name=ppw-city]`
 
 const ID_PROVINCE_STREET = `
 [name=province], [name=state], [autocomplete=address-level1]`
 
 const ID_POSTAL_CODE = `
-[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code]`
+[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],
+[name*=postalCode i], [name*=zipcode i]`
 
 const ID_COUNTRY = `
-[name=country] [autocomplete=country]`
+[name=country] [autocomplete=country],
+[name*=countryCode i]`
 
 /** @type Matcher[] */
 const ID_MATCHERS_LIST = [
