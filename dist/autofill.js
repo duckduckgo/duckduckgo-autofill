@@ -506,7 +506,7 @@ const FormAnalyzer = require('./FormAnalyzer');
 
 const {
   SUBMIT_BUTTON_SELECTOR,
-  FIELD_SELECTOR
+  FORM_ELS_SELECTOR
 } = require('./selectors');
 
 const {
@@ -523,7 +523,8 @@ const {
   getInputMainType,
   formatCCYear,
   getUnifiedExpiryDate,
-  formatFullName
+  formatFullName,
+  getCountryName
 } = require('./input-classifiers');
 
 const {
@@ -540,7 +541,8 @@ const getInputConfig = require('./inputTypeConfig.js');
 class Form {
   constructor(form, _input, DeviceInterface) {
     _defineProperty(this, "autofillInput", (input, string, dataType) => {
-      setValue(input, string);
+      const successful = setValue(input, string);
+      if (!successful) return;
       input.classList.add('ddg-autofilled');
       addInlineStyles(input, getIconStylesAutofilled(input)); // If the user changes the alias, remove the decoration
 
@@ -681,7 +683,7 @@ class Form {
   }
 
   categorizeInputs() {
-    this.form.querySelectorAll(FIELD_SELECTOR).forEach(input => this.addInput(input));
+    this.form.querySelectorAll(FORM_ELS_SELECTOR).forEach(input => this.addInput(input));
   }
 
   get submitButtons() {
@@ -812,6 +814,10 @@ class Form {
         autofillData = formatFullName(data);
       }
 
+      if (inputSubtype === 'addressCountryCode') {
+        autofillData = getCountryName(input, data);
+      }
+
       if (autofillData) this.autofillInput(input, autofillData, dataType);
     }, dataType);
 
@@ -932,12 +938,12 @@ class FormAnalyzer {
 
     if (headings) {
       headings.forEach(({
-        innerText
+        textContent
       }) => {
         this.updateSignal({
-          string: innerText,
+          string: textContent,
           strength: 0.5,
-          signalType: "heading: ".concat(innerText),
+          signalType: "heading: ".concat(textContent),
           shouldCheckUnifiedForm: true,
           shouldBeConservative: true
         });
@@ -966,7 +972,7 @@ class FormAnalyzer {
   getText(el) {
     // for buttons, we don't care about descendants, just get the whole text as is
     // this is important in order to give proper attribution of the text to the button
-    if (this.elementIs(el, 'BUTTON')) return el.innerText;
+    if (this.elementIs(el, 'BUTTON')) return el.textContent;
     if (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) return el.value;
     return Array.from(el.childNodes).reduce((text, child) => this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, '');
   }
@@ -1004,11 +1010,11 @@ class FormAnalyzer {
         shouldFlip: true
       });
     } else {
-      var _el$innerText;
+      var _el$textContent;
 
       // any other case
       // only consider the el if it's a small text to avoid noisy disclaimers
-      if (((_el$innerText = el.innerText) === null || _el$innerText === void 0 ? void 0 : _el$innerText.length) < 50) {
+      if (((_el$textContent = el.textContent) === null || _el$textContent === void 0 ? void 0 : _el$textContent.length) < 50) {
         this.updateSignal({
           string,
           strength: 1,
@@ -1047,6 +1053,10 @@ module.exports = FormAnalyzer;
 },{"./selectors":9}],4:[function(require,module,exports){
 "use strict";
 
+var _templateObject, _templateObject2;
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
 const {
   CC_FIELD_SELECTOR,
   DATE_SEPARATOR_REGEX,
@@ -1055,7 +1065,8 @@ const {
   EMAIL_MATCHER,
   USERNAME_MATCHER,
   FOUR_DIGIT_YEAR_REGEX,
-  ID_MATCHERS_LIST
+  ID_MATCHERS_LIST,
+  FORM_ELS_SELECTOR
 } = require('./selectors');
 
 const {
@@ -1085,8 +1096,14 @@ const getExplicitLabelsText = el => {
 
 
 const getRelatedText = (el, form) => {
-  const container = getLargestMeaningfulContainer(el, form);
-  return container.textContent;
+  var _container$querySelec, _container$textConten;
+
+  const container = getLargestMeaningfulContainer(el, form); // If there is no meaningful container return empty string
+
+  if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
+
+  const noisyText = ((_container$querySelec = container.querySelector('select')) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.textContent) || '';
+  return (_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '');
 };
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
@@ -1099,7 +1116,7 @@ const getRelatedText = (el, form) => {
 const getLargestMeaningfulContainer = (el, form) => {
   const parentElement = el.parentElement;
   if (!parentElement || el === form) return el;
-  const inputsInScope = parentElement.querySelectorAll('input, select, textarea'); // To avoid noise, ensure that our input is the only in scope
+  const inputsInScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR); // To avoid noise, ensure that our input is the only in scope
 
   if (inputsInScope.length === 1) {
     return getLargestMeaningfulContainer(parentElement, form);
@@ -1108,18 +1125,38 @@ const getLargestMeaningfulContainer = (el, form) => {
   return el;
 };
 /**
- * Tries to infer input type, with checks in decreasing order of reliability
- * @type (el: HTMLInputElement, form: HTMLFormElement, Matcher) => Boolean
+ * Tries to infer input subtype, with checks in decreasing order of reliability
+ * @type (el: HTMLInputElement, form: HTMLFormElement, matchers: []Matcher) => string|undefined
  */
 
 
-const checkMatch = (el, form, {
-  selector,
-  matcherFn
-}) => {
-  if (selector && el.matches(selector)) return true;
-  if (!matcherFn) return false;
-  return [getExplicitLabelsText(el), el.id, el.placeholder, getRelatedText(el, form)].some(matcherFn);
+const getSubtypeFromMatchers = (el, form, matchers) => {
+  var _found;
+
+  let found; // Selectors give high confidence and are least expensive
+
+  found = matchers.find(({
+    selector
+  }) => el.matches(selector));
+  if (found) return found.type; // Labels are second-highest confidence and pretty cheap
+
+  const labelText = getExplicitLabelsText(el);
+  found = matchers.find(({
+    matcherFn
+  }) => matcherFn === null || matcherFn === void 0 ? void 0 : matcherFn(labelText));
+  if (found) return found.type; // Next up, placeholder
+
+  const placeholder = el.placeholder || '';
+  found = matchers.find(({
+    matcherFn
+  }) => matcherFn === null || matcherFn === void 0 ? void 0 : matcherFn(placeholder));
+  if (found) return found.type; // The related text is the most expensive and gives the least confidence
+
+  const relatedText = getRelatedText(el, form);
+  found = matchers.find(({
+    matcherFn
+  }) => matcherFn === null || matcherFn === void 0 ? void 0 : matcherFn(relatedText));
+  return (_found = found) === null || _found === void 0 ? void 0 : _found.type;
 };
 /**
  * Tries to infer if input is for password
@@ -1127,21 +1164,21 @@ const checkMatch = (el, form, {
  */
 
 
-const isPassword = (el, form) => checkMatch(el, form, PASSWORD_MATCHER);
+const isPassword = (el, form) => !!getSubtypeFromMatchers(el, form, [PASSWORD_MATCHER]);
 /**
  * Tries to infer if input is for email
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 
 
-const isEmail = (el, form) => checkMatch(el, form, EMAIL_MATCHER);
+const isEmail = (el, form) => !!getSubtypeFromMatchers(el, form, [EMAIL_MATCHER]);
 /**
  * Tries to infer if input is for username
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 
 
-const isUserName = (el, form) => checkMatch(el, form, USERNAME_MATCHER);
+const isUserName = (el, form) => !!getSubtypeFromMatchers(el, form, [USERNAME_MATCHER]);
 /**
  * Tries to infer if it's a credit card form
  * @param {HTMLFormElement} form
@@ -1165,29 +1202,6 @@ const isCCForm = form => {
   return (textMatches === null || textMatches === void 0 ? void 0 : textMatches.length) > 1;
 };
 /**
- * Get a CC subtype based on selectors and regexes
- * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
- */
-
-
-const getCCFieldSubtype = (el, form) => {
-  var _CC_MATCHERS_LIST$fin;
-
-  return (_CC_MATCHERS_LIST$fin = CC_MATCHERS_LIST.find(sel => checkMatch(el, form, sel))) === null || _CC_MATCHERS_LIST$fin === void 0 ? void 0 : _CC_MATCHERS_LIST$fin.type;
-};
-/**
- * Get an identities subtype based on selectors and regexes
- * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
- */
-
-
-const getIDFieldSubtype = (el, form) => {
-  var _ID_MATCHERS_LIST$fin;
-
-  return (_ID_MATCHERS_LIST$fin = ID_MATCHERS_LIST.find(sel => checkMatch(el, form, sel))) === null || _ID_MATCHERS_LIST$fin === void 0 ? void 0 : _ID_MATCHERS_LIST$fin.type;
-}; // TODO: Is it worth checking all selectors first before moving to labels and stuff?
-
-/**
  * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {Form} form
@@ -1202,14 +1216,14 @@ const inferInputType = (input, form) => {
   // run them on actual CC forms to avoid false positives and expensive loops
 
   if (isCCForm(formEl)) {
-    const subtype = getCCFieldSubtype(input, formEl);
+    const subtype = getSubtypeFromMatchers(input, formEl, CC_MATCHERS_LIST);
     if (subtype) return "creditCard.".concat(subtype);
   }
 
   if (isPassword(input, formEl)) return 'credentials.password';
   if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'emailNew';
   if (isUserName(input, formEl)) return 'credentials.username';
-  const idSubtype = getIDFieldSubtype(input, form);
+  const idSubtype = getSubtypeFromMatchers(input, form, ID_MATCHERS_LIST);
   if (idSubtype) return "identities.".concat(idSubtype);
   return 'unknown';
 };
@@ -1311,19 +1325,61 @@ const formatFullName = ({
   middleName,
   lastName
 }) => "".concat(firstName, " ").concat(middleName ? middleName + ' ' : '').concat(lastName);
+/**
+ * Tries to format the country code into a localised country name
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @param {string} addressCountryCode
+ */
+
+
+const getCountryName = (el, {
+  addressCountryCode
+}) => {
+  var _el$form;
+
+  // Try to infer the field language or fallback to en
+  const elLocale = el.lang || ((_el$form = el.form) === null || _el$form === void 0 ? void 0 : _el$form.lang) || document.body.lang || document.documentElement.lang || 'en'; // TODO: use a fallback when Intl.DisplayNames is not available
+
+  const localisedRegionNames = new Intl.DisplayNames([elLocale], {
+    type: 'region'
+  });
+  const localisedCountryName = localisedRegionNames.of(addressCountryCode) || addressCountryCode; // If it's a select el we try to find a suitable match to autofill
+
+  if (el.nodeName === 'SELECT') {
+    const englishRegionNames = new Intl.DisplayNames(['en'], {
+      type: 'region'
+    });
+    const englishCountryName = englishRegionNames.of(addressCountryCode) || addressCountryCode;
+    const countryNameRegex = new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["", "|", ""])), localisedCountryName.replaceAll(' ', '.?'), englishCountryName.replaceAll(' ', '.?')), 'i');
+    const countryCodeRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), addressCountryCode), 'i'); // We check the country code first because it's more accurate
+
+    for (const option of el.options) {
+      if (countryCodeRegex.test(option.value)) {
+        return option.value;
+      }
+    }
+
+    for (const option of el.options) {
+      if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText)) return option.value;
+    }
+  }
+
+  return localisedCountryName;
+};
 
 module.exports = {
   isPassword,
   isEmail,
   isUserName,
-  getCCFieldSubtype,
+  getSubtypeFromMatchers,
   inferInputType,
   setInputType,
   getInputMainType,
   getInputSubtype,
   formatCCYear,
   getUnifiedExpiryDate,
-  formatFullName
+  formatFullName,
+  getCountryName
 };
 
 },{"../constants":19,"./selectors":9}],5:[function(require,module,exports){
@@ -1517,6 +1573,7 @@ module.exports = {
 },{}],9:[function(require,module,exports){
 "use strict";
 
+const FORM_ELS_SELECTOR = 'input, select, textarea';
 const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])";
 /** @type Matcher */
 
@@ -1542,7 +1599,7 @@ const USERNAME_SELECTOR = "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]");
 const USERNAME_MATCHER = {
   type: 'username',
   selector: USERNAME_SELECTOR,
-  matcherFn: string => /user((.)?name)?$/i.test(string) && !/search/i.test(string)
+  matcherFn: string => /user((.)?(name|id))?$/i.test(string) && !/search/i.test(string)
 };
 const CC_NAME_SELECTOR = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
 const CC_NUMBER_SELECTOR = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name=\"cardnumber\"],\ninput[name=\"card-number\"],\ninput[name=\"creditCardNumber\"],\ninput[name=\"addCreditCardNumber\"],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
@@ -1574,15 +1631,15 @@ const CC_MATCHERS_LIST = [{
 }, {
   type: 'expirationMonth',
   selector: CC_MONTH_SELECTOR,
-  matcherFn: string => /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i.test(string) && !/mm[/\s.\-_—–]/i.test(string)
+  matcherFn: string => /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(month|\bmm\b(?![.\s/-]yy))/i.test(string) && !/mm[/\s.\-_—–]/i.test(string)
 }, {
   type: 'expirationYear',
   selector: CC_YEAR_SELECTOR,
-  matcherFn: string => /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i.test(string) && !/mm[/\s.\-_—–]/i.test(string)
+  matcherFn: string => /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(year|yy)/i.test(string) && !/mm[/\s.\-_—–]/i.test(string)
 }, {
   type: 'expiration',
   selector: CC_EXP_SELECTOR,
-  matcherFn: string => /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i.test(string) && !/invalid/i.test(string) && // if there are more than six digits it could be a phone number
+  matcherFn: string => /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid/i.test(string) && !/invalid/i.test(string) && // if there are more than six digits it could be a phone number
   string.replace(/\D+/g, '').length <= 6
 }];
 const CC_FIELD_SELECTOR = CC_MATCHERS_LIST.map(({
@@ -1590,9 +1647,14 @@ const CC_FIELD_SELECTOR = CC_MATCHERS_LIST.map(({
 }) => selector).join(', ');
 const ID_FIRST_NAME_SELECTOR = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firstname i], [autocomplete*=firstname i],\n[name*=first-name i], [autocomplete*=first-name i],\n[name*=first_name i], [autocomplete*=first_name i],\n[name*=givenname i], [autocomplete*=givenname i],\n[name*=given-name i],\n[name*=given_name i], [autocomplete*=given_name i],\n[name*=forename i], [autocomplete*=forename i]";
 const ID_MIDDLE_NAME_SELECTOR = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
-const ID_LAST_NAME_SELECTOR = "\n[name*=lname i], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
+const ID_LAST_NAME_SELECTOR = "\n[name=lname i], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
 const ID_NAME_SELECTOR = "\n[name=name], [autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
 const ID_PHONE_SELECTOR = "\n[name*=phone i], [name*=mobile i], [autocomplete=tel],\n[type=tel]";
+const ID_ADDRESS_STREET = "\n[name=address], [autocomplete=street-address], [autocomplete=address-line1],\n[name=ppw-line1]";
+const ID_CITY_STREET = "\n[name=city], [autocomplete=address-level2],\n[name=ppw-city]";
+const ID_PROVINCE_STREET = "\n[name=province], [name=state], [autocomplete=address-level1]";
+const ID_POSTAL_CODE = "\n[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],\n[name*=postalCode i], [name*=zipcode i]";
+const ID_COUNTRY = "\n[name=country] [autocomplete=country],\n[name*=countryCode i]";
 /** @type Matcher[] */
 
 const ID_MATCHERS_LIST = [{
@@ -1606,15 +1668,36 @@ const ID_MATCHERS_LIST = [{
 }, {
   type: 'lastName',
   selector: ID_LAST_NAME_SELECTOR,
-  matcherFn: string => /(last|family|sur).?name/i.test(string)
+  matcherFn: string => // matches surname, but not Suriname, the country
+  /(last|family|sur)[^i]?name/i.test(string)
 }, {
   type: 'fullName',
   selector: ID_NAME_SELECTOR,
-  matcherFn: string => /name/i.test(string) && !/company|org/i.test(string)
+  matcherFn: string => /\bname\b/i.test(string) && !/company|org/i.test(string)
 }, {
   type: 'phone',
   selector: ID_PHONE_SELECTOR,
   matcherFn: string => /phone/i.test(string)
+}, {
+  type: 'addressStreet',
+  selector: ID_ADDRESS_STREET,
+  matcherFn: string => /address/i.test(string) && !/email|\bip\b|address.?2/i.test(string)
+}, {
+  type: 'addressCity',
+  selector: ID_CITY_STREET,
+  matcherFn: string => /city|town/i.test(string) && !/vatican/i.test(string)
+}, {
+  type: 'addressProvince',
+  selector: ID_PROVINCE_STREET,
+  matcherFn: string => /state|province|region/i.test(string) && !/country|united/i.test(string)
+}, {
+  type: 'addressPostalCode',
+  selector: ID_POSTAL_CODE,
+  matcherFn: string => /\bzip\b|postal/i.test(string)
+}, {
+  type: 'addressCountryCode',
+  selector: ID_COUNTRY,
+  matcherFn: string => /country/i.test(string)
 }];
 const ID_FIELD_SELECTOR = ID_MATCHERS_LIST.map(({
   selector
@@ -1622,6 +1705,7 @@ const ID_FIELD_SELECTOR = ID_MATCHERS_LIST.map(({
 const FIELD_SELECTOR = [PASSWORD_SELECTOR, GENERIC_TEXT_FIELD, EMAIL_SELECTOR, CC_FIELD_SELECTOR, ID_FIELD_SELECTOR].join(', ');
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
 module.exports = {
+  FORM_ELS_SELECTOR,
   PASSWORD_SELECTOR,
   EMAIL_MATCHER,
   PASSWORD_MATCHER,
@@ -2136,6 +2220,7 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 
 const setValueForInput = (el, val) => {
@@ -2159,52 +2244,69 @@ const setValueForInput = (el, val) => {
   originalSet.call(el, val);
   events.forEach(ev => el.dispatchEvent(ev));
   el.blur();
+  return true;
+};
+
+const fireEventsOnSelect = el => {
+  const events = [new Event('mousedown', {
+    bubbles: true
+  }), new Event('focus', {
+    bubbles: true
+  }), new Event('change', {
+    bubbles: true
+  }), new Event('mouseup', {
+    bubbles: true
+  }), new Event('click', {
+    bubbles: true
+  })]; // Events fire on the select el, not option
+
+  events.forEach(ev => el.dispatchEvent(ev));
+  events.forEach(ev => el.dispatchEvent(ev));
+  el.blur();
 };
 /**
  * Selects an option of a select element
  * We assume Select is only used for dates, i.e. in the credit card
  * @param {HTMLSelectElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 
 
 const setValueForSelect = (el, val) => {
+  // Loop first through all values because they tend to be more precise
   for (const option of el.options) {
     // TODO: try to match localised month names
-    const optValue = option.value || option.innerText;
-
-    if (optValue.includes(val)) {
-      const events = [new Event('mousedown', {
-        bubbles: true
-      }), new Event('focus', {
-        bubbles: true
-      }), new Event('change', {
-        bubbles: true
-      }), new Event('mouseup', {
-        bubbles: true
-      }), new Event('click', {
-        bubbles: true
-      })];
-      option.selected = true; // Events fire on the select el, not option
-
-      events.forEach(ev => el.dispatchEvent(ev));
+    if (option.value.includes(val)) {
       option.selected = true;
-      events.forEach(ev => el.dispatchEvent(ev));
-      el.blur();
-      return;
+      fireEventsOnSelect(el);
+      return true;
     }
   }
+
+  for (const option of el.options) {
+    if (option.innerText.includes(val)) {
+      option.selected = true;
+      fireEventsOnSelect(el);
+      return true;
+    }
+  } // If we didn't find a matching option return false
+
+
+  return false;
 };
 /**
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 
 
 const setValue = (el, val) => {
-  if (el.nodeName === 'INPUT') setValueForInput(el, val);
-  if (el.nodeName === 'SELECT') setValueForSelect(el, val);
+  if (el.nodeName === 'INPUT') return setValueForInput(el, val);
+  if (el.nodeName === 'SELECT') return setValueForSelect(el, val);
+  return false;
 };
 /**
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
