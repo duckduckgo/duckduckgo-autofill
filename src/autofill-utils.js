@@ -74,6 +74,20 @@ const setValueForInput = (el, val) => {
     return true
 }
 
+const fireEventsOnSelect = (el) => {
+    const events = [
+        new Event('mousedown', {bubbles: true}),
+        new Event('focus', {bubbles: true}),
+        new Event('change', {bubbles: true}),
+        new Event('mouseup', {bubbles: true}),
+        new Event('click', {bubbles: true})
+    ]
+    // Events fire on the select el, not option
+    events.forEach((ev) => el.dispatchEvent(ev))
+    events.forEach((ev) => el.dispatchEvent(ev))
+    el.blur()
+}
+
 /**
  * Selects an option of a select element
  * We assume Select is only used for dates, i.e. in the credit card
@@ -82,22 +96,20 @@ const setValueForInput = (el, val) => {
  * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
+    // Loop first through all values because they tend to be more precise
     for (const option of el.options) {
         // TODO: try to match localised month names
-        if (option.value.includes(val) || option.innerText.includes(val)) {
-            const events = [
-                new Event('mousedown', {bubbles: true}),
-                new Event('focus', {bubbles: true}),
-                new Event('change', {bubbles: true}),
-                new Event('mouseup', {bubbles: true}),
-                new Event('click', {bubbles: true})
-            ]
+        if (option.value.includes(val)) {
             option.selected = true
-            // Events fire on the select el, not option
-            events.forEach((ev) => el.dispatchEvent(ev))
+            fireEventsOnSelect(el)
+            return true
+        }
+    }
+
+    for (const option of el.options) {
+        if (option.innerText.includes(val)) {
             option.selected = true
-            events.forEach((ev) => el.dispatchEvent(ev))
-            el.blur()
+            fireEventsOnSelect(el)
             return true
         }
     }
