@@ -177,7 +177,7 @@ const ID_MIDDLE_NAME_SELECTOR = `
 [name*=additional_name i], [autocomplete*=additional_name i]`
 
 const ID_LAST_NAME_SELECTOR = `
-[name=lname i], [autocomplete*=family-name i],
+[name=lname], [autocomplete*=family-name i],
 [name*=lastname i], [autocomplete*=lastname i],
 [name*=last-name i], [autocomplete*=last-name i],
 [name*=last_name i], [autocomplete*=last_name i],
