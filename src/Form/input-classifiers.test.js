@@ -1,4 +1,7 @@
-const {getCCFieldSubtype, getUnifiedExpiryDate} = require('./input-classifiers')
+const {getSubtypeFromMatchers, getUnifiedExpiryDate} = require('./input-classifiers')
+const {CC_MATCHERS_LIST} = require('./selectors')
+
+const getCCFieldSubtype = (el, form) => getSubtypeFromMatchers(el, form, CC_MATCHERS_LIST)
 
 const renderInputWithLabel = () => {
     const input = document.createElement('input')

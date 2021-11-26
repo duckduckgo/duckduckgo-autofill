@@ -1,6 +1,6 @@
 const {
-    CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST,
-    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST
+    CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST, PASSWORD_MATCHER,
+    EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
 
@@ -24,9 +24,13 @@ const getExplicitLabelsText = (el) => {
  */
 const getRelatedText = (el, form) => {
     const container = getLargestMeaningfulContainer(el, form)
+
+    // If there is no meaningful container return empty string
+    if (container === el || container.nodeName === 'SELECT') return ''
+
     // If the container has a select element, remove its contents to avoid noise
-    const selectText = container.querySelector('select')?.textContent || ''
-    return container.textContent.replace(selectText, '')
+    const noisyText = container.querySelector('select')?.textContent || ''
+    return container.textContent?.replace(noisyText, '')
 }
 
 /**
@@ -48,15 +52,30 @@ const getLargestMeaningfulContainer = (el, form) => {
 }
 
 /**
- * Tries to infer input type, with checks in decreasing order of reliability
- * @type (el: HTMLInputElement, form: HTMLFormElement, Matcher) => Boolean
+ * Tries to infer input subtype, with checks in decreasing order of reliability
+ * @type (el: HTMLInputElement, form: HTMLFormElement, matchers: []Matcher) => string|undefined
  */
-const checkMatch = (el, form, {selector, matcherFn}) => {
-    if (selector && el.matches(selector)) return true
+const getSubtypeFromMatchers = (el, form, matchers) => {
+    let found
+    // Selectors give high confidence and are least expensive
+    found = matchers.find(({selector}) => el.matches(selector))
+    if (found) return found.type
 
-    if (!matcherFn) return false
+    // Labels are second-highest confidence and pretty cheap
+    const labelText = getExplicitLabelsText(el)
+    found = matchers.find(({matcherFn}) => matcherFn?.(labelText))
+    if (found) return found.type
 
-    return [getExplicitLabelsText(el), el.id, el.placeholder, getRelatedText(el, form)].some(matcherFn)
+    // Next up, placeholder
+    const placeholder = el.placeholder || ''
+    found = matchers.find(({matcherFn}) => matcherFn?.(placeholder))
+    if (found) return found.type
+
+    // The related text is the most expensive and gives the least confidence
+    const relatedText = getRelatedText(el, form)
+    found = matchers.find(({matcherFn}) => matcherFn?.(relatedText))
+
+    return found?.type
 }
 
 /**
@@ -64,21 +83,21 @@ const checkMatch = (el, form, {selector, matcherFn}) => {
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isPassword = (el, form) =>
-    checkMatch(el, form, PASSWORD_MATCHER)
+    !!getSubtypeFromMatchers(el, form, [PASSWORD_MATCHER])
 
 /**
  * Tries to infer if input is for email
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isEmail = (el, form) =>
-    checkMatch(el, form, EMAIL_MATCHER)
+    !!getSubtypeFromMatchers(el, form, [EMAIL_MATCHER])
 
 /**
  * Tries to infer if input is for username
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isUserName = (el, form) =>
-    checkMatch(el, form, USERNAME_MATCHER)
+    !!getSubtypeFromMatchers(el, form, [USERNAME_MATCHER])
 
 /**
  * Tries to infer if it's a credit card form
@@ -104,21 +123,6 @@ const isCCForm = (form) => {
 }
 
 /**
- * Get a CC subtype based on selectors and regexes
- * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
- */
-const getCCFieldSubtype = (el, form) =>
-    CC_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type
-
-/**
- * Get an identities subtype based on selectors and regexes
- * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
- */
-const getIDFieldSubtype = (el, form) =>
-    ID_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type
-// TODO: Is it worth checking all selectors first before moving to labels and stuff?
-
-/**
  * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {Form} form
@@ -133,7 +137,7 @@ const inferInputType = (input, form) => {
     // For CC forms we run aggressive matches, so we want to make sure we only
     // run them on actual CC forms to avoid false positives and expensive loops
     if (isCCForm(formEl)) {
-        const subtype = getCCFieldSubtype(input, formEl)
+        const subtype = getSubtypeFromMatchers(input, formEl, CC_MATCHERS_LIST)
         if (subtype) return `creditCard.${subtype}`
     }
 
@@ -143,7 +147,7 @@ const inferInputType = (input, form) => {
 
     if (isUserName(input, formEl)) return 'credentials.username'
 
-    const idSubtype = getIDFieldSubtype(input, form)
+    const idSubtype = getSubtypeFromMatchers(input, form, ID_MATCHERS_LIST)
     if (idSubtype) return `identities.${idSubtype}`
 
     return 'unknown'
@@ -241,7 +245,7 @@ module.exports = {
     isPassword,
     isEmail,
     isUserName,
-    getCCFieldSubtype,
+    getSubtypeFromMatchers,
     inferInputType,
     setInputType,
     getInputMainType,
