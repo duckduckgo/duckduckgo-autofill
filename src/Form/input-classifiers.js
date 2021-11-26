@@ -258,6 +258,7 @@ const getCountryName = (el, {addressCountryCode}) => {
     if (el.nodeName === 'SELECT') {
         const englishRegionNames = new Intl.DisplayNames(['en'], { type: 'region' })
         const englishCountryName = englishRegionNames.of(addressCountryCode) || addressCountryCode
+        // This regex matches both the localised and English country names
         const countryNameRegex = new RegExp(String.raw`${
             localisedCountryName.replaceAll(' ', '.?')
         }|${

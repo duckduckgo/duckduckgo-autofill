@@ -1349,7 +1349,8 @@ const getCountryName = (el, {
     const englishRegionNames = new Intl.DisplayNames(['en'], {
       type: 'region'
     });
-    const englishCountryName = englishRegionNames.of(addressCountryCode) || addressCountryCode;
+    const englishCountryName = englishRegionNames.of(addressCountryCode) || addressCountryCode; // This regex matches both the localised and English country names
+
     const countryNameRegex = new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["", "|", ""])), localisedCountryName.replaceAll(' ', '.?'), englishCountryName.replaceAll(' ', '.?')), 'i');
     const countryCodeRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), addressCountryCode), 'i'); // We check the country code first because it's more accurate
 
