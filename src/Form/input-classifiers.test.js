@@ -79,7 +79,7 @@ describe('Input Classifiers', () => {
         expect(getCCFieldSubtype(inputs[3], form)).toBeUndefined()
     })
 
-    const ccLabeltestCases = {
+    const ccLabelTestCases = {
         cardName: [
             {text: 'credit card name'},
             {text: 'name on card'},
@@ -115,7 +115,7 @@ describe('Input Classifiers', () => {
             {text: 'card expiry mo', shouldMatch: false}
         ]
     }
-    testRegexForCCLabels(ccLabeltestCases)
+    testRegexForCCLabels(ccLabelTestCases)
 
     describe('Unified Expiration Date', () => {
         describe.each([
