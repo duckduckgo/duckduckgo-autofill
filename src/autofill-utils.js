@@ -50,6 +50,7 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValueForInput = (el, val) => {
     // Avoid keyboard flashing on Android
@@ -69,6 +70,8 @@ const setValueForInput = (el, val) => {
     originalSet.call(el, val)
     events.forEach((ev) => el.dispatchEvent(ev))
     el.blur()
+
+    return true
 }
 
 /**
@@ -76,6 +79,7 @@ const setValueForInput = (el, val) => {
  * We assume Select is only used for dates, i.e. in the credit card
  * @param {HTMLSelectElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
     for (const option of el.options) {
@@ -94,19 +98,24 @@ const setValueForSelect = (el, val) => {
             option.selected = true
             events.forEach((ev) => el.dispatchEvent(ev))
             el.blur()
-            return
+            return true
         }
     }
+    // If we didn't find a matching option return false
+    return false
 }
 
 /**
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValue = (el, val) => {
-    if (el.nodeName === 'INPUT') setValueForInput(el, val)
-    if (el.nodeName === 'SELECT') setValueForSelect(el, val)
+    if (el.nodeName === 'INPUT') return setValueForInput(el, val)
+    if (el.nodeName === 'SELECT') return setValueForSelect(el, val)
+
+    return false
 }
 
 /**

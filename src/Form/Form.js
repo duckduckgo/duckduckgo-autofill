@@ -234,7 +234,10 @@ class Form {
     }
 
     autofillInput = (input, string, dataType) => {
-        setValue(input, string)
+        const successful = setValue(input, string)
+
+        if (!successful) return
+
         input.classList.add('ddg-autofilled')
         addInlineStyles(input, getIconStylesAutofilled(input))
 
