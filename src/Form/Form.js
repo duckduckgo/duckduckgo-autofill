@@ -14,7 +14,7 @@ class Form {
         this.formAnalyzer = new FormAnalyzer(form, input)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
-        this.Device = DeviceInterface
+        this.device = DeviceInterface
         this.attachTooltip = DeviceInterface.attachTooltip
 
         /** @type Object<'all' | SupportedMainTypes, Set> */
@@ -41,7 +41,7 @@ class Form {
             if (credentials.password) {
                 // ask to store credentials and/or fireproof
                 if (this.shouldPromptToStoreCredentials) {
-                    this.Device.storeCredentials(credentials)
+                    this.device.storeCredentials(credentials)
                 }
                 this.handlerExecuted = true
             }
