@@ -30,8 +30,7 @@ const attachTooltip = function (form, input) {
         if (form.tooltip) return
 
         form.activeInput = input
-        const inputType = getInputConfig(input).type
-        form.tooltip = inputType === 'emailNew'
+        form.tooltip = !isApp
             ? new EmailAutofill(input, form, this)
             : new DataAutofill(input, form, this)
         form.intObs.observe(input)
