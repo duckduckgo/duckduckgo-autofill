@@ -8,7 +8,20 @@ const isFirefox = navigator.userAgent.includes('Firefox')
 const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
 
 /**
- * A map of config objects. These help by centralising here some of the complexity
+ * Get the icon for the identities (currently only Dax for emails)
+ * @param {HTMLInputElement} input
+ * @param device
+ * @return {string}
+ */
+const getIdentitiesIcon = (input, {device}) => {
+    const subtype = getInputSubtype(input)
+    if (subtype === 'emailAddress' && device.hasLocalAddresses) return getDaxImg
+
+    return ''
+}
+
+/**
+ * A map of config objects. These help by centralising here some complexity
  * @type {Object<SupportedMainTypes, InputTypeConfig>}
  */
 const inputTypeConfig = {
@@ -48,8 +61,8 @@ const inputTypeConfig = {
     },
     identities: {
         type: 'identities',
-        getIconBase: () => '',
-        getIconFilled: () => '',
+        getIconBase: getIdentitiesIcon,
+        getIconFilled: getIdentitiesIcon,
         shouldDecorate: (input, {device}) => {
             const subtype = getInputSubtype(input)
             return device.getLocalIdentities()?.some((identity) => !!identity[subtype])

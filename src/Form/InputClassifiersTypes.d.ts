@@ -24,8 +24,8 @@ type SupportedSubTypes =
 
 interface InputTypeConfig {
     type: SupportedMainTypes,
-    getIconFilled: () => string,
-    getIconBase: () => string,
+    getIconFilled: (input: HTMLInputElement, form: Form) => string,
+    getIconBase: (input: HTMLInputElement, form: Form) => string,
     shouldDecorate: (input: HTMLInputElement, form: Form) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
     displayTitlePropName: (
