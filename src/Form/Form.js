@@ -144,7 +144,7 @@ class Form {
         const inputs = this.inputs[inputType]
         for (const input of inputs) {
             const {shouldDecorate} = getInputConfig(input)
-            if (shouldDecorate(this.isLogin, this.Device)) fn(input)
+            if (shouldDecorate(input, this)) fn(input)
         }
     }
 
@@ -184,7 +184,7 @@ class Form {
     decorateInput (input) {
         const config = getInputConfig(input)
 
-        if (!config.shouldDecorate(this.isLogin, this.Device)) return this
+        if (!config.shouldDecorate(input, this)) return this
 
         input.setAttribute(ATTR_AUTOFILL, 'true')
 

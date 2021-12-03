@@ -16,7 +16,7 @@ const inputTypeConfig = {
         type: 'emailNew',
         getIconBase: () => getDaxImg,
         getIconFilled: () => getDaxImg,
-        shouldDecorate: (isLogin, device) => {
+        shouldDecorate: (input, {device}) => {
             if (isMobileApp) return device.isDeviceSignedIn()
 
             return device.hasLocalAddresses
@@ -30,7 +30,7 @@ const inputTypeConfig = {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (isLogin, device) => isLogin && device.hasLocalCredentials,
+        shouldDecorate: (input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
         dataType: 'Credentials',
         displayTitlePropName: (input, data) => data.username,
         displaySubtitlePropName: '•••••••••••••••',
@@ -40,7 +40,7 @@ const inputTypeConfig = {
         type: 'creditCard',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
+        shouldDecorate: (input, {device}) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
         displayTitlePropName: (input, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
@@ -50,7 +50,10 @@ const inputTypeConfig = {
         type: 'identities',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (isLogin, device) => device.hasLocalIdentities,
+        shouldDecorate: (input, {device}) => {
+            const subtype = getInputSubtype(input)
+            return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
+        },
         dataType: 'Identities',
         displayTitlePropName: (input, data) => {
             const subtype = getInputSubtype(input)

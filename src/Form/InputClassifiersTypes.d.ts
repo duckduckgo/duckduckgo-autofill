@@ -26,7 +26,7 @@ interface InputTypeConfig {
     type: SupportedMainTypes,
     getIconFilled: () => string,
     getIconBase: () => string,
-    shouldDecorate: (boolean, InterfacePrototype) => boolean,
+    shouldDecorate: (input: HTMLInputElement, form: Form) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
     displayTitlePropName: (
         input: HTMLInputElement,
