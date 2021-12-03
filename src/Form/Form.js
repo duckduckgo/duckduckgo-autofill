@@ -85,7 +85,7 @@ class Form {
             window.removeEventListener('pointerdown', this.removeTooltip, {capture: true})
         }
         this.removeInputHighlight = (input) => {
-            removeInlineStyles(input, getIconStylesAutofilled(input))
+            removeInlineStyles(input, getIconStylesAutofilled(input, this))
             input.classList.remove('ddg-autofilled')
             this.addAutofillStyles(input)
         }
@@ -99,7 +99,7 @@ class Form {
             this.execOnInputs(this.removeInputHighlight, dataType)
         }
         this.removeInputDecoration = (input) => {
-            removeInlineStyles(input, getIconStylesBase(input))
+            removeInlineStyles(input, getIconStylesBase(input, this))
             input.removeAttribute(ATTR_AUTOFILL)
         }
         this.removeAllDecorations = () => {
@@ -177,7 +177,7 @@ class Form {
     }
 
     addAutofillStyles (input) {
-        const styles = getIconStylesBase(input)
+        const styles = getIconStylesBase(input, this)
         addInlineStyles(input, styles)
     }
 
@@ -188,7 +188,7 @@ class Form {
 
         input.setAttribute(ATTR_AUTOFILL, 'true')
 
-        const hasIcon = !!config.getIconBase()
+        const hasIcon = !!config.getIconBase(input, this)
         if (hasIcon) {
             this.addAutofillStyles(input, config)
             this.addListener(input, 'mousemove', (e) => {
@@ -240,7 +240,7 @@ class Form {
         if (!successful) return
 
         input.classList.add('ddg-autofilled')
-        addInlineStyles(input, getIconStylesAutofilled(input))
+        addInlineStyles(input, getIconStylesAutofilled(input, this))
 
         // If the user changes the alias, remove the decoration
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
