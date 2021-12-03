@@ -44,7 +44,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
 const wkSendAndWait = async (handler, data = {}) => {
     if (hasModernWebkitAPI) {
         const response = await wkSend(handler, data)
-        return ddgGlobals.JSONparse(response)
+        return ddgGlobals.JSONparse(response || '{}')
     }
 
     try {
@@ -65,7 +65,7 @@ const wkSendAndWait = async (handler, data = {}) => {
 
         const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag])
         const decrypted = await decrypt(cipher, key, iv)
-        return ddgGlobals.JSONparse(decrypted)
+        return ddgGlobals.JSONparse(decrypted || '{}')
     } catch (e) {
         console.error('decryption failed', e)
         return {error: e}
