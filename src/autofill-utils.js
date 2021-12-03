@@ -1,3 +1,5 @@
+const {getInputSubtype} = require('./Form/input-classifiers')
+
 let isApp = false
 // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
 // INJECT isApp HERE
@@ -100,10 +102,20 @@ const fireEventsOnSelect = (el) => {
  * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
+    const subtype = getInputSubtype(el)
+    const isMonth = subtype.includes('Month')
+    const isZeroBasedNumber = el.options[0].value === '0' && !el.options[0].disabled && isMonth
+
     // Loop first through all values because they tend to be more precise
     for (const option of el.options) {
+        // If values for months are zero-based (Jan === 0), add one to match our data type
+        let value = Number(option.value)
+        if (isZeroBasedNumber) {
+            value += 1
+        }
+        value = String(value)
         // TODO: try to match localised month names
-        if (option.value.includes(val)) {
+        if (value.includes(val)) {
             option.selected = true
             fireEventsOnSelect(el)
             return true
