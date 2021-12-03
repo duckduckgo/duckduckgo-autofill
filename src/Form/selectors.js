@@ -253,7 +253,8 @@ const ID_MATCHERS_LIST = [
         type: 'addressStreet',
         selector: ID_ADDRESS_STREET,
         matcherFn: (string) =>
-            /address/i.test(string) && !/email|\bip\b|address.?2/i.test(string)
+            /address/i.test(string) &&
+            !/email|\bip\b|address.?2|duck|log.?in|sign.?in/i.test(string)
     },
     {
         type: 'addressCity',
