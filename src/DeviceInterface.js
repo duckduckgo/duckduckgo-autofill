@@ -15,7 +15,7 @@ const {
     wkSendAndWait
 } = require('./appleDeviceUtils/appleDeviceUtils')
 const {scanForInputs, forms} = require('./scanForInputs.js')
-const getInputConfig = require('./Form/inputTypeConfig')
+const {formatFullName} = require('./Form/input-classifiers')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -52,6 +52,16 @@ class InterfacePrototype {
     }
     storeLocalAddresses (addresses) {
         this.#addresses = addresses
+        // When we get new addresses, add them to the identities list
+        const identities = this.getLocalIdentities()
+        const privateAddressIdentity = identities.find(({id}) => id === 'privateAddress')
+        // If we had previously stored them, just update the private address
+        if (privateAddressIdentity) {
+            privateAddressIdentity.emailAddress = formatAddress(addresses.privateAddress)
+        } else {
+            // Otherwise, add both addresses
+            this.#data.identities = this.formatIdentities(identities)
+        }
     }
 
     /** @type { PMData } */
@@ -61,6 +71,37 @@ class InterfacePrototype {
         identities: []
     }
 
+    formatIdentities (identities) {
+        let duckEmailsInIdentities = []
+        identities.forEach((identity) => {
+            // Store the full name as a separate field to simplify autocomplete
+            identity.fullName = formatFullName(identity)
+            // Check if we have a duck address in identities
+            if (identity.emailAddress.includes('@duck.com')) {
+                duckEmailsInIdentities.push(identity.emailAddress)
+            }
+        })
+        if (this.hasLocalAddresses) {
+            let {privateAddress, personalAddress} = this.getLocalAddresses()
+            privateAddress = formatAddress(privateAddress)
+            personalAddress = formatAddress(personalAddress)
+            // If the user manually added a personal duck address to identities, we don't show it separately
+            if (!duckEmailsInIdentities.includes(personalAddress)) {
+                identities.push({
+                    id: 'personalAddress',
+                    emailAddress: personalAddress,
+                    title: 'Blocks Email Trackers'
+                })
+            }
+            identities.push({
+                id: 'privateAddress',
+                emailAddress: privateAddress,
+                title: 'Blocks Email Trackers and hides Your Address'
+            })
+        }
+        return identities
+    }
+
     /**
      * Stores init data coming from the device
      * @param { PMData } data
@@ -68,6 +109,7 @@ class InterfacePrototype {
     storeLocalData (data) {
         data.credentials.forEach((cred) => delete cred.password)
         data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        data.identities = this.formatIdentities(data.identities)
         this.#data = data
     }
     get hasLocalCredentials () {
@@ -289,7 +331,11 @@ class AppleDeviceInterface extends InterfacePrototype {
             return formatAddress(alias)
         }
 
-        this.refreshAlias = () => wkSend('emailHandlerRefreshAlias')
+        this.refreshAlias = () => wkSendAndWait('emailHandlerRefreshAlias')
+            .then(() => {
+                // On macOS we also update the addresses stored locally
+                if (isApp) this.getAddresses()
+            })
 
         this._checkDeviceSignedIn = async () => {
             const {isAppSignedIn} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
@@ -348,10 +394,12 @@ class AppleDeviceInterface extends InterfacePrototype {
         /**
          * Gets a single identity obj once the user requests it
          * @param {Number} id
-         * @returns {APIResponse<IdentityObject>}
+         * @returns {Promise<{success: IdentityObject}>}
          */
-        this.getAutofillIdentity = (id) =>
-            wkSendAndWait('pmHandlerGetIdentity', { id })
+        this.getAutofillIdentity = (id) => {
+            const identity = this.getLocalIdentities().find(({id: identityId}) => `${identityId}` === `${id}`)
+            return Promise.resolve({success: identity})
+        }
 
         /**
          * Gets a single complete credit card obj once the user requests it

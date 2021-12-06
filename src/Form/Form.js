@@ -2,7 +2,7 @@ const FormAnalyzer = require('./FormAnalyzer')
 const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp} = require('../autofill-utils')
 const {getInputSubtype, setInputType, getInputMainType,
-    formatCCYear, getUnifiedExpiryDate, formatFullName, getCountryName
+    formatCCYear, getUnifiedExpiryDate, getCountryName
 } = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
@@ -269,10 +269,6 @@ class Form {
 
             if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
                 autofillData = formatCCYear(input, autofillData, this.form)
-            }
-
-            if (inputSubtype === 'fullName') {
-                autofillData = formatFullName(data)
             }
 
             if (inputSubtype === 'addressCountryCode') {

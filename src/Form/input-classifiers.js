@@ -144,7 +144,7 @@ const inferInputType = (input, form) => {
 
     if (isPassword(input, formEl)) return 'credentials.password'
 
-    if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'emailNew'
+    if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'identities.emailAddress'
 
     if (isUserName(input, formEl)) return 'credentials.username'
 
