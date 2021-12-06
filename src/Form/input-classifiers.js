@@ -1,6 +1,7 @@
 const {
     CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST,
-    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER, FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST
+    PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER,
+    FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST, FORM_ELS_SELECTOR
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
 
@@ -24,7 +25,13 @@ const getExplicitLabelsText = (el) => {
  */
 const getRelatedText = (el, form) => {
     const container = getLargestMeaningfulContainer(el, form)
-    return container.textContent
+
+    // If there is no meaningful container return empty string
+    if (container === el || container.nodeName === 'SELECT') return ''
+
+    // If the container has a select element, remove its contents to avoid noise
+    const noisyText = container.querySelector('select')?.textContent || ''
+    return container.textContent?.replace(noisyText, '')
 }
 
 /**
@@ -37,7 +44,7 @@ const getLargestMeaningfulContainer = (el, form) => {
     const parentElement = el.parentElement
     if (!parentElement || el === form) return el
 
-    const inputsInScope = parentElement.querySelectorAll('input, select, textarea')
+    const inputsInScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR)
     // To avoid noise, ensure that our input is the only in scope
     if (inputsInScope.length === 1) {
         return getLargestMeaningfulContainer(parentElement, form)
@@ -46,15 +53,30 @@ const getLargestMeaningfulContainer = (el, form) => {
 }
 
 /**
- * Tries to infer input type, with checks in decreasing order of reliability
- * @type (el: HTMLInputElement, form: HTMLFormElement, Matcher) => Boolean
+ * Tries to infer input subtype, with checks in decreasing order of reliability
+ * @type (el: HTMLInputElement, form: HTMLFormElement, matchers: []Matcher) => string|undefined
  */
-const checkMatch = (el, form, {selector, matcherFn}) => {
-    if (selector && el.matches(selector)) return true
+const getSubtypeFromMatchers = (el, form, matchers) => {
+    let found
+    // Selectors give high confidence and are least expensive
+    found = matchers.find(({selector}) => el.matches(selector))
+    if (found) return found.type
 
-    if (!matcherFn) return false
+    // Labels are second-highest confidence and pretty cheap
+    const labelText = getExplicitLabelsText(el)
+    found = matchers.find(({matcherFn}) => matcherFn?.(labelText))
+    if (found) return found.type
 
-    return [getExplicitLabelsText(el), el.id, el.placeholder, getRelatedText(el, form)].some(matcherFn)
+    // Next up, placeholder
+    const placeholder = el.placeholder || ''
+    found = matchers.find(({matcherFn}) => matcherFn?.(placeholder))
+    if (found) return found.type
+
+    // The related text is the most expensive and gives the least confidence
+    const relatedText = getRelatedText(el, form)
+    found = matchers.find(({matcherFn}) => matcherFn?.(relatedText))
+
+    return found?.type
 }
 
 /**
@@ -62,21 +84,21 @@ const checkMatch = (el, form, {selector, matcherFn}) => {
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isPassword = (el, form) =>
-    checkMatch(el, form, PASSWORD_MATCHER)
+    !!getSubtypeFromMatchers(el, form, [PASSWORD_MATCHER])
 
 /**
  * Tries to infer if input is for email
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isEmail = (el, form) =>
-    checkMatch(el, form, EMAIL_MATCHER)
+    !!getSubtypeFromMatchers(el, form, [EMAIL_MATCHER])
 
 /**
  * Tries to infer if input is for username
  * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
  */
 const isUserName = (el, form) =>
-    checkMatch(el, form, USERNAME_MATCHER)
+    !!getSubtypeFromMatchers(el, form, [USERNAME_MATCHER])
 
 /**
  * Tries to infer if it's a credit card form
@@ -102,21 +124,6 @@ const isCCForm = (form) => {
 }
 
 /**
- * Get a CC subtype based on selectors and regexes
- * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
- */
-const getCCFieldSubtype = (el, form) =>
-    CC_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type
-
-/**
- * Get an identities subtype based on selectors and regexes
- * @type (el: HTMLInputElement, form: HTMLFormElement) => string|undefined
- */
-const getIDFieldSubtype = (el, form) =>
-    ID_MATCHERS_LIST.find((sel) => checkMatch(el, form, sel))?.type
-// TODO: Is it worth checking all selectors first before moving to labels and stuff?
-
-/**
  * Tries to infer the input type
  * @param {HTMLInputElement} input
  * @param {Form} form
@@ -131,7 +138,7 @@ const inferInputType = (input, form) => {
     // For CC forms we run aggressive matches, so we want to make sure we only
     // run them on actual CC forms to avoid false positives and expensive loops
     if (isCCForm(formEl)) {
-        const subtype = getCCFieldSubtype(input, formEl)
+        const subtype = getSubtypeFromMatchers(input, formEl, CC_MATCHERS_LIST)
         if (subtype) return `creditCard.${subtype}`
     }
 
@@ -141,7 +148,7 @@ const inferInputType = (input, form) => {
 
     if (isUserName(input, formEl)) return 'credentials.username'
 
-    const idSubtype = getIDFieldSubtype(input, form)
+    const idSubtype = getSubtypeFromMatchers(input, form, ID_MATCHERS_LIST)
     if (idSubtype) return `identities.${idSubtype}`
 
     return 'unknown'
@@ -235,16 +242,59 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
 const formatFullName = ({firstName, middleName, lastName}) =>
     `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`
 
+/**
+ * Tries to format the country code into a localised country name
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @param {string} addressCountryCode
+ */
+const getCountryName = (el, {addressCountryCode}) => {
+    // Try to infer the field language or fallback to en
+    const elLocale = el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
+    // TODO: use a fallback when Intl.DisplayNames is not available
+    const localisedRegionNames = new Intl.DisplayNames([elLocale], { type: 'region' })
+    const localisedCountryName = localisedRegionNames.of(addressCountryCode) || addressCountryCode
+
+    // If it's a select el we try to find a suitable match to autofill
+    if (el.nodeName === 'SELECT') {
+        const englishRegionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+        const englishCountryName = englishRegionNames.of(addressCountryCode) || addressCountryCode
+        // This regex matches both the localised and English country names
+        const countryNameRegex = new RegExp(String.raw`${
+            localisedCountryName.replaceAll(' ', '.?')
+        }|${
+            englishCountryName.replaceAll(' ', '.?')
+        }`, 'i')
+        const countryCodeRegex = new RegExp(String.raw`\b${addressCountryCode}\b`, 'i')
+
+        // We check the country code first because it's more accurate
+        for (const option of el.options) {
+            if (countryCodeRegex.test(option.value)) {
+                return option.value
+            }
+        }
+
+        for (const option of el.options) {
+            if (
+                countryNameRegex.test(option.value) ||
+                countryNameRegex.test(option.innerText)
+            ) return option.value
+        }
+    }
+
+    return localisedCountryName
+}
+
 module.exports = {
     isPassword,
     isEmail,
     isUserName,
-    getCCFieldSubtype,
+    getSubtypeFromMatchers,
     inferInputType,
     setInputType,
     getInputMainType,
     getInputSubtype,
     formatCCYear,
     getUnifiedExpiryDate,
-    formatFullName
+    formatFullName,
+    getCountryName
 }

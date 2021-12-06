@@ -1,3 +1,5 @@
+const FORM_ELS_SELECTOR = 'input, select, textarea'
+
 const EMAIL_SELECTOR = `
 input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
 input[type=""][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
@@ -44,7 +46,7 @@ const USERNAME_MATCHER = {
     type: 'username',
     selector: USERNAME_SELECTOR,
     matcherFn: (string) =>
-        /user((.)?name)?$/i.test(string) && !/search/i.test(string)
+        /user((.)?(name|id))?$/i.test(string) && !/search/i.test(string)
 }
 
 const CC_NAME_SELECTOR = `
@@ -132,21 +134,21 @@ const CC_MATCHERS_LIST = [
         type: 'expirationMonth',
         selector: CC_MONTH_SELECTOR,
         matcherFn: (string) =>
-            /(card|cc)?.?(exp(iry|iration)?)?.?(month|mm(?![.\s/-]yy))/i.test(string) &&
+            /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(month|\bmm\b(?![.\s/-]yy))/i.test(string) &&
             !/mm[/\s.\-_—–]/i.test(string)
     },
     {
         type: 'expirationYear',
         selector: CC_YEAR_SELECTOR,
         matcherFn: (string) =>
-            /(card|cc)?.?(exp(iry|iration)?)?.?(ye(ar)?|yy)/i.test(string) &&
+            /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(year|yy)/i.test(string) &&
             !/mm[/\s.\-_—–]/i.test(string)
     },
     {
         type: 'expiration',
         selector: CC_EXP_SELECTOR,
         matcherFn: (string) =>
-            /(mm|\d\d)[/\s.\-_—–](yy|jj|aa|\d\d)|exp|valid/i.test(string) &&
+            /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid/i.test(string) &&
             !/invalid/i.test(string) &&
             // if there are more than six digits it could be a phone number
             string.replace(/\D+/g, '').length <= 6
@@ -175,7 +177,7 @@ const ID_MIDDLE_NAME_SELECTOR = `
 [name*=additional_name i], [autocomplete*=additional_name i]`
 
 const ID_LAST_NAME_SELECTOR = `
-[name*=lname i], [autocomplete*=family-name i],
+[name=lname], [autocomplete*=family-name i],
 [name*=lastname i], [autocomplete*=lastname i],
 [name*=last-name i], [autocomplete*=last-name i],
 [name*=last_name i], [autocomplete*=last_name i],
@@ -195,6 +197,25 @@ const ID_PHONE_SELECTOR = `
 [name*=phone i], [name*=mobile i], [autocomplete=tel],
 [type=tel]`
 
+const ID_ADDRESS_STREET = `
+[name=address], [autocomplete=street-address], [autocomplete=address-line1],
+[name=ppw-line1]`
+
+const ID_CITY_STREET = `
+[name=city], [autocomplete=address-level2],
+[name=ppw-city]`
+
+const ID_PROVINCE_STREET = `
+[name=province], [name=state], [autocomplete=address-level1]`
+
+const ID_POSTAL_CODE = `
+[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],
+[name*=postalCode i], [name*=zipcode i]`
+
+const ID_COUNTRY = `
+[name=country] [autocomplete=country],
+[name*=countryCode i]`
+
 /** @type Matcher[] */
 const ID_MATCHERS_LIST = [
     {
@@ -213,19 +234,50 @@ const ID_MATCHERS_LIST = [
         type: 'lastName',
         selector: ID_LAST_NAME_SELECTOR,
         matcherFn: (string) =>
-            /(last|family|sur).?name/i.test(string)
+            // matches surname, but not Suriname, the country
+            /(last|family|sur)[^i]?name/i.test(string)
     },
     {
         type: 'fullName',
         selector: ID_NAME_SELECTOR,
         matcherFn: (string) =>
-            /name/i.test(string) && !/company|org/i.test(string)
+            /\bname\b/i.test(string) && !/company|org/i.test(string)
     },
     {
         type: 'phone',
         selector: ID_PHONE_SELECTOR,
         matcherFn: (string) =>
             /phone/i.test(string)
+    },
+    {
+        type: 'addressStreet',
+        selector: ID_ADDRESS_STREET,
+        matcherFn: (string) =>
+            /address/i.test(string) && !/email|\bip\b|address.?2/i.test(string)
+    },
+    {
+        type: 'addressCity',
+        selector: ID_CITY_STREET,
+        matcherFn: (string) =>
+            /city|town/i.test(string) && !/vatican/i.test(string)
+    },
+    {
+        type: 'addressProvince',
+        selector: ID_PROVINCE_STREET,
+        matcherFn: (string) =>
+            /state|province|region/i.test(string) && !/country|united/i.test(string)
+    },
+    {
+        type: 'addressPostalCode',
+        selector: ID_POSTAL_CODE,
+        matcherFn: (string) =>
+            /\bzip\b|postal/i.test(string)
+    },
+    {
+        type: 'addressCountryCode',
+        selector: ID_COUNTRY,
+        matcherFn: (string) =>
+            /country/i.test(string)
     }
 ]
 
@@ -242,6 +294,7 @@ button:not([role=switch]):not([role=link]),
 [role=button]`
 
 module.exports = {
+    FORM_ELS_SELECTOR,
     PASSWORD_SELECTOR,
     EMAIL_MATCHER,
     PASSWORD_MATCHER,

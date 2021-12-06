@@ -50,6 +50,7 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValueForInput = (el, val) => {
     // Avoid keyboard flashing on Android
@@ -69,6 +70,26 @@ const setValueForInput = (el, val) => {
     originalSet.call(el, val)
     events.forEach((ev) => el.dispatchEvent(ev))
     el.blur()
+
+    return true
+}
+
+/**
+ * Fires events on a select element to simulate user interaction
+ * @param {HTMLSelectElement} el
+ */
+const fireEventsOnSelect = (el) => {
+    const events = [
+        new Event('mousedown', {bubbles: true}),
+        new Event('focus', {bubbles: true}),
+        new Event('change', {bubbles: true}),
+        new Event('mouseup', {bubbles: true}),
+        new Event('click', {bubbles: true})
+    ]
+    // Events fire on the select el, not option
+    events.forEach((ev) => el.dispatchEvent(ev))
+    events.forEach((ev) => el.dispatchEvent(ev))
+    el.blur()
 }
 
 /**
@@ -76,38 +97,41 @@ const setValueForInput = (el, val) => {
  * We assume Select is only used for dates, i.e. in the credit card
  * @param {HTMLSelectElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
+    // Loop first through all values because they tend to be more precise
     for (const option of el.options) {
         // TODO: try to match localised month names
-        const optValue = option.value || option.innerText
-        if (optValue.includes(val)) {
-            const events = [
-                new Event('mousedown', {bubbles: true}),
-                new Event('focus', {bubbles: true}),
-                new Event('change', {bubbles: true}),
-                new Event('mouseup', {bubbles: true}),
-                new Event('click', {bubbles: true})
-            ]
+        if (option.value.includes(val)) {
             option.selected = true
-            // Events fire on the select el, not option
-            events.forEach((ev) => el.dispatchEvent(ev))
-            option.selected = true
-            events.forEach((ev) => el.dispatchEvent(ev))
-            el.blur()
-            return
+            fireEventsOnSelect(el)
+            return true
         }
     }
+
+    for (const option of el.options) {
+        if (option.innerText.includes(val)) {
+            option.selected = true
+            fireEventsOnSelect(el)
+            return true
+        }
+    }
+    // If we didn't find a matching option return false
+    return false
 }
 
 /**
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValue = (el, val) => {
-    if (el.nodeName === 'INPUT') setValueForInput(el, val)
-    if (el.nodeName === 'SELECT') setValueForSelect(el, val)
+    if (el.nodeName === 'INPUT') return setValueForInput(el, val)
+    if (el.nodeName === 'SELECT') return setValueForSelect(el, val)
+
+    return false
 }
 
 /**

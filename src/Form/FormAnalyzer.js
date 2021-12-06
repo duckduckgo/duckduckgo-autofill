@@ -93,11 +93,11 @@ class FormAnalyzer {
     evaluatePageHeadings () {
         const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]')
         if (headings) {
-            headings.forEach(({innerText}) => {
+            headings.forEach(({textContent}) => {
                 this.updateSignal({
-                    string: innerText,
+                    string: textContent,
                     strength: 0.5,
-                    signalType: `heading: ${innerText}`,
+                    signalType: `heading: ${textContent}`,
                     shouldCheckUnifiedForm: true,
                     shouldBeConservative: true
                 })
@@ -130,7 +130,7 @@ class FormAnalyzer {
     getText (el) {
         // for buttons, we don't care about descendants, just get the whole text as is
         // this is important in order to give proper attribution of the text to the button
-        if (this.elementIs(el, 'BUTTON')) return el.innerText
+        if (this.elementIs(el, 'BUTTON')) return el.textContent
 
         if (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) return el.value
 
@@ -166,7 +166,7 @@ class FormAnalyzer {
         } else {
             // any other case
             // only consider the el if it's a small text to avoid noisy disclaimers
-            if (el.innerText?.length < 50) {
+            if (el.textContent?.length < 50) {
                 this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
             }
         }

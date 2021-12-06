@@ -1,4 +1,7 @@
-const {getCCFieldSubtype, getUnifiedExpiryDate} = require('./input-classifiers')
+const {getSubtypeFromMatchers, getUnifiedExpiryDate} = require('./input-classifiers')
+const {CC_MATCHERS_LIST} = require('./selectors')
+
+const getCCFieldSubtype = (el, form) => getSubtypeFromMatchers(el, form, CC_MATCHERS_LIST)
 
 const renderInputWithLabel = () => {
     const input = document.createElement('input')
@@ -76,7 +79,7 @@ describe('Input Classifiers', () => {
         expect(getCCFieldSubtype(inputs[3], form)).toBeUndefined()
     })
 
-    const ccLabeltestCases = {
+    const ccLabelTestCases = {
         cardName: [
             {text: 'credit card name'},
             {text: 'name on card'},
@@ -112,7 +115,7 @@ describe('Input Classifiers', () => {
             {text: 'card expiry mo', shouldMatch: false}
         ]
     }
-    testRegexForCCLabels(ccLabeltestCases)
+    testRegexForCCLabels(ccLabelTestCases)
 
     describe('Unified Expiration Date', () => {
         describe.each([

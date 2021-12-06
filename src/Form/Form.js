@@ -1,8 +1,9 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {SUBMIT_BUTTON_SELECTOR, FIELD_SELECTOR} = require('./selectors')
+const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp} = require('../autofill-utils')
 const {getInputSubtype, setInputType, getInputMainType,
-    formatCCYear, getUnifiedExpiryDate, formatFullName} = require('./input-classifiers')
+    formatCCYear, getUnifiedExpiryDate, formatFullName, getCountryName
+} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const getInputConfig = require('./inputTypeConfig.js')
@@ -125,7 +126,7 @@ class Form {
     }
 
     categorizeInputs () {
-        this.form.querySelectorAll(FIELD_SELECTOR).forEach(input => this.addInput(input))
+        this.form.querySelectorAll(FORM_ELS_SELECTOR).forEach(input => this.addInput(input))
     }
 
     get submitButtons () {
@@ -234,7 +235,10 @@ class Form {
     }
 
     autofillInput = (input, string, dataType) => {
-        setValue(input, string)
+        const successful = setValue(input, string)
+
+        if (!successful) return
+
         input.classList.add('ddg-autofilled')
         addInlineStyles(input, getIconStylesAutofilled(input))
 
@@ -269,6 +273,10 @@ class Form {
 
             if (inputSubtype === 'fullName') {
                 autofillData = formatFullName(data)
+            }
+
+            if (inputSubtype === 'addressCountryCode') {
+                autofillData = getCountryName(input, data)
             }
 
             if (autofillData) this.autofillInput(input, autofillData, dataType)
