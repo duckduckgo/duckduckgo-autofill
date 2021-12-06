@@ -30,6 +30,8 @@ class Form {
         this.listeners = new Set()
         this.tooltip = null
         this.activeInput = null
+        // We set this to true to skip event listeners while we're autofilling
+        this.isAutofilling = false
         this.handlerExecuted = false
         this.shouldPromptToStoreCredentials = true
 
@@ -73,6 +75,7 @@ class Form {
 
         this.removeTooltip = (e) => {
             if (
+                this.isAutofilling ||
                 !this.tooltip ||
                 (e && e.target === this.tooltip.host)
             ) {
@@ -200,7 +203,7 @@ class Form {
         }
 
         const handler = (e) => {
-            if (this.tooltip) return
+            if (this.tooltip || this.isAutofilling) return
 
             // Checks for mousedown event
             if (e.type === 'pointerdown') {
@@ -234,6 +237,15 @@ class Form {
     }
 
     autofillInput = (input, string, dataType) => {
+        const activeInputSubtype = getInputSubtype(this.activeInput)
+        const inputSubtype = getInputSubtype(input)
+
+        if (
+            input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
+            activeInputSubtype !== inputSubtype && // and the type is not the same as the active input
+            !input.classList.contains('ddg-autofilled') // and we didn't fill it
+        ) return // do not overwrite the value
+
         const successful = setValue(input, string)
 
         if (!successful) return
@@ -241,15 +253,17 @@ class Form {
         input.classList.add('ddg-autofilled')
         addInlineStyles(input, getIconStylesAutofilled(input, this))
 
-        // If the user changes the alias, remove the decoration
+        // If the user changes the value, remove the decoration
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
     }
 
     autofillEmail (alias, dataType = 'emailNew') {
+        this.isAutofilling = true
         this.execOnInputs(
             (input) => this.autofillInput(input, alias, dataType),
             dataType
         )
+        this.isAutofilling = false
         if (this.tooltip) {
             this.removeTooltip()
         }
@@ -257,6 +271,7 @@ class Form {
 
     autofillData (data, dataType) {
         this.shouldPromptToStoreCredentials = false
+        this.isAutofilling = true
 
         this.execOnInputs((input) => {
             const inputSubtype = getInputSubtype(input)
@@ -276,6 +291,8 @@ class Form {
 
             if (autofillData) this.autofillInput(input, autofillData, dataType)
         }, dataType)
+
+        this.isAutofilling = false
 
         if (this.tooltip) {
             this.removeTooltip()

@@ -20,8 +20,9 @@ const {formatFullName} = require('./Form/formatters')
 const SIGN_IN_MSG = { signMeIn: true }
 
 const attachTooltip = function (form, input) {
+    form.activeInput = input
+
     if (isMobileApp) {
-        form.activeInput = input
         this.getAlias().then((alias) => {
             if (alias) form.autofillEmail(alias)
             else form.activeInput.focus()
@@ -29,7 +30,6 @@ const attachTooltip = function (form, input) {
     } else {
         if (form.tooltip) return
 
-        form.activeInput = input
         form.tooltip = !isApp
             ? new EmailAutofill(input, form, this)
             : new DataAutofill(input, form, this)
