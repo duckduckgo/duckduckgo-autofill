@@ -248,6 +248,8 @@ const formatFullName = ({firstName, middleName, lastName}) =>
  * @param {string} addressCountryCode
  */
 const getCountryName = (el, {addressCountryCode}) => {
+    if (!addressCountryCode) return ''
+
     // Try to infer the field language or fallback to en
     const elLocale = el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
     // TODO: use a fallback when Intl.DisplayNames is not available
