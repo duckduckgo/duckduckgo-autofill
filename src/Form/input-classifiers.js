@@ -240,7 +240,7 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
 }
 
 const formatFullName = ({firstName, middleName, lastName}) =>
-    `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`
+    `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim()
 
 /**
  * Tries to format the country code into a localised country name
