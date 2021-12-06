@@ -166,7 +166,7 @@ class FormAnalyzer {
         } else {
             // any other case
             // only consider the el if it's a small text to avoid noisy disclaimers
-            if (el.textContent?.length < 50) {
+            if (el.textContent?.trim().length < 50) {
                 this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
             }
         }
