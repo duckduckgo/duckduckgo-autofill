@@ -1,5 +1,6 @@
 const {FOUR_DIGIT_YEAR_REGEX, DATE_SEPARATOR_REGEX} = require('./selectors')
 const {matchInPlaceholderAndLabels, checkPlaceholderAndLabels} = require('./input-classifiers')
+const COUNTRY_NAMES = require('./countryNames')
 
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
@@ -37,6 +38,21 @@ const formatFullName = ({firstName, middleName, lastName}) =>
     `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim()
 
 /**
+ * Tries to use Intl.DisplayNames or falls back to a simple list in English
+ * @param {string} locale
+ * @param {string} addressCountryCode
+ * @return {string}
+ */
+const getCountryDisplayName = (locale, addressCountryCode) => {
+    try {
+        const regionNames = new Intl.DisplayNames([locale], { type: 'region' })
+        return regionNames.of(addressCountryCode)
+    } catch (e) {
+        return COUNTRY_NAMES[addressCountryCode] || addressCountryCode
+    }
+}
+
+/**
  * Tries to format the country code into a localised country name
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string} addressCountryCode
@@ -46,14 +62,11 @@ const getCountryName = (el, {addressCountryCode}) => {
 
     // Try to infer the field language or fallback to en
     const elLocale = el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
-    // TODO: use a fallback when Intl.DisplayNames is not available
-    const localisedRegionNames = new Intl.DisplayNames([elLocale], { type: 'region' })
-    const localisedCountryName = localisedRegionNames.of(addressCountryCode) || addressCountryCode
+    const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode)
 
     // If it's a select el we try to find a suitable match to autofill
     if (el.nodeName === 'SELECT') {
-        const englishRegionNames = new Intl.DisplayNames(['en'], { type: 'region' })
-        const englishCountryName = englishRegionNames.of(addressCountryCode) || addressCountryCode
+        const englishCountryName = getCountryDisplayName('en', addressCountryCode)
         // This regex matches both the localised and English country names
         const countryNameRegex = new RegExp(String.raw`${
             localisedCountryName.replaceAll(' ', '.?')
@@ -84,5 +97,6 @@ module.exports = {
     formatCCYear,
     getUnifiedExpiryDate,
     formatFullName,
+    getCountryDisplayName,
     getCountryName
 }
