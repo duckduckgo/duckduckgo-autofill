@@ -15,7 +15,7 @@ const {
     wkSendAndWait
 } = require('./appleDeviceUtils/appleDeviceUtils')
 const {scanForInputs, forms} = require('./scanForInputs.js')
-const {formatFullName} = require('./Form/input-classifiers')
+const {formatFullName} = require('./Form/formatters')
 
 const SIGN_IN_MSG = { signMeIn: true }
 

@@ -1,12 +1,11 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp} = require('../autofill-utils')
-const {getInputSubtype, setInputType, getInputMainType,
-    formatCCYear, getUnifiedExpiryDate, getCountryName
-} = require('./input-classifiers')
+const {getInputSubtype, setInputType, getInputMainType} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const getInputConfig = require('./inputTypeConfig.js')
+const {getUnifiedExpiryDate, formatCCYear, getCountryName} = require('./formatters')
 
 class Form {
     constructor (form, input, DeviceInterface) {
