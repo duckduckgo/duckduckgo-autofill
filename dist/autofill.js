@@ -606,9 +606,12 @@ class Form {
     _defineProperty(this, "autofillInput", (input, string, dataType) => {
       const activeInputSubtype = getInputSubtype(this.activeInput);
       const inputSubtype = getInputSubtype(input);
-      if (input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
-      activeInputSubtype !== inputSubtype && // and the type is not the same as the active input
-      !input.classList.contains('ddg-autofilled') // and we didn't fill it
+      const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'; // Don't override values for identities, unless it's the current input or we're autofilling email
+
+      if (dataType === 'identities' && // only for identities
+      input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
+      this.activeInput !== input && // and this is not the active input
+      !isEmailAutofill // and we're not auto-filling email
       ) return; // do not overwrite the value
 
       const successful = setValue(input, string);
@@ -751,7 +754,6 @@ class Form {
     };
 
     this.categorizeInputs();
-    console.log('form: ', this);
     return this;
   }
 
@@ -2987,9 +2989,7 @@ module.exports = {
         }
       });
     }
-  } catch (e) {
-    // Noop, we errored
-    console.error(e);
+  } catch (e) {// Noop, we errored
   }
 })();
 
