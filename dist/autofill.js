@@ -1507,12 +1507,10 @@ module.exports = {
 
 const {
   CC_FIELD_SELECTOR,
-  DATE_SEPARATOR_REGEX,
   CC_MATCHERS_LIST,
   PASSWORD_MATCHER,
   EMAIL_MATCHER,
   USERNAME_MATCHER,
-  FOUR_DIGIT_YEAR_REGEX,
   ID_MATCHERS_LIST,
   FORM_ELS_SELECTOR
 } = require('./selectors');
@@ -1842,7 +1840,7 @@ const {
 
 const {
   getCountryDisplayName
-} = require("./formatters"); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+} = require('./formatters'); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 
 
 const isFirefox = navigator.userAgent.includes('Firefox');
