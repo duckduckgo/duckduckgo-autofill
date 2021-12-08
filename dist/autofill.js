@@ -23,7 +23,7 @@ const {
   isDDGDomain,
   sendAndWaitForAnswer,
   setValue,
-  formatAddress,
+  formatDuckAddress,
   isMobileApp
 } = require('./autofill-utils');
 
@@ -108,7 +108,7 @@ class InterfacePrototype {
     }) => id === 'privateAddress'); // If we had previously stored them, just update the private address
 
     if (privateAddressIdentity) {
-      privateAddressIdentity.emailAddress = formatAddress(addresses.privateAddress);
+      privateAddressIdentity.emailAddress = formatDuckAddress(addresses.privateAddress);
     } else {
       // Otherwise, add both addresses
       _classPrivateFieldGet(this, _data).identities = this.formatIdentities(identities);
@@ -133,8 +133,8 @@ class InterfacePrototype {
         privateAddress,
         personalAddress
       } = this.getLocalAddresses();
-      privateAddress = formatAddress(privateAddress);
-      personalAddress = formatAddress(personalAddress); // If the user manually added a personal duck address to identities, we don't show it separately
+      privateAddress = formatDuckAddress(privateAddress);
+      personalAddress = formatDuckAddress(personalAddress); // If the user manually added a personal duck address to identities, we don't show it separately
 
       if (!duckEmailsInIdentities.includes(personalAddress)) {
         identities.push({
@@ -313,7 +313,7 @@ class ExtensionInterface extends InterfacePrototype {
             break;
 
           case 'contextualAutofill':
-            setValue(activeEl, formatAddress(message.alias));
+            setValue(activeEl, formatDuckAddress(message.alias));
             activeEl.classList.add('ddg-autofilled');
             this.refreshAlias(); // If the user changes the alias, remove the decoration
 
@@ -441,7 +441,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         requiresUserPermission: !isApp,
         shouldConsumeAliasIfProvided: !isApp
       });
-      return formatAddress(alias);
+      return formatDuckAddress(alias);
     };
 
     this.refreshAlias = () => wkSendAndWait('emailHandlerRefreshAlias').then(() => {
@@ -2209,7 +2209,7 @@ module.exports = DataAutofill;
 
 const {
   isApp,
-  formatAddress,
+  formatDuckAddress,
   escapeXML
 } = require('../autofill-utils');
 
@@ -2220,7 +2220,7 @@ class EmailAutofill extends Tooltip {
     super(input, associatedForm, Interface);
     this.addresses = this.interface.getLocalAddresses();
     const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
-    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat(formatAddress(escapeXML(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
+    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat(formatDuckAddress(escapeXML(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
@@ -2230,15 +2230,15 @@ class EmailAutofill extends Tooltip {
     this.updateAddresses = addresses => {
       if (addresses) {
         this.addresses = addresses;
-        this.addressEl.textContent = formatAddress(addresses.personalAddress);
+        this.addressEl.textContent = formatDuckAddress(addresses.personalAddress);
       }
     };
 
     this.registerClickableButton(this.usePersonalButton, () => {
-      this.associatedForm.autofillEmail(formatAddress(this.addresses.personalAddress));
+      this.associatedForm.autofillEmail(formatDuckAddress(this.addresses.personalAddress));
     });
     this.registerClickableButton(this.usePrivateButton, () => {
-      this.associatedForm.autofillEmail(formatAddress(this.addresses.privateAddress));
+      this.associatedForm.autofillEmail(formatDuckAddress(this.addresses.privateAddress));
       this.interface.refreshAlias();
     }); // Get the alias from the extension
 
@@ -2875,7 +2875,7 @@ const ADDRESS_DOMAIN = '@duck.com';
  * @returns {string}
  */
 
-const formatAddress = address => address + ADDRESS_DOMAIN;
+const formatDuckAddress = address => address + ADDRESS_DOMAIN;
 /**
  * Escapes any occurrences of &, ", <, > or / with XML entities.
  * @param {string} str The string to escape.
@@ -2911,7 +2911,7 @@ module.exports = {
   addInlineStyles,
   removeInlineStyles,
   ADDRESS_DOMAIN,
-  formatAddress,
+  formatDuckAddress,
   escapeXML
 };
 

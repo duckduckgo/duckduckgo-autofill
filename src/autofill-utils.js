@@ -222,7 +222,7 @@ const ADDRESS_DOMAIN = '@duck.com'
  * @param {string} address
  * @returns {string}
  */
-const formatAddress = (address) => address + ADDRESS_DOMAIN
+const formatDuckAddress = (address) => address + ADDRESS_DOMAIN
 
 /**
  * Escapes any occurrences of &, ", <, > or / with XML entities.
@@ -250,6 +250,6 @@ module.exports = {
     addInlineStyles,
     removeInlineStyles,
     ADDRESS_DOMAIN,
-    formatAddress,
+    formatDuckAddress,
     escapeXML
 }

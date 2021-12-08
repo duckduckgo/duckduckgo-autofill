@@ -8,7 +8,7 @@ const {
     isDDGDomain,
     sendAndWaitForAnswer,
     setValue,
-    formatAddress, isMobileApp
+    formatDuckAddress, isMobileApp
 } = require('./autofill-utils')
 const {
     wkSend,
@@ -57,7 +57,7 @@ class InterfacePrototype {
         const privateAddressIdentity = identities.find(({id}) => id === 'privateAddress')
         // If we had previously stored them, just update the private address
         if (privateAddressIdentity) {
-            privateAddressIdentity.emailAddress = formatAddress(addresses.privateAddress)
+            privateAddressIdentity.emailAddress = formatDuckAddress(addresses.privateAddress)
         } else {
             // Otherwise, add both addresses
             this.#data.identities = this.formatIdentities(identities)
@@ -83,8 +83,8 @@ class InterfacePrototype {
         })
         if (this.hasLocalAddresses) {
             let {privateAddress, personalAddress} = this.getLocalAddresses()
-            privateAddress = formatAddress(privateAddress)
-            personalAddress = formatAddress(personalAddress)
+            privateAddress = formatDuckAddress(privateAddress)
+            personalAddress = formatDuckAddress(personalAddress)
             // If the user manually added a personal duck address to identities, we don't show it separately
             if (!duckEmailsInIdentities.includes(personalAddress)) {
                 identities.push({
@@ -226,7 +226,7 @@ class ExtensionInterface extends InterfacePrototype {
                     this.setupAutofill({shouldLog: true})
                     break
                 case 'contextualAutofill':
-                    setValue(activeEl, formatAddress(message.alias))
+                    setValue(activeEl, formatDuckAddress(message.alias))
                     activeEl.classList.add('ddg-autofilled')
                     this.refreshAlias()
 
@@ -328,7 +328,7 @@ class AppleDeviceInterface extends InterfacePrototype {
                     shouldConsumeAliasIfProvided: !isApp
                 }
             )
-            return formatAddress(alias)
+            return formatDuckAddress(alias)
         }
 
         this.refreshAlias = () => wkSendAndWait('emailHandlerRefreshAlias')
