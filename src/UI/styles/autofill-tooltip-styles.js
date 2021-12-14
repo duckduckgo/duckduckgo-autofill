@@ -80,6 +80,7 @@ module.exports = `
     width: 100%;
     padding: 4px;
     font-family: inherit;
+    color: inherit;
     background: transparent;
     border: none;
     border-radius: 6px;
