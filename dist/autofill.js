@@ -2728,7 +2728,7 @@ const fireEventsOnSelect = el => {
 const setValueForSelect = (el, val) => {
   const subtype = getInputSubtype(el);
   const isMonth = subtype.includes('Month');
-  const isZeroBasedNumber = el.options[0].value === '0' && !el.options[0].disabled && isMonth; // Loop first through all values because they tend to be more precise
+  const isZeroBasedNumber = isMonth && el.options[0].value === '0' && el.options.length === 12; // Loop first through all values because they tend to be more precise
 
   for (const option of el.options) {
     // If values for months are zero-based (Jan === 0), add one to match our data type
