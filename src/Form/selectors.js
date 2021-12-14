@@ -1,4 +1,9 @@
-const FORM_ELS_SELECTOR = 'input, select, textarea'
+const FORM_ELS_SELECTOR = `
+input:not([type=submit]),
+input:not([type=checkbox]),
+input:not([type=radio]),
+select,
+textarea`
 
 const EMAIL_SELECTOR = `
 input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
@@ -26,7 +31,7 @@ const EMAIL_MATCHER = {
 
 // We've seen non-standard types like 'user'. This selector should get them, too
 const GENERIC_TEXT_FIELD = `
-input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=tel]):not([type=time]):not([type=url]):not([type=week]):not([readonly]):not([disabled])`
+input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([readonly]):not([disabled])`
 
 const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])`
 
@@ -68,8 +73,7 @@ input[name="ccnumber"],
 input[name="cc-number"],
 input[name="cardnumber"],
 input[name="card-number"],
-input[name="creditCardNumber"],
-input[name="addCreditCardNumber"],
+input[name*=creditCardNumber i],
 input[id*=cardnumber i],
 input[id*=card-number i],
 input[id*=card_number i]`
@@ -88,12 +92,14 @@ input[name="securityCode"]`
 const CC_MONTH_SELECTOR = `
 [autocomplete="cc-exp-month"],
 [name="ccmonth"],
-[name="ppw-expirationDate_month"]`
+[name="ppw-expirationDate_month"],
+[name=cardExpiryMonth]`
 
 const CC_YEAR_SELECTOR = `
 [autocomplete="cc-exp-year"],
 [name="ccyear"],
-[name="ppw-expirationDate_year"]`
+[name="ppw-expirationDate_year"],
+[name=cardExpiryYear]`
 
 const CC_EXP_SELECTOR = `
 [autocomplete="cc-exp"],
@@ -194,8 +200,7 @@ const ID_NAME_SELECTOR = `
 [name*=your-name i], [autocomplete*=your-name i]`
 
 const ID_PHONE_SELECTOR = `
-[name*=phone i], [name*=mobile i], [autocomplete=tel],
-[type=tel]`
+[name*=phone i], [name*=mobile i], [autocomplete=tel]`
 
 const ID_ADDRESS_STREET = `
 [name=address], [autocomplete=street-address], [autocomplete=address-line1],
@@ -247,7 +252,8 @@ const ID_MATCHERS_LIST = [
         type: 'phone',
         selector: ID_PHONE_SELECTOR,
         matcherFn: (string) =>
-            /phone/i.test(string)
+            /phone/i.test(string) &&
+            !/code|pass/i.test(string)
     },
     {
         type: 'addressStreet',
