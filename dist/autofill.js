@@ -2048,7 +2048,7 @@ const CC_MATCHERS_LIST = [{
 }, {
   type: 'cardSecurityCode',
   selector: CC_CVC_SELECTOR,
-  matcherFn: string => /security.?code|cvv|csc|cvc/i.test(string)
+  matcherFn: string => /security.?code|card.?verif|cvv|csc|cvc/i.test(string)
 }, {
   type: 'expirationMonth',
   selector: CC_MONTH_SELECTOR,
@@ -2102,7 +2102,7 @@ const ID_MATCHERS_LIST = [{
 }, {
   type: 'addressStreet',
   selector: ID_ADDRESS_STREET,
-  matcherFn: string => /address/i.test(string) && !/email|\bip\b|address.?2|duck|log.?in|sign.?in/i.test(string)
+  matcherFn: string => /address/i.test(string) && !/email|\bip\b|address(.?line)?.?2|duck|log.?in|sign.?in/i.test(string)
 }, {
   type: 'addressCity',
   selector: ID_CITY_STREET,
