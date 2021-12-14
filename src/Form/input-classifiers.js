@@ -14,7 +14,7 @@ const getExplicitLabelsText = (el) => {
     const text = [...(el.labels || [])].reduce((text, label) => `${text} ${label.textContent}`, '')
     const ariaLabel = el.getAttribute('aria-label') || ''
     const labelledByText = document.getElementById(el.getAttribute('aria-labelled'))?.textContent || ''
-    return `${text} ${ariaLabel} ${labelledByText}`
+    return `${text} ${ariaLabel} ${labelledByText}`.trim()
 }
 
 /**
@@ -31,7 +31,7 @@ const getRelatedText = (el, form) => {
 
     // If the container has a select element, remove its contents to avoid noise
     const noisyText = container.querySelector('select')?.textContent || ''
-    return container.textContent?.replace(noisyText, '')
+    return container.textContent?.replace(noisyText, '').trim()
 }
 
 /**

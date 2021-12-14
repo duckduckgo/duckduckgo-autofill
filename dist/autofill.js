@@ -1531,7 +1531,7 @@ const getExplicitLabelsText = el => {
   const text = [...(el.labels || [])].reduce((text, label) => "".concat(text, " ").concat(label.textContent), '');
   const ariaLabel = el.getAttribute('aria-label') || '';
   const labelledByText = ((_document$getElementB = document.getElementById(el.getAttribute('aria-labelled'))) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.textContent) || '';
-  return "".concat(text, " ").concat(ariaLabel, " ").concat(labelledByText);
+  return "".concat(text, " ").concat(ariaLabel, " ").concat(labelledByText).trim();
 };
 /**
  * Get all text close to the input (useful when no labels are defined)
@@ -1549,7 +1549,7 @@ const getRelatedText = (el, form) => {
   if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
   const noisyText = ((_container$querySelec = container.querySelector('select')) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.textContent) || '';
-  return (_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '');
+  return (_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '').trim();
 };
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
