@@ -2027,7 +2027,7 @@ const CC_NUMBER_SELECTOR = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomp
 const CC_CVC_SELECTOR = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name=\"securityCode\"]";
 const CC_MONTH_SELECTOR = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth]";
 const CC_YEAR_SELECTOR = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear]";
-const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i],\nselect[id*=expiration i]"; // Matches strings like mm/yy, mm-yyyy, mm-aa
+const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i],\nselect[id*=expiration i]"; // Matches strings like mm/yy, mm-yyyy, mm-aa
 
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
 
@@ -2075,7 +2075,7 @@ const ID_ADDRESS_STREET = "\n[name=address], [autocomplete=street-address], [aut
 const ID_CITY_STREET = "\n[name=city], [autocomplete=address-level2],\n[name=ppw-city]";
 const ID_PROVINCE_STREET = "\n[name=province], [name=state], [autocomplete=address-level1]";
 const ID_POSTAL_CODE = "\n[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],\n[name*=postalCode i], [name*=zipcode i]";
-const ID_COUNTRY = "\n[name=country] [autocomplete=country],\n[name*=countryCode i]";
+const ID_COUNTRY = "\n[name=country] [autocomplete=country],\n[name*=countryCode i], [name*=country-code i],\n[name*=countryName i], [name*=country-name i]";
 /** @type Matcher[] */
 
 const ID_MATCHERS_LIST = [{

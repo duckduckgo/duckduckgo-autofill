@@ -103,6 +103,7 @@ const CC_YEAR_SELECTOR = `
 
 const CC_EXP_SELECTOR = `
 [autocomplete="cc-exp"],
+[name="cc-exp"],
 [name="exp-date"],
 [name="expirationDate"],
 input[id*=expiration i],
@@ -219,7 +220,8 @@ const ID_POSTAL_CODE = `
 
 const ID_COUNTRY = `
 [name=country] [autocomplete=country],
-[name*=countryCode i]`
+[name*=countryCode i], [name*=country-code i],
+[name*=countryName i], [name*=country-name i]`
 
 /** @type Matcher[] */
 const ID_MATCHERS_LIST = [
