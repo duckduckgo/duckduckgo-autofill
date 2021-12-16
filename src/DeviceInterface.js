@@ -110,7 +110,7 @@ class InterfacePrototype {
             fullName: formatFullName(identity)
         }))
         // Add addresses
-        this.#data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
+        data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
         this.#data = data
     }
     get hasLocalCredentials () {

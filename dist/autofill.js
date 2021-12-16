@@ -162,7 +162,7 @@ class InterfacePrototype {
       fullName: formatFullName(identity)
     })); // Add addresses
 
-    _classPrivateFieldGet(this, _data).identities = this.addDuckAddressesToIdentities(updatedIdentities);
+    data.identities = this.addDuckAddressesToIdentities(updatedIdentities);
 
     _classPrivateFieldSet(this, _data, data);
   }
