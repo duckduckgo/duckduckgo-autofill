@@ -815,6 +815,7 @@ class Form {
   }
 
   decorateInput(input) {
+    if (input.type === 'submit' || input.type === 'button') return this;
     const config = getInputConfig(input);
     if (!config.shouldDecorate(input, this)) return this;
     input.setAttribute(ATTR_AUTOFILL, 'true');
@@ -2008,7 +2009,7 @@ module.exports = {
 },{}],11:[function(require,module,exports){
 "use strict";
 
-const FORM_ELS_SELECTOR = "\ninput:not([type=submit]),\ninput:not([type=checkbox]),\ninput:not([type=radio]),\nselect,\ntextarea";
+const FORM_ELS_SELECTOR = "\ninput:not([type=submit]),\ninput:not([type=button]),\ninput:not([type=checkbox]),\ninput:not([type=radio]),\nselect";
 const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])";
 /** @type Matcher */
 
@@ -3061,8 +3062,8 @@ const {
 } = require('./autofill-utils');
 
 const {
-  FIELD_SELECTOR,
-  SUBMIT_BUTTON_SELECTOR
+  SUBMIT_BUTTON_SELECTOR,
+  FORM_ELS_SELECTOR
 } = require('./Form/selectors');
 
 const forms = new Map(); // Accepts the DeviceInterface as an explicit dependency
@@ -3074,7 +3075,7 @@ const scanForInputs = DeviceInterface => {
 
     while (element.parentNode && element !== document.body) {
       element = element.parentElement;
-      const inputs = element.querySelectorAll(FIELD_SELECTOR);
+      const inputs = element.querySelectorAll(FORM_ELS_SELECTOR);
       const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
 
       if (inputs.length > 1 || buttons.length) {
@@ -3103,10 +3104,12 @@ const scanForInputs = DeviceInterface => {
   };
 
   const findEligibleInput = context => {
-    if (context.nodeName === 'INPUT' && context.matches(FIELD_SELECTOR)) {
+    var _context$matches;
+
+    if ((_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, FORM_ELS_SELECTOR)) {
       addInput(context);
     } else {
-      context.querySelectorAll(FIELD_SELECTOR).forEach(addInput);
+      context.querySelectorAll(FORM_ELS_SELECTOR).forEach(addInput);
     }
   }; // For all DOM mutations, search for new eligible inputs and update existing inputs positions
 

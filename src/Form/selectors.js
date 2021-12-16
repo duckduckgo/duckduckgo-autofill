@@ -1,9 +1,9 @@
 const FORM_ELS_SELECTOR = `
 input:not([type=submit]),
+input:not([type=button]),
 input:not([type=checkbox]),
 input:not([type=radio]),
-select,
-textarea`
+select`
 
 const EMAIL_SELECTOR = `
 input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
