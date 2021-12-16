@@ -1597,11 +1597,15 @@ const getSubtypeFromMatchers = (el, form, matchers) => {
     matcherFn
   }) => matcherFn === null || matcherFn === void 0 ? void 0 : matcherFn(placeholder));
   if (found) return found.type; // The related text is the most expensive and gives the least confidence
+  // If the field had an explicit label, don't check related text to decrease false positives
 
-  const relatedText = getRelatedText(el, form);
-  found = matchers.find(({
-    matcherFn
-  }) => matcherFn === null || matcherFn === void 0 ? void 0 : matcherFn(relatedText));
+  if (!labelText) {
+    const relatedText = getRelatedText(el, form);
+    found = matchers.find(({
+      matcherFn
+    }) => matcherFn === null || matcherFn === void 0 ? void 0 : matcherFn(relatedText));
+  }
+
   return (_found = found) === null || _found === void 0 ? void 0 : _found.type;
 };
 /**
@@ -2025,8 +2029,8 @@ const USERNAME_MATCHER = {
 const CC_NAME_SELECTOR = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
 const CC_NUMBER_SELECTOR = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name=\"cardnumber\"],\ninput[name=\"card-number\"],\ninput[name*=creditCardNumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
 const CC_CVC_SELECTOR = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name=\"securityCode\"]";
-const CC_MONTH_SELECTOR = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth]";
-const CC_YEAR_SELECTOR = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear]";
+const CC_MONTH_SELECTOR = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth],\n[name=\"expiration-month\"]";
+const CC_YEAR_SELECTOR = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear],\n[name=\"expiration-year\"]";
 const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i],\nselect[id*=expiration i]"; // Matches strings like mm/yy, mm-yyyy, mm-aa
 
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
@@ -2060,7 +2064,7 @@ const CC_MATCHERS_LIST = [{
 }, {
   type: 'expiration',
   selector: CC_EXP_SELECTOR,
-  matcherFn: string => /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid/i.test(string) && !/invalid/i.test(string) && // if there are more than six digits it could be a phone number
+  matcherFn: string => /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/i.test(string) && !/invalid/i.test(string) && // if there are more than six digits it could be a phone number
   string.replace(/\D+/g, '').length <= 6
 }];
 const CC_FIELD_SELECTOR = CC_MATCHERS_LIST.map(({

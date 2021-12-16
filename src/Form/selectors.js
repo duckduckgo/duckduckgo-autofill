@@ -93,13 +93,15 @@ const CC_MONTH_SELECTOR = `
 [autocomplete="cc-exp-month"],
 [name="ccmonth"],
 [name="ppw-expirationDate_month"],
-[name=cardExpiryMonth]`
+[name=cardExpiryMonth],
+[name="expiration-month"]`
 
 const CC_YEAR_SELECTOR = `
 [autocomplete="cc-exp-year"],
 [name="ccyear"],
 [name="ppw-expirationDate_year"],
-[name=cardExpiryYear]`
+[name=cardExpiryYear],
+[name="expiration-year"]`
 
 const CC_EXP_SELECTOR = `
 [autocomplete="cc-exp"],
@@ -155,7 +157,7 @@ const CC_MATCHERS_LIST = [
         type: 'expiration',
         selector: CC_EXP_SELECTOR,
         matcherFn: (string) =>
-            /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid/i.test(string) &&
+            /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/i.test(string) &&
             !/invalid/i.test(string) &&
             // if there are more than six digits it could be a phone number
             string.replace(/\D+/g, '').length <= 6

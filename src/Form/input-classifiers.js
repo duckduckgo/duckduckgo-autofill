@@ -73,8 +73,11 @@ const getSubtypeFromMatchers = (el, form, matchers) => {
     if (found) return found.type
 
     // The related text is the most expensive and gives the least confidence
-    const relatedText = getRelatedText(el, form)
-    found = matchers.find(({matcherFn}) => matcherFn?.(relatedText))
+    // If the field had an explicit label, don't check related text to decrease false positives
+    if (!labelText) {
+        const relatedText = getRelatedText(el, form)
+        found = matchers.find(({matcherFn}) => matcherFn?.(relatedText))
+    }
 
     return found?.type
 }
