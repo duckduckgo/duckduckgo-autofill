@@ -24,7 +24,8 @@ const {
   sendAndWaitForAnswer,
   setValue,
   formatDuckAddress,
-  isMobileApp
+  isMobileApp,
+  ADDRESS_DOMAIN
 } = require('./autofill-utils');
 
 const {
@@ -99,7 +100,7 @@ class InterfacePrototype {
   }
 
   storeLocalAddresses(addresses) {
-    _classPrivateFieldSet(this, _addresses, addresses); // When we get new addresses, add them to the identities list
+    _classPrivateFieldSet(this, _addresses, addresses); // When we get new duck addresses, add them to the identities list
 
 
     const identities = this.getLocalIdentities();
@@ -111,47 +112,41 @@ class InterfacePrototype {
       privateAddressIdentity.emailAddress = formatDuckAddress(addresses.privateAddress);
     } else {
       // Otherwise, add both addresses
-      _classPrivateFieldGet(this, _data).identities = this.formatIdentities(identities);
+      _classPrivateFieldGet(this, _data).identities = this.addDuckAddressesToIdentities(identities);
     }
   }
   /** @type { PMData } */
 
 
-  formatIdentities(identities) {
-    let duckEmailsInIdentities = [];
-    identities.forEach(identity => {
-      // Store the full name as a separate field to simplify autocomplete
-      identity.fullName = formatFullName(identity); // Check if we have a duck address in identities
+  addDuckAddressesToIdentities(identities) {
+    if (!this.hasLocalAddresses) return identities;
+    const newIdentities = [];
+    let {
+      privateAddress,
+      personalAddress
+    } = this.getLocalAddresses();
+    privateAddress = formatDuckAddress(privateAddress);
+    personalAddress = formatDuckAddress(personalAddress); // Get the duck addresses in identities
 
-      if (identity.emailAddress.includes('@duck.com')) {
-        duckEmailsInIdentities.push(identity.emailAddress);
-      }
-    });
+    const duckEmailsInIdentities = identities.reduce((duckEmails, {
+      emailAddress: email
+    }) => email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails, []); // Only add the personal duck address to identities if the user hasn't
+    // already manually added it
 
-    if (this.hasLocalAddresses) {
-      let {
-        privateAddress,
-        personalAddress
-      } = this.getLocalAddresses();
-      privateAddress = formatDuckAddress(privateAddress);
-      personalAddress = formatDuckAddress(personalAddress); // If the user manually added a personal duck address to identities, we don't show it separately
-
-      if (!duckEmailsInIdentities.includes(personalAddress)) {
-        identities.push({
-          id: 'personalAddress',
-          emailAddress: personalAddress,
-          title: 'Blocks Email Trackers'
-        });
-      }
-
-      identities.push({
-        id: 'privateAddress',
-        emailAddress: privateAddress,
-        title: 'Blocks Email Trackers and hides Your Address'
+    if (!duckEmailsInIdentities.includes(personalAddress)) {
+      newIdentities.push({
+        id: 'personalAddress',
+        emailAddress: personalAddress,
+        title: 'Blocks Email Trackers'
       });
     }
 
-    return identities;
+    newIdentities.push({
+      id: 'privateAddress',
+      emailAddress: privateAddress,
+      title: 'Blocks Email Trackers and hides Your Address'
+    });
+    return [...identities, ...newIdentities];
   }
   /**
    * Stores init data coming from the device
@@ -161,8 +156,13 @@ class InterfacePrototype {
 
   storeLocalData(data) {
     data.credentials.forEach(cred => delete cred.password);
-    data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode);
-    data.identities = this.formatIdentities(data.identities);
+    data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode); // Store the full name as a separate field to simplify autocomplete
+
+    const updatedIdentities = data.identities.map(identity => ({ ...identity,
+      fullName: formatFullName(identity)
+    })); // Add addresses
+
+    _classPrivateFieldGet(this, _data).identities = this.addDuckAddressesToIdentities(updatedIdentities);
 
     _classPrivateFieldSet(this, _data, data);
   }
@@ -1435,15 +1435,15 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
 };
 
 const formatFullName = ({
-  firstName,
-  middleName,
-  lastName
+  firstName = '',
+  middleName = '',
+  lastName = ''
 }) => "".concat(firstName, " ").concat(middleName ? middleName + ' ' : '').concat(lastName).trim();
 /**
- * Tries to use Intl.DisplayNames or falls back to a simple list in English
+ * Tries to look up a human-readable country name from the country code
  * @param {string} locale
  * @param {string} addressCountryCode
- * @return {string}
+ * @return {string} - Returns the country code if we can't find a name
  */
 
 
@@ -1458,6 +1458,18 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
   }
 };
 /**
+ * Tries to infer the element locale or returns 'en'
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @return {string | 'en'}
+ */
+
+
+const inferElementLocale = el => {
+  var _el$form;
+
+  return el.lang || ((_el$form = el.form) === null || _el$form === void 0 ? void 0 : _el$form.lang) || document.body.lang || document.documentElement.lang || 'en';
+};
+/**
  * Tries to format the country code into a localised country name
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string} addressCountryCode
@@ -1467,11 +1479,9 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
 const getCountryName = (el, {
   addressCountryCode
 }) => {
-  var _el$form;
-
   if (!addressCountryCode) return ''; // Try to infer the field language or fallback to en
 
-  const elLocale = el.lang || ((_el$form = el.form) === null || _el$form === void 0 ? void 0 : _el$form.lang) || document.body.lang || document.documentElement.lang || 'en';
+  const elLocale = inferElementLocale(el);
   const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode); // If it's a select el we try to find a suitable match to autofill
 
   if (el.nodeName === 'SELECT') {
@@ -2739,9 +2749,7 @@ const setValueForSelect = (el, val) => {
     let value = option.value;
 
     if (isZeroBasedNumber) {
-      value = Number(value);
-      value += 1;
-      value = String(value);
+      value = "".concat(Number(value) + 1);
     } // TODO: try to match localised month names
 
 

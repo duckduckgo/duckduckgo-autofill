@@ -1,19 +1,11 @@
 const EmailAutofill = require('./UI/EmailAutofill')
 const DataAutofill = require('./UI/DataAutofill')
 const {
-    isApp,
-    notifyWebApp,
-    isDDGApp,
-    isAndroid,
-    isDDGDomain,
-    sendAndWaitForAnswer,
-    setValue,
-    formatDuckAddress, isMobileApp
+    isApp, notifyWebApp, isDDGApp, isAndroid,
+    isDDGDomain, sendAndWaitForAnswer, setValue,
+    formatDuckAddress, isMobileApp, ADDRESS_DOMAIN
 } = require('./autofill-utils')
-const {
-    wkSend,
-    wkSendAndWait
-} = require('./appleDeviceUtils/appleDeviceUtils')
+const {wkSend, wkSendAndWait} = require('./appleDeviceUtils/appleDeviceUtils')
 const {scanForInputs, forms} = require('./scanForInputs.js')
 const {formatFullName} = require('./Form/formatters')
 
@@ -52,7 +44,7 @@ class InterfacePrototype {
     }
     storeLocalAddresses (addresses) {
         this.#addresses = addresses
-        // When we get new addresses, add them to the identities list
+        // When we get new duck addresses, add them to the identities list
         const identities = this.getLocalIdentities()
         const privateAddressIdentity = identities.find(({id}) => id === 'privateAddress')
         // If we had previously stored them, just update the private address
@@ -60,7 +52,7 @@ class InterfacePrototype {
             privateAddressIdentity.emailAddress = formatDuckAddress(addresses.privateAddress)
         } else {
             // Otherwise, add both addresses
-            this.#data.identities = this.formatIdentities(identities)
+            this.#data.identities = this.addDuckAddressesToIdentities(identities)
         }
     }
 
@@ -71,35 +63,38 @@ class InterfacePrototype {
         identities: []
     }
 
-    formatIdentities (identities) {
-        let duckEmailsInIdentities = []
-        identities.forEach((identity) => {
-            // Store the full name as a separate field to simplify autocomplete
-            identity.fullName = formatFullName(identity)
-            // Check if we have a duck address in identities
-            if (identity.emailAddress.includes('@duck.com')) {
-                duckEmailsInIdentities.push(identity.emailAddress)
-            }
-        })
-        if (this.hasLocalAddresses) {
-            let {privateAddress, personalAddress} = this.getLocalAddresses()
-            privateAddress = formatDuckAddress(privateAddress)
-            personalAddress = formatDuckAddress(personalAddress)
-            // If the user manually added a personal duck address to identities, we don't show it separately
-            if (!duckEmailsInIdentities.includes(personalAddress)) {
-                identities.push({
-                    id: 'personalAddress',
-                    emailAddress: personalAddress,
-                    title: 'Blocks Email Trackers'
-                })
-            }
-            identities.push({
-                id: 'privateAddress',
-                emailAddress: privateAddress,
-                title: 'Blocks Email Trackers and hides Your Address'
+    addDuckAddressesToIdentities (identities) {
+        if (!this.hasLocalAddresses) return identities
+
+        const newIdentities = []
+        let { privateAddress, personalAddress } = this.getLocalAddresses()
+        privateAddress = formatDuckAddress(privateAddress)
+        personalAddress = formatDuckAddress(personalAddress)
+
+        // Get the duck addresses in identities
+        const duckEmailsInIdentities = identities.reduce(
+            (duckEmails, { emailAddress: email }) =>
+                email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails,
+            []
+        )
+
+        // Only add the personal duck address to identities if the user hasn't
+        // already manually added it
+        if (!duckEmailsInIdentities.includes(personalAddress)) {
+            newIdentities.push({
+                id: 'personalAddress',
+                emailAddress: personalAddress,
+                title: 'Blocks Email Trackers'
             })
         }
-        return identities
+
+        newIdentities.push({
+            id: 'privateAddress',
+            emailAddress: privateAddress,
+            title: 'Blocks Email Trackers and hides Your Address'
+        })
+
+        return [...identities, ...newIdentities]
     }
 
     /**
@@ -109,7 +104,13 @@ class InterfacePrototype {
     storeLocalData (data) {
         data.credentials.forEach((cred) => delete cred.password)
         data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
-        data.identities = this.formatIdentities(data.identities)
+        // Store the full name as a separate field to simplify autocomplete
+        const updatedIdentities = data.identities.map((identity) => ({
+            ...identity,
+            fullName: formatFullName(identity)
+        }))
+        // Add addresses
+        this.#data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
         this.#data = data
     }
     get hasLocalCredentials () {

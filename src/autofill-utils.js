@@ -112,9 +112,7 @@ const setValueForSelect = (el, val) => {
         // If values for months are zero-based (Jan === 0), add one to match our data type
         let value = option.value
         if (isZeroBasedNumber) {
-            value = Number(value)
-            value += 1
-            value = String(value)
+            value = `${Number(value) + 1}`
         }
         // TODO: try to match localised month names
         if (value.includes(val)) {

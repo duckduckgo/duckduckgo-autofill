@@ -34,14 +34,14 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
     return `${paddedMonth}${separator}${formattedYear}`
 }
 
-const formatFullName = ({firstName, middleName, lastName}) =>
+const formatFullName = ({firstName = '', middleName = '', lastName = ''}) =>
     `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim()
 
 /**
- * Tries to use Intl.DisplayNames or falls back to a simple list in English
+ * Tries to look up a human-readable country name from the country code
  * @param {string} locale
  * @param {string} addressCountryCode
- * @return {string}
+ * @return {string} - Returns the country code if we can't find a name
  */
 const getCountryDisplayName = (locale, addressCountryCode) => {
     try {
@@ -53,6 +53,14 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
 }
 
 /**
+ * Tries to infer the element locale or returns 'en'
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @return {string | 'en'}
+ */
+const inferElementLocale = (el) =>
+    el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
+
+/**
  * Tries to format the country code into a localised country name
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string} addressCountryCode
@@ -61,7 +69,7 @@ const getCountryName = (el, {addressCountryCode}) => {
     if (!addressCountryCode) return ''
 
     // Try to infer the field language or fallback to en
-    const elLocale = el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
+    const elLocale = inferElementLocale(el)
     const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode)
 
     // If it's a select el we try to find a suitable match to autofill
