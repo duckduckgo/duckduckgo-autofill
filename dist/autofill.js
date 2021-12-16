@@ -2125,11 +2125,11 @@ const ID_MATCHERS_LIST = [{
 }, {
   type: 'addressProvince',
   selector: ID_PROVINCE_STREET,
-  matcherFn: string => /state|province|region/i.test(string) && !/country|united/i.test(string)
+  matcherFn: string => /state|province|region|county/i.test(string) && !/country|united/i.test(string)
 }, {
   type: 'addressPostalCode',
   selector: ID_POSTAL_CODE,
-  matcherFn: string => /\bzip\b|postal/i.test(string)
+  matcherFn: string => /\bzip\b|postal|post.?code/i.test(string)
 }, {
   type: 'addressCountryCode',
   selector: ID_COUNTRY,
