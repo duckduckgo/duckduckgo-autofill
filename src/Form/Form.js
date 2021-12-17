@@ -122,6 +122,12 @@ class Form {
         this.dismissTooltip = () => {
             this.removeTooltip()
         }
+        // This removes all listeners to avoid memory leaks and weird behaviours
+        this.destroy = () => {
+            this.removeAllDecorations()
+            this.removeTooltip()
+            this.intObs = null
+        }
         this.categorizeInputs()
 
         return this

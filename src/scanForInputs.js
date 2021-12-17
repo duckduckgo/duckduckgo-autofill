@@ -2,6 +2,7 @@ const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
 const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./Form/selectors')
 
+/** @type Map<HTMLFormElement, Form> */
 const forms = new Map()
 
 // Accepts the DeviceInterface as an explicit dependency
@@ -37,6 +38,7 @@ const scanForInputs = (DeviceInterface) => {
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
             const childForm = [...forms.keys()].find((form) => parentForm.contains(form))
+            forms.get(childForm)?.destroy()
             forms.delete(childForm)
 
             forms.set(parentForm, new Form(parentForm, input, DeviceInterface))
