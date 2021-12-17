@@ -48,7 +48,7 @@ const USERNAME_MATCHER = {
     type: 'username',
     selector: USERNAME_SELECTOR,
     matcherFn: (string) =>
-        /user((.)?(name|id))?$/i.test(string) && !/search/i.test(string)
+        /user((.)?(name|id|login))?$/i.test(string) && !/search/i.test(string)
 }
 
 const CC_NAME_SELECTOR = `
@@ -91,22 +91,23 @@ const CC_MONTH_SELECTOR = `
 [name="ccmonth"],
 [name="ppw-expirationDate_month"],
 [name=cardExpiryMonth],
-[name="expiration-month"]`
+[name="expiration-month"],
+[id*=expiration-month i]`
 
 const CC_YEAR_SELECTOR = `
 [autocomplete="cc-exp-year"],
 [name="ccyear"],
 [name="ppw-expirationDate_year"],
 [name=cardExpiryYear],
-[name="expiration-year"]`
+[name="expiration-year"],
+[id*=expiration-year i]`
 
 const CC_EXP_SELECTOR = `
 [autocomplete="cc-exp"],
 [name="cc-exp"],
 [name="exp-date"],
 [name="expirationDate"],
-input[id*=expiration i],
-select[id*=expiration i]`
+input[id*=expiration i]`
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
