@@ -751,6 +751,13 @@ class Form {
 
     this.dismissTooltip = () => {
       this.removeTooltip();
+    }; // This removes all listeners to avoid memory leaks and weird behaviours
+
+
+    this.destroy = () => {
+      this.removeAllDecorations();
+      this.removeTooltip();
+      this.intObs = null;
     };
 
     this.categorizeInputs();
@@ -815,7 +822,6 @@ class Form {
   }
 
   decorateInput(input) {
-    if (input.type === 'submit' || input.type === 'button') return this;
     const config = getInputConfig(input);
     if (!config.shouldDecorate(input, this)) return this;
     input.setAttribute(ATTR_AUTOFILL, 'true');
@@ -852,9 +858,12 @@ class Form {
       }
     };
 
-    const events = ['pointerdown'];
-    if (!isMobileApp) events.push('focus');
-    events.forEach(ev => this.addListener(input, ev, handler, true));
+    if (input.nodeName !== 'SELECT') {
+      const events = ['pointerdown'];
+      if (!isMobileApp) events.push('focus');
+      events.forEach(ev => this.addListener(input, ev, handler, true));
+    }
+
     return this;
   }
 
@@ -913,6 +922,10 @@ const {
   PASSWORD_SELECTOR,
   SUBMIT_BUTTON_SELECTOR
 } = require('./selectors');
+
+const {
+  removeExcessWhitespace
+} = require('./input-classifiers');
 
 class FormAnalyzer {
   constructor(form, input) {
@@ -1016,6 +1029,7 @@ class FormAnalyzer {
       headings.forEach(({
         textContent
       }) => {
+        textContent = removeExcessWhitespace(textContent);
         this.updateSignal({
           string: textContent,
           strength: 0.5,
@@ -1048,9 +1062,9 @@ class FormAnalyzer {
   getText(el) {
     // for buttons, we don't care about descendants, just get the whole text as is
     // this is important in order to give proper attribution of the text to the button
-    if (this.elementIs(el, 'BUTTON')) return el.textContent;
+    if (this.elementIs(el, 'BUTTON')) return removeExcessWhitespace(el.textContent);
     if (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) return el.value;
-    return Array.from(el.childNodes).reduce((text, child) => this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, '');
+    return removeExcessWhitespace(Array.from(el.childNodes).reduce((text, child) => this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, ''));
   }
 
   evaluateElement(el) {
@@ -1086,11 +1100,11 @@ class FormAnalyzer {
         shouldFlip: true
       });
     } else {
-      var _el$textContent;
+      var _removeExcessWhitespa;
 
       // any other case
       // only consider the el if it's a small text to avoid noisy disclaimers
-      if (((_el$textContent = el.textContent) === null || _el$textContent === void 0 ? void 0 : _el$textContent.trim().length) < 50) {
+      if (((_removeExcessWhitespa = removeExcessWhitespace(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < 50) {
         this.updateSignal({
           string,
           strength: 1,
@@ -1126,7 +1140,7 @@ class FormAnalyzer {
 
 module.exports = FormAnalyzer;
 
-},{"./selectors":11}],4:[function(require,module,exports){
+},{"./input-classifiers":6,"./selectors":11}],4:[function(require,module,exports){
 "use strict";
 
 // Country names object using 2-letter country codes to reference country name
@@ -1528,7 +1542,16 @@ const {
 
 const {
   ATTR_INPUT_TYPE
-} = require('../constants');
+} = require('../constants'); // TODO: move this to formatters.js after migrating the codebase to ES modules
+
+/**
+ * Remove whitespace of more than 2 in a row and trim the string
+ * @param string
+ * @return {string}
+ */
+
+
+const removeExcessWhitespace = (string = '') => string.replace(/\s{2,}/, ' ').trim();
 /**
  * Get text from all explicit labels
  * @param {HTMLInputElement} el
@@ -1542,7 +1565,7 @@ const getExplicitLabelsText = el => {
   const text = [...(el.labels || [])].reduce((text, label) => "".concat(text, " ").concat(label.textContent), '');
   const ariaLabel = el.getAttribute('aria-label') || '';
   const labelledByText = ((_document$getElementB = document.getElementById(el.getAttribute('aria-labelled'))) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.textContent) || '';
-  return "".concat(text, " ").concat(ariaLabel, " ").concat(labelledByText).trim();
+  return removeExcessWhitespace("".concat(text, " ").concat(ariaLabel, " ").concat(labelledByText));
 };
 /**
  * Get all text close to the input (useful when no labels are defined)
@@ -1560,7 +1583,7 @@ const getRelatedText = (el, form) => {
   if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
   const noisyText = ((_container$querySelec = container.querySelector('select')) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.textContent) || '';
-  return (_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '').trim();
+  return removeExcessWhitespace((_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, ''));
 };
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
@@ -1751,6 +1774,7 @@ const matchInPlaceholderAndLabels = (input, regex, form) => {
 const checkPlaceholderAndLabels = (input, regex, form) => !!matchInPlaceholderAndLabels(input, regex, form);
 
 module.exports = {
+  removeExcessWhitespace,
   isPassword,
   isEmail,
   isUserName,
@@ -2009,7 +2033,7 @@ module.exports = {
 },{}],11:[function(require,module,exports){
 "use strict";
 
-const FORM_ELS_SELECTOR = "\ninput:not([type=submit]),\ninput:not([type=button]),\ninput:not([type=checkbox]),\ninput:not([type=radio]),\nselect";
+const FORM_ELS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]),\nselect";
 const EMAIL_SELECTOR = "\ninput:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][id*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=email]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([readonly]),\ninput[autocomplete=email]:not([readonly]):not([hidden]):not([disabled])";
 /** @type Matcher */
 
@@ -2035,14 +2059,14 @@ const USERNAME_SELECTOR = "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]");
 const USERNAME_MATCHER = {
   type: 'username',
   selector: USERNAME_SELECTOR,
-  matcherFn: string => /user((.)?(name|id))?$/i.test(string) && !/search/i.test(string)
+  matcherFn: string => /user((.)?(name|id|login))?$/i.test(string) && !/search/i.test(string)
 };
 const CC_NAME_SELECTOR = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
 const CC_NUMBER_SELECTOR = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name=\"cardnumber\"],\ninput[name=\"card-number\"],\ninput[name*=creditCardNumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
 const CC_CVC_SELECTOR = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name=\"securityCode\"]";
-const CC_MONTH_SELECTOR = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth],\n[name=\"expiration-month\"]";
-const CC_YEAR_SELECTOR = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear],\n[name=\"expiration-year\"]";
-const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i],\nselect[id*=expiration i]"; // Matches strings like mm/yy, mm-yyyy, mm-aa
+const CC_MONTH_SELECTOR = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth],\n[name=\"expiration-month\"],\n[id*=expiration-month i]";
+const CC_YEAR_SELECTOR = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear],\n[name=\"expiration-year\"],\n[id*=expiration-year i]";
+const CC_EXP_SELECTOR = "\n[autocomplete=\"cc-exp\"],\n[name=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i]"; // Matches strings like mm/yy, mm-yyyy, mm-aa
 
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
 
@@ -3065,6 +3089,8 @@ const {
   SUBMIT_BUTTON_SELECTOR,
   FORM_ELS_SELECTOR
 } = require('./Form/selectors');
+/** @type Map<HTMLFormElement, Form> */
+
 
 const forms = new Map(); // Accepts the DeviceInterface as an explicit dependency
 
@@ -3096,8 +3122,11 @@ const scanForInputs = DeviceInterface => {
       // If we've already met the form or a descendant, add the input
       forms.get(previouslyFoundParent).addInput(input);
     } else {
+      var _forms$get;
+
       // if this form is an ancestor of an existing form, remove that before adding this
       const childForm = [...forms.keys()].find(form => parentForm.contains(form));
+      (_forms$get = forms.get(childForm)) === null || _forms$get === void 0 ? void 0 : _forms$get.destroy();
       forms.delete(childForm);
       forms.set(parentForm, new Form(parentForm, input, DeviceInterface));
     }
