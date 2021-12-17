@@ -1,8 +1,5 @@
 const FORM_ELS_SELECTOR = `
-input:not([type=submit]),
-input:not([type=button]),
-input:not([type=checkbox]),
-input:not([type=radio]),
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]),
 select`
 
 const EMAIL_SELECTOR = `

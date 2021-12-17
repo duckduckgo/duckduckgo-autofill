@@ -184,8 +184,6 @@ class Form {
     }
 
     decorateInput (input) {
-        if (input.type === 'submit' || input.type === 'button') return this
-
         const config = getInputConfig(input)
 
         if (!config.shouldDecorate(input, this)) return this
