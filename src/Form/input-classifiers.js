@@ -5,6 +5,15 @@ const {
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
 
+// TODO: move this to formatters.js after migrating the codebase to ES modules
+/**
+ * Remove whitespace of more than 2 in a row and trim the string
+ * @param string
+ * @return {string}
+ */
+const removeExcessWhitespace = (string = '') =>
+    string.replace(/\s{2,}/, ' ').trim()
+
 /**
  * Get text from all explicit labels
  * @param {HTMLInputElement} el
@@ -14,7 +23,7 @@ const getExplicitLabelsText = (el) => {
     const text = [...(el.labels || [])].reduce((text, label) => `${text} ${label.textContent}`, '')
     const ariaLabel = el.getAttribute('aria-label') || ''
     const labelledByText = document.getElementById(el.getAttribute('aria-labelled'))?.textContent || ''
-    return `${text} ${ariaLabel} ${labelledByText}`.trim()
+    return removeExcessWhitespace(`${text} ${ariaLabel} ${labelledByText}`)
 }
 
 /**
@@ -31,7 +40,7 @@ const getRelatedText = (el, form) => {
 
     // If the container has a select element, remove its contents to avoid noise
     const noisyText = container.querySelector('select')?.textContent || ''
-    return container.textContent?.replace(noisyText, '').trim()
+    return removeExcessWhitespace(container.textContent?.replace(noisyText, ''))
 }
 
 /**
@@ -211,6 +220,7 @@ const checkPlaceholderAndLabels = (input, regex, form) =>
     !!matchInPlaceholderAndLabels(input, regex, form)
 
 module.exports = {
+    removeExcessWhitespace,
     isPassword,
     isEmail,
     isUserName,
