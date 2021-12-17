@@ -225,9 +225,11 @@ class Form {
             }
         }
 
-        const events = ['pointerdown']
-        if (!isMobileApp) events.push('focus')
-        events.forEach((ev) => this.addListener(input, ev, handler, true))
+        if (input.nodeName !== 'SELECT') {
+            const events = ['pointerdown']
+            if (!isMobileApp) events.push('focus')
+            events.forEach((ev) => this.addListener(input, ev, handler, true))
+        }
         return this
     }
 
