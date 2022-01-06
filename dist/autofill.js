@@ -927,6 +927,10 @@ const {
   removeExcessWhitespace
 } = require('./input-classifiers');
 
+const {
+  TEXT_LENGTH_CUTOFF
+} = require('../constants');
+
 class FormAnalyzer {
   constructor(form, input) {
     this.form = form;
@@ -1104,7 +1108,7 @@ class FormAnalyzer {
 
       // any other case
       // only consider the el if it's a small text to avoid noisy disclaimers
-      if (((_removeExcessWhitespa = removeExcessWhitespace(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < 50) {
+      if (((_removeExcessWhitespa = removeExcessWhitespace(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < TEXT_LENGTH_CUTOFF) {
         this.updateSignal({
           string,
           strength: 1,
@@ -1140,7 +1144,7 @@ class FormAnalyzer {
 
 module.exports = FormAnalyzer;
 
-},{"./input-classifiers":6,"./selectors":11}],4:[function(require,module,exports){
+},{"../constants":21,"./input-classifiers":6,"./selectors":11}],4:[function(require,module,exports){
 "use strict";
 
 // Country names object using 2-letter country codes to reference country name
@@ -1541,7 +1545,8 @@ const {
 } = require('./selectors');
 
 const {
-  ATTR_INPUT_TYPE
+  ATTR_INPUT_TYPE,
+  TEXT_LENGTH_CUTOFF
 } = require('../constants'); // TODO: move this to formatters.js after migrating the codebase to ES modules
 
 /**
@@ -1583,9 +1588,9 @@ const getRelatedText = (el, form) => {
   if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
   const noisyText = ((_container$querySelec = container.querySelector('select')) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.textContent) || '';
-  const sanitizedText = removeExcessWhitespace((_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '')); // If the text is longer than 50 chars it's too noisy and likely to yield false positives, so return ''
+  const sanitizedText = removeExcessWhitespace((_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
 
-  if (sanitizedText.length < 50) return sanitizedText;
+  if (sanitizedText.length < TEXT_LENGTH_CUTOFF) return sanitizedText;
   return '';
 };
 /**
@@ -3037,7 +3042,8 @@ module.exports = {
 
 module.exports = {
   ATTR_INPUT_TYPE: 'data-ddg-inputType',
-  ATTR_AUTOFILL: 'data-ddg-autofill'
+  ATTR_AUTOFILL: 'data-ddg-autofill',
+  TEXT_LENGTH_CUTOFF: 50
 };
 
 },{}],22:[function(require,module,exports){

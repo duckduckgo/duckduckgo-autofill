@@ -3,7 +3,7 @@ const {
     PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER,
     ID_MATCHERS_LIST, FORM_ELS_SELECTOR
 } = require('./selectors')
-const {ATTR_INPUT_TYPE} = require('../constants')
+const {ATTR_INPUT_TYPE, TEXT_LENGTH_CUTOFF} = require('../constants')
 
 // TODO: move this to formatters.js after migrating the codebase to ES modules
 /**
@@ -41,8 +41,8 @@ const getRelatedText = (el, form) => {
     // If the container has a select element, remove its contents to avoid noise
     const noisyText = container.querySelector('select')?.textContent || ''
     const sanitizedText = removeExcessWhitespace(container.textContent?.replace(noisyText, ''))
-    // If the text is longer than 50 chars it's too noisy and likely to yield false positives, so return ''
-    if (sanitizedText.length < 50) return sanitizedText
+    // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
+    if (sanitizedText.length < TEXT_LENGTH_CUTOFF) return sanitizedText
     return ''
 }
 
