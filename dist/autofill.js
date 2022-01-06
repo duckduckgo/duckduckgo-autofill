@@ -1583,7 +1583,10 @@ const getRelatedText = (el, form) => {
   if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
   const noisyText = ((_container$querySelec = container.querySelector('select')) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.textContent) || '';
-  return removeExcessWhitespace((_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, ''));
+  const sanitizedText = removeExcessWhitespace((_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '')); // If the text is longer than 50 chars it's too noisy and likely to yield false positives, so return ''
+
+  if (sanitizedText.length < 50) return sanitizedText;
+  return '';
 };
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
@@ -1598,7 +1601,7 @@ const getLargestMeaningfulContainer = (el, form) => {
   if (!parentElement || el === form) return el;
   const inputsInScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR); // To avoid noise, ensure that our input is the only in scope
 
-  if (inputsInScope.length === 1) {
+  if (inputsInScope.length <= 1) {
     return getLargestMeaningfulContainer(parentElement, form);
   }
 
@@ -3099,7 +3102,7 @@ const scanForInputs = DeviceInterface => {
     if (input.form) return input.form;
     let element = input; // traverse the DOM to search for related inputs
 
-    while (element.parentNode && element !== document.body) {
+    while (element.parentElement && element.parentElement !== document.body) {
       element = element.parentElement;
       const inputs = element.querySelectorAll(FORM_ELS_SELECTOR);
       const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form

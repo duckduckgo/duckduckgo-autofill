@@ -40,7 +40,10 @@ const getRelatedText = (el, form) => {
 
     // If the container has a select element, remove its contents to avoid noise
     const noisyText = container.querySelector('select')?.textContent || ''
-    return removeExcessWhitespace(container.textContent?.replace(noisyText, ''))
+    const sanitizedText = removeExcessWhitespace(container.textContent?.replace(noisyText, ''))
+    // If the text is longer than 50 chars it's too noisy and likely to yield false positives, so return ''
+    if (sanitizedText.length < 50) return sanitizedText
+    return ''
 }
 
 /**
@@ -55,7 +58,7 @@ const getLargestMeaningfulContainer = (el, form) => {
 
     const inputsInScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR)
     // To avoid noise, ensure that our input is the only in scope
-    if (inputsInScope.length === 1) {
+    if (inputsInScope.length <= 1) {
         return getLargestMeaningfulContainer(parentElement, form)
     }
     return el
