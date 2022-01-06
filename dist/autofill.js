@@ -1604,9 +1604,9 @@ const getRelatedText = (el, form) => {
 const getLargestMeaningfulContainer = (el, form) => {
   const parentElement = el.parentElement;
   if (!parentElement || el === form) return el;
-  const inputsInScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR); // To avoid noise, ensure that our input is the only in scope
+  const inputsInParentsScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR); // To avoid noise, ensure that our input is the only in scope
 
-  if (inputsInScope.length <= 1) {
+  if (inputsInParentsScope.length === 1) {
     return getLargestMeaningfulContainer(parentElement, form);
   }
 
