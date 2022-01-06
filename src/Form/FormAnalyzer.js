@@ -1,4 +1,5 @@
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./selectors')
+const {removeExcessWhitespace} = require('./input-classifiers')
 
 class FormAnalyzer {
     constructor (form, input) {
@@ -94,6 +95,7 @@ class FormAnalyzer {
         const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]')
         if (headings) {
             headings.forEach(({textContent}) => {
+                textContent = removeExcessWhitespace(textContent)
                 this.updateSignal({
                     string: textContent,
                     strength: 0.5,
@@ -130,12 +132,14 @@ class FormAnalyzer {
     getText (el) {
         // for buttons, we don't care about descendants, just get the whole text as is
         // this is important in order to give proper attribution of the text to the button
-        if (this.elementIs(el, 'BUTTON')) return el.textContent
+        if (this.elementIs(el, 'BUTTON')) return removeExcessWhitespace(el.textContent)
 
         if (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) return el.value
 
-        return Array.from(el.childNodes).reduce((text, child) =>
-            this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, '')
+        return removeExcessWhitespace(
+            Array.from(el.childNodes).reduce((text, child) =>
+                this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, '')
+        )
     }
 
     evaluateElement (el) {
@@ -166,7 +170,7 @@ class FormAnalyzer {
         } else {
             // any other case
             // only consider the el if it's a small text to avoid noisy disclaimers
-            if (el.textContent?.length < 50) {
+            if (removeExcessWhitespace(el.textContent)?.length < 50) {
                 this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
             }
         }

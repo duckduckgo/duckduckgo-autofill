@@ -1,6 +1,6 @@
 const {
     isApp,
-    formatAddress,
+    formatDuckAddress,
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
@@ -21,7 +21,7 @@ ${includeStyles}
     <div class="tooltip tooltip--email" hidden>
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
-                Use <span class="js-address">${formatAddress(escapeXML(this.addresses.personalAddress))}</span>
+                Use <span class="js-address">${formatDuckAddress(escapeXML(this.addresses.personalAddress))}</span>
             </span>
             <span class="tooltip__button--email__secondary-text">Blocks email trackers</span>
         </button>
@@ -40,14 +40,14 @@ ${includeStyles}
         this.updateAddresses = (addresses) => {
             if (addresses) {
                 this.addresses = addresses
-                this.addressEl.textContent = formatAddress(addresses.personalAddress)
+                this.addressEl.textContent = formatDuckAddress(addresses.personalAddress)
             }
         }
         this.registerClickableButton(this.usePersonalButton, () => {
-            this.associatedForm.autofillEmail(formatAddress(this.addresses.personalAddress))
+            this.associatedForm.autofillEmail(formatDuckAddress(this.addresses.personalAddress))
         })
         this.registerClickableButton(this.usePrivateButton, () => {
-            this.associatedForm.autofillEmail(formatAddress(this.addresses.privateAddress))
+            this.associatedForm.autofillEmail(formatDuckAddress(this.addresses.privateAddress))
             this.interface.refreshAlias()
         })
 

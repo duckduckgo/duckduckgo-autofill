@@ -1,7 +1,8 @@
 const Form = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
-const {FIELD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./Form/selectors')
+const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./Form/selectors')
 
+/** @type Map<HTMLFormElement, Form> */
 const forms = new Map()
 
 // Accepts the DeviceInterface as an explicit dependency
@@ -13,7 +14,7 @@ const scanForInputs = (DeviceInterface) => {
         // traverse the DOM to search for related inputs
         while (element.parentNode && element !== document.body) {
             element = element.parentElement
-            const inputs = element.querySelectorAll(FIELD_SELECTOR)
+            const inputs = element.querySelectorAll(FORM_ELS_SELECTOR)
             const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
             // If we find a button or another input, we assume that's our form
             if (inputs.length > 1 || buttons.length) {
@@ -37,6 +38,7 @@ const scanForInputs = (DeviceInterface) => {
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
             const childForm = [...forms.keys()].find((form) => parentForm.contains(form))
+            forms.get(childForm)?.destroy()
             forms.delete(childForm)
 
             forms.set(parentForm, new Form(parentForm, input, DeviceInterface))
@@ -44,10 +46,10 @@ const scanForInputs = (DeviceInterface) => {
     }
 
     const findEligibleInput = (context) => {
-        if (context.nodeName === 'INPUT' && context.matches(FIELD_SELECTOR)) {
+        if (context.matches?.(FORM_ELS_SELECTOR)) {
             addInput(context)
         } else {
-            context.querySelectorAll(FIELD_SELECTOR).forEach(addInput)
+            context.querySelectorAll(FORM_ELS_SELECTOR).forEach(addInput)
         }
     }
 

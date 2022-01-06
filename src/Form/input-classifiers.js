@@ -1,9 +1,18 @@
 const {
-    CC_FIELD_SELECTOR, DATE_SEPARATOR_REGEX, CC_MATCHERS_LIST,
+    CC_FIELD_SELECTOR, CC_MATCHERS_LIST,
     PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER,
-    FOUR_DIGIT_YEAR_REGEX, ID_MATCHERS_LIST, FORM_ELS_SELECTOR
+    ID_MATCHERS_LIST, FORM_ELS_SELECTOR
 } = require('./selectors')
 const {ATTR_INPUT_TYPE} = require('../constants')
+
+// TODO: move this to formatters.js after migrating the codebase to ES modules
+/**
+ * Remove whitespace of more than 2 in a row and trim the string
+ * @param string
+ * @return {string}
+ */
+const removeExcessWhitespace = (string = '') =>
+    string.replace(/\s{2,}/, ' ').trim()
 
 /**
  * Get text from all explicit labels
@@ -14,7 +23,7 @@ const getExplicitLabelsText = (el) => {
     const text = [...(el.labels || [])].reduce((text, label) => `${text} ${label.textContent}`, '')
     const ariaLabel = el.getAttribute('aria-label') || ''
     const labelledByText = document.getElementById(el.getAttribute('aria-labelled'))?.textContent || ''
-    return `${text} ${ariaLabel} ${labelledByText}`
+    return removeExcessWhitespace(`${text} ${ariaLabel} ${labelledByText}`)
 }
 
 /**
@@ -31,7 +40,7 @@ const getRelatedText = (el, form) => {
 
     // If the container has a select element, remove its contents to avoid noise
     const noisyText = container.querySelector('select')?.textContent || ''
-    return container.textContent?.replace(noisyText, '')
+    return removeExcessWhitespace(container.textContent?.replace(noisyText, ''))
 }
 
 /**
@@ -73,8 +82,11 @@ const getSubtypeFromMatchers = (el, form, matchers) => {
     if (found) return found.type
 
     // The related text is the most expensive and gives the least confidence
-    const relatedText = getRelatedText(el, form)
-    found = matchers.find(({matcherFn}) => matcherFn?.(relatedText))
+    // If the field had an explicit label, don't check related text to decrease false positives
+    if (!labelText) {
+        const relatedText = getRelatedText(el, form)
+        found = matchers.find(({matcherFn}) => matcherFn?.(relatedText))
+    }
 
     return found?.type
 }
@@ -144,7 +156,7 @@ const inferInputType = (input, form) => {
 
     if (isPassword(input, formEl)) return 'credentials.password'
 
-    if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'emailNew'
+    if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'identities.emailAddress'
 
     if (isUserName(input, formEl)) return 'credentials.username'
 
@@ -207,84 +219,8 @@ const matchInPlaceholderAndLabels = (input, regex, form) =>
 const checkPlaceholderAndLabels = (input, regex, form) =>
     !!matchInPlaceholderAndLabels(input, regex, form)
 
-/**
- * Format the cc year to best adapt to the input requirements (YY vs YYYY)
- * @param {HTMLInputElement} input
- * @param {number} year
- * @param {HTMLFormElement} form
- * @returns {number}
- */
-const formatCCYear = (input, year, form) => {
-    if (
-        input.maxLength === 4 ||
-        checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form)
-    ) return year
-
-    return year - 2000
-}
-
-/**
- * Get a unified expiry date with separator
- * @param {HTMLInputElement} input
- * @param {number} month
- * @param {number} year
- * @param {HTMLFormElement} form
- * @returns {string}
- */
-const getUnifiedExpiryDate = (input, month, year, form) => {
-    const formattedYear = formatCCYear(input, year, form)
-    const paddedMonth = `${month}`.padStart(2, '0')
-    const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form)?.groups?.separator || '/'
-
-    return `${paddedMonth}${separator}${formattedYear}`
-}
-
-const formatFullName = ({firstName, middleName, lastName}) =>
-    `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`
-
-/**
- * Tries to format the country code into a localised country name
- * @param {HTMLInputElement | HTMLSelectElement} el
- * @param {string} addressCountryCode
- */
-const getCountryName = (el, {addressCountryCode}) => {
-    // Try to infer the field language or fallback to en
-    const elLocale = el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
-    // TODO: use a fallback when Intl.DisplayNames is not available
-    const localisedRegionNames = new Intl.DisplayNames([elLocale], { type: 'region' })
-    const localisedCountryName = localisedRegionNames.of(addressCountryCode) || addressCountryCode
-
-    // If it's a select el we try to find a suitable match to autofill
-    if (el.nodeName === 'SELECT') {
-        const englishRegionNames = new Intl.DisplayNames(['en'], { type: 'region' })
-        const englishCountryName = englishRegionNames.of(addressCountryCode) || addressCountryCode
-        // This regex matches both the localised and English country names
-        const countryNameRegex = new RegExp(String.raw`${
-            localisedCountryName.replaceAll(' ', '.?')
-        }|${
-            englishCountryName.replaceAll(' ', '.?')
-        }`, 'i')
-        const countryCodeRegex = new RegExp(String.raw`\b${addressCountryCode}\b`, 'i')
-
-        // We check the country code first because it's more accurate
-        for (const option of el.options) {
-            if (countryCodeRegex.test(option.value)) {
-                return option.value
-            }
-        }
-
-        for (const option of el.options) {
-            if (
-                countryNameRegex.test(option.value) ||
-                countryNameRegex.test(option.innerText)
-            ) return option.value
-        }
-    }
-
-    return localisedCountryName
-}
-
 module.exports = {
+    removeExcessWhitespace,
     isPassword,
     isEmail,
     isUserName,
@@ -293,8 +229,6 @@ module.exports = {
     setInputType,
     getInputMainType,
     getInputSubtype,
-    formatCCYear,
-    getUnifiedExpiryDate,
-    formatFullName,
-    getCountryName
+    matchInPlaceholderAndLabels,
+    checkPlaceholderAndLabels
 }

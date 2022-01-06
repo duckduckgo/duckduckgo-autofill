@@ -1,14 +1,28 @@
 const {isDDGApp, isMobileApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {getInputMainType, getInputSubtype, formatFullName} = require('./input-classifiers')
+const {getInputMainType, getInputSubtype} = require('./input-classifiers')
+const {getCountryDisplayName} = require('./formatters')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
 const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
 
 /**
- * A map of config objects. These help by centralising here some of the complexity
+ * Get the icon for the identities (currently only Dax for emails)
+ * @param {HTMLInputElement} input
+ * @param device
+ * @return {string}
+ */
+const getIdentitiesIcon = (input, {device}) => {
+    const subtype = getInputSubtype(input)
+    if (subtype === 'emailAddress' && device.hasLocalAddresses) return getDaxImg
+
+    return ''
+}
+
+/**
+ * A map of config objects. These help by centralising here some complexity
  * @type {Object<SupportedMainTypes, InputTypeConfig>}
  */
 const inputTypeConfig = {
@@ -16,7 +30,7 @@ const inputTypeConfig = {
         type: 'emailNew',
         getIconBase: () => getDaxImg,
         getIconFilled: () => getDaxImg,
-        shouldDecorate: (isLogin, device) => {
+        shouldDecorate: (input, {device}) => {
             if (isMobileApp) return device.isDeviceSignedIn()
 
             return device.hasLocalAddresses
@@ -30,7 +44,7 @@ const inputTypeConfig = {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (isLogin, device) => isLogin && device.hasLocalCredentials,
+        shouldDecorate: (input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
         dataType: 'Credentials',
         displayTitlePropName: (input, data) => data.username,
         displaySubtitlePropName: '•••••••••••••••',
@@ -40,7 +54,7 @@ const inputTypeConfig = {
         type: 'creditCard',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
+        shouldDecorate: (input, {device}) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
         displayTitlePropName: (input, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
@@ -48,14 +62,17 @@ const inputTypeConfig = {
     },
     identities: {
         type: 'identities',
-        getIconBase: () => '',
-        getIconFilled: () => '',
-        shouldDecorate: (isLogin, device) => device.hasLocalIdentities,
+        getIconBase: getIdentitiesIcon,
+        getIconFilled: getIdentitiesIcon,
+        shouldDecorate: (input, {device}) => {
+            const subtype = getInputSubtype(input)
+            return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
+        },
         dataType: 'Identities',
         displayTitlePropName: (input, data) => {
             const subtype = getInputSubtype(input)
-            if (subtype === 'fullName') {
-                return formatFullName(data)
+            if (subtype === 'addressCountryCode') {
+                return getCountryDisplayName('en', data.addressCountryCode)
             }
             return data[subtype]
         },

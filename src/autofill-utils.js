@@ -1,3 +1,5 @@
+const {getInputSubtype} = require('./Form/input-classifiers')
+
 let isApp = false
 // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
 // INJECT isApp HERE
@@ -100,10 +102,20 @@ const fireEventsOnSelect = (el) => {
  * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
+    const subtype = getInputSubtype(el)
+    const isMonth = subtype.includes('Month')
+    const isZeroBasedNumber = isMonth &&
+        el.options[0].value === '0' && el.options.length === 12
+
     // Loop first through all values because they tend to be more precise
     for (const option of el.options) {
+        // If values for months are zero-based (Jan === 0), add one to match our data type
+        let value = option.value
+        if (isZeroBasedNumber) {
+            value = `${Number(value) + 1}`
+        }
         // TODO: try to match localised month names
-        if (option.value.includes(val)) {
+        if (value.includes(val)) {
             option.selected = true
             fireEventsOnSelect(el)
             return true
@@ -209,7 +221,7 @@ const ADDRESS_DOMAIN = '@duck.com'
  * @param {string} address
  * @returns {string}
  */
-const formatAddress = (address) => address + ADDRESS_DOMAIN
+const formatDuckAddress = (address) => address + ADDRESS_DOMAIN
 
 /**
  * Escapes any occurrences of &, ", <, > or / with XML entities.
@@ -237,6 +249,6 @@ module.exports = {
     addInlineStyles,
     removeInlineStyles,
     ADDRESS_DOMAIN,
-    formatAddress,
+    formatDuckAddress,
     escapeXML
 }

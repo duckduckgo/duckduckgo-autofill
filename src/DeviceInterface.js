@@ -1,27 +1,20 @@
 const EmailAutofill = require('./UI/EmailAutofill')
 const DataAutofill = require('./UI/DataAutofill')
 const {
-    isApp,
-    notifyWebApp,
-    isDDGApp,
-    isAndroid,
-    isDDGDomain,
-    sendAndWaitForAnswer,
-    setValue,
-    formatAddress, isMobileApp
+    isApp, notifyWebApp, isDDGApp, isAndroid,
+    isDDGDomain, sendAndWaitForAnswer, setValue,
+    formatDuckAddress, isMobileApp, ADDRESS_DOMAIN
 } = require('./autofill-utils')
-const {
-    wkSend,
-    wkSendAndWait
-} = require('./appleDeviceUtils/appleDeviceUtils')
+const {wkSend, wkSendAndWait} = require('./appleDeviceUtils/appleDeviceUtils')
 const {scanForInputs, forms} = require('./scanForInputs.js')
-const getInputConfig = require('./Form/inputTypeConfig')
+const {formatFullName} = require('./Form/formatters')
 
 const SIGN_IN_MSG = { signMeIn: true }
 
 const attachTooltip = function (form, input) {
+    form.activeInput = input
+
     if (isMobileApp) {
-        form.activeInput = input
         this.getAlias().then((alias) => {
             if (alias) form.autofillEmail(alias)
             else form.activeInput.focus()
@@ -29,9 +22,7 @@ const attachTooltip = function (form, input) {
     } else {
         if (form.tooltip) return
 
-        form.activeInput = input
-        const inputType = getInputConfig(input).type
-        form.tooltip = inputType === 'emailNew'
+        form.tooltip = !isApp
             ? new EmailAutofill(input, form, this)
             : new DataAutofill(input, form, this)
         form.intObs.observe(input)
@@ -53,6 +44,16 @@ class InterfacePrototype {
     }
     storeLocalAddresses (addresses) {
         this.#addresses = addresses
+        // When we get new duck addresses, add them to the identities list
+        const identities = this.getLocalIdentities()
+        const privateAddressIdentity = identities.find(({id}) => id === 'privateAddress')
+        // If we had previously stored them, just update the private address
+        if (privateAddressIdentity) {
+            privateAddressIdentity.emailAddress = formatDuckAddress(addresses.privateAddress)
+        } else {
+            // Otherwise, add both addresses
+            this.#data.identities = this.addDuckAddressesToIdentities(identities)
+        }
     }
 
     /** @type { PMData } */
@@ -62,6 +63,40 @@ class InterfacePrototype {
         identities: []
     }
 
+    addDuckAddressesToIdentities (identities) {
+        if (!this.hasLocalAddresses) return identities
+
+        const newIdentities = []
+        let { privateAddress, personalAddress } = this.getLocalAddresses()
+        privateAddress = formatDuckAddress(privateAddress)
+        personalAddress = formatDuckAddress(personalAddress)
+
+        // Get the duck addresses in identities
+        const duckEmailsInIdentities = identities.reduce(
+            (duckEmails, { emailAddress: email }) =>
+                email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails,
+            []
+        )
+
+        // Only add the personal duck address to identities if the user hasn't
+        // already manually added it
+        if (!duckEmailsInIdentities.includes(personalAddress)) {
+            newIdentities.push({
+                id: 'personalAddress',
+                emailAddress: personalAddress,
+                title: 'Blocks Email Trackers'
+            })
+        }
+
+        newIdentities.push({
+            id: 'privateAddress',
+            emailAddress: privateAddress,
+            title: 'Blocks Email Trackers and hides Your Address'
+        })
+
+        return [...identities, ...newIdentities]
+    }
+
     /**
      * Stores init data coming from the device
      * @param { PMData } data
@@ -69,6 +104,13 @@ class InterfacePrototype {
     storeLocalData (data) {
         data.credentials.forEach((cred) => delete cred.password)
         data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        // Store the full name as a separate field to simplify autocomplete
+        const updatedIdentities = data.identities.map((identity) => ({
+            ...identity,
+            fullName: formatFullName(identity)
+        }))
+        // Add addresses
+        data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
         this.#data = data
     }
     get hasLocalCredentials () {
@@ -185,7 +227,7 @@ class ExtensionInterface extends InterfacePrototype {
                     this.setupAutofill({shouldLog: true})
                     break
                 case 'contextualAutofill':
-                    setValue(activeEl, formatAddress(message.alias))
+                    setValue(activeEl, formatDuckAddress(message.alias))
                     activeEl.classList.add('ddg-autofilled')
                     this.refreshAlias()
 
@@ -287,10 +329,14 @@ class AppleDeviceInterface extends InterfacePrototype {
                     shouldConsumeAliasIfProvided: !isApp
                 }
             )
-            return formatAddress(alias)
+            return formatDuckAddress(alias)
         }
 
-        this.refreshAlias = () => wkSend('emailHandlerRefreshAlias')
+        this.refreshAlias = () => wkSendAndWait('emailHandlerRefreshAlias')
+            .then(() => {
+                // On macOS we also update the addresses stored locally
+                if (isApp) this.getAddresses()
+            })
 
         this._checkDeviceSignedIn = async () => {
             const {isAppSignedIn} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
@@ -349,10 +395,12 @@ class AppleDeviceInterface extends InterfacePrototype {
         /**
          * Gets a single identity obj once the user requests it
          * @param {Number} id
-         * @returns {APIResponse<IdentityObject>}
+         * @returns {Promise<{success: IdentityObject}>}
          */
-        this.getAutofillIdentity = (id) =>
-            wkSendAndWait('pmHandlerGetIdentity', { id })
+        this.getAutofillIdentity = (id) => {
+            const identity = this.getLocalIdentities().find(({id: identityId}) => `${identityId}` === `${id}`)
+            return Promise.resolve({success: identity})
+        }
 
         /**
          * Gets a single complete credit card obj once the user requests it

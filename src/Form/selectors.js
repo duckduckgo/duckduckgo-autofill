@@ -1,4 +1,6 @@
-const FORM_ELS_SELECTOR = 'input, select, textarea'
+const FORM_ELS_SELECTOR = `
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]),
+select`
 
 const EMAIL_SELECTOR = `
 input:not([type])[name*=mail i]:not([readonly]):not([disabled]):not([hidden]):not([aria-hidden=true]),
@@ -26,7 +28,7 @@ const EMAIL_MATCHER = {
 
 // We've seen non-standard types like 'user'. This selector should get them, too
 const GENERIC_TEXT_FIELD = `
-input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=tel]):not([type=time]):not([type=url]):not([type=week]):not([readonly]):not([disabled])`
+input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([readonly]):not([disabled])`
 
 const PASSWORD_SELECTOR = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])`
 
@@ -46,7 +48,7 @@ const USERNAME_MATCHER = {
     type: 'username',
     selector: USERNAME_SELECTOR,
     matcherFn: (string) =>
-        /user((.)?(name|id))?$/i.test(string) && !/search/i.test(string)
+        /user((.)?(name|id|login))?$/i.test(string) && !/search/i.test(string)
 }
 
 const CC_NAME_SELECTOR = `
@@ -68,8 +70,7 @@ input[name="ccnumber"],
 input[name="cc-number"],
 input[name="cardnumber"],
 input[name="card-number"],
-input[name="creditCardNumber"],
-input[name="addCreditCardNumber"],
+input[name*=creditCardNumber i],
 input[id*=cardnumber i],
 input[id*=card-number i],
 input[id*=card_number i]`
@@ -88,19 +89,25 @@ input[name="securityCode"]`
 const CC_MONTH_SELECTOR = `
 [autocomplete="cc-exp-month"],
 [name="ccmonth"],
-[name="ppw-expirationDate_month"]`
+[name="ppw-expirationDate_month"],
+[name=cardExpiryMonth],
+[name="expiration-month"],
+[id*=expiration-month i]`
 
 const CC_YEAR_SELECTOR = `
 [autocomplete="cc-exp-year"],
 [name="ccyear"],
-[name="ppw-expirationDate_year"]`
+[name="ppw-expirationDate_year"],
+[name=cardExpiryYear],
+[name="expiration-year"],
+[id*=expiration-year i]`
 
 const CC_EXP_SELECTOR = `
 [autocomplete="cc-exp"],
+[name="cc-exp"],
 [name="exp-date"],
 [name="expirationDate"],
-input[id*=expiration i],
-select[id*=expiration i]`
+input[id*=expiration i]`
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
@@ -128,7 +135,7 @@ const CC_MATCHERS_LIST = [
         type: 'cardSecurityCode',
         selector: CC_CVC_SELECTOR,
         matcherFn: (string) =>
-            /security.?code|cvv|csc|cvc/i.test(string)
+            /security.?code|card.?verif|cvv|csc|cvc/i.test(string)
     },
     {
         type: 'expirationMonth',
@@ -148,7 +155,7 @@ const CC_MATCHERS_LIST = [
         type: 'expiration',
         selector: CC_EXP_SELECTOR,
         matcherFn: (string) =>
-            /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid/i.test(string) &&
+            /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/i.test(string) &&
             !/invalid/i.test(string) &&
             // if there are more than six digits it could be a phone number
             string.replace(/\D+/g, '').length <= 6
@@ -194,8 +201,7 @@ const ID_NAME_SELECTOR = `
 [name*=your-name i], [autocomplete*=your-name i]`
 
 const ID_PHONE_SELECTOR = `
-[name*=phone i], [name*=mobile i], [autocomplete=tel],
-[type=tel]`
+[name*=phone i], [name*=mobile i], [autocomplete=tel]`
 
 const ID_ADDRESS_STREET = `
 [name=address], [autocomplete=street-address], [autocomplete=address-line1],
@@ -214,7 +220,8 @@ const ID_POSTAL_CODE = `
 
 const ID_COUNTRY = `
 [name=country] [autocomplete=country],
-[name*=countryCode i]`
+[name*=countryCode i], [name*=country-code i],
+[name*=countryName i], [name*=country-name i]`
 
 /** @type Matcher[] */
 const ID_MATCHERS_LIST = [
@@ -247,13 +254,15 @@ const ID_MATCHERS_LIST = [
         type: 'phone',
         selector: ID_PHONE_SELECTOR,
         matcherFn: (string) =>
-            /phone/i.test(string)
+            /phone/i.test(string) &&
+            !/code|pass/i.test(string)
     },
     {
         type: 'addressStreet',
         selector: ID_ADDRESS_STREET,
         matcherFn: (string) =>
-            /address/i.test(string) && !/email|\bip\b|address.?2/i.test(string)
+            /address/i.test(string) &&
+            !/email|\bip\b|address(.?line)?.?2|duck|log.?in|sign.?in/i.test(string)
     },
     {
         type: 'addressCity',
@@ -265,13 +274,13 @@ const ID_MATCHERS_LIST = [
         type: 'addressProvince',
         selector: ID_PROVINCE_STREET,
         matcherFn: (string) =>
-            /state|province|region/i.test(string) && !/country|united/i.test(string)
+            /state|province|region|county/i.test(string) && !/country|united/i.test(string)
     },
     {
         type: 'addressPostalCode',
         selector: ID_POSTAL_CODE,
         matcherFn: (string) =>
-            /\bzip\b|postal/i.test(string)
+            /\bzip\b|postal|post.?code/i.test(string)
     },
     {
         type: 'addressCountryCode',

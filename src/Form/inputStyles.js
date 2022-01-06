@@ -1,13 +1,31 @@
 const getInputConfig = require('./inputTypeConfig.js')
 
 /**
+ * Returns the css-ready base64 encoding of the icon for the given input
+ * @param {HTMLInputElement} input
+ * @param {Form} form
+ * @param {'base' | 'filled'} type
+ * @return {string}
+ */
+const getIcon = (input, form, type = 'base') => {
+    const config = getInputConfig(input)
+    if (type === 'base') {
+        return config.getIconBase(input, form)
+    }
+    if (type === 'filled') {
+        return config.getIconFilled(input, form)
+    }
+    return ''
+}
+
+/**
  * Get inline styles for the injected icon, base state
  * @param {HTMLInputElement} input
+ * @param {Form} form
  * @return {Object<string, string>}
  */
-const getIconStylesBase = (input) => {
-    const config = getInputConfig(input)
-    const icon = config.getIconBase()
+const getIconStylesBase = (input, form) => {
+    const icon = getIcon(input, form)
 
     if (!icon) return {}
 
@@ -25,10 +43,11 @@ const getIconStylesBase = (input) => {
 /**
  * Get inline styles for the injected icon, autofilled state
  * @param {HTMLInputElement} input
+ * @param {Form} form
+ * @return {Object<string, string>}
  */
-const getIconStylesAutofilled = (input) => {
-    const config = getInputConfig(input)
-    const icon = config.getIconBase()
+const getIconStylesAutofilled = (input, form) => {
+    const icon = getIcon(input, form, 'filled')
 
     const iconStyle = icon ? {'background-image': `url(${icon}`} : {}
 
