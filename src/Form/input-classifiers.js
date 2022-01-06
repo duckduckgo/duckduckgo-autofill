@@ -3,7 +3,7 @@ const {
     PASSWORD_MATCHER, EMAIL_MATCHER, USERNAME_MATCHER,
     ID_MATCHERS_LIST, FORM_ELS_SELECTOR
 } = require('./selectors')
-const {ATTR_INPUT_TYPE} = require('../constants')
+const {ATTR_INPUT_TYPE, TEXT_LENGTH_CUTOFF} = require('../constants')
 
 // TODO: move this to formatters.js after migrating the codebase to ES modules
 /**
@@ -40,7 +40,10 @@ const getRelatedText = (el, form) => {
 
     // If the container has a select element, remove its contents to avoid noise
     const noisyText = container.querySelector('select')?.textContent || ''
-    return removeExcessWhitespace(container.textContent?.replace(noisyText, ''))
+    const sanitizedText = removeExcessWhitespace(container.textContent?.replace(noisyText, ''))
+    // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
+    if (sanitizedText.length < TEXT_LENGTH_CUTOFF) return sanitizedText
+    return ''
 }
 
 /**
@@ -53,9 +56,9 @@ const getLargestMeaningfulContainer = (el, form) => {
     const parentElement = el.parentElement
     if (!parentElement || el === form) return el
 
-    const inputsInScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR)
+    const inputsInParentsScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR)
     // To avoid noise, ensure that our input is the only in scope
-    if (inputsInScope.length === 1) {
+    if (inputsInParentsScope.length === 1) {
         return getLargestMeaningfulContainer(parentElement, form)
     }
     return el

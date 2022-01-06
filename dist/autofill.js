@@ -927,6 +927,10 @@ const {
   removeExcessWhitespace
 } = require('./input-classifiers');
 
+const {
+  TEXT_LENGTH_CUTOFF
+} = require('../constants');
+
 class FormAnalyzer {
   constructor(form, input) {
     this.form = form;
@@ -1104,7 +1108,7 @@ class FormAnalyzer {
 
       // any other case
       // only consider the el if it's a small text to avoid noisy disclaimers
-      if (((_removeExcessWhitespa = removeExcessWhitespace(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < 50) {
+      if (((_removeExcessWhitespa = removeExcessWhitespace(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < TEXT_LENGTH_CUTOFF) {
         this.updateSignal({
           string,
           strength: 1,
@@ -1140,7 +1144,7 @@ class FormAnalyzer {
 
 module.exports = FormAnalyzer;
 
-},{"./input-classifiers":6,"./selectors":11}],4:[function(require,module,exports){
+},{"../constants":21,"./input-classifiers":6,"./selectors":11}],4:[function(require,module,exports){
 "use strict";
 
 // Country names object using 2-letter country codes to reference country name
@@ -1541,7 +1545,8 @@ const {
 } = require('./selectors');
 
 const {
-  ATTR_INPUT_TYPE
+  ATTR_INPUT_TYPE,
+  TEXT_LENGTH_CUTOFF
 } = require('../constants'); // TODO: move this to formatters.js after migrating the codebase to ES modules
 
 /**
@@ -1583,7 +1588,10 @@ const getRelatedText = (el, form) => {
   if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
   const noisyText = ((_container$querySelec = container.querySelector('select')) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.textContent) || '';
-  return removeExcessWhitespace((_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, ''));
+  const sanitizedText = removeExcessWhitespace((_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
+
+  if (sanitizedText.length < TEXT_LENGTH_CUTOFF) return sanitizedText;
+  return '';
 };
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
@@ -1596,9 +1604,9 @@ const getRelatedText = (el, form) => {
 const getLargestMeaningfulContainer = (el, form) => {
   const parentElement = el.parentElement;
   if (!parentElement || el === form) return el;
-  const inputsInScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR); // To avoid noise, ensure that our input is the only in scope
+  const inputsInParentsScope = parentElement.querySelectorAll(FORM_ELS_SELECTOR); // To avoid noise, ensure that our input is the only in scope
 
-  if (inputsInScope.length === 1) {
+  if (inputsInParentsScope.length === 1) {
     return getLargestMeaningfulContainer(parentElement, form);
   }
 
@@ -3034,7 +3042,8 @@ module.exports = {
 
 module.exports = {
   ATTR_INPUT_TYPE: 'data-ddg-inputType',
-  ATTR_AUTOFILL: 'data-ddg-autofill'
+  ATTR_AUTOFILL: 'data-ddg-autofill',
+  TEXT_LENGTH_CUTOFF: 50
 };
 
 },{}],22:[function(require,module,exports){
@@ -3099,7 +3108,7 @@ const scanForInputs = DeviceInterface => {
     if (input.form) return input.form;
     let element = input; // traverse the DOM to search for related inputs
 
-    while (element.parentNode && element !== document.body) {
+    while (element.parentElement && element.parentElement !== document.body) {
       element = element.parentElement;
       const inputs = element.querySelectorAll(FORM_ELS_SELECTOR);
       const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form

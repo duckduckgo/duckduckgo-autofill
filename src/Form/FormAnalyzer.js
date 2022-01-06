@@ -1,5 +1,6 @@
 const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./selectors')
 const {removeExcessWhitespace} = require('./input-classifiers')
+const {TEXT_LENGTH_CUTOFF} = require('../constants')
 
 class FormAnalyzer {
     constructor (form, input) {
@@ -170,7 +171,7 @@ class FormAnalyzer {
         } else {
             // any other case
             // only consider the el if it's a small text to avoid noisy disclaimers
-            if (removeExcessWhitespace(el.textContent)?.length < 50) {
+            if (removeExcessWhitespace(el.textContent)?.length < TEXT_LENGTH_CUTOFF) {
                 this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
             }
         }
