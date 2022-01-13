@@ -131,6 +131,11 @@ describe('Real-world form tests', () => {
                 const manualScore = field.getAttribute('data-manual-scoring')
                 expect(inferredType).toMatch(manualScore)
             })
+
+            // Check that the script didn't identify fields that shouldn't have by matching the count for unknown
+            const identifiedFields = document.querySelectorAll('[data-ddg-inputtype]:not([data-ddg-inputtype=unknown])')
+            const manuallyIdentifiedFields = document.querySelectorAll('[data-manual-scoring]:not([data-manual-scoring=unknown])')
+            expect(identifiedFields.length).toEqual(manuallyIdentifiedFields.length)
             done()
         }, 20)
     })
