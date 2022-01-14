@@ -138,5 +138,5 @@ describe('Real-world form tests', () => {
             expect(identifiedFields.length).toEqual(manuallyIdentifiedFields.length)
             done()
         }, 20)
-    })
+    }, 60000)
 })
