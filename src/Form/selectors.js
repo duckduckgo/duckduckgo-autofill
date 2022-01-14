@@ -203,9 +203,14 @@ const ID_NAME_SELECTOR = `
 const ID_PHONE_SELECTOR = `
 [name*=phone i], [name*=mobile i], [autocomplete=tel]`
 
-const ID_ADDRESS_STREET = `
+const ID_ADDRESS_STREET_1 = `
 [name=address], [autocomplete=street-address], [autocomplete=address-line1],
+[name=street],
 [name=ppw-line1]`
+
+const ID_ADDRESS_STREET_2 = `
+[name=address], [autocomplete=address-line2],
+[name=ppw-line2]`
 
 const ID_CITY_STREET = `
 [name=city], [autocomplete=address-level2],
@@ -259,10 +264,17 @@ const ID_MATCHERS_LIST = [
     },
     {
         type: 'addressStreet',
-        selector: ID_ADDRESS_STREET,
+        selector: ID_ADDRESS_STREET_1,
         matcherFn: (string) =>
             /address/i.test(string) &&
-            !/email|\bip\b|address(.?line)?.?2|duck|log.?in|sign.?in/i.test(string)
+            !/email|\bip\b|address.*(2|two)|duck|log.?in|sign.?in/i.test(string)
+    },
+    {
+        type: 'addressStreet2',
+        selector: ID_ADDRESS_STREET_2,
+        matcherFn: (string) =>
+            /address.*(2|two)|apartment|\bapt\b|\bflat\b|\bline.*(2|two)/i.test(string) &&
+            !/email|\bip\b|duck|log.?in|sign.?in/i.test(string)
     },
     {
         type: 'addressCity',
