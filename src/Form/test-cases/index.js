@@ -9,4 +9,10 @@ module.exports = [
     ['amazon_address', require('./amazon_address')],
     ['facebook_login', require('./facebook_login')],
     ['facebook_signup', require('./facebook_signup')],
+    ['twitter_login', require('./twitter_login')],
+    ['twitter_signup', require('./twitter_signup')],
+    ['fandom_login', require('./fandom_login')],
+    ['fandom_signup', require('./fandom_signup')],
+    ['pinterest_login', require('./pinterest_login')],
+    ['pinterest_signup', require('./pinterest_signup')],
 ]
