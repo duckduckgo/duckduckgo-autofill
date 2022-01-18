@@ -15,4 +15,10 @@ module.exports = [
     ['fandom_signup', require('./fandom_signup')],
     ['pinterest_login', require('./pinterest_login')],
     ['pinterest_signup', require('./pinterest_signup')],
+    ['reddit_login', require('./reddit_login')],
+    ['reddit_signup', require('./reddit_signup')],
+    ['yelp_login', require('./yelp_login')],
+    ['yelp_signup', require('./yelp_signup')],
+    ['instagram_login', require('./instagram_login')],
+    ['instagram_signup', require('./instagram_signup')],
 ]
