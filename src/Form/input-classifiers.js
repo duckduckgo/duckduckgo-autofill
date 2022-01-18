@@ -53,6 +53,8 @@ const getRelatedText = (el, form) => {
  * @return {HTMLElement}
  */
 const getLargestMeaningfulContainer = (el, form) => {
+    /* TODO: there could be more than one select el for the same label, in that case we should
+        change how we compute the container */
     const parentElement = el.parentElement
     if (!parentElement || el === form) return el
 
