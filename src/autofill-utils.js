@@ -63,8 +63,8 @@ const setValueForInput = (el, val) => {
 
     const events = [
         new Event('keydown', {bubbles: true}),
-        new Event('keyup', {bubbles: true}),
         new Event('input', {bubbles: true}),
+        new Event('keyup', {bubbles: true}),
         new Event('change', {bubbles: true})
     ]
     events.forEach((ev) => el.dispatchEvent(ev))
