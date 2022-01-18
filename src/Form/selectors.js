@@ -1,5 +1,5 @@
 const FORM_ELS_SELECTOR = `
-input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]),
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),
 select`
 
 const EMAIL_SELECTOR = `
@@ -92,6 +92,7 @@ const CC_MONTH_SELECTOR = `
 [name="ppw-expirationDate_month"],
 [name=cardExpiryMonth],
 [name="expiration-month"],
+[name*=ExpDate_Month i],
 [id*=expiration-month i]`
 
 const CC_YEAR_SELECTOR = `
@@ -100,6 +101,7 @@ const CC_YEAR_SELECTOR = `
 [name="ppw-expirationDate_year"],
 [name=cardExpiryYear],
 [name="expiration-year"],
+[name*=ExpDate_Year i],
 [id*=expiration-year i]`
 
 const CC_EXP_SELECTOR = `
@@ -253,7 +255,7 @@ const ID_MATCHERS_LIST = [
         type: 'fullName',
         selector: ID_NAME_SELECTOR,
         matcherFn: (string) =>
-            /\bname\b/i.test(string) && !/company|org/i.test(string)
+            /^(full.?|whole\s)?name\b/i.test(string) && !/company|org/i.test(string)
     },
     {
         type: 'phone',
