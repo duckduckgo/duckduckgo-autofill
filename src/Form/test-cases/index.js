@@ -21,4 +21,10 @@ module.exports = [
     ['yelp_signup', require('./yelp_signup')],
     ['instagram_login', require('./instagram_login')],
     ['instagram_signup', require('./instagram_signup')],
+    ['ebay_login', require('./ebay_login')],
+    ['ebay_signup', require('./ebay_signup')],
+    ['ebay_checkout', require('./ebay_checkout')],
+    ['walmart_login', require('./walmart_login')],
+    ['walmart_signup', require('./walmart_signup')],
+    ['walmart_checkout', require('./walmart_checkout')],
 ]
