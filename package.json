@@ -9,7 +9,10 @@
   "scripts": {
     "start": "grunt dev",
     "build": "grunt",
-    "test": "jest"
+    "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "license": "Apache-2.0",
   "devDependencies": {

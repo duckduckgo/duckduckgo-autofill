@@ -2754,9 +2754,9 @@ const setValueForInput = (el, val) => {
   originalSet.call(el, val);
   const events = [new Event('keydown', {
     bubbles: true
-  }), new Event('keyup', {
-    bubbles: true
   }), new Event('input', {
+    bubbles: true
+  }), new Event('keyup', {
     bubbles: true
   }), new Event('change', {
     bubbles: true
