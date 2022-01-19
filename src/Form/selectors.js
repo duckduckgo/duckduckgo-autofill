@@ -233,17 +233,20 @@ const ID_COUNTRY = `
 const ID_BDAY_DAY = `
 [name=bday-day],
 [name=birthday_day], [name=birthday-day],
-[name=date_of_birth_day], [name=date-of-birth-day]`
+[name=date_of_birth_day], [name=date-of-birth-day],
+[name^=birthdate_d], [name^=birthdate-d]`
 
 const ID_BDAY_MONTH = `
 [name=bday-month],
 [name=birthday_month], [name=birthday-month],
-[name=date_of_birth_month], [name=date-of-birth-month]`
+[name=date_of_birth_month], [name=date-of-birth-month],
+[name^=birthdate_m], [name^=birthdate-m]`
 
 const ID_BDAY_YEAR = `
 [name=bday-year],
-[name=birthday_year],
-[name=date_of_birth_year], [name=date-of-birth-year]`
+[name=birthday_year], [name=birthday-year],
+[name=date_of_birth_year], [name=date-of-birth-year],
+[name^=birthdate_y], [name^=birthdate-y]`
 
 /** @type Matcher[] */
 const ID_MATCHERS_LIST = [

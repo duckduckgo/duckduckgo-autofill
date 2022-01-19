@@ -2126,9 +2126,9 @@ const ID_CITY_STREET = "\n[name=city], [autocomplete=address-level2],\n[name=ppw
 const ID_PROVINCE_STREET = "\n[name=province], [name=state], [autocomplete=address-level1]";
 const ID_POSTAL_CODE = "\n[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],\n[name*=postalCode i], [name*=zipcode i]";
 const ID_COUNTRY = "\n[name=country] [autocomplete=country],\n[name*=countryCode i], [name*=country-code i],\n[name*=countryName i], [name*=country-name i]";
-const ID_BDAY_DAY = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day]";
-const ID_BDAY_MONTH = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month]";
-const ID_BDAY_YEAR = "\n[name=bday-year],\n[name=birthday_year],\n[name=date_of_birth_year], [name=date-of-birth-year]";
+const ID_BDAY_DAY = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d]";
+const ID_BDAY_MONTH = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m]";
+const ID_BDAY_YEAR = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]";
 /** @type Matcher[] */
 
 const ID_MATCHERS_LIST = [{
