@@ -1026,7 +1026,7 @@ module.exports = `
         <label class="wt-label wt-mb-xs-0 " for="second_line12-input">
             Flat/Other<span class="wt-label__optional"> (optional)</span>
         </label>
-        <input type="text" class="wt-input " data-field="second_line" value="" name="second_line" id="second_line12-input" placeholder="" autocomplete="address-line2" data-manual-scoring="unknown">
+        <input type="text" class="wt-input " data-field="second_line" value="" name="second_line" id="second_line12-input" placeholder="" autocomplete="address-line2" data-manual-scoring="addressStreet2">
         <div class="wt-validation__message">
         </div>
     </div>
