@@ -5,7 +5,6 @@ interface Matcher {
 }
 
 type SupportedMainTypes =
-    | 'emailNew'
     | 'credentials'
     | 'creditCard'
     | 'identities'

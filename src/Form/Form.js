@@ -19,7 +19,6 @@ class Form {
         /** @type Object<'all' | SupportedMainTypes, Set> */
         this.inputs = {
             all: new Set(),
-            emailNew: new Set(),
             credentials: new Set(),
             creditCard: new Set(),
             identities: new Set(),
@@ -49,22 +48,24 @@ class Form {
         }
 
         this.getValues = () => {
-            const credentials = [...this.inputs.credentials, ...this.inputs.emailNew].reduce((output, input) => {
+            const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
                 const subtype = getInputSubtype(input)
-                output[subtype] = input.value || output[subtype]
+                if (['username', 'password', 'emailAddress'].includes(subtype)) {
+                    output[subtype] = input.value || output[subtype]
+                }
                 return output
             }, {username: '', password: ''})
             // If we don't have a username, let's try and save the email if available.
-            if (credentials.emailNew && !credentials.username) {
-                credentials.username = credentials.emailNew
+            if (credentials.emailAddress && !credentials.username) {
+                credentials.username = credentials.emailAddress
             }
-            delete credentials.emailNew
+            delete credentials.emailAddress
             return credentials
         }
 
         this.hasValues = () => {
-            const {username, password} = this.getValues()
-            return !!(username && password)
+            const {password} = this.getValues()
+            return !!password
         }
 
         this.intObs = new IntersectionObserver((entries) => {
@@ -268,7 +269,7 @@ class Form {
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
     }
 
-    autofillEmail (alias, dataType = 'emailNew') {
+    autofillEmail (alias, dataType = 'emailAddress') {
         this.isAutofilling = true
         this.execOnInputs(
             (input) => this.autofillInput(input, alias, dataType),
