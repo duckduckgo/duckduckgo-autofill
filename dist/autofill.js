@@ -1824,6 +1824,23 @@ const getIcon = (input, form, type = 'base') => {
   return '';
 };
 /**
+ * Returns an object with styles to be applied inline
+ * @param {HTMLInputElement} input
+ * @param {String} icon
+ * @return {Object<string, string>}
+ */
+
+
+const getBasicStyles = (input, icon) => ({
+  // Height must be > 0 to account for fields initially hidden
+  'background-size': "auto ".concat(input.offsetHeight <= 30 && input.offsetHeight > 0 ? '100%' : '26px'),
+  'background-position': 'center right',
+  'background-repeat': 'no-repeat',
+  'background-origin': 'content-box',
+  'background-image': "url(".concat(icon, ")"),
+  'transition': 'background 0s'
+});
+/**
  * Get inline styles for the injected icon, base state
  * @param {HTMLInputElement} input
  * @param {Form} form
@@ -1834,15 +1851,7 @@ const getIcon = (input, form, type = 'base') => {
 const getIconStylesBase = (input, form) => {
   const icon = getIcon(input, form);
   if (!icon) return {};
-  return {
-    // Height must be > 0 to account for fields initially hidden
-    'background-size': "auto ".concat(input.offsetHeight <= 30 && input.offsetHeight > 0 ? '100%' : '26px'),
-    'background-position': 'center right',
-    'background-repeat': 'no-repeat',
-    'background-origin': 'content-box',
-    'background-image': "url(".concat(icon, ")"),
-    'transition': 'background 0s'
-  };
+  return getBasicStyles(input, icon);
 };
 /**
  * Get inline styles for the injected icon, autofilled state
@@ -1854,9 +1863,7 @@ const getIconStylesBase = (input, form) => {
 
 const getIconStylesAutofilled = (input, form) => {
   const icon = getIcon(input, form, 'filled');
-  const iconStyle = icon ? {
-    'background-image': "url(".concat(icon)
-  } : {};
+  const iconStyle = icon ? getBasicStyles(input, icon) : {};
   return { ...iconStyle,
     'background-color': '#F8F498',
     'color': '#333333'
