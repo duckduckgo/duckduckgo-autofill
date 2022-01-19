@@ -230,6 +230,21 @@ const ID_COUNTRY = `
 [name*=countryCode i], [name*=country-code i],
 [name*=countryName i], [name*=country-name i]`
 
+const ID_BDAY_DAY = `
+[name=bday-day],
+[name=birthday_day], [name=birthday-day],
+[name=date_of_birth_day], [name=date-of-birth-day]`
+
+const ID_BDAY_MONTH = `
+[name=bday-month],
+[name=birthday_month], [name=birthday-month],
+[name=date_of_birth_month], [name=date-of-birth-month]`
+
+const ID_BDAY_YEAR = `
+[name=bday-year],
+[name=birthday_year],
+[name=date_of_birth_year], [name=date-of-birth-year]`
+
 /** @type Matcher[] */
 const ID_MATCHERS_LIST = [
     {
@@ -301,6 +316,24 @@ const ID_MATCHERS_LIST = [
         selector: ID_COUNTRY,
         matcherFn: (string) =>
             /country/i.test(string)
+    },
+    {
+        type: 'birthdayDay',
+        selector: ID_BDAY_DAY,
+        /* For birthday we only support css selectors */
+        matcherFn: () => false
+    },
+    {
+        type: 'birthdayMonth',
+        selector: ID_BDAY_MONTH,
+        /* For birthday we only support css selectors */
+        matcherFn: () => false
+    },
+    {
+        type: 'birthdayYear',
+        selector: ID_BDAY_YEAR,
+        /* For birthday we only support css selectors */
+        matcherFn: () => false
     }
 ]
 
