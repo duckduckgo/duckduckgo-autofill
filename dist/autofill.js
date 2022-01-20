@@ -634,7 +634,6 @@ class Form {
 
     this.inputs = {
       all: new Set(),
-      emailNew: new Set(),
       credentials: new Set(),
       creditCard: new Set(),
       identities: new Set(),
@@ -664,29 +663,32 @@ class Form {
     };
 
     this.getValues = () => {
-      const credentials = [...this.inputs.credentials, ...this.inputs.emailNew].reduce((output, input) => {
+      const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
         const subtype = getInputSubtype(input);
-        output[subtype] = input.value || output[subtype];
+
+        if (['username', 'password', 'emailAddress'].includes(subtype)) {
+          output[subtype] = input.value || output[subtype];
+        }
+
         return output;
       }, {
         username: '',
         password: ''
       }); // If we don't have a username, let's try and save the email if available.
 
-      if (credentials.emailNew && !credentials.username) {
-        credentials.username = credentials.emailNew;
+      if (credentials.emailAddress && !credentials.username) {
+        credentials.username = credentials.emailAddress;
       }
 
-      delete credentials.emailNew;
+      delete credentials.emailAddress;
       return credentials;
     };
 
     this.hasValues = () => {
       const {
-        username,
         password
       } = this.getValues();
-      return !!(username && password);
+      return !!password;
     };
 
     this.intObs = new IntersectionObserver(entries => {
@@ -873,7 +875,7 @@ class Form {
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
   }
 
-  autofillEmail(alias, dataType = 'emailNew') {
+  autofillEmail(alias, dataType = 'emailAddress') {
     this.isAutofilling = true;
     this.execOnInputs(input => this.autofillInput(input, alias, dataType), dataType);
     this.isAutofilling = false;
@@ -2342,7 +2344,7 @@ const {
 } = require('../autofill-utils');
 
 const {
-  getInputMainType
+  getInputSubtype
 } = require('../Form/input-classifiers');
 
 const updatePosition = function ({
@@ -2377,7 +2379,7 @@ const checkPosition = function () {
   }
 
   this.animationFrame = window.requestAnimationFrame(() => {
-    const isEmailInput = getInputMainType(this.input) === 'emailNew'; // Placement for the email autofill tooltip is relative to the position of the Dax icon
+    const isEmailInput = getInputSubtype(this.input) === 'emailAddress'; // Placement for the email autofill tooltip is relative to the position of the Dax icon
 
     const position = isEmailInput ? getDaxBoundingBox(this.input) : this.input.getBoundingClientRect();
     const {
