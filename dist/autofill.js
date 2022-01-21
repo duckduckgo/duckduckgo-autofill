@@ -871,8 +871,8 @@ class Form {
   }
 
   shouldOpenTooltip(e, input) {
-    const inputType = getInputMainType(input);
     if (isApp) return true;
+    const inputType = getInputMainType(input);
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
   }
 

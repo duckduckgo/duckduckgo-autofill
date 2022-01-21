@@ -1,6 +1,6 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./selectors')
-const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp} = require('../autofill-utils')
+const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp, isApp} = require('../autofill-utils')
 const {getInputSubtype, setInputType, getInputMainType} = require('./input-classifiers')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
@@ -239,9 +239,9 @@ class Form {
     }
 
     shouldOpenTooltip (e, input) {
-        const inputType = getInputMainType(input)
-        if (inputType !== 'emailNew') return true
+        if (isApp) return true
 
+        const inputType = getInputMainType(input)
         return (!this.touched.has(input) && this.areAllInputsEmpty(inputType)) || isEventWithinDax(e, input)
     }
 
