@@ -1,5 +1,4 @@
-const {safeExecute, addInlineStyles, getDaxBoundingBox} = require('../autofill-utils')
-const {getInputSubtype} = require('../Form/input-classifiers')
+const {safeExecute, addInlineStyles, getDaxBoundingBox, isApp} = require('../autofill-utils')
 
 const updatePosition = function ({left, top}) {
     const shadow = this.shadow
@@ -30,9 +29,8 @@ const checkPosition = function () {
     }
 
     this.animationFrame = window.requestAnimationFrame(() => {
-        const isEmailInput = getInputSubtype(this.input) === 'emailAddress'
-        // Placement for the email autofill tooltip is relative to the position of the Dax icon
-        const position = isEmailInput ? getDaxBoundingBox(this.input)
+        // In extensions, the tooltip is centered on the Dax icon
+        const position = !isApp ? getDaxBoundingBox(this.input)
             : this.input.getBoundingClientRect()
         const {left, bottom} = position
 
