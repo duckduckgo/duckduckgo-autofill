@@ -1,6 +1,4 @@
-const testcases = [
-    'poor-markup-form',
-    'etsy',
+module.exports = [
+    'poor-markup-form.html',
+    'etsy.html',
 ]
-
-module.exports = testcases.map(testcase => { return [testcase, require('./' + testcase)] })
