@@ -82,7 +82,7 @@ describe('Test the form class reading values correctly', () => {
         require('../autofill.js')
         const {forms} = require('../scanForInputs')
 
-        // Autofill uses requestIdleCallback to debounce DOM checks, the timeout gives it time to run
+        // Autofill uses requestIdleCallback to debounce DOM checks, we call it twice here to run tests after it
         requestIdleCallback(() => {
             requestIdleCallback(() => {
                 try {
