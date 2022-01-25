@@ -27,4 +27,8 @@ module.exports = [
     'walmart_login.html',
     'walmart_signup.html',
     'walmart_checkout.html',
+    'craigslist_account.html',
+    'healthline_newsletter.html',
+    'tripadvisor_login.html',
+    'tripadvisor_signup.html',
 ]
