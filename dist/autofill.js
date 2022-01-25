@@ -2757,10 +2757,11 @@ const setValueForInput = (el, val) => {
     el.focus();
   }
 
-  originalSet.call(el, val);
-  const events = [new Event('keydown', {
+  el.dispatchEvent(new Event('keydown', {
     bubbles: true
-  }), new Event('input', {
+  }));
+  originalSet.call(el, val);
+  const events = [new Event('input', {
     bubbles: true
   }), new Event('keyup', {
     bubbles: true

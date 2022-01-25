@@ -34,7 +34,6 @@ describe('value setting', function () {
             'input',
             'keyup',
             'change',
-            'keydown',
             'input',
             'keyup',
             'change'
