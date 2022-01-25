@@ -1,4 +1,7 @@
-const {getSubtypeFromMatchers} = require('./input-classifiers')
+const fs = require('fs')
+const path = require('path')
+
+const {getSubtypeFromMatchers, getInputSubtype} = require('./input-classifiers')
 const {getUnifiedExpiryDate} = require('./formatters')
 const {CC_MATCHERS_LIST} = require('./selectors')
 
@@ -38,48 +41,6 @@ afterEach(() => {
 })
 
 describe('Input Classifiers', () => {
-    it('should match the selector for cardNumber', () => {
-        const {input, form} = renderInputWithLabel()
-        input.autocomplete = 'cc-number'
-        expect(getCCFieldSubtype(input, form)).toBe('cardNumber')
-    })
-
-    it('should match text in a nearby span', () => {
-        // Poor markup without a form proper labels and attributes
-        const markup = `
-<div class="form">
-    <div>
-        <span>Card Number</span>
-        <input />
-    </div>
-    <div>
-        <span>MM-YYYY</span>
-        <input />
-    </div>
-    <div>
-        <span>Security code</span>
-        <input />
-    </div>
-    <div>
-        <span>Random unrelated field</span>
-        <input />
-        <span hidden class="Error message">
-            Invalid field. Used to test that the word "invalid" doesn't trigger the expiry regex
-        </span>
-    </div>
-    <button>Buy now</button>
-</div>`
-        document.body.innerHTML = markup
-        const form = document.querySelector('.form')
-        const inputs = document.querySelectorAll('input')
-
-        expect(getCCFieldSubtype(inputs[0], form)).toBe('cardNumber')
-        expect(getCCFieldSubtype(inputs[1], form)).toBe('expiration')
-        expect(getUnifiedExpiryDate(inputs[1], 8, 2025, form)).toBe('08-2025')
-        expect(getCCFieldSubtype(inputs[2], form)).toBe('cardSecurityCode')
-        expect(getCCFieldSubtype(inputs[3], form)).toBeUndefined()
-    })
-
     const ccLabelTestCases = {
         cardName: [
             {text: 'credit card name'},
@@ -92,7 +53,6 @@ describe('Input Classifiers', () => {
             {text: 'Credit Card Number'},
             {text: 'number on card'},
             {text: 'card owner', shouldMatch: false}
-
         ],
         expirationMonth: [
             {text: 'expiry month'},
@@ -131,7 +91,7 @@ describe('Input Classifiers', () => {
             { text: 'mm - yy', expectedResult: '08-25' },
             { text: 'mm yy', expectedResult: '08 25' },
             { text: 'ie: 08.22', expectedResult: '08.25' }
-        ])('when checking for $text', ({ text, expectedResult }) => {
+        ])('when checking for "$text"', ({ text, expectedResult }) => {
             let elements
 
             beforeEach(() => {
@@ -151,6 +111,43 @@ describe('Input Classifiers', () => {
 
                 expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
                 expect(getUnifiedExpiryDate(elements.input, 8, 2025, elements.form)).toBe(expectedResult)
+            })
+        })
+    })
+})
+
+describe('Real-world form tests', () => {
+    const testCases = require('./test-cases/index')
+
+    test.each(testCases)('Test %s fields', (caseName, done) => {
+        const testContent = fs.readFileSync(path.resolve(__dirname, "./test-cases", caseName), "utf-8")
+        
+        document.body.innerHTML = testContent
+        // When we require autofill, the script scores the fields in the DOM
+        require('../autofill.js')
+
+        // A human classified these fields, so we want to make sure the script matches them
+        const manuallyScoredFields = document.querySelectorAll('[data-manual-scoring]')
+
+        // Autofill uses requestIdleCallback to debounce DOM checks, we call it twice here to run tests after it
+        requestIdleCallback(() => {
+            requestIdleCallback(() => {
+                try {
+                    manuallyScoredFields.forEach((field) => {
+                        const inferredType = getInputSubtype(field)
+                        const manualScore = field.getAttribute('data-manual-scoring')
+                        expect(inferredType).toMatch(manualScore)
+                    })
+
+                    // Check that the script didn't identify fields that shouldn't have by matching the count for unknown
+                    const identifiedFields = document.querySelectorAll('[data-ddg-inputtype]:not([data-ddg-inputtype=unknown])')
+                    const manuallyIdentifiedFields = document.querySelectorAll('[data-manual-scoring]:not([data-manual-scoring=unknown])')
+                    expect(identifiedFields.length).toEqual(manuallyIdentifiedFields.length)
+
+                    done()
+                } catch (e) {
+                    done(e)
+                }
             })
         })
     })
