@@ -120,8 +120,8 @@ describe('Real-world form tests', () => {
     const testCases = require('./test-cases/index')
 
     test.each(testCases)('Test %s fields', (caseName, done) => {
-        const testContent = fs.readFileSync(path.resolve(__dirname, "./test-cases", caseName), "utf-8")
-        
+        const testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', caseName), 'utf-8')
+
         document.body.innerHTML = testContent
         // When we require autofill, the script scores the fields in the DOM
         require('../autofill.js')
