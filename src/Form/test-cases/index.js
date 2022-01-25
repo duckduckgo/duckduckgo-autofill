@@ -1,4 +1,4 @@
 module.exports = [
     'poor-markup-form.html',
-    'etsy.html',
+    'etsy.html'
 ]
