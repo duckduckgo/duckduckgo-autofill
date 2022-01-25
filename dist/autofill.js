@@ -1,6 +1,410 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
+const {
+  isDDGApp,
+  isAndroid
+} = require('./autofill-utils');
+
+const AndroidInterface = require('./DeviceInterface/AndroidInterface');
+
+const ExtensionInterface = require('./DeviceInterface/ExtensionInterface');
+
+const AppleDeviceInterface = require('./DeviceInterface/AppleDeviceInterface'); // Exports a device interface instance
+
+
+const deviceInterface = (() => {
+  if (isDDGApp) {
+    return isAndroid ? new AndroidInterface() : new AppleDeviceInterface();
+  }
+
+  return new ExtensionInterface();
+})();
+
+module.exports = deviceInterface;
+
+},{"./DeviceInterface/AndroidInterface":2,"./DeviceInterface/AppleDeviceInterface":3,"./DeviceInterface/ExtensionInterface":4,"./autofill-utils":23}],2:[function(require,module,exports){
+"use strict";
+
+const InterfacePrototype = require('./InterfacePrototype.js');
+
+const {
+  notifyWebApp,
+  isDDGDomain,
+  sendAndWaitForAnswer
+} = require('../autofill-utils');
+
+const {
+  scanForInputs
+} = require('../scanForInputs.js');
+
+class AndroidInterface extends InterfacePrototype {
+  async getAlias() {
+    // @ts-ignore
+    const {
+      alias
+    } = sendAndWaitForAnswer(() => {
+      return window.EmailInterface.showTooltip();
+    }, 'getAliasResponse');
+    return alias;
+  }
+
+  isDeviceSignedIn() {
+    // isDeviceSignedIn is only available on DDG domains...
+    if (isDDGDomain()) return window.EmailInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
+
+    return true;
+  }
+
+  setupAutofill({
+    shouldLog
+  } = {
+    shouldLog: false
+  }) {
+    if (this.isDeviceSignedIn()) {
+      notifyWebApp({
+        deviceSignedIn: {
+          value: true,
+          shouldLog
+        }
+      });
+      scanForInputs(this);
+    } else {
+      this.trySigningIn();
+    }
+  }
+
+  storeUserData({
+    addUserData: {
+      token,
+      userName,
+      cohort
+    }
+  }) {
+    return window.EmailInterface.storeCredentials(token, userName, cohort);
+  }
+
+}
+
+module.exports = AndroidInterface;
+
+},{"../autofill-utils":23,"../scanForInputs.js":28,"./InterfacePrototype.js":5}],3:[function(require,module,exports){
+"use strict";
+
+const InterfacePrototype = require('./InterfacePrototype.js');
+
+const {
+  wkSend,
+  wkSendAndWait
+} = require('../appleDeviceUtils/appleDeviceUtils');
+
+const {
+  isApp,
+  notifyWebApp,
+  isDDGDomain,
+  formatDuckAddress
+} = require('../autofill-utils');
+
+const {
+  scanForInputs,
+  forms
+} = require('../scanForInputs.js');
+
+class AppleDeviceInterface extends InterfacePrototype {
+  async setupAutofill({
+    shouldLog
+  } = {
+    shouldLog: false
+  }) {
+    if (isDDGDomain()) {
+      // Tell the web app whether we're in the app
+      notifyWebApp({
+        isApp
+      });
+    }
+
+    if (isApp) {
+      await this.getAutofillInitData();
+    }
+
+    const signedIn = await this._checkDeviceSignedIn();
+
+    if (signedIn) {
+      if (isApp) {
+        await this.getAddresses();
+      }
+
+      notifyWebApp({
+        deviceSignedIn: {
+          value: true,
+          shouldLog
+        }
+      });
+      forms.forEach(form => form.redecorateAllInputs());
+    } else {
+      this.trySigningIn();
+    }
+
+    scanForInputs(this);
+  }
+
+  async getAddresses() {
+    if (!isApp) return this.getAlias();
+    const {
+      addresses
+    } = await wkSendAndWait('emailHandlerGetAddresses');
+    this.storeLocalAddresses(addresses);
+    return addresses;
+  }
+
+  async refreshAlias() {
+    await wkSendAndWait('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
+
+    if (isApp) this.getAddresses();
+  }
+
+  async _checkDeviceSignedIn() {
+    const {
+      isAppSignedIn
+    } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
+
+    this.isDeviceSignedIn = () => !!isAppSignedIn;
+
+    return !!isAppSignedIn;
+  }
+
+  storeUserData({
+    addUserData: {
+      token,
+      userName,
+      cohort
+    }
+  }) {
+    return wkSend('emailHandlerStoreToken', {
+      token,
+      username: userName,
+      cohort
+    });
+  }
+  /**
+   * PM endpoints
+   */
+
+  /**
+   * Sends credentials to the native layer
+   * @param {{username: string, password: string}} credentials
+   */
+
+
+  storeCredentials(credentials) {
+    return wkSend('pmHandlerStoreCredentials', credentials);
+  }
+  /**
+   * Gets the init data from the device
+   * @returns {APIResponse<PMData>}
+   */
+
+
+  async getAutofillInitData() {
+    const response = await wkSendAndWait('pmHandlerGetAutofillInitData');
+    this.storeLocalData(response.success);
+    return response;
+  }
+  /**
+   * Gets credentials ready for autofill
+   * @param {Number} id - the credential id
+   * @returns {APIResponse<CredentialsObject>}
+   */
+
+
+  getAutofillCredentials(id) {
+    return wkSendAndWait('pmHandlerGetAutofillCredentials', {
+      id
+    });
+  }
+  /**
+   * Opens the native UI for managing passwords
+   */
+
+
+  openManagePasswords() {
+    return wkSend('pmHandlerOpenManagePasswords');
+  }
+  /**
+   * Opens the native UI for managing identities
+   */
+
+
+  openManageIdentities() {
+    return wkSend('pmHandlerOpenManageIdentities');
+  }
+  /**
+   * Opens the native UI for managing credit cards
+   */
+
+
+  openManageCreditCards() {
+    return wkSend('pmHandlerOpenManageCreditCards');
+  }
+  /**
+   * Gets a single identity obj once the user requests it
+   * @param {Number} id
+   * @returns {Promise<{success: IdentityObject | undefined}>}
+   */
+
+
+  getAutofillIdentity(id) {
+    const identity = this.getLocalIdentities().find(({
+      id: identityId
+    }) => "".concat(identityId) === "".concat(id));
+    return Promise.resolve({
+      success: identity
+    });
+  }
+  /**
+   * Gets a single complete credit card obj once the user requests it
+   * @param {Number} id
+   * @returns {APIResponse<CreditCardObject>}
+   */
+
+
+  getAutofillCreditCard(id) {
+    return wkSendAndWait('pmHandlerGetCreditCard', {
+      id
+    });
+  }
+
+  async getAlias() {
+    const {
+      alias
+    } = await wkSendAndWait('emailHandlerGetAlias', {
+      requiresUserPermission: !isApp,
+      shouldConsumeAliasIfProvided: !isApp
+    });
+    return formatDuckAddress(alias);
+  }
+
+}
+
+module.exports = AppleDeviceInterface;
+
+},{"../appleDeviceUtils/appleDeviceUtils":21,"../autofill-utils":23,"../scanForInputs.js":28,"./InterfacePrototype.js":5}],4:[function(require,module,exports){
+"use strict";
+
+const InterfacePrototype = require('./InterfacePrototype.js');
+
+const {
+  SIGN_IN_MSG,
+  notifyWebApp,
+  isDDGDomain,
+  sendAndWaitForAnswer,
+  setValue,
+  formatDuckAddress
+} = require('../autofill-utils');
+
+const {
+  scanForInputs
+} = require('../scanForInputs.js');
+
+class ExtensionInterface extends InterfacePrototype {
+  isDeviceSignedIn() {
+    return this.hasLocalAddresses;
+  }
+
+  setupAutofill({
+    shouldLog
+  } = {
+    shouldLog: false
+  }) {
+    this.getAddresses().then(_addresses => {
+      if (this.hasLocalAddresses) {
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog
+          }
+        });
+        scanForInputs(this);
+      } else {
+        this.trySigningIn();
+      }
+    });
+  }
+
+  getAddresses() {
+    return new Promise(resolve => chrome.runtime.sendMessage({
+      getAddresses: true
+    }, data => {
+      this.storeLocalAddresses(data);
+      return resolve(data);
+    }));
+  }
+
+  refreshAlias() {
+    return chrome.runtime.sendMessage({
+      refreshAlias: true
+    }, addresses => this.storeLocalAddresses(addresses));
+  }
+
+  async trySigningIn() {
+    if (isDDGDomain()) {
+      const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData');
+      this.storeUserData(data);
+    }
+  }
+
+  storeUserData(data) {
+    return chrome.runtime.sendMessage(data);
+  }
+
+  addDeviceListeners() {
+    // Add contextual menu listeners
+    let activeEl = null;
+    document.addEventListener('contextmenu', e => {
+      activeEl = e.target;
+    });
+    chrome.runtime.onMessage.addListener((message, sender) => {
+      if (sender.id !== chrome.runtime.id) return;
+
+      switch (message.type) {
+        case 'ddgUserReady':
+          this.setupAutofill({
+            shouldLog: true
+          });
+          break;
+
+        case 'contextualAutofill':
+          setValue(activeEl, formatDuckAddress(message.alias));
+          activeEl.classList.add('ddg-autofilled');
+          this.refreshAlias(); // If the user changes the alias, remove the decoration
+
+          activeEl.addEventListener('input', e => e.target.classList.remove('ddg-autofilled'), {
+            once: true
+          });
+          break;
+
+        default:
+          break;
+      }
+    });
+  }
+
+  addLogoutListener(handler) {
+    // Cleanup on logout events
+    chrome.runtime.onMessage.addListener((message, sender) => {
+      if (sender.id === chrome.runtime.id && message.type === 'logout') {
+        handler();
+      }
+    });
+  }
+
+}
+
+module.exports = ExtensionInterface;
+
+},{"../autofill-utils":23,"../scanForInputs.js":28,"./InterfacePrototype.js":5}],5:[function(require,module,exports){
+"use strict";
+
 function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
 
 function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
@@ -11,70 +415,33 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 
 function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
-const EmailAutofill = require('./UI/EmailAutofill');
-
-const DataAutofill = require('./UI/DataAutofill');
-
 const {
+  ADDRESS_DOMAIN,
+  SIGN_IN_MSG,
   isApp,
-  notifyWebApp,
-  isDDGApp,
-  isAndroid,
+  isMobileApp,
   isDDGDomain,
   sendAndWaitForAnswer,
-  setValue,
-  formatDuckAddress,
-  isMobileApp,
-  ADDRESS_DOMAIN
-} = require('./autofill-utils');
-
-const {
-  wkSend,
-  wkSendAndWait
-} = require('./appleDeviceUtils/appleDeviceUtils');
-
-const {
-  scanForInputs,
-  forms
-} = require('./scanForInputs.js');
+  formatDuckAddress
+} = require('../autofill-utils');
 
 const {
   formatFullName
-} = require('./Form/formatters');
+} = require('../Form/formatters');
 
-const SIGN_IN_MSG = {
-  signMeIn: true
-};
+const EmailAutofill = require('../UI/EmailAutofill');
 
-const attachTooltip = function (form, input) {
-  form.activeInput = input;
-
-  if (isMobileApp) {
-    this.getAlias().then(alias => {
-      if (alias) form.autofillEmail(alias);else form.activeInput.focus();
-    });
-  } else {
-    if (form.tooltip) return;
-    form.tooltip = !isApp ? new EmailAutofill(input, form, this) : new DataAutofill(input, form, this);
-    form.intObs.observe(input);
-    window.addEventListener('pointerdown', form.removeTooltip, {
-      capture: true
-    });
-    window.addEventListener('input', form.removeTooltip, {
-      once: true
-    });
-  }
-};
+const DataAutofill = require('../UI/DataAutofill');
 
 let attempts = 0;
 
-var _addresses2 = new WeakMap();
+var _addresses = new WeakMap();
 
 var _data2 = new WeakMap();
 
 class InterfacePrototype {
   constructor() {
-    _addresses2.set(this, {
+    _addresses.set(this, {
       writable: true,
       value: {
         privateAddress: '',
@@ -95,15 +462,15 @@ class InterfacePrototype {
   get hasLocalAddresses() {
     var _classPrivateFieldGet2, _classPrivateFieldGet3;
 
-    return !!((_classPrivateFieldGet2 = _classPrivateFieldGet(this, _addresses2)) !== null && _classPrivateFieldGet2 !== void 0 && _classPrivateFieldGet2.privateAddress && (_classPrivateFieldGet3 = _classPrivateFieldGet(this, _addresses2)) !== null && _classPrivateFieldGet3 !== void 0 && _classPrivateFieldGet3.personalAddress);
+    return !!((_classPrivateFieldGet2 = _classPrivateFieldGet(this, _addresses)) !== null && _classPrivateFieldGet2 !== void 0 && _classPrivateFieldGet2.privateAddress && (_classPrivateFieldGet3 = _classPrivateFieldGet(this, _addresses)) !== null && _classPrivateFieldGet3 !== void 0 && _classPrivateFieldGet3.personalAddress);
   }
 
   getLocalAddresses() {
-    return _classPrivateFieldGet(this, _addresses2);
+    return _classPrivateFieldGet(this, _addresses);
   }
 
   storeLocalAddresses(addresses) {
-    _classPrivateFieldSet(this, _addresses2, addresses); // When we get new duck addresses, add them to the identities list
+    _classPrivateFieldSet(this, _addresses, addresses); // When we get new duck addresses, add them to the identities list
 
 
     const identities = this.getLocalIdentities();
@@ -195,8 +562,6 @@ class InterfacePrototype {
   }
 
   init() {
-    this.attachTooltip = attachTooltip.bind(this);
-
     const start = () => {
       this.addDeviceListeners();
       this.setupAutofill();
@@ -209,8 +574,24 @@ class InterfacePrototype {
     }
   }
 
-  getActiveForm() {
-    return [...forms.values()].find(form => form.tooltip);
+  attachTooltip(form, input) {
+    form.activeInput = input;
+
+    if (isMobileApp) {
+      this.getAlias().then(alias => {
+        if (alias) form.autofillEmail(alias);else form.activeInput.focus();
+      });
+    } else {
+      if (form.tooltip) return;
+      form.tooltip = !isApp ? new EmailAutofill(input, form, this) : new DataAutofill(input, form, this);
+      form.intObs.observe(input);
+      window.addEventListener('pointerdown', form.removeTooltip, {
+        capture: true
+      });
+      window.addEventListener('input', form.removeTooltip, {
+        once: true
+      });
+    }
   }
 
   setupAutofill(_opts) {}
@@ -241,11 +622,15 @@ class InterfacePrototype {
 
   addLogoutListener() {}
 
-  attachTooltip() {}
-
   isDeviceSignedIn() {}
+  /**
+   * @returns {Promise<null|string>}
+   */
 
-  getAlias() {} // PM endpoints
+
+  async getAlias() {
+    return null;
+  } // PM endpoints
 
 
   storeCredentials(_opts) {}
@@ -258,314 +643,9 @@ class InterfacePrototype {
 
 }
 
-class ExtensionInterface extends InterfacePrototype {
-  constructor() {
-    super();
+module.exports = InterfacePrototype;
 
-    this.isDeviceSignedIn = () => this.hasLocalAddresses;
-
-    this.setupAutofill = ({
-      shouldLog
-    } = {
-      shouldLog: false
-    }) => {
-      this.getAddresses().then(_addresses => {
-        if (this.hasLocalAddresses) {
-          notifyWebApp({
-            deviceSignedIn: {
-              value: true,
-              shouldLog
-            }
-          });
-          scanForInputs(this);
-        } else {
-          this.trySigningIn();
-        }
-      });
-    };
-
-    this.getAddresses = () => new Promise(resolve => chrome.runtime.sendMessage({
-      getAddresses: true
-    }, data => {
-      this.storeLocalAddresses(data);
-      return resolve(data);
-    }));
-
-    this.refreshAlias = () => chrome.runtime.sendMessage({
-      refreshAlias: true
-    }, addresses => this.storeLocalAddresses(addresses));
-
-    this.trySigningIn = async () => {
-      if (isDDGDomain()) {
-        sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(data => this.storeUserData(data));
-      }
-    };
-
-    this.storeUserData = data => chrome.runtime.sendMessage(data);
-
-    this.addDeviceListeners = () => {
-      // Add contextual menu listeners
-      let activeEl = null;
-      document.addEventListener('contextmenu', e => {
-        activeEl = e.target;
-      });
-      chrome.runtime.onMessage.addListener((message, sender) => {
-        if (sender.id !== chrome.runtime.id) return;
-
-        switch (message.type) {
-          case 'ddgUserReady':
-            this.setupAutofill({
-              shouldLog: true
-            });
-            break;
-
-          case 'contextualAutofill':
-            setValue(activeEl, formatDuckAddress(message.alias));
-            activeEl.classList.add('ddg-autofilled');
-            this.refreshAlias(); // If the user changes the alias, remove the decoration
-
-            activeEl.addEventListener('input', e => e.target.classList.remove('ddg-autofilled'), {
-              once: true
-            });
-            break;
-
-          default:
-            break;
-        }
-      });
-    };
-
-    this.addLogoutListener = handler => {
-      // Cleanup on logout events
-      chrome.runtime.onMessage.addListener((message, sender) => {
-        if (sender.id === chrome.runtime.id && message.type === 'logout') {
-          handler();
-        }
-      });
-    };
-  }
-
-}
-
-class AndroidInterface extends InterfacePrototype {
-  constructor() {
-    super();
-
-    this.getAlias = () => sendAndWaitForAnswer(() => window.EmailInterface.showTooltip(), 'getAliasResponse').then(({
-      alias
-    }) => alias);
-
-    this.isDeviceSignedIn = () => {
-      // isDeviceSignedIn is only available on DDG domains...
-      if (isDDGDomain()) return window.EmailInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
-
-      return true;
-    };
-
-    this.setupAutofill = ({
-      shouldLog
-    } = {
-      shouldLog: false
-    }) => {
-      if (this.isDeviceSignedIn()) {
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog
-          }
-        });
-        scanForInputs(this);
-      } else {
-        this.trySigningIn();
-      }
-    };
-
-    this.storeUserData = ({
-      addUserData: {
-        token,
-        userName,
-        cohort
-      }
-    }) => window.EmailInterface.storeCredentials(token, userName, cohort);
-  }
-
-}
-
-class AppleDeviceInterface extends InterfacePrototype {
-  constructor() {
-    super();
-
-    this.setupAutofill = async ({
-      shouldLog
-    } = {
-      shouldLog: false
-    }) => {
-      if (isDDGDomain()) {
-        // Tell the web app whether we're in the app
-        notifyWebApp({
-          isApp
-        });
-      }
-
-      if (isApp) {
-        await this.getAutofillInitData();
-      }
-
-      const signedIn = await this._checkDeviceSignedIn();
-
-      if (signedIn) {
-        if (isApp) {
-          await this.getAddresses();
-        }
-
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog
-          }
-        });
-        forms.forEach(form => form.redecorateAllInputs());
-      } else {
-        this.trySigningIn();
-      }
-
-      scanForInputs(this);
-    };
-
-    this.getAddresses = async () => {
-      if (!isApp) return this.getAlias();
-      const {
-        addresses
-      } = await wkSendAndWait('emailHandlerGetAddresses');
-      this.storeLocalAddresses(addresses);
-      return addresses;
-    };
-
-    this.getAlias = async () => {
-      const {
-        alias
-      } = await wkSendAndWait('emailHandlerGetAlias', {
-        requiresUserPermission: !isApp,
-        shouldConsumeAliasIfProvided: !isApp
-      });
-      return formatDuckAddress(alias);
-    };
-
-    this.refreshAlias = () => wkSendAndWait('emailHandlerRefreshAlias').then(() => {
-      // On macOS we also update the addresses stored locally
-      if (isApp) this.getAddresses();
-    });
-
-    this._checkDeviceSignedIn = async () => {
-      const {
-        isAppSignedIn
-      } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
-
-      this.isDeviceSignedIn = () => !!isAppSignedIn;
-
-      return !!isAppSignedIn;
-    };
-
-    this.storeUserData = ({
-      addUserData: {
-        token,
-        userName,
-        cohort
-      }
-    }) => wkSend('emailHandlerStoreToken', {
-      token,
-      username: userName,
-      cohort
-    });
-    /**
-     * PM endpoints
-     */
-
-    /**
-     * Sends credentials to the native layer
-     * @param {{username: string, password: string}} credentials
-     */
-
-
-    this.storeCredentials = credentials => wkSend('pmHandlerStoreCredentials', credentials);
-    /**
-     * Gets the init data from the device
-     * @returns {APIResponse<PMData>}
-     */
-
-
-    this.getAutofillInitData = () => wkSendAndWait('pmHandlerGetAutofillInitData').then(response => {
-      this.storeLocalData(response.success);
-      return response;
-    });
-    /**
-     * Gets credentials ready for autofill
-     * @param {Number} id - the credential id
-     * @returns {APIResponse<CredentialsObject>}
-     */
-
-
-    this.getAutofillCredentials = id => wkSendAndWait('pmHandlerGetAutofillCredentials', {
-      id
-    });
-    /**
-     * Opens the native UI for managing passwords
-     */
-
-
-    this.openManagePasswords = () => wkSend('pmHandlerOpenManagePasswords');
-    /**
-     * Opens the native UI for managing identities
-     */
-
-
-    this.openManageIdentities = () => wkSend('pmHandlerOpenManageIdentities');
-    /**
-     * Opens the native UI for managing credit cards
-     */
-
-
-    this.openManageCreditCards = () => wkSend('pmHandlerOpenManageCreditCards');
-    /**
-     * Gets a single identity obj once the user requests it
-     * @param {Number} id
-     * @returns {Promise<{success: IdentityObject | undefined}>}
-     */
-
-
-    this.getAutofillIdentity = id => {
-      const identity = this.getLocalIdentities().find(({
-        id: identityId
-      }) => "".concat(identityId) === "".concat(id));
-      return Promise.resolve({
-        success: identity
-      });
-    };
-    /**
-     * Gets a single complete credit card obj once the user requests it
-     * @param {Number} id
-     * @returns {APIResponse<CreditCardObject>}
-     */
-
-
-    this.getAutofillCreditCard = id => wkSendAndWait('pmHandlerGetCreditCard', {
-      id
-    });
-  }
-
-}
-
-const DeviceInterface = (() => {
-  if (isDDGApp) {
-    return isAndroid ? new AndroidInterface() : new AppleDeviceInterface();
-  }
-
-  return new ExtensionInterface();
-})();
-
-module.exports = DeviceInterface;
-
-},{"./Form/formatters":5,"./UI/DataAutofill":12,"./UI/EmailAutofill":13,"./appleDeviceUtils/appleDeviceUtils":17,"./autofill-utils":19,"./scanForInputs.js":24}],2:[function(require,module,exports){
+},{"../Form/formatters":9,"../UI/DataAutofill":16,"../UI/EmailAutofill":17,"../autofill-utils":23}],6:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -610,7 +690,7 @@ const {
 } = require('./formatters');
 
 class Form {
-  constructor(form, _input, DeviceInterface) {
+  constructor(form, _input, deviceInterface) {
     _defineProperty(this, "autofillInput", (input, string, dataType) => {
       const activeInputSubtype = getInputSubtype(this.activeInput);
       const inputSubtype = getInputSubtype(input);
@@ -636,8 +716,7 @@ class Form {
     this.formAnalyzer = new FormAnalyzer(form, _input);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
-    this.device = DeviceInterface;
-    this.attachTooltip = DeviceInterface.attachTooltip;
+    this.device = deviceInterface;
     /** @type Object<'all' | SupportedMainTypes, Set> */
 
     this.inputs = {
@@ -870,7 +949,7 @@ class Form {
         }
 
         this.touched.add(e.target);
-        this.attachTooltip(this, e.target);
+        this.device.attachTooltip(this, e.target);
       }
     };
 
@@ -931,7 +1010,7 @@ class Form {
 
 module.exports = Form;
 
-},{"../autofill-utils":19,"../constants":21,"./FormAnalyzer":3,"./formatters":5,"./input-classifiers":6,"./inputStyles":7,"./inputTypeConfig.js":8,"./selectors":11}],3:[function(require,module,exports){
+},{"../autofill-utils":23,"../constants":25,"./FormAnalyzer":7,"./formatters":9,"./input-classifiers":10,"./inputStyles":11,"./inputTypeConfig.js":12,"./selectors":15}],7:[function(require,module,exports){
 "use strict";
 
 const {
@@ -1162,7 +1241,7 @@ class FormAnalyzer {
 
 module.exports = FormAnalyzer;
 
-},{"../constants":21,"./input-classifiers":6,"./selectors":11}],4:[function(require,module,exports){
+},{"../constants":25,"./input-classifiers":10,"./selectors":15}],8:[function(require,module,exports){
 "use strict";
 
 // Country names object using 2-letter country codes to reference country name
@@ -1421,7 +1500,7 @@ module.exports = {
   'AX': 'Åland Islands'
 };
 
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 var _templateObject, _templateObject2;
@@ -1552,7 +1631,7 @@ module.exports = {
   getCountryName
 };
 
-},{"./countryNames":4,"./input-classifiers":6,"./selectors":11}],6:[function(require,module,exports){
+},{"./countryNames":8,"./input-classifiers":10,"./selectors":15}],10:[function(require,module,exports){
 "use strict";
 
 const {
@@ -1820,7 +1899,7 @@ module.exports = {
   checkPlaceholderAndLabels
 };
 
-},{"../constants":21,"./selectors":11}],7:[function(require,module,exports){
+},{"../constants":25,"./selectors":15}],11:[function(require,module,exports){
 "use strict";
 
 const getInputConfig = require('./inputTypeConfig.js');
@@ -1898,7 +1977,7 @@ module.exports = {
   getIconStylesAutofilled
 };
 
-},{"./inputTypeConfig.js":8}],8:[function(require,module,exports){
+},{"./inputTypeConfig.js":12}],12:[function(require,module,exports){
 "use strict";
 
 const {
@@ -2035,7 +2114,7 @@ const getInputConfig = input => {
 
 module.exports = getInputConfig;
 
-},{"../UI/img/ddgPasswordIcon":15,"../autofill-utils":19,"./formatters":5,"./input-classifiers":6,"./logo-svg":10}],9:[function(require,module,exports){
+},{"../UI/img/ddgPasswordIcon":19,"../autofill-utils":23,"./formatters":9,"./input-classifiers":10,"./logo-svg":14}],13:[function(require,module,exports){
 "use strict";
 
 const {
@@ -2064,7 +2143,7 @@ const listenForGlobalFormSubmission = () => {
 
 module.exports = listenForGlobalFormSubmission;
 
-},{"../autofill-utils":19,"../scanForInputs":24}],10:[function(require,module,exports){
+},{"../autofill-utils":23,"../scanForInputs":28}],14:[function(require,module,exports){
 "use strict";
 
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
@@ -2072,7 +2151,7 @@ module.exports = {
   daxBase64
 };
 
-},{}],11:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 const FORM_ELS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -2248,7 +2327,7 @@ module.exports = {
   SUBMIT_BUTTON_SELECTOR
 };
 
-},{}],12:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 const {
@@ -2265,8 +2344,8 @@ const {
 } = require('../Form/input-classifiers');
 
 class DataAutofill extends Tooltip {
-  constructor(input, associatedForm, Interface) {
-    super(input, associatedForm, Interface);
+  constructor(input, associatedForm, deviceInterface) {
+    super(input, associatedForm, deviceInterface);
     const config = getInputConfig(input);
     const subtype = getInputSubtype(input);
     this.data = this.interface["getLocal".concat(config.dataType)]();
@@ -2308,7 +2387,7 @@ class DataAutofill extends Tooltip {
 
 module.exports = DataAutofill;
 
-},{"../Form/input-classifiers":6,"../Form/inputTypeConfig":8,"../autofill-utils":19,"./Tooltip":14,"./styles/autofill-tooltip-styles.js":16}],13:[function(require,module,exports){
+},{"../Form/input-classifiers":10,"../Form/inputTypeConfig":12,"../autofill-utils":23,"./Tooltip":18,"./styles/autofill-tooltip-styles.js":20}],17:[function(require,module,exports){
 "use strict";
 
 const {
@@ -2320,8 +2399,8 @@ const {
 const Tooltip = require('./Tooltip');
 
 class EmailAutofill extends Tooltip {
-  constructor(input, associatedForm, Interface) {
-    super(input, associatedForm, Interface);
+  constructor(input, associatedForm, deviceInterface) {
+    super(input, associatedForm, deviceInterface);
     this.addresses = this.interface.getLocalAddresses();
     const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat(formatDuckAddress(escapeXML(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
@@ -2354,7 +2433,7 @@ class EmailAutofill extends Tooltip {
 
 module.exports = EmailAutofill;
 
-},{"../autofill-utils":19,"./Tooltip":14,"./styles/autofill-tooltip-styles.js":16}],14:[function(require,module,exports){
+},{"../autofill-utils":23,"./Tooltip":18,"./styles/autofill-tooltip-styles.js":20}],18:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -2449,7 +2528,7 @@ const ensureIsLastInDOM = function () {
 };
 
 class Tooltip {
-  constructor(input, associatedForm, Interface) {
+  constructor(input, associatedForm, deviceInterface) {
     _defineProperty(this, "checkPosition", checkPosition.bind(this));
 
     _defineProperty(this, "updatePosition", updatePosition.bind(this));
@@ -2488,7 +2567,7 @@ class Tooltip {
     addInlineStyles(this.host, forcedVisibilityStyles);
     this.input = input;
     this.associatedForm = associatedForm;
-    this.interface = Interface;
+    this.interface = deviceInterface;
     this.count = 0;
   }
 
@@ -2561,7 +2640,7 @@ class Tooltip {
 
 module.exports = Tooltip;
 
-},{"../autofill-utils":19}],15:[function(require,module,exports){
+},{"../autofill-utils":23}],19:[function(require,module,exports){
 "use strict";
 
 const ddgPasswordIconBase = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tYmFzZTwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tYmFzZSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IlVuaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjMzMzMsMi42NjY2NyBDMTAuMjI4OCwyLjY2NjY3IDkuMzMzMzMsMy41NjIxIDkuMzMzMzMsNC42NjY2NyBDOS4zMzMzMyw1Ljc3MTI0IDEwLjIyODgsNi42NjY2NyAxMS4zMzMzLDYuNjY2NjcgQzEyLjQzNzksNi42NjY2NyAxMy4zMzMzLDUuNzcxMjQgMTMuMzMzMyw0LjY2NjY3IEMxMy4zMzMzLDMuNTYyMSAxMi40Mzc5LDIuNjY2NjcgMTEuMzMzMywyLjY2NjY3IFogTTEwLjY2NjcsNC42NjY2NyBDMTAuNjY2Nyw0LjI5ODQ4IDEwLjk2NTEsNCAxMS4zMzMzLDQgQzExLjcwMTUsNCAxMiw0LjI5ODQ4IDEyLDQuNjY2NjcgQzEyLDUuMDM0ODYgMTEuNzAxNSw1LjMzMzMzIDExLjMzMzMsNS4zMzMzMyBDMTAuOTY1MSw1LjMzMzMzIDEwLjY2NjcsNS4wMzQ4NiAxMC42NjY3LDQuNjY2NjcgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC42NjY3LDAgQzcuNzIxMTUsMCA1LjMzMzMzLDIuMzg3ODEgNS4zMzMzMyw1LjMzMzMzIEM1LjMzMzMzLDUuNzYxMTkgNS4zODM4NSw2LjE3Nzk4IDUuNDc5NDUsNi41Nzc3NSBMMC4xOTUyNjIsMTEuODYxOSBDMC4wNzAyMzc5LDExLjk4NyAwLDEyLjE1NjUgMCwxMi4zMzMzIEwwLDE1LjMzMzMgQzAsMTUuNzAxNSAwLjI5ODQ3NywxNiAwLjY2NjY2NywxNiBMMy4zMzMzMywxNiBDNC4wNjk3MSwxNiA0LjY2NjY3LDE1LjQwMyA0LjY2NjY3LDE0LjY2NjcgTDQuNjY2NjcsMTQgTDUuMzMzMzMsMTQgQzYuMDY5NzEsMTQgNi42NjY2NywxMy40MDMgNi42NjY2NywxMi42NjY3IEw2LjY2NjY3LDExLjMzMzMgTDgsMTEuMzMzMyBDOC4xNzY4MSwxMS4zMzMzIDguMzQ2MzgsMTEuMjYzMSA4LjQ3MTQxLDExLjEzODEgTDkuMTU5MDYsMTAuNDUwNCBDOS42Mzc3MiwxMC41OTEyIDEwLjE0MzksMTAuNjY2NyAxMC42NjY3LDEwLjY2NjcgQzEzLjYxMjIsMTAuNjY2NyAxNiw4LjI3ODg1IDE2LDUuMzMzMzMgQzE2LDIuMzg3ODEgMTMuNjEyMiwwIDEwLjY2NjcsMCBaIE02LjY2NjY3LDUuMzMzMzMgQzYuNjY2NjcsMy4xMjQxOSA4LjQ1NzUzLDEuMzMzMzMgMTAuNjY2NywxLjMzMzMzIEMxMi44NzU4LDEuMzMzMzMgMTQuNjY2NywzLjEyNDE5IDE0LjY2NjcsNS4zMzMzMyBDMTQuNjY2Nyw3LjU0MjQ3IDEyLjg3NTgsOS4zMzMzMyAxMC42NjY3LDkuMzMzMzMgQzEwLjE1NTgsOS4zMzMzMyA5LjY2ODg2LDkuMjM3OSA5LjIyMTUyLDkuMDY0NSBDOC45NzUyOCw4Ljk2OTA1IDguNjk1OTEsOS4wMjc5NSA4LjUwOTE2LDkuMjE0NjkgTDcuNzIzODYsMTAgTDYsMTAgQzUuNjMxODEsMTAgNS4zMzMzMywxMC4yOTg1IDUuMzMzMzMsMTAuNjY2NyBMNS4zMzMzMywxMi42NjY3IEw0LDEyLjY2NjcgQzMuNjMxODEsMTIuNjY2NyAzLjMzMzMzLDEyLjk2NTEgMy4zMzMzMywxMy4zMzMzIEwzLjMzMzMzLDE0LjY2NjcgTDEuMzMzMzMsMTQuNjY2NyBMMS4zMzMzMywxMi42MDk1IEw2LjY5Nzg3LDcuMjQ0OTQgQzYuODc1MDIsNy4wNjc3OSA2LjkzNzksNi44MDYyOSA2Ljg2MDY1LDYuNTY3OTggQzYuNzM0ODksNi4xNzk5NyA2LjY2NjY3LDUuNzY1MjcgNi42NjY2Nyw1LjMzMzMzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
@@ -2581,12 +2660,12 @@ module.exports = {
   ddgIdentityIconBase
 };
 
-},{}],16:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n.wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n.tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data {\n    top: 100%;\n    left: 100%;\n    width: 315px;\n    padding: 4px;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n    font-size: 13px;\n    line-height: 14px;\n    color: #222222;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n.tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 4px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    align-items: center;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center;\n}\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.tooltip__button__primary-text {\n    font-size: 13px;\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.8)\n}\n.tooltip__button__primary-text::first-line {\n    font-size: 12px;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.9)\n}\n.tooltip__button__secondary-text {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button:hover .tooltip__button__primary-text,\n.tooltip__button:hover .tooltip__button__secondary-text {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tYmFzZTwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tYmFzZSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IlVuaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjMzMzMsMi42NjY2NyBDMTAuMjI4OCwyLjY2NjY3IDkuMzMzMzMsMy41NjIxIDkuMzMzMzMsNC42NjY2NyBDOS4zMzMzMyw1Ljc3MTI0IDEwLjIyODgsNi42NjY2NyAxMS4zMzMzLDYuNjY2NjcgQzEyLjQzNzksNi42NjY2NyAxMy4zMzMzLDUuNzcxMjQgMTMuMzMzMyw0LjY2NjY3IEMxMy4zMzMzLDMuNTYyMSAxMi40Mzc5LDIuNjY2NjcgMTEuMzMzMywyLjY2NjY3IFogTTEwLjY2NjcsNC42NjY2NyBDMTAuNjY2Nyw0LjI5ODQ4IDEwLjk2NTEsNCAxMS4zMzMzLDQgQzExLjcwMTUsNCAxMiw0LjI5ODQ4IDEyLDQuNjY2NjcgQzEyLDUuMDM0ODYgMTEuNzAxNSw1LjMzMzMzIDExLjMzMzMsNS4zMzMzMyBDMTAuOTY1MSw1LjMzMzMzIDEwLjY2NjcsNS4wMzQ4NiAxMC42NjY3LDQuNjY2NjcgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC42NjY3LDAgQzcuNzIxMTUsMCA1LjMzMzMzLDIuMzg3ODEgNS4zMzMzMyw1LjMzMzMzIEM1LjMzMzMzLDUuNzYxMTkgNS4zODM4NSw2LjE3Nzk4IDUuNDc5NDUsNi41Nzc3NSBMMC4xOTUyNjIsMTEuODYxOSBDMC4wNzAyMzc5LDExLjk4NyAwLDEyLjE1NjUgMCwxMi4zMzMzIEwwLDE1LjMzMzMgQzAsMTUuNzAxNSAwLjI5ODQ3NywxNiAwLjY2NjY2NywxNiBMMy4zMzMzMywxNiBDNC4wNjk3MSwxNiA0LjY2NjY3LDE1LjQwMyA0LjY2NjY3LDE0LjY2NjcgTDQuNjY2NjcsMTQgTDUuMzMzMzMsMTQgQzYuMDY5NzEsMTQgNi42NjY2NywxMy40MDMgNi42NjY2NywxMi42NjY3IEw2LjY2NjY3LDExLjMzMzMgTDgsMTEuMzMzMyBDOC4xNzY4MSwxMS4zMzMzIDguMzQ2MzgsMTEuMjYzMSA4LjQ3MTQxLDExLjEzODEgTDkuMTU5MDYsMTAuNDUwNCBDOS42Mzc3MiwxMC41OTEyIDEwLjE0MzksMTAuNjY2NyAxMC42NjY3LDEwLjY2NjcgQzEzLjYxMjIsMTAuNjY2NyAxNiw4LjI3ODg1IDE2LDUuMzMzMzMgQzE2LDIuMzg3ODEgMTMuNjEyMiwwIDEwLjY2NjcsMCBaIE02LjY2NjY3LDUuMzMzMzMgQzYuNjY2NjcsMy4xMjQxOSA4LjQ1NzUzLDEuMzMzMzMgMTAuNjY2NywxLjMzMzMzIEMxMi44NzU4LDEuMzMzMzMgMTQuNjY2NywzLjEyNDE5IDE0LjY2NjcsNS4zMzMzMyBDMTQuNjY2Nyw3LjU0MjQ3IDEyLjg3NTgsOS4zMzMzMyAxMC42NjY3LDkuMzMzMzMgQzEwLjE1NTgsOS4zMzMzMyA5LjY2ODg2LDkuMjM3OSA5LjIyMTUyLDkuMDY0NSBDOC45NzUyOCw4Ljk2OTA1IDguNjk1OTEsOS4wMjc5NSA4LjUwOTE2LDkuMjE0NjkgTDcuNzIzODYsMTAgTDYsMTAgQzUuNjMxODEsMTAgNS4zMzMzMywxMC4yOTg1IDUuMzMzMzMsMTAuNjY2NyBMNS4zMzMzMywxMi42NjY3IEw0LDEyLjY2NjcgQzMuNjMxODEsMTIuNjY2NyAzLjMzMzMzLDEyLjk2NTEgMy4zMzMzMywxMy4zMzMzIEwzLjMzMzMzLDE0LjY2NjcgTDEuMzMzMzMsMTQuNjY2NyBMMS4zMzMzMywxMi42MDk1IEw2LjY5Nzg3LDcuMjQ0OTQgQzYuODc1MDIsNy4wNjc3OSA2LjkzNzksNi44MDYyOSA2Ljg2MDY1LDYuNTY3OTggQzYuNzM0ODksNi4xNzk5NyA2LjY2NjY3LDUuNzY1MjcgNi42NjY2Nyw1LjMzMzMzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCard::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress:hover::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 
-},{}],17:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 // Do not remove -- Apple devices change this when they support modern webkit messaging
@@ -2704,7 +2783,7 @@ module.exports = {
   wkSendAndWait
 };
 
-},{"./captureDdgGlobals":18}],18:[function(require,module,exports){
+},{"./captureDdgGlobals":22}],22:[function(require,module,exports){
 "use strict";
 
 // Capture the globals we need on page start
@@ -2730,7 +2809,7 @@ const secretGlobals = {
 };
 module.exports = secretGlobals;
 
-},{}],19:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 const {
@@ -2744,6 +2823,9 @@ const isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.nav
 const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
 const isMobileApp = isDDGApp && !isApp;
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
+const SIGN_IN_MSG = {
+  signMeIn: true
+};
 
 const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX); // Send a message to the web app (only on DDG domains)
 
@@ -3030,12 +3112,13 @@ module.exports = {
   isEventWithinDax,
   addInlineStyles,
   removeInlineStyles,
+  SIGN_IN_MSG,
   ADDRESS_DOMAIN,
   formatDuckAddress,
   escapeXML
 };
 
-},{"./Form/input-classifiers":6}],20:[function(require,module,exports){
+},{"./Form/input-classifiers":10}],24:[function(require,module,exports){
 "use strict";
 
 (() => {
@@ -3067,7 +3150,7 @@ module.exports = {
   }
 })();
 
-},{"./Form/listenForFormSubmission":9,"./inject":22}],21:[function(require,module,exports){
+},{"./Form/listenForFormSubmission":13,"./inject":26}],25:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -3076,7 +3159,7 @@ module.exports = {
   TEXT_LENGTH_CUTOFF: 50
 };
 
-},{}],22:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 // Polyfills/shims
@@ -3132,7 +3215,7 @@ const inject = () => {
 
 module.exports = inject;
 
-},{"./DeviceInterface":1,"./autofill-utils":19,"./requestIdleCallback":23,"./scanForInputs":24}],23:[function(require,module,exports){
+},{"./DeviceInterface":1,"./autofill-utils":23,"./requestIdleCallback":27,"./scanForInputs":28}],27:[function(require,module,exports){
 "use strict";
 
 /*!
@@ -3174,7 +3257,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 
 module.exports = {};
 
-},{}],24:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 const Form = require('./Form/Form');
@@ -3294,4 +3377,4 @@ module.exports = {
   forms
 };
 
-},{"./Form/Form":2,"./Form/selectors":11,"./autofill-utils":19}]},{},[20]);
+},{"./Form/Form":6,"./Form/selectors":15,"./autofill-utils":23}]},{},[24]);

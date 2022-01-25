@@ -7,8 +7,8 @@ const getInputConfig = require('../Form/inputTypeConfig')
 const {getInputSubtype} = require('../Form/input-classifiers')
 
 class DataAutofill extends Tooltip {
-    constructor (input, associatedForm, Interface) {
-        super(input, associatedForm, Interface)
+    constructor (input, associatedForm, deviceInterface) {
+        super(input, associatedForm, deviceInterface)
 
         const config = getInputConfig(input)
         const subtype = getInputSubtype(input)
