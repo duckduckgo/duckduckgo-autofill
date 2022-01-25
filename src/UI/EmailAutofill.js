@@ -6,8 +6,8 @@ const {
 const Tooltip = require('./Tooltip')
 
 class EmailAutofill extends Tooltip {
-    constructor (input, associatedForm, Interface) {
-        super(input, associatedForm, Interface)
+    constructor (input, associatedForm, deviceInterface) {
+        super(input, associatedForm, deviceInterface)
 
         this.addresses = this.interface.getLocalAddresses()
 

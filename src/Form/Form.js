@@ -8,13 +8,12 @@ const getInputConfig = require('./inputTypeConfig.js')
 const {getUnifiedExpiryDate, formatCCYear, getCountryName} = require('./formatters')
 
 class Form {
-    constructor (form, input, DeviceInterface) {
+    constructor (form, input, deviceInterface) {
         this.form = form
         this.formAnalyzer = new FormAnalyzer(form, input)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
-        this.device = DeviceInterface
-        this.attachTooltip = DeviceInterface.attachTooltip
+        this.device = deviceInterface
 
         /** @type Object<'all' | SupportedMainTypes, Set> */
         this.inputs = {
@@ -229,7 +228,7 @@ class Form {
                 }
 
                 this.touched.add(e.target)
-                this.attachTooltip(this, e.target)
+                this.device.attachTooltip(this, e.target)
             }
         }
 

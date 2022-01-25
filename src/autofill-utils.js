@@ -12,6 +12,8 @@ const isMobileApp = isDDGApp && !isApp
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
 
+const SIGN_IN_MSG = { signMeIn: true }
+
 const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX)
 
 // Send a message to the web app (only on DDG domains)
@@ -251,6 +253,7 @@ module.exports = {
     isEventWithinDax,
     addInlineStyles,
     removeInlineStyles,
+    SIGN_IN_MSG,
     ADDRESS_DOMAIN,
     formatDuckAddress,
     escapeXML
