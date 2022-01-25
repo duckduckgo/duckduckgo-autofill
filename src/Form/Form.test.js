@@ -83,19 +83,21 @@ describe('Test the form class reading values correctly', () => {
         const {forms} = require('../scanForInputs')
 
         // Autofill uses requestIdleCallback to debounce DOM checks, the timeout gives it time to run
-        setTimeout(() => {
-            try {
-                const formEl = document.querySelector('form')
-                const formClass = forms.get(formEl)
-                const hasValues = formClass.hasValues()
-                const formValues = formClass.getValues()
+        requestIdleCallback(() => {
+            requestIdleCallback(() => {
+                try {
+                    const formEl = document.querySelector('form')
+                    const formClass = forms.get(formEl)
+                    const hasValues = formClass.hasValues()
+                    const formValues = formClass.getValues()
 
-                expect(hasValues).toBe(expHasValues)
-                expect(formValues).toMatchObject(expValues)
-                done()
-            } catch (e) {
-                done(e)
-            }
-        }, 20)
+                    expect(hasValues).toBe(expHasValues)
+                    expect(formValues).toMatchObject(expValues)
+                    done()
+                } catch (e) {
+                    done(e)
+                }
+            })
+        })
     })
 })
