@@ -15,6 +15,7 @@ interface IdentityObject {
      birthdayMonth?: Number,
      birthdayYear?: Number,
      addressStreet?: String,
+     addressStreet2?: String,
      addressCity?: String,
      addressProvince?: String,
      addressPostalCode?: String,

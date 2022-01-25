@@ -1,5 +1,5 @@
 const FORM_ELS_SELECTOR = `
-input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]),
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),
 select`
 
 const EMAIL_SELECTOR = `
@@ -92,6 +92,7 @@ const CC_MONTH_SELECTOR = `
 [name="ppw-expirationDate_month"],
 [name=cardExpiryMonth],
 [name="expiration-month"],
+[name*=ExpDate_Month i],
 [id*=expiration-month i]`
 
 const CC_YEAR_SELECTOR = `
@@ -100,6 +101,7 @@ const CC_YEAR_SELECTOR = `
 [name="ppw-expirationDate_year"],
 [name=cardExpiryYear],
 [name="expiration-year"],
+[name*=ExpDate_Year i],
 [id*=expiration-year i]`
 
 const CC_EXP_SELECTOR = `
@@ -203,9 +205,14 @@ const ID_NAME_SELECTOR = `
 const ID_PHONE_SELECTOR = `
 [name*=phone i], [name*=mobile i], [autocomplete=tel]`
 
-const ID_ADDRESS_STREET = `
+const ID_ADDRESS_STREET_1 = `
 [name=address], [autocomplete=street-address], [autocomplete=address-line1],
+[name=street],
 [name=ppw-line1]`
+
+const ID_ADDRESS_STREET_2 = `
+[name=address], [autocomplete=address-line2],
+[name=ppw-line2]`
 
 const ID_CITY_STREET = `
 [name=city], [autocomplete=address-level2],
@@ -222,6 +229,24 @@ const ID_COUNTRY = `
 [name=country] [autocomplete=country],
 [name*=countryCode i], [name*=country-code i],
 [name*=countryName i], [name*=country-name i]`
+
+const ID_BDAY_DAY = `
+[name=bday-day],
+[name=birthday_day], [name=birthday-day],
+[name=date_of_birth_day], [name=date-of-birth-day],
+[name^=birthdate_d], [name^=birthdate-d]`
+
+const ID_BDAY_MONTH = `
+[name=bday-month],
+[name=birthday_month], [name=birthday-month],
+[name=date_of_birth_month], [name=date-of-birth-month],
+[name^=birthdate_m], [name^=birthdate-m]`
+
+const ID_BDAY_YEAR = `
+[name=bday-year],
+[name=birthday_year], [name=birthday-year],
+[name=date_of_birth_year], [name=date-of-birth-year],
+[name^=birthdate_y], [name^=birthdate-y]`
 
 /** @type Matcher[] */
 const ID_MATCHERS_LIST = [
@@ -248,7 +273,7 @@ const ID_MATCHERS_LIST = [
         type: 'fullName',
         selector: ID_NAME_SELECTOR,
         matcherFn: (string) =>
-            /\bname\b/i.test(string) && !/company|org/i.test(string)
+            /^(full.?|whole\s)?name\b/i.test(string) && !/company|org/i.test(string)
     },
     {
         type: 'phone',
@@ -259,10 +284,17 @@ const ID_MATCHERS_LIST = [
     },
     {
         type: 'addressStreet',
-        selector: ID_ADDRESS_STREET,
+        selector: ID_ADDRESS_STREET_1,
         matcherFn: (string) =>
             /address/i.test(string) &&
-            !/email|\bip\b|address(.?line)?.?2|duck|log.?in|sign.?in/i.test(string)
+            !/email|\bip\b|address.*(2|two)|duck|log.?in|sign.?in/i.test(string)
+    },
+    {
+        type: 'addressStreet2',
+        selector: ID_ADDRESS_STREET_2,
+        matcherFn: (string) =>
+            /address.*(2|two)|apartment|\bapt\b|\bflat\b|\bline.*(2|two)/i.test(string) &&
+            !/email|\bip\b|duck|log.?in|sign.?in/i.test(string)
     },
     {
         type: 'addressCity',
@@ -287,6 +319,24 @@ const ID_MATCHERS_LIST = [
         selector: ID_COUNTRY,
         matcherFn: (string) =>
             /country/i.test(string)
+    },
+    {
+        type: 'birthdayDay',
+        selector: ID_BDAY_DAY,
+        /* For birthday we only support css selectors */
+        matcherFn: () => false
+    },
+    {
+        type: 'birthdayMonth',
+        selector: ID_BDAY_MONTH,
+        /* For birthday we only support css selectors */
+        matcherFn: () => false
+    },
+    {
+        type: 'birthdayYear',
+        selector: ID_BDAY_YEAR,
+        /* For birthday we only support css selectors */
+        matcherFn: () => false
     }
 ]
 

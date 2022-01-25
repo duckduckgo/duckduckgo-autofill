@@ -1,3 +1,6 @@
+const fs = require('fs')
+const path = require('path')
+
 const {getSubtypeFromMatchers, getInputSubtype} = require('./input-classifiers')
 const {getUnifiedExpiryDate} = require('./formatters')
 const {CC_MATCHERS_LIST} = require('./selectors')
@@ -116,32 +119,36 @@ describe('Input Classifiers', () => {
 describe('Real-world form tests', () => {
     const testCases = require('./test-cases/index')
 
-    test.each(testCases)('Test %s fields', (caseName, form, done) => {
-        document.body.innerHTML = form
+    test.each(testCases)('Test %s fields', (caseName, done) => {
+        const testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', caseName), 'utf-8')
+
+        document.body.innerHTML = testContent
         // When we require autofill, the script scores the fields in the DOM
         require('../autofill.js')
 
         // A human classified these fields, so we want to make sure the script matches them
         const manuallyScoredFields = document.querySelectorAll('[data-manual-scoring]')
 
-        // Autofill uses requestIdleCallback to debounce DOM checks, the timeout gives it time to run
-        setTimeout(() => {
-            try {
-                manuallyScoredFields.forEach((field) => {
-                    const inferredType = getInputSubtype(field)
-                    const manualScore = field.getAttribute('data-manual-scoring')
-                    expect(inferredType).toMatch(manualScore)
-                })
+        // Autofill uses requestIdleCallback to debounce DOM checks, we call it twice here to run tests after it
+        requestIdleCallback(() => {
+            requestIdleCallback(() => {
+                try {
+                    manuallyScoredFields.forEach((field) => {
+                        const inferredType = getInputSubtype(field)
+                        const manualScore = field.getAttribute('data-manual-scoring')
+                        expect(inferredType).toMatch(manualScore)
+                    })
 
-                // Check that the script didn't identify fields that shouldn't have by matching the count for unknown
-                const identifiedFields = document.querySelectorAll('[data-ddg-inputtype]:not([data-ddg-inputtype=unknown])')
-                const manuallyIdentifiedFields = document.querySelectorAll('[data-manual-scoring]:not([data-manual-scoring=unknown])')
-                expect(identifiedFields.length).toEqual(manuallyIdentifiedFields.length)
+                    // Check that the script didn't identify fields that shouldn't have by matching the count for unknown
+                    const identifiedFields = document.querySelectorAll('[data-ddg-inputtype]:not([data-ddg-inputtype=unknown])')
+                    const manuallyIdentifiedFields = document.querySelectorAll('[data-manual-scoring]:not([data-manual-scoring=unknown])')
+                    expect(identifiedFields.length).toEqual(manuallyIdentifiedFields.length)
 
-                done()
-            } catch (e) {
-                done(e)
-            }
-        }, 20)
+                    done()
+                } catch (e) {
+                    done(e)
+                }
+            })
+        })
     })
 })

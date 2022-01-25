@@ -1,6 +1,5 @@
-//https://payments.wikimedia.org/index.php?title=Special:IngenicoGateway&appeal=JimmyQuote&ffname=cc-vmad&recurring=false&payment_method=cc&country=US&uselang=en&amount=5&utm_medium=sidebar&utm_campaign=C13_en.wikipedia.org&utm_source=donate.default%7Edefault%7Edefault%7Edefault%7Econtrol.cc&utm_key=vw_1440%7Evh_377%7EotherAmt_0%7Etime_6&referrer=en.wikipedia.org%2F&currency=USD
-//On the real page, the credit card section is an iframe separate from the address info; here they're combined together
-module.exports = `
+<!-- https://payments.wikimedia.org/index.php?title=Special:IngenicoGateway&appeal=JimmyQuote&ffname=cc-vmad&recurring=false&payment_method=cc&country=US&uselang=en&amount=5&utm_medium=sidebar&utm_campaign=C13_en.wikipedia.org&utm_source=donate.default%7Edefault%7Edefault%7Edefault%7Econtrol.cc&utm_key=vw_1440%7Evh_377%7EotherAmt_0%7Etime_6&referrer=en.wikipedia.org%2F&currency=USD
+On the real page, the credit card section is an iframe separate from the address info; here they're combined together -->
 <div id="payment_gateway-personal-info">
     <span id="amountMsg" class="errorMsgHide"></span>
 
@@ -354,4 +353,3 @@ module.exports = `
     </button>
     </div>
     <input name="expiryDateMonth" id="expiryDateMonth" type="text" autocomplete="cc-exp-month" tabindex="-1" aria-labelledby="label-expiryDate" style="opacity: 0; width: 0px; height: 0px; overflow: hidden; pointer-events: none; margin: 0px; padding: 0px; position: absolute;" data-manual-scoring="expirationMonth"><input name="expiryDateYear" id="expiryDateYear" type="text" autocomplete="cc-exp-year" tabindex="-1" aria-labelledby="label-expiryDate" style="opacity: 0; width: 0px; height: 0px; overflow: hidden; pointer-events: none; margin: 0px; padding: 0px; position: absolute;" data-manual-scoring="expirationYear"></form>
-`
