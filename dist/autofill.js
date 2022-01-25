@@ -2378,7 +2378,7 @@ const checkPosition = function () {
 
   this.animationFrame = window.requestAnimationFrame(() => {
     // In extensions, the tooltip is centered on the Dax icon
-    const position = !isApp ? getDaxBoundingBox(this.input) : this.input.getBoundingClientRect();
+    const position = isApp ? this.input.getBoundingClientRect() : getDaxBoundingBox(this.input);
     const {
       left,
       bottom
