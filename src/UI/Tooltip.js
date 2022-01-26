@@ -1,10 +1,13 @@
 const {safeExecute, addInlineStyles, getDaxBoundingBox, isApp} = require('../autofill-utils')
 
+/**
+ * @this {Tooltip}
+ */
 const updatePosition = function ({left, top}) {
     const shadow = this.shadow
     // If the stylesheet is not loaded wait for load (Chrome bug)
     if (!shadow.styleSheets.length) {
-        this.stylesheet.addEventListener('load', this.checkPosition)
+        this.stylesheet?.addEventListener('load', this.checkPosition)
         return
     }
 
@@ -23,6 +26,9 @@ const updatePosition = function ({left, top}) {
     shadow.styleSheets[0].insertRule(newRule, this.transformRuleIndex)
 }
 
+/**
+ * @this {Tooltip}
+ */
 const checkPosition = function () {
     if (this.animationFrame) {
         window.cancelAnimationFrame(this.animationFrame)
@@ -42,6 +48,9 @@ const checkPosition = function () {
     })
 }
 
+/**
+ * @this {Tooltip}
+ */
 const ensureIsLastInDOM = function () {
     this.count = this.count || 0
     // If DDG el is not the last in the doc, move it there
@@ -70,16 +79,18 @@ class Tooltip {
             'visibility': 'visible',
             'opacity': '1'
         }
+        // @ts-ignore how to narrow this.host to HTMLElement?
         addInlineStyles(this.host, forcedVisibilityStyles)
         this.input = input
         this.associatedForm = associatedForm
         this.interface = Interface
+        this.count = 0
     }
     append () {
         document.body.appendChild(this.host)
     }
     remove () {
-        window.removeEventListener('scroll', this.checkPosition, {passive: true, capture: true})
+        window.removeEventListener('scroll', this.checkPosition, {capture: true})
         this.resObs.disconnect()
         this.mutObs.disconnect()
         this.lift()
@@ -117,7 +128,7 @@ class Tooltip {
         this.clickableButtons.set(btn, handler)
         // Needed because clicks within the shadow dom don't provide this info to the outside
         btn.addEventListener('mouseenter', (e) => this.setActiveButton(e))
-        btn.addEventListener('mouseleave', (e) => this.unsetActiveButton(e))
+        btn.addEventListener('mouseleave', () => this.unsetActiveButton())
     }
     dispatchClick () {
         const handler = this.clickableButtons.get(this.activeButton)
@@ -133,7 +144,7 @@ class Tooltip {
 
         this.stylesheet = this.shadow.querySelector('link, style')
         // Un-hide once the style is loaded, to avoid flashing unstyled content
-        this.stylesheet.addEventListener('load', () =>
+        this.stylesheet?.addEventListener('load', () =>
             this.tooltip.removeAttribute('hidden'))
 
         this.append()

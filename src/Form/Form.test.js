@@ -1,5 +1,5 @@
 afterEach(() => {
-    document.body.innerHTML = null
+    document.body.innerHTML = ''
 })
 
 describe('Test the form class reading values correctly', () => {
@@ -69,7 +69,6 @@ describe('Test the form class reading values correctly', () => {
 
     test.each(testCases)('Test $testCase', (
         {
-            testCase,
             form,
             expHasValues = true,
             expValues = {
@@ -87,14 +86,17 @@ describe('Test the form class reading values correctly', () => {
             requestIdleCallback(() => {
                 try {
                     const formEl = document.querySelector('form')
+                    // @ts-ignore
                     const formClass = forms.get(formEl)
-                    const hasValues = formClass.hasValues()
-                    const formValues = formClass.getValues()
+                    const hasValues = formClass?.hasValues()
+                    const formValues = formClass?.getValues()
 
                     expect(hasValues).toBe(expHasValues)
                     expect(formValues).toMatchObject(expValues)
+                    // @ts-ignore
                     done()
                 } catch (e) {
+                    // @ts-ignore
                     done(e)
                 }
             })

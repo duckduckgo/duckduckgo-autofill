@@ -22,7 +22,7 @@ const removeExcessWhitespace = (string = '') =>
 const getExplicitLabelsText = (el) => {
     const text = [...(el.labels || [])].reduce((text, label) => `${text} ${label.textContent}`, '')
     const ariaLabel = el.getAttribute('aria-label') || ''
-    const labelledByText = document.getElementById(el.getAttribute('aria-labelled'))?.textContent || ''
+    const labelledByText = document.getElementById(el.getAttribute('aria-labelled') || '')?.textContent || ''
     return removeExcessWhitespace(`${text} ${ariaLabel} ${labelledByText}`)
 }
 
@@ -68,7 +68,7 @@ const getLargestMeaningfulContainer = (el, form) => {
 
 /**
  * Tries to infer input subtype, with checks in decreasing order of reliability
- * @type (el: HTMLInputElement, form: HTMLFormElement, matchers: []Matcher) => string|undefined
+ * @type {(el: HTMLInputElement, form: HTMLFormElement, matchers: Matcher[]) => string|undefined}
  */
 const getSubtypeFromMatchers = (el, form, matchers) => {
     let found
@@ -98,21 +98,21 @@ const getSubtypeFromMatchers = (el, form, matchers) => {
 
 /**
  * Tries to infer if input is for password
- * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
+ * @type {(el: HTMLInputElement, form: HTMLFormElement) => Boolean}
  */
 const isPassword = (el, form) =>
     !!getSubtypeFromMatchers(el, form, [PASSWORD_MATCHER])
 
 /**
  * Tries to infer if input is for email
- * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
+ * @type {(el: HTMLInputElement, form: HTMLFormElement) => Boolean}
  */
 const isEmail = (el, form) =>
     !!getSubtypeFromMatchers(el, form, [EMAIL_MATCHER])
 
 /**
  * Tries to infer if input is for username
- * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
+ * @type {(el: HTMLInputElement, form: HTMLFormElement) => Boolean}
  */
 const isUserName = (el, form) =>
     !!getSubtypeFromMatchers(el, form, [USERNAME_MATCHER])
@@ -134,17 +134,17 @@ const isCCForm = (form) => {
     if (hasCCAttribute) return true
 
     // Match form textContent against common cc fields (includes hidden labels)
-    const textMatches = form.textContent.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
+    const textMatches = form.textContent?.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
 
     // We check for more than one to minimise false positives
-    return textMatches?.length > 1
+    return Boolean(textMatches && textMatches.length > 1)
 }
 
 /**
  * Tries to infer the input type
  * @param {HTMLInputElement} input
- * @param {Form} form
- * @returns {SupportedSubTypes}
+ * @param {import("./Form")} form
+ * @returns {SupportedSubTypes | string}
  */
 const inferInputType = (input, form) => {
     const presetType = input.getAttribute(ATTR_INPUT_TYPE)
@@ -165,7 +165,7 @@ const inferInputType = (input, form) => {
 
     if (isUserName(input, formEl)) return 'credentials.username'
 
-    const idSubtype = getSubtypeFromMatchers(input, form, ID_MATCHERS_LIST)
+    const idSubtype = getSubtypeFromMatchers(input, formEl, ID_MATCHERS_LIST)
     if (idSubtype) return `identities.${idSubtype}`
 
     return 'unknown'
@@ -174,8 +174,8 @@ const inferInputType = (input, form) => {
 /**
  * Sets the input type as a data attribute to the element and returns it
  * @param {HTMLInputElement} input
- * @param {Form} form
- * @returns {SupportedSubTypes}
+ * @param {import("./Form")} form
+ * @returns {SupportedSubTypes | string}
  */
 const setInputType = (input, form) => {
     const type = inferInputType(input, form)
@@ -186,7 +186,7 @@ const setInputType = (input, form) => {
 /**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedSubTypes}
+ * @returns {SupportedSubTypes | string}
  */
 const getInputMainType = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
@@ -194,8 +194,8 @@ const getInputMainType = (input) =>
 
 /**
  * Retrieves the input subtype
- * @param {HTMLInputElement} input
- * @returns {SupportedSubTypes}
+ * @param {HTMLInputElement|Element} input
+ * @returns {SupportedSubTypes | string}
  */
 const getInputSubtype = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[1] ||

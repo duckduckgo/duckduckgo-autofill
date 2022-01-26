@@ -32,4 +32,5 @@ interface InputTypeConfig {
         data: CredentialsObject | IdentityObject | CreditCardObject
     ) => string,
     displaySubtitlePropName: string,
+    autofillMethod: string // more specific here?
 }

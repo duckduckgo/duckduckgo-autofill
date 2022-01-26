@@ -68,6 +68,9 @@ class Form {
             return !!password
         }
 
+        /**
+         * @type {IntersectionObserver | null}
+         */
         this.intObs = new IntersectionObserver((entries) => {
             for (const entry of entries) {
                 if (!entry.isIntersecting) this.removeTooltip()
@@ -84,7 +87,7 @@ class Form {
             }
             this.tooltip.remove()
             this.tooltip = null
-            this.intObs.disconnect()
+            this.intObs?.disconnect()
             window.removeEventListener('pointerdown', this.removeTooltip, {capture: true})
         }
         this.removeInputHighlight = (input) => {
@@ -199,7 +202,7 @@ class Form {
 
         const hasIcon = !!config.getIconBase(input, this)
         if (hasIcon) {
-            this.addAutofillStyles(input, config)
+            this.addAutofillStyles(input)
             this.addListener(input, 'mousemove', (e) => {
                 if (isEventWithinDax(e, e.target)) {
                     e.target.style.setProperty('cursor', 'pointer', 'important')
@@ -233,7 +236,7 @@ class Form {
         if (input.nodeName !== 'SELECT') {
             const events = ['pointerdown']
             if (!isMobileApp) events.push('focus')
-            events.forEach((ev) => this.addListener(input, ev, handler, true))
+            events.forEach((ev) => this.addListener(input, ev, handler))
         }
         return this
     }

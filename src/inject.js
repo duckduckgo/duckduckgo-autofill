@@ -10,6 +10,7 @@ const inject = () => {
     window.addEventListener('pointerdown', (e) => {
         if (!e.isTrusted) return
 
+        // @ts-ignore
         if (e.target.nodeName === 'DDG-AUTOFILL') {
             e.preventDefault()
             e.stopImmediatePropagation()
@@ -36,6 +37,7 @@ const inject = () => {
 
     if (isApp) {
         window.addEventListener('submit', (e) =>
+            // @ts-ignore
             forms.get(e.target)?.submitHandler(),
         true)
     }

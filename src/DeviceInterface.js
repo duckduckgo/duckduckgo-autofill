@@ -34,8 +34,11 @@ const attachTooltip = function (form, input) {
 let attempts = 0
 
 class InterfacePrototype {
-    /** @type {{privateAddress: String, personalAddress: String}} */
-    #addresses = {}
+    /** @type {{privateAddress: string, personalAddress: string}} */
+    #addresses = {
+        privateAddress: '',
+        personalAddress: ''
+    }
     get hasLocalAddresses () {
         return !!(this.#addresses?.privateAddress && this.#addresses?.personalAddress)
     }
@@ -147,7 +150,7 @@ class InterfacePrototype {
     getActiveForm () {
         return [...forms.values()].find((form) => form.tooltip)
     }
-    setupAutofill () {}
+    setupAutofill (_opts) {}
     getAddresses () {}
     refreshAlias () {}
     async trySigningIn () {
@@ -163,16 +166,16 @@ class InterfacePrototype {
             }
         }
     }
-    storeUserData () {}
+    storeUserData (_data) {}
     addDeviceListeners () {}
     addLogoutListener () {}
     attachTooltip () {}
     isDeviceSignedIn () {}
     getAlias () {}
     // PM endpoints
-    storeCredentials () {}
+    storeCredentials (_opts) {}
     getAccounts () {}
-    getAutofillCredentials () {}
+    getAutofillCredentials (_id) {}
     openManagePasswords () {}
 }
 
@@ -183,7 +186,7 @@ class ExtensionInterface extends InterfacePrototype {
         this.isDeviceSignedIn = () => this.hasLocalAddresses
 
         this.setupAutofill = ({shouldLog} = {shouldLog: false}) => {
-            this.getAddresses().then(addresses => {
+            this.getAddresses().then(_addresses => {
                 if (this.hasLocalAddresses) {
                     notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
                     scanForInputs(this)
@@ -206,7 +209,7 @@ class ExtensionInterface extends InterfacePrototype {
             (addresses) => this.storeLocalAddresses(addresses)
         )
 
-        this.trySigningIn = () => {
+        this.trySigningIn = async () => {
             if (isDDGDomain()) {
                 sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                     .then(data => this.storeUserData(data))
@@ -356,7 +359,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         /**
          * Sends credentials to the native layer
-         * @param {{username: String, password: String}} credentials
+         * @param {{username: string, password: string}} credentials
          */
         this.storeCredentials = (credentials) =>
             wkSend('pmHandlerStoreCredentials', credentials)
@@ -398,7 +401,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         /**
          * Gets a single identity obj once the user requests it
          * @param {Number} id
-         * @returns {Promise<{success: IdentityObject}>}
+         * @returns {Promise<{success: IdentityObject | undefined}>}
          */
         this.getAutofillIdentity = (id) => {
             const identity = this.getLocalIdentities().find(({id: identityId}) => `${identityId}` === `${id}`)

@@ -46,6 +46,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 }
 
 // Access the original setter (needed to bypass React's implementation on mobile)
+// @ts-ignore
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
 
 /**
@@ -62,7 +63,7 @@ const setValueForInput = (el, val) => {
 
     el.dispatchEvent(new Event('keydown', {bubbles: true}))
 
-    originalSet.call(el, val)
+    originalSet?.call(el, val)
 
     const events = [
         new Event('input', {bubbles: true}),
@@ -71,7 +72,7 @@ const setValueForInput = (el, val) => {
     ]
     events.forEach((ev) => el.dispatchEvent(ev))
     // We call this again to make sure all forms are happy
-    originalSet.call(el, val)
+    originalSet?.call(el, val)
     events.forEach((ev) => el.dispatchEvent(ev))
     el.blur()
 
@@ -117,7 +118,7 @@ const setValueForSelect = (el, val) => {
             value = `${Number(value) + 1}`
         }
         // TODO: try to match localised month names
-        if (value.includes(val)) {
+        if (value.includes(String(val))) {
             option.selected = true
             fireEventsOnSelect(el)
             return true
@@ -125,7 +126,7 @@ const setValueForSelect = (el, val) => {
     }
 
     for (const option of el.options) {
-        if (option.innerText.includes(val)) {
+        if (option.innerText.includes(String(val))) {
             option.selected = true
             fireEventsOnSelect(el)
             return true
@@ -142,8 +143,8 @@ const setValueForSelect = (el, val) => {
  * @return {boolean}
  */
 const setValue = (el, val) => {
-    if (el.nodeName === 'INPUT') return setValueForInput(el, val)
-    if (el.nodeName === 'SELECT') return setValueForSelect(el, val)
+    if (el instanceof HTMLInputElement) return setValueForInput(el, val)
+    if (el instanceof HTMLSelectElement) return setValueForSelect(el, val)
 
     return false
 }
@@ -156,15 +157,19 @@ const safeExecute = (el, fn) => {
     const intObs = new IntersectionObserver((changes) => {
         for (const change of changes) {
             // Feature detection
+            // @ts-ignore todo: Why does TS not understand .isVisible here?
             if (typeof change.isVisible === 'undefined') {
                 // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
+                // @ts-ignore
                 change.isVisible = true
             }
+            // @ts-ignore
             if (change.isIntersecting && change.isVisible) {
                 fn()
             }
         }
         intObs.disconnect()
+    // @ts-ignore todo: Why does TD think trackVisibility is invalid?
     }, {trackVisibility: true, delay: 100})
     intObs.observe(el)
 }

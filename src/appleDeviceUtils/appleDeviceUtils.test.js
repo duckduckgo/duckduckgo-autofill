@@ -1,4 +1,4 @@
-const {wkSendAndWait} = require('./AppleDeviceUtils')
+const {wkSendAndWait} = require('./appleDeviceUtils')
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data
@@ -18,6 +18,7 @@ const webkitMock = jest.fn(async (data) => {
 
     return encrypt(JSON.stringify(message))
         .then((ciphertext) =>
+            // @ts-ignore add method names here?
             window[messageHandling.methodName]({
                 ciphertext: new Uint8Array(ciphertext),
                 tag: []

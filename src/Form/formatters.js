@@ -63,9 +63,10 @@ const inferElementLocale = (el) =>
 /**
  * Tries to format the country code into a localised country name
  * @param {HTMLInputElement | HTMLSelectElement} el
- * @param {string} addressCountryCode
+ * @param {{addressCountryCode?: string}} options
  */
-const getCountryName = (el, {addressCountryCode}) => {
+const getCountryName = (el, options = {}) => {
+    const {addressCountryCode} = options
     if (!addressCountryCode) return ''
 
     // Try to infer the field language or fallback to en
@@ -84,17 +85,19 @@ const getCountryName = (el, {addressCountryCode}) => {
         const countryCodeRegex = new RegExp(String.raw`\b${addressCountryCode}\b`, 'i')
 
         // We check the country code first because it's more accurate
-        for (const option of el.options) {
-            if (countryCodeRegex.test(option.value)) {
-                return option.value
+        if (el instanceof HTMLSelectElement) {
+            for (const option of el.options) {
+                if (countryCodeRegex.test(option.value)) {
+                    return option.value
+                }
             }
-        }
 
-        for (const option of el.options) {
-            if (
-                countryNameRegex.test(option.value) ||
-                countryNameRegex.test(option.innerText)
-            ) return option.value
+            for (const option of el.options) {
+                if (
+                    countryNameRegex.test(option.value) ||
+                    countryNameRegex.test(option.innerText)
+                ) return option.value
+            }
         }
     }
 
