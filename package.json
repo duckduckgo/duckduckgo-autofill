@@ -11,7 +11,10 @@
     "build": "grunt",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest",
+    "copy-build-integration": "cp dist/autofill.js integration-test/extension && cp dist/autofill.css integration-test/extension/public/css/",
+    "open-test-extension": "web-ext run -t chromium -u https://privacy-test-pages.glitch.me/ -s integration-test/extension",
+    "test": "jest && npm run test:integration",
+    "test:integration": "npm run copy-build-integration && jasmine --config=integration-test/config.js",
     "test:watch": "jest --watch"
   },
   "license": "Apache-2.0",
@@ -33,9 +36,11 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-eslint": "^23.0.0",
     "grunt-exec": "^3.0.0",
+    "jasmine": "^4.0.2",
     "jest": "^27.4.7",
     "jest-chrome": "^0.7.1",
     "load-grunt-tasks": "^5.1.0",
-    "markdown-it": "^12.2.0"
+    "markdown-it": "^12.2.0",
+    "puppeteer": "^13.0.1"
   }
 }
