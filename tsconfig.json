@@ -26,6 +26,7 @@
   "include": [
     "src",
     "scripts",
-    "*.js"
+    "*.js",
+    "types.d.ts"
   ]
 }

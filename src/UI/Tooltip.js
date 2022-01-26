@@ -150,7 +150,7 @@ class Tooltip {
         this.append()
         this.resObs.observe(document.body)
         this.mutObs.observe(document.body, {childList: true, subtree: true, attributes: true})
-        window.addEventListener('scroll', this.checkPosition, {passive: true, capture: true})
+        window.addEventListener('scroll', this.checkPosition, {capture: true})
     }
 }
 

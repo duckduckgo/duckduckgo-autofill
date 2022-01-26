@@ -23,7 +23,7 @@ const getIdentitiesIcon = (input, {device}) => {
 
 /**
  * A map of config objects. These help by centralising here some complexity
- * TODO: Why is `emailNew` not part of 'SupportedMainTypes'?
+ * TODO: We're removing emailNew everywhere. The new thing is identities.emailAddress. We still have to backport this properly to other platforms.
  * @type {Record<SupportedMainTypes & {'emailNew': InputTypeConfig}, InputTypeConfig>}
  */
 const inputTypeConfig = {

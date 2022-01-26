@@ -44,11 +44,6 @@ interface PMData {
 
 type APIResponse<Type> = Promise<{ success: [Type], error?: string }>
 
-interface Window {
-     EmailInterface: any
-     webkit: any
-}
-
 interface EmailAddresses {
      privateAddress?: string,
      personalAddress?: string

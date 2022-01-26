@@ -157,19 +157,15 @@ const safeExecute = (el, fn) => {
     const intObs = new IntersectionObserver((changes) => {
         for (const change of changes) {
             // Feature detection
-            // @ts-ignore todo: Why does TS not understand .isVisible here?
             if (typeof change.isVisible === 'undefined') {
                 // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
-                // @ts-ignore
                 change.isVisible = true
             }
-            // @ts-ignore
             if (change.isIntersecting && change.isVisible) {
                 fn()
             }
         }
         intObs.disconnect()
-    // @ts-ignore todo: Why does TD think trackVisibility is invalid?
     }, {trackVisibility: true, delay: 100})
     intObs.observe(el)
 }
