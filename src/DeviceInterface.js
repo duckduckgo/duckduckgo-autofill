@@ -144,6 +144,9 @@ class InterfacePrototype {
             window.addEventListener('load', start)
         }
     }
+    getActiveForm () {
+        return [...forms.values()].find((form) => form.tooltip)
+    }
     setupAutofill () {}
     getAddresses () {}
     refreshAlias () {}
