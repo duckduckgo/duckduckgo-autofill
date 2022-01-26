@@ -70,7 +70,7 @@ const ensureIsLastInDOM = function () {
 }
 
 class Tooltip {
-    constructor (input, associatedForm, Interface) {
+    constructor (input, associatedForm, deviceInterface) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
         this.host = this.shadow.host
         this.tooltip = null
@@ -83,7 +83,7 @@ class Tooltip {
         addInlineStyles(this.host, forcedVisibilityStyles)
         this.input = input
         this.associatedForm = associatedForm
-        this.interface = Interface
+        this.interface = deviceInterface
         this.count = 0
     }
     append () {
