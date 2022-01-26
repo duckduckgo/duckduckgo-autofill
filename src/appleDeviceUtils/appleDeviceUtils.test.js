@@ -1,4 +1,4 @@
-const {wkSendAndWait} = require('./AppleDeviceUtils')
+const {wkSendAndWait} = require('./appleDeviceUtils')
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data
