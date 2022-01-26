@@ -38,7 +38,7 @@ ${includeStyles}
         this.addressEl = this.shadow.querySelector('.js-address')
 
         this.updateAddresses = (addresses) => {
-            if (addresses) {
+            if (addresses && this.addressEl) {
                 this.addresses = addresses
                 this.addressEl.textContent = formatDuckAddress(addresses.personalAddress)
             }

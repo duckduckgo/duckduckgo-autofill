@@ -61,7 +61,7 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
 
         this.autofillButtons.forEach((btn) => {
             this.registerClickableButton(btn, () => {
-                this.interface[`${config.autofillMethod}`](btn.id).then(({success, error}) => {
+                this.interface[`${config.autofillMethod}`](btn.id).then(({success}) => {
                     if (success) {
                         this.associatedForm.autofillData(success, config.type)
                         if (btn.id === 'privateAddress') this.interface.refreshAlias()

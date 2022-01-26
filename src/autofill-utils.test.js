@@ -18,7 +18,7 @@ const renderInputWithEvents = () => {
 }
 
 afterEach(() => {
-    document.body.innerHTML = null
+    document.body.innerHTML = ''
 })
 
 describe('value setting', function () {

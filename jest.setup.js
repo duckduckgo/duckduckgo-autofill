@@ -1,5 +1,6 @@
 Object.assign(global, require('jest-chrome'))
 // Mocks chrome API calls needed for autofill to run successfully
+// @ts-ignore
 chrome.runtime.sendMessage.mockImplementation(
     (message, callback) => {
         let response = {}
@@ -21,6 +22,7 @@ const crypto = require('crypto')
 Object.defineProperty(global.self, 'crypto', {
     value: {
         ...global.self.crypto,
+        // @ts-ignore TS doesn't know of `crypto.webcrypto.subtle`
         subtle: crypto.webcrypto.subtle,
         getRandomValues: arr => crypto.randomFillSync(arr)
     }

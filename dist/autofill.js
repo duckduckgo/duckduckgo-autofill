@@ -68,18 +68,21 @@ const attachTooltip = function (form, input) {
 
 let attempts = 0;
 
-var _addresses = new WeakMap();
+var _addresses2 = new WeakMap();
 
-var _data = new WeakMap();
+var _data2 = new WeakMap();
 
 class InterfacePrototype {
   constructor() {
-    _addresses.set(this, {
+    _addresses2.set(this, {
       writable: true,
-      value: {}
+      value: {
+        privateAddress: '',
+        personalAddress: ''
+      }
     });
 
-    _data.set(this, {
+    _data2.set(this, {
       writable: true,
       value: {
         credentials: [],
@@ -92,15 +95,15 @@ class InterfacePrototype {
   get hasLocalAddresses() {
     var _classPrivateFieldGet2, _classPrivateFieldGet3;
 
-    return !!((_classPrivateFieldGet2 = _classPrivateFieldGet(this, _addresses)) !== null && _classPrivateFieldGet2 !== void 0 && _classPrivateFieldGet2.privateAddress && (_classPrivateFieldGet3 = _classPrivateFieldGet(this, _addresses)) !== null && _classPrivateFieldGet3 !== void 0 && _classPrivateFieldGet3.personalAddress);
+    return !!((_classPrivateFieldGet2 = _classPrivateFieldGet(this, _addresses2)) !== null && _classPrivateFieldGet2 !== void 0 && _classPrivateFieldGet2.privateAddress && (_classPrivateFieldGet3 = _classPrivateFieldGet(this, _addresses2)) !== null && _classPrivateFieldGet3 !== void 0 && _classPrivateFieldGet3.personalAddress);
   }
 
   getLocalAddresses() {
-    return _classPrivateFieldGet(this, _addresses);
+    return _classPrivateFieldGet(this, _addresses2);
   }
 
   storeLocalAddresses(addresses) {
-    _classPrivateFieldSet(this, _addresses, addresses); // When we get new duck addresses, add them to the identities list
+    _classPrivateFieldSet(this, _addresses2, addresses); // When we get new duck addresses, add them to the identities list
 
 
     const identities = this.getLocalIdentities();
@@ -112,7 +115,7 @@ class InterfacePrototype {
       privateAddressIdentity.emailAddress = formatDuckAddress(addresses.privateAddress);
     } else {
       // Otherwise, add both addresses
-      _classPrivateFieldGet(this, _data).identities = this.addDuckAddressesToIdentities(identities);
+      _classPrivateFieldGet(this, _data2).identities = this.addDuckAddressesToIdentities(identities);
     }
   }
   /** @type { PMData } */
@@ -164,31 +167,31 @@ class InterfacePrototype {
 
     data.identities = this.addDuckAddressesToIdentities(updatedIdentities);
 
-    _classPrivateFieldSet(this, _data, data);
+    _classPrivateFieldSet(this, _data2, data);
   }
 
   get hasLocalCredentials() {
-    return _classPrivateFieldGet(this, _data).credentials.length > 0;
+    return _classPrivateFieldGet(this, _data2).credentials.length > 0;
   }
 
   getLocalCredentials() {
-    return _classPrivateFieldGet(this, _data).credentials.map(cred => delete cred.password && cred);
+    return _classPrivateFieldGet(this, _data2).credentials.map(cred => delete cred.password && cred);
   }
 
   get hasLocalIdentities() {
-    return _classPrivateFieldGet(this, _data).identities.length > 0;
+    return _classPrivateFieldGet(this, _data2).identities.length > 0;
   }
 
   getLocalIdentities() {
-    return _classPrivateFieldGet(this, _data).identities;
+    return _classPrivateFieldGet(this, _data2).identities;
   }
 
   get hasLocalCreditCards() {
-    return _classPrivateFieldGet(this, _data).creditCards.length > 0;
+    return _classPrivateFieldGet(this, _data2).creditCards.length > 0;
   }
 
   getLocalCreditCards() {
-    return _classPrivateFieldGet(this, _data).creditCards;
+    return _classPrivateFieldGet(this, _data2).creditCards;
   }
 
   init() {
@@ -210,7 +213,7 @@ class InterfacePrototype {
     return [...forms.values()].find(form => form.tooltip);
   }
 
-  setupAutofill() {}
+  setupAutofill(_opts) {}
 
   getAddresses() {}
 
@@ -232,7 +235,7 @@ class InterfacePrototype {
     }
   }
 
-  storeUserData() {}
+  storeUserData(_data) {}
 
   addDeviceListeners() {}
 
@@ -245,11 +248,11 @@ class InterfacePrototype {
   getAlias() {} // PM endpoints
 
 
-  storeCredentials() {}
+  storeCredentials(_opts) {}
 
   getAccounts() {}
 
-  getAutofillCredentials() {}
+  getAutofillCredentials(_id) {}
 
   openManagePasswords() {}
 
@@ -266,7 +269,7 @@ class ExtensionInterface extends InterfacePrototype {
     } = {
       shouldLog: false
     }) => {
-      this.getAddresses().then(addresses => {
+      this.getAddresses().then(_addresses => {
         if (this.hasLocalAddresses) {
           notifyWebApp({
             deviceSignedIn: {
@@ -292,7 +295,7 @@ class ExtensionInterface extends InterfacePrototype {
       refreshAlias: true
     }, addresses => this.storeLocalAddresses(addresses));
 
-    this.trySigningIn = () => {
+    this.trySigningIn = async () => {
       if (isDDGDomain()) {
         sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData').then(data => this.storeUserData(data));
       }
@@ -480,7 +483,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * Sends credentials to the native layer
-     * @param {{username: String, password: String}} credentials
+     * @param {{username: string, password: string}} credentials
      */
 
 
@@ -526,7 +529,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     /**
      * Gets a single identity obj once the user requests it
      * @param {Number} id
-     * @returns {Promise<{success: IdentityObject}>}
+     * @returns {Promise<{success: IdentityObject | undefined}>}
      */
 
 
@@ -695,6 +698,10 @@ class Form {
       } = this.getValues();
       return !!password;
     };
+    /**
+     * @type {IntersectionObserver | null}
+     */
+
 
     this.intObs = new IntersectionObserver(entries => {
       for (const entry of entries) {
@@ -703,13 +710,15 @@ class Form {
     });
 
     this.removeTooltip = e => {
+      var _this$intObs;
+
       if (this.isAutofilling || !this.tooltip || e && e.target === this.tooltip.host) {
         return;
       }
 
       this.tooltip.remove();
       this.tooltip = null;
-      this.intObs.disconnect();
+      (_this$intObs = this.intObs) === null || _this$intObs === void 0 ? void 0 : _this$intObs.disconnect();
       window.removeEventListener('pointerdown', this.removeTooltip, {
         capture: true
       });
@@ -835,7 +844,7 @@ class Form {
     const hasIcon = !!config.getIconBase(input, this);
 
     if (hasIcon) {
-      this.addAutofillStyles(input, config);
+      this.addAutofillStyles(input);
       this.addListener(input, 'mousemove', e => {
         if (isEventWithinDax(e, e.target)) {
           e.target.style.setProperty('cursor', 'pointer', 'important');
@@ -868,7 +877,7 @@ class Form {
     if (input.nodeName !== 'SELECT') {
       const events = ['pointerdown'];
       if (!isMobileApp) events.push('focus');
-      events.forEach(ev => this.addListener(input, ev, handler, true));
+      events.forEach(ev => this.addListener(input, ev, handler));
     }
 
     return this;
@@ -1040,7 +1049,7 @@ class FormAnalyzer {
       headings.forEach(({
         textContent
       }) => {
-        textContent = removeExcessWhitespace(textContent);
+        textContent = removeExcessWhitespace(textContent || '');
         this.updateSignal({
           string: textContent,
           strength: 0.5,
@@ -1059,9 +1068,11 @@ class FormAnalyzer {
     const buttons = document.querySelectorAll("\n                button[type=submit],\n                button:not([type]),\n                [role=button]\n            ");
     buttons.forEach(button => {
       // if the button has a form, it's not related to our input, because our input has no form here
-      if (!button.form && !button.closest('form')) {
-        this.evaluateElement(button);
-        this.evaluateElAttributes(button, 0.5);
+      if (button instanceof HTMLButtonElement) {
+        if (!button.form && !button.closest('form')) {
+          this.evaluateElement(button);
+          this.evaluateElAttributes(button, 0.5);
+        }
       }
     });
   }
@@ -1498,13 +1509,14 @@ const inferElementLocale = el => {
 /**
  * Tries to format the country code into a localised country name
  * @param {HTMLInputElement | HTMLSelectElement} el
- * @param {string} addressCountryCode
+ * @param {{addressCountryCode?: string}} options
  */
 
 
-const getCountryName = (el, {
-  addressCountryCode
-}) => {
+const getCountryName = (el, options = {}) => {
+  const {
+    addressCountryCode
+  } = options;
   if (!addressCountryCode) return ''; // Try to infer the field language or fallback to en
 
   const elLocale = inferElementLocale(el);
@@ -1516,14 +1528,16 @@ const getCountryName = (el, {
     const countryNameRegex = new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["", "|", ""])), localisedCountryName.replaceAll(' ', '.?'), englishCountryName.replaceAll(' ', '.?')), 'i');
     const countryCodeRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), addressCountryCode), 'i'); // We check the country code first because it's more accurate
 
-    for (const option of el.options) {
-      if (countryCodeRegex.test(option.value)) {
-        return option.value;
+    if (el instanceof HTMLSelectElement) {
+      for (const option of el.options) {
+        if (countryCodeRegex.test(option.value)) {
+          return option.value;
+        }
       }
-    }
 
-    for (const option of el.options) {
-      if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText)) return option.value;
+      for (const option of el.options) {
+        if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText)) return option.value;
+      }
     }
   }
 
@@ -1576,7 +1590,7 @@ const getExplicitLabelsText = el => {
 
   const text = [...(el.labels || [])].reduce((text, label) => "".concat(text, " ").concat(label.textContent), '');
   const ariaLabel = el.getAttribute('aria-label') || '';
-  const labelledByText = ((_document$getElementB = document.getElementById(el.getAttribute('aria-labelled'))) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.textContent) || '';
+  const labelledByText = ((_document$getElementB = document.getElementById(el.getAttribute('aria-labelled') || '')) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.textContent) || '';
   return removeExcessWhitespace("".concat(text, " ").concat(ariaLabel, " ").concat(labelledByText));
 };
 /**
@@ -1623,7 +1637,7 @@ const getLargestMeaningfulContainer = (el, form) => {
 };
 /**
  * Tries to infer input subtype, with checks in decreasing order of reliability
- * @type (el: HTMLInputElement, form: HTMLFormElement, matchers: []Matcher) => string|undefined
+ * @type {(el: HTMLInputElement, form: HTMLFormElement, matchers: Matcher[]) => string|undefined}
  */
 
 
@@ -1661,21 +1675,21 @@ const getSubtypeFromMatchers = (el, form, matchers) => {
 };
 /**
  * Tries to infer if input is for password
- * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
+ * @type {(el: HTMLInputElement, form: HTMLFormElement) => Boolean}
  */
 
 
 const isPassword = (el, form) => !!getSubtypeFromMatchers(el, form, [PASSWORD_MATCHER]);
 /**
  * Tries to infer if input is for email
- * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
+ * @type {(el: HTMLInputElement, form: HTMLFormElement) => Boolean}
  */
 
 
 const isEmail = (el, form) => !!getSubtypeFromMatchers(el, form, [EMAIL_MATCHER]);
 /**
  * Tries to infer if input is for username
- * @type (el: HTMLInputElement, form: HTMLFormElement) => Boolean
+ * @type {(el: HTMLInputElement, form: HTMLFormElement) => Boolean}
  */
 
 
@@ -1688,6 +1702,8 @@ const isUserName = (el, form) => !!getSubtypeFromMatchers(el, form, [USERNAME_MA
 
 
 const isCCForm = form => {
+  var _form$textContent;
+
   const hasCCSelectorChild = form.querySelector(CC_FIELD_SELECTOR); // If the form contains one of the specific selectors, we have high confidence
 
   if (hasCCSelectorChild) return true; // Read form attributes to find a signal
@@ -1698,15 +1714,15 @@ const isCCForm = form => {
   }) => /(credit|payment).?card/i.test("".concat(name, "=").concat(value)));
   if (hasCCAttribute) return true; // Match form textContent against common cc fields (includes hidden labels)
 
-  const textMatches = form.textContent.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
+  const textMatches = (_form$textContent = form.textContent) === null || _form$textContent === void 0 ? void 0 : _form$textContent.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
 
-  return (textMatches === null || textMatches === void 0 ? void 0 : textMatches.length) > 1;
+  return Boolean(textMatches && textMatches.length > 1);
 };
 /**
  * Tries to infer the input type
  * @param {HTMLInputElement} input
- * @param {Form} form
- * @returns {SupportedSubTypes}
+ * @param {import("./Form")} form
+ * @returns {SupportedSubTypes | string}
  */
 
 
@@ -1724,15 +1740,15 @@ const inferInputType = (input, form) => {
   if (isPassword(input, formEl)) return 'credentials.password';
   if (isEmail(input, formEl)) return form.isLogin ? 'credentials.username' : 'identities.emailAddress';
   if (isUserName(input, formEl)) return 'credentials.username';
-  const idSubtype = getSubtypeFromMatchers(input, form, ID_MATCHERS_LIST);
+  const idSubtype = getSubtypeFromMatchers(input, formEl, ID_MATCHERS_LIST);
   if (idSubtype) return "identities.".concat(idSubtype);
   return 'unknown';
 };
 /**
  * Sets the input type as a data attribute to the element and returns it
  * @param {HTMLInputElement} input
- * @param {Form} form
- * @returns {SupportedSubTypes}
+ * @param {import("./Form")} form
+ * @returns {SupportedSubTypes | string}
  */
 
 
@@ -1744,7 +1760,7 @@ const setInputType = (input, form) => {
 /**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedSubTypes}
+ * @returns {SupportedSubTypes | string}
  */
 
 
@@ -1755,8 +1771,8 @@ const getInputMainType = input => {
 };
 /**
  * Retrieves the input subtype
- * @param {HTMLInputElement} input
- * @returns {SupportedSubTypes}
+ * @param {HTMLInputElement|Element} input
+ * @returns {SupportedSubTypes | string}
  */
 
 
@@ -1811,7 +1827,7 @@ const getInputConfig = require('./inputTypeConfig.js');
 /**
  * Returns the css-ready base64 encoding of the icon for the given input
  * @param {HTMLInputElement} input
- * @param {Form} form
+ * @param {import("./Form")} form
  * @param {'base' | 'filled'} type
  * @return {string}
  */
@@ -1850,7 +1866,7 @@ const getBasicStyles = (input, icon) => ({
 /**
  * Get inline styles for the injected icon, base state
  * @param {HTMLInputElement} input
- * @param {Form} form
+ * @param {import("./Form")} form
  * @return {Object<string, string>}
  */
 
@@ -1863,7 +1879,7 @@ const getIconStylesBase = (input, form) => {
 /**
  * Get inline styles for the injected icon, autofilled state
  * @param {HTMLInputElement} input
- * @param {Form} form
+ * @param {import("./Form")} form
  * @return {Object<string, string>}
  */
 
@@ -1924,7 +1940,8 @@ const getIdentitiesIcon = (input, {
 };
 /**
  * A map of config objects. These help by centralising here some complexity
- * @type {Object<SupportedMainTypes, InputTypeConfig>}
+ * TODO: Why is `emailNew` not part of 'SupportedMainTypes'?
+ * @type {Record<SupportedMainTypes & {'emailNew': InputTypeConfig}, InputTypeConfig>}
  */
 
 
@@ -1933,7 +1950,7 @@ const inputTypeConfig = {
     type: 'emailNew',
     getIconBase: () => getDaxImg,
     getIconFilled: () => getDaxImg,
-    shouldDecorate: (input, {
+    shouldDecorate: (_input, {
       device
     }) => {
       if (isMobileApp) return device.isDeviceSignedIn();
@@ -1948,12 +1965,12 @@ const inputTypeConfig = {
     type: 'credentials',
     getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
     getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-    shouldDecorate: (input, {
+    shouldDecorate: (_input, {
       isLogin,
       device
     }) => isLogin && device.hasLocalCredentials,
     dataType: 'Credentials',
-    displayTitlePropName: (input, data) => data.username,
+    displayTitlePropName: (_input, data) => data.username,
     displaySubtitlePropName: '•••••••••••••••',
     autofillMethod: 'getAutofillCredentials'
   },
@@ -1961,11 +1978,11 @@ const inputTypeConfig = {
     type: 'creditCard',
     getIconBase: () => '',
     getIconFilled: () => '',
-    shouldDecorate: (input, {
+    shouldDecorate: (_input, {
       device
     }) => device.hasLocalCreditCards,
     dataType: 'CreditCards',
-    displayTitlePropName: (input, data) => data.title,
+    displayTitlePropName: (_input, data) => data.title,
     displaySubtitlePropName: 'displayNumber',
     autofillMethod: 'getAutofillCreditCard'
   },
@@ -2000,7 +2017,7 @@ const inputTypeConfig = {
     getIconFilled: () => '',
     shouldDecorate: () => false,
     dataType: '',
-    displayTitlePropName: '',
+    displayTitlePropName: () => 'unknown',
     displaySubtitlePropName: '',
     autofillMethod: ''
   }
@@ -2032,7 +2049,8 @@ const listenForGlobalFormSubmission = () => {
 
   try {
     const observer = new PerformanceObserver(list => {
-      const entries = list.getEntries().filter(entry => ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && entry.name.match(/login|sign-in|signin|session/));
+      const entries = list.getEntries().filter(entry => // @ts-ignore why does TS not know about `entry.initiatorType`?
+      ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && entry.name.match(/login|sign-in|signin|session/));
       if (!entries.length) return;
       const filledForm = [...forms.values()].find(form => form.hasValues());
       filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler();
@@ -2274,8 +2292,7 @@ class DataAutofill extends Tooltip {
     this.autofillButtons.forEach(btn => {
       this.registerClickableButton(btn, () => {
         this.interface["".concat(config.autofillMethod)](btn.id).then(({
-          success,
-          error
+          success
         }) => {
           if (success) {
             this.associatedForm.autofillData(success, config.type);
@@ -2315,7 +2332,7 @@ class EmailAutofill extends Tooltip {
     this.addressEl = this.shadow.querySelector('.js-address');
 
     this.updateAddresses = addresses => {
-      if (addresses) {
+      if (addresses && this.addressEl) {
         this.addresses = addresses;
         this.addressEl.textContent = formatDuckAddress(addresses.personalAddress);
       }
@@ -2348,6 +2365,10 @@ const {
   getDaxBoundingBox,
   isApp
 } = require('../autofill-utils');
+/**
+ * @this {Tooltip}
+ */
+
 
 const updatePosition = function ({
   left,
@@ -2356,7 +2377,9 @@ const updatePosition = function ({
   const shadow = this.shadow; // If the stylesheet is not loaded wait for load (Chrome bug)
 
   if (!shadow.styleSheets.length) {
-    this.stylesheet.addEventListener('load', this.checkPosition);
+    var _this$stylesheet;
+
+    (_this$stylesheet = this.stylesheet) === null || _this$stylesheet === void 0 ? void 0 : _this$stylesheet.addEventListener('load', this.checkPosition);
     return;
   }
 
@@ -2374,6 +2397,10 @@ const updatePosition = function ({
   const newRule = ".wrapper {transform: translate(".concat(left, "px, ").concat(top, "px);}");
   shadow.styleSheets[0].insertRule(newRule, this.transformRuleIndex);
 };
+/**
+ * @this {Tooltip}
+ */
+
 
 const checkPosition = function () {
   if (this.animationFrame) {
@@ -2398,6 +2425,10 @@ const checkPosition = function () {
     this.animationFrame = null;
   });
 };
+/**
+ * @this {Tooltip}
+ */
+
 
 const ensureIsLastInDOM = function () {
   this.count = this.count || 0; // If DDG el is not the last in the doc, move it there
@@ -2452,11 +2483,13 @@ class Tooltip {
       'display': 'block',
       'visibility': 'visible',
       'opacity': '1'
-    };
+    }; // @ts-ignore how to narrow this.host to HTMLElement?
+
     addInlineStyles(this.host, forcedVisibilityStyles);
     this.input = input;
     this.associatedForm = associatedForm;
     this.interface = Interface;
+    this.count = 0;
   }
 
   append() {
@@ -2465,7 +2498,6 @@ class Tooltip {
 
   remove() {
     window.removeEventListener('scroll', this.checkPosition, {
-      passive: true,
       capture: true
     });
     this.resObs.disconnect();
@@ -2491,7 +2523,7 @@ class Tooltip {
     this.clickableButtons.set(btn, handler); // Needed because clicks within the shadow dom don't provide this info to the outside
 
     btn.addEventListener('mouseenter', e => this.setActiveButton(e));
-    btn.addEventListener('mouseleave', e => this.unsetActiveButton(e));
+    btn.addEventListener('mouseleave', () => this.unsetActiveButton());
   }
 
   dispatchClick() {
@@ -2503,13 +2535,15 @@ class Tooltip {
   }
 
   init() {
+    var _this$stylesheet2;
+
     this.animationFrame = null;
     this.top = 0;
     this.left = 0;
     this.transformRuleIndex = null;
     this.stylesheet = this.shadow.querySelector('link, style'); // Un-hide once the style is loaded, to avoid flashing unstyled content
 
-    this.stylesheet.addEventListener('load', () => this.tooltip.removeAttribute('hidden'));
+    (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => this.tooltip.removeAttribute('hidden'));
     this.append();
     this.resObs.observe(document.body);
     this.mutObs.observe(document.body, {
@@ -2745,6 +2779,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     window.addEventListener('message', handler);
   });
 }; // Access the original setter (needed to bypass React's implementation on mobile)
+// @ts-ignore
 
 
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
@@ -2764,7 +2799,7 @@ const setValueForInput = (el, val) => {
   el.dispatchEvent(new Event('keydown', {
     bubbles: true
   }));
-  originalSet.call(el, val);
+  originalSet === null || originalSet === void 0 ? void 0 : originalSet.call(el, val);
   const events = [new Event('input', {
     bubbles: true
   }), new Event('keyup', {
@@ -2774,7 +2809,7 @@ const setValueForInput = (el, val) => {
   })];
   events.forEach(ev => el.dispatchEvent(ev)); // We call this again to make sure all forms are happy
 
-  originalSet.call(el, val);
+  originalSet === null || originalSet === void 0 ? void 0 : originalSet.call(el, val);
   events.forEach(ev => el.dispatchEvent(ev));
   el.blur();
   return true;
@@ -2825,7 +2860,7 @@ const setValueForSelect = (el, val) => {
     } // TODO: try to match localised month names
 
 
-    if (value.includes(val)) {
+    if (value.includes(String(val))) {
       option.selected = true;
       fireEventsOnSelect(el);
       return true;
@@ -2833,7 +2868,7 @@ const setValueForSelect = (el, val) => {
   }
 
   for (const option of el.options) {
-    if (option.innerText.includes(val)) {
+    if (option.innerText.includes(String(val))) {
       option.selected = true;
       fireEventsOnSelect(el);
       return true;
@@ -2852,8 +2887,8 @@ const setValueForSelect = (el, val) => {
 
 
 const setValue = (el, val) => {
-  if (el.nodeName === 'INPUT') return setValueForInput(el, val);
-  if (el.nodeName === 'SELECT') return setValueForSelect(el, val);
+  if (el instanceof HTMLInputElement) return setValueForInput(el, val);
+  if (el instanceof HTMLSelectElement) return setValueForSelect(el, val);
   return false;
 };
 /**
@@ -2866,17 +2901,20 @@ const safeExecute = (el, fn) => {
   const intObs = new IntersectionObserver(changes => {
     for (const change of changes) {
       // Feature detection
+      // @ts-ignore todo: Why does TS not understand .isVisible here?
       if (typeof change.isVisible === 'undefined') {
         // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
+        // @ts-ignore
         change.isVisible = true;
-      }
+      } // @ts-ignore
+
 
       if (change.isIntersecting && change.isVisible) {
         fn();
       }
     }
 
-    intObs.disconnect();
+    intObs.disconnect(); // @ts-ignore todo: Why does TD think trackVisibility is invalid?
   }, {
     trackVisibility: true,
     delay: 100
@@ -3057,7 +3095,7 @@ const DeviceInterface = require('./DeviceInterface');
 const inject = () => {
   // Global listener for event delegation
   window.addEventListener('pointerdown', e => {
-    if (!e.isTrusted) return;
+    if (!e.isTrusted) return; // @ts-ignore
 
     if (e.target.nodeName === 'DDG-AUTOFILL') {
       e.preventDefault();
@@ -3083,7 +3121,9 @@ const inject = () => {
     window.addEventListener('submit', e => {
       var _forms$get;
 
-      return (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler();
+      return (// @ts-ignore
+        (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler()
+      );
     }, true);
   }
 
@@ -3114,6 +3154,7 @@ module.exports = inject;
 /*
  * @see https://developers.google.com/web/updates/2015/08/using-requestidlecallback
  */
+// @ts-ignore
 window.requestIdleCallback = window.requestIdleCallback || function (cb) {
   return setTimeout(function () {
     const start = Date.now(); // eslint-disable-next-line standard/no-callback-literal
@@ -3130,6 +3171,8 @@ window.requestIdleCallback = window.requestIdleCallback || function (cb) {
 window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
   clearTimeout(id);
 };
+
+module.exports = {};
 
 },{}],24:[function(require,module,exports){
 "use strict";
@@ -3174,15 +3217,21 @@ const scanForInputs = DeviceInterface => {
     const previouslyFoundParent = [...forms.keys()].find(form => form.contains(parentForm));
 
     if (previouslyFoundParent) {
-      // If we've already met the form or a descendant, add the input
-      forms.get(previouslyFoundParent).addInput(input);
-    } else {
       var _forms$get;
 
+      // If we've already met the form or a descendant, add the input
+      (_forms$get = forms.get(previouslyFoundParent)) === null || _forms$get === void 0 ? void 0 : _forms$get.addInput(input);
+    } else {
       // if this form is an ancestor of an existing form, remove that before adding this
       const childForm = [...forms.keys()].find(form => parentForm.contains(form));
-      (_forms$get = forms.get(childForm)) === null || _forms$get === void 0 ? void 0 : _forms$get.destroy();
-      forms.delete(childForm);
+
+      if (childForm) {
+        var _forms$get2;
+
+        (_forms$get2 = forms.get(childForm)) === null || _forms$get2 === void 0 ? void 0 : _forms$get2.destroy();
+        forms.delete(childForm);
+      }
+
       forms.set(parentForm, new Form(parentForm, input, DeviceInterface));
     }
   };

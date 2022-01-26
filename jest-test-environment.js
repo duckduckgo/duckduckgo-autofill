@@ -6,6 +6,7 @@ module.exports = class CustomTestEnvironment extends Environment {
         if (typeof this.global.TextEncoder === 'undefined') {
             const { TextEncoder, TextDecoder } = require('util')
             this.global.TextEncoder = TextEncoder
+            // @ts-ignore
             this.global.TextDecoder = TextDecoder
         }
     }

@@ -96,7 +96,7 @@ class FormAnalyzer {
         const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]')
         if (headings) {
             headings.forEach(({textContent}) => {
-                textContent = removeExcessWhitespace(textContent)
+                textContent = removeExcessWhitespace(textContent || '')
                 this.updateSignal({
                     string: textContent,
                     strength: 0.5,
@@ -119,9 +119,11 @@ class FormAnalyzer {
             `)
         buttons.forEach(button => {
             // if the button has a form, it's not related to our input, because our input has no form here
-            if (!button.form && !button.closest('form')) {
-                this.evaluateElement(button)
-                this.evaluateElAttributes(button, 0.5)
+            if (button instanceof HTMLButtonElement) {
+                if (!button.form && !button.closest('form')) {
+                    this.evaluateElement(button)
+                    this.evaluateElAttributes(button, 0.5)
+                }
             }
         })
     }

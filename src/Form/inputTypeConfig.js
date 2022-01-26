@@ -23,14 +23,15 @@ const getIdentitiesIcon = (input, {device}) => {
 
 /**
  * A map of config objects. These help by centralising here some complexity
- * @type {Object<SupportedMainTypes, InputTypeConfig>}
+ * TODO: We're removing emailNew everywhere. The new thing is identities.emailAddress. We still have to backport this properly to other platforms.
+ * @type {Record<SupportedMainTypes & {'emailNew': InputTypeConfig}, InputTypeConfig>}
  */
 const inputTypeConfig = {
     emailNew: {
         type: 'emailNew',
         getIconBase: () => getDaxImg,
         getIconFilled: () => getDaxImg,
-        shouldDecorate: (input, {device}) => {
+        shouldDecorate: (_input, {device}) => {
             if (isMobileApp) return device.isDeviceSignedIn()
 
             return device.hasLocalAddresses
@@ -44,9 +45,9 @@ const inputTypeConfig = {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
+        shouldDecorate: (_input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
         dataType: 'Credentials',
-        displayTitlePropName: (input, data) => data.username,
+        displayTitlePropName: (_input, data) => data.username,
         displaySubtitlePropName: '•••••••••••••••',
         autofillMethod: 'getAutofillCredentials'
     },
@@ -54,9 +55,9 @@ const inputTypeConfig = {
         type: 'creditCard',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (input, {device}) => device.hasLocalCreditCards,
+        shouldDecorate: (_input, {device}) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
-        displayTitlePropName: (input, data) => data.title,
+        displayTitlePropName: (_input, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
         autofillMethod: 'getAutofillCreditCard'
     },
@@ -85,7 +86,7 @@ const inputTypeConfig = {
         getIconFilled: () => '',
         shouldDecorate: () => false,
         dataType: '',
-        displayTitlePropName: '',
+        displayTitlePropName: () => 'unknown',
         displaySubtitlePropName: '',
         autofillMethod: ''
     }

@@ -37,7 +37,7 @@ const testRegexForCCLabels = (cases) => {
 }
 
 afterEach(() => {
-    document.body.innerHTML = null
+    document.body.innerHTML = ''
 })
 
 describe('Input Classifiers', () => {
@@ -136,6 +136,7 @@ describe('Real-world form tests', () => {
                     manuallyScoredFields.forEach((field) => {
                         const inferredType = getInputSubtype(field)
                         const manualScore = field.getAttribute('data-manual-scoring')
+                        // @ts-ignore
                         expect(inferredType).toMatch(manualScore)
                     })
 
@@ -144,8 +145,10 @@ describe('Real-world form tests', () => {
                     const manuallyIdentifiedFields = document.querySelectorAll('[data-manual-scoring]:not([data-manual-scoring=unknown])')
                     expect(identifiedFields.length).toEqual(manuallyIdentifiedFields.length)
 
+                    // @ts-ignore
                     done()
                 } catch (e) {
+                    // @ts-ignore
                     done(e)
                 }
             })
