@@ -1,4 +1,4 @@
-const {safeExecute, addInlineStyles, getDaxBoundingBox, isApp} = require('../autofill-utils')
+const {safeExecute, addInlineStyles, getDaxBoundingBox, isApp, isTopFrame} = require('../autofill-utils')
 
 /**
  * @this {Tooltip}
@@ -22,7 +22,10 @@ const updatePosition = function ({left, top}) {
         this.transformRuleIndex = shadow.styleSheets[0].rules.length
     }
 
-    const newRule = `.wrapper {transform: translate(${left}px, ${top}px);}`
+    let newRule = `.wrapper {transform: translate(${left}px, ${top}px);}`
+    if (isTopFrame) {
+        newRule = '.wrapper {transform: none; }'
+    }
     shadow.styleSheets[0].insertRule(newRule, this.transformRuleIndex)
 }
 
@@ -136,6 +139,10 @@ class Tooltip {
             safeExecute(this.activeButton, handler)
         }
     }
+    setSize () {
+        const innerNode = this.shadow.querySelector('.wrapper--data')
+        this.interface.setSize({height: innerNode.clientHeight, width: innerNode.clientWidth})
+    }
     init () {
         this.animationFrame = null
         this.top = 0
@@ -151,6 +158,14 @@ class Tooltip {
         this.resObs.observe(document.body)
         this.mutObs.observe(document.body, {childList: true, subtree: true, attributes: true})
         window.addEventListener('scroll', this.checkPosition, {capture: true})
+        this.setSize()
+
+        // TODO Not ideal, we wait till after the form is filled.
+        requestIdleCallback(() => {
+            requestIdleCallback(() => {
+                this.setSize()
+            })
+        })
     }
 }
 

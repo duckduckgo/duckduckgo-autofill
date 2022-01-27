@@ -228,7 +228,7 @@ class Form {
                 }
 
                 this.touched.add(e.target)
-                this.device.attachTooltip(this, e.target)
+                this.device.attachTooltip(this, e.target, e)
             }
         }
 

@@ -1,5 +1,6 @@
 const {
     isApp,
+    isTopFrame,
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
@@ -12,6 +13,7 @@ class DataAutofill extends Tooltip {
 
         const config = getInputConfig(input)
         const subtype = getInputSubtype(input)
+        this.config = config
 
         this.data = this.interface[`getLocal${config.dataType}`]()
 
@@ -32,9 +34,11 @@ class DataAutofill extends Tooltip {
             return shouldShow
         }
 
+        const desktopClass = isTopFrame ? 'desktop' : ''
+
         this.shadow.innerHTML = `
 ${includeStyles}
-<div class="wrapper wrapper--data">
+<div class="wrapper wrapper--data ${desktopClass}">
     <div class="tooltip tooltip--data" hidden>
         ${this.data.map((singleData) => `
             ${shouldShowSeparator(singleData.id) ? '<hr />' : ''}
@@ -63,7 +67,7 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
             this.registerClickableButton(btn, () => {
                 this.interface[`${config.autofillMethod}`](btn.id).then(({success}) => {
                     if (success) {
-                        this.associatedForm.autofillData(success, config.type)
+                        this.fillForm(success, config.type)
                         if (btn.id === 'privateAddress') this.interface.refreshAlias()
                     }
                 })
@@ -71,6 +75,13 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
         })
 
         this.init()
+    }
+    fillForm (data) {
+        if (isTopFrame) {
+            this.interface.selectedDetail(data, this.config.type)
+        } else {
+            this.associatedForm.autofillData(data, this.config.type)
+        }
     }
 }
 

@@ -5,9 +5,29 @@ const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./Form/selectors')
 /** @type Map<HTMLFormElement, Form> */
 const forms = new Map()
 
+/* TODO check if we need this / should combine with getParentFormElement for a faster lookup
+const getParentFormInstance = (input, parentFormElement) => {
+    // Note that el.contains returns true for el itself
+    return [...forms.keys()].find((form) => form.contains(parentFormElement))
+}
+*/
+
+const getParentFormInstance = (parentFormElement) => {
+    return forms.get(parentFormElement)
+}
+
+const getOrCreateParentFormInstance = (input, parentFormElement, DeviceInterface) => {
+    let parentFormInstance = getParentFormInstance(input, parentFormElement)
+    if (!parentFormInstance) {
+        parentFormInstance = new Form(parentFormElement, input, DeviceInterface)
+        forms.set(parentFormElement, parentFormInstance)
+    }
+    return parentFormInstance
+}
+
 // Accepts the DeviceInterface as an explicit dependency
 const scanForInputs = (DeviceInterface) => {
-    const getParentForm = (input) => {
+    const getParentFormElement = (input) => {
         if (input.form) return input.form
 
         let element = input
@@ -22,29 +42,16 @@ const scanForInputs = (DeviceInterface) => {
                 return element
             }
         }
-
-        return input
     }
 
     const addInput = (input) => {
-        const parentForm = getParentForm(input)
+        const parentFormElement = getParentFormElement(input)
 
-        // Note that el.contains returns true for el itself
-        const previouslyFoundParent = [...forms.keys()].find((form) => form.contains(parentForm))
+        // if this form is an ancestor of an existing form, remove that before adding this
+        const childForm = [...forms.keys()].find((form) => parentFormElement.contains(form))
+        forms.delete(childForm)
 
-        if (previouslyFoundParent) {
-            // If we've already met the form or a descendant, add the input
-            forms.get(previouslyFoundParent)?.addInput(input)
-        } else {
-            // if this form is an ancestor of an existing form, remove that before adding this
-            const childForm = [...forms.keys()].find((form) => parentForm.contains(form))
-            if (childForm) {
-                forms.get(childForm)?.destroy()
-                forms.delete(childForm)
-            }
-
-            forms.set(parentForm, new Form(parentForm, input, DeviceInterface))
-        }
+        getOrCreateParentFormInstance(input, parentFormElement, DeviceInterface)
     }
 
     const findEligibleInput = (context) => {
@@ -92,4 +99,4 @@ const scanForInputs = (DeviceInterface) => {
     })
 }
 
-module.exports = {scanForInputs, forms}
+module.exports = {scanForInputs, forms, getOrCreateParentFormInstance}

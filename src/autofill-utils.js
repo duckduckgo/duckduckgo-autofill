@@ -1,13 +1,14 @@
 const {getInputSubtype} = require('./Form/input-classifiers')
 
 let isApp = false
+let isTopFrame = false
 // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
 // INJECT isApp HERE
+// INJECT isTopFrame HERE
 
-const isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp
-
+let isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp || isTopFrame
+isDDGApp = true // TODO fix
 const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent)
-
 const isMobileApp = isDDGApp && !isApp
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
@@ -240,6 +241,7 @@ function escapeXML (str) {
 
 module.exports = {
     isApp,
+    isTopFrame,
     isDDGApp,
     isAndroid,
     isMobileApp,

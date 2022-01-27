@@ -1,7 +1,8 @@
 const {
     isApp,
     formatDuckAddress,
-    escapeXML
+    escapeXML,
+    isTopFrame
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
 
@@ -15,10 +16,12 @@ class EmailAutofill extends Tooltip {
             ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
 
+        const desktopClass = isTopFrame ? 'desktop' : ''
+
         this.shadow.innerHTML = `
 ${includeStyles}
-<div class="wrapper wrapper--email">
-    <div class="tooltip tooltip--email" hidden>
+<div class="wrapper wrapper--email ${desktopClass}">
+    <div class="tooltip tooltip--data" hidden>
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
                 Use <span class="js-address">${formatDuckAddress(escapeXML(this.addresses.personalAddress))}</span>
@@ -44,17 +47,26 @@ ${includeStyles}
             }
         }
         this.registerClickableButton(this.usePersonalButton, () => {
-            this.associatedForm.autofillEmail(formatDuckAddress(this.addresses.personalAddress))
+            this.fillForm(this.addresses.personalAddress)
         })
         this.registerClickableButton(this.usePrivateButton, () => {
-            this.associatedForm.autofillEmail(formatDuckAddress(this.addresses.privateAddress))
+            const email = this.addresses.privateAddress
             this.interface.refreshAlias()
+            this.fillForm(email)
         })
 
         // Get the alias from the extension
         this.interface.getAddresses().then(this.updateAddresses)
 
         this.init()
+    }
+    fillForm (address) {
+        const formattedAddress = formatDuckAddress(address)
+        if (isTopFrame) {
+            this.interface.selectedDetail({email: formattedAddress}, 'email')
+        } else {
+            this.associatedForm.autofillEmail(formattedAddress)
+        }
     }
 }
 

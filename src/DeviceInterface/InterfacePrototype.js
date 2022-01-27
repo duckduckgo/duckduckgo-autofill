@@ -2,11 +2,13 @@ const {
     ADDRESS_DOMAIN,
     SIGN_IN_MSG,
     isApp,
+    isTopFrame,
     isMobileApp,
     isDDGDomain,
     sendAndWaitForAnswer,
     formatDuckAddress
 } = require('../autofill-utils')
+const {getInputMainType} = require('../Form/input-classifiers')
 const {forms} = require('../scanForInputs')
 const {
     formatFullName
@@ -17,6 +19,8 @@ const DataAutofill = require('../UI/DataAutofill')
 let attempts = 0
 
 class InterfacePrototype {
+    stripCredentials = true
+
     /** @type {{privateAddress: string, personalAddress: string}} */
     #addresses = {
         privateAddress: '',
@@ -88,8 +92,10 @@ class InterfacePrototype {
      * @param { PMData } data
      */
     storeLocalData (data) {
-        data.credentials.forEach((cred) => delete cred.password)
-        data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        if (this.stripCredentials) {
+            data.credentials.forEach((cred) => delete cred.password)
+            data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        }
         // Store the full name as a separate field to simplify autocomplete
         const updatedIdentities = data.identities.map((identity) => ({
             ...identity,
@@ -118,20 +124,31 @@ class InterfacePrototype {
         return this.#data.creditCards
     }
 
+    async startInit () {
+        this.addDeviceListeners()
+        await this.setupAutofill()
+        const event = new CustomEvent('InitComplete', {})
+        window.dispatchEvent(event)
+    }
+
     init () {
-        const start = () => {
-            this.addDeviceListeners()
-            this.setupAutofill()
-        }
         if (document.readyState === 'complete') {
-            start()
+            this.startInit()
         } else {
-            window.addEventListener('load', start)
+            window.addEventListener('load', () => {
+                this.startInit()
+            })
         }
     }
 
-    attachTooltip (form, input) {
+    attachTooltip (form, input, e) {
         form.activeInput = input
+
+        if (!isTopFrame) {
+            const inputType = getInputMainType(input)
+            this.showTooltip(form, input, inputType, e)
+            return
+        }
 
         if (isMobileApp) {
             this.getAlias().then((alias) => {
