@@ -15,33 +15,37 @@ module.exports = `
     transform: translate(-1000px);
     z-index: 2147483647;
 }
-.wrapper--data {
+:not(.desktop).wrapper--data {
     font-family: 'SF Pro Text', -apple-system,
     BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
-.tooltip {
+:not(.desktop) .tooltip {
     position: absolute;
     width: 300px;
     max-width: calc(100vw - 25px);
     z-index: 2147483647;
 }
-.tooltip--data {
-    top: 100%;
-    left: 100%;
-    width: 315px;
-    padding: 4px;
-    border: 0.5px solid rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
+.tooltip--data, #topAutofill {
     background-color: rgba(242, 240, 240, 0.9);
     -webkit-backdrop-filter: blur(40px);
     backdrop-filter: blur(40px);
+}
+.tooltip--data {
+    padding: 4px;
     font-size: 13px;
     line-height: 14px;
     color: #222222;
+}
+:not(.desktop) .tooltip--data {
+    top: 100%;
+    left: 100%;
+    width: 315px;
+    border: 0.5px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
 }
-.tooltip--email {
+:not(.desktop) .tooltip--email {
     top: calc(100% + 6px);
     right: calc(100% - 46px);
     padding: 8px;
