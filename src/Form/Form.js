@@ -1,21 +1,33 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./selectors')
 const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp, isApp} = require('../autofill-utils')
-const {getInputSubtype, setInputType, getInputMainType} = require('./input-classifiers')
+const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const getInputConfig = require('./inputTypeConfig.js')
 const {getUnifiedExpiryDate, formatCCYear, getCountryName} = require('./formatters')
+const {Matching} = require('./matching')
+const {matchingConfiguration} = require('./matching-configuration')
 
 class Form {
-    constructor (form, input, deviceInterface) {
+    /** @type {import("./matching").Matching} */
+    matching;
+    /** @type {HTMLFormElement} */
+    form;
+    /**
+     * @param {HTMLFormElement} form
+     * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {InterfacePrototypeBase} deviceInterface
+     * @param {Matching} [matching]
+     */
+    constructor (form, input, deviceInterface, matching) {
         this.form = form
-        this.formAnalyzer = new FormAnalyzer(form, input)
+        this.matching = matching || new Matching(matchingConfiguration)
+        this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
         this.device = deviceInterface
 
-        /** @type Object<'all' | SupportedMainTypes, Set> */
+        /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {
             all: new Set(),
             credentials: new Set(),
@@ -40,6 +52,7 @@ class Form {
             if (credentials.password) {
                 // ask to store credentials and/or fireproof
                 if (this.shouldPromptToStoreCredentials) {
+                    // @ts-ignore
                     this.device.storeCredentials(credentials)
                 }
                 this.handlerExecuted = true
@@ -137,15 +150,18 @@ class Form {
     }
 
     categorizeInputs () {
-        this.form.querySelectorAll(FORM_ELS_SELECTOR).forEach(input => this.addInput(input))
+        const selector = this.matching.cssSelector('FORM_INPUTS_SELECTOR')
+        this.form.querySelectorAll(selector).forEach(input => this.addInput(input))
     }
 
     get submitButtons () {
-        return [...this.form.querySelectorAll(SUBMIT_BUTTON_SELECTOR)]
+        const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
+        return [...this.form.querySelectorAll(selector)]
             .filter((button) => {
-                const content = button.textContent
-                const ariaLabel = button.getAttribute('aria-label')
-                const title = button.title
+                const content = button.textContent || ''
+                const ariaLabel = button.getAttribute('aria-label') || ''
+                // @ts-ignore
+                const title = button.title || ''
                 // trying to exclude the little buttons to show and hide passwords
                 return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
             })
@@ -164,7 +180,7 @@ class Form {
 
         this.inputs.all.add(input)
 
-        setInputType(input, this)
+        this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
 
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)
@@ -228,6 +244,7 @@ class Form {
                 }
 
                 this.touched.add(e.target)
+                // @ts-ignore
                 this.device.attachTooltip(this, e.target)
             }
         }
@@ -292,11 +309,11 @@ class Form {
             let autofillData = data[inputSubtype]
 
             if (inputSubtype === 'expiration') {
-                autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this.form)
+                autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this)
             }
 
             if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
-                autofillData = formatCCYear(input, autofillData, this.form)
+                autofillData = formatCCYear(input, autofillData, this)
             }
 
             if (inputSubtype === 'addressCountryCode') {
@@ -314,4 +331,4 @@ class Form {
     }
 }
 
-module.exports = Form
+module.exports.Form = Form

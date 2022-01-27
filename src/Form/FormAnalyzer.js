@@ -1,10 +1,20 @@
-const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./selectors')
-const {removeExcessWhitespace} = require('./input-classifiers')
+const {removeExcessWhitespace, Matching} = require('./matching')
 const {TEXT_LENGTH_CUTOFF} = require('../constants')
+const {matchingConfiguration} = require('./matching-configuration')
 
 class FormAnalyzer {
-    constructor (form, input) {
+    /** @type HTMLFormElement */
+    form;
+    /** @type Matching */
+    matching;
+    /**
+     * @param {HTMLFormElement} form
+     * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {Matching} [matching]
+     */
+    constructor (form, input, matching) {
         this.form = form
+        this.matching = matching || new Matching(matchingConfiguration)
         this.autofillSignal = 0
         this.signals = []
 
@@ -148,7 +158,7 @@ class FormAnalyzer {
     evaluateElement (el) {
         const string = this.getText(el)
 
-        if (el.matches(PASSWORD_SELECTOR)) {
+        if (el.matches(this.matching.cssSelector('password'))) {
             // These are explicit signals by the web author, so we weigh them heavily
             this.updateSignal({
                 string: el.getAttribute('autocomplete') || '',
@@ -158,7 +168,7 @@ class FormAnalyzer {
         }
 
         // check button contents
-        if (el.matches(SUBMIT_BUTTON_SELECTOR)) {
+        if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
             // If we're sure this is a submit button, it's a stronger signal
             const strength =
                 el.getAttribute('type') === 'submit' ||

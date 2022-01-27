@@ -3,7 +3,7 @@ require('./requestIdleCallback')
 
 const {forms} = require('./scanForInputs')
 const {isApp} = require('./autofill-utils')
-const DeviceInterface = require('./DeviceInterface')
+const deviceInterface = require('./DeviceInterface')
 
 const inject = () => {
     // Global listener for event delegation
@@ -15,7 +15,8 @@ const inject = () => {
             e.preventDefault()
             e.stopImmediatePropagation()
 
-            const activeForm = DeviceInterface.getActiveForm()
+            // @ts-ignore
+            const activeForm = deviceInterface.getActiveForm()
             if (activeForm) {
                 activeForm.tooltip.dispatchClick()
             }
@@ -27,8 +28,10 @@ const inject = () => {
         const matchingForm = [...forms.values()].find(
             (form) => {
                 const btns = [...form.submitButtons]
+                // @ts-ignore
                 if (btns.includes(e.target)) return true
 
+                // @ts-ignore
                 if (btns.find((btn) => btn.contains(e.target))) return true
             }
         )
@@ -42,7 +45,7 @@ const inject = () => {
         true)
     }
 
-    DeviceInterface.init()
+    deviceInterface.init()
 }
 
 module.exports = inject

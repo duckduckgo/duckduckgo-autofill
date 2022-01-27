@@ -24,6 +24,7 @@
             )
         }
     } catch (e) {
+        console.error(e)
         // Noop, we errored
     }
 })()

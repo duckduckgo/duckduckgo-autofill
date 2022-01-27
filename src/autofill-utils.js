@@ -1,4 +1,4 @@
-const {getInputSubtype} = require('./Form/input-classifiers')
+const {getInputSubtype} = require('./Form/matching')
 
 let isApp = false
 // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`

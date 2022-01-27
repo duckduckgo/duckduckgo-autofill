@@ -1,7 +1,7 @@
 const {isDDGApp, isMobileApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {getInputMainType, getInputSubtype} = require('./input-classifiers')
+const {getInputMainType, getInputSubtype} = require('./matching')
 const {getCountryDisplayName} = require('./formatters')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
