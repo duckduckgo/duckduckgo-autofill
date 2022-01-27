@@ -31,4 +31,17 @@ module.exports = [
     'healthline_newsletter.html',
     'tripadvisor_login.html',
     'tripadvisor_signup.html',
+    'linkedin_login.html',
+    'linkedin_signup.html',
+    'webmd_login.html',
+    'webmd_signup.html',
+    'netflix_login.html',
+    'netflix_signup.html',
+    'apple_login.html',
+    'apple_signup.html',
+    'apple_checkout.html',
+    'homedepot_login.html',
+    'homedepot_signup.html',
+    'yahoo_login.html',
+    'yahoo_signup.html'
 ]
