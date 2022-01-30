@@ -1,6 +1,5 @@
 module.exports = [
     'poor-markup-form.html',
-    'etsy.html',
     'wikipedia_login.html',
     'wikipedia_signup.html',
     'wikipedia_donation.html',
@@ -43,5 +42,12 @@ module.exports = [
     'homedepot_login.html',
     'homedepot_signup.html',
     'yahoo_login.html',
-    'yahoo_signup.html'
+    'yahoo_signup.html',
+    'cnn_newsletter.html',
+    'etsy_login.html',
+    'etsy_signup.html',
+    'etsy_checkout.html',
+    'google_login.html',
+    'google_signup.html',
+    'google_store_checkout.html',
 ]
