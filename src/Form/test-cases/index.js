@@ -68,5 +68,15 @@ module.exports = [
     'quizlet_checkout.html',
     'lowes_login.html',
     'lowes_signup.html',
-    'lowes_checkout.html'
+    'lowes_checkout.html',
+    'idme_login.html',
+    'idme_signup.html',
+    'merriamwebster_login.html',
+    'merriamwebster_signup.html',
+    'steam_login.html',
+    'steam_signup.html',
+    'mapquest_login.html',
+    'mapquest_signup.html',
+    'fox_login.html',
+    'fox_signup.html',
 ]
