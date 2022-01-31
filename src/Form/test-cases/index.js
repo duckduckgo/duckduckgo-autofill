@@ -79,4 +79,14 @@ module.exports = [
     'mapquest_signup.html',
     'fox_login.html',
     'fox_signup.html',
+    'allrecipes_login_signup.html',
+    'quora_login.html',
+    'quora_signup.html',
+    'britannica_login.html',
+    'britannica_signup.html',
+    'bestbuy_login.html',
+    'bestbuy_signup.html',
+    'bestbuy_checkout.html',
+    'rottentomatoes_login.html',
+    'rottentomatoes_signup.html'
 ]
