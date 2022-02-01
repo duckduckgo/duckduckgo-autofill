@@ -201,7 +201,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     return wkSend('pmHandlerStoreCredentials', credentials);
   }
   /**
-   * Sends credentials to the native layer
+   * Sends form data to the native layer
    * @param {DataStorageObject} data
    */
 
