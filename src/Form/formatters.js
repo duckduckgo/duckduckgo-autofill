@@ -110,10 +110,124 @@ const getCountryName = (el, options = {}) => {
     return localisedCountryName
 }
 
+/**
+ * Try to get a map of localised country names to code, or falls back to the English map
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ */
+const getLocalisedCountryNamesToCodes = (el) => {
+    if (typeof Intl.DisplayNames !== 'function') return COUNTRY_NAMES_TO_CODES
+
+    // Try to infer the field language or fallback to en
+    const elLocale = inferElementLocale(el)
+
+    return Object.fromEntries(
+        Object.entries(COUNTRY_CODES_TO_NAMES)
+            .map(([code]) => [getCountryDisplayName(elLocale, code), code])
+    )
+}
+
+/**
+ * Try to infer a country code from an element we identified as identities.addressCountryCode
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @return {string}
+ */
+const inferCountryCodeFromElement = (el) => {
+    if (COUNTRY_CODES_TO_NAMES[el.value]) return el.value
+    if (COUNTRY_NAMES_TO_CODES[el.value]) return COUNTRY_NAMES_TO_CODES[el.value]
+
+    const localisedCountryNamesToCodes = getLocalisedCountryNamesToCodes(el)
+    if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value]
+
+    if (el instanceof HTMLSelectElement) {
+        const selectedText = el.selectedOptions[0].text
+        if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText
+        if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText]
+        if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText]
+    }
+    return ''
+}
+
+/** @param {InternalDataStorageObject} credentials */
+const shouldStoreCredentials = ({credentials}) =>
+    credentials.password
+
+/** @param {InternalDataStorageObject} credentials */
+const shouldStoreIdentities = ({identities}) =>
+    (identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity
+
+/** @param {InternalDataStorageObject} credentials */
+const shouldStoreCreditCards = ({creditCards}) =>
+    creditCards.cardNumber && creditCards.cardSecurityCode
+
+/**
+ * Formats form data into an object to send to the device for storage
+ * @param {InternalDataStorageObject} formValues
+ * @return {DataStorageObject}
+ */
+const prepareFormValuesForStorage = (formValues) => {
+    let {credentials, identities, creditCards} = formValues
+
+    /** Fixes for credentials **/
+    // Don't store if there isn't enough data
+    if (shouldStoreCredentials(formValues)) {
+        // If we don't have a username to match a password, let's see if the email is available
+        if (credentials.password && !credentials.username && identities.emailAddress) {
+            credentials.username = identities.emailAddress
+        }
+    } else {
+        // @ts-ignore
+        credentials = null
+    }
+
+    /** Fixes for identities **/
+    // Don't store if there isn't enough data
+    if (shouldStoreIdentities(formValues)) {
+        if (identities.fullName) {
+            // If the fullname can be easily split into two, we'll store it as first and last
+            const nameParts = identities.fullName.trim().split(/\s+/)
+            if (nameParts.length === 2) {
+                identities.firstName = nameParts[0]
+                identities.lastName = nameParts[1]
+            } else {
+                // If we can't split it, just store it as first name
+                identities.firstName = identities.fullName
+            }
+            delete identities.fullName
+        }
+    } else {
+        // @ts-ignore
+        identities = null
+    }
+
+    /** Fixes for credit cards **/
+    // Don't store if there isn't enough data
+    if (shouldStoreCreditCards(formValues)) {
+        if (creditCards.expiration) {
+            const [expirationMonth, expirationYear] = creditCards.expiration.split(/\D/)
+            creditCards.expirationMonth = expirationMonth
+            creditCards.expirationYear = expirationYear
+            delete creditCards.expiration
+        }
+        if (Number(creditCards.expirationYear) <= 2020) {
+            creditCards.expirationYear = `${Number(creditCards.expirationYear) + 2000}`
+        }
+        if (creditCards.cardNumber) {
+            creditCards.cardNumber = creditCards.cardNumber.replaceAll(/\D/g, '')
+        }
+    } else {
+        // @ts-ignore
+        creditCards = null
+    }
+
+    return {credentials, identities, creditCards}
+}
+
 module.exports = {
     formatCCYear,
     getUnifiedExpiryDate,
     formatFullName,
     getCountryDisplayName,
-    getCountryName
+    getCountryName,
+    inferCountryCodeFromElement,
+    prepareFormValuesForStorage
 }
