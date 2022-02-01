@@ -31,7 +31,7 @@ interface InternalIdentityObject extends IdentityObject {
 interface CreditCardObject {
      id: string,
      title: string,
-     displaystring: string,
+     displayNumber: string,
      cardName?: string,
      cardSecurityCode?: string,
      expirationMonth?: string,

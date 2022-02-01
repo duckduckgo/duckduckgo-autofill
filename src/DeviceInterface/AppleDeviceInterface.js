@@ -64,9 +64,18 @@ class AppleDeviceInterface extends InterfacePrototype {
     /**
      * Sends credentials to the native layer
      * @param {{username: string, password: string}} credentials
+     * @deprecated
      */
     storeCredentials (credentials) {
         return wkSend('pmHandlerStoreCredentials', credentials)
+    }
+
+    /**
+     * Sends credentials to the native layer
+     * @param {DataStorageObject} data
+     */
+    storeFormData (data) {
+        return wkSend('pmHandlerStoreData', data)
     }
 
     /**
