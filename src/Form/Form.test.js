@@ -40,6 +40,8 @@ describe('Test the form class reading values correctly', () => {
             expHasValues: true,
             expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
         },
+        /*
+        TODO: uncomment when Shane's branch is merged
         {
             testCase: 'form with readonly email fields and password',
             form: `
@@ -51,6 +53,7 @@ describe('Test the form class reading values correctly', () => {
             expHasValues: true,
             expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
         },
+        */
         {
             testCase: 'form with empty fields',
             form: `
@@ -153,6 +156,8 @@ describe('Test the form class reading values correctly', () => {
                 }
             }
         },
+        /*
+        TODO: uncomment when Shane's branch is merged
         {
             testCase: 'test localised country code with text input',
             form: `
@@ -165,6 +170,7 @@ describe('Test the form class reading values correctly', () => {
             expHasValues: true,
             expValues: {identities: {addressCountryCode: 'IT'}}
         },
+        */
         {
             testCase: 'incomplete identities form',
             form: `
