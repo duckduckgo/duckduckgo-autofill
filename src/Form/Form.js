@@ -75,7 +75,6 @@ class Form {
                     return output
                 }, {credentials: {}, creditCards: {}, identities: {}})
 
-            console.log('values', prepareFormValuesForStorage(formValues))
             return prepareFormValuesForStorage(formValues)
         }
 
@@ -150,12 +149,6 @@ class Form {
             this.intObs = null
         }
         this.categorizeInputs()
-
-        console.log('form: ', this)
-
-        form.addEventListener('change', () => {
-            this.getValues()
-        })
 
         return this
     }
