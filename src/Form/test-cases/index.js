@@ -94,6 +94,7 @@ module.exports = [
     'costco_checkout.html',
     'kroger_login.html',
     'kroger_signup.html',
+    'kroger_checkout.html',
     'wayfair_login_signup.html',
     'wayfair_checkout.html',
 ]
