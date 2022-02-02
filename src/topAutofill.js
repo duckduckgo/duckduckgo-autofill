@@ -38,6 +38,7 @@ function setupFakeForm (inputType) {
 async function init () {
     const DeviceInterface = require('./DeviceInterface')
     const inputType = await DeviceInterface.getInputType()
+    const inputSubtype = await DeviceInterface.getInputSubtype()
     const {fakeInput, fakeForm} = setupFakeForm(inputType)
     function triggerFormSetup () {
         const {getOrCreateParentFormInstance} = require('./scanForInputs')

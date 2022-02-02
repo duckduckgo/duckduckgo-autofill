@@ -115,7 +115,9 @@ const {
   forms
 } = require('../scanForInputs.js');
 
-const getInputConfig = require('../Form/inputTypeConfig');
+const {
+  getInputConfigFromType
+} = require('../Form/inputTypeConfig');
 
 let currentAttached = {};
 document.addEventListener('InboundCredential', function (e) {
@@ -202,13 +204,31 @@ class AppleDeviceInterface extends InterfacePrototype {
     if (currentAttached.form) return currentAttached.form;
     return [...forms.values()].find(form => form.tooltip);
   }
+  /* TODO remove if data patch works
+  setActiveForm (input, form) {
+      currentAttached.form = form
+      currentAttached.input = input
+      form.activeInput = input
+      const inputType = getInputConfig(input).type
+      form.tooltip = inputType === 'emailNew'
+          ? new EmailAutofill(input, form, this)
+          : new DataAutofill(input, form, this)
+      form.intObs.observe(input)
+      window.addEventListener('pointerdown', form.removeTooltip, {capture: true})
+      window.addEventListener('input', form.removeTooltip, {once: true})
+  }
+  */
 
-  setActiveForm(input, form) {
+
+  async setActiveForm(input, form) {
     currentAttached.form = form;
     currentAttached.input = input;
     form.activeInput = input;
-    const inputType = getInputConfig(input).type;
-    form.tooltip = inputType === 'emailNew' ? new EmailAutofill(input, form, this) : new DataAutofill(input, form, this);
+    const inputType = await this.getInputType();
+    const subtype = await this.getInputSubtype();
+    const config = getInputConfigFromType(inputType);
+    const position = isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input);
+    form.tooltip = inputType === 'emailNew' ? new EmailAutofill(config, subtype, position, this) : new DataAutofill(config, subtype, position, this);
     form.intObs.observe(input);
     window.addEventListener('pointerdown', form.removeTooltip, {
       capture: true
@@ -222,7 +242,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     await wkSend('setSize', details);
   }
 
-  async showTooltip(form, input, inputType, e) {
+  async showTooltip(form, input, inputType, inputSubtype, e) {
     if (e.type !== 'pointerdown') {
       return;
     }
@@ -244,7 +264,8 @@ class AppleDeviceInterface extends InterfacePrototype {
       inputWidth: Math.floor(inputClientDimensions.width),
       // inputTop: inputTop,
       // inputLeft: inputLeft,
-      inputType: inputType
+      inputType: inputType,
+      inputSubtype: inputSubtype
     };
     currentAttached = {
       form,
@@ -376,6 +397,14 @@ class AppleDeviceInterface extends InterfacePrototype {
       inputType
     } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
     return inputType;
+  } // TODO consolidate with the above
+
+
+  async getInputSubtype() {
+    const {
+      inputSubtype
+    } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
+    return inputSubtype;
   }
 
   async getAlias() {
@@ -745,7 +774,7 @@ class InterfacePrototype {
 
     if (!isTopFrame) {
       const inputType = getInputMainType(input);
-      this.showTooltip(form, input, inputType, e);
+      this.showTooltip(form, input, inputType, subtype, e);
       return;
     }
 
@@ -4937,6 +4966,7 @@ async function init() {
   const DeviceInterface = require('./DeviceInterface');
 
   const inputType = await DeviceInterface.getInputType();
+  const inputSubtype = await DeviceInterface.getInputSubtype();
   const {
     fakeInput,
     fakeForm

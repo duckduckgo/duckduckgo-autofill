@@ -99,7 +99,6 @@ class Tooltip {
             }
         }
     }
-
     resObs = new ResizeObserver(entries => entries.forEach(() => this.checkPosition()))
     mutObs = new MutationObserver((mutationList) => {
         for (const mutationRecord of mutationList) {

@@ -9,7 +9,7 @@ const {
 const EmailAutofill = require('../UI/EmailAutofill')
 const DataAutofill = require('../UI/DataAutofill')
 const {scanForInputs, forms} = require('../scanForInputs.js')
-const getInputConfig = require('../Form/inputTypeConfig')
+const {getInputConfigFromType} = require('../Form/inputTypeConfig')
 let currentAttached = {}
 
 document.addEventListener('InboundCredential', function (e) {
@@ -78,6 +78,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         return [...forms.values()].find((form) => form.tooltip)
     }
 
+    /* TODO remove if data patch works
     setActiveForm (input, form) {
         currentAttached.form = form
         currentAttached.input = input
@@ -90,12 +91,31 @@ class AppleDeviceInterface extends InterfacePrototype {
         window.addEventListener('pointerdown', form.removeTooltip, {capture: true})
         window.addEventListener('input', form.removeTooltip, {once: true})
     }
+*/
+    async setActiveForm (input, form) {
+        currentAttached.form = form
+        currentAttached.input = input
+        form.activeInput = input
+
+        const inputType = await this.getInputType()
+        const subtype = await this.getInputSubtype()
+        const config = getInputConfigFromType(inputType)
+        const position = isApp ? input.getBoundingClientRect()
+            : getDaxBoundingBox(input)
+
+        form.tooltip = inputType === 'emailNew'
+            ? new EmailAutofill(config, subtype, position, this)
+            : new DataAutofill(config, subtype, position, this)
+        form.intObs.observe(input)
+        window.addEventListener('pointerdown', form.removeTooltip, {capture: true})
+        window.addEventListener('input', form.removeTooltip, {once: true})
+    }
 
     async setSize (details) {
         await wkSend('setSize', details)
     }
 
-    async showTooltip (form, input, inputType, e) {
+    async showTooltip (form, input, inputType, inputSubtype, e) {
         if (e.type !== 'pointerdown') {
             return
         }
@@ -117,7 +137,8 @@ class AppleDeviceInterface extends InterfacePrototype {
             inputWidth: Math.floor(inputClientDimensions.width),
             // inputTop: inputTop,
             // inputLeft: inputLeft,
-            inputType: inputType
+            inputType: inputType,
+            inputSubtype: inputSubtype
         }
         currentAttached = {form, input}
 
@@ -216,6 +237,12 @@ class AppleDeviceInterface extends InterfacePrototype {
     async getInputType () {
         const {inputType} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
         return inputType
+    }
+
+    // TODO consolidate with the above
+    async getInputSubtype () {
+        const {inputSubtype} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+        return inputSubtype
     }
 
     async getAlias () {

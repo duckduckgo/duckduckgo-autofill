@@ -178,7 +178,7 @@ class InterfacePrototype {
 
         if (!isTopFrame) {
             const inputType = getInputMainType(input)
-            this.showTooltip(form, input, inputType, e)
+            this.showTooltip(form, input, inputType, subtype, e)
             return
         }
 
