@@ -97,4 +97,9 @@ module.exports = [
     'kroger_checkout.html',
     'wayfair_login_signup.html',
     'wayfair_checkout.html',
+    'chewy_login.html',
+    'chewy_signup.html',
+    'chewy_checkout.html',
+    'everydayoil_checkout.html',
+    'stripeelements_checkout.html',
 ]
