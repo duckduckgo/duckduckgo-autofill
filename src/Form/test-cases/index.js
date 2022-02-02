@@ -88,5 +88,12 @@ module.exports = [
     'bestbuy_signup.html',
     'bestbuy_checkout.html',
     'rottentomatoes_login.html',
-    'rottentomatoes_signup.html'
+    'rottentomatoes_signup.html',
+    'costco_login.html',
+    'costco_signup.html',
+    'costco_checkout.html',
+    'kroger_login.html',
+    'kroger_signup.html',
+    'wayfair_login_signup.html',
+    'wayfair_checkout.html',
 ]
