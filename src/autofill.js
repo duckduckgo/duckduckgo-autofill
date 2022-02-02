@@ -4,7 +4,17 @@
 
         const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission')
         const {forms} = require('./scanForInputs')
-        const {isApp} = require('./autofill-utils')
+        const {isApp, isAndroid} = require('./autofill-utils')
+        const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
+
+        if (!isAndroid) {
+            // eslint-disable-next-line no-undef
+            const privacyConfig = processConfig($CONTENT_SCOPE$, $USER_UNPROTECTED_DOMAINS$, $USER_PREFERENCES$)
+            const site = privacyConfig.site
+            if (site.isBroken || site.isAllowlisted || !site.enabledFeatures.includes('autofill')) {
+                return
+            }
+        }
 
         const inject = () => {
             // Polyfills/shims

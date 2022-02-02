@@ -34,5 +34,8 @@
     "jest-chrome": "^0.7.1",
     "load-grunt-tasks": "^5.1.0",
     "markdown-it": "^12.2.0"
+  },
+  "dependencies": {
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#brad/extract-functions"
   }
 }
