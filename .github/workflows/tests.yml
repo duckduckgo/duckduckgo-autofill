@@ -17,6 +17,8 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      - name: npm install
+        run: "npm install"
       - name: "ESLint"
         run: "npm run lint"
       - name: "Typescript"
