@@ -12,7 +12,9 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest && tsc",
-    "test:watch": "jest --watch",
+    "test:unit": "jest",
+    "test:report": "jest --testResultsProcessor='./node_modules/jest-html-reporter'",
+    "test:watch": "jest --watch --verbose=false",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch"
   },
@@ -41,6 +43,7 @@
     "jest-chrome": "^0.7.1",
     "load-grunt-tasks": "^5.1.0",
     "markdown-it": "^12.2.0",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "jest-html-reporter": "^3.4.2"
   }
 }

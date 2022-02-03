@@ -171,7 +171,9 @@ class InterfacePrototype {
     }
     storeUserData (_data) {}
     addDeviceListeners () {}
-    addLogoutListener () {}
+
+    /** @param {() => void} _fn */
+    addLogoutListener (_fn) {}
     isDeviceSignedIn () {}
     /**
      * @returns {Promise<null|string>}
