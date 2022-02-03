@@ -177,8 +177,10 @@ class InterfacePrototype {
         this.currentAttached = form
         const inputType = getInputType(input)
 
+        window.addEventListener('pointerdown', () => this.removeTooltip(), {capture: true, once: true})
+        window.addEventListener('input', () => this.removeTooltip(), {once: true})
         if (!isTopFrame && isApp) {
-            this.showTooltip(form, input, inputType, e)
+            this.showTopTooltip(form, input, inputType, subtype, e)
             return
         }
 
