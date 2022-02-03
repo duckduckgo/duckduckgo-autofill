@@ -43,7 +43,7 @@ async function init () {
     function triggerFormSetup () {
         const {getOrCreateParentFormInstance} = require('./scanForInputs')
         const parentFormInstance = getOrCreateParentFormInstance(fakeInput, fakeForm, DeviceInterface)
-        DeviceInterface.setActiveForm(fakeInput, parentFormInstance)
+        DeviceInterface.attachTooltip(parentFormInstance, fakeInput)
     }
     window.addEventListener('InitComplete', () => {
         triggerFormSetup()

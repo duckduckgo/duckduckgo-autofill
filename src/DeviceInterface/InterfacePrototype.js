@@ -1,4 +1,5 @@
 const {
+    getDaxBoundingBox,
     ADDRESS_DOMAIN,
     SIGN_IN_MSG,
     isApp,
@@ -176,9 +177,8 @@ class InterfacePrototype {
         this.currentAttached = form
         const inputType = getInputType(input)
 
-        if (!isTopFrame) {
-            const inputType = getInputMainType(input)
-            this.showTooltip(form, input, inputType, subtype, e)
+        if (!isTopFrame && isApp) {
+            this.showTooltip(form, input, inputType, e)
             return
         }
 

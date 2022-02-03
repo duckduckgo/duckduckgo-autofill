@@ -99,6 +99,7 @@ const {
 } = require('../appleDeviceUtils/appleDeviceUtils');
 
 const {
+  getDaxBoundingBox,
   isApp,
   notifyWebApp,
   isTopFrame,
@@ -120,13 +121,6 @@ const {
 } = require('../Form/inputTypeConfig');
 
 let currentAttached = {};
-document.addEventListener('InboundCredential', function (e) {
-  if ('email' in e.detail.data) {
-    currentAttached.form.autofillEmail(e.detail.data.email);
-  } else {
-    currentAttached.form.autofillData(e.detail.data, e.detail.configType);
-  }
-});
 
 class AppleDeviceInterface extends InterfacePrototype {
   constructor() {
@@ -134,6 +128,26 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     if (isTopFrame) {
       this.stripCredentials = false;
+    }
+
+    document.addEventListener('InboundCredential', this);
+  }
+
+  handleEvent(event) {
+    switch (event.type) {
+      case 'InboundCredential':
+        this.inboundCredential(event);
+        break;
+    }
+  }
+
+  inboundCredential(e) {
+    const activeForm = this.getActiveForm();
+
+    if ('email' in e.detail.data) {
+      activeForm.autofillEmail(e.detail.data.email);
+    } else {
+      activeForm.autofillData(e.detail.data, e.detail.configType);
     }
   }
 
@@ -266,10 +280,6 @@ class AppleDeviceInterface extends InterfacePrototype {
       // inputLeft: inputLeft,
       inputType: inputType,
       inputSubtype: inputSubtype
-    };
-    currentAttached = {
-      form,
-      input
     };
     console.log('show autofill parent', details);
     await wkSend('showAutofillParent', details);
@@ -552,6 +562,7 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
 const {
+  getDaxBoundingBox,
   ADDRESS_DOMAIN,
   SIGN_IN_MSG,
   isApp,
@@ -772,9 +783,8 @@ class InterfacePrototype {
     this.currentAttached = form;
     const inputType = getInputType(input);
 
-    if (!isTopFrame) {
-      const inputType = getInputMainType(input);
-      this.showTooltip(form, input, inputType, subtype, e);
+    if (!isTopFrame && isApp) {
+      this.showTooltip(form, input, inputType, e);
       return;
     }
 
@@ -3997,8 +4007,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 const {
   safeExecute,
   addInlineStyles,
-  getDaxBoundingBox,
-  isApp,
   isTopFrame
 } = require('../autofill-utils');
 

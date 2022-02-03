@@ -1,4 +1,4 @@
-const {safeExecute, addInlineStyles, getDaxBoundingBox, isApp, isTopFrame} = require('../autofill-utils')
+const {safeExecute, addInlineStyles, isTopFrame} = require('../autofill-utils')
 const {getSubtypeFromType} = require('../Form/matching')
 
 class Tooltip {
