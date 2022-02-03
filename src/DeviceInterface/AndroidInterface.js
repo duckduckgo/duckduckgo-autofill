@@ -25,7 +25,8 @@ class AndroidInterface extends InterfacePrototype {
     setupAutofill ({shouldLog} = {shouldLog: false}) {
         if (this.isDeviceSignedIn()) {
             notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-            scanForInputs(this)
+            const cleanup = scanForInputs(this).init()
+            this.addLogoutListener(cleanup)
         } else {
             this.trySigningIn()
         }

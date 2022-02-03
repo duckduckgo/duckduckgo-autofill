@@ -3,10 +3,21 @@ const {notifyWebApp} = require('./autofill-utils')
 const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./Form/selectors')
 
 /** @type Map<HTMLFormElement, Form> */
-const forms = new Map()
+const _forms = new Map()
 
-// Accepts the DeviceInterface as an explicit dependency
-const scanForInputs = (DeviceInterface) => {
+/**
+ * This will return `init` and `findEligibleInputs` which allows consumers
+ * to either `init` if in the context of a webpage, or alternatively just perform
+ * the synchronous mutations via findEligibleInputs
+ *
+ * @param DeviceInterface
+ * @param {Map<HTMLFormElement, Form>} [forms]
+ * @returns {{
+ *   init: () => () => void,
+ *   findEligibleInputs: (element: Element|Document) => void
+ * }}
+ */
+const scanForInputs = (DeviceInterface, forms = _forms) => {
     const getParentForm = (input) => {
         if (input.form) return input.form
 
@@ -47,7 +58,7 @@ const scanForInputs = (DeviceInterface) => {
         }
     }
 
-    const findEligibleInput = (context) => {
+    const findEligibleInputs = (context) => {
         if (context.matches?.(FORM_ELS_SELECTOR)) {
             addInput(context)
         } else {
@@ -65,7 +76,7 @@ const scanForInputs = (DeviceInterface) => {
 
                     if (el instanceof HTMLElement) {
                         window.requestIdleCallback(() => {
-                            findEligibleInput(el)
+                            findEligibleInputs(el)
                         })
                     }
                 })
@@ -84,12 +95,27 @@ const scanForInputs = (DeviceInterface) => {
         notifyWebApp({ deviceSignedIn: {value: false} })
     }
 
-    DeviceInterface.addLogoutListener(logoutHandler)
+    /**
+     * Requiring consumers to explicitly call this `init` method allows
+     * us to view this as stateless, which helps with tests and general hygiene
+     *
+     * We return the logoutHandler to allow consumers to do with it as they please,
+     * rather than this module needing to know to register it.
+     *
+     * @returns {logoutHandler}
+     */
+    const init = () => {
+        window.requestIdleCallback(() => {
+            findEligibleInputs(document)
+            mutObs.observe(document.body, {childList: true, subtree: true})
+        })
+        return logoutHandler
+    }
 
-    window.requestIdleCallback(() => {
-        findEligibleInput(document)
-        mutObs.observe(document.body, {childList: true, subtree: true})
-    })
+    return {
+        init,
+        findEligibleInputs
+    }
 }
 
-module.exports = {scanForInputs, forms}
+module.exports = {scanForInputs, forms: _forms}

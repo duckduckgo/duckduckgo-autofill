@@ -16,7 +16,8 @@ class ExtensionInterface extends InterfacePrototype {
         this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
                 notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
-                scanForInputs(this)
+                const cleanup = scanForInputs(this).init()
+                this.addLogoutListener(cleanup)
             } else {
                 this.trySigningIn()
             }

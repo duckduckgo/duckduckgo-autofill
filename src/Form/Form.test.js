@@ -1,3 +1,5 @@
+const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
+
 afterEach(() => {
     document.body.innerHTML = ''
 })
@@ -75,31 +77,21 @@ describe('Test the form class reading values correctly', () => {
                 username: 'testUsername',
                 password: 'testPassword'
             }
-        }, done) => {
+        }) => {
         document.body.innerHTML = form
         // When we require autofill, the script scores the fields in the DOM
-        require('../autofill.js')
-        const {forms} = require('../scanForInputs')
+        const {forms, scanForInputs} = require('../scanForInputs')
 
         // Autofill uses requestIdleCallback to debounce DOM checks, we call it twice here to run tests after it
-        requestIdleCallback(() => {
-            requestIdleCallback(() => {
-                try {
-                    const formEl = document.querySelector('form')
-                    // @ts-ignore
-                    const formClass = forms.get(formEl)
-                    const hasValues = formClass?.hasValues()
-                    const formValues = formClass?.getValues()
+        scanForInputs(new InterfacePrototype()).findEligibleInputs(document)
 
-                    expect(hasValues).toBe(expHasValues)
-                    expect(formValues).toMatchObject(expValues)
-                    // @ts-ignore
-                    done()
-                } catch (e) {
-                    // @ts-ignore
-                    done(e)
-                }
-            })
-        })
+        const formEl = document.querySelector('form')
+        if (!formEl) throw new Error('unreachable')
+        const formClass = forms.get(formEl)
+        const hasValues = formClass?.hasValues()
+        const formValues = formClass?.getValues()
+
+        expect(hasValues).toBe(expHasValues)
+        expect(formValues).toMatchObject(expValues)
     })
 })

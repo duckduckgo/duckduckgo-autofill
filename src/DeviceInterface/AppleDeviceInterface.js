@@ -29,7 +29,8 @@ class AppleDeviceInterface extends InterfacePrototype {
             this.trySigningIn()
         }
 
-        scanForInputs(this)
+        const cleanup = scanForInputs(this).init()
+        this.addLogoutListener(cleanup)
     }
 
     async getAddresses () {
