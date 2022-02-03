@@ -68,7 +68,8 @@ class AndroidInterface extends InterfacePrototype {
           shouldLog
         }
       });
-      scanForInputs(this);
+      const cleanup = scanForInputs(this).init();
+      this.addLogoutListener(cleanup);
     } else {
       this.trySigningIn();
     }
@@ -145,7 +146,8 @@ class AppleDeviceInterface extends InterfacePrototype {
       this.trySigningIn();
     }
 
-    scanForInputs(this);
+    const cleanup = scanForInputs(this).init();
+    this.addLogoutListener(cleanup);
   }
 
   async getAddresses() {
@@ -324,7 +326,8 @@ class ExtensionInterface extends InterfacePrototype {
             shouldLog
           }
         });
-        scanForInputs(this);
+        const cleanup = scanForInputs(this).init();
+        this.addLogoutListener(cleanup);
       } else {
         this.trySigningIn();
       }
@@ -439,9 +442,9 @@ const DataAutofill = require('../UI/DataAutofill');
 
 let attempts = 0;
 
-var _addresses = new WeakMap();
+var _addresses = /*#__PURE__*/new WeakMap();
 
-var _data2 = new WeakMap();
+var _data2 = /*#__PURE__*/new WeakMap();
 
 class InterfacePrototype {
   constructor() {
@@ -627,8 +630,10 @@ class InterfacePrototype {
   storeUserData(_data) {}
 
   addDeviceListeners() {}
+  /** @param {() => void} _fn */
 
-  addLogoutListener() {}
+
+  addLogoutListener(_fn) {}
 
   isDeviceSignedIn() {}
   /**
@@ -3277,9 +3282,22 @@ const {
 /** @type Map<HTMLFormElement, Form> */
 
 
-const forms = new Map(); // Accepts the DeviceInterface as an explicit dependency
+const _forms = new Map();
+/**
+ * This will return `init` and `findEligibleInputs` which allows consumers
+ * to either `init` if in the context of a webpage, or alternatively just perform
+ * the synchronous mutations via findEligibleInputs
+ *
+ * @param DeviceInterface
+ * @param {Map<HTMLFormElement, Form>} [forms]
+ * @returns {{
+ *   init: () => () => void,
+ *   findEligibleInputs: (element: Element|Document) => void
+ * }}
+ */
 
-const scanForInputs = DeviceInterface => {
+
+const scanForInputs = (DeviceInterface, forms = _forms) => {
   const getParentForm = input => {
     if (input.form) return input.form;
     let element = input; // traverse the DOM to search for related inputs
@@ -3323,7 +3341,7 @@ const scanForInputs = DeviceInterface => {
     }
   };
 
-  const findEligibleInput = context => {
+  const findEligibleInputs = context => {
     var _context$matches;
 
     if ((_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, FORM_ELS_SELECTOR)) {
@@ -3343,7 +3361,7 @@ const scanForInputs = DeviceInterface => {
 
           if (el instanceof HTMLElement) {
             window.requestIdleCallback(() => {
-              findEligibleInput(el);
+              findEligibleInputs(el);
             });
           }
         });
@@ -3365,20 +3383,37 @@ const scanForInputs = DeviceInterface => {
       }
     });
   };
+  /**
+   * Requiring consumers to explicitly call this `init` method allows
+   * us to view this as stateless, which helps with tests and general hygiene
+   *
+   * We return the logoutHandler to allow consumers to do with it as they please,
+   * rather than this module needing to know to register it.
+   *
+   * @returns {logoutHandler}
+   */
 
-  DeviceInterface.addLogoutListener(logoutHandler);
-  window.requestIdleCallback(() => {
-    findEligibleInput(document);
-    mutObs.observe(document.body, {
-      childList: true,
-      subtree: true
+
+  const init = () => {
+    window.requestIdleCallback(() => {
+      findEligibleInputs(document);
+      mutObs.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
     });
-  });
+    return logoutHandler;
+  };
+
+  return {
+    init,
+    findEligibleInputs
+  };
 };
 
 module.exports = {
   scanForInputs,
-  forms
+  forms: _forms
 };
 
 },{"./Form/Form":6,"./Form/selectors":15,"./autofill-utils":23}]},{},[24]);
