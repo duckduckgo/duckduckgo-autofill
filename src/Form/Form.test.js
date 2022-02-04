@@ -82,7 +82,6 @@ describe('Test the form class reading values correctly', () => {
         // When we require autofill, the script scores the fields in the DOM
         const {forms, scanForInputs} = require('../scanForInputs')
 
-        // Autofill uses requestIdleCallback to debounce DOM checks, we call it twice here to run tests after it
         scanForInputs(new InterfacePrototype()).findEligibleInputs(document)
 
         const formEl = document.querySelector('form')
