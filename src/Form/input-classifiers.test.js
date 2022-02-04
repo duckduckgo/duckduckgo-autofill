@@ -1,33 +1,47 @@
 const fs = require('fs')
 const path = require('path')
 
-const {getSubtypeFromMatchers, getInputSubtype} = require('./input-classifiers')
 const {getUnifiedExpiryDate} = require('./formatters')
-const {CC_MATCHERS_LIST} = require('./selectors')
 const {scanForInputs} = require('../scanForInputs')
+const {Matching, getInputSubtype} = require('./matching')
+const {matchingConfiguration} = require('./matching-configuration')
+const {Form} = require('./Form')
 const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
 
-const getCCFieldSubtype = (el, form) => getSubtypeFromMatchers(el, form, CC_MATCHERS_LIST)
+const CSS_MATCHERS_LIST = matchingConfiguration.matchers.lists['cc'].map(matcherName => {
+    return matchingConfiguration.matchers.fields[matcherName]
+})
+
+/**
+ * @param {HTMLInputElement} el
+ * @param {HTMLFormElement} form
+ * @returns {string|undefined}
+ */
+const getCCFieldSubtype = (el, form) => {
+    const matching = new Matching(matchingConfiguration)
+    return matching.subtypeFromMatchers(CSS_MATCHERS_LIST, el, form)
+}
 
 const renderInputWithLabel = () => {
     const input = document.createElement('input')
     input.id = 'inputId'
     const label = document.createElement('label')
     label.setAttribute('for', 'inputId')
-    const form = document.createElement('form')
-    form.append(input, label)
-    document.body.append(form)
-    return {input, label, form}
+    const formElement = document.createElement('form')
+    formElement.append(input, label)
+    document.body.append(formElement)
+    const form = new Form(formElement, input, new InterfacePrototype())
+    return { input, label, formElement: formElement, form }
 }
 
 const testRegexForCCLabels = (cases) => {
     Object.entries(cases).forEach(([expectedType, arr]) => {
         arr.forEach(({text, shouldMatch = true}) => {
             it(`"${text}" should ${shouldMatch ? '' : 'not '}match regex for ${expectedType}`, () => {
-                const {input, label, form} = renderInputWithLabel()
+                const {input, label, formElement} = renderInputWithLabel()
                 label.textContent = text
 
-                const subtype = getCCFieldSubtype(input, form)
+                const subtype = getCCFieldSubtype(input, formElement)
                 if (shouldMatch) {
                     expect(subtype).toBe(expectedType)
                 } else {
@@ -120,54 +134,54 @@ describe('Input Classifiers', () => {
 
 const testCases = require('./test-cases/index')
 describe.each(testCases)('Test $html fields', (testCase) => {
-    const { html, expectedFailures = [] } = testCase
-    const testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', html), 'utf-8')
-
-    document.body.innerHTML = testContent
-
-    scanForInputs(new InterfacePrototype(), new Map()).findEligibleInputs(document)
-
-    /**
-     * @type {NodeListOf<HTMLInputElement>}
-     */
-    const manuallyScoredFields = document.querySelectorAll('[data-manual-scoring]')
-
-    const scores = Array.from(manuallyScoredFields).map(field => {
-        const { manualScoring, ddgInputtype, ...rest } = field.dataset
-        // @ts-ignore
-        field.style = ''
-        return {
-            attrs: {
-                name: field.name,
-                id: field.id,
-                dataset: rest
-            },
-            html: field.outerHTML,
-            inferredType: getInputSubtype(field),
-            manualScore: field.getAttribute('data-manual-scoring')
-        }
-    })
-    let bad = scores.filter(x => x.inferredType !== x.manualScore)
-    let failed = bad.map(x => x.manualScore)
-
-    if (bad.length !== expectedFailures.length) {
-        // console.log(good.map(({inferredType, html}) => ({inferredType, html})))
-        for (let score of bad) {
-            console.log(
-                'manualType:   ' + JSON.stringify(score.manualScore),
-                '\ninferredType: ' + JSON.stringify(score.inferredType),
-                '\nid: ', JSON.stringify(score.attrs.id),
-                '\nname: ', JSON.stringify(score.attrs.name),
-                '\nHTML: ', score.html
-            )
-        }
-    }
+    const { html, expectedFailures = [], title = '__test__' } = testCase
 
     const testTextString = expectedFailures.length > 0
-        ? `should contain ${failed.length} known failures: ${JSON.stringify(failed)}`
-        : `should NOT contain failures, found: ${failed.length} ${JSON.stringify(failed)}`
+        ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
+        : `should NOT contain failures`
 
     it(testTextString, () => {
+        const testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', html), 'utf-8')
+
+        document.body.innerHTML = testContent
+        document.title = title
+
+        scanForInputs(new InterfacePrototype(), new Map()).findEligibleInputs(document)
+
+        /**
+         * @type {NodeListOf<HTMLInputElement>}
+         */
+        const manuallyScoredFields = document.querySelectorAll('[data-manual-scoring]')
+
+        const scores = Array.from(manuallyScoredFields).map(field => {
+            const { manualScoring, ddgInputtype, ...rest } = field.dataset
+            // @ts-ignore
+            field.style = ''
+            return {
+                attrs: {
+                    name: field.name,
+                    id: field.id,
+                    dataset: rest
+                },
+                html: field.outerHTML,
+                inferredType: getInputSubtype(field),
+                manualScore: field.getAttribute('data-manual-scoring')
+            }
+        })
+        let bad = scores.filter(x => x.inferredType !== x.manualScore)
+        let failed = bad.map(x => x.manualScore)
+
+        if (bad.length !== expectedFailures.length) {
+            for (let score of bad) {
+                console.log(
+                    'manualType:   ' + JSON.stringify(score.manualScore),
+                    '\ninferredType: ' + JSON.stringify(score.inferredType),
+                    '\nid:          ', JSON.stringify(score.attrs.id),
+                    '\nname:        ', JSON.stringify(score.attrs.name),
+                    '\nHTML:        ', score.html
+                )
+            }
+        }
         expect(failed).toStrictEqual(expectedFailures)
     })
 })

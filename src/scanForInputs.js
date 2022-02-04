@@ -1,6 +1,6 @@
-const Form = require('./Form/Form')
+const {Form} = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
-const {SUBMIT_BUTTON_SELECTOR, FORM_ELS_SELECTOR} = require('./Form/selectors')
+const {SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR} = require('./Form/selectors-css')
 
 /** @type Map<HTMLFormElement, Form> */
 const _forms = new Map()
@@ -25,7 +25,8 @@ const scanForInputs = (DeviceInterface, forms = _forms) => {
         // traverse the DOM to search for related inputs
         while (element.parentElement && element.parentElement !== document.body) {
             element = element.parentElement
-            const inputs = element.querySelectorAll(FORM_ELS_SELECTOR)
+            // todo: These selectors should be configurable
+            const inputs = element.querySelectorAll(FORM_INPUTS_SELECTOR)
             const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
             // If we find a button or another input, we assume that's our form
             if (inputs.length > 1 || buttons.length) {
@@ -59,10 +60,10 @@ const scanForInputs = (DeviceInterface, forms = _forms) => {
     }
 
     const findEligibleInputs = (context) => {
-        if (context.matches?.(FORM_ELS_SELECTOR)) {
+        if (context.matches?.(FORM_INPUTS_SELECTOR)) {
             addInput(context)
         } else {
-            context.querySelectorAll(FORM_ELS_SELECTOR).forEach(addInput)
+            context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach(addInput)
         }
     }
 

@@ -1,18 +1,23 @@
-const {FOUR_DIGIT_YEAR_REGEX, DATE_SEPARATOR_REGEX} = require('./selectors')
-const {matchInPlaceholderAndLabels, checkPlaceholderAndLabels} = require('./input-classifiers')
+const {matchInPlaceholderAndLabels, checkPlaceholderAndLabels} = require('./matching')
 const COUNTRY_NAMES = require('./countryNames')
+
+// Matches strings like mm/yy, mm-yyyy, mm-aa
+const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
+// Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
+const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
 
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
  * @param {number} year
- * @param {HTMLFormElement} form
+ * @param {import("./Form").Form} form
  * @returns {number}
  */
 const formatCCYear = (input, year, form) => {
+    const selector = form.matching.cssSelector('FORM_INPUTS_SELECTOR')
     if (
         input.maxLength === 4 ||
-        checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form)
+        checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)
     ) return year
 
     return year - 2000
@@ -23,13 +28,14 @@ const formatCCYear = (input, year, form) => {
  * @param {HTMLInputElement} input
  * @param {number} month
  * @param {number} year
- * @param {HTMLFormElement} form
+ * @param {import("./Form").Form} form
  * @returns {string}
  */
 const getUnifiedExpiryDate = (input, month, year, form) => {
     const formattedYear = formatCCYear(input, year, form)
     const paddedMonth = `${month}`.padStart(2, '0')
-    const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form)?.groups?.separator || '/'
+    const cssSelector = form.matching.cssSelector('FORM_INPUTS_SELECTOR')
+    const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form.form, cssSelector)?.groups?.separator || '/'
 
     return `${paddedMonth}${separator}${formattedYear}`
 }

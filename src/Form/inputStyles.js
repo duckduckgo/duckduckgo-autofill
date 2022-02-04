@@ -3,7 +3,7 @@ const getInputConfig = require('./inputTypeConfig.js')
 /**
  * Returns the css-ready base64 encoding of the icon for the given input
  * @param {HTMLInputElement} input
- * @param {import("./Form")} form
+ * @param {import("./Form").Form} form
  * @param {'base' | 'filled'} type
  * @return {string}
  */
@@ -37,7 +37,7 @@ const getBasicStyles = (input, icon) => ({
 /**
  * Get inline styles for the injected icon, base state
  * @param {HTMLInputElement} input
- * @param {import("./Form")} form
+ * @param {import("./Form").Form} form
  * @return {Object<string, string>}
  */
 const getIconStylesBase = (input, form) => {
@@ -51,7 +51,7 @@ const getIconStylesBase = (input, form) => {
 /**
  * Get inline styles for the injected icon, autofilled state
  * @param {HTMLInputElement} input
- * @param {import("./Form")} form
+ * @param {import("./Form").Form} form
  * @return {Object<string, string>}
  */
 const getIconStylesAutofilled = (input, form) => {
