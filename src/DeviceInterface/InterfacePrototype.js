@@ -6,7 +6,8 @@ const {
     isDDGDomain,
     sendAndWaitForAnswer,
     formatDuckAddress,
-    autofillEnabled
+    autofillEnabled,
+    notifyWebApp
 } = require('../autofill-utils')
 const {getInputType, getSubtypeFromType} = require('../Form/matching')
 const {
@@ -173,6 +174,7 @@ class InterfacePrototype {
         listenForGlobalFormSubmission()
         this.addDeviceListeners()
         await this.setupAutofill()
+        await this.setupSettingsPage()
         this.postInit()
     }
 
@@ -446,8 +448,32 @@ class InterfacePrototype {
             break
         }
     }
-    setupAutofill (_opts) {}
+
+    async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
+        if (isDDGDomain()) {
+            notifyWebApp({isApp})
+
+            const userData = await this.getUserData()
+            if (userData && !userData.error && Object.entries(userData).length > 0) {
+                notifyWebApp({
+                    deviceSignedIn: {
+                        value: true,
+                        shouldLog,
+                        userData
+                    }
+                })
+            } else {
+                this.trySigningIn()
+            }
+        }
+    }
+
+    setupAutofill () {}
     getAddresses () {}
+    /**
+     * @returns {Promise<null|Record<any,any>>}
+     */
+    getUserData () { return Promise.resolve(null) }
     refreshAlias () {}
     async trySigningIn () {
         if (isDDGDomain()) {
@@ -456,7 +482,8 @@ class InterfacePrototype {
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
-                this.setupAutofill({shouldLog: true})
+                this.setupAutofill()
+                this.setupSettingsPage({shouldLog: true})
             } else {
                 console.warn('max attempts reached, bailing')
             }

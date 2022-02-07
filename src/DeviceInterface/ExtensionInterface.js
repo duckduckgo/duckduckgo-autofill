@@ -1,7 +1,7 @@
 const InterfacePrototype = require('./InterfacePrototype.js')
 const {
     SIGN_IN_MSG,
-    notifyWebApp, isDDGDomain,
+    isDDGDomain,
     sendAndWaitForAnswer, setValue,
     formatDuckAddress,
     autofillEnabled
@@ -32,14 +32,11 @@ class ExtensionInterface extends InterfacePrototype {
         return this.hasLocalAddresses
     }
 
-    setupAutofill ({shouldLog} = {shouldLog: false}) {
+    setupAutofill () {
         this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
-                notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
                 const cleanup = scanForInputs(this).init()
                 this.addLogoutListener(cleanup)
-            } else {
-                this.trySigningIn()
             }
         })
     }
@@ -51,6 +48,13 @@ class ExtensionInterface extends InterfacePrototype {
                 this.storeLocalAddresses(data)
                 return resolve(data)
             }
+        ))
+    }
+
+    getUserData () {
+        return new Promise(resolve => chrome.runtime.sendMessage(
+            {getUserData: true},
+            (data) => resolve(data)
         ))
     }
 
@@ -84,7 +88,8 @@ class ExtensionInterface extends InterfacePrototype {
 
             switch (message.type) {
             case 'ddgUserReady':
-                this.setupAutofill({shouldLog: true})
+                this.setupAutofill()
+                this.setupSettingsPage({shouldLog: true})
                 break
             case 'contextualAutofill':
                 setValue(activeEl, formatDuckAddress(message.alias))

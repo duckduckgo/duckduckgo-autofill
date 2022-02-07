@@ -106,12 +106,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         this.currentTooltip?.focus(event.detail.x, event.detail.y)
     }
 
-    async setupAutofill ({shouldLog} = {shouldLog: false}) {
-        if (isDDGDomain()) {
-            // Tell the web app whether we're in the app
-            notifyWebApp({isApp})
-        }
-
+    async setupAutofill () {
         if (isApp) {
             await this.getAutofillInitData()
         }
@@ -121,14 +116,15 @@ class AppleDeviceInterface extends InterfacePrototype {
             if (isApp) {
                 await this.getAddresses()
             }
-            notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
             forms.forEach(form => form.redecorateAllInputs())
-        } else {
-            this.trySigningIn()
         }
 
         const cleanup = scanForInputs(this).init()
         this.addLogoutListener(cleanup)
+    }
+
+    getUserData () {
+        return wkSendAndWait('emailHandlerGetUserData')
     }
 
     async getAddresses () {
