@@ -40,10 +40,9 @@ const {
 
 class AndroidInterface extends InterfacePrototype {
   async getAlias() {
-    // @ts-ignore
     const {
       alias
-    } = sendAndWaitForAnswer(() => {
+    } = await sendAndWaitForAnswer(() => {
       return window.EmailInterface.showTooltip();
     }, 'getAliasResponse');
     return alias;
@@ -1005,7 +1004,7 @@ class Form {
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
   }
 
-  autofillEmail(alias, dataType = 'emailAddress') {
+  autofillEmail(alias, dataType = 'identities') {
     this.isAutofilling = true;
     this.execOnInputs(input => this.autofillInput(input, alias, dataType), dataType);
     this.isAutofilling = false;
@@ -1768,7 +1767,7 @@ module.exports = {
 
 const {
   isDDGApp,
-  isMobileApp
+  isApp
 } = require('../autofill-utils');
 
 const {
@@ -1800,32 +1799,17 @@ const getIdentitiesIcon = (input, {
   device
 }) => {
   const subtype = getInputSubtype(input);
-  if (subtype === 'emailAddress' && device.hasLocalAddresses) return getDaxImg;
+  if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg;
   return '';
 };
 /**
  * A map of config objects. These help by centralising here some complexity
- * TODO: We're removing emailNew everywhere. The new thing is identities.emailAddress. We still have to backport this properly to other platforms.
- * @type {Record<SupportedMainTypes & {'emailNew': InputTypeConfig}, InputTypeConfig>}
+ * @type {InputTypeConfig}
  */
 
 
 const inputTypeConfig = {
-  emailNew: {
-    type: 'emailNew',
-    getIconBase: () => getDaxImg,
-    getIconFilled: () => getDaxImg,
-    shouldDecorate: (_input, {
-      device
-    }) => {
-      if (isMobileApp) return device.isDeviceSignedIn();
-      return device.hasLocalAddresses;
-    },
-    dataType: 'Addresses',
-    displayTitlePropName: () => '',
-    displaySubtitlePropName: '',
-    autofillMethod: ''
-  },
+  /** @type {CredentialsInputTypeConfig} */
   credentials: {
     type: 'credentials',
     getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
@@ -1839,6 +1823,8 @@ const inputTypeConfig = {
     displaySubtitlePropName: '•••••••••••••••',
     autofillMethod: 'getAutofillCredentials'
   },
+
+  /** @type {CreditCardInputTypeConfig} */
   creditCard: {
     type: 'creditCard',
     getIconBase: () => '',
@@ -1851,6 +1837,8 @@ const inputTypeConfig = {
     displaySubtitlePropName: 'displayNumber',
     autofillMethod: 'getAutofillCreditCard'
   },
+
+  /** @type {IdentitiesInputTypeConfig} */
   identities: {
     type: 'identities',
     getIconBase: getIdentitiesIcon,
@@ -1858,10 +1846,19 @@ const inputTypeConfig = {
     shouldDecorate: (input, {
       device
     }) => {
-      var _device$getLocalIdent;
-
       const subtype = getInputSubtype(input);
-      return (_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]);
+
+      if (isApp) {
+        var _device$getLocalIdent;
+
+        return (_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]);
+      }
+
+      if (subtype === 'emailAddress') {
+        return device.isDeviceSignedIn();
+      }
+
+      return false;
     },
     dataType: 'Identities',
     displayTitlePropName: (input, data) => {
@@ -1876,6 +1873,8 @@ const inputTypeConfig = {
     displaySubtitlePropName: 'title',
     autofillMethod: 'getAutofillIdentity'
   },
+
+  /** @type {UnknownInputTypeConfig} */
   unknown: {
     type: 'unknown',
     getIconBase: () => '',
@@ -1890,7 +1889,7 @@ const inputTypeConfig = {
 /**
  * Retrieves configs from an input el
  * @param {HTMLInputElement} input
- * @returns {InputTypeConfig}
+ * @returns {InputTypeConfigs}
  */
 
 const getInputConfig = input => {

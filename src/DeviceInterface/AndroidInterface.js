@@ -7,8 +7,7 @@ const {scanForInputs} = require('../scanForInputs.js')
 
 class AndroidInterface extends InterfacePrototype {
     async getAlias () {
-        // @ts-ignore
-        const { alias } = sendAndWaitForAnswer(() => {
+        const { alias } = await sendAndWaitForAnswer(() => {
             return window.EmailInterface.showTooltip()
         }, 'getAliasResponse')
         return alias
