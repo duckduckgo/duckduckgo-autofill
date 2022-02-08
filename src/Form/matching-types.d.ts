@@ -104,19 +104,36 @@ type SupportedSubTypes =
     | 'creditCards.expirationYear'
     | 'creditCards.expiration'
 
-interface InputTypeConfig {
+interface InputTypeConfigBase {
     type: SupportedMainTypes,
     getIconFilled: (input: HTMLInputElement, form: Form) => string,
     getIconBase: (input: HTMLInputElement, form: Form) => string,
     shouldDecorate: (input: HTMLInputElement, form: Form) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
-    displayTitlePropName: (
-        input: HTMLInputElement,
-        data: CredentialsObject | IdentityObject | CreditCardObject
-    ) => string,
+    displayTitlePropName: (input: HTMLInputElement, data: any) => string
     displaySubtitlePropName: string,
     autofillMethod: string // more specific here?
 }
+interface CredentialsInputTypeConfig extends InputTypeConfigBase {
+    displayTitlePropName: (input: HTMLInputElement, data: CredentialsObject) => string
+}
+interface CreditCardInputTypeConfig extends InputTypeConfigBase {
+    displayTitlePropName: (input: HTMLInputElement, data: CreditCardObject) => string
+}
+interface IdentitiesInputTypeConfig extends InputTypeConfigBase {
+    displayTitlePropName: (input: HTMLInputElement, data: IdentitiesObject) => string
+}
+interface UnknownInputTypeConfig extends InputTypeConfigBase {
+    displayTitlePropName: () => string
+}
+
+type InputTypeConfigs =
+    | CredentialsInputTypeConfig
+    | CreditCardInputTypeConfig
+    | IdentitiesInputTypeConfig
+    | UnknownInputTypeConfig
+
+type InputTypeConfig = Record<SupportedMainTypes, InputTypeConfigs>
 
 interface CssSelectorConfiguration {
     selectors: RequiredCssSelectors | Record<MatcherTypeNames | string, string>

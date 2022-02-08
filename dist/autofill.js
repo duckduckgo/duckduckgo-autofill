@@ -1805,11 +1805,12 @@ const getIdentitiesIcon = (input, {
 };
 /**
  * A map of config objects. These help by centralising here some complexity
- * @type {Record<SupportedMainTypes, InputTypeConfig>}
+ * @type {InputTypeConfig}
  */
 
 
 const inputTypeConfig = {
+  /** @type {CredentialsInputTypeConfig} */
   credentials: {
     type: 'credentials',
     getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
@@ -1823,6 +1824,8 @@ const inputTypeConfig = {
     displaySubtitlePropName: '•••••••••••••••',
     autofillMethod: 'getAutofillCredentials'
   },
+
+  /** @type {CreditCardInputTypeConfig} */
   creditCard: {
     type: 'creditCard',
     getIconBase: () => '',
@@ -1835,6 +1838,8 @@ const inputTypeConfig = {
     displaySubtitlePropName: 'displayNumber',
     autofillMethod: 'getAutofillCreditCard'
   },
+
+  /** @type {IdentitiesInputTypeConfig} */
   identities: {
     type: 'identities',
     getIconBase: getIdentitiesIcon,
@@ -1869,6 +1874,8 @@ const inputTypeConfig = {
     displaySubtitlePropName: 'title',
     autofillMethod: 'getAutofillIdentity'
   },
+
+  /** @type {UnknownInputTypeConfig} */
   unknown: {
     type: 'unknown',
     getIconBase: () => '',
@@ -1883,7 +1890,7 @@ const inputTypeConfig = {
 /**
  * Retrieves configs from an input el
  * @param {HTMLInputElement} input
- * @returns {InputTypeConfig}
+ * @returns {InputTypeConfigs}
  */
 
 const getInputConfig = input => {
