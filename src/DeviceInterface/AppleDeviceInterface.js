@@ -2,10 +2,8 @@ const InterfacePrototype = require('./InterfacePrototype.js')
 const {wkSend, wkSendAndWait} = require('../appleDeviceUtils/appleDeviceUtils')
 const {
     isApp,
-    notifyWebApp,
     isTopFrame,
     supportsTopFrame,
-    isDDGDomain,
     formatDuckAddress,
     autofillEnabled
 } = require('../autofill-utils')

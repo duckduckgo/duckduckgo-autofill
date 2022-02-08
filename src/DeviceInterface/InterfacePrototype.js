@@ -453,13 +453,18 @@ class InterfacePrototype {
         if (isDDGDomain()) {
             notifyWebApp({isApp})
 
-            const userData = await this.getUserData()
-            if (userData && !userData.error && Object.entries(userData).length > 0) {
+            if (this.isDeviceSignedIn()) {
+                let userData
+                try {
+                    userData = await this.getUserData()
+                } catch (e) {}
+
+                const hasUserData = userData && !userData.error && Object.entries(userData).length > 0
                 notifyWebApp({
                     deviceSignedIn: {
                         value: true,
                         shouldLog,
-                        userData
+                        userData: hasUserData ? userData : undefined
                     }
                 })
             } else {
@@ -468,7 +473,7 @@ class InterfacePrototype {
         }
     }
 
-    setupAutofill () {}
+    async setupAutofill () {}
     getAddresses () {}
     /**
      * @returns {Promise<null|Record<any,any>>}
@@ -482,8 +487,8 @@ class InterfacePrototype {
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
-                this.setupAutofill()
-                this.setupSettingsPage({shouldLog: true})
+                await this.setupAutofill()
+                await this.setupSettingsPage({shouldLog: true})
             } else {
                 console.warn('max attempts reached, bailing')
             }
@@ -494,7 +499,7 @@ class InterfacePrototype {
     addDeviceListeners () {}
     /** @param {() => void} _fn */
     addLogoutListener (_fn) {}
-    isDeviceSignedIn () {}
+    isDeviceSignedIn () { return false }
     /**
      * @returns {Promise<null|string>}
      */

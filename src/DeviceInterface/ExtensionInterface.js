@@ -33,7 +33,7 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     setupAutofill () {
-        this.getAddresses().then(_addresses => {
+        return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
                 const cleanup = scanForInputs(this).init()
                 this.addLogoutListener(cleanup)
@@ -88,8 +88,9 @@ class ExtensionInterface extends InterfacePrototype {
 
             switch (message.type) {
             case 'ddgUserReady':
-                this.setupAutofill()
-                this.setupSettingsPage({shouldLog: true})
+                this.setupAutofill().then(() => {
+                    this.setupSettingsPage({shouldLog: true})
+                })
                 break
             case 'contextualAutofill':
                 setValue(activeEl, formatDuckAddress(message.alias))
