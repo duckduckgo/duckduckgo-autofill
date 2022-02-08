@@ -40,10 +40,9 @@ const {
 
 class AndroidInterface extends InterfacePrototype {
   async getAlias() {
-    // @ts-ignore
     const {
       alias
-    } = sendAndWaitForAnswer(() => {
+    } = await sendAndWaitForAnswer(() => {
       return window.EmailInterface.showTooltip();
     }, 'getAliasResponse');
     return alias;
