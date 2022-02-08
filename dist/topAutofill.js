@@ -135,7 +135,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   inboundCredential(e) {
-    const activeForm = this.getActiveForm();
+    const activeForm = this.currentAttached;
 
     if ('email' in e.detail.data) {
       activeForm.autofillEmail(e.detail.data.email);
@@ -211,24 +211,19 @@ class AppleDeviceInterface extends InterfacePrototype {
     await wkSend('setSize', details);
   }
 
-  async showTopTooltip(form, input, inputType, inputSubtype, e) {
-    if (e.type !== 'pointerdown') {
-      return;
-    }
-
+  async showTopTooltip(inputType, inputSubtype, click, input) {
     window.addEventListener('scroll', this, {
       once: true
     });
-    const inputClientDimensions = input.getBoundingClientRect();
-    let diffX = Math.floor(e.clientX - inputClientDimensions.x);
-    let diffY = Math.floor(e.clientY - inputClientDimensions.y);
+    let diffX = Math.floor(click.x - input.x);
+    let diffY = Math.floor(click.y - input.y);
     const details = {
       inputTop: diffY,
       inputLeft: diffX,
-      height: inputClientDimensions.height,
-      width: inputClientDimensions.width,
-      inputHeight: Math.floor(inputClientDimensions.height),
-      inputWidth: Math.floor(inputClientDimensions.width),
+      height: input.height,
+      width: input.width,
+      inputHeight: Math.floor(input.height),
+      inputWidth: Math.floor(input.width),
       inputType: inputType,
       inputSubtype: inputSubtype
     };
@@ -342,14 +337,18 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   async selectedDetail(detailIn, configType) {
-    let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
-      return [key, String(value)];
-    });
-    const data = Object.fromEntries(detailsEntries);
-    wkSend('selectedDetail', {
-      data,
-      configType
-    });
+    if (isTopFrame) {
+      let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
+        return [key, String(value)];
+      });
+      const data = Object.fromEntries(detailsEntries);
+      wkSend('selectedDetail', {
+        data,
+        configType
+      });
+    } else {
+      this.activeFormSelectedDetail(detailIn, configType);
+    }
   }
 
   async getInputTypes() {
@@ -508,7 +507,6 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
 const {
-  getDaxBoundingBox,
   ADDRESS_DOMAIN,
   SIGN_IN_MSG,
   isApp,
@@ -689,7 +687,7 @@ class InterfacePrototype {
     }
   }
 
-  selectedDetail(data, type) {
+  async selectedDetail(data, type) {
     this.activeFormSelectedDetail(data, type);
   }
 
@@ -724,7 +722,7 @@ class InterfacePrototype {
     }
   }
 
-  attachTooltip(form, input, getPosition) {
+  attachTooltip(form, input, getPosition, click) {
     form.activeInput = input;
     this.currentAttached = form;
     const inputType = getInputType(input);
@@ -737,7 +735,12 @@ class InterfacePrototype {
     });
 
     if (!isTopFrame && isApp) {
-      this.showTopTooltip(form, input, inputType, subtype, e);
+      // TODO currently only mouse supported
+      if (!click) {
+        return;
+      }
+
+      this.showTopTooltip(inputType, subtype, click, getPosition());
       return;
     }
 
@@ -747,7 +750,7 @@ class InterfacePrototype {
       });
     } else {
       if (this.currentTooltip) return;
-      this.currentTooltip = this.createTooltip(inputType, getPosition);
+      this.currentTooltip = this.createTooltip(inputType, getPosition, click);
       form.intObs.observe(input);
     }
   }
@@ -761,6 +764,10 @@ class InterfacePrototype {
 
   getActiveTooltip() {
     return this.currentTooltip;
+  }
+
+  setActiveTooltip(tooltip) {
+    this.currentTooltip = tooltip;
   }
 
   handleEvent(_event) {}
@@ -1135,6 +1142,7 @@ class Form {
     const handler = e => {
       if (this.device.getActiveTooltip() || this.isAutofilling) return;
       const input = e.target;
+      let click = null;
 
       const getPosition = () => {
         // In extensions, the tooltip is centered on the Dax icon
@@ -1146,6 +1154,10 @@ class Form {
         if (!e.isTrusted) return;
         const isMainMouseButton = e.button === 0;
         if (!isMainMouseButton) return;
+        click = {
+          x: e.clientX,
+          y: e.clientY
+        };
       }
 
       if (this.shouldOpenTooltip(e, input)) {
@@ -1156,7 +1168,7 @@ class Form {
 
         this.touched.add(input); // @ts-ignore
 
-        this.device.attachTooltip(this, input, getPosition);
+        this.device.attachTooltip(this, input, getPosition, click);
       }
     };
 
@@ -3964,7 +3976,6 @@ class Tooltip {
     this.host = this.shadow.host;
     this.config = config;
     this.subtype = getSubtypeFromType(inputType);
-    this.device = deviceInterface;
     this.tooltip = null;
     this.getPosition = getPosition;
     const forcedVisibilityStyles = {
@@ -4884,45 +4895,6 @@ module.exports = {
 },{"./Form/Form":6,"./Form/selectors-css":16,"./autofill-utils":25}],30:[function(require,module,exports){
 "use strict";
 
-function makeField(outputType) {
-  let field = document.createElement('input');
-  field.type = outputType;
-  field.name = outputType;
-  field.autocomplete = outputType;
-  return field;
-}
-
-function setupFakeForm(inputType) {
-  let main = document.querySelector('main'); // TODO hey we're a PoC let's just fake the code to get it working
-
-  let fakeForm = document.createElement('form');
-  let fakeInput = makeField('email'); // TODO add support for identities
-
-  if (inputType === 'identities') {
-    inputType = 'emailNew';
-  }
-
-  if (inputType !== 'emailNew') {
-    fakeInput = makeField('username');
-    fakeForm.appendChild(fakeInput);
-    const fakePassword = makeField('password');
-    fakePassword.autocomplete = 'current-password';
-    fakeForm.appendChild(fakePassword);
-    let fakeButton = document.createElement('button');
-    fakeButton.textContent = 'Log in';
-    fakeForm.appendChild(fakeButton);
-  } else {
-    fakeForm.appendChild(fakeInput);
-  }
-
-  fakeForm.style.visibility = 'collapse';
-  main.appendChild(fakeForm);
-  return {
-    fakeInput,
-    fakeForm
-  };
-}
-
 async function init() {
   const DeviceInterface = require('./DeviceInterface');
 
@@ -4930,18 +4902,20 @@ async function init() {
     inputType,
     inputSubtype
   } = await DeviceInterface.getInputTypes();
-  const {
-    fakeInput,
-    fakeForm
-  } = setupFakeForm(inputType);
 
   function triggerFormSetup() {
-    const {
-      getOrCreateParentFormInstance
-    } = require('./scanForInputs');
+    // TODO pass this
+    const getPosition = () => {
+      return {
+        x: 0,
+        y: 0,
+        height: 50,
+        width: 50
+      };
+    };
 
-    const parentFormInstance = getOrCreateParentFormInstance(fakeInput, fakeForm, DeviceInterface);
-    DeviceInterface.attachTooltip(parentFormInstance, fakeInput);
+    const tooltip = DeviceInterface.createTooltip(inputType, inputSubtype, getPosition);
+    DeviceInterface.setActiveTooltip(tooltip);
   }
 
   window.addEventListener('InitComplete', () => {
@@ -4955,4 +4929,4 @@ async function init() {
 
 window.addEventListener('load', init);
 
-},{"./DeviceInterface":1,"./inject":27,"./scanForInputs":29}]},{},[30]);
+},{"./DeviceInterface":1,"./inject":27}]},{},[30]);

@@ -7,7 +7,6 @@ class Tooltip {
         this.host = this.shadow.host
         this.config = config
         this.subtype = getSubtypeFromType(inputType)
-        this.device = deviceInterface
         this.tooltip = null
         this.getPosition = getPosition
         const forcedVisibilityStyles = {

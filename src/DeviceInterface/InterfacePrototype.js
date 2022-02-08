@@ -1,5 +1,4 @@
 const {
-    getDaxBoundingBox,
     ADDRESS_DOMAIN,
     SIGN_IN_MSG,
     isApp,
@@ -143,7 +142,7 @@ class InterfacePrototype {
         }
     }
 
-    selectedDetail (data, type) {
+    async selectedDetail (data, type) {
         this.activeFormSelectedDetail(data, type)
     }
 
@@ -172,7 +171,7 @@ class InterfacePrototype {
         }
     }
 
-    attachTooltip (form, input, getPosition) {
+    attachTooltip (form, input, getPosition, click) {
         form.activeInput = input
         this.currentAttached = form
         const inputType = getInputType(input)
@@ -180,7 +179,11 @@ class InterfacePrototype {
         window.addEventListener('pointerdown', () => this.removeTooltip(), {capture: true, once: true})
         window.addEventListener('input', () => this.removeTooltip(), {once: true})
         if (!isTopFrame && isApp) {
-            this.showTopTooltip(form, input, inputType, subtype, e)
+            // TODO currently only mouse supported
+            if (!click) {
+                return
+            }
+            this.showTopTooltip(inputType, subtype, click, getPosition())
             return
         }
 
@@ -191,7 +194,7 @@ class InterfacePrototype {
             })
         } else {
             if (this.currentTooltip) return
-            this.currentTooltip = this.createTooltip(inputType, getPosition)
+            this.currentTooltip = this.createTooltip(inputType, getPosition, click)
             form.intObs.observe(input)
         }
     }
@@ -205,6 +208,10 @@ class InterfacePrototype {
 
     getActiveTooltip () {
         return this.currentTooltip
+    }
+
+    setActiveTooltip (tooltip) {
+        this.currentTooltip = tooltip
     }
 
     handleEvent (_event) {}

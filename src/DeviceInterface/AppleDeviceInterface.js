@@ -31,7 +31,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     inboundCredential (e) {
-        const activeForm = this.getActiveForm()
+        const activeForm = this.currentAttached
         if ('email' in e.detail.data) {
             activeForm.autofillEmail(e.detail.data.email)
         } else {
@@ -88,23 +88,19 @@ class AppleDeviceInterface extends InterfacePrototype {
         await wkSend('setSize', details)
     }
 
-    async showTopTooltip (form, input, inputType, inputSubtype, e) {
-        if (e.type !== 'pointerdown') {
-            return
-        }
+    async showTopTooltip (inputType, inputSubtype, click, input) {
         window.addEventListener('scroll', this, {once: true})
 
-        const inputClientDimensions = input.getBoundingClientRect()
-        let diffX = Math.floor(e.clientX - inputClientDimensions.x)
-        let diffY = Math.floor(e.clientY - inputClientDimensions.y)
+        let diffX = Math.floor(click.x - input.x)
+        let diffY = Math.floor(click.y - input.y)
 
         const details = {
             inputTop: diffY,
             inputLeft: diffX,
-            height: inputClientDimensions.height,
-            width: inputClientDimensions.width,
-            inputHeight: Math.floor(inputClientDimensions.height),
-            inputWidth: Math.floor(inputClientDimensions.width),
+            height: input.height,
+            width: input.width,
+            inputHeight: Math.floor(input.height),
+            inputWidth: Math.floor(input.width),
             inputType: inputType,
             inputSubtype: inputSubtype
         }
@@ -193,11 +189,15 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     // Used to encode data to send back to the child autofill
     async selectedDetail (detailIn, configType) {
-        let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
-            return [key, String(value)]
-        })
-        const data = Object.fromEntries(detailsEntries)
-        wkSend('selectedDetail', { data, configType })
+        if (isTopFrame) {
+            let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
+                return [key, String(value)]
+            })
+            const data = Object.fromEntries(detailsEntries)
+            wkSend('selectedDetail', { data, configType })
+        } else {
+            this.activeFormSelectedDetail(detailIn, configType)
+        }
     }
 
     async getInputTypes () {

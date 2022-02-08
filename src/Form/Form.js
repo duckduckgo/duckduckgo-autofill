@@ -230,6 +230,7 @@ class Form {
             if (this.device.getActiveTooltip() || this.isAutofilling) return
 
             const input = e.target
+            let click = null
             const getPosition = () => {
                 // In extensions, the tooltip is centered on the Dax icon
                 return isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
@@ -240,6 +241,10 @@ class Form {
                 if (!e.isTrusted) return
                 const isMainMouseButton = e.button === 0
                 if (!isMainMouseButton) return
+                click = {
+                    x: e.clientX,
+                    y: e.clientY
+                }
             }
 
             if (this.shouldOpenTooltip(e, input)) {
@@ -250,7 +255,7 @@ class Form {
 
                 this.touched.add(input)
                 // @ts-ignore
-                this.device.attachTooltip(this, input, getPosition)
+                this.device.attachTooltip(this, input, getPosition, click)
             }
         }
 
