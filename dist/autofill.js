@@ -1005,7 +1005,7 @@ class Form {
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
   }
 
-  autofillEmail(alias, dataType = 'emailAddress') {
+  autofillEmail(alias, dataType = 'identities') {
     this.isAutofilling = true;
     this.execOnInputs(input => this.autofillInput(input, alias, dataType), dataType);
     this.isAutofilling = false;
@@ -1768,7 +1768,7 @@ module.exports = {
 
 const {
   isDDGApp,
-  isMobileApp
+  isApp
 } = require('../autofill-utils');
 
 const {
@@ -1800,32 +1800,16 @@ const getIdentitiesIcon = (input, {
   device
 }) => {
   const subtype = getInputSubtype(input);
-  if (subtype === 'emailAddress' && device.hasLocalAddresses) return getDaxImg;
+  if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg;
   return '';
 };
 /**
  * A map of config objects. These help by centralising here some complexity
- * TODO: We're removing emailNew everywhere. The new thing is identities.emailAddress. We still have to backport this properly to other platforms.
- * @type {Record<SupportedMainTypes & {'emailNew': InputTypeConfig}, InputTypeConfig>}
+ * @type {Record<SupportedMainTypes, InputTypeConfig>}
  */
 
 
 const inputTypeConfig = {
-  emailNew: {
-    type: 'emailNew',
-    getIconBase: () => getDaxImg,
-    getIconFilled: () => getDaxImg,
-    shouldDecorate: (_input, {
-      device
-    }) => {
-      if (isMobileApp) return device.isDeviceSignedIn();
-      return device.hasLocalAddresses;
-    },
-    dataType: 'Addresses',
-    displayTitlePropName: () => '',
-    displaySubtitlePropName: '',
-    autofillMethod: ''
-  },
   credentials: {
     type: 'credentials',
     getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
@@ -1858,10 +1842,19 @@ const inputTypeConfig = {
     shouldDecorate: (input, {
       device
     }) => {
-      var _device$getLocalIdent;
-
       const subtype = getInputSubtype(input);
-      return (_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]);
+
+      if (isApp) {
+        var _device$getLocalIdent;
+
+        return (_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]);
+      }
+
+      if (subtype === 'emailAddress') {
+        return device.isDeviceSignedIn();
+      }
+
+      return false;
     },
     dataType: 'Identities',
     displayTitlePropName: (input, data) => {

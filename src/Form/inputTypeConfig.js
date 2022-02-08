@@ -1,4 +1,4 @@
-const {isDDGApp, isMobileApp} = require('../autofill-utils')
+const {isDDGApp, isApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
 const {getInputMainType, getInputSubtype} = require('./matching')
@@ -16,31 +16,16 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
  */
 const getIdentitiesIcon = (input, {device}) => {
     const subtype = getInputSubtype(input)
-    if (subtype === 'emailAddress' && device.hasLocalAddresses) return getDaxImg
+    if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg
 
     return ''
 }
 
 /**
  * A map of config objects. These help by centralising here some complexity
- * TODO: We're removing emailNew everywhere. The new thing is identities.emailAddress. We still have to backport this properly to other platforms.
- * @type {Record<SupportedMainTypes & {'emailNew': InputTypeConfig}, InputTypeConfig>}
+ * @type {Record<SupportedMainTypes, InputTypeConfig>}
  */
 const inputTypeConfig = {
-    emailNew: {
-        type: 'emailNew',
-        getIconBase: () => getDaxImg,
-        getIconFilled: () => getDaxImg,
-        shouldDecorate: (_input, {device}) => {
-            if (isMobileApp) return device.isDeviceSignedIn()
-
-            return device.hasLocalAddresses
-        },
-        dataType: 'Addresses',
-        displayTitlePropName: () => '',
-        displaySubtitlePropName: '',
-        autofillMethod: ''
-    },
     credentials: {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
@@ -67,7 +52,16 @@ const inputTypeConfig = {
         getIconFilled: getIdentitiesIcon,
         shouldDecorate: (input, {device}) => {
             const subtype = getInputSubtype(input)
-            return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
+
+            if (isApp) {
+                return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
+            }
+
+            if (subtype === 'emailAddress') {
+                return device.isDeviceSignedIn()
+            }
+
+            return false
         },
         dataType: 'Identities',
         displayTitlePropName: (input, data) => {

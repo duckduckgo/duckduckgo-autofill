@@ -288,7 +288,7 @@ class Form {
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
     }
 
-    autofillEmail (alias, dataType = 'emailAddress') {
+    autofillEmail (alias, dataType = 'identities') {
         this.isAutofilling = true
         this.execOnInputs(
             (input) => this.autofillInput(input, alias, dataType),
