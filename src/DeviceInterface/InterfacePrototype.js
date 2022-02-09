@@ -7,16 +7,21 @@ const {
     sendAndWaitForAnswer,
     formatDuckAddress
 } = require('../autofill-utils')
-const {forms} = require('../scanForInputs')
+const {getInputMainType, getInputSubtype} = require('../Form/matching')
 const {
     formatFullName
 } = require('../Form/formatters')
 const EmailAutofill = require('../UI/EmailAutofill')
 const DataAutofill = require('../UI/DataAutofill')
-
-let attempts = 0
+const {getInputConfigFromType} = require('../Form/inputTypeConfig')
 
 class InterfacePrototype {
+    constructor () {
+        this.attempts = 0
+        this.currentAttached = null
+        this.currentTooltip = null
+    }
+
     /** @type {{privateAddress: string, personalAddress: string}} */
     #addresses = {
         privateAddress: '',
@@ -130,8 +135,40 @@ class InterfacePrototype {
         }
     }
 
-    attachTooltip (form, input) {
+    selectedDetail (data, type) {
+        this.activeFormSelectedDetail(data, type)
+    }
+
+    activeFormSelectedDetail (data, type) {
+        const form = this.currentAttached
+        if (!form) {
+            return
+        }
+        if (type === 'email') {
+            form.autofillEmail(data.email)
+        } else {
+            form.autofillData(data, type)
+        }
+    }
+
+    createTooltip (inputType, subtype, getPosition) {
+        window.addEventListener('pointerdown', () => this.removeTooltip(), {capture: true, once: true})
+        window.addEventListener('input', () => this.removeTooltip(), {once: true})
+
+        const config = getInputConfigFromType(inputType)
+
+        if (isApp) {
+            return new DataAutofill(config, subtype, getPosition, this)
+        } else {
+            return new EmailAutofill(config, subtype, getPosition, this)
+        }
+    }
+
+    attachTooltip (form, input, getPosition) {
         form.activeInput = input
+        this.currentAttached = form
+        const inputType = getInputMainType(input)
+        const subtype = getInputSubtype(input)
 
         if (isMobileApp) {
             this.getAlias().then((alias) => {
@@ -139,27 +176,31 @@ class InterfacePrototype {
                 else form.activeInput.focus()
             })
         } else {
-            if (form.tooltip) return
-
-            form.tooltip = !isApp
-                ? new EmailAutofill(input, form, this)
-                : new DataAutofill(input, form, this)
+            if (this.currentTooltip) return
+            this.currentTooltip = this.createTooltip(inputType, subtype, getPosition)
             form.intObs.observe(input)
-            window.addEventListener('pointerdown', form.removeTooltip, {capture: true})
-            window.addEventListener('input', form.removeTooltip, {once: true})
         }
     }
 
-    getActiveForm () {
-        return [...forms.values()].find((form) => form.tooltip)
+    async removeTooltip () {
+        if (this.currentTooltip) {
+            this.currentTooltip.remove()
+            this.currentTooltip = null
+        }
     }
+
+    getActiveTooltip () {
+        return this.currentTooltip
+    }
+
+    handleEvent (_event) {}
     setupAutofill (_opts) {}
     getAddresses () {}
     refreshAlias () {}
     async trySigningIn () {
         if (isDDGDomain()) {
-            if (attempts < 10) {
-                attempts++
+            if (this.attempts < 10) {
+                this.attempts++
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)

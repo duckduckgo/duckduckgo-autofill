@@ -33,7 +33,7 @@ const inputTypeConfig = {
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
         shouldDecorate: (_input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
         dataType: 'Credentials',
-        displayTitlePropName: (_input, data) => data.username,
+        displayTitlePropName: (_subtype, data) => data.username,
         displaySubtitlePropName: '•••••••••••••••',
         autofillMethod: 'getAutofillCredentials'
     },
@@ -44,7 +44,7 @@ const inputTypeConfig = {
         getIconFilled: () => '',
         shouldDecorate: (_input, {device}) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
-        displayTitlePropName: (_input, data) => data.title,
+        displayTitlePropName: (_subtype, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
         autofillMethod: 'getAutofillCreditCard'
     },
@@ -67,8 +67,7 @@ const inputTypeConfig = {
             return false
         },
         dataType: 'Identities',
-        displayTitlePropName: (input, data) => {
-            const subtype = getInputSubtype(input)
+        displayTitlePropName: (subtype, data) => {
             if (subtype === 'addressCountryCode') {
                 return getCountryDisplayName('en', data.addressCountryCode)
             }
@@ -97,7 +96,19 @@ const inputTypeConfig = {
  */
 const getInputConfig = (input) => {
     const inputType = getInputMainType(input)
+    return getInputConfigFromType(inputType)
+}
+
+/**
+ * Retrieves configs from an input type
+ * @param {SupportedMainTypes | string} inputType
+ * @returns {InputTypeConfigs}
+ */
+const getInputConfigFromType = (inputType) => {
     return inputTypeConfig[inputType || 'unknown']
 }
 
-module.exports = getInputConfig
+module.exports = {
+    getInputConfig,
+    getInputConfigFromType
+}

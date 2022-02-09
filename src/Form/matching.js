@@ -503,7 +503,7 @@ class Matching {
 /**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedSubTypes | string}
+ * @returns {SupportedMainTypes | string}
  */
 const getInputMainType = (input) =>
     input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||

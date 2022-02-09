@@ -1,9 +1,9 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp, isApp} = require('../autofill-utils')
+const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp, isApp, getDaxBoundingBox} = require('../autofill-utils')
 const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
-const getInputConfig = require('./inputTypeConfig.js')
+const {getInputConfig} = require('./inputTypeConfig.js')
 const {getUnifiedExpiryDate, formatCCYear, getCountryName} = require('./formatters')
 const {Matching} = require('./matching')
 const {matchingConfiguration} = require('./matching-configuration')
@@ -38,7 +38,6 @@ class Form {
 
         this.touched = new Set()
         this.listeners = new Set()
-        this.tooltip = null
         this.activeInput = null
         // We set this to true to skip event listeners while we're autofilling
         this.isAutofilling = false
@@ -90,15 +89,15 @@ class Form {
         })
 
         this.removeTooltip = (e) => {
+            const tooltip = this.device.getActiveTooltip()
             if (
                 this.isAutofilling ||
-                !this.tooltip ||
-                (e && e.target === this.tooltip.host)
+                !tooltip ||
+                (e && e.target === tooltip.host)
             ) {
                 return
             }
-            this.tooltip.remove()
-            this.tooltip = null
+            this.device.removeTooltip()
             this.intObs?.disconnect()
             window.removeEventListener('pointerdown', this.removeTooltip, {capture: true})
         }
@@ -228,7 +227,13 @@ class Form {
         }
 
         const handler = (e) => {
-            if (this.tooltip || this.isAutofilling) return
+            if (this.device.getActiveTooltip() || this.isAutofilling) return
+
+            const input = e.target
+            const getPosition = () => {
+                // In extensions, the tooltip is centered on the Dax icon
+                return isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
+            }
 
             // Checks for mousedown event
             if (e.type === 'pointerdown') {
@@ -237,15 +242,15 @@ class Form {
                 if (!isMainMouseButton) return
             }
 
-            if (this.shouldOpenTooltip(e, e.target)) {
-                if (isEventWithinDax(e, e.target) || isMobileApp) {
+            if (this.shouldOpenTooltip(e, input)) {
+                if (isEventWithinDax(e, input) || isMobileApp) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
                 }
 
-                this.touched.add(e.target)
+                this.touched.add(input)
                 // @ts-ignore
-                this.device.attachTooltip(this, e.target)
+                this.device.attachTooltip(this, input, getPosition)
             }
         }
 
@@ -295,9 +300,7 @@ class Form {
             dataType
         )
         this.isAutofilling = false
-        if (this.tooltip) {
-            this.removeTooltip()
-        }
+        this.removeTooltip()
     }
 
     autofillData (data, dataType) {
@@ -325,9 +328,7 @@ class Form {
 
         this.isAutofilling = false
 
-        if (this.tooltip) {
-            this.removeTooltip()
-        }
+        this.removeTooltip()
     }
 }
 

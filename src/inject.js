@@ -15,11 +15,8 @@ const inject = () => {
             e.preventDefault()
             e.stopImmediatePropagation()
 
-            // @ts-ignore
-            const activeForm = deviceInterface.getActiveForm()
-            if (activeForm) {
-                activeForm.tooltip.dispatchClick()
-            }
+            const activeTooltip = deviceInterface.getActiveTooltip()
+            activeTooltip?.dispatchClick()
         }
 
         if (!isApp) return

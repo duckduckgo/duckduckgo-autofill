@@ -3,15 +3,10 @@ const {
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
-const getInputConfig = require('../Form/inputTypeConfig')
-const {getInputSubtype} = require('../Form/matching')
 
 class DataAutofill extends Tooltip {
-    constructor (input, associatedForm, deviceInterface) {
-        super(input, associatedForm, deviceInterface)
-
-        const config = getInputConfig(input)
-        const subtype = getInputSubtype(input)
+    constructor (config, subtype, position, deviceInterface) {
+        super(config, subtype, position, deviceInterface)
 
         this.data = this.interface[`getLocal${config.dataType}`]()
 
@@ -45,7 +40,7 @@ ${includeStyles}
                 <span class="tooltip__button__text-container">
                     <span class="tooltip__button__primary-text">
 ${singleData.id === 'privateAddress' ? 'Generated Private Address\n' : ''}
-${escapeXML(config.displayTitlePropName(input, singleData))}
+${escapeXML(config.displayTitlePropName(subtype, singleData))}
                     </span><br />
                     <span class="tooltip__button__secondary-text">
 ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitlePropName)}
@@ -63,7 +58,7 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
             this.registerClickableButton(btn, () => {
                 this.interface[`${config.autofillMethod}`](btn.id).then(({success}) => {
                     if (success) {
-                        this.associatedForm.autofillData(success, config.type)
+                        this.fillForm(success)
                         if (btn.id === 'privateAddress') this.interface.refreshAlias()
                     }
                 })
@@ -71,6 +66,9 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
         })
 
         this.init()
+    }
+    fillForm (data) {
+        this.interface.selectedDetail(data, this.config.type)
     }
 }
 

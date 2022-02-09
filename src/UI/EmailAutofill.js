@@ -6,8 +6,8 @@ const {
 const Tooltip = require('./Tooltip')
 
 class EmailAutofill extends Tooltip {
-    constructor (input, associatedForm, deviceInterface) {
-        super(input, associatedForm, deviceInterface)
+    constructor (config, subtype, position, deviceInterface) {
+        super(config, subtype, position, deviceInterface)
 
         this.addresses = this.interface.getLocalAddresses()
 
@@ -44,10 +44,10 @@ ${includeStyles}
             }
         }
         this.registerClickableButton(this.usePersonalButton, () => {
-            this.associatedForm.autofillEmail(formatDuckAddress(this.addresses.personalAddress))
+            this.fillForm(this.addresses.personalAddress)
         })
         this.registerClickableButton(this.usePrivateButton, () => {
-            this.associatedForm.autofillEmail(formatDuckAddress(this.addresses.privateAddress))
+            this.fillForm(this.addresses.privateAddress)
             this.interface.refreshAlias()
         })
 
@@ -55,6 +55,10 @@ ${includeStyles}
         this.interface.getAddresses().then(this.updateAddresses)
 
         this.init()
+    }
+    fillForm (address) {
+        const formattedAddress = formatDuckAddress(address)
+        this.interface.selectedDetail({email: formattedAddress}, 'email')
     }
 }
 
