@@ -133,6 +133,8 @@ describe('Input Classifiers', () => {
 })
 
 const testCases = require('./test-cases/index')
+let testResults = []
+
 describe.each(testCases)('Test $html fields', (testCase) => {
     const { html, expectedFailures = [], title = '__test__' } = testCase
 
@@ -168,6 +170,9 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                 manualScore: field.getAttribute('data-manual-scoring')
             }
         })
+
+        testResults.push({ testCase, scores })
+
         let bad = scores.filter(x => x.inferredType !== x.manualScore)
         let failed = bad.map(x => x.manualScore)
 
@@ -184,4 +189,64 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         }
         expect(failed).toStrictEqual(expectedFailures)
     })
+})
+
+afterAll(() => {
+    /* site statistics
+    a site is considered "failing" if there is at least one failing field in at least one of its tests
+    (including expected failures)
+     */
+
+    let siteHasFailures = {}
+
+    testResults.forEach((result) => {
+        const siteName = result.testCase.html.split('_')[0]
+        const testHasFailures = result.scores.some(field => field.manualScore !== field.inferredType)
+        if (siteHasFailures[siteName] !== true) {
+            siteHasFailures[siteName] = testHasFailures
+        }
+    })
+
+    const proportionFailingSites = Object.values(siteHasFailures).filter(t => t === true).length / Object.values(siteHasFailures).length
+
+    /* field statistics */
+
+    let totalFields = 0
+    let totalFailedFields = 0
+    let totalFalsePositives = 0
+
+    let totalFieldsByType = {}
+    let totalFailuresByFieldType = {}
+
+    testResults.forEach((result) => {
+        result.scores.forEach((field) => {
+            if (!totalFieldsByType[field.manualScore]) {
+                totalFieldsByType[field.manualScore] = 0
+                totalFailuresByFieldType[field.manualScore] = 0
+            }
+
+            if (field.manualScore !== field.inferredType) {
+                totalFailedFields++
+                totalFailuresByFieldType[field.manualScore]++
+            }
+            if (field.manualScore === 'unknown' && field.inferredType !== field.manualScore) {
+                totalFalsePositives++
+            }
+            totalFields++
+            totalFieldsByType[field.manualScore]++
+        })
+    })
+
+    console.log(
+        'Input classification statistics:',
+        '\n% of failing sites:\t\t' + Math.round(proportionFailingSites * 100) + '%',
+        '\n% of failing fields:\t' + Math.round((totalFailedFields / totalFields) * 100) + '%',
+        '\n% of false positive fields:\t' + Math.round((totalFalsePositives / totalFields) * 100) + '%',
+        '\n% fields failing by type:',
+        '\n' + Object.keys(totalFieldsByType).sort().map((type) => {
+            return '\n' + (type + ':').padEnd(24) +
+                    (Math.round((totalFailuresByFieldType[type] / totalFieldsByType[type]) * 100) + '%').padEnd(4) +
+                    ' (' + Math.round((totalFailuresByFieldType[type] / totalFailedFields) * 100) + '% of all failures)'
+        }).join('') + '\n'
+    )
 })
