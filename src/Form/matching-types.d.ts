@@ -93,20 +93,56 @@ type SupportedMainTypes =
     | 'identities'
     | 'unknown'
 
-type SupportedSubTypes =
-    | SupportedMainTypes
+type SupportedTypes =
+    | 'identities.firstName'
+    | 'identities.middleName'
+    | 'identities.lastName'
+    | 'identities.fullName'
+    | 'identities.phone'
+    | 'identities.addressStreet'
+    | 'identities.addressStreet2'
+    | 'identities.addressCity'
+    | 'identities.addressProvince'
+    | 'identities.addressPostalCode'
+    | 'identities.addressCountryCode'
+    | 'identities.birthdayDay'
+    | 'identities.birthdayMonth'
+    | 'identities.birthdayYear'
+    | 'identities.emailAddress'
     | 'credentials.username'
     | 'credentials.password'
-    | 'creditCards.cardName'
-    | 'creditCards.cardNumber'
-    | 'creditCards.cardSecurityCode'
-    | 'creditCards.expirationMonth'
-    | 'creditCards.expirationYear'
-    | 'creditCards.expiration'
+    | 'creditCard.cardName'
+    | 'creditCard.cardNumber'
+    | 'creditCard.cardSecurityCode'
+    | 'creditCard.expirationMonth'
+    | 'creditCard.expirationYear'
+    | 'creditCard.expiration'
+    | 'unknown'
 
-type SupportedSubTypesOrString =
-    | SupportedSubTypes
-    | string
+type SupportedSubTypes =
+    | 'emailAddress'
+    | 'password'
+    | 'username'
+    | 'cardName'
+    | 'cardNumber'
+    | 'cardSecurityCode'
+    | 'expirationMonth'
+    | 'expirationYear'
+    | 'expiration'
+    | 'firstName'
+    | 'middleName'
+    | 'lastName'
+    | 'fullName'
+    | 'phone'
+    | 'addressStreet'
+    | 'addressStreet2'
+    | 'addressCity'
+    | 'addressProvince'
+    | 'addressPostalCode'
+    | 'addressCountryCode'
+    | 'birthdayDay'
+    | 'birthdayMonth'
+    | 'birthdayYear'
 
 interface InputTypeConfigBase {
     type: SupportedMainTypes,

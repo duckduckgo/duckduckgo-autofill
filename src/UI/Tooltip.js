@@ -1,11 +1,12 @@
 const {safeExecute, addInlineStyles} = require('../autofill-utils')
+const {getSubtypeFromType} = require('../Form/matching')
 
 class Tooltip {
-    constructor (config, subtype, getPosition, deviceInterface) {
+    constructor (config, inputType, getPosition, deviceInterface) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
         this.host = this.shadow.host
         this.config = config
-        this.subtype = subtype
+        this.subtype = getSubtypeFromType(inputType)
         this.device = deviceInterface
         this.tooltip = null
         this.getPosition = getPosition

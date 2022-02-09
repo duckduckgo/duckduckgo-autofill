@@ -160,10 +160,11 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLFormElement} formEl
      * @param {{isLogin?: boolean}} [opts]
-     * @returns {SupportedSubTypes | string}
+     * @returns {SupportedTypes}
      */
     inferInputType (input, formEl, opts = {}) {
         const presetType = input.getAttribute(ATTR_INPUT_TYPE)
+        // @ts-ignore
         if (presetType) return presetType
 
         // For CC forms we run aggressive matches, so we want to make sure we only
@@ -171,6 +172,7 @@ class Matching {
         if (this.isCCForm(formEl)) {
             const ccMatchers = this.matcherList('cc')
             const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl)
+            // @ts-ignore
             if (subtype) return `creditCard.${subtype}`
         }
 
@@ -190,6 +192,7 @@ class Matching {
 
         const idMatchers = this.matcherList('id')
         const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl)
+        // @ts-ignore
         if (idSubtype) return `identities.${idSubtype}`
 
         return 'unknown'
@@ -501,23 +504,82 @@ class Matching {
 }
 
 /**
+ *  @returns {SupportedTypes}
+ */
+function getInputType (input) {
+    return input.getAttribute(ATTR_INPUT_TYPE) || 'unknown'
+}
+
+/**
+ * Retrieves the main type
+ * @param {SupportedSubTypes | string} type
+ * @returns {SupportedMainTypes}
+ */
+function getMainTypeFromType (type) {
+    const mainType = type.split('.')[0]
+    switch (mainType) {
+    case 'credentials':
+    case 'creditCard':
+    case 'identities':
+        return mainType
+    }
+    return 'unknown'
+}
+
+/**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedMainTypes | string}
+ * @returns {SupportedMainTypes}
  */
 const getInputMainType = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
-    'unknown'
+    getMainTypeFromType(getInputType(input))
+
+/**
+ * Retrieves the subtype
+ * @param {SupportedTypes | string} type
+ * @returns {SupportedSubTypes | 'unknown'}
+ */
+function getSubtypeFromType (type) {
+    const mainType = type?.split('.')[0]
+    switch (mainType) {
+    case 'emailAddress':
+    case 'password':
+    case 'username':
+    case 'cardName':
+    case 'cardNumber':
+    case 'cardSecurityCode':
+    case 'expirationMonth':
+    case 'expirationYear':
+    case 'expiration':
+    case 'firstName':
+    case 'middleName':
+    case 'lastName':
+    case 'fullName':
+    case 'phone':
+    case 'addressStreet':
+    case 'addressStreet2':
+    case 'addressCity':
+    case 'addressProvince':
+    case 'addressPostalCode':
+    case 'addressCountryCode':
+    case 'birthdayDay':
+    case 'birthdayMonth':
+    case 'birthdayYear':
+        return mainType
+    }
+    return 'unknown'
+}
 
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement|Element} input
- * @returns {SupportedSubTypes | string}
+ * @returns {SupportedSubTypes | SupportedMainTypes}
  */
-const getInputSubtype = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[1] ||
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
-    'unknown'
+function getInputSubtype (input) {
+    const type = getInputType(input)
+    const typeParts = type.split('.')
+    return typeParts[1] ? getSubtypeFromType(typeParts[1]) : 'unknown'
+}
 
 /**
  * Remove whitespace of more than 2 in a row and trim the string
@@ -644,7 +706,9 @@ const safeRegex = (string) => {
 }
 
 module.exports = {
+    getInputType,
     getInputSubtype,
+    getSubtypeFromType,
     removeExcessWhitespace,
     getInputMainType,
     getExplicitLabelsText,
