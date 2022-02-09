@@ -104,24 +104,28 @@ type SupportedSubTypes =
     | 'creditCards.expirationYear'
     | 'creditCards.expiration'
 
+type SupportedSubTypesOrString =
+    | SupportedSubTypes
+    | string
+
 interface InputTypeConfigBase {
     type: SupportedMainTypes,
     getIconFilled: (input: HTMLInputElement, form: Form) => string,
     getIconBase: (input: HTMLInputElement, form: Form) => string,
     shouldDecorate: (input: HTMLInputElement, form: Form) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
-    displayTitlePropName: (input: HTMLInputElement, data: any) => string
+    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: any) => string
     displaySubtitlePropName: string,
     autofillMethod: string // more specific here?
 }
 interface CredentialsInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (input: HTMLInputElement, data: CredentialsObject) => string
+    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CredentialsObject) => string
 }
 interface CreditCardInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (input: HTMLInputElement, data: CreditCardObject) => string
+    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CreditCardObject) => string
 }
 interface IdentitiesInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (input: HTMLInputElement, data: IdentitiesObject) => string
+    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: IdentitiesObject) => string
 }
 interface UnknownInputTypeConfig extends InputTypeConfigBase {
     displayTitlePropName: () => string

@@ -1,4 +1,4 @@
-const getInputConfig = require('./inputTypeConfig.js')
+const {getInputConfig} = require('./inputTypeConfig.js')
 
 /**
  * Returns the css-ready base64 encoding of the icon for the given input

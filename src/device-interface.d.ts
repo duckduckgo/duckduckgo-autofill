@@ -51,4 +51,6 @@ interface EmailAddresses {
 
 interface InterfacePrototypeBase {
      storeLocalAddresses(emailAddresses: EmailAddresses): void;
+     getActiveTooltip(): Tooltip;
+     removeTooltip(): void;
 }
