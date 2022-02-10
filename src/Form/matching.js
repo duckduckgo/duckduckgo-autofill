@@ -601,23 +601,23 @@ const supportedTypes = /** @type {const} */ ([
 function getSubtypeFromType (type) {
     const mainType = type?.split('.')[0]
     const validType = isValidSubtype(mainType)
-    return validType ? 'birthdayMonth' : 'unknown'
+    return validType ? mainType : 'unknown'
 }
 
 /**
- * @param {SupportedSubTypes | any} input
- * @returns {input is SupportedSubTypes}
+ * @param {SupportedSubTypes | any} supportedSubType
+ * @returns {supportedSubType is SupportedSubTypes}
  */
-function isValidSubtype (input) {
-    return supportedSubtypes.includes(input)
+function isValidSubtype (supportedSubType) {
+    return supportedSubtypes.includes(supportedSubType)
 }
 
 /**
- * @param {SupportedTypes | any} input
- * @returns {input is SupportedTypes}
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedTypes}
  */
-function isValidSupportedType (input) {
-    return supportedTypes.includes(input)
+function isValidSupportedType (supportedType) {
+    return supportedTypes.includes(supportedType)
 }
 
 /**
