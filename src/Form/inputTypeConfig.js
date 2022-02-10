@@ -22,6 +22,13 @@ const getIdentitiesIcon = (input, {device}) => {
 }
 
 /**
+ * Inputs with readOnly or disabled should never be decorated
+ * @param {HTMLInputElement} input
+ * @return {boolean}
+ */
+const canBeDecorated = (input) => !input.readOnly && !input.disabled
+
+/**
  * A map of config objects. These help by centralising here some complexity
  * @type {InputTypeConfig}
  */
@@ -31,7 +38,8 @@ const inputTypeConfig = {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (_input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
+        shouldDecorate: (_input, {isLogin, device}) =>
+            canBeDecorated(_input) && isLogin && device.hasLocalCredentials,
         dataType: 'Credentials',
         displayTitlePropName: (_subtype, data) => data.username,
         displaySubtitlePropName: '•••••••••••••••',
@@ -42,7 +50,8 @@ const inputTypeConfig = {
         type: 'creditCard',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (_input, {device}) => device.hasLocalCreditCards,
+        shouldDecorate: (_input, {device}) =>
+            canBeDecorated(_input) && device.hasLocalCreditCards,
         dataType: 'CreditCards',
         displayTitlePropName: (_subtype, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
@@ -53,8 +62,8 @@ const inputTypeConfig = {
         type: 'identities',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
-        shouldDecorate: (input, {device}) => {
-            const subtype = getInputSubtype(input)
+        shouldDecorate: (_input, {device}) => {
+            if (!canBeDecorated(_input)) return false
 
             if (isApp) {
                 return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
