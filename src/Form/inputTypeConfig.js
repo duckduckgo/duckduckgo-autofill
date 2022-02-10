@@ -61,8 +61,8 @@ const inputTypeConfig = {
         tooltipItem: (data) => new CredentialsTooltipItem(data)
     },
     /** @type {CreditCardInputTypeConfig} */
-    creditCard: {
-        type: 'creditCard',
+    creditCards: {
+        type: 'creditCards',
         getIconBase: () => '',
         getIconFilled: () => '',
         shouldDecorate: (_input, {device}) =>
