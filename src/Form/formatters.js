@@ -139,7 +139,7 @@ const inferCountryCodeFromElement = (el) => {
     if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value]
 
     if (el instanceof HTMLSelectElement) {
-        const selectedText = el.selectedOptions[0].text
+        const selectedText = el.selectedOptions[0]?.text
         if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText
         if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText]
         if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText]
@@ -147,17 +147,30 @@ const inferCountryCodeFromElement = (el) => {
     return ''
 }
 
-/** @param {InternalDataStorageObject} credentials */
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
 const shouldStoreCredentials = ({credentials}) =>
-    credentials.password
+    Boolean(credentials.password)
 
-/** @param {InternalDataStorageObject} credentials */
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
 const shouldStoreIdentities = ({identities}) =>
-    (identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity
+    Boolean(
+        (identities.firstName || identities.fullName) &&
+        identities.addressStreet &&
+        identities.addressCity
+    )
 
-/** @param {InternalDataStorageObject} credentials */
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
 const shouldStoreCreditCards = ({creditCards}) =>
-    creditCards.cardNumber && creditCards.cardSecurityCode
+    Boolean(creditCards.cardNumber && creditCards.cardSecurityCode)
 
 /**
  * Formats form data into an object to send to the device for storage
