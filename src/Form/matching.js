@@ -507,12 +507,16 @@ class Matching {
  *  @returns {SupportedTypes}
  */
 function getInputType (input) {
-    return input.getAttribute(ATTR_INPUT_TYPE) || 'unknown'
+    const attr = input.getAttribute(ATTR_INPUT_TYPE)
+    if (isValidSupportedType(attr)) {
+        return attr
+    }
+    return 'unknown'
 }
 
 /**
  * Retrieves the main type
- * @param {SupportedSubTypes | string} type
+ * @param {SupportedTypes} type
  * @returns {SupportedMainTypes}
  */
 function getMainTypeFromType (type) {
@@ -534,6 +538,61 @@ function getMainTypeFromType (type) {
 const getInputMainType = (input) =>
     getMainTypeFromType(getInputType(input))
 
+/** @typedef {supportedSubtypes[number]} SupportedSubTypes */
+const supportedSubtypes = /** @type {const} */ ([
+    'emailAddress',
+    'password',
+    'username',
+    'cardName',
+    'cardNumber',
+    'cardSecurityCode',
+    'expirationMonth',
+    'expirationYear',
+    'expiration',
+    'firstName',
+    'middleName',
+    'lastName',
+    'fullName',
+    'phone',
+    'addressStreet',
+    'addressStreet2',
+    'addressCity',
+    'addressProvince',
+    'addressPostalCode',
+    'addressCountryCode',
+    'birthdayDay',
+    'birthdayMonth',
+    'birthdayYear'
+])
+
+/** @typedef {supportedTypes[number]} SupportedTypes */
+const supportedTypes = /** @type {const} */ ([
+    'identities.firstName',
+    'identities.middleName',
+    'identities.lastName',
+    'identities.fullName',
+    'identities.phone',
+    'identities.addressStreet',
+    'identities.addressStreet2',
+    'identities.addressCity',
+    'identities.addressProvince',
+    'identities.addressPostalCode',
+    'identities.addressCountryCode',
+    'identities.birthdayDay',
+    'identities.birthdayMonth',
+    'identities.birthdayYear',
+    'identities.emailAddress',
+    'credentials.username',
+    'credentials.password',
+    'creditCard.cardName',
+    'creditCard.cardNumber',
+    'creditCard.cardSecurityCode',
+    'creditCard.expirationMonth',
+    'creditCard.expirationYear',
+    'creditCard.expiration',
+    'unknown'
+])
+
 /**
  * Retrieves the subtype
  * @param {SupportedTypes | string} type
@@ -541,33 +600,24 @@ const getInputMainType = (input) =>
  */
 function getSubtypeFromType (type) {
     const mainType = type?.split('.')[0]
-    switch (mainType) {
-    case 'emailAddress':
-    case 'password':
-    case 'username':
-    case 'cardName':
-    case 'cardNumber':
-    case 'cardSecurityCode':
-    case 'expirationMonth':
-    case 'expirationYear':
-    case 'expiration':
-    case 'firstName':
-    case 'middleName':
-    case 'lastName':
-    case 'fullName':
-    case 'phone':
-    case 'addressStreet':
-    case 'addressStreet2':
-    case 'addressCity':
-    case 'addressProvince':
-    case 'addressPostalCode':
-    case 'addressCountryCode':
-    case 'birthdayDay':
-    case 'birthdayMonth':
-    case 'birthdayYear':
-        return mainType
-    }
-    return 'unknown'
+    const validType = isValidSubtype(mainType)
+    return validType ? 'birthdayMonth' : 'unknown'
+}
+
+/**
+ * @param {SupportedSubTypes | any} input
+ * @returns {input is SupportedSubTypes}
+ */
+function isValidSubtype (input) {
+    return supportedSubtypes.includes(input)
+}
+
+/**
+ * @param {SupportedTypes | any} input
+ * @returns {input is SupportedTypes}
+ */
+function isValidSupportedType (input) {
+    return supportedTypes.includes(input)
 }
 
 /**
