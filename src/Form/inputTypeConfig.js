@@ -46,8 +46,8 @@ const inputTypeConfig = {
         autofillMethod: 'getAutofillCredentials'
     },
     /** @type {CreditCardInputTypeConfig} */
-    creditCard: {
-        type: 'creditCard',
+    creditCards: {
+        type: 'creditCards',
         getIconBase: () => '',
         getIconFilled: () => '',
         shouldDecorate: (_input, {device}) =>

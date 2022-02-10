@@ -31,7 +31,7 @@ class Form {
         this.inputs = {
             all: new Set(),
             credentials: new Set(),
-            creditCard: new Set(),
+            creditCards: new Set(),
             identities: new Set(),
             unknown: new Set()
         }
