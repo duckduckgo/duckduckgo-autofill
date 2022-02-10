@@ -89,7 +89,7 @@ type MatchingResult = {
 
 type SupportedMainTypes =
     | 'credentials'
-    | 'creditCard'
+    | 'creditCards'
     | 'identities'
     | 'unknown'
 
@@ -121,8 +121,8 @@ interface InputTypeConfigBase {
 interface CredentialsInputTypeConfig extends InputTypeConfigBase {
     displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CredentialsObject) => string
 }
-interface CreditCardInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CreditCardObject) => string
+interface CreditCardsInputTypeConfig extends InputTypeConfigBase {
+    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CreditCardsObject) => string
 }
 interface IdentitiesInputTypeConfig extends InputTypeConfigBase {
     displayTitlePropName: (subtype: SupportedSubtypesOrString, data: IdentitiesObject) => string
@@ -133,7 +133,7 @@ interface UnknownInputTypeConfig extends InputTypeConfigBase {
 
 type InputTypeConfigs =
     | CredentialsInputTypeConfig
-    | CreditCardInputTypeConfig
+    | CreditCardsInputTypeConfig
     | IdentitiesInputTypeConfig
     | UnknownInputTypeConfig
 

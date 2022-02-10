@@ -45,7 +45,7 @@ const inputTypeConfig = {
         displaySubtitlePropName: '•••••••••••••••',
         autofillMethod: 'getAutofillCredentials'
     },
-    /** @type {CreditCardInputTypeConfig} */
+    /** @type {CreditCardsInputTypeConfig} */
     creditCards: {
         type: 'creditCards',
         getIconBase: () => '',
@@ -64,6 +64,8 @@ const inputTypeConfig = {
         getIconFilled: getIdentitiesIcon,
         shouldDecorate: (_input, {device}) => {
             if (!canBeDecorated(_input)) return false
+
+            const subtype = getInputSubtype(_input)
 
             if (isApp) {
                 return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
