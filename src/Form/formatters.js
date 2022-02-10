@@ -1,5 +1,5 @@
 const {matchInPlaceholderAndLabels, checkPlaceholderAndLabels} = require('./matching')
-const COUNTRY_NAMES = require('./countryNames')
+const {COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES} = require('./countryNames')
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
@@ -54,7 +54,7 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
         const regionNames = new Intl.DisplayNames([locale], { type: 'region' })
         return regionNames.of(addressCountryCode)
     } catch (e) {
-        return COUNTRY_NAMES[addressCountryCode] || addressCountryCode
+        return COUNTRY_CODES_TO_NAMES[addressCountryCode] || addressCountryCode
     }
 }
 
