@@ -163,17 +163,17 @@ class Matching {
      * @returns {SupportedTypes}
      */
     inferInputType (input, formEl, opts = {}) {
-        const presetType = input.getAttribute(ATTR_INPUT_TYPE)
-        // @ts-ignore
-        if (presetType) return presetType
+        const presetType = getInputType(input)
+        if (presetType !== 'unknown') return presetType
 
         // For CC forms we run aggressive matches, so we want to make sure we only
         // run them on actual CC forms to avoid false positives and expensive loops
         if (this.isCCForm(formEl)) {
             const ccMatchers = this.matcherList('cc')
             const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl)
-            // @ts-ignore
-            if (subtype) return `creditCard.${subtype}`
+            if (subtype && isValidCreditCardSubtype(subtype)) {
+                return `creditCard.${subtype}`
+            }
         }
 
         if (input instanceof HTMLInputElement) {
@@ -192,8 +192,9 @@ class Matching {
 
         const idMatchers = this.matcherList('id')
         const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl)
-        // @ts-ignore
-        if (idSubtype) return `identities.${idSubtype}`
+        if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
+            return `identities.${idSubtype}`
+        }
 
         return 'unknown'
     }
@@ -538,17 +539,10 @@ function getMainTypeFromType (type) {
 const getInputMainType = (input) =>
     getMainTypeFromType(getInputType(input))
 
-/** @typedef {supportedSubtypes[number]} SupportedSubTypes */
-const supportedSubtypes = /** @type {const} */ ([
+/** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
+const supportedIdentitiesSubtypes = /** @type {const} */ ([
     'emailAddress',
-    'password',
-    'username',
     'cardName',
-    'cardNumber',
-    'cardSecurityCode',
-    'expirationMonth',
-    'expirationYear',
-    'expiration',
     'firstName',
     'middleName',
     'lastName',
@@ -565,33 +559,52 @@ const supportedSubtypes = /** @type {const} */ ([
     'birthdayYear'
 ])
 
-/** @typedef {supportedTypes[number]} SupportedTypes */
-const supportedTypes = /** @type {const} */ ([
-    'identities.firstName',
-    'identities.middleName',
-    'identities.lastName',
-    'identities.fullName',
-    'identities.phone',
-    'identities.addressStreet',
-    'identities.addressStreet2',
-    'identities.addressCity',
-    'identities.addressProvince',
-    'identities.addressPostalCode',
-    'identities.addressCountryCode',
-    'identities.birthdayDay',
-    'identities.birthdayMonth',
-    'identities.birthdayYear',
-    'identities.emailAddress',
-    'credentials.username',
-    'credentials.password',
-    'creditCard.cardName',
-    'creditCard.cardNumber',
-    'creditCard.cardSecurityCode',
-    'creditCard.expirationMonth',
-    'creditCard.expirationYear',
-    'creditCard.expiration',
-    'unknown'
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedIdentitiesSubTypes}
+ */
+function isValidIdentitiesSubtype (supportedType) {
+    return supportedIdentitiesSubtypes.includes(supportedType)
+}
+
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}`} SupportedCompoundIdentitiesTypes */
+const supportedIdentitiesTypes = /** @type {const} */ supportedIdentitiesSubtypes.map((type) => `identities.${type}`)
+
+/** @typedef {supportedCreditCardSubtypes[number]} SupportedCreditCardSubTypes */
+const supportedCreditCardSubtypes = /** @type {const} */ ([
+    'cardName',
+    'cardNumber',
+    'cardSecurityCode',
+    'expirationMonth',
+    'expirationYear',
+    'expiration'
 ])
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCreditCardSubTypes}
+ */
+function isValidCreditCardSubtype (supportedType) {
+    return supportedCreditCardSubtypes.includes(supportedType)
+}
+
+/** @typedef {`creditCard.${SupportedCreditCardSubTypes}`} SupportedCompoundCreditCardTypes */
+const supportedCreditCardTypes = supportedCreditCardSubtypes.map((type) => `creditCard.${type}`)
+
+/** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
+const supportedCredentialsSubtypes = /** @type {const} */ ([
+    'password',
+    'username'
+])
+
+/** @typedef {`credentials.${SupportedCredentialsSubTypes}`} SupportedCompoundCredentialsTypes */
+const supportedCredentialsTypes = supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+
+/** @typedef {supportedSubtypes[number]} SupportedSubTypes */
+const supportedSubtypes = [...supportedIdentitiesSubtypes, ...supportedCreditCardSubtypes, ...supportedCredentialsSubtypes]
+
+/** @typedef {SupportedCompoundIdentitiesTypes | SupportedCompoundCreditCardTypes | SupportedCompoundCredentialsTypes | 'unknown'} SupportedTypes */
+const supportedTypes = [...supportedIdentitiesTypes, ...supportedCreditCardTypes, ...supportedCredentialsTypes]
 
 /**
  * Retrieves the subtype
