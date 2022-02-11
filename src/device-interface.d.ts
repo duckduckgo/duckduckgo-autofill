@@ -50,9 +50,9 @@ interface PMData {
 }
 
 interface DataStorageObject {
-     credentials: CredentialsObject,
-     creditCards: CreditCardObject,
-     identities: IdentityObject,
+     credentials?: CredentialsObject,
+     creditCards?: CreditCardObject,
+     identities?: IdentityObject,
 }
 
 interface InternalDataStorageObject {

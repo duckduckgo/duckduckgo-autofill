@@ -179,6 +179,7 @@ const shouldStoreCreditCards = ({creditCards}) =>
  * @return {DataStorageObject}
  */
 const prepareFormValuesForStorage = (formValues) => {
+    /** @type {Partial<InternalDataStorageObject>} */
     let {credentials, identities, creditCards} = formValues
 
     /** Fixes for credentials **/
@@ -189,8 +190,7 @@ const prepareFormValuesForStorage = (formValues) => {
             credentials.username = identities.emailAddress
         }
     } else {
-        // @ts-ignore
-        credentials = null
+        credentials = undefined
     }
 
     /** Fixes for identities **/
@@ -209,8 +209,7 @@ const prepareFormValuesForStorage = (formValues) => {
             delete identities.fullName
         }
     } else {
-        // @ts-ignore
-        identities = null
+        identities = undefined
     }
 
     /** Fixes for credit cards **/
@@ -229,8 +228,7 @@ const prepareFormValuesForStorage = (formValues) => {
             creditCards.cardNumber = creditCards.cardNumber.replaceAll(/\D/g, '')
         }
     } else {
-        // @ts-ignore
-        creditCards = null
+        creditCards = undefined
     }
 
     return {credentials, identities, creditCards}
