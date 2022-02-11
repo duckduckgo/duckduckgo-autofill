@@ -2,7 +2,7 @@
 require('./requestIdleCallback')
 
 const {forms} = require('./scanForInputs')
-const {isApp} = require('./autofill-utils')
+const {isApp, isTopFrame} = require('./autofill-utils')
 const deviceInterface = require('./DeviceInterface')
 
 const inject = () => {
@@ -40,9 +40,32 @@ const inject = () => {
             // @ts-ignore
             forms.get(e.target)?.submitHandler(),
         true)
+        if (isTopFrame) {
+            setupTopFrame()
+        }
     }
 
     deviceInterface.init()
+}
+
+async function setupTopFrame () {
+    const {inputType, inputSubtype} = await deviceInterface.getInputTypes()
+    function triggerFormSetup () {
+        // Provide dummy values, they're not used
+        const getPosition = () => {
+            return {
+                x: 0,
+                y: 0,
+                height: 50,
+                width: 50
+            }
+        }
+        const tooltip = deviceInterface.createTooltip(inputType, inputSubtype, getPosition)
+        deviceInterface.setActiveTooltip(tooltip)
+    }
+    window.addEventListener('InitComplete', () => {
+        triggerFormSetup()
+    })
 }
 
 module.exports = inject

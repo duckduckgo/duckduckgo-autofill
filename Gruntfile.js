@@ -16,8 +16,7 @@ module.exports = function (grunt) {
                     ]
                 },
                 files: {
-                    'dist/autofill.js': ['src/autofill.js'],
-                    'dist/topAutofill.js': ['src/topAutofill.js']
+                    'dist/autofill.js': ['src/autofill.js']
                 }
             }
         },

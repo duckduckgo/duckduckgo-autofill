@@ -220,8 +220,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     const details = {
       inputTop: diffY,
       inputLeft: diffX,
-      height: input.height,
-      width: input.width,
       inputHeight: Math.floor(input.height),
       inputWidth: Math.floor(input.width),
       inputType: inputType,
@@ -4225,11 +4223,17 @@ const ddgGlobals = require('./captureDdgGlobals');
  */
 
 
-const wkSend = (handler, data = {}) => window.webkit.messageHandlers[handler].postMessage({ ...data,
-  messageHandling: { ...data.messageHandling,
-    secret
+const wkSend = (handler, data = {}) => {
+  if (!(handler in window.webkit.messageHandlers)) {
+    throw new Error("Missing webkit handler: '".concat(handler, "'"));
   }
-});
+
+  return window.webkit.messageHandlers[handler].postMessage({ ...data,
+    messageHandling: { ...data.messageHandling,
+      secret
+    }
+  });
+};
 /**
  * Generate a random method name and adds it to the global scope
  * The native layer will use this method to send the response
@@ -4715,7 +4719,8 @@ const {
 } = require('./scanForInputs');
 
 const {
-  isApp
+  isApp,
+  isTopFrame
 } = require('./autofill-utils');
 
 const deviceInterface = require('./DeviceInterface');
@@ -4752,10 +4757,40 @@ const inject = () => {
         (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler()
       );
     }, true);
+
+    if (isTopFrame) {
+      setupTopFrame();
+    }
   }
 
   deviceInterface.init();
 };
+
+async function setupTopFrame() {
+  const {
+    inputType,
+    inputSubtype
+  } = await deviceInterface.getInputTypes();
+
+  function triggerFormSetup() {
+    // Provide dummy values, they're not used
+    const getPosition = () => {
+      return {
+        x: 0,
+        y: 0,
+        height: 50,
+        width: 50
+      };
+    };
+
+    const tooltip = deviceInterface.createTooltip(inputType, inputSubtype, getPosition);
+    deviceInterface.setActiveTooltip(tooltip);
+  }
+
+  window.addEventListener('InitComplete', () => {
+    triggerFormSetup();
+  });
+}
 
 module.exports = inject;
 

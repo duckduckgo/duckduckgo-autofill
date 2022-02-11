@@ -97,8 +97,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         const details = {
             inputTop: diffY,
             inputLeft: diffX,
-            height: input.height,
-            width: input.width,
             inputHeight: Math.floor(input.height),
             inputWidth: Math.floor(input.width),
             inputType: inputType,
