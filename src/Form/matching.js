@@ -542,7 +542,6 @@ const getInputMainType = (input) =>
 /** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
 const supportedIdentitiesSubtypes = /** @type {const} */ ([
     'emailAddress',
-    'cardName',
     'firstName',
     'middleName',
     'lastName',
@@ -567,9 +566,6 @@ function isValidIdentitiesSubtype (supportedType) {
     return supportedIdentitiesSubtypes.includes(supportedType)
 }
 
-/** @typedef {`identities.${SupportedIdentitiesSubTypes}`} SupportedCompoundIdentitiesTypes */
-const supportedIdentitiesTypes = /** @type {const} */ supportedIdentitiesSubtypes.map((type) => `identities.${type}`)
-
 /** @typedef {supportedCreditCardSubtypes[number]} SupportedCreditCardSubTypes */
 const supportedCreditCardSubtypes = /** @type {const} */ ([
     'cardName',
@@ -588,23 +584,28 @@ function isValidCreditCardSubtype (supportedType) {
     return supportedCreditCardSubtypes.includes(supportedType)
 }
 
-/** @typedef {`creditCard.${SupportedCreditCardSubTypes}`} SupportedCompoundCreditCardTypes */
-const supportedCreditCardTypes = supportedCreditCardSubtypes.map((type) => `creditCard.${type}`)
-
 /** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
 const supportedCredentialsSubtypes = /** @type {const} */ ([
     'password',
     'username'
 ])
 
-/** @typedef {`credentials.${SupportedCredentialsSubTypes}`} SupportedCompoundCredentialsTypes */
-const supportedCredentialsTypes = supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCredentialsSubTypes}
+ */
+function isValidCredentialsSubtype (supportedType) {
+    return supportedCredentialsSubtypes.includes(supportedType)
+}
 
-/** @typedef {supportedSubtypes[number]} SupportedSubTypes */
-const supportedSubtypes = [...supportedIdentitiesSubtypes, ...supportedCreditCardSubtypes, ...supportedCredentialsSubtypes]
+/** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
 
-/** @typedef {SupportedCompoundIdentitiesTypes | SupportedCompoundCreditCardTypes | SupportedCompoundCredentialsTypes | 'unknown'} SupportedTypes */
-const supportedTypes = [...supportedIdentitiesTypes, ...supportedCreditCardTypes, ...supportedCredentialsTypes]
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCard.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
+const supportedTypes = [
+    ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
+    ...supportedCreditCardSubtypes.map((type) => `creditCard.${type}`),
+    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+]
 
 /**
  * Retrieves the subtype
@@ -612,9 +613,9 @@ const supportedTypes = [...supportedIdentitiesTypes, ...supportedCreditCardTypes
  * @returns {SupportedSubTypes | 'unknown'}
  */
 function getSubtypeFromType (type) {
-    const mainType = type?.split('.')[0]
-    const validType = isValidSubtype(mainType)
-    return validType ? mainType : 'unknown'
+    const subType = type?.split('.')[1]
+    const validType = isValidSubtype(subType)
+    return validType ? subType : 'unknown'
 }
 
 /**
@@ -622,7 +623,9 @@ function getSubtypeFromType (type) {
  * @returns {supportedSubType is SupportedSubTypes}
  */
 function isValidSubtype (supportedSubType) {
-    return supportedSubtypes.includes(supportedSubType)
+    return isValidIdentitiesSubtype(supportedSubType) ||
+           isValidCreditCardSubtype(supportedSubType) ||
+           isValidCredentialsSubtype(supportedSubType)
 }
 
 /**
@@ -636,12 +639,11 @@ function isValidSupportedType (supportedType) {
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement|Element} input
- * @returns {SupportedSubTypes | SupportedMainTypes}
+ * @returns {SupportedSubTypes | 'unknown'}
  */
 function getInputSubtype (input) {
     const type = getInputType(input)
-    const typeParts = type.split('.')
-    return typeParts[1] ? getSubtypeFromType(typeParts[1]) : 'unknown'
+    return getSubtypeFromType(type)
 }
 
 /**

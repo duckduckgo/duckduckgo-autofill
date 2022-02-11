@@ -2917,16 +2917,17 @@ class Matching {
 
 
   inferInputType(input, formEl, opts = {}) {
-    const presetType = input.getAttribute(ATTR_INPUT_TYPE); // @ts-ignore
-
-    if (presetType) return presetType; // For CC forms we run aggressive matches, so we want to make sure we only
+    const presetType = getInputType(input);
+    if (presetType !== 'unknown') return presetType; // For CC forms we run aggressive matches, so we want to make sure we only
     // run them on actual CC forms to avoid false positives and expensive loops
 
     if (this.isCCForm(formEl)) {
       const ccMatchers = this.matcherList('cc');
-      const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl); // @ts-ignore
+      const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl);
 
-      if (subtype) return "creditCard.".concat(subtype);
+      if (subtype && isValidCreditCardSubtype(subtype)) {
+        return "creditCard.".concat(subtype);
+      }
     }
 
     if (input instanceof HTMLInputElement) {
@@ -2944,9 +2945,12 @@ class Matching {
     }
 
     const idMatchers = this.matcherList('id');
-    const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl); // @ts-ignore
+    const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl);
 
-    if (idSubtype) return "identities.".concat(idSubtype);
+    if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
+      return "identities.".concat(idSubtype);
+    }
+
     return 'unknown';
   }
   /**
@@ -3332,11 +3336,17 @@ _defineProperty(Matching, "emptyConfig", {
 });
 
 function getInputType(input) {
-  return input.getAttribute(ATTR_INPUT_TYPE) || 'unknown';
+  const attr = input.getAttribute(ATTR_INPUT_TYPE);
+
+  if (isValidSupportedType(attr)) {
+    return attr;
+  }
+
+  return 'unknown';
 }
 /**
  * Retrieves the main type
- * @param {SupportedSubTypes | string} type
+ * @param {SupportedTypes} type
  * @returns {SupportedMainTypes}
  */
 
@@ -3361,56 +3371,93 @@ function getMainTypeFromType(type) {
 
 
 const getInputMainType = input => getMainTypeFromType(getInputType(input));
+/** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
+
+
+const supportedIdentitiesSubtypes =
+/** @type {const} */
+['emailAddress', 'firstName', 'middleName', 'lastName', 'fullName', 'phone', 'addressStreet', 'addressStreet2', 'addressCity', 'addressProvince', 'addressPostalCode', 'addressCountryCode', 'birthdayDay', 'birthdayMonth', 'birthdayYear'];
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedIdentitiesSubTypes}
+ */
+
+function isValidIdentitiesSubtype(supportedType) {
+  return supportedIdentitiesSubtypes.includes(supportedType);
+}
+/** @typedef {supportedCreditCardSubtypes[number]} SupportedCreditCardSubTypes */
+
+
+const supportedCreditCardSubtypes =
+/** @type {const} */
+['cardName', 'cardNumber', 'cardSecurityCode', 'expirationMonth', 'expirationYear', 'expiration'];
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCreditCardSubTypes}
+ */
+
+function isValidCreditCardSubtype(supportedType) {
+  return supportedCreditCardSubtypes.includes(supportedType);
+}
+/** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
+
+
+const supportedCredentialsSubtypes =
+/** @type {const} */
+['password', 'username'];
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCredentialsSubTypes}
+ */
+
+function isValidCredentialsSubtype(supportedType) {
+  return supportedCredentialsSubtypes.includes(supportedType);
+}
+/** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
+
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCard.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
+
+
+const supportedTypes = [...supportedIdentitiesSubtypes.map(type => "identities.".concat(type)), ...supportedCreditCardSubtypes.map(type => "creditCard.".concat(type)), ...supportedCredentialsSubtypes.map(type => "credentials.".concat(type))];
 /**
  * Retrieves the subtype
  * @param {SupportedTypes | string} type
  * @returns {SupportedSubTypes | 'unknown'}
  */
 
-
 function getSubtypeFromType(type) {
-  const mainType = type === null || type === void 0 ? void 0 : type.split('.')[0];
+  const subType = type === null || type === void 0 ? void 0 : type.split('.')[1];
+  const validType = isValidSubtype(subType);
+  return validType ? subType : 'unknown';
+}
+/**
+ * @param {SupportedSubTypes | any} supportedSubType
+ * @returns {supportedSubType is SupportedSubTypes}
+ */
 
-  switch (mainType) {
-    case 'emailAddress':
-    case 'password':
-    case 'username':
-    case 'cardName':
-    case 'cardNumber':
-    case 'cardSecurityCode':
-    case 'expirationMonth':
-    case 'expirationYear':
-    case 'expiration':
-    case 'firstName':
-    case 'middleName':
-    case 'lastName':
-    case 'fullName':
-    case 'phone':
-    case 'addressStreet':
-    case 'addressStreet2':
-    case 'addressCity':
-    case 'addressProvince':
-    case 'addressPostalCode':
-    case 'addressCountryCode':
-    case 'birthdayDay':
-    case 'birthdayMonth':
-    case 'birthdayYear':
-      return mainType;
-  }
 
-  return 'unknown';
+function isValidSubtype(supportedSubType) {
+  return isValidIdentitiesSubtype(supportedSubType) || isValidCreditCardSubtype(supportedSubType) || isValidCredentialsSubtype(supportedSubType);
+}
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedTypes}
+ */
+
+
+function isValidSupportedType(supportedType) {
+  return supportedTypes.includes(supportedType);
 }
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement|Element} input
- * @returns {SupportedSubTypes | SupportedMainTypes}
+ * @returns {SupportedSubTypes | 'unknown'}
  */
 
 
 function getInputSubtype(input) {
   const type = getInputType(input);
-  const typeParts = type.split('.');
-  return typeParts[1] ? getSubtypeFromType(typeParts[1]) : 'unknown';
+  return getSubtypeFromType(type);
 }
 /**
  * Remove whitespace of more than 2 in a row and trim the string
