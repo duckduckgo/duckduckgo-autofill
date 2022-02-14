@@ -183,7 +183,7 @@ class InterfacePrototype {
             if (!click) {
                 return
             }
-            this.showTopTooltip(inputType, subtype, click, getPosition())
+            this.showTopTooltip(inputType, click, getPosition())
             return
         }
 

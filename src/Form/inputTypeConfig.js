@@ -1,7 +1,7 @@
 const {isDDGApp, isApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {getInputMainType, getInputSubtype} = require('./matching')
+const {getInputType, getMainTypeFromType, getInputSubtype} = require('./matching')
 const {getCountryDisplayName} = require('./formatters')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
@@ -95,17 +95,18 @@ const inputTypeConfig = {
  * @returns {InputTypeConfigs}
  */
 const getInputConfig = (input) => {
-    const inputType = getInputMainType(input)
+    const inputType = getInputType(input)
     return getInputConfigFromType(inputType)
 }
 
 /**
  * Retrieves configs from an input type
- * @param {SupportedMainTypes | string} inputType
+ * @param {SupportedTypes | string} inputType
  * @returns {InputTypeConfigs}
  */
 const getInputConfigFromType = (inputType) => {
-    return inputTypeConfig[inputType || 'unknown']
+    const inputMainType = getMainTypeFromType(inputType)
+    return inputTypeConfig[inputMainType]
 }
 
 module.exports = {

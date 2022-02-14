@@ -49,7 +49,7 @@ const inject = () => {
 }
 
 async function setupTopFrame () {
-    const {inputType, inputSubtype} = await deviceInterface.getInputTypes()
+    const inputType = await deviceInterface.getInputType()
     function triggerFormSetup () {
         // Provide dummy values, they're not used
         const getPosition = () => {
@@ -60,7 +60,7 @@ async function setupTopFrame () {
                 width: 50
             }
         }
-        const tooltip = deviceInterface.createTooltip(inputType, inputSubtype, getPosition)
+        const tooltip = deviceInterface.createTooltip(inputType, getPosition)
         deviceInterface.setActiveTooltip(tooltip)
     }
     window.addEventListener('InitComplete', () => {

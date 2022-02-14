@@ -211,19 +211,18 @@ class AppleDeviceInterface extends InterfacePrototype {
     await wkSend('setSize', details);
   }
 
-  async showTopTooltip(inputType, inputSubtype, click, input) {
+  async showTopTooltip(inputType, click, inputDimensions) {
     window.addEventListener('scroll', this, {
       once: true
     });
-    let diffX = Math.floor(click.x - input.x);
-    let diffY = Math.floor(click.y - input.y);
+    let diffX = Math.floor(click.x - inputDimensions.x);
+    let diffY = Math.floor(click.y - inputDimensions.y);
     const details = {
       inputTop: diffY,
       inputLeft: diffX,
-      inputHeight: Math.floor(input.height),
-      inputWidth: Math.floor(input.width),
-      inputType: inputType,
-      inputSubtype: inputSubtype
+      inputHeight: Math.floor(inputDimensions.height),
+      inputWidth: Math.floor(inputDimensions.width),
+      inputType
     };
     await wkSend('showAutofillParent', details);
   }
@@ -349,15 +348,11 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
   }
 
-  async getInputTypes() {
+  async getInputType() {
     const {
-      inputSubtype,
       inputType
     } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
-    return {
-      inputSubtype,
-      inputType
-    };
+    return inputType;
   }
 
   async getAlias() {
@@ -738,7 +733,7 @@ class InterfacePrototype {
         return;
       }
 
-      this.showTopTooltip(inputType, subtype, click, getPosition());
+      this.showTopTooltip(inputType, click, getPosition());
       return;
     }
 
@@ -1954,7 +1949,8 @@ const {
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon');
 
 const {
-  getInputMainType,
+  getInputType,
+  getMainTypeFromType,
   getInputSubtype
 } = require('./matching');
 
@@ -2068,18 +2064,19 @@ const inputTypeConfig = {
  */
 
 const getInputConfig = input => {
-  const inputType = getInputMainType(input);
+  const inputType = getInputType(input);
   return getInputConfigFromType(inputType);
 };
 /**
  * Retrieves configs from an input type
- * @param {SupportedMainTypes | string} inputType
+ * @param {SupportedTypes | string} inputType
  * @returns {InputTypeConfigs}
  */
 
 
 const getInputConfigFromType = inputType => {
-  return inputTypeConfig[inputType || 'unknown'];
+  const inputMainType = getMainTypeFromType(inputType);
+  return inputTypeConfig[inputMainType];
 };
 
 module.exports = {
@@ -3720,6 +3717,7 @@ module.exports = {
   getSubtypeFromType,
   removeExcessWhitespace,
   getInputMainType,
+  getMainTypeFromType,
   getExplicitLabelsText,
   getRelatedText,
   matchInPlaceholderAndLabels,
@@ -4767,10 +4765,7 @@ const inject = () => {
 };
 
 async function setupTopFrame() {
-  const {
-    inputType,
-    inputSubtype
-  } = await deviceInterface.getInputTypes();
+  const inputType = await deviceInterface.getInputType();
 
   function triggerFormSetup() {
     // Provide dummy values, they're not used
@@ -4783,7 +4778,7 @@ async function setupTopFrame() {
       };
     };
 
-    const tooltip = deviceInterface.createTooltip(inputType, inputSubtype, getPosition);
+    const tooltip = deviceInterface.createTooltip(inputType, getPosition);
     deviceInterface.setActiveTooltip(tooltip);
   }
 

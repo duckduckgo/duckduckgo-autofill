@@ -88,19 +88,18 @@ class AppleDeviceInterface extends InterfacePrototype {
         await wkSend('setSize', details)
     }
 
-    async showTopTooltip (inputType, inputSubtype, click, input) {
+    async showTopTooltip (inputType, click, inputDimensions) {
         window.addEventListener('scroll', this, {once: true})
 
-        let diffX = Math.floor(click.x - input.x)
-        let diffY = Math.floor(click.y - input.y)
+        let diffX = Math.floor(click.x - inputDimensions.x)
+        let diffY = Math.floor(click.y - inputDimensions.y)
 
         const details = {
             inputTop: diffY,
             inputLeft: diffX,
-            inputHeight: Math.floor(input.height),
-            inputWidth: Math.floor(input.width),
-            inputType: inputType,
-            inputSubtype: inputSubtype
+            inputHeight: Math.floor(inputDimensions.height),
+            inputWidth: Math.floor(inputDimensions.width),
+            inputType
         }
 
         await wkSend('showAutofillParent', details)
@@ -198,9 +197,9 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
     }
 
-    async getInputTypes () {
-        const {inputSubtype, inputType} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
-        return {inputSubtype, inputType}
+    async getInputType () {
+        const {inputType} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+        return inputType
     }
 
     async getAlias () {

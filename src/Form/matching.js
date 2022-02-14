@@ -776,6 +776,7 @@ module.exports = {
     getSubtypeFromType,
     removeExcessWhitespace,
     getInputMainType,
+    getMainTypeFromType,
     getExplicitLabelsText,
     getRelatedText,
     matchInPlaceholderAndLabels,
