@@ -7,7 +7,7 @@ const {
     sendAndWaitForAnswer,
     formatDuckAddress
 } = require('../autofill-utils')
-const {getInputMainType, getInputSubtype} = require('../Form/matching')
+const {getInputType} = require('../Form/matching')
 const {
     formatFullName
 } = require('../Form/formatters')
@@ -151,24 +151,23 @@ class InterfacePrototype {
         }
     }
 
-    createTooltip (inputType, subtype, getPosition) {
+    createTooltip (inputType, getPosition) {
         window.addEventListener('pointerdown', () => this.removeTooltip(), {capture: true, once: true})
         window.addEventListener('input', () => this.removeTooltip(), {once: true})
 
         const config = getInputConfigFromType(inputType)
 
         if (isApp) {
-            return new DataAutofill(config, subtype, getPosition, this)
+            return new DataAutofill(config, inputType, getPosition, this)
         } else {
-            return new EmailAutofill(config, subtype, getPosition, this)
+            return new EmailAutofill(config, inputType, getPosition, this)
         }
     }
 
     attachTooltip (form, input, getPosition) {
         form.activeInput = input
         this.currentAttached = form
-        const inputType = getInputMainType(input)
-        const subtype = getInputSubtype(input)
+        const inputType = getInputType(input)
 
         if (isMobileApp) {
             this.getAlias().then((alias) => {
@@ -177,7 +176,7 @@ class InterfacePrototype {
             })
         } else {
             if (this.currentTooltip) return
-            this.currentTooltip = this.createTooltip(inputType, subtype, getPosition)
+            this.currentTooltip = this.createTooltip(inputType, getPosition)
             form.intObs.observe(input)
         }
     }

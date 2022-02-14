@@ -5,14 +5,14 @@ const {
 const Tooltip = require('./Tooltip')
 
 class DataAutofill extends Tooltip {
-    constructor (config, subtype, position, deviceInterface) {
-        super(config, subtype, position, deviceInterface)
+    constructor (config, inputType, position, deviceInterface) {
+        super(config, inputType, position, deviceInterface)
 
         this.data = this.interface[`getLocal${config.dataType}`]()
 
         if (config.type === 'identities') {
             // For identities, we don't show options where this subtype is not available
-            this.data = this.data.filter((singleData) => !!singleData[subtype])
+            this.data = this.data.filter((singleData) => !!singleData[this.subtype])
         }
 
         const includeStyles = isApp
@@ -40,7 +40,7 @@ ${includeStyles}
                 <span class="tooltip__button__text-container">
                     <span class="tooltip__button__primary-text">
 ${singleData.id === 'privateAddress' ? 'Generated Private Address\n' : ''}
-${escapeXML(config.displayTitlePropName(subtype, singleData))}
+${escapeXML(config.displayTitlePropName(this.subtype, singleData))}
                     </span><br />
                     <span class="tooltip__button__secondary-text">
 ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitlePropName)}

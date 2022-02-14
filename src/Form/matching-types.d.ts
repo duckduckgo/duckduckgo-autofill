@@ -93,21 +93,6 @@ type SupportedMainTypes =
     | 'identities'
     | 'unknown'
 
-type SupportedSubTypes =
-    | SupportedMainTypes
-    | 'credentials.username'
-    | 'credentials.password'
-    | 'creditCards.cardName'
-    | 'creditCards.cardNumber'
-    | 'creditCards.cardSecurityCode'
-    | 'creditCards.expirationMonth'
-    | 'creditCards.expirationYear'
-    | 'creditCards.expiration'
-
-type SupportedSubTypesOrString =
-    | SupportedSubTypes
-    | string
-
 interface InputTypeConfigBase {
     type: SupportedMainTypes,
     getIconFilled: (input: HTMLInputElement, form: Form) => string,

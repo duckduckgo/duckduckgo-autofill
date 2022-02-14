@@ -428,8 +428,7 @@ const {
 } = require('../autofill-utils');
 
 const {
-  getInputMainType,
-  getInputSubtype
+  getInputType
 } = require('../Form/matching');
 
 const {
@@ -607,7 +606,7 @@ class InterfacePrototype {
     }
   }
 
-  createTooltip(inputType, subtype, getPosition) {
+  createTooltip(inputType, getPosition) {
     window.addEventListener('pointerdown', () => this.removeTooltip(), {
       capture: true,
       once: true
@@ -618,17 +617,16 @@ class InterfacePrototype {
     const config = getInputConfigFromType(inputType);
 
     if (isApp) {
-      return new DataAutofill(config, subtype, getPosition, this);
+      return new DataAutofill(config, inputType, getPosition, this);
     } else {
-      return new EmailAutofill(config, subtype, getPosition, this);
+      return new EmailAutofill(config, inputType, getPosition, this);
     }
   }
 
   attachTooltip(form, input, getPosition) {
     form.activeInput = input;
     this.currentAttached = form;
-    const inputType = getInputMainType(input);
-    const subtype = getInputSubtype(input);
+    const inputType = getInputType(input);
 
     if (isMobileApp) {
       this.getAlias().then(alias => {
@@ -636,7 +634,7 @@ class InterfacePrototype {
       });
     } else {
       if (this.currentTooltip) return;
-      this.currentTooltip = this.createTooltip(inputType, subtype, getPosition);
+      this.currentTooltip = this.createTooltip(inputType, getPosition);
       form.intObs.observe(input);
     }
   }
@@ -2914,19 +2912,22 @@ class Matching {
    * @param {HTMLInputElement|HTMLSelectElement} input
    * @param {HTMLFormElement} formEl
    * @param {{isLogin?: boolean}} [opts]
-   * @returns {SupportedSubTypes | string}
+   * @returns {SupportedTypes}
    */
 
 
   inferInputType(input, formEl, opts = {}) {
-    const presetType = input.getAttribute(ATTR_INPUT_TYPE);
-    if (presetType) return presetType; // For CC forms we run aggressive matches, so we want to make sure we only
+    const presetType = getInputType(input);
+    if (presetType !== 'unknown') return presetType; // For CC forms we run aggressive matches, so we want to make sure we only
     // run them on actual CC forms to avoid false positives and expensive loops
 
     if (this.isCCForm(formEl)) {
       const ccMatchers = this.matcherList('cc');
       const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl);
-      if (subtype) return "creditCard.".concat(subtype);
+
+      if (subtype && isValidCreditCardSubtype(subtype)) {
+        return "creditCard.".concat(subtype);
+      }
     }
 
     if (input instanceof HTMLInputElement) {
@@ -2945,7 +2946,11 @@ class Matching {
 
     const idMatchers = this.matcherList('id');
     const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl);
-    if (idSubtype) return "identities.".concat(idSubtype);
+
+    if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
+      return "identities.".concat(idSubtype);
+    }
+
     return 'unknown';
   }
   /**
@@ -3307,9 +3312,7 @@ class Matching {
 
 }
 /**
- * Retrieves the input main type
- * @param {HTMLInputElement} input
- * @returns {SupportedMainTypes | string}
+ *  @returns {SupportedTypes}
  */
 
 
@@ -3332,23 +3335,130 @@ _defineProperty(Matching, "emptyConfig", {
   }
 });
 
-const getInputMainType = input => {
-  var _input$getAttribute;
+function getInputType(input) {
+  const attr = input.getAttribute(ATTR_INPUT_TYPE);
 
-  return ((_input$getAttribute = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute === void 0 ? void 0 : _input$getAttribute.split('.')[0]) || 'unknown';
-};
+  if (isValidSupportedType(attr)) {
+    return attr;
+  }
+
+  return 'unknown';
+}
 /**
- * Retrieves the input subtype
- * @param {HTMLInputElement|Element} input
- * @returns {SupportedSubTypes | string}
+ * Retrieves the main type
+ * @param {SupportedTypes} type
+ * @returns {SupportedMainTypes}
  */
 
 
-const getInputSubtype = input => {
-  var _input$getAttribute2, _input$getAttribute3;
+function getMainTypeFromType(type) {
+  const mainType = type.split('.')[0];
 
-  return ((_input$getAttribute2 = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute2 === void 0 ? void 0 : _input$getAttribute2.split('.')[1]) || ((_input$getAttribute3 = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute3 === void 0 ? void 0 : _input$getAttribute3.split('.')[0]) || 'unknown';
-};
+  switch (mainType) {
+    case 'credentials':
+    case 'creditCard':
+    case 'identities':
+      return mainType;
+  }
+
+  return 'unknown';
+}
+/**
+ * Retrieves the input main type
+ * @param {HTMLInputElement} input
+ * @returns {SupportedMainTypes}
+ */
+
+
+const getInputMainType = input => getMainTypeFromType(getInputType(input));
+/** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
+
+
+const supportedIdentitiesSubtypes =
+/** @type {const} */
+['emailAddress', 'firstName', 'middleName', 'lastName', 'fullName', 'phone', 'addressStreet', 'addressStreet2', 'addressCity', 'addressProvince', 'addressPostalCode', 'addressCountryCode', 'birthdayDay', 'birthdayMonth', 'birthdayYear'];
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedIdentitiesSubTypes}
+ */
+
+function isValidIdentitiesSubtype(supportedType) {
+  return supportedIdentitiesSubtypes.includes(supportedType);
+}
+/** @typedef {supportedCreditCardSubtypes[number]} SupportedCreditCardSubTypes */
+
+
+const supportedCreditCardSubtypes =
+/** @type {const} */
+['cardName', 'cardNumber', 'cardSecurityCode', 'expirationMonth', 'expirationYear', 'expiration'];
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCreditCardSubTypes}
+ */
+
+function isValidCreditCardSubtype(supportedType) {
+  return supportedCreditCardSubtypes.includes(supportedType);
+}
+/** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
+
+
+const supportedCredentialsSubtypes =
+/** @type {const} */
+['password', 'username'];
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCredentialsSubTypes}
+ */
+
+function isValidCredentialsSubtype(supportedType) {
+  return supportedCredentialsSubtypes.includes(supportedType);
+}
+/** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
+
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCard.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
+
+
+const supportedTypes = [...supportedIdentitiesSubtypes.map(type => "identities.".concat(type)), ...supportedCreditCardSubtypes.map(type => "creditCard.".concat(type)), ...supportedCredentialsSubtypes.map(type => "credentials.".concat(type))];
+/**
+ * Retrieves the subtype
+ * @param {SupportedTypes | string} type
+ * @returns {SupportedSubTypes | 'unknown'}
+ */
+
+function getSubtypeFromType(type) {
+  const subType = type === null || type === void 0 ? void 0 : type.split('.')[1];
+  const validType = isValidSubtype(subType);
+  return validType ? subType : 'unknown';
+}
+/**
+ * @param {SupportedSubTypes | any} supportedSubType
+ * @returns {supportedSubType is SupportedSubTypes}
+ */
+
+
+function isValidSubtype(supportedSubType) {
+  return isValidIdentitiesSubtype(supportedSubType) || isValidCreditCardSubtype(supportedSubType) || isValidCredentialsSubtype(supportedSubType);
+}
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedTypes}
+ */
+
+
+function isValidSupportedType(supportedType) {
+  return supportedTypes.includes(supportedType);
+}
+/**
+ * Retrieves the input subtype
+ * @param {HTMLInputElement|Element} input
+ * @returns {SupportedSubTypes | 'unknown'}
+ */
+
+
+function getInputSubtype(input) {
+  const type = getInputType(input);
+  return getSubtypeFromType(type);
+}
 /**
  * Remove whitespace of more than 2 in a row and trim the string
  * @param string
@@ -3482,7 +3592,9 @@ const safeRegex = string => {
 };
 
 module.exports = {
+  getInputType,
   getInputSubtype,
+  getSubtypeFromType,
   removeExcessWhitespace,
   getInputMainType,
   getExplicitLabelsText,
@@ -3624,13 +3736,13 @@ const {
 const Tooltip = require('./Tooltip');
 
 class DataAutofill extends Tooltip {
-  constructor(config, subtype, position, deviceInterface) {
-    super(config, subtype, position, deviceInterface);
+  constructor(config, inputType, position, deviceInterface) {
+    super(config, inputType, position, deviceInterface);
     this.data = this.interface["getLocal".concat(config.dataType)]();
 
     if (config.type === 'identities') {
       // For identities, we don't show options where this subtype is not available
-      this.data = this.data.filter(singleData => !!singleData[subtype]);
+      this.data = this.data.filter(singleData => !!singleData[this.subtype]);
     }
 
     const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
@@ -3642,7 +3754,7 @@ class DataAutofill extends Tooltip {
       return shouldShow;
     };
 
-    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--data\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(this.data.map(singleData => "\n            ".concat(shouldShowSeparator(singleData.id) ? '<hr />' : '', "\n            <button\n                class=\"tooltip__button tooltip__button--data tooltip__button--data--").concat(config.type, " js-autofill-button\"\n                id=\"").concat(singleData.id, "\"\n            >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"tooltip__button__primary-text\">\n").concat(singleData.id === 'privateAddress' ? 'Generated Private Address\n' : '', "\n").concat(escapeXML(config.displayTitlePropName(subtype, singleData)), "\n                    </span><br />\n                    <span class=\"tooltip__button__secondary-text\">\n").concat(escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitlePropName), "\n                    </span>\n                </span>\n            </button>\n        ")).join(''), "\n    </div>\n</div>");
+    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--data\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(this.data.map(singleData => "\n            ".concat(shouldShowSeparator(singleData.id) ? '<hr />' : '', "\n            <button\n                class=\"tooltip__button tooltip__button--data tooltip__button--data--").concat(config.type, " js-autofill-button\"\n                id=\"").concat(singleData.id, "\"\n            >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"tooltip__button__primary-text\">\n").concat(singleData.id === 'privateAddress' ? 'Generated Private Address\n' : '', "\n").concat(escapeXML(config.displayTitlePropName(this.subtype, singleData)), "\n                    </span><br />\n                    <span class=\"tooltip__button__secondary-text\">\n").concat(escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitlePropName), "\n                    </span>\n                </span>\n            </button>\n        ")).join(''), "\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
@@ -3681,8 +3793,8 @@ const {
 const Tooltip = require('./Tooltip');
 
 class EmailAutofill extends Tooltip {
-  constructor(config, subtype, position, deviceInterface) {
-    super(config, subtype, position, deviceInterface);
+  constructor(config, inputType, position, deviceInterface) {
+    super(config, inputType, position, deviceInterface);
     this.addresses = this.interface.getLocalAddresses();
     const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat(formatDuckAddress(escapeXML(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
@@ -3732,8 +3844,12 @@ const {
   addInlineStyles
 } = require('../autofill-utils');
 
+const {
+  getSubtypeFromType
+} = require('../Form/matching');
+
 class Tooltip {
-  constructor(config, subtype, getPosition, deviceInterface) {
+  constructor(config, inputType, getPosition, deviceInterface) {
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
@@ -3757,7 +3873,7 @@ class Tooltip {
     });
     this.host = this.shadow.host;
     this.config = config;
-    this.subtype = subtype;
+    this.subtype = getSubtypeFromType(inputType);
     this.device = deviceInterface;
     this.tooltip = null;
     this.getPosition = getPosition;
@@ -3916,7 +4032,7 @@ class Tooltip {
 
 module.exports = Tooltip;
 
-},{"../autofill-utils":26}],22:[function(require,module,exports){
+},{"../Form/matching":16,"../autofill-utils":26}],22:[function(require,module,exports){
 "use strict";
 
 const ddgPasswordIconBase = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tYmFzZTwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tYmFzZSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IlVuaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjMzMzMsMi42NjY2NyBDMTAuMjI4OCwyLjY2NjY3IDkuMzMzMzMsMy41NjIxIDkuMzMzMzMsNC42NjY2NyBDOS4zMzMzMyw1Ljc3MTI0IDEwLjIyODgsNi42NjY2NyAxMS4zMzMzLDYuNjY2NjcgQzEyLjQzNzksNi42NjY2NyAxMy4zMzMzLDUuNzcxMjQgMTMuMzMzMyw0LjY2NjY3IEMxMy4zMzMzLDMuNTYyMSAxMi40Mzc5LDIuNjY2NjcgMTEuMzMzMywyLjY2NjY3IFogTTEwLjY2NjcsNC42NjY2NyBDMTAuNjY2Nyw0LjI5ODQ4IDEwLjk2NTEsNCAxMS4zMzMzLDQgQzExLjcwMTUsNCAxMiw0LjI5ODQ4IDEyLDQuNjY2NjcgQzEyLDUuMDM0ODYgMTEuNzAxNSw1LjMzMzMzIDExLjMzMzMsNS4zMzMzMyBDMTAuOTY1MSw1LjMzMzMzIDEwLjY2NjcsNS4wMzQ4NiAxMC42NjY3LDQuNjY2NjcgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC42NjY3LDAgQzcuNzIxMTUsMCA1LjMzMzMzLDIuMzg3ODEgNS4zMzMzMyw1LjMzMzMzIEM1LjMzMzMzLDUuNzYxMTkgNS4zODM4NSw2LjE3Nzk4IDUuNDc5NDUsNi41Nzc3NSBMMC4xOTUyNjIsMTEuODYxOSBDMC4wNzAyMzc5LDExLjk4NyAwLDEyLjE1NjUgMCwxMi4zMzMzIEwwLDE1LjMzMzMgQzAsMTUuNzAxNSAwLjI5ODQ3NywxNiAwLjY2NjY2NywxNiBMMy4zMzMzMywxNiBDNC4wNjk3MSwxNiA0LjY2NjY3LDE1LjQwMyA0LjY2NjY3LDE0LjY2NjcgTDQuNjY2NjcsMTQgTDUuMzMzMzMsMTQgQzYuMDY5NzEsMTQgNi42NjY2NywxMy40MDMgNi42NjY2NywxMi42NjY3IEw2LjY2NjY3LDExLjMzMzMgTDgsMTEuMzMzMyBDOC4xNzY4MSwxMS4zMzMzIDguMzQ2MzgsMTEuMjYzMSA4LjQ3MTQxLDExLjEzODEgTDkuMTU5MDYsMTAuNDUwNCBDOS42Mzc3MiwxMC41OTEyIDEwLjE0MzksMTAuNjY2NyAxMC42NjY3LDEwLjY2NjcgQzEzLjYxMjIsMTAuNjY2NyAxNiw4LjI3ODg1IDE2LDUuMzMzMzMgQzE2LDIuMzg3ODEgMTMuNjEyMiwwIDEwLjY2NjcsMCBaIE02LjY2NjY3LDUuMzMzMzMgQzYuNjY2NjcsMy4xMjQxOSA4LjQ1NzUzLDEuMzMzMzMgMTAuNjY2NywxLjMzMzMzIEMxMi44NzU4LDEuMzMzMzMgMTQuNjY2NywzLjEyNDE5IDE0LjY2NjcsNS4zMzMzMyBDMTQuNjY2Nyw3LjU0MjQ3IDEyLjg3NTgsOS4zMzMzMyAxMC42NjY3LDkuMzMzMzMgQzEwLjE1NTgsOS4zMzMzMyA5LjY2ODg2LDkuMjM3OSA5LjIyMTUyLDkuMDY0NSBDOC45NzUyOCw4Ljk2OTA1IDguNjk1OTEsOS4wMjc5NSA4LjUwOTE2LDkuMjE0NjkgTDcuNzIzODYsMTAgTDYsMTAgQzUuNjMxODEsMTAgNS4zMzMzMywxMC4yOTg1IDUuMzMzMzMsMTAuNjY2NyBMNS4zMzMzMywxMi42NjY3IEw0LDEyLjY2NjcgQzMuNjMxODEsMTIuNjY2NyAzLjMzMzMzLDEyLjk2NTEgMy4zMzMzMywxMy4zMzMzIEwzLjMzMzMzLDE0LjY2NjcgTDEuMzMzMzMsMTQuNjY2NyBMMS4zMzMzMywxMi42MDk1IEw2LjY5Nzg3LDcuMjQ0OTQgQzYuODc1MDIsNy4wNjc3OSA2LjkzNzksNi44MDYyOSA2Ljg2MDY1LDYuNTY3OTggQzYuNzM0ODksNi4xNzk5NyA2LjY2NjY3LDUuNzY1MjcgNi42NjY2Nyw1LjMzMzMzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';

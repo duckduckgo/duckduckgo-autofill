@@ -160,18 +160,20 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLFormElement} formEl
      * @param {{isLogin?: boolean}} [opts]
-     * @returns {SupportedSubTypes | string}
+     * @returns {SupportedTypes}
      */
     inferInputType (input, formEl, opts = {}) {
-        const presetType = input.getAttribute(ATTR_INPUT_TYPE)
-        if (presetType) return presetType
+        const presetType = getInputType(input)
+        if (presetType !== 'unknown') return presetType
 
         // For CC forms we run aggressive matches, so we want to make sure we only
         // run them on actual CC forms to avoid false positives and expensive loops
         if (this.isCCForm(formEl)) {
             const ccMatchers = this.matcherList('cc')
             const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl)
-            if (subtype) return `creditCard.${subtype}`
+            if (subtype && isValidCreditCardSubtype(subtype)) {
+                return `creditCard.${subtype}`
+            }
         }
 
         if (input instanceof HTMLInputElement) {
@@ -190,7 +192,9 @@ class Matching {
 
         const idMatchers = this.matcherList('id')
         const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl)
-        if (idSubtype) return `identities.${idSubtype}`
+        if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
+            return `identities.${idSubtype}`
+        }
 
         return 'unknown'
     }
@@ -501,23 +505,146 @@ class Matching {
 }
 
 /**
+ *  @returns {SupportedTypes}
+ */
+function getInputType (input) {
+    const attr = input.getAttribute(ATTR_INPUT_TYPE)
+    if (isValidSupportedType(attr)) {
+        return attr
+    }
+    return 'unknown'
+}
+
+/**
+ * Retrieves the main type
+ * @param {SupportedTypes} type
+ * @returns {SupportedMainTypes}
+ */
+function getMainTypeFromType (type) {
+    const mainType = type.split('.')[0]
+    switch (mainType) {
+    case 'credentials':
+    case 'creditCard':
+    case 'identities':
+        return mainType
+    }
+    return 'unknown'
+}
+
+/**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedMainTypes | string}
+ * @returns {SupportedMainTypes}
  */
 const getInputMainType = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
-    'unknown'
+    getMainTypeFromType(getInputType(input))
+
+/** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
+const supportedIdentitiesSubtypes = /** @type {const} */ ([
+    'emailAddress',
+    'firstName',
+    'middleName',
+    'lastName',
+    'fullName',
+    'phone',
+    'addressStreet',
+    'addressStreet2',
+    'addressCity',
+    'addressProvince',
+    'addressPostalCode',
+    'addressCountryCode',
+    'birthdayDay',
+    'birthdayMonth',
+    'birthdayYear'
+])
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedIdentitiesSubTypes}
+ */
+function isValidIdentitiesSubtype (supportedType) {
+    return supportedIdentitiesSubtypes.includes(supportedType)
+}
+
+/** @typedef {supportedCreditCardSubtypes[number]} SupportedCreditCardSubTypes */
+const supportedCreditCardSubtypes = /** @type {const} */ ([
+    'cardName',
+    'cardNumber',
+    'cardSecurityCode',
+    'expirationMonth',
+    'expirationYear',
+    'expiration'
+])
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCreditCardSubTypes}
+ */
+function isValidCreditCardSubtype (supportedType) {
+    return supportedCreditCardSubtypes.includes(supportedType)
+}
+
+/** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
+const supportedCredentialsSubtypes = /** @type {const} */ ([
+    'password',
+    'username'
+])
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCredentialsSubTypes}
+ */
+function isValidCredentialsSubtype (supportedType) {
+    return supportedCredentialsSubtypes.includes(supportedType)
+}
+
+/** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
+
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCard.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
+const supportedTypes = [
+    ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
+    ...supportedCreditCardSubtypes.map((type) => `creditCard.${type}`),
+    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+]
+
+/**
+ * Retrieves the subtype
+ * @param {SupportedTypes | string} type
+ * @returns {SupportedSubTypes | 'unknown'}
+ */
+function getSubtypeFromType (type) {
+    const subType = type?.split('.')[1]
+    const validType = isValidSubtype(subType)
+    return validType ? subType : 'unknown'
+}
+
+/**
+ * @param {SupportedSubTypes | any} supportedSubType
+ * @returns {supportedSubType is SupportedSubTypes}
+ */
+function isValidSubtype (supportedSubType) {
+    return isValidIdentitiesSubtype(supportedSubType) ||
+           isValidCreditCardSubtype(supportedSubType) ||
+           isValidCredentialsSubtype(supportedSubType)
+}
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedTypes}
+ */
+function isValidSupportedType (supportedType) {
+    return supportedTypes.includes(supportedType)
+}
 
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement|Element} input
- * @returns {SupportedSubTypes | string}
+ * @returns {SupportedSubTypes | 'unknown'}
  */
-const getInputSubtype = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[1] ||
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
-    'unknown'
+function getInputSubtype (input) {
+    const type = getInputType(input)
+    return getSubtypeFromType(type)
+}
 
 /**
  * Remove whitespace of more than 2 in a row and trim the string
@@ -644,7 +771,9 @@ const safeRegex = (string) => {
 }
 
 module.exports = {
+    getInputType,
     getInputSubtype,
+    getSubtypeFromType,
     removeExcessWhitespace,
     getInputMainType,
     getExplicitLabelsText,
