@@ -51,7 +51,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         const signedIn = await this._checkDeviceSignedIn()
         if (signedIn) {
-            if (isApp && !isTopFrame) {
+            if (isApp) {
                 await this.getAddresses()
             }
             notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
