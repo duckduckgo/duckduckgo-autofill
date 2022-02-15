@@ -15,15 +15,36 @@ class AppleDeviceInterface extends InterfacePrototype {
         if (isTopFrame) {
             this.stripCredentials = false
         } else {
-            document.addEventListener('InboundCredential', this)
+            // This is always added as a child frame needs to be informed of a parent frame scroll
+            window.addEventListener('scroll', this)
+        }
+    }
+
+    async listenForSelectedCredential() {
+        const response = await wkSendAndWait('getSelectedCredentials')
+        switch (response.type) {
+            case 'none':
+                // Parent hasn't got a selected credential yet
+                return setTimeout(() => {
+                    this.listenForSelectedCredential()
+                }, 100)
+                break;
+            case 'ok':
+                this.inboundCredential({
+                    detail: {
+                        data: response.data
+                    }
+                })
+                break;
+            case 'stop':
+                // Parent wants us to stop polling
+                return
+                break;
         }
     }
 
     handleEvent (event) {
         switch (event.type) {
-        case 'InboundCredential':
-            this.inboundCredential(event)
-            break
         case 'scroll':
             this.removeTooltip()
             break
@@ -32,6 +53,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     inboundCredential (e) {
         const activeForm = this.currentAttached
+        if (activeForm === null) return
         if ('email' in e.detail.data) {
             activeForm.autofillEmail(e.detail.data.email)
         } else {
@@ -89,8 +111,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async showTopTooltip (inputType, click, inputDimensions) {
-        window.addEventListener('scroll', this, {once: true})
-
         let diffX = Math.floor(click.x - inputDimensions.x)
         let diffY = Math.floor(click.y - inputDimensions.y)
 
@@ -103,6 +123,9 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
 
         await wkSend('showAutofillParent', details)
+
+        // Start listening for the user intiated credential
+        this.listenForSelectedCredential()
     }
 
     async removeTooltip () {
