@@ -36,11 +36,11 @@ module.exports = `
     font-size: 13px;
     line-height: 14px;
     color: #222222;
+    width: 315px;
 }
 :not(.desktop) .tooltip--data {
     top: 100%;
     left: 100%;
-    width: 315px;
     border: 0.5px solid rgba(0, 0, 0, 0.2);
     border-radius: 6px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
