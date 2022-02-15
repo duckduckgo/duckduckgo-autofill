@@ -32,7 +32,8 @@ class AppleDeviceInterface extends InterfacePrototype {
             case 'ok':
                 this.inboundCredential({
                     detail: {
-                        data: response.data
+                        data: response.data,
+                        configType: response.configType
                     }
                 })
                 break;
