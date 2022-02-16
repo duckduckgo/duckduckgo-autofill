@@ -7,8 +7,8 @@
         const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
 
         if (!isAndroid) {
-            // eslint-disable-next-line no-undef
-            const privacyConfig = processConfig($CONTENT_SCOPE$, $USER_UNPROTECTED_DOMAINS$, $USER_PREFERENCES$) // @ts-ignore - variable populated during injection
+            // @ts-ignore - variable populated during injection
+            const privacyConfig = processConfig($CONTENT_SCOPE$, $USER_UNPROTECTED_DOMAINS$, $USER_PREFERENCES$)// eslint-disable-line no-undef
             const site = privacyConfig.site
             if (site.isBroken || site.isAllowlisted || !site.enabledFeatures.includes('autofill')) {
                 return
