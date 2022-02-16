@@ -1,0 +1,2383 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #current {
+            display: block;
+            padding: 1rem;
+            background: lightyellow;
+            border: 1px solid yellow;
+        }
+        #current[data-state="valid"] {
+
+        }
+        #signup-form {
+
+        }
+        #table {
+            margin-top: 1rem;
+        }
+        #test-case-name {
+            padding: 1rem;
+            background: lightyellow;
+            border: 1px solid yellow;
+            margin-left: 1rem;
+        }
+        #test-case-name:empty {
+            padding: 0 0.5rem;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+    </style>
+    <script type="module">
+        // const r = document.querySelectorAll('[data-pw]');
+        // for (let rElement of r) {
+        //     console.log(rElement.dataset.pw)
+        // }
+        document.addEventListener('DOMContentLoaded', init);
+        function init() {
+            let pwField = document.querySelector(`[name=password]`);
+            const current = document.querySelector(`#current`);
+            const testCaseName = document.querySelector(`#test-case-name`);
+            const form = document.querySelector(`#signup-form`);
+            current.dataset.state = "idle"
+
+            function setAttr(value) {
+                pwField.setAttribute("passwordrules", value);
+            }
+            function reset() {
+                const c = pwField?.cloneNode();
+                const p = pwField.parentElement;
+                p.removeChild(pwField)
+                p.appendChild(c)
+                pwField = c;
+            }
+            document.addEventListener('pointerdown', (e) => {
+                if (e.target?.dataset?.pw) {
+                    console.log('clicked',e.target?.dataset?.pw);
+                    setAttr(e.target?.dataset?.pw)
+                    current.textContent = e.target?.dataset?.pw;
+                    current.dataset.state = "valid"
+                    testCaseName.textContent = e.target.textContent;
+                    window.scrollTo(0, 0);
+                    reset()
+                }
+            })
+            current.addEventListener('input', (e) => {
+                setAttr(e.target.textContent)
+                reset()
+            })
+            form.addEventListener('reset', (_e) => {
+                reset()
+            })
+        }
+    </script>
+</head>
+<body>
+<h1>Sign up</h1>
+<p><a href="/login.html">Login</a></p>
+<div>
+    <p>Current rules: <code id="test-case-name"></code></p>
+    <pre>
+        <code id="current" contenteditable></code>
+    </pre>
+</div>
+<form action="/" id="signup-form">
+    <label for="email">
+        Email <input type="text" id="email" name="email"/>
+    </label>
+    <label for="password">
+        Password <input type="password" id="password" name="password"/>
+    </label>
+    <button type="submit">Submit</button>
+    <button type="reset">Remount password input</button>
+</form>
+
+<div>
+    <table id="table">
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; required: lower, upper; required: digit; required: [&quot;]">" test</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; required: lower, upper; required: digit; required: [&quot;]</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 16;">163.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; required: lower, upper; required: digit;">1800flowers.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 10; required: lower; required: upper; required: digit; required: special;">access.service.gov.uk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 10; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: digit; required: [- !&quot;#$&amp;&apos;()*+,.:;&lt;=&gt;?@[^_`{|}~]]; allowed: lower, upper;">admiral.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: digit; required: [- !&quot;#$&amp;&apos;()*+,.:;&lt;=&gt;?@[^_`{|}~]]; allowed: lower, upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;">ae.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; max-consecutive: 2; required: upper; required: digit; allowed: lower, [-_&amp;#@];">aetna.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; max-consecutive: 2; required: upper; required: digit; allowed: lower, [-_&amp;#@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;">airasia.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; allowed: [ !#$%&amp;*?@];">ajisushionline.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; allowed: [ !#$%&amp;*?@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; allowed: lower, upper, digit;">aliexpress.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; allowed: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$*];">alliantcreditunion.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 4; maxlength: 4;">allianz.com.br</button>
+    </td>
+    <td>
+        <pre><code>minlength: 4; maxlength: 4;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; max-consecutive: 4; required: lower, upper; required: digit; allowed: [%&amp;_?#=];">americanexpress.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; max-consecutive: 4; required: lower, upper; required: digit; allowed: [%&amp;_?#=];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 15; allowed: lower, upper, digit;">anatel.gov.br</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 15; allowed: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [-!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?@[^_`{|}~]];">ancestry.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [-!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?@[^_`{|}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 15;">angieslist.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 15;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!$*?@|];">anthem.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!$*?@|];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15;">app.digio.in</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@#$%^&amp;];">app.parkmobile.io</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@#$%^&amp;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 63; required: lower; required: upper; required: digit; allowed: ascii-printable;">apple.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 63; required: lower; required: upper; required: digit; allowed: ascii-printable;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 10; required: lower; required: upper; required: digit; required: [!#&amp;*+&#x2F;=@_];">areariservata.bancaetica.it</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 10; required: lower; required: upper; required: digit; required: [!#&amp;*+&#x2F;=@_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 19;">artscyclery.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 19;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;">astonmartinf1.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?@[^_`{|}~]];">autify.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?@[^_`{|}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 65; required: lower; required: upper; required: digit; allowed: [-!&quot;§$%&amp;&#x2F;()=?;:_+*&apos;#];">axa.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 65; required: lower; required: upper; required: digit; allowed: [-!&quot;§$%&amp;&#x2F;()=?;:_+*&apos;#];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 14;">baidu.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 14;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 8; required: lower; required: upper; required: digit;">bancochile.cl</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 8; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-@#*()+={}&#x2F;?~;,._];">bankofamerica.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-@#*()+={}&#x2F;?~;,._];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower, upper; allowed: digit, special;">battle.net</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower, upper; allowed: digit, special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 14;">bcassessment.ca</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 14;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower, upper; required: digit; required: [$!@~_,%&amp;];">belkin.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower, upper; required: digit; required: [$!@~_,%&amp;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 10; required: upper; required: digit; required: [!#$%&amp;*?@]; allowed: lower;">benefitslogin.discoverybenefits.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 10; required: upper; required: digit; required: [!#$%&amp;*?@]; allowed: lower;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="required: upper; required: upper; required: digit; required: digit; required: special; required: special; allowed: lower;">benjerry.com</button>
+    </td>
+    <td>
+        <pre><code>required: upper; required: upper; required: digit; required: digit; required: special; required: special; allowed: lower;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 20; required: lower; required: upper; required: digit; required: special;">bestbuy.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 20; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="maxlength: 15;">bhphotovideo.com</button>
+    </td>
+    <td>
+        <pre><code>maxlength: 15;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; max-consecutive: 2; required: digit; required: upper,lower;">billerweb.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; max-consecutive: 2; required: digit; required: upper,lower;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="maxlength: 19;">biovea.com</button>
+    </td>
+    <td>
+        <pre><code>maxlength: 19;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; required: lower; required: upper; required: digit; required: [`!@#$%^&amp;*()+~{}&apos;&quot;;:&lt;&gt;?]];">bitly.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; required: lower; required: upper; required: digit; required: [`!@#$%^&amp;*()+~{}&apos;&quot;;:&lt;&gt;?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; maxlength: 16; required: lower, upper; required: digit; required: [`!@#$%^&amp;*()+~{}&apos;&quot;;:&lt;&gt;?]];">bloomingdales.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; maxlength: 16; required: lower, upper; required: digit; required: [`!@#$%^&amp;*()+~{}&apos;&quot;;:&lt;&gt;?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="allowed: lower, upper, digit, [!$#@];">bluesguitarunleashed.com</button>
+    </td>
+    <td>
+        <pre><code>allowed: lower, upper, digit, [!$#@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [#$%&amp;()*+,.:;&lt;=&gt;?@_];">bochk.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [#$%&amp;()*+,.:;&lt;=&gt;?@_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: digit;">box.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16;">brighthorizons.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; max-consecutive: 2; required: lower, upper; required: digit;">callofduty.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; max-consecutive: 2; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 32; required: lower, upper; required: digit; allowed: [-_.&#x2F;\@$*&amp;!#];">capitalone.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 32; required: lower, upper; required: digit; allowed: [-_.&#x2F;\@$*&amp;!#];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; maxlength: 100; required: lower, upper; required: digit;">cardbenefitservices.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; maxlength: 100; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; maxlength: 18; required: lower, upper; required: digit;">cb2.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; maxlength: 18; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 12; required: lower; required: upper; required: digit; required: [!#$%&amp;*@^];">cecredentialtrust.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 12; required: lower; required: upper; required: digit; required: [!#$%&amp;*@^];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 32; max-consecutive: 2; required: lower, upper; required: digit; required: [!#$%+&#x2F;=@~];">chase.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 32; max-consecutive: 2; required: lower, upper; required: digit; required: [!#$%+&#x2F;=@~];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;">cigna.co.uk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12; required: upper; required: digit; required: [_!.&amp;@]; allowed: lower;">cigna.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12; required: upper; required: digit; required: [_!.&amp;@]; allowed: lower;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 50; max-consecutive: 2; required: lower, upper; required: digit; allowed: [_!@$]">citi.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 50; max-consecutive: 2; required: lower, upper; required: digit; allowed: [_!@$]</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@#$%^&amp;+=!];">claimlookup.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@#$%^&amp;+=!];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; allowed: upper, digit, [-!@#$%&amp;*_+=&lt;&gt;];">claro.com.br</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; allowed: upper, digit, [-!@#$%&amp;*_+=&lt;&gt;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; required: lower, upper; required: digit;">clien.net</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit;">collectivehealth.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; max-consecutive: 2;required: lower, upper; required: digit;">comcastpaymentcenter.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; max-consecutive: 2;required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-~!@#$%^&amp;*_+=`|(){}[:;&quot;&apos;&lt;&gt;,.?&#x2F;\]];">comed.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-~!@#$%^&amp;*_+=`|(){}[:;&quot;&apos;&lt;&gt;,.?&#x2F;\]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; maxlength: 8; required: lower, upper; required: digit;">commerzbank.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; maxlength: 8; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; maxlength: 5; required: lower, upper, digit;">consorsbank.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; maxlength: 5; required: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 15; allowed: lower, upper, digit, [-.];">consorsfinanz.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 15; allowed: lower, upper, digit, [-.];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: lower, upper; allowed: digit, [-!#$%&amp;&apos;()*+&#x2F;:;=?@[^_`{|}~]];">costco.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: lower, upper; allowed: digit, [-!#$%&amp;&apos;()*+&#x2F;:;=?@[^_`{|}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 72;">coursera.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 72;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 24; required: digit; required: upper,lower; allowed: [!#$%()*@^];">cox.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 24; required: digit; required: upper,lower; allowed: [!#$%()*@^];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 9; maxlength: 64; required: lower; required: upper; required: digit; required: [!&quot;#$%&amp;()*,.:&lt;&gt;?@^_{|}];">crateandbarrel.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 9; maxlength: 64; required: lower; required: upper; required: digit; required: [!&quot;#$%&amp;()*,.:&lt;&gt;?@^_{|}];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 25; required: lower, upper; required: digit; allowed: [!@#$%^&amp;*()];">cvs.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 25; required: lower, upper; required: digit; allowed: [!@#$%^&amp;*()];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; maxlength: 15;">dailymail.co.uk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; maxlength: 15;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@$%^&amp;*];">dan.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@$%^&amp;*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 21; required: lower, upper; required: digit; required: [!@$%^&amp;*];">danawa.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 21; required: lower, upper; required: digit; required: [!@$%^&amp;*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit;">darty.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 30; required: lower; required: upper; required: digit;">dbs.com.hk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 30; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 45; required: lower; required: upper; required: digit;">decluttr.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 45; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: lower; required: upper; required: digit;">delta.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; maxlength: 5; required: lower, upper, digit;">deutsche-bank.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; maxlength: 5; required: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 12;">devstore.cn</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 12;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;*?@^];">dickssportinggoods.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;*?@^];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 38; required: lower, upper; required: digit; allowed: [-äüöÄÜÖß!$%&amp;&#x2F;()=?+#,.:];">dkb.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 38; required: lower, upper; required: digit; allowed: [-äüöÄÜÖß!$%&amp;&#x2F;()=?+#,.:];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 4; maxlength: 16; required: lower; required: upper; required: digit;">dmm.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 4; maxlength: 16; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="maxlength: 15;">dowjones.com</button>
+    </td>
+    <td>
+        <pre><code>maxlength: 15;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;">ea.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: upper; required: special; allowed: lower, digit;">easycoop.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: upper; required: special; allowed: lower, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: [-];">easyjet.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: [-];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 15; required: lower; required: lower; required: upper; required: upper; required: digit; required: digit; required: [-!@#$%^&amp;*()_+|~=`{}[:&quot;;&apos;?,.&#x2F;.]]; required: [-!@#$%^&amp;*()_+|~=`{}[:&quot;;&apos;?,.&#x2F;.]];">ebrap.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 15; required: lower; required: lower; required: upper; required: upper; required: digit; required: digit; required: [-!@#$%^&amp;*()_+|~=`{}[:&quot;;&apos;?,.&#x2F;.]]; required: [-!@#$%^&amp;*()_+|~=`{}[:&quot;;&apos;?,.&#x2F;.]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; max-consecutive: 2; required: lower; required: upper; required: digit; required: [#$%*+.=@^_];">ecompanystore.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; max-consecutive: 2; required: lower; required: upper; required: digit; required: [#$%*+.=@^_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()];">eddservices.edd.ca.gov</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16;">empower-retirement.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; required: lower; required: upper; required: digit; required: [-!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?@[^_`{|}~]];">epicgames.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; required: lower; required: upper; required: digit; required: [-!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?@[^_`{|}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16;">epicmix.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [!$*+@];">equifax.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [!$*+@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 8; allowed: lower, upper, digit;">essportal.excelityglobal.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 8; allowed: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 12;">ettoday.net</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 12;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 8;">examservice.com.tw</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 8;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; maxlength: 16; required: lower, upper; required: digit;">expertflyer.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; maxlength: 16; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; allowed: lower; required: upper, digit, [!#$%&amp;*?@];">extraspace.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; allowed: lower; required: upper, digit, [!#$%&amp;*?@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;">ezpassva.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16;">fc2.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-!@#$%^&amp;*_+=`|(){}[:;,.?]];">fedex.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-!@#$%^&amp;*_+=`|(){}[:;,.?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; required: lower; allowed: upper,digit,[!$%&apos;()+,.&#x2F;:;=?@^_|~];">fidelity.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; required: lower; allowed: upper,digit,[!$%&apos;()+,.&#x2F;:;=?@^_|~];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; required: [-~!@#$%^&amp;_+=`|(){}[:&quot;&apos;&lt;&gt;,.?]];">flysas.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; required: [-~!@#$%^&amp;_+=`|(){}[:&quot;&apos;&lt;&gt;,.?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit;">fnac.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; allowed: upper,lower,digit,[!#$%@];">fuelrewards.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; allowed: upper,lower,digit,[!#$%@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 225; required: lower; required: upper; required: digit; required: [!@#$%];">gamestop.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 225; required: lower; required: upper; required: digit; required: [!@#$%];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; maxlength: 72;">getflywheel.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; maxlength: 72;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [$#!];">girlscouts.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [$#!];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 40; allowed: lower, upper, digit, [-&lt;=&gt;~!|()@#{}$%,.?^&apos;&amp;*_+`:;&quot;[]];">gmx.net</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 40; allowed: lower, upper, digit, [-&lt;=&gt;~!|()@#{}$%,.?^&apos;&amp;*_+`:;&quot;[]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; allowed: lower, upper, digit, [-!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?@[^_{|}~]];">google.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; allowed: lower, upper, digit, [-!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?@[^_{|}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 50; max-consecutive: 2; required: lower; required: upper; required: digit, [-~!@#$%^&amp;*_+=`|(){}[:;,.?]];">guardiananytime.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 50; max-consecutive: 2; required: lower; required: upper; required: digit, [-~!@#$%^&amp;*_+=`|(){}[:;,.?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [-!#$%_=+&lt;&gt;];">gwl.greatwestlife.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [-!#$%_=+&lt;&gt;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 30; required: lower; required: upper; required: digit;">hangseng.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 30; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="maxlength: 16;">hawaiianairlines.com</button>
+    </td>
+    <td>
+        <pre><code>maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 30; max-consecutive: 3; required: lower; required: upper; required: digit; required: [#$%^&amp;!@];">hertz.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 30; max-consecutive: 3; required: lower; required: upper; required: digit; required: [#$%^&amp;!@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit, special;">hetzner.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit, special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;">hilton.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;">hkbea.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: special;">hkexpress.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; required: digit; allowed: lower, upper, [@$!#()&amp;^*%];">hotels.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; required: digit; allowed: lower, upper, [@$!#()&amp;^*%];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 30; allowed: lower, upper, digit, [-~!@#$%^&amp;*_+=`|(){}[:;&quot;&apos;&lt;&gt;,.?]];">hotwire.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 30; allowed: lower, upper, digit, [-~!@#$%^&amp;*_+=`|(){}[:;&quot;&apos;&lt;&gt;,.?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [$#%!];">hrblock.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [$#%!];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 30; required: lower; required: upper; required: digit; allowed: [&apos;.@_];">hsbc.com.hk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 30; required: lower; required: upper; required: digit; allowed: [&apos;.@_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!$*.=?@_&apos;];">hsbc.com.my</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!$*.=?@_&apos;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 10; required: lower, upper, digit; allowed: [!&quot;#$%&amp;()*+:;&lt;=&gt;?@[{}~]];">hypovereinsbank.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 10; required: lower, upper, digit; allowed: [!&quot;#$%&amp;()*+:;&lt;=&gt;?@[{}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; required: lower, upper; required: digit;">hyresbostader.se</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!@#^&amp;*=+;:];">id.sonyentertainmentnetwork.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!@#^&amp;*=+;:];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="allowed: lower, upper, digit, [!#%&amp;*@^];">identitytheft.gov</button>
+    </td>
+    <td>
+        <pre><code>allowed: lower, upper, digit, [!#%&amp;*@^];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="maxlength: 15;">idestination.info</button>
+    </td>
+    <td>
+        <pre><code>maxlength: 15;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 12; maxlength: 128; required: lower; required: digit; allowed: [-!#$%&amp;*+&#x2F;=?^_&apos;.{|}];">impots.gouv.fr</button>
+    </td>
+    <td>
+        <pre><code>minlength: 12; maxlength: 128; required: lower; required: digit; allowed: [-!#$%&amp;*+&#x2F;=?^_&apos;.{|}];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 15; required: upper; required: digit; allowed: lower, special;">indochino.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 15; required: upper; required: digit; allowed: lower, special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="required: lower; required: upper; required: digit; required: [@#$%^&amp;+=_];">internationalsos.com</button>
+    </td>
+    <td>
+        <pre><code>required: lower; required: upper; required: digit; required: [@#$%^&amp;+=_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()+];">irctc.co.in</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()+];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [!#$%&amp;*@];">irs.gov</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [!#$%&amp;*@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16;">jal.co.jp</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: digit; required: upper,lower;">japanpost.jp</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: digit; required: upper,lower;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 32; allowed: upper, lower, digit,[-!&quot;#$%&amp;&apos;()*+,.:;&lt;=&gt;?@[^_`{|}~]];">jordancu-onlinebanking.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 32; allowed: upper, lower, digit,[-!&quot;#$%&amp;&apos;()*+,.:;&lt;=&gt;?@[^_`{|}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 12; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*];">keldoc.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 12; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 10; maxlength: 100; required: lower; required: upper; required: digit; allowed: [-@_#!&amp;$`%*+().&#x2F;,;~:{}|?&gt;=&lt;^[&apos;]];">key.harvard.edu</button>
+    </td>
+    <td>
+        <pre><code>minlength: 10; maxlength: 100; required: lower; required: upper; required: digit; allowed: [-@_#!&amp;$`%*+().&#x2F;,;~:{}|?&gt;=&lt;^[&apos;]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$%&amp;?*];">kfc.ca</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$%&amp;?*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12;">klm.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 15; required: lower, upper; required: digit;">la-z-boy.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 15; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: digit; allowed: lower, upper;">ladwp.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: digit; allowed: lower, upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: digit; required: digit; allowed: lower, upper;">launtel.net.au</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: digit; required: digit; allowed: lower, upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;()*+,.&#x2F;:;&lt;&gt;?@&quot;_];">leetchi.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;()*+,.&#x2F;:;&lt;&gt;?@&quot;_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; allowed: [-@_#!&amp;$`%*+().&#x2F;,;~:{}|?&gt;=&lt;^&apos;[]];">live.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; allowed: [-@_#!&amp;$`%*+().&#x2F;,;~:{}|?&gt;=&lt;^&apos;[]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: digit; allowed: upper;">lloydsbank.co.uk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: digit; allowed: upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12; required: lower, upper; required: digit;">lowes.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit, [-!#$%&amp;*?@^_];">lsacsso.b2clogin.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit, [-!#$%&amp;*?@^_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [!#$%&amp;()*+,.&#x2F;:;&lt;&gt;?@&quot;_];">lufthansa.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [!#$%&amp;()*+,.&#x2F;:;&lt;&gt;?@&quot;_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; maxlength: 16; allowed: lower, upper, digit, [~!@#$%^&amp;*+`(){}[:;&quot;&apos;&lt;&gt;?]];">macys.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; maxlength: 16; allowed: lower, upper, digit, [~!@#$%^&amp;*+`(){}[:;&quot;&apos;&lt;&gt;?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; allowed: [-!$&quot;%&amp;&#x2F;()=*+#.,;:@?{}[]];">mailbox.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; allowed: [-!$&quot;%&amp;&#x2F;()=*+#.,;:@?{}[]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [@$!%*#?&amp;];">makemytrip.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [@$!%*#?&amp;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; allowed: [$!#&amp;@?%=];">marriott.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; allowed: [$!#&amp;@?%=];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12; max-consecutive: 2; required: lower; required: upper; required: digit; required: [-~!@#$%^&amp;*_+=`|(){}[:;&quot;&apos;&lt;&gt;,.?];">maybank2u.com.my</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12; max-consecutive: 2; required: lower; required: upper; required: digit; required: [-~!@#$%^&amp;*_+=`|(){}[:;&quot;&apos;&lt;&gt;,.?];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@!$%^*()];">medicare.gov</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@!$%^*()];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20;">metlife.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: special;">microsoft.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower, upper; required: digit; allowed: ascii-printable;">minecraft.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower, upper; required: digit; allowed: ascii-printable;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: special; allowed: [!#$%&amp;()*+:;=@[^_`{}~]];">mintmobile.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: special; allowed: [!#$%&amp;()*+:;=@[^_`{}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?[\^_`{|}~]];">mlb.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!&quot;#$%&amp;&apos;()*+,.&#x2F;:;&lt;=&gt;?[\^_`{|}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;">mpv.tickets.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;">my.konami.net</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 9; maxlength: 20; required: lower; required: upper; required: digit; allowed: [-@_#!&amp;$`%*+().&#x2F;,;~:{}|?&gt;=&lt;^&apos;[]];">myaccess.dmdc.osd.mil</button>
+    </td>
+    <td>
+        <pre><code>minlength: 9; maxlength: 20; required: lower; required: upper; required: digit; allowed: [-@_#!&amp;$`%*+().&#x2F;,;~:{}|?&gt;=&lt;^&apos;[]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower, upper, digit;">mygoodtogo.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];">myhealthrecord.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!#$%()*+,.&#x2F;:;=?@\^`~];">mysubaru.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!#$%()*+,.&#x2F;:;=?@\^`~];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 16;">naver.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit, [!@#$&amp;*];">nelnet.net</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit, [!@#$&amp;*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 4; maxlength: 60; required: lower, upper, digit; allowed: special;">netflix.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 4; maxlength: 60; required: lower, upper, digit; allowed: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 128; allowed: lower, upper, digit, [!@#$%^&amp;*()];">netgear.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 128; allowed: lower, upper, digit, [!@#$%^&amp;*()];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; allowed: lower, upper, digit;">nowinstock.net</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; allowed: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; allowed: [!#$%&amp;()*+&#x2F;=?^_{}];">order.wendys.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; allowed: [!#$%&amp;()*+&#x2F;=?^_{}];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; allowed: upper,lower,digit,[- .=_];">ototoy.jp</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; allowed: upper,lower,digit,[- .=_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 4; maxlength: 4; allowed: digit;">packageconciergeadmin.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 4; maxlength: 4; allowed: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit, [!@#$%^&amp;*()];">paypal.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit, [!@#$%^&amp;*()];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: special;">payvgm.youraccountadvantage.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; required: digit; allowed: lower, upper;">pilotflyingj.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; required: digit; allowed: lower, upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 4; maxlength: 16; allowed: lower, upper;">pixnet.cc</button>
+    </td>
+    <td>
+        <pre><code>minlength: 4; maxlength: 16; allowed: lower, upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; maxlength: 20; required: lower; required: upper; required: digit; allowed: ascii-printable;">planetary.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; maxlength: 20; required: lower; required: upper; required: digit; allowed: ascii-printable;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;()*@^];">portal.edd.ca.gov</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;()*@^];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;&apos;()*+,.&#x2F;:;&lt;&gt;?@\^_`{|}~[]];">portals.emblemhealth.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;&apos;()*+,.&#x2F;:;&lt;&gt;?@\^_`{|}~[]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%&amp;*?@];">portlandgeneral.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%&amp;*?@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; max-consecutive: 2; required: lower; required: upper; required: digit; required: special;">poste.it</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; max-consecutive: 2; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit, [-~!#$%&amp;_+=|(){}[:;&quot;’&lt;&gt;,.? ]];">posteo.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit, [-~!#$%&amp;_+=|(){}[:;&quot;’&lt;&gt;,.? ]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [&quot;!@#$%^&amp;*(){}[]];">powells.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [&quot;!@#$%^&amp;*(){}[]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;()*+@^_];">preferredhotels.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;()*+@^_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 16;">premier.ticketek.com.au</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()+~{}&apos;&quot;;:&lt;&gt;?];">prepaid.bankofamerica.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()+~{}&apos;&quot;;:&lt;&gt;?];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit,[!&quot;#$%&amp;&apos;()*+,&lt;&gt;?@];">prestocard.ca</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit,[!&quot;#$%&amp;&apos;()*+,&lt;&gt;?@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 16;">propelfuels.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;@^];">qdosstatusreview.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;@^];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 30; required: upper, lower; required: digit, [!#$%&amp;()*+&lt;&gt;?@^_~];">questdiagnostics.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 30; required: upper, lower; required: digit, [!#$%&amp;()*+&lt;&gt;?@^_~];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; maxlength: 15; required: lower; required: upper; required: digit;">rejsekort.dk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; maxlength: 15; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 38; allowed: upper,lower,digit;">renaud-bray.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 38; allowed: upper,lower,digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*&lt;&gt;?];">ring.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*&lt;&gt;?];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;">riteaid.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 10;">robinhood.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 10;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower, upper; required: digit; required: [!@#$];">rogers.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower, upper; required: digit; required: [!@#$];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 8; required: lower, upper; required: [-!#%&amp;(){}*+;%&#x2F;&lt;=&gt;?_];">ruc.dk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 8; required: lower, upper; required: [-!#%&amp;(){}*+;%&#x2F;&lt;=&gt;?_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; maxlength: 20; required: lower; required: upper; required: digit;">runescape.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; maxlength: 20; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 15; required: lower, upper;">ruten.com.tw</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 15; required: lower, upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 50; required: upper; required: lower; required: digit; required: [!@#$&amp;*];">salslimo.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 50; required: upper; required: lower; required: digit; required: [!@#$&amp;*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [-!@#$%&amp;*_+=&lt;&gt;];">santahelenasaude.com.br</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [-!@#$%&amp;*_+=&lt;&gt;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 12; required: lower, upper; required: digit; allowed: [-!#$%&amp;&apos;()*,.:;=?^{}];">santander.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 12; required: lower, upper; required: digit; allowed: [-!#$%&amp;&apos;()*,.:;=?^{}];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 10; maxlength: 20; allowed: upper,lower,digit;">sbisec.co.jp</button>
+    </td>
+    <td>
+        <pre><code>minlength: 10; maxlength: 20; allowed: upper,lower,digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [!#$%&amp;&apos;()+,.:?@[_`~]];">secure-arborfcu.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [!#$%&amp;&apos;()+,.:?@[_`~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 15; required: lower; required: digit; allowed: ascii-printable;">secure.orclinic.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 15; required: lower; required: digit; allowed: ascii-printable;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 7; maxlength: 16; required: digit; allowed: lower, upper;">secure.snnow.ca</button>
+    </td>
+    <td>
+        <pre><code>minlength: 7; maxlength: 16; required: digit; allowed: lower, upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: ascii-printable;">secure.wa.aaa.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: ascii-printable;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 12;">sephora.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 12;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;">serviziconsolari.esteri.it</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [!#$%&amp;*?@^_~];">servizioelettriconazionale.it</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [!#$%&amp;*?@^_~];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 10; maxlength: 30; required: digit; allowed: lower, upper, [!@#$%*()_+^}{:;?.];">sfwater.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 10; maxlength: 30; required: digit; allowed: lower, upper, [!@#$%*()_+^}{:;?.];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 64; required: lower, upper; required: digit; allowed: [-!@#^&amp;*=+;:];">signin.ea.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 64; required: lower, upper; required: digit; allowed: [-!@#^&amp;*=+;:];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: upper; required: digit; allowed: lower, [!@#$%^*(),.;:&#x2F;\];">southwest.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: upper; required: digit; allowed: lower, [!@#$%^*(),.;:&#x2F;\];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 4; maxlength: 8; required: digit;">speedway.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 4; maxlength: 8; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()];">spirit.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 64; required: lower; required: upper; required: digit; required: [-!@#$%&amp;*_+=&lt;&gt;];">splunk.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 64; required: lower; required: upper; required: digit; required: [-!@#$%&amp;*_+=&lt;&gt;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="required: lower; required: upper; required: digit; required: [~!@#$%^&amp;*];">ssa.gov</button>
+    </td>
+    <td>
+        <pre><code>required: lower; required: upper; required: digit; required: [~!@#$%^&amp;*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [-!@#$%^*~:;&amp;&gt;&lt;[{}|_+=?]];">store.nvidia.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [-!@#$%^*~:;&amp;&gt;&lt;[{}|_+=?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; required: lower; required: upper; required: digit; allowed: [~!@#$%^&amp;*];">store.steampowered.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; required: lower; required: upper; required: digit; allowed: [~!@#$%^&amp;*];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 18; required: lower; required: upper; required: digit,[-!&quot;#$%&amp;&apos;()*+,.:;&lt;=&gt;?@[^_`{|}~]];">successfactors.eu</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 18; required: lower; required: upper; required: digit,[-!&quot;#$%&amp;&apos;()*+,.:;&lt;=&gt;?@[^_`{|}~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 6;">sulamericaseguros.com.br</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 6;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 10; required: digit; required: lower, upper;">sunlife.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 10; required: digit; required: lower, upper;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16;">t-mobile.net</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: lower, upper; required: digit, [-!&quot;#$%&amp;&apos;()*+,.&#x2F;:;=?@[\^_`{|}~];">target.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: lower, upper; required: digit, [-!&quot;#$%&amp;&apos;()*+,.&#x2F;:;=?@[\^_`{|}~];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [#$%&amp;()*+,.&#x2F;&lt;=&gt;?@_{|}~];">telekom-dienste.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [#$%&amp;()*+,.&#x2F;&lt;=&gt;?@_{|}~];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;">thameswater.co.uk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%*@^_~];">training.confluent.io</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%*@^_~];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8;">twitter.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [-]; required: [!@#$%^&amp;*()+];">ubisoft.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [-]; required: [!@#$%^&amp;*()+];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 12; maxlength: 30; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()+];">udel.edu</button>
+    </td>
+    <td>
+        <pre><code>minlength: 12; maxlength: 30; required: lower; required: upper; required: digit; required: [!@#$%^&amp;*()+];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 30; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$%.&#x2F;_];">user.ornl.gov</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 30; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$%.&#x2F;_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 50; max-consecutive: 2; required: lower; required: upper; required: digit; allowed: [-!&quot;#&amp;&apos;()+,.&#x2F;?@];">usps.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 50; max-consecutive: 2; required: lower; required: upper; required: digit; allowed: [-!&quot;#&amp;&apos;()+,.&#x2F;?@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: digit;">vanguard.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 50; required: lower; required: upper; required: digit; required: digit;">vanguardinvestor.co.uk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 50; required: lower; required: upper; required: digit; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit, [!@#$%^];">ventrachicago.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit, [!@#$%^];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 20; required: lower, upper; required: digit; allowed: unicode;">verizonwireless.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 20; required: lower, upper; required: digit; allowed: unicode;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; allowed: [?!@$%^+=&amp;];">vetsfirstchoice.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; allowed: [?!@$%^+=&amp;];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!#$@];">virginmobile.ca</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!#$@];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 32;">visa.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 32;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!&quot;#$%&amp;()*,.:&lt;&gt;?@^{|}];">visabenefits-auth.axa-assistance.us</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!&quot;#$%&amp;()*,.:&lt;&gt;?@^{|}];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="maxlength: 6; max-consecutive: 3; allowed: digit;">vivo.com.br</button>
+    </td>
+    <td>
+        <pre><code>maxlength: 6; max-consecutive: 3; allowed: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 9; maxlength: 15; required: lower; required: upper; required: digit; allowed: special;">walkhighlands.co.uk</button>
+    </td>
+    <td>
+        <pre><code>minlength: 9; maxlength: 15; required: lower; required: upper; required: digit; allowed: special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="allowed: lower, upper, digit, [-(~!@#$%^&amp;*_+=`|(){}[:;&quot;&apos;&lt;&gt;,.?]];">walmart.com</button>
+    </td>
+    <td>
+        <pre><code>allowed: lower, upper, digit, [-(~!@#$%^&amp;*_+=`|(){}[:;&quot;&apos;&lt;&gt;,.?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 64; required: lower, upper, digit;">waze.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 64; required: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 4; maxlength: 16; allowed: lower, upper, digit;">wccls.org</button>
+    </td>
+    <td>
+        <pre><code>minlength: 4; maxlength: 16; allowed: lower, upper, digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 40; allowed: lower, upper, digit, [-&lt;=&gt;~!|()@#{}$%,.?^&apos;&amp;*_+`:;&quot;[]];">web.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 40; allowed: lower, upper, digit, [-&lt;=&gt;~!|()@#{}$%,.?^&apos;&amp;*_+`:;&quot;[]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: digit; required: upper,lower; required: [!#$%&amp;*+=?@^];">wegmans.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: digit; required: upper,lower; required: [!#$%&amp;*+=?@^];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 6; maxlength: 16;">weibo.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 6; maxlength: 16;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 5; maxlength: 15; required: digit; allowed: lower, upper, [-~!@#$^*_=`|(){}[:;&quot;&apos;&lt;&gt;,.?]];">wsj.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 5; maxlength: 15; required: digit; allowed: lower, upper, [-~!@#$^*_=`|(){}[:;&quot;&apos;&lt;&gt;,.?]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 16; required: lower, upper; required: digit;">xfinity.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 16; required: lower, upper; required: digit;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 11; required: upper; required: digit; required: [!@#$%&amp;_];">xvoucher.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 11; required: upper; required: digit; required: [!@#$%&amp;_];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;&apos;()+,.:?@[_`~]];">yatra.com</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&amp;&apos;()+,.:?@[_`~]];</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; required: upper; required: digit; allowed: lower, special;">zdf.de</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; required: upper; required: digit; allowed: lower, special;</code></pre>
+    </td>
+</tr>
+        
+<tr>
+    <td>
+        <button type="button" data-pw="minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;">zoom.us</button>
+    </td>
+    <td>
+        <pre><code>minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;</code></pre>
+    </td>
+</tr>
+        </table>
+</div>
+
+</body>
+</html>
