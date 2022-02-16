@@ -20,8 +20,7 @@ function testUniqueTimes (domain, passwordRules, num = 10) {
 describe('password generation', () => {
     describe('public api', () => {
         it('creates from default rules', () => {
-            const defaultPw = generate({input: 'allowed: lower, upper, digit, [-(~!@#$%^&*_+=`|(){}[:;\"\'<>,.?]];'})
-            console.log(defaultPw)
+            const defaultPw = generate({input: constants.DEFAULT_PASSWORD_RULES})
             expect(defaultPw.length).toBeGreaterThanOrEqual(constants.MIN_LENGTH)
             expect(defaultPw.length).toBeLessThanOrEqual(constants.MAX_LENGTH)
         })
