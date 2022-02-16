@@ -57,7 +57,7 @@ class AndroidInterface extends InterfacePrototype {
      */
     async getAutofillCredentials () {
         const response = await sendAndWaitForAnswer(
-            window.EmailInterface.getAutofillCredentials,
+            () => window.EmailInterface.getAutofillCredentials(),
             'getAutofillCredentialsResponse'
         )
         console.log('receiving creds', response)
