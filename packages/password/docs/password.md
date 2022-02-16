@@ -33,7 +33,7 @@ the rule - in this case the rule is the basic character set so is always matched
 For example, the following rules
 
 ```
-minlength: 20; maxlength: 30; required: [$]; required: upper,lower,digit;
+minlength: 10; maxlength: 30; required: [$]; required: upper,lower,digit;
 ```
 
 Would return results like this, all about 12 chars long, because it took an extra 2 cycles to 
