@@ -4262,10 +4262,6 @@ const {
   getInputSubtype
 } = require('./Form/matching');
 
-const {
-  processConfig
-} = require('@duckduckgo/content-scope-scripts/src/apple-utils');
-
 let isApp = false; // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
 // INJECT isApp HERE
 
@@ -4312,7 +4308,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
   });
 };
 
-const autofillEnabled = () => {
+const autofillEnabled = processConfig => {
   if (!isAndroid && (isDDGApp || isApp)) {
     let contentScope = null;
     let userUnprotectedDomains = null;
@@ -4586,7 +4582,7 @@ module.exports = {
   escapeXML
 };
 
-},{"./Form/matching":17,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],28:[function(require,module,exports){
+},{"./Form/matching":17}],28:[function(require,module,exports){
 "use strict";
 
 (() => {
@@ -4596,6 +4592,10 @@ module.exports = {
     const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission');
 
     const {
+      processConfig
+    } = require('@duckduckgo/content-scope-scripts/src/apple-utils');
+
+    const {
       autofillEnabled
     } = require('./autofill-utils');
 
@@ -4603,7 +4603,7 @@ module.exports = {
 
 
     if (typeof chrome === 'undefined') {
-      if (autofillEnabled()) {
+      if (autofillEnabled(processConfig)) {
         listenForGlobalFormSubmission();
         inject();
       }
@@ -4625,7 +4625,7 @@ module.exports = {
   }
 })();
 
-},{"./Form/listenForFormSubmission":14,"./autofill-utils":27,"./inject":30}],29:[function(require,module,exports){
+},{"./Form/listenForFormSubmission":14,"./autofill-utils":27,"./inject":30,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],29:[function(require,module,exports){
 "use strict";
 
 module.exports = {
