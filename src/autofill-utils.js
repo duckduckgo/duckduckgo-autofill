@@ -1,3 +1,5 @@
+const {getInputSubtype} = require('./Form/matching')
+
 let isApp = false
 // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
 // INJECT isApp HERE
@@ -9,6 +11,8 @@ const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent)
 const isMobileApp = isDDGApp && !isApp
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
+
+const SIGN_IN_MSG = { signMeIn: true }
 
 const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX)
 
@@ -44,29 +48,53 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 }
 
 // Access the original setter (needed to bypass React's implementation on mobile)
+// @ts-ignore
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
 
 /**
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValueForInput = (el, val) => {
     // Avoid keyboard flashing on Android
     if (!isAndroid) {
         el.focus()
     }
-    originalSet.call(el, val)
+
+    el.dispatchEvent(new Event('keydown', {bubbles: true}))
+
+    originalSet?.call(el, val)
 
     const events = [
-        new Event('keydown', {bubbles: true}),
-        new Event('keyup', {bubbles: true}),
         new Event('input', {bubbles: true}),
+        new Event('keyup', {bubbles: true}),
         new Event('change', {bubbles: true})
     ]
     events.forEach((ev) => el.dispatchEvent(ev))
     // We call this again to make sure all forms are happy
-    originalSet.call(el, val)
+    originalSet?.call(el, val)
+    events.forEach((ev) => el.dispatchEvent(ev))
+    el.blur()
+
+    return true
+}
+
+/**
+ * Fires events on a select element to simulate user interaction
+ * @param {HTMLSelectElement} el
+ */
+const fireEventsOnSelect = (el) => {
+    const events = [
+        new Event('mousedown', {bubbles: true}),
+        new Event('focus', {bubbles: true}),
+        new Event('change', {bubbles: true}),
+        new Event('mouseup', {bubbles: true}),
+        new Event('click', {bubbles: true})
+    ]
+    // Events fire on the select el, not option
+    events.forEach((ev) => el.dispatchEvent(ev))
     events.forEach((ev) => el.dispatchEvent(ev))
     el.blur()
 }
@@ -76,38 +104,51 @@ const setValueForInput = (el, val) => {
  * We assume Select is only used for dates, i.e. in the credit card
  * @param {HTMLSelectElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
+    const subtype = getInputSubtype(el)
+    const isMonth = subtype.includes('Month')
+    const isZeroBasedNumber = isMonth &&
+        el.options[0].value === '0' && el.options.length === 12
+
+    // Loop first through all values because they tend to be more precise
     for (const option of el.options) {
+        // If values for months are zero-based (Jan === 0), add one to match our data type
+        let value = option.value
+        if (isZeroBasedNumber) {
+            value = `${Number(value) + 1}`
+        }
         // TODO: try to match localised month names
-        const optValue = option.value || option.innerText
-        if (optValue.includes(val)) {
-            const events = [
-                new Event('mousedown', {bubbles: true}),
-                new Event('focus', {bubbles: true}),
-                new Event('change', {bubbles: true}),
-                new Event('mouseup', {bubbles: true}),
-                new Event('click', {bubbles: true})
-            ]
+        if (value.includes(String(val))) {
             option.selected = true
-            // Events fire on the select el, not option
-            events.forEach((ev) => el.dispatchEvent(ev))
-            option.selected = true
-            events.forEach((ev) => el.dispatchEvent(ev))
-            el.blur()
-            return
+            fireEventsOnSelect(el)
+            return true
         }
     }
+
+    for (const option of el.options) {
+        if (option.innerText.includes(String(val))) {
+            option.selected = true
+            fireEventsOnSelect(el)
+            return true
+        }
+    }
+    // If we didn't find a matching option return false
+    return false
 }
 
 /**
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string | number} val
+ * @return {boolean}
  */
 const setValue = (el, val) => {
-    if (el.nodeName === 'INPUT') setValueForInput(el, val)
-    if (el.nodeName === 'SELECT') setValueForSelect(el, val)
+    if (el instanceof HTMLInputElement) return setValueForInput(el, val)
+    if (el instanceof HTMLSelectElement) return setValueForSelect(el, val)
+
+    return false
 }
 
 /**
@@ -185,7 +226,7 @@ const ADDRESS_DOMAIN = '@duck.com'
  * @param {string} address
  * @returns {string}
  */
-const formatAddress = (address) => address + ADDRESS_DOMAIN
+const formatDuckAddress = (address) => address + ADDRESS_DOMAIN
 
 /**
  * Escapes any occurrences of &, ", <, > or / with XML entities.
@@ -212,7 +253,8 @@ module.exports = {
     isEventWithinDax,
     addInlineStyles,
     removeInlineStyles,
+    SIGN_IN_MSG,
     ADDRESS_DOMAIN,
-    formatAddress,
+    formatDuckAddress,
     escapeXML
 }

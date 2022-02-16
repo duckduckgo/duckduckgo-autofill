@@ -1,58 +1,89 @@
-const {isDDGApp, isMobileApp} = require('../autofill-utils')
+const {isDDGApp, isApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {getInputMainType} = require('./input-classifiers')
+const {getInputMainType, getInputSubtype} = require('./matching')
+const {getCountryDisplayName} = require('./formatters')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
 const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
 
 /**
- * A map of config objects. These help by centralising here some of the complexity
- * @type {Object<SupportedMainTypes, InputTypeConfig>}
+ * Get the icon for the identities (currently only Dax for emails)
+ * @param {HTMLInputElement} input
+ * @param device
+ * @return {string}
+ */
+const getIdentitiesIcon = (input, {device}) => {
+    const subtype = getInputSubtype(input)
+    if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg
+
+    return ''
+}
+
+/**
+ * A map of config objects. These help by centralising here some complexity
+ * @type {InputTypeConfig}
  */
 const inputTypeConfig = {
-    emailNew: {
-        type: 'emailNew',
-        getIconBase: () => getDaxImg,
-        getIconFilled: () => getDaxImg,
-        shouldDecorate: (isLogin, device) => {
-            if (isMobileApp) return device.isDeviceSignedIn()
-
-            return device.hasLocalAddresses
-        },
-        dataType: 'Addresses',
-        displayTitlePropName: '',
-        displaySubtitlePropName: '',
-        autofillMethod: ''
-    },
+    /** @type {CredentialsInputTypeConfig} */
     credentials: {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (isLogin, device) => isLogin && device.hasLocalCredentials,
+        shouldDecorate: (_input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
         dataType: 'Credentials',
-        displayTitlePropName: 'username',
+        displayTitlePropName: (_subtype, data) => data.username,
         displaySubtitlePropName: '•••••••••••••••',
         autofillMethod: 'getAutofillCredentials'
     },
+    /** @type {CreditCardInputTypeConfig} */
     creditCard: {
         type: 'creditCard',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (isLogin, device) => device.hasLocalCreditCards,
+        shouldDecorate: (_input, {device}) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
-        displayTitlePropName: 'title',
+        displayTitlePropName: (_subtype, data) => data.title,
         displaySubtitlePropName: 'displayNumber',
         autofillMethod: 'getAutofillCreditCard'
     },
+    /** @type {IdentitiesInputTypeConfig} */
+    identities: {
+        type: 'identities',
+        getIconBase: getIdentitiesIcon,
+        getIconFilled: getIdentitiesIcon,
+        shouldDecorate: (input, {device}) => {
+            const subtype = getInputSubtype(input)
+
+            if (isApp) {
+                return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
+            }
+
+            if (subtype === 'emailAddress') {
+                return device.isDeviceSignedIn()
+            }
+
+            return false
+        },
+        dataType: 'Identities',
+        displayTitlePropName: (subtype, data) => {
+            if (subtype === 'addressCountryCode') {
+                return getCountryDisplayName('en', data.addressCountryCode)
+            }
+            return data[subtype]
+        },
+        displaySubtitlePropName: 'title',
+        autofillMethod: 'getAutofillIdentity'
+    },
+    /** @type {UnknownInputTypeConfig} */
     unknown: {
         type: 'unknown',
         getIconBase: () => '',
         getIconFilled: () => '',
         shouldDecorate: () => false,
         dataType: '',
-        displayTitlePropName: '',
+        displayTitlePropName: () => 'unknown',
         displaySubtitlePropName: '',
         autofillMethod: ''
     }
@@ -61,11 +92,23 @@ const inputTypeConfig = {
 /**
  * Retrieves configs from an input el
  * @param {HTMLInputElement} input
- * @returns {InputTypeConfig}
+ * @returns {InputTypeConfigs}
  */
 const getInputConfig = (input) => {
     const inputType = getInputMainType(input)
+    return getInputConfigFromType(inputType)
+}
+
+/**
+ * Retrieves configs from an input type
+ * @param {SupportedMainTypes | string} inputType
+ * @returns {InputTypeConfigs}
+ */
+const getInputConfigFromType = (inputType) => {
     return inputTypeConfig[inputType || 'unknown']
 }
 
-module.exports = getInputConfig
+module.exports = {
+    getInputConfig,
+    getInputConfigFromType
+}

@@ -47,7 +47,7 @@ module.exports = function (grunt) {
                 tasks: ['browserify']
             },
             styles: {
-                files: ['src/**/*.css'],
+                files: ['src/**/*.css', 'src/UI/styles/*'],
                 tasks: ['exec:copyAutofillStylesToCSS', 'exec:copyHostStyles', 'exec:updateFirefoxRelativeUrl']
             }
         }
