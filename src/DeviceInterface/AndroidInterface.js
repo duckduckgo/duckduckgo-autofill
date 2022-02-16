@@ -22,6 +22,7 @@ class AndroidInterface extends InterfacePrototype {
     }
 
     setupAutofill ({shouldLog} = {shouldLog: false}) {
+        this.getAutofillInitData()
         if (this.isDeviceSignedIn()) {
             notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
             const cleanup = scanForInputs(this).init()
@@ -33,6 +34,31 @@ class AndroidInterface extends InterfacePrototype {
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
         return window.EmailInterface.storeCredentials(token, userName, cohort)
+    }
+
+    /**
+     * Gets the init data from the device
+     * @returns {APIResponse<PMData>}
+     */
+    getAutofillInitData () {
+        console.log('getting autofill init')
+        const response = window.EmailInterface.getAutofillInitData()
+        this.storeLocalData(response.success)
+        console.log('hasLocalCredentials', this.hasLocalCredentials)
+        return response
+    }
+
+    /**
+     * Gets credentials ready for autofill
+     * @returns {APIResponse<CredentialsObject>}
+     */
+    async getAutofillCredentials () {
+        const response = await sendAndWaitForAnswer(
+            window.EmailInterface.getAutofillCredentials,
+            'getAutofillCredentialsResponse'
+        )
+        console.log('receiving creds', response)
+        return response.getAutofillCredentialsResponse
     }
 }
 

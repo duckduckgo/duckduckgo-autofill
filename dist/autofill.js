@@ -60,6 +60,8 @@ class AndroidInterface extends InterfacePrototype {
   } = {
     shouldLog: false
   }) {
+    this.getAutofillInitData();
+
     if (this.isDeviceSignedIn()) {
       notifyWebApp({
         deviceSignedIn: {
@@ -82,6 +84,30 @@ class AndroidInterface extends InterfacePrototype {
     }
   }) {
     return window.EmailInterface.storeCredentials(token, userName, cohort);
+  }
+  /**
+   * Gets the init data from the device
+   * @returns {APIResponse<PMData>}
+   */
+
+
+  getAutofillInitData() {
+    console.log('getting autofill init');
+    const response = window.EmailInterface.getAutofillInitData();
+    this.storeLocalData(response.success);
+    console.log('hasLocalCredentials', this.hasLocalCredentials);
+    return response;
+  }
+  /**
+   * Gets credentials ready for autofill
+   * @returns {APIResponse<CredentialsObject>}
+   */
+
+
+  async getAutofillCredentials() {
+    const response = await sendAndWaitForAnswer(window.EmailInterface.getAutofillCredentials, 'getAutofillCredentialsResponse');
+    console.log('receiving creds', response);
+    return response.getAutofillCredentialsResponse;
   }
 
 }
@@ -424,11 +450,13 @@ const {
   isMobileApp,
   isDDGDomain,
   sendAndWaitForAnswer,
-  formatDuckAddress
+  formatDuckAddress,
+  isAndroid
 } = require('../autofill-utils');
 
 const {
-  getInputType
+  getInputType,
+  getInputMainType
 } = require('../Form/matching');
 
 const {
@@ -627,8 +655,24 @@ class InterfacePrototype {
     form.activeInput = input;
     this.currentAttached = form;
     const inputType = getInputType(input);
+    const maintype = getInputMainType(input);
 
     if (isMobileApp) {
+      // Android PoC
+      if (isAndroid) {
+        if (maintype === 'credentials' && this.hasLocalCredentials) {
+          // @ts-ignore
+          this.getAutofillCredentials().then(({
+            success
+          }) => {
+            if (success) {
+              this.selectedDetail(success, maintype);
+            }
+          });
+          return;
+        }
+      }
+
       this.getAlias().then(alias => {
         if (alias) form.autofillEmail(alias);else form.activeInput.focus();
       });

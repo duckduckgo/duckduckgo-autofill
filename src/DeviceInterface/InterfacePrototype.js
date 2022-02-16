@@ -5,9 +5,9 @@ const {
     isMobileApp,
     isDDGDomain,
     sendAndWaitForAnswer,
-    formatDuckAddress
+    formatDuckAddress, isAndroid
 } = require('../autofill-utils')
-const {getInputType} = require('../Form/matching')
+const {getInputType, getInputMainType} = require('../Form/matching')
 const {
     formatFullName
 } = require('../Form/formatters')
@@ -168,8 +168,22 @@ class InterfacePrototype {
         form.activeInput = input
         this.currentAttached = form
         const inputType = getInputType(input)
+        const maintype = getInputMainType(input)
 
         if (isMobileApp) {
+            // Android PoC
+            if (isAndroid) {
+                if (maintype === 'credentials' && this.hasLocalCredentials) {
+                    // @ts-ignore
+                    this.getAutofillCredentials().then(({success}) => {
+                        if (success) {
+                            this.selectedDetail(success, maintype)
+                        }
+                    })
+                    return
+                }
+            }
+
             this.getAlias().then((alias) => {
                 if (alias) form.autofillEmail(alias)
                 else form.activeInput.focus()
