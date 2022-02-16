@@ -4262,6 +4262,10 @@ const {
   getInputSubtype
 } = require('./Form/matching');
 
+const {
+  processConfig
+} = require('@duckduckgo/content-scope-scripts/src/apple-utils');
+
 let isApp = false; // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
 // INJECT isApp HERE
 
@@ -4306,6 +4310,26 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 
     window.addEventListener('message', handler);
   });
+};
+
+const autofillEnabled = () => {
+  if (!isAndroid && (isDDGApp || isApp)) {
+    let contentScope = null;
+    let userUnprotectedDomains = null;
+    let userPreferences = null; // INJECT contentScope HERE
+    // INJECT userUnprotectedDomains HERE
+    // INJECT userPreferences HERE
+    // Check config on Apple platforms
+
+    const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
+    const site = privacyConfig.site;
+
+    if (site.isBroken || site.isAllowlisted || !site.enabledFeatures.includes('autofill')) {
+      return false;
+    }
+  }
+
+  return true;
 }; // Access the original setter (needed to bypass React's implementation on mobile)
 // @ts-ignore
 
@@ -4549,6 +4573,7 @@ module.exports = {
   isDDGDomain,
   notifyWebApp,
   sendAndWaitForAnswer,
+  autofillEnabled,
   setValue,
   safeExecute,
   getDaxBoundingBox,
@@ -4561,7 +4586,7 @@ module.exports = {
   escapeXML
 };
 
-},{"./Form/matching":17}],28:[function(require,module,exports){
+},{"./Form/matching":17,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],28:[function(require,module,exports){
 "use strict";
 
 (() => {
@@ -4571,33 +4596,17 @@ module.exports = {
     const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission');
 
     const {
-      isAndroid,
-      isDDGApp,
-      isApp
+      autofillEnabled
     } = require('./autofill-utils');
-
-    const {
-      processConfig
-    } = require('@duckduckgo/content-scope-scripts/src/apple-utils');
 
     const inject = require('./inject'); // chrome is only present in desktop browsers
 
 
     if (typeof chrome === 'undefined') {
-      if (!isAndroid && (isDDGApp || isApp)) {
-        // Check config on Apple platforms
-        // @ts-ignore - variable populated during injection
-        const privacyConfig = processConfig($CONTENT_SCOPE$, $USER_UNPROTECTED_DOMAINS$, $USER_PREFERENCES$); // eslint-disable-line no-undef
-
-        const site = privacyConfig.site;
-
-        if (site.isBroken || site.isAllowlisted || !site.enabledFeatures.includes('autofill')) {
-          return;
-        }
+      if (autofillEnabled()) {
+        listenForGlobalFormSubmission();
+        inject();
       }
-
-      listenForGlobalFormSubmission();
-      inject();
     } else {
       // Check if the site is marked to skip autofill
       chrome.runtime.sendMessage({
@@ -4616,7 +4625,7 @@ module.exports = {
   }
 })();
 
-},{"./Form/listenForFormSubmission":14,"./autofill-utils":27,"./inject":30,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],29:[function(require,module,exports){
+},{"./Form/listenForFormSubmission":14,"./autofill-utils":27,"./inject":30}],29:[function(require,module,exports){
 "use strict";
 
 module.exports = {

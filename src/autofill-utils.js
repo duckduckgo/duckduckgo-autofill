@@ -1,4 +1,5 @@
 const {getInputSubtype} = require('./Form/matching')
+const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
 
 let isApp = false
 // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
@@ -45,6 +46,26 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
         }
         window.addEventListener('message', handler)
     })
+}
+
+const autofillEnabled = () => {
+    if (!isAndroid && (isDDGApp || isApp)) {
+        let contentScope = null
+        let userUnprotectedDomains = null
+        let userPreferences = null
+        // INJECT contentScope HERE
+        // INJECT userUnprotectedDomains HERE
+        // INJECT userPreferences HERE
+
+        // Check config on Apple platforms
+        const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
+        const site = privacyConfig.site
+        if (site.isBroken || site.isAllowlisted || !site.enabledFeatures.includes('autofill')) {
+            return false
+        }
+    }
+
+    return true
 }
 
 // Access the original setter (needed to bypass React's implementation on mobile)
@@ -247,6 +268,7 @@ module.exports = {
     isDDGDomain,
     notifyWebApp,
     sendAndWaitForAnswer,
+    autofillEnabled,
     setValue,
     safeExecute,
     getDaxBoundingBox,
