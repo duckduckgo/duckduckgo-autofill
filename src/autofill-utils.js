@@ -1,5 +1,4 @@
 const {getInputSubtype} = require('./Form/matching')
-const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
 
 let isApp = false
 // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
@@ -48,7 +47,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     })
 }
 
-const autofillEnabled = () => {
+const autofillEnabled = (processConfig) => {
     if (!isAndroid && (isDDGApp || isApp)) {
         let contentScope = null
         let userUnprotectedDomains = null

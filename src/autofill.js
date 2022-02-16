@@ -3,13 +3,14 @@
         if (!window.isSecureContext) return
 
         const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission')
+        const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
         const {autofillEnabled} = require('./autofill-utils')
 
         const inject = require('./inject')
 
         // chrome is only present in desktop browsers
         if (typeof chrome === 'undefined') {
-            if (autofillEnabled()) {
+            if (autofillEnabled(processConfig)) {
                 listenForGlobalFormSubmission()
                 inject()
             }
