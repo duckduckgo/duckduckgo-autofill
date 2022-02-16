@@ -22,6 +22,20 @@ const notifyWebApp = (message) => {
         window.postMessage(message, window.origin)
     }
 }
+
+/**
+ * Tries to JSON.parse a parameter or returns it if it's not valid json
+ * @param string
+ * @return {any}
+ */
+const parseJsonOrReturnIntact = (string) => {
+    try {
+        return JSON.parse(string)
+    } catch {
+        return string
+    }
+}
+
 /**
  * Sends a message and returns a Promise that resolves with the response
  * @param {{} | Function} msgOrFn - a fn to call or an object to send via postMessage
@@ -38,9 +52,11 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     return new Promise((resolve) => {
         const handler = e => {
             if (e.origin !== window.origin) return
-            if (!e.data || (e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))) return
 
-            resolve(e.data)
+            const data = parseJsonOrReturnIntact(e.data)
+            if (!data || (data && !(data[expectedResponse] || data.type === expectedResponse))) return
+
+            resolve(data)
             window.removeEventListener('message', handler)
         }
         window.addEventListener('message', handler)
@@ -246,6 +262,7 @@ module.exports = {
     DDG_DOMAIN_REGEX,
     isDDGDomain,
     notifyWebApp,
+    parseJsonOrReturnIntact,
     sendAndWaitForAnswer,
     setValue,
     safeExecute,

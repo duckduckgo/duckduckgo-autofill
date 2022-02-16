@@ -1,7 +1,7 @@
 const InterfacePrototype = require('./InterfacePrototype.js')
 const {
-    notifyWebApp,
-    isDDGDomain, sendAndWaitForAnswer
+    notifyWebApp, isDDGDomain,
+    sendAndWaitForAnswer, parseJsonOrReturnIntact
 } = require('../autofill-utils')
 const {scanForInputs} = require('../scanForInputs.js')
 
@@ -43,7 +43,8 @@ class AndroidInterface extends InterfacePrototype {
      */
     getAutofillInitData () {
         console.log('getting autofill init')
-        const response = window.EmailInterface.getAutofillInitData?.()
+        let response = window.EmailInterface.getAutofillInitData?.()
+        response = parseJsonOrReturnIntact(response)
         if (response) {
             this.storeLocalData(response.success)
             console.log('hasLocalCredentials', this.hasLocalCredentials)

@@ -31,7 +31,8 @@ const InterfacePrototype = require('./InterfacePrototype.js');
 const {
   notifyWebApp,
   isDDGDomain,
-  sendAndWaitForAnswer
+  sendAndWaitForAnswer,
+  parseJsonOrReturnIntact
 } = require('../autofill-utils');
 
 const {
@@ -95,7 +96,8 @@ class AndroidInterface extends InterfacePrototype {
     var _window$EmailInterfac, _window$EmailInterfac2;
 
     console.log('getting autofill init');
-    const response = (_window$EmailInterfac = (_window$EmailInterfac2 = window.EmailInterface).getAutofillInitData) === null || _window$EmailInterfac === void 0 ? void 0 : _window$EmailInterfac.call(_window$EmailInterfac2);
+    let response = (_window$EmailInterfac = (_window$EmailInterfac2 = window.EmailInterface).getAutofillInitData) === null || _window$EmailInterfac === void 0 ? void 0 : _window$EmailInterfac.call(_window$EmailInterfac2);
+    response = parseJsonOrReturnIntact(response);
 
     if (response) {
       this.storeLocalData(response.success);
@@ -4276,6 +4278,20 @@ const notifyWebApp = message => {
   }
 };
 /**
+ * Tries to JSON.parse a parameter or returns it if it's not valid json
+ * @param string
+ * @return {any}
+ */
+
+
+const parseJsonOrReturnIntact = string => {
+  try {
+    return JSON.parse(string);
+  } catch {
+    return string;
+  }
+};
+/**
  * Sends a message and returns a Promise that resolves with the response
  * @param {{} | Function} msgOrFn - a fn to call or an object to send via postMessage
  * @param {String} expectedResponse - the name of the response
@@ -4293,8 +4309,9 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
   return new Promise(resolve => {
     const handler = e => {
       if (e.origin !== window.origin) return;
-      if (!e.data || e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse)) return;
-      resolve(e.data);
+      const data = parseJsonOrReturnIntact(e.data);
+      if (!data || data && !(data[expectedResponse] || data.type === expectedResponse)) return;
+      resolve(data);
       window.removeEventListener('message', handler);
     };
 
@@ -4542,6 +4559,7 @@ module.exports = {
   DDG_DOMAIN_REGEX,
   isDDGDomain,
   notifyWebApp,
+  parseJsonOrReturnIntact,
   sendAndWaitForAnswer,
   setValue,
   safeExecute,
