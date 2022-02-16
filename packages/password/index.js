@@ -1,15 +1,6 @@
 const {generatePasswordFromInput} = require('./lib/apple.password')
 const {ParserError} = require('./lib/rules-parser')
-
-const MIN_LENGTH = 20
-const MAX_LENGTH = 30
-const DEFAULT_PASSWORD_RULES = `minlength: ${MIN_LENGTH}; maxlength: ${MAX_LENGTH};`
-
-const constants = {
-    MIN_LENGTH,
-    MAX_LENGTH,
-    DEFAULT_PASSWORD_RULES
-}
+const {constants} = require('./lib/constants')
 
 /**
  * @typedef {{

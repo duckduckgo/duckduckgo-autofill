@@ -8,10 +8,11 @@ const {
 } = require('./rules-parser')
 // eslint-disable-next-line no-unused-vars
 const {Rule} = require('./rules-parser')
+const {constants} = require('./constants')
 
 const defaultUnambiguousCharacters = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789'
-const defaultNumberOfCharactersForClassicPassword = 12
-const defaultClassicPasswordLength = 15
+const defaultNumberOfCharactersForClassicPassword = constants.MIN_LENGTH
+const defaultClassicPasswordLength = constants.MIN_LENGTH
 const SCAN_SET_ORDER = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\\"'<>,.?/ ]"
 
 /**
