@@ -41,7 +41,7 @@ const SCAN_SET_ORDER = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123
 function generatePasswordFromInput (inputString) {
     const passwordRules = parsePasswordRules(inputString)
     const quirks = _requirementsFromRules(passwordRules)
-    const password = generatedPasswordMatchingRequirements(quirks)
+    const password = _generatedPasswordMatchingRequirements(quirks)
     /**
      * The following is unreachable because if user input was incorrect then
      * the parsing phase would throw. The following lines is to satisfy Typescript
@@ -109,7 +109,7 @@ function _randomNumberWithUniformDistribution (range) {
 
 /**
  * @param {number} numberOfRequiredRandomCharacters
- * @param {string | any[]} allowedCharacters
+ * @param {string} allowedCharacters
  */
 function _classicPassword (numberOfRequiredRandomCharacters, allowedCharacters) {
     const length = allowedCharacters.length
@@ -189,6 +189,7 @@ function _passwordHasNotExceededConsecutiveCharLimit (password, consecutiveCharL
 /**
  * @param {string} password
  * @param {number} repeatedCharLimit
+ * @returns {boolean}
  */
 function _passwordHasNotExceededRepeatedCharLimit (password, repeatedCharLimit) {
     var longestRepeatedCharLength = 1
@@ -213,7 +214,8 @@ function _passwordHasNotExceededRepeatedCharLimit (password, repeatedCharLimit) 
 
 /**
  * @param {string} password
- * @param {string | string[]} requiredCharacterSets
+ * @param {string[]} requiredCharacterSets
+ * @returns {boolean}
  */
 function _passwordContainsRequiredCharacters (password, requiredCharacterSets) {
     var requiredCharacterSetsLength = requiredCharacterSets.length
@@ -352,7 +354,7 @@ function _passwordGenerationParametersDictionary (requirements) {
  * @param {Requirements | null} requirements
  * @returns {string}
  */
-function generatedPasswordMatchingRequirements (requirements) {
+function _generatedPasswordMatchingRequirements (requirements) {
     requirements = requirements || {}
 
     const parameters = _passwordGenerationParametersDictionary(requirements)
@@ -422,6 +424,10 @@ function _charactersFromCharactersClasses (characterClasses) {
     return output
 }
 
+/**
+ * @param {string[]} characters
+ * @returns {string}
+ */
 function _canonicalizedScanSetFromCharacters (characters) {
     if (!characters.length) {
         return ''
@@ -439,3 +445,11 @@ function _canonicalizedScanSetFromCharacters (characters) {
 }
 
 module.exports.generatePasswordFromInput = generatePasswordFromInput
+module.exports.internal = {
+    _randomNumberWithUniformDistribution,
+    _passwordHasNotExceededConsecutiveCharLimit,
+    _canonicalizedScanSetFromCharacters,
+    _classicPassword,
+    _passwordHasNotExceededRepeatedCharLimit,
+    _passwordContainsRequiredCharacters
+}

@@ -77,6 +77,7 @@ class CustomCharacterClass {
 
 function _isIdentifierCharacter (c) {
     console.assert(c.length === 1)
+    // eslint-disable-next-line no-mixed-operators
     return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c === '-'
 }
 
@@ -323,7 +324,11 @@ function _parseCustomCharacterClass (input, position) {
         }
     } while (position < length)
 
-    if (position < length && input[position] !== CHARACTER_CLASS_END_SENTINEL || position === length && input[position - 1] === CHARACTER_CLASS_END_SENTINEL) {
+    if (position < length && input[position] !== CHARACTER_CLASS_END_SENTINEL) {
+        // Fix up result; we over consumed.
+        result.pop()
+        return [result, position]
+    } else if (position === length && input[position - 1] === CHARACTER_CLASS_END_SENTINEL) {
         // Fix up result; we over consumed.
         result.pop()
         return [result, position]
@@ -346,6 +351,7 @@ function _parsePasswordRequiredOrAllowedPropertyValue (input, position) {
     while (true) {
         if (_isIdentifierCharacter(input[position])) {
             let identifierStartPosition = position
+            // eslint-disable-next-line no-redeclare
             var [propertyValue, position] = _parseIdentifier(input, position)
             if (!_isValidRequiredOrAllowedPropertyValueIdentifier(propertyValue)) {
                 // console.error('Unrecognized property value identifier: ' + propertyValue)
@@ -353,6 +359,7 @@ function _parsePasswordRequiredOrAllowedPropertyValue (input, position) {
             }
             propertyValues.push(new NamedCharacterClass(propertyValue))
         } else if (input[position] === CHARACTER_CLASS_START_SENTINEL) {
+            // eslint-disable-next-line no-redeclare
             var [propertyValue, position] = _parseCustomCharacterClass(input, position)
             if (propertyValue && propertyValue.length) {
                 propertyValues.push(new CustomCharacterClass(propertyValue))
@@ -396,6 +403,7 @@ function _parsePasswordRule (input, position) {
     let length = input.length
 
     var mayBeIdentifierStartPosition = position
+    // eslint-disable-next-line no-redeclare
     var [identifier, position] = _parseIdentifier(input, position)
     if (!Object.values(RuleName).includes(identifier)) {
         // console.error('Unrecognized property name: ' + identifier)
@@ -423,6 +431,7 @@ function _parsePasswordRule (input, position) {
     switch (identifier) {
     case RuleName.ALLOWED:
     case RuleName.REQUIRED: {
+        // eslint-disable-next-line no-redeclare
         var [propertyValue, position] = _parsePasswordRequiredOrAllowedPropertyValue(input, position)
         if (propertyValue) {
             property.value = propertyValue
@@ -430,6 +439,7 @@ function _parsePasswordRule (input, position) {
         return [new Rule(property.name, property.value), position, undefined]
     }
     case RuleName.MAX_CONSECUTIVE: {
+        // eslint-disable-next-line no-redeclare
         var [propertyValue, position] = _parseMaxConsecutivePropertyValue(input, position)
         if (propertyValue) {
             property.value = propertyValue
@@ -438,6 +448,7 @@ function _parsePasswordRule (input, position) {
     }
     case RuleName.MIN_LENGTH:
     case RuleName.MAX_LENGTH: {
+        // eslint-disable-next-line no-redeclare
         var [propertyValue, position] = _parseMinLengthMaxLengthPropertyValue(input, position)
         if (propertyValue) {
             property.value = propertyValue
@@ -498,7 +509,7 @@ function _parsePasswordRulesInternal (input) {
             return [parsedProperties, undefined]
         }
 
-        // @ts-ignore
+        // eslint-disable-next-line no-redeclare
         var [parsedProperty, position, message] = _parsePasswordRule(input, position)
         if (parsedProperty && parsedProperty.value) {
             parsedProperties.push(parsedProperty)

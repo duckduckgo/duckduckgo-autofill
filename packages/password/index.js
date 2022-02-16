@@ -1,5 +1,5 @@
-const {generatePasswordFromInput} = require('./apple.password')
-const {ParserError} = require('./rules-parser')
+const {generatePasswordFromInput} = require('./lib/apple.password')
+const {ParserError} = require('./lib/rules-parser')
 
 const MIN_LENGTH = 20
 const MAX_LENGTH = 30
@@ -20,9 +20,9 @@ const constants = {
  */
 
 /**
+ * Generate a random password based on DuckDuckGo's default ruleset;
  *
  * @example
- * Generate a random password based on DuckDuckGo's default ruleset.
  *
  * ```js
  * const password = require("@duckduckgo/autofill/packages/password");
@@ -58,7 +58,7 @@ const constants = {
  *
  * @param {GenerateOptions} inputs
  */
-function generatePasswordForDomainOrInputOrDefault (inputs) {
+function generate (inputs) {
     try {
         if (inputs.input) {
             return generatePasswordFromInput(inputs.input)
@@ -95,7 +95,7 @@ class HostnameInputError extends Error {}
  * @throws {HostnameInputError}
  */
 function _selectPasswordRules (inputHostname, rules) {
-    rules = rules || require('../rules.json')
+    rules = rules || require('./rules.json')
     const hostname = _safeHostname(inputHostname)
     // direct match
     if (rules[hostname]) {
@@ -135,7 +135,7 @@ function _safeHostname (inputHostname) {
     }
 }
 
-module.exports.generate = generatePasswordForDomainOrInputOrDefault
+module.exports.generate = generate
 module.exports._selectPasswordRules = _selectPasswordRules
 module.exports.HostnameInputError = HostnameInputError
 module.exports.constants = constants
