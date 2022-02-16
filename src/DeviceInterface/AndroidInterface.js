@@ -23,6 +23,7 @@ class AndroidInterface extends InterfacePrototype {
 
     setupAutofill ({shouldLog} = {shouldLog: false}) {
         this.getAutofillInitData()
+
         if (this.isDeviceSignedIn()) {
             notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
             const cleanup = scanForInputs(this).init()
@@ -42,10 +43,11 @@ class AndroidInterface extends InterfacePrototype {
      */
     getAutofillInitData () {
         console.log('getting autofill init')
-        const response = window.EmailInterface.getAutofillInitData()
-        this.storeLocalData(response.success)
-        console.log('hasLocalCredentials', this.hasLocalCredentials)
-        return response
+        const response = window.EmailInterface.getAutofillInitData?.()
+        if (response) {
+            this.storeLocalData(response.success)
+            console.log('hasLocalCredentials', this.hasLocalCredentials)
+        }
     }
 
     /**

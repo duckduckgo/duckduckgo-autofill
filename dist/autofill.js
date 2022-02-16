@@ -92,11 +92,15 @@ class AndroidInterface extends InterfacePrototype {
 
 
   getAutofillInitData() {
+    var _window$EmailInterfac, _window$EmailInterfac2;
+
     console.log('getting autofill init');
-    const response = window.EmailInterface.getAutofillInitData();
-    this.storeLocalData(response.success);
-    console.log('hasLocalCredentials', this.hasLocalCredentials);
-    return response;
+    const response = (_window$EmailInterfac = (_window$EmailInterfac2 = window.EmailInterface).getAutofillInitData) === null || _window$EmailInterfac === void 0 ? void 0 : _window$EmailInterfac.call(_window$EmailInterfac2);
+
+    if (response) {
+      this.storeLocalData(response.success);
+      console.log('hasLocalCredentials', this.hasLocalCredentials);
+    }
   }
   /**
    * Gets credentials ready for autofill
