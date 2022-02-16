@@ -8,7 +8,7 @@
 
         if (!isAndroid) {
             // eslint-disable-next-line no-undef
-            const privacyConfig = processConfig($CONTENT_SCOPE$, $USER_UNPROTECTED_DOMAINS$, $USER_PREFERENCES$)
+            const privacyConfig = processConfig($CONTENT_SCOPE$, $USER_UNPROTECTED_DOMAINS$, $USER_PREFERENCES$) // @ts-ignore - variable populated during injection
             const site = privacyConfig.site
             if (site.isBroken || site.isAllowlisted || !site.enabledFeatures.includes('autofill')) {
                 return
