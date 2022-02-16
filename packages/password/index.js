@@ -47,9 +47,9 @@ const {constants} = require('./lib/constants')
  * })
  * ```
  *
- * @param {GenerateOptions} inputs
+ * @param {GenerateOptions} [inputs]
  */
-function generate (inputs) {
+function generate (inputs = {}) {
     try {
         if (inputs.input) {
             return generatePasswordFromInput(inputs.input)

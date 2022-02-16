@@ -1,3 +1,27 @@
+## DDG Password API
+
+A single `generate()` method is exposed from this module.
+
+You can do the following with it
+
+1: Generate a password based on DuckDuckGo's default settings
+2: Generate a password from a 'passwordrules' attribute string
+3: Lookup known password rules from the [resources provided by Apple](https://github.com/apple/password-manager-resources)
+
+
+```javascript
+const password = require("@duckduckgo/autofill/packages/password");
+
+// generate a password with default settings
+const pw = password.generate()
+
+// generate a password with a given input, falling back to default
+const pw = password.generate({ input: "minlength: 30; required: lower, upper;"})
+
+// generate a password with rules from a known domain, falling back to default
+const pw = password.generate({ domain: "example.com" })
+```
+
 # DDG Default Rules
 
 With no parameters, the generate function will use the following character set
