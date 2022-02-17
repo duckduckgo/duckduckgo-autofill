@@ -14,8 +14,7 @@ describe('Apple password implementations', () => {
             fc.property(fc.integer({min: 1}), data => {
                 const result = internal._randomNumberWithUniformDistribution(data)
                 return result >= 0
-            }),
-            { seed: 1691610651, path: '0', endOnFailure: true }
+            })
         )
     })
     it('should produce boolean _passwordHasNotExceededConsecutiveCharLimit', () => {
