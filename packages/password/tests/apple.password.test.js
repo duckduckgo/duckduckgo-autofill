@@ -2,13 +2,6 @@ const { internal } = require('../lib/apple.password')
 const fc = require('fast-check')
 
 describe('Apple password implementations', () => {
-    let n = []
-    beforeAll(() => {
-        n = []
-    })
-    afterAll(() => {
-        console.log(n)
-    })
     it('should produce positive integers from ranges _randomNumberWithUniformDistribution', () => {
         fc.assert(
             fc.property(fc.integer({min: 1}), data => {

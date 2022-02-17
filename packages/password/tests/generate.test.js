@@ -1,4 +1,4 @@
-const { constants, _selectPasswordRules, HostnameInputError, generate } = require('../')
+const { constants, _selectPasswordRules, HostnameInputError, ParserError, generate } = require('../')
 const vendorRules = require('../rules.json')
 const fc = require('fast-check')
 
@@ -28,6 +28,66 @@ describe('password generation', () => {
             const defaultPw = generate({input: constants.DEFAULT_PASSWORD_RULES})
             expect(defaultPw.length).toBeGreaterThanOrEqual(constants.MIN_LENGTH)
             expect(defaultPw.length).toBeLessThanOrEqual(constants.MAX_LENGTH)
+        })
+        it('handles any value for `input`', () => {
+            fc.assert(
+                fc.property(fc.anything(), (anything) => {
+                    // @ts-ignore - this is deliberate
+                    const pw = generate({ input: anything })
+                    return typeof pw === 'string'
+                })
+            )
+        })
+        it('handles any value for `domain`', () => {
+            fc.assert(
+                fc.property(fc.anything(), (anything) => {
+                    // @ts-ignore - this is deliberate
+                    const pw = generate({ domain: anything })
+                    return typeof pw === 'string'
+                })
+            )
+        })
+        it('handles any value for `onError`', () => {
+            fc.assert(
+                fc.property(fc.anything(), (anything) => {
+                    // @ts-ignore - this is deliberate
+                    const pw = generate({ onError: anything })
+                    return typeof pw === 'string'
+                })
+            )
+        })
+        it('handles any value for `options`', () => {
+            fc.assert(
+                fc.property(fc.anything(), (anything) => {
+                    // @ts-ignore - this is deliberate
+                    const pw = generate(anything)
+                    return typeof pw === 'string'
+                })
+            )
+        })
+        it('creates from vendor rules', () => {
+            const password = generate({
+                domain: 'example.com',
+                rules: {
+                    'example.com': {
+                        'password-rules': 'minlength: 4; maxlength: 4;'
+                    }
+                }
+            })
+            expect(password.length).toBe(4)
+        })
+        it.each([
+            { args: { input: 'invalid input' }, expectedErrorClass: ParserError },
+            { args: { domain: 'localhost:8080' }, expectedErrorClass: HostnameInputError },
+            { args: { domain: 'https://example.com' }, expectedErrorClass: HostnameInputError }
+        ])('can receive errors', ({args, expectedErrorClass}) => {
+            expect.assertions(1)
+            generate({
+                ...args,
+                onError (e) {
+                    expect(e).toBeInstanceOf(expectedErrorClass)
+                }
+            })
         })
         it.each([
             { input: 'minlength: 30; maxlength: 40; required: upper; required: lower; required: [$]', test: (pws) => pws.every(pw => pw.includes('$')) },

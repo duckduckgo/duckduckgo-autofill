@@ -6,29 +6,37 @@ const {constants} = require('./lib/constants')
  * @typedef {{
  *   domain?: string | null | undefined;
  *   input?: string | null | undefined;
- *   rules?: RulesFormat | null | undefined
+ *   rules?: RulesFormat | null | undefined;
+ *   onError?: ((error: unknown) => void) | null | undefined;
  * }} GenerateOptions
  */
 
 /**
  * Generate a random password based on DuckDuckGo's default ruleset
  *
- * @param {GenerateOptions} [inputs]
+ * @param {GenerateOptions} [options]
  */
-function generate (inputs = {}) {
+function generate (options = {}) {
     try {
-        if (inputs.input) {
-            return generatePasswordFromInput(inputs.input)
+        if (typeof options?.input === 'string') {
+            return generatePasswordFromInput(options.input)
         }
-        if (inputs.domain) {
-            const rules = _selectPasswordRules(inputs.domain, inputs.rules)
+        if (typeof options?.domain === 'string') {
+            const rules = _selectPasswordRules(options.domain, options.rules)
             if (rules) {
-                return generatePasswordFromInput(inputs.domain)
+                return generatePasswordFromInput(rules)
             }
         }
     } catch (e) {
-        if (!(e instanceof ParserError) && !(e instanceof HostnameInputError)) {
-            console.error(e)
+        // if an 'onError' callback was provided, forward all errors
+        if (options.onError && typeof options.onError === 'function') {
+            options.onError(e)
+        } else {
+            // otherwise, only console.error unknown errors (which could be implementation bugs)
+            const isKnownError = e instanceof ParserError || e instanceof HostnameInputError
+            if (!isKnownError) {
+                console.error(e)
+            }
         }
     }
 
@@ -95,4 +103,5 @@ function _safeHostname (inputHostname) {
 module.exports.generate = generate
 module.exports._selectPasswordRules = _selectPasswordRules
 module.exports.HostnameInputError = HostnameInputError
+module.exports.ParserError = ParserError
 module.exports.constants = constants
