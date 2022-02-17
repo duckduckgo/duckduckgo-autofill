@@ -240,6 +240,7 @@ class InterfacePrototype {
     getAccounts () {}
     getAutofillCredentials (_id) {}
     openManagePasswords () {}
+    storeFormData (_values) {}
 }
 
 module.exports = InterfacePrototype

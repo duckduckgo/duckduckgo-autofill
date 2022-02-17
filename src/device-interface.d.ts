@@ -24,22 +24,41 @@ interface IdentityObject {
      emailAddress?: string,
 }
 
+interface InternalIdentityObject extends IdentityObject {
+     fullName?: string
+}
+
 interface CreditCardObject {
      id: string,
      title: string,
-     displaystring: string,
+     displayNumber: string,
      cardName?: string,
-     cardstring?: string,
      cardSecurityCode?: string,
      expirationMonth?: string,
      expirationYear?: string,
-     cardNumber?: number
+     cardNumber?: string
+}
+
+interface InternalCreditCardObject extends CreditCardObject {
+     expiration?: string
 }
 
 interface PMData {
      credentials: CredentialsObject[],
      creditCards: CreditCardObject[],
      identities: IdentityObject[],
+}
+
+interface DataStorageObject {
+     credentials?: CredentialsObject,
+     creditCards?: CreditCardObject,
+     identities?: IdentityObject,
+}
+
+interface InternalDataStorageObject {
+     credentials: CredentialsObject,
+     creditCards: InternalCreditCardObject,
+     identities: InternalIdentityObject,
 }
 
 type APIResponse<Type> = Promise<{ success: [Type], error?: string }>
@@ -53,4 +72,5 @@ interface InterfacePrototypeBase {
      storeLocalAddresses(emailAddresses: EmailAddresses): void;
      getActiveTooltip(): Tooltip;
      removeTooltip(): void;
+     storeFormData(DataStorageObject): void;
 }

@@ -4,7 +4,8 @@ const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const {getInputConfig} = require('./inputTypeConfig.js')
-const {getUnifiedExpiryDate, formatCCYear, getCountryName} = require('./formatters')
+const {getUnifiedExpiryDate, formatCCYear, getCountryName,
+    prepareFormValuesForStorage, inferCountryCodeFromElement} = require('./formatters')
 const {Matching} = require('./matching')
 const {matchingConfiguration} = require('./matching-configuration')
 
@@ -31,7 +32,7 @@ class Form {
         this.inputs = {
             all: new Set(),
             credentials: new Set(),
-            creditCard: new Set(),
+            creditCards: new Set(),
             identities: new Set(),
             unknown: new Set()
         }
@@ -42,41 +43,52 @@ class Form {
         // We set this to true to skip event listeners while we're autofilling
         this.isAutofilling = false
         this.handlerExecuted = false
-        this.shouldPromptToStoreCredentials = true
+        this.shouldPromptToStoreData = true
 
         this.submitHandler = () => {
             if (this.handlerExecuted) return
 
-            const credentials = this.getValues()
-            if (credentials.password) {
+            const values = this.getValues()
+            if (this.hasValues(values)) {
                 // ask to store credentials and/or fireproof
-                if (this.shouldPromptToStoreCredentials) {
-                    // @ts-ignore
-                    this.device.storeCredentials(credentials)
+                if (this.shouldPromptToStoreData) {
+                    this.device.storeFormData(values)
                 }
                 this.handlerExecuted = true
             }
         }
 
+        /**
+         * Get values from the form and format them for our device storage
+         * @return {DataStorageObject}
+         */
         this.getValues = () => {
-            const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
-                const subtype = getInputSubtype(input)
-                if (['username', 'password', 'emailAddress'].includes(subtype)) {
-                    output[subtype] = input.value || output[subtype]
-                }
-                return output
-            }, {username: '', password: ''})
-            // If we don't have a username, let's try and save the email if available.
-            if (credentials.emailAddress && !credentials.username) {
-                credentials.username = credentials.emailAddress
-            }
-            delete credentials.emailAddress
-            return credentials
+            const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
+                .reduce((output, inputEl) => {
+                    const mainType = getInputMainType(inputEl)
+                    const subtype = getInputSubtype(inputEl)
+                    let value = inputEl.value || output[mainType]?.[subtype]
+                    if (subtype === 'addressCountryCode') {
+                        value = inferCountryCodeFromElement(inputEl)
+                    }
+                    if (value) {
+                        output[mainType][subtype] = value
+                    }
+                    return output
+                }, {credentials: {}, creditCards: {}, identities: {}})
+
+            return prepareFormValuesForStorage(formValues)
         }
 
-        this.hasValues = () => {
-            const {password} = this.getValues()
-            return !!password
+        /**
+         * Determine if the form has values we want to store in the device
+         * @param {DataStorageObject} [values]
+         * @return {boolean}
+         */
+        this.hasValues = (values) => {
+            const {credentials, creditCards, identities} = values || this.getValues()
+
+            return Boolean(credentials || creditCards || identities)
         }
 
         /**
@@ -111,7 +123,7 @@ class Form {
             if (e && !e.isTrusted) return
 
             // If the user has changed the value, we prompt to update the stored creds
-            this.shouldPromptToStoreCredentials = true
+            this.shouldPromptToStoreData = true
 
             this.execOnInputs(this.removeInputHighlight, dataType)
         }
@@ -304,7 +316,7 @@ class Form {
     }
 
     autofillData (data, dataType) {
-        this.shouldPromptToStoreCredentials = false
+        this.shouldPromptToStoreData = false
         this.isAutofilling = true
 
         this.execOnInputs((input) => {
