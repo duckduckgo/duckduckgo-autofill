@@ -11,41 +11,7 @@ const {constants} = require('./lib/constants')
  */
 
 /**
- * Generate a random password based on DuckDuckGo's default ruleset;
- *
- * @example
- *
- * ```js
- * const password = require("@duckduckgo/autofill/packages/password");
- * const pw = password.generate()
- * ```
- *
- *
- * @example Generate a random password based on a given input string
- * that matches [the format here](https://developer.apple.com/password-rules/).
- *
- * <br />
- * **Note**: this API is designed to NEVER throw an exception. It will *always* provide a
- * valid password.
- * <br />
- * <br />
- *
- * ```js
- * const password = require(""@duckduckgo/autofill/packages/password");
- * const pw = password.generate({
- *    input: "minlength: 20; maxlength: 30; required: upper, lower; required: [$%^&*]"
- * })
- * ```
- *
- * @example Generate a random password for a given domain, if it doesn't exist, it will
- * use the default rules instead
- *
- * ```js
- * const password = require("@duckduckgo/autofill/packages/password");
- * const pw = password.generate({
- *    domain: "example.com"
- * })
- * ```
+ * Generate a random password based on DuckDuckGo's default ruleset
  *
  * @param {GenerateOptions} [inputs]
  */
