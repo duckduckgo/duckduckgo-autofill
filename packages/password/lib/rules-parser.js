@@ -8,7 +8,7 @@
  *
  * The only additions from DuckDuckGo employees are
  *
- * 1) exporting some identifies
+ * 1) exporting some identifiers
  * 2) adding some JSDoc comments
  * 3) making this parser throw when it cannot produce any rules
  *    ^ the default implementation still returns a base-line ruleset, which we didn't want.
