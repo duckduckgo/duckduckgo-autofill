@@ -1,3 +1,11 @@
+/**
+ *
+ * This file is used to generate the table of inputs inside `index.html`
+ *
+ * You can run this any time that `../rules.json` has changed, or after
+ * adding any manual entries to `manualEntries` below.
+ *
+ */
 const {readFileSync, writeFileSync} = require('fs')
 const {join} = require('path')
 const rules = require('../rules.json')
