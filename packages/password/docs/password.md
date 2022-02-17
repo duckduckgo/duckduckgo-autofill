@@ -1,6 +1,6 @@
 ## DDG Password API
 
-A single `generate()` method is exposed from this module.
+This module exposes a single `generate()` method.
 
 You can do the following with it
 
