@@ -20,5 +20,5 @@
   "bugs": {
     "url": "https://github.com/duckduckgo/duckduckgo-autofill/issues"
   },
-  "homepage": "https://github.com/duckduckgo/duckduckgo-autofill#readme"
+  "homepage": "https://github.com/duckduckgo/duckduckgo-autofill/blob/main/packages/password/docs/password.md"
 }
