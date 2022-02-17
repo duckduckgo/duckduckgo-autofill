@@ -59,7 +59,7 @@ const autofillEnabled = (processConfig) => {
         // Check config on Apple platforms
         const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
         const site = privacyConfig.site
-        if (site.isBroken || site.isAllowlisted || !site.enabledFeatures.includes('autofill')) {
+        if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
             return false
         }
     }
