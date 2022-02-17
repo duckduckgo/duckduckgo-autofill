@@ -1,3 +1,16 @@
+/*
+ *
+ * NOTE:
+ *
+ * This file was created with inspiration from https://developer.apple.com/password-rules
+ *
+ * * The changes made by DuckDuckGo employees are:
+ *
+ * 1) removed all logic relating to 'more typeable passwords'
+ * 2) reduced the number of password styles from 4 to only the 1 which suits our needs
+ * 2) added JSDoc comments (for Typescript checking)
+ *
+ */
 const {
     parsePasswordRules,
     RuleName,
