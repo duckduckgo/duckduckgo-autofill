@@ -47,6 +47,6 @@
     "jest-html-reporter": "^3.4.2"
   },
   "dependencies": {
-    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#brad/extract-functions"
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts"
   }
 }
