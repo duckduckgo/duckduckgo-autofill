@@ -66,6 +66,8 @@ const autofillEnabled = (processConfig) => {
     if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
         return false
     }
+
+    return true
 }
 
 // Access the original setter (needed to bypass React's implementation on mobile)
