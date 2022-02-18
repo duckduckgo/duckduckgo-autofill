@@ -4309,23 +4309,24 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 };
 
 const autofillEnabled = processConfig => {
-  if (!isAndroid && (isDDGApp || isApp)) {
-    let contentScope = null;
-    let userUnprotectedDomains = null;
-    let userPreferences = null; // INJECT contentScope HERE
-    // INJECT userUnprotectedDomains HERE
-    // INJECT userPreferences HERE
-    // Check config on Apple platforms
+  let contentScope = null;
+  let userUnprotectedDomains = null;
+  let userPreferences = null; // INJECT contentScope HERE
+  // INJECT userUnprotectedDomains HERE
+  // INJECT userPreferences HERE
 
-    const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
-    const site = privacyConfig.site;
+  if (!contentScope) {
+    // Return enabled for platforms that haven't implemented the config yet
+    return true;
+  } // Check config on Apple platforms
 
-    if (site.isBroken || site.isAllowlisted || !site.enabledFeatures.includes('autofill')) {
-      return false;
-    }
+
+  const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
+  const site = privacyConfig.site;
+
+  if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
+    return false;
   }
-
-  return true;
 }; // Access the original setter (needed to bypass React's implementation on mobile)
 // @ts-ignore
 
