@@ -63,6 +63,13 @@ class AndroidInterface extends InterfacePrototype {
         console.log('receiving creds', response)
         return response.getAutofillCredentialsResponse
     }
+    /**
+     * Sends form data to the native layer
+     * @param {DataStorageObject} data
+     */
+    storeFormData (data) {
+        window.EmailInterface.storeFormData(data)
+    }
 }
 
 module.exports = AndroidInterface

@@ -2,7 +2,7 @@
 require('./requestIdleCallback')
 
 const {forms} = require('./scanForInputs')
-const {isApp} = require('./autofill-utils')
+const {isApp, isAndroid} = require('./autofill-utils')
 const deviceInterface = require('./DeviceInterface')
 
 const inject = () => {
@@ -19,7 +19,7 @@ const inject = () => {
             activeTooltip?.dispatchClick()
         }
 
-        if (!isApp) return
+        if (!(isApp || isAndroid)) return
 
         // Check for clicks on submit buttons
         const matchingForm = [...forms.values()].find(

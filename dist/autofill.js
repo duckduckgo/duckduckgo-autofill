@@ -115,6 +115,15 @@ class AndroidInterface extends InterfacePrototype {
     console.log('receiving creds', response);
     return response.getAutofillCredentialsResponse;
   }
+  /**
+   * Sends form data to the native layer
+   * @param {DataStorageObject} data
+   */
+
+
+  storeFormData(data) {
+    window.EmailInterface.storeFormData(data);
+  }
 
 }
 
@@ -5115,7 +5124,8 @@ const {
 } = require('./scanForInputs');
 
 const {
-  isApp
+  isApp,
+  isAndroid
 } = require('./autofill-utils');
 
 const deviceInterface = require('./DeviceInterface');
@@ -5132,7 +5142,7 @@ const inject = () => {
       activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.dispatchClick();
     }
 
-    if (!isApp) return; // Check for clicks on submit buttons
+    if (!(isApp || isAndroid)) return; // Check for clicks on submit buttons
 
     const matchingForm = [...forms.values()].find(form => {
       const btns = [...form.submitButtons]; // @ts-ignore
