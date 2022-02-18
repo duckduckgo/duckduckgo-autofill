@@ -45,5 +45,8 @@
     "markdown-it": "^12.2.0",
     "typescript": "^4.5.5",
     "jest-html-reporter": "^3.4.2"
+  },
+  "dependencies": {
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts"
   }
 }
