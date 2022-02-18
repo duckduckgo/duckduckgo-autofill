@@ -22,6 +22,21 @@ const pw = password.generate({ input: "minlength: 30; required: lower, upper;"})
 const pw = password.generate({ domain: "example.com" })
 ```
 
+The API is designed to **never** throw an exception, it will always fall back to the default ruleset if there's
+anything wrong with the `input` or `domain`.
+
+Whilst in development however, you may want more feedback about an input that might be incorrect - for
+that you can provide an `onError` callback to observe any thrown exceptions. 
+
+```javascript
+const pw = password.generate({ 
+    domain: "localhost:8080",
+    onError: (e) => {
+        console.error(e)
+    }
+})
+```
+
 # DDG Default Rules
 
 With no parameters, the generate function will use the following character set
@@ -50,6 +65,10 @@ VmJ1IdUmvqERkdEY2I7A
 8xKpY2NsLf4dn1zUMinB
 I08cqi3ZyQz3mQHevfNU
 ```
+
+These passwords have roughly 119 bits of entropy (`Math.log2(62**20)`), which is very secure.
+
+When password rules dictate a max-length, this becomes drastically reduced. For example if a site dictates that it only allows a maxlength of 8 chars, then we only get about 47 bits of entropy with the character set above.
 
 Note, these are all 20 characters because the generation continues until it finds a password that suits
 the rule - in this case the rule is the basic character set so is always matched.
