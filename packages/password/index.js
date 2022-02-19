@@ -1,4 +1,4 @@
-const {generatePasswordFromInput} = require('./lib/apple.password')
+const {Password} = require('./lib/apple.password')
 const {ParserError} = require('./lib/rules-parser')
 const {constants} = require('./lib/constants')
 
@@ -12,19 +12,26 @@ const {constants} = require('./lib/constants')
  */
 
 /**
- * Generate a random password based on DuckDuckGo's default ruleset
+ * Generate a random password based on the following attempts
+ *
+ * 1) using `options.input` if provided -> falling back to default ruleset
+ * 2) using `options.domain` if provided -> falling back to default ruleset
+ * 3) using default ruleset
+ *
+ * Note: This API is designed to never throw - if you want to observe errors
+ * during development, toy can provide an `onError` callback
  *
  * @param {GenerateOptions} [options]
  */
 function generate (options = {}) {
     try {
         if (typeof options?.input === 'string') {
-            return generatePasswordFromInput(options.input)
+            return Password.generateOrThrow(options.input)
         }
         if (typeof options?.domain === 'string') {
             const rules = _selectPasswordRules(options.domain, options.rules)
             if (rules) {
-                return generatePasswordFromInput(rules)
+                return Password.generateOrThrow(rules)
             }
         }
     } catch (e) {
@@ -42,7 +49,7 @@ function generate (options = {}) {
 
     // At this point, we have to trust the generation will not throw
     // as it is NOT using any user/page-provided data
-    return generatePasswordFromInput(constants.DEFAULT_PASSWORD_RULES)
+    return Password.generateDefault()
 }
 
 // An extension type to differentiate between known errors

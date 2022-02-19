@@ -11,6 +11,7 @@ const {join} = require('path')
 const rules = require('../rules.json')
 const filePath = join(__dirname, 'index.html')
 const html = readFileSync(filePath, 'utf8')
+const {Password} = require('../lib/apple.password')
 
 let s = ''
 
@@ -20,21 +21,63 @@ const manualEntries = {
 }
 
 const joined = [...Object.entries(manualEntries), ...Object.entries(rules)]
+const outputs = []
+const password = new Password({
+    getRandomValues: (v) => require('crypto').randomFillSync(v)
+})
 
 for (let [domain, value] of joined) {
-    const rules = value['password-rules']
-    if (domain && rules) {
-        s += `
+    const rulesString = value['password-rules']
+    if (domain && rulesString) {
+        const {parameters, generate, entropy} = password.parse(rulesString)
+        let charsetLength = parameters.PasswordAllowedCharacters.length
+        let passwords = new Array(5).fill(0).map((_, i) => i)
+            .map(() => {
+                const pw = generate()
+                return { pw, length: pw.length }
+            })
+        const averageLength = passwords.reduce((acc, a) => acc + a.length, 0) / 5
+
+        outputs.push({
+            domain,
+            rules: rulesString,
+            charsetLength,
+            averageLength,
+            entropy,
+            passwords,
+            charset: parameters.PasswordAllowedCharacters
+        })
+    }
+}
+
+outputs.sort((a, b) => a.entropy - b.entropy)
+
+for (let output of outputs) {
+    const {averageLength, entropy, passwords, charsetLength, rules, domain, charset} = output
+    let entropyScore = 'Very Strong'
+    if (entropy >= 60 && entropy <= 127) {
+        entropyScore = 'Strong'
+    } else if (entropy >= 36 && entropy < 60) {
+        entropyScore = 'Reasonable'
+    } else if (entropy >= 28 && entropy < 36) {
+        entropyScore = 'Weak'
+    } else if (entropy < 28) {
+        entropyScore = 'Very Weak'
+    }
+    s += `
 <tr>
     <td>
         <button type="button" data-pw="${escapeXML(rules)}">${domain}</button>
     </td>
     <td>
-        <pre><code>${escapeXML(rules)}</code></pre>
+        <pre><code><b>Rules: </b><span>${escapeXML(rules)}</span></code></pre>
+        <pre><code><b>charset</b>: ${escapeXML(charset)}</code></pre>
+        <pre><code><b>charset size</b>: ${charsetLength}, <b>length:</b> ${averageLength}</code></pre>
+        <pre><code><b>entropy:</b> <span class="rules" data-entropy="${entropyScore}">${entropyScore}</span> ${entropy.toFixed(2)}</code></pre>
+        <div><pre><code>${escapeXML(passwords.map(pw => `${pw.pw} (${pw.length})`).join('\n'))}</code></pre></div>
     </td>
 </tr>
         `
-    }
 }
 
 const markerStart = '<table id="table">'
