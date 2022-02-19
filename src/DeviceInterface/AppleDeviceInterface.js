@@ -1,13 +1,86 @@
 const InterfacePrototype = require('./InterfacePrototype.js')
 const {wkSend, wkSendAndWait} = require('../appleDeviceUtils/appleDeviceUtils')
 const {
-    isApp, notifyWebApp,
+    isApp,
+    notifyWebApp,
+    isTopFrame,
+    supportsTopFrame,
     isDDGDomain,
     formatDuckAddress
 } = require('../autofill-utils')
 const {scanForInputs, forms} = require('../scanForInputs.js')
 
 class AppleDeviceInterface extends InterfacePrototype {
+    /* @type {Timeout | undefined} */
+    pollingTimeout
+
+    constructor () {
+        super()
+        if (isTopFrame) {
+            this.stripCredentials = false
+            window.addEventListener('mouseMove', this)
+        } else {
+            // This is always added as a child frame needs to be informed of a parent frame scroll
+            window.addEventListener('scroll', this)
+        }
+    }
+
+    /**
+     * Poll the native listener until the user has selected a credential.
+     * Message return types are:
+     * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
+     *     - This also is triggered when the close event is called and prevents any edge case continued polling.
+     * - 'ok' is when the user has selected a credential and the value can be injected into the page.
+     * - 'none' is when the tooltip is open in the native window however hasn't been entered.
+     * @returns {Promise<void>}
+     */
+    async listenForSelectedCredential () {
+        // Prevent two timeouts from happening
+        clearTimeout(this.pollingTimeout)
+
+        const response = await wkSendAndWait('getSelectedCredentials')
+        switch (response.type) {
+        case 'none':
+            // Parent hasn't got a selected credential yet
+            this.pollingTimeout = setTimeout(() => {
+                this.listenForSelectedCredential()
+            }, 100)
+            return
+        case 'ok':
+            return this.inboundCredential({
+                detail: {
+                    data: response.data,
+                    configType: response.configType
+                }
+            })
+        case 'stop':
+            // Parent wants us to stop polling
+
+            break
+        }
+    }
+
+    handleEvent (event) {
+        switch (event.type) {
+        case 'mouseMove':
+            this.processMouseMove(event)
+            break
+        case 'scroll':
+            this.removeTooltip()
+            break
+        }
+    }
+
+    processMouseMove (event) {
+        this.currentTooltip?.focus(event.detail.x, event.detail.y)
+    }
+
+    inboundCredential (e) {
+        const activeForm = this.currentAttached
+        if (activeForm === null) return
+        activeForm.autofillData(e.detail.data, e.detail.configType)
+    }
+
     async setupAutofill ({shouldLog} = {shouldLog: false}) {
         if (isDDGDomain()) {
             // Tell the web app whether we're in the app
@@ -51,6 +124,46 @@ class AppleDeviceInterface extends InterfacePrototype {
         const {isAppSignedIn} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
         this.isDeviceSignedIn = () => !!isAppSignedIn
         return !!isAppSignedIn
+    }
+
+    async setSize (details) {
+        await wkSend('setSize', details)
+    }
+
+    attachTooltipInner (form, input, inputType, getPosition, click) {
+        if (!isTopFrame && supportsTopFrame) {
+            // TODO currently only mouse initiated events are supported
+            if (!click) {
+                return
+            }
+            this.showTopTooltip(inputType, click, getPosition())
+            return
+        }
+
+        super.attachTooltipInner(form, input, inputType, getPosition, click)
+    }
+
+    async showTopTooltip (inputType, click, inputDimensions) {
+        let diffX = Math.floor(click.x - inputDimensions.x)
+        let diffY = Math.floor(click.y - inputDimensions.y)
+
+        const details = {
+            inputTop: diffY,
+            inputLeft: diffX,
+            inputHeight: Math.floor(inputDimensions.height),
+            inputWidth: Math.floor(inputDimensions.width),
+            inputType
+        }
+
+        await wkSend('showAutofillParent', details)
+
+        // Start listening for the user intiated credential
+        this.listenForSelectedCredential()
+    }
+
+    async removeTooltip () {
+        if (!supportsTopFrame) return super.removeTooltip()
+        await wkSend('closeAutofillParent', {})
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
@@ -126,6 +239,24 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     getAutofillCreditCard (id) {
         return wkSendAndWait('pmHandlerGetCreditCard', { id })
+    }
+
+    // Used to encode data to send back to the child autofill
+    async selectedDetail (detailIn, configType) {
+        if (isTopFrame) {
+            let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
+                return [key, String(value)]
+            })
+            const data = Object.fromEntries(detailsEntries)
+            wkSend('selectedDetail', { data, configType })
+        } else {
+            this.activeFormSelectedDetail(detailIn, configType)
+        }
+    }
+
+    async getCurrentInputType () {
+        const {inputType} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+        return inputType
     }
 
     async getAlias () {

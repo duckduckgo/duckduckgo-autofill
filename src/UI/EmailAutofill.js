@@ -47,8 +47,8 @@ ${includeStyles}
             this.fillForm(this.addresses.personalAddress)
         })
         this.registerClickableButton(this.usePrivateButton, () => {
-            this.fillForm(this.addresses.privateAddress)
-            this.interface.refreshAlias()
+            const email = this.addresses.privateAddress
+            this.fillForm(email)
         })
 
         // Get the alias from the extension
@@ -56,8 +56,9 @@ ${includeStyles}
 
         this.init()
     }
-    fillForm (address) {
+    async fillForm (address) {
         const formattedAddress = formatDuckAddress(address)
+        await this.interface.refreshAlias()
         this.interface.selectedDetail({email: formattedAddress}, 'email')
     }
 }
