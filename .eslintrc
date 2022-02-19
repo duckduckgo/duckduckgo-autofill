@@ -2,7 +2,9 @@
     "extends": "standard",
     "parser": "@babel/eslint-parser",
     "parserOptions": {
-        "ecmaVersion": 2020
+        "ecmaVersion": 2020,
+        "requireConfigFile" : false,
+        "babelOptions": { "configFile": "./.babelrc" }
     },
     "rules": {
         "indent": ["error", 4],

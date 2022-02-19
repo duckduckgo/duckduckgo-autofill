@@ -16,6 +16,7 @@
     "strict": true,
     "noImplicitAny": false,
     "strictNullChecks": true,
+    "resolveJsonModule": true,
     "noImplicitThis": false,
     "skipLibCheck": true,
     "noUnusedLocals": true,
@@ -26,6 +27,7 @@
   "include": [
     "src",
     "scripts",
+    "packages/password",
     "*.js",
     "types.d.ts"
   ]

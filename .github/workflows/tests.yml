@@ -25,3 +25,5 @@ jobs:
         run: "npm run tsc"
       - name: "Unit Tests"
         run: "npm run test:unit"
+      - name: "Password unit tests"
+        run: "npm run test:passwords"
