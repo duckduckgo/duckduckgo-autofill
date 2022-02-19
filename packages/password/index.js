@@ -19,7 +19,7 @@ const {constants} = require('./lib/constants')
  * 3) using default ruleset
  *
  * Note: This API is designed to never throw - if you want to observe errors
- * during development, toy can provide an `onError` callback
+ * during development, you can provide an `onError` callback
  *
  * @param {GenerateOptions} [options]
  */
