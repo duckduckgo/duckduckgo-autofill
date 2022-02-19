@@ -1,5 +1,6 @@
 const {
     isApp,
+    isTopFrame,
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
@@ -27,9 +28,11 @@ class DataAutofill extends Tooltip {
             return shouldShow
         }
 
+        const topClass = isTopFrame ? 'top-autofill' : ''
+
         this.shadow.innerHTML = `
 ${includeStyles}
-<div class="wrapper wrapper--data">
+<div class="wrapper wrapper--data ${topClass}">
     <div class="tooltip tooltip--data" hidden>
         ${this.data.map((singleData) => `
             ${shouldShowSeparator(singleData.id) ? '<hr />' : ''}
@@ -59,7 +62,6 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
                 this.interface[`${config.autofillMethod}`](btn.id).then(({success}) => {
                     if (success) {
                         this.fillForm(success)
-                        if (btn.id === 'privateAddress') this.interface.refreshAlias()
                     }
                 })
             })
@@ -67,7 +69,10 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
 
         this.init()
     }
-    fillForm (data) {
+    async fillForm (data) {
+        if (data.id === 'privateAddress') {
+            await this.interface.refreshAlias()
+        }
         this.interface.selectedDetail(data, this.config.type)
     }
 }

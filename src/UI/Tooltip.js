@@ -1,4 +1,4 @@
-const {safeExecute, addInlineStyles} = require('../autofill-utils')
+const {safeExecute, addInlineStyles, isTopFrame} = require('../autofill-utils')
 const {getSubtypeFromType} = require('../Form/matching')
 
 class Tooltip {
@@ -7,7 +7,6 @@ class Tooltip {
         this.host = this.shadow.host
         this.config = config
         this.subtype = getSubtypeFromType(inputType)
-        this.device = deviceInterface
         this.tooltip = null
         this.getPosition = getPosition
         const forcedVisibilityStyles = {
@@ -41,6 +40,15 @@ class Tooltip {
             this.checkPosition()
             break
         }
+    }
+    focus (x, y) {
+        const focusableElements = 'button'
+        const currentFocusClassName = 'currentFocus'
+        const currentFocused = this.shadow.querySelectorAll(`.${currentFocusClassName}`);
+        [...currentFocused].map(el => {
+            el.classList.remove(currentFocusClassName)
+        })
+        this.shadow.elementFromPoint(x, y)?.closest(focusableElements)?.classList.add(currentFocusClassName)
     }
     checkPosition () {
         if (this.animationFrame) {
@@ -77,6 +85,9 @@ class Tooltip {
         }
 
         let newRule = `.wrapper {transform: translate(${left}px, ${top}px);}`
+        if (isTopFrame) {
+            newRule = '.wrapper {transform: none; }'
+        }
         shadow.styleSheets[0].insertRule(newRule, this.transformRuleIndex)
     }
     ensureIsLastInDOM () {
@@ -91,12 +102,11 @@ class Tooltip {
                 this.count++
             } else {
                 // Remove the tooltip from the form to cleanup listeners and observers
-                this.device.removeTooltip()
+                this.interface.removeTooltip()
                 console.info(`DDG autofill bailing out`)
             }
         }
     }
-
     resObs = new ResizeObserver(entries => entries.forEach(() => this.checkPosition()))
     mutObs = new MutationObserver((mutationList) => {
         for (const mutationRecord of mutationList) {
@@ -130,6 +140,21 @@ class Tooltip {
             safeExecute(this.activeButton, handler)
         }
     }
+    setupSizeListener () {
+        if (!isTopFrame) return
+        // Listen to layout and paint changes to register the size
+        const observer = new PerformanceObserver(() => {
+            this.setSize()
+        })
+        observer.observe({entryTypes: ['layout-shift', 'paint']})
+    }
+    setSize () {
+        if (!isTopFrame) return
+        const innerNode = this.shadow.querySelector('.wrapper--data')
+        // Shouldn't be possible
+        if (!innerNode) return
+        this.interface.setSize({height: innerNode.clientHeight, width: innerNode.clientWidth})
+    }
     init () {
         this.animationFrame = null
         this.top = 0
@@ -145,6 +170,9 @@ class Tooltip {
         this.resObs.observe(document.body)
         this.mutObs.observe(document.body, {childList: true, subtree: true, attributes: true})
         window.addEventListener('scroll', this, {capture: true})
+        this.setSize()
+
+        this.setupSizeListener()
     }
 }
 

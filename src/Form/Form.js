@@ -226,10 +226,35 @@ class Form {
             })
         }
 
+        function getMainClickCoords (e) {
+            if (!e.isTrusted) return
+            const isMainMouseButton = e.button === 0
+            if (!isMainMouseButton) return
+            return {
+                x: e.clientX,
+                y: e.clientY
+            }
+        }
+
+        // Store the click to a label so we can use the click when the field is focused
+        let storedClick = new WeakMap()
+        let timeout = null
+        const handlerLabel = (e) => {
+            const control = e.target.control
+            if (!control) return
+            storedClick.set(control, getMainClickCoords(e))
+            clearTimeout(timeout)
+            // Remove the stored click if the timer expires
+            timeout = setTimeout(() => {
+                storedClick = new WeakMap()
+            }, 1000)
+        }
+
         const handler = (e) => {
             if (this.device.getActiveTooltip() || this.isAutofilling) return
 
             const input = e.target
+            let click = null
             const getPosition = () => {
                 // In extensions, the tooltip is centered on the Dax icon
                 return isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
@@ -237,9 +262,12 @@ class Form {
 
             // Checks for mousedown event
             if (e.type === 'pointerdown') {
-                if (!e.isTrusted) return
-                const isMainMouseButton = e.button === 0
-                if (!isMainMouseButton) return
+                click = getMainClickCoords(e)
+                if (!click) return
+            } else if (storedClick) {
+                // Reuse a previous click if one exists for this element
+                click = storedClick.get(input)
+                storedClick.delete(input)
             }
 
             if (this.shouldOpenTooltip(e, input)) {
@@ -250,13 +278,16 @@ class Form {
 
                 this.touched.add(input)
                 // @ts-ignore
-                this.device.attachTooltip(this, input, getPosition)
+                this.device.attachTooltip(this, input, getPosition, click)
             }
         }
 
         if (input.nodeName !== 'SELECT') {
             const events = ['pointerdown']
             if (!isMobileApp) events.push('focus')
+            input.labels.forEach((label) => {
+                this.addListener(label, 'pointerdown', handlerLabel)
+            })
             events.forEach((ev) => this.addListener(input, ev, handler))
         }
         return this
