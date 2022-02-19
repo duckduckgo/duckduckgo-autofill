@@ -517,7 +517,7 @@ function getInputType (input) {
 
 /**
  * Retrieves the main type
- * @param {SupportedTypes} type
+ * @param {SupportedTypes | string} type
  * @returns {SupportedMainTypes}
  */
 function getMainTypeFromType (type) {
@@ -776,6 +776,7 @@ module.exports = {
     getSubtypeFromType,
     removeExcessWhitespace,
     getInputMainType,
+    getMainTypeFromType,
     getExplicitLabelsText,
     getRelatedText,
     matchInPlaceholderAndLabels,

@@ -16,11 +16,12 @@ const DataAutofill = require('../UI/DataAutofill')
 const {getInputConfigFromType} = require('../Form/inputTypeConfig')
 
 class InterfacePrototype {
-    constructor () {
-        this.attempts = 0
-        this.currentAttached = null
-        this.currentTooltip = null
-    }
+    attempts = 0
+    /** @type {import("../Form/Form").Form | null} */
+    currentAttached = null
+    /** @type {import("../UI/Tooltip") | null} */
+    currentTooltip = null
+    stripCredentials = true
 
     /** @type {{privateAddress: string, personalAddress: string}} */
     #addresses = {
@@ -52,6 +53,13 @@ class InterfacePrototype {
         credentials: [],
         creditCards: [],
         identities: []
+    }
+
+    /**
+     * @returns {Promise<import('../Form/matching').SupportedTypes>}
+     */
+    async getCurrentInputType () {
+        throw new Error('Not implemented')
     }
 
     addDuckAddressesToIdentities (identities) {
@@ -93,8 +101,10 @@ class InterfacePrototype {
      * @param { PMData } data
      */
     storeLocalData (data) {
-        data.credentials.forEach((cred) => delete cred.password)
-        data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        if (this.stripCredentials) {
+            data.credentials.forEach((cred) => delete cred.password)
+            data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        }
         // Store the full name as a separate field to simplify autocomplete
         const updatedIdentities = data.identities.map((identity) => ({
             ...identity,
@@ -123,19 +133,24 @@ class InterfacePrototype {
         return this.#data.creditCards
     }
 
+    async startInit () {
+        this.addDeviceListeners()
+        await this.setupAutofill()
+        const event = new CustomEvent('InitComplete', {})
+        window.dispatchEvent(event)
+    }
+
     init () {
-        const start = () => {
-            this.addDeviceListeners()
-            this.setupAutofill()
-        }
         if (document.readyState === 'complete') {
-            start()
+            this.startInit()
         } else {
-            window.addEventListener('load', start)
+            window.addEventListener('load', () => {
+                this.startInit()
+            })
         }
     }
 
-    selectedDetail (data, type) {
+    async selectedDetail (data, type) {
         this.activeFormSelectedDetail(data, type)
     }
 
@@ -164,10 +179,14 @@ class InterfacePrototype {
         }
     }
 
-    attachTooltip (form, input, getPosition) {
+    attachTooltip (form, input, getPosition, click) {
         form.activeInput = input
         this.currentAttached = form
         const inputType = getInputType(input)
+
+        // Attach close listeners
+        window.addEventListener('pointerdown', () => this.removeTooltip(), {capture: true, once: true})
+        window.addEventListener('input', () => this.removeTooltip(), {once: true})
 
         if (isMobileApp) {
             this.getAlias().then((alias) => {
@@ -175,10 +194,14 @@ class InterfacePrototype {
                 else form.activeInput.focus()
             })
         } else {
-            if (this.currentTooltip) return
-            this.currentTooltip = this.createTooltip(inputType, getPosition)
-            form.intObs.observe(input)
+            this.attachTooltipInner(form, input, inputType, getPosition, click)
         }
+    }
+
+    attachTooltipInner (form, input, inputType, getPosition, _click) {
+        if (this.currentTooltip) return
+        this.currentTooltip = this.createTooltip(inputType, getPosition)
+        form.intObs.observe(input)
     }
 
     async removeTooltip () {
@@ -190,6 +213,10 @@ class InterfacePrototype {
 
     getActiveTooltip () {
         return this.currentTooltip
+    }
+
+    setActiveTooltip (tooltip) {
+        this.currentTooltip = tooltip
     }
 
     handleEvent (_event) {}
