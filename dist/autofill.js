@@ -962,7 +962,8 @@ const {
 } = require('./inputStyles');
 
 const {
-  ATTR_AUTOFILL
+  ATTR_AUTOFILL,
+  ATTR_INPUT_TYPE
 } = require('../constants');
 
 const {
@@ -1005,16 +1006,7 @@ class Form {
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
     this.device = deviceInterface;
-    /** @type Record<'all' | SupportedMainTypes, Set> */
-
-    this.inputs = {
-      all: new Set(),
-      credentials: new Set(),
-      creditCard: new Set(),
-      identities: new Set(),
-      unknown: new Set()
-    };
-    this.touched = new Set();
+    this.touched = new WeakSet();
     this.listeners = new Set();
     this.activeInput = null; // We set this to true to skip event listeners while we're autofilling
 
@@ -1049,25 +1041,24 @@ class Form {
   }
 
   getValues() {
-    const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
+    const fields = [...this.findInputByType('credentials'), ...this.findInputByType('identities')];
+    const credentials = {};
+    fields.forEach(input => {
       const subtype = getInputSubtype(input);
 
-      if (['username', 'password', 'emailAddress'].includes(subtype)) {
-        output[subtype] = input.value || output[subtype];
+      if (['username', 'password', 'emailAddress'].includes(subtype) && input.value) {
+        credentials[subtype] = input.value;
       }
-
-      return output;
-    }, {
-      username: '',
-      password: ''
     }); // If we don't have a username, let's try and save the email if available.
 
     if (credentials.emailAddress && !credentials.username) {
       credentials.username = credentials.emailAddress;
     }
 
-    delete credentials.emailAddress;
-    return credentials;
+    return {
+      username: credentials.username || '',
+      password: credentials.password || ''
+    };
   }
 
   hasValues() {
@@ -1164,9 +1155,36 @@ class Form {
       return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title);
     });
   }
+  /**
+   * @param {SupportedMainTypes | undefined} inputMainType
+   * @returns {HTMLInputElement[]}
+   */
 
-  execOnInputs(fn, inputType = 'all') {
-    const inputs = this.inputs[inputType];
+
+  findInputByType(inputMainType) {
+    const selector = inputMainType ? "[".concat(ATTR_INPUT_TYPE, "^=\"").concat(inputMainType, ".\"]") : "[".concat(ATTR_INPUT_TYPE, "]");
+    /** @type {NodeListOf<HTMLInputElement>} */
+
+    const inputs = this.form.querySelectorAll(selector);
+    return [...inputs];
+  }
+  /**
+   * @param {HTMLInputElement} input
+   * @returns {boolean}
+   */
+
+
+  isInputDecorated(input) {
+    return input.hasAttribute(ATTR_INPUT_TYPE);
+  }
+  /**
+   * @param {(HTMLInputElement) => void} fn
+   * @param {SupportedMainTypes | undefined} [inputType] Matches SupportedMainTypes or all if not passed.
+   */
+
+
+  execOnInputs(fn, inputType) {
+    const inputs = this.findInputByType(inputType);
 
     for (const input of inputs) {
       const {
@@ -1177,13 +1195,10 @@ class Form {
   }
 
   addInput(input) {
-    if (this.inputs.all.has(input)) return this;
-    this.inputs.all.add(input);
+    if (this.isInputDecorated(input)) return this;
     this.matching.setInputType(input, this.form, {
       isLogin: this.isLogin
     });
-    const mainInputType = getInputMainType(input);
-    this.inputs[mainInputType].add(input);
     this.decorateInput(input);
     return this;
   }
@@ -1322,6 +1337,11 @@ class Form {
       once: true
     });
   }
+  /**
+   * @param {string} alias
+   * @param {SupportedMainTypes} dataType
+   */
+
 
   autofillEmail(alias, dataType = 'identities') {
     this.isAutofilling = true;
