@@ -820,6 +820,8 @@ class InterfacePrototype {
   }
 
   createTooltip(inputType, getPosition) {
+    const config = getInputConfigFromType(inputType); // Attach close listeners
+
     window.addEventListener('pointerdown', () => this.removeTooltip(), {
       capture: true,
       once: true
@@ -827,7 +829,6 @@ class InterfacePrototype {
     window.addEventListener('input', () => this.removeTooltip(), {
       once: true
     });
-    const config = getInputConfigFromType(inputType);
 
     if (isApp) {
       return new DataAutofill(config, inputType, getPosition, this);
@@ -839,15 +840,7 @@ class InterfacePrototype {
   attachTooltip(form, input, getPosition, click) {
     form.activeInput = input;
     this.currentAttached = form;
-    const inputType = getInputType(input); // Attach close listeners
-
-    window.addEventListener('pointerdown', () => this.removeTooltip(), {
-      capture: true,
-      once: true
-    });
-    window.addEventListener('input', () => this.removeTooltip(), {
-      once: true
-    });
+    const inputType = getInputType(input);
 
     if (isMobileApp) {
       this.getAlias().then(alias => {
