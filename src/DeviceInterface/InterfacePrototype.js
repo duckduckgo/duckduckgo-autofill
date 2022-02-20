@@ -14,6 +14,8 @@ const {
 const EmailAutofill = require('../UI/EmailAutofill')
 const DataAutofill = require('../UI/DataAutofill')
 const {getInputConfigFromType} = require('../Form/inputTypeConfig')
+const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
+const {forms} = require('../scanForInputs')
 
 class InterfacePrototype {
     attempts = 0
@@ -134,11 +136,15 @@ class InterfacePrototype {
     }
 
     async startInit () {
+        window.addEventListener('pointerdown', this, true)
+
+        listenForGlobalFormSubmission()
         this.addDeviceListeners()
         await this.setupAutofill()
-        const event = new CustomEvent('InitComplete', {})
-        window.dispatchEvent(event)
+        this.postInit()
     }
+
+    postInit () {}
 
     init () {
         if (document.readyState === 'complete') {
@@ -148,6 +154,35 @@ class InterfacePrototype {
                 this.startInit()
             })
         }
+    }
+
+    // Global listener for event delegation
+    pointerDownListener (e) {
+        if (!e.isTrusted) return
+
+        // @ts-ignore
+        if (e.target.nodeName === 'DDG-AUTOFILL') {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+
+            const activeTooltip = this.getActiveTooltip()
+            activeTooltip?.dispatchClick()
+        }
+
+        if (!isApp) return
+
+        // Check for clicks on submit buttons
+        const matchingForm = [...forms.values()].find(
+            (form) => {
+                const btns = [...form.submitButtons]
+                // @ts-ignore
+                if (btns.includes(e.target)) return true
+
+                // @ts-ignore
+                if (btns.find((btn) => btn.contains(e.target))) return true
+            }
+        )
+        matchingForm?.submitHandler()
     }
 
     async selectedDetail (data, type) {
@@ -219,7 +254,13 @@ class InterfacePrototype {
         this.currentTooltip = tooltip
     }
 
-    handleEvent (_event) {}
+    handleEvent (event) {
+        switch (event.type) {
+        case 'pointerdown':
+            this.pointerDownListener(event)
+            break
+        }
+    }
     setupAutofill (_opts) {}
     getAddresses () {}
     refreshAlias () {}
