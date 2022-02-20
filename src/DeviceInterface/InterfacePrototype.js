@@ -201,7 +201,7 @@ class InterfacePrototype {
     attachTooltipInner (form, input, inputType, getPosition, _click) {
         if (this.currentTooltip) return
         this.currentTooltip = this.createTooltip(inputType, getPosition)
-        form.intObs.observe(input)
+        form.showingTooltip(input)
     }
 
     async removeTooltip () {

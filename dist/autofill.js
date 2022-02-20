@@ -861,7 +861,7 @@ class InterfacePrototype {
   attachTooltipInner(form, input, inputType, getPosition, _click) {
     if (this.currentTooltip) return;
     this.currentTooltip = this.createTooltip(inputType, getPosition);
-    form.intObs.observe(input);
+    form.showingTooltip(input);
   }
 
   async removeTooltip() {
@@ -994,35 +994,14 @@ class Form {
    * @param {InterfacePrototypeBase} deviceInterface
    * @param {Matching} [matching]
    */
-  constructor(form, _input, deviceInterface, matching) {
+  constructor(form, input, deviceInterface, matching) {
     _defineProperty(this, "matching", void 0);
 
     _defineProperty(this, "form", void 0);
 
-    _defineProperty(this, "autofillInput", (input, string, dataType) => {
-      const activeInputSubtype = getInputSubtype(this.activeInput);
-      const inputSubtype = getInputSubtype(input);
-      const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'; // Don't override values for identities, unless it's the current input or we're autofilling email
-
-      if (dataType === 'identities' && // only for identities
-      input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
-      this.activeInput !== input && // and this is not the active input
-      !isEmailAutofill // and we're not auto-filling email
-      ) return; // do not overwrite the value
-
-      const successful = setValue(input, string);
-      if (!successful) return;
-      input.classList.add('ddg-autofilled');
-      addInlineStyles(input, getIconStylesAutofilled(input, this)); // If the user changes the value, remove the decoration
-
-      input.addEventListener('input', e => this.removeAllHighlights(e, dataType), {
-        once: true
-      });
-    });
-
     this.form = form;
     this.matching = matching || new Matching(matchingConfiguration);
-    this.formAnalyzer = new FormAnalyzer(form, _input, matching);
+    this.formAnalyzer = new FormAnalyzer(form, input, matching);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
     this.device = deviceInterface;
@@ -1042,131 +1021,131 @@ class Form {
     this.isAutofilling = false;
     this.handlerExecuted = false;
     this.shouldPromptToStoreCredentials = true;
-
-    this.submitHandler = () => {
-      if (this.handlerExecuted) return;
-      const credentials = this.getValues();
-
-      if (credentials.password) {
-        // ask to store credentials and/or fireproof
-        if (this.shouldPromptToStoreCredentials) {
-          // @ts-ignore
-          this.device.storeCredentials(credentials);
-        }
-
-        this.handlerExecuted = true;
-      }
-    };
-
-    this.getValues = () => {
-      const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
-        const subtype = getInputSubtype(input);
-
-        if (['username', 'password', 'emailAddress'].includes(subtype)) {
-          output[subtype] = input.value || output[subtype];
-        }
-
-        return output;
-      }, {
-        username: '',
-        password: ''
-      }); // If we don't have a username, let's try and save the email if available.
-
-      if (credentials.emailAddress && !credentials.username) {
-        credentials.username = credentials.emailAddress;
-      }
-
-      delete credentials.emailAddress;
-      return credentials;
-    };
-
-    this.hasValues = () => {
-      const {
-        password
-      } = this.getValues();
-      return !!password;
-    };
     /**
      * @type {IntersectionObserver | null}
      */
-
 
     this.intObs = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) this.removeTooltip();
       }
     });
+    this.categorizeInputs();
+  }
 
-    this.removeTooltip = e => {
-      var _this$intObs;
+  submitHandler() {
+    if (this.handlerExecuted) return;
+    const credentials = this.getValues();
 
-      const tooltip = this.device.getActiveTooltip();
-
-      if (this.isAutofilling || !tooltip || e && e.target === tooltip.host) {
-        return;
+    if (credentials.password) {
+      // ask to store credentials and/or fireproof
+      if (this.shouldPromptToStoreCredentials) {
+        // @ts-ignore
+        this.device.storeCredentials(credentials);
       }
 
-      this.device.removeTooltip();
-      (_this$intObs = this.intObs) === null || _this$intObs === void 0 ? void 0 : _this$intObs.disconnect();
-      window.removeEventListener('pointerdown', this.removeTooltip, {
-        capture: true
-      });
-    };
+      this.handlerExecuted = true;
+    }
+  }
 
-    this.removeInputHighlight = input => {
-      removeInlineStyles(input, getIconStylesAutofilled(input, this));
-      input.classList.remove('ddg-autofilled');
-      this.addAutofillStyles(input);
-    };
+  getValues() {
+    const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
+      const subtype = getInputSubtype(input);
 
-    this.removeAllHighlights = (e, dataType) => {
-      // This ensures we are not removing the highlight ourselves when autofilling more than once
-      if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
+      if (['username', 'password', 'emailAddress'].includes(subtype)) {
+        output[subtype] = input.value || output[subtype];
+      }
 
-      this.shouldPromptToStoreCredentials = true;
-      this.execOnInputs(this.removeInputHighlight, dataType);
-    };
+      return output;
+    }, {
+      username: '',
+      password: ''
+    }); // If we don't have a username, let's try and save the email if available.
 
-    this.removeInputDecoration = input => {
-      removeInlineStyles(input, getIconStylesBase(input, this));
-      input.removeAttribute(ATTR_AUTOFILL);
-    };
+    if (credentials.emailAddress && !credentials.username) {
+      credentials.username = credentials.emailAddress;
+    }
 
-    this.removeAllDecorations = () => {
-      this.execOnInputs(this.removeInputDecoration);
-      this.listeners.forEach(({
-        el,
-        type,
-        fn
-      }) => el.removeEventListener(type, fn));
-    };
+    delete credentials.emailAddress;
+    return credentials;
+  }
 
-    this.redecorateAllInputs = () => {
-      this.removeAllDecorations();
-      this.execOnInputs(input => this.decorateInput(input));
-    };
+  hasValues() {
+    const {
+      password
+    } = this.getValues();
+    return !!password;
+  }
 
-    this.resetAllInputs = () => {
-      this.execOnInputs(input => {
-        setValue(input, '');
-        this.removeInputHighlight(input);
-      });
-      if (this.activeInput) this.activeInput.focus();
-    };
+  removeTooltip() {
+    var _this$intObs;
 
-    this.dismissTooltip = () => {
-      this.removeTooltip();
-    }; // This removes all listeners to avoid memory leaks and weird behaviours
+    const tooltip = this.device.getActiveTooltip();
+
+    if (this.isAutofilling || !tooltip) {
+      return;
+    }
+
+    this.device.removeTooltip();
+    (_this$intObs = this.intObs) === null || _this$intObs === void 0 ? void 0 : _this$intObs.disconnect();
+  }
+
+  showingTooltip(input) {
+    var _this$intObs2;
+
+    (_this$intObs2 = this.intObs) === null || _this$intObs2 === void 0 ? void 0 : _this$intObs2.observe(input);
+  }
+
+  removeInputHighlight(input) {
+    removeInlineStyles(input, getIconStylesAutofilled(input, this));
+    input.classList.remove('ddg-autofilled');
+    this.addAutofillStyles(input);
+  }
+
+  removeAllHighlights(e, dataType) {
+    // This ensures we are not removing the highlight ourselves when autofilling more than once
+    if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
+
+    this.shouldPromptToStoreCredentials = true;
+    this.execOnInputs(this.removeInputHighlight, dataType);
+  }
+
+  removeInputDecoration(input) {
+    removeInlineStyles(input, getIconStylesBase(input, this));
+    input.removeAttribute(ATTR_AUTOFILL);
+  }
+
+  removeAllDecorations() {
+    this.execOnInputs(this.removeInputDecoration);
+    this.listeners.forEach(({
+      el,
+      type,
+      fn
+    }) => el.removeEventListener(type, fn));
+  }
+
+  redecorateAllInputs() {
+    this.removeAllDecorations();
+    this.execOnInputs(input => this.decorateInput(input));
+  }
+
+  resetAllInputs() {
+    this.execOnInputs(input => {
+      setValue(input, '');
+      this.removeInputHighlight(input);
+    });
+    if (this.activeInput) this.activeInput.focus();
+  }
+
+  dismissTooltip() {
+    this.removeTooltip();
+  } // This removes all listeners to avoid memory leaks and weird behaviours
 
 
-    this.destroy = () => {
-      this.removeAllDecorations();
-      this.removeTooltip();
-      this.intObs = null;
-    };
-
-    this.categorizeInputs();
-    return this;
+  destroy() {
+    this.removeAllDecorations();
+    this.removeTooltip();
+    this.intObs = null;
   }
 
   categorizeInputs() {
@@ -1321,6 +1300,27 @@ class Form {
     if (isApp) return true;
     const inputType = getInputMainType(input);
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
+  }
+
+  autofillInput(input, string, dataType) {
+    const activeInputSubtype = getInputSubtype(this.activeInput);
+    const inputSubtype = getInputSubtype(input);
+    const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'; // Don't override values for identities, unless it's the current input or we're autofilling email
+
+    if (dataType === 'identities' && // only for identities
+    input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
+    this.activeInput !== input && // and this is not the active input
+    !isEmailAutofill // and we're not auto-filling email
+    ) return; // do not overwrite the value
+
+    const successful = setValue(input, string);
+    if (!successful) return;
+    input.classList.add('ddg-autofilled');
+    addInlineStyles(input, getIconStylesAutofilled(input, this)); // If the user changes the value, remove the decoration
+
+    input.addEventListener('input', e => this.removeAllHighlights(e, dataType), {
+      once: true
+    });
   }
 
   autofillEmail(alias, dataType = 'identities') {
