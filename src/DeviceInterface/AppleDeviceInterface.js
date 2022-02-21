@@ -6,13 +6,19 @@ const {
     isTopFrame,
     supportsTopFrame,
     isDDGDomain,
-    formatDuckAddress
+    formatDuckAddress,
+    autofillEnabled
 } = require('../autofill-utils')
 const {scanForInputs, forms} = require('../scanForInputs.js')
+const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
 
 class AppleDeviceInterface extends InterfacePrototype {
     /* @type {Timeout | undefined} */
     pollingTimeout
+
+    async isEnabled () {
+        return autofillEnabled(processConfig)
+    }
 
     constructor () {
         super()

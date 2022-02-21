@@ -5,7 +5,8 @@ const {
     isMobileApp,
     isDDGDomain,
     sendAndWaitForAnswer,
-    formatDuckAddress
+    formatDuckAddress,
+    autofillEnabled
 } = require('../autofill-utils')
 const {getInputType} = require('../Form/matching')
 const {
@@ -146,7 +147,13 @@ class InterfacePrototype {
 
     postInit () {}
 
-    init () {
+    async isEnabled () {
+        return autofillEnabled()
+    }
+
+    async init () {
+        const isEnabled = await this.isEnabled()
+        if (!isEnabled) return
         if (document.readyState === 'complete') {
             this.startInit()
         } else {
