@@ -24,7 +24,7 @@ describe('Ensure email autofill works in extension', () => {
     it('should populate and select email autofill', async () => {
         const page = await browser.newPage()
         const selector = '[data-ddg-inputtype="identities.emailAddress"]'
-        const email = 'shane-123@duck.com';
+        const email = 'shane-123@duck.com'
         await gotoAndWait(page, `http://localhost:${server.address().port}/email-autofill.html`)
         const inputElement = await page.$(selector)
         await inputElement.click()
