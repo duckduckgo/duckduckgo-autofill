@@ -31,10 +31,13 @@ export async function setup (ops = {}) {
 
     const puppeteerOps = {
         args,
-        headless: true
+        headless: false
     }
 
     const browser = await puppeteer.launch(puppeteerOps)
+    // for some reason we need to init a blank page
+    // before the extension is initialized
+    await browser.newPage()
     const servers = []
 
     async function teardown () {
