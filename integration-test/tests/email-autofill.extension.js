@@ -24,6 +24,7 @@ describe('Ensure email autofill works in extension', () => {
     it('should populate and select email autofill', async () => {
         const page = await browser.newPage()
         const selector = '[data-ddg-inputtype="identities.emailAddress"]'
+        const email = 'shane-123@duck.com';
         await gotoAndWait(page, `http://localhost:${server.address().port}/email-autofill.html`)
         const inputElement = await page.$(selector)
         await inputElement.click()
@@ -43,6 +44,6 @@ describe('Ensure email autofill works in extension', () => {
         await buttons[0].click()
 
         // this is to avoid race conditions with checking the field's value before it's set.
-        await page.waitForFunction(() => document.querySelector('[data-ddg-inputtype="identities.emailAddress"]').value === 'shaness-123@duck.com', {polling: 100, timeout: 2000})
+        await page.waitForFunction((selector, email) => document.querySelector(selector).value === email, {}, selector, email)
     })
 })
