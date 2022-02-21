@@ -25,6 +25,26 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
     }
 
+    postInit () {
+        if (!isTopFrame) return
+        this.setupTopFrame()
+    }
+
+    async setupTopFrame () {
+        const inputType = await this.getCurrentInputType()
+        // Provide dummy values, they're not used
+        const getPosition = () => {
+            return {
+                x: 0,
+                y: 0,
+                height: 50,
+                width: 50
+            }
+        }
+        const tooltip = this.createTooltip(inputType, getPosition)
+        this.setActiveTooltip(tooltip)
+    }
+
     /**
      * Poll the native listener until the user has selected a credential.
      * Message return types are:
@@ -68,6 +88,8 @@ class AppleDeviceInterface extends InterfacePrototype {
         case 'scroll':
             this.removeTooltip()
             break
+        default:
+            super.handleEvent(event)
         }
     }
 
