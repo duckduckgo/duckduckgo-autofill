@@ -167,6 +167,8 @@ class InterfacePrototype {
 
             const activeTooltip = this.getActiveTooltip()
             activeTooltip?.dispatchClick()
+        } else {
+            this.removeTooltip()
         }
 
         if (!isApp) return
@@ -199,13 +201,13 @@ class InterfacePrototype {
         } else {
             form.autofillData(data, type)
         }
+        this.removeTooltip()
     }
 
     createTooltip (inputType, getPosition) {
         const config = getInputConfigFromType(inputType)
 
         // Attach close listeners
-        window.addEventListener('pointerdown', () => this.removeTooltip(), {capture: true, once: true})
         window.addEventListener('input', () => this.removeTooltip(), {once: true})
 
         if (isApp) {
