@@ -100,7 +100,7 @@ export async function setup (ops = {}) {
         // Append the flag so that the script knows to wait for incoming args.
         // url.searchParams.append('wait-for-init-args', 'true')
 
-        await page.goto(url.href, {waitUntil: "networkidle0"})
+        await page.goto(url.href, {waitUntil: 'networkidle0'})
 
         // // wait until contentScopeFeatures.load() has completed
         // await page.waitForFunction(() => {

@@ -706,7 +706,7 @@ var _data2 = /*#__PURE__*/new WeakMap();
 
 class InterfacePrototype {
   constructor() {
-    _defineProperty(this, "mode", "test");
+    _defineProperty(this, "mode", 'test');
 
     _defineProperty(this, "attempts", 0);
 
@@ -4399,7 +4399,7 @@ class Tooltip {
     _defineProperty(this, "clickableButtons", new Map());
 
     this.shadow = document.createElement('ddg-autofill').attachShadow({
-      mode: deviceInterface.mode === "test" ? "open" : "closed"
+      mode: deviceInterface.mode === 'test' ? 'open' : 'closed'
     });
     this.host = this.shadow.host;
     this.config = config;

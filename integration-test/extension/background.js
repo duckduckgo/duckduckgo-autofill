@@ -1,11 +1,11 @@
-const domain = 'duck.co';
-let random = Math.round(Math.random()*10);
+// const domain = 'duck.co'
+let random = Math.round(Math.random() * 10)
 const userData = {
-    userName: "shane-123",
+    userName: 'shane-123',
     nextAlias: random
 }
 
-function getAddresses() {
+function getAddresses () {
     return {
         personalAddress: `${userData.userName}`,
         privateAddress: `${userData.nextAlias}`
@@ -20,29 +20,36 @@ async function addUserData (userData, sender) {
     const sendDdgUserReady = async () => {
         const tabs = await browser.tabs.query({})
         tabs.forEach((tab) =>
+            // eslint-disable-next-line no-undef
             utils.sendTabMessage(tab.id, { type: 'ddgUserReady' })
         )
     }
 
+    // eslint-disable-next-line no-undef
     await settings.ready()
+    // eslint-disable-next-line no-undef
     const { existingToken } = settings.getSetting('userData') || {}
 
     // If the user is already registered, just notify tabs that we're ready
     if (existingToken === token) {
-        sendDdgUserReady()
+        await sendDdgUserReady()
         return { success: true }
     }
 
     // Check general data validity
+    // eslint-disable-next-line no-undef
     if (isValidUsername(userName) && isValidToken(token)) {
+        // eslint-disable-next-line no-undef
         settings.updateSetting('userData', userData)
         // Once user is set, fetch the alias and notify all tabs
+        // eslint-disable-next-line no-undef
         const response = await fetchAlias()
         if (response && response.error) {
             return { error: response.error.message }
         }
 
         sendDdgUserReady()
+        // eslint-disable-next-line no-undef
         showContextMenuAction()
         return { success: true }
     } else {
@@ -56,19 +63,19 @@ function registeredTempAutofillContentScript () {
         site: {
             isBroken: false,
             allowlisted: false,
-            enabledFeatures: ["autofill"]
+            enabledFeatures: ['autofill']
         }
     }
 }
 
-function init() {
+function init () {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.registeredTempAutofillContentScript) {
             return sendResponse(registeredTempAutofillContentScript())
         } else if (message.getAddresses) {
             return sendResponse(getAddresses())
         } else if (message.refreshAlias) {
-            userData.nextAlias = random+1
+            userData.nextAlias = random + 1
             return sendResponse(getAddresses())
         } else if (message.addUserData) {
             return sendResponse(addUserData(message.addUserData, sender))

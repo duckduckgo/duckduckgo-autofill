@@ -23,28 +23,28 @@ describe('Ensure navigator interface is injected', () => {
 
     it('should populate and select email autofill', async () => {
         const page = await browser.newPage()
-        const selector = '[data-ddg-inputtype="identities.emailAddress"]';
-        const email = 'shane-123@duck.com';
+        const selector = '[data-ddg-inputtype="identities.emailAddress"]'
+        const email = 'shane-123@duck.com'
         await gotoAndWait(page, `http://localhost:${server.address().port}/email-autofill.html`)
         const inputElement = await page.$(selector)
         await inputElement.click()
-        const autofill = await page.$(`ddg-autofill`);
-        const buttons = await autofill.$$('pierce/button');
+        const autofill = await page.$(`ddg-autofill`)
+        const buttons = await autofill.$$('pierce/button')
 
         // assert values are populated into the email tooltip
-        const button1Text = await page.evaluate(elem => elem.textContent.trim(), buttons[0]);
+        const button1Text = await page.evaluate(elem => elem.textContent.trim(), buttons[0])
         expect(button1Text).toContain('shane-123@duck.com')
         expect(button1Text).toContain('Blocks email trackers')
 
-        const button2Text = await page.evaluate(elem => elem.textContent.trim(), buttons[1]);
+        const button2Text = await page.evaluate(elem => elem.textContent.trim(), buttons[1])
         expect(button2Text).toContain('Use a Private Address')
         expect(button2Text).toContain('Blocks email trackers and hides your address')
 
         // now check that selecting an element works
-        await buttons[0].click();
+        await buttons[0].click()
 
         // this is to avoid race conditions with checking the field's value before it's set.
-        const fn = `() => document.querySelector('${selector}')?.value === '${email}'`;
-        await page.waitForFunction(fn);
+        const fn = `() => document.querySelector('${selector}')?.value === '${email}'`
+        await page.waitForFunction(fn)
     })
 })
