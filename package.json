@@ -18,6 +18,7 @@
     "test:passwords": "PASSWORD_STRESS_TEST=true jest generate.test.js",
     "test:unit": "jest",
     "test:integration": "npm run build && npm run copy-build-integration && jasmine --config=integration-test/config.js",
+    "test:integration:ci": "npm run copy-build-integration && jasmine --config=integration-test/config.js",
     "test:report": "jest --testResultsProcessor='./node_modules/jest-html-reporter' --no-colors --verbose=false",
     "test:watch": "jest --watch --verbose=false",
     "tsc": "tsc",
