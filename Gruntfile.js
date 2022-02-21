@@ -36,7 +36,8 @@ module.exports = function (grunt) {
             copyHostStyles: 'cp src/UI/styles/autofill-host-styles.css dist/autofill-host-styles_chrome.css && cp src/UI/styles/autofill-host-styles.css dist/autofill-host-styles_firefox.css',
             copyHtml: 'cp src/TopAutofill.html dist/TopAutofill.html',
             // Firefox and Chrome treat relative url differently in injected scripts. This fixes it.
-            updateFirefoxRelativeUrl: `sed -i "" "s/chrome-extension:\\/\\/__MSG_@@extension_id__\\/public/../g" dist/autofill-host-styles_firefox.css`
+            updateFirefoxRelativeUrl: `sed -i "" "s/chrome-extension:\\/\\/__MSG_@@extension_id__\\/public/../g" dist/autofill-host-styles_firefox.css`,
+            copyInt: 'npm run copy-build-integration'
         },
         /**
          * Run predefined tasks whenever watched files are added,
@@ -45,7 +46,7 @@ module.exports = function (grunt) {
         watch: {
             scripts: {
                 files: ['src/**/*.js'],
-                tasks: ['browserify']
+                tasks: ['browserify', 'exec:copyInt']
             },
             html: {
                 files: ['src/**/*.html'],
@@ -59,12 +60,12 @@ module.exports = function (grunt) {
     })
 
     grunt.registerTask('default', [
-        'eslint',
         'browserify',
         'exec:copyHtml',
         'exec:copyAutofillStylesToCSS',
         'exec:copyHostStyles',
-        'exec:updateFirefoxRelativeUrl'
+        'exec:updateFirefoxRelativeUrl',
+        'exec:copyInt'
     ])
     grunt.registerTask('dev', ['default', 'watch'])
 }

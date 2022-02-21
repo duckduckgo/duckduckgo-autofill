@@ -27,3 +27,5 @@ jobs:
         run: "npm run test:unit"
       - name: "Password unit tests"
         run: "npm run test:passwords"
+      - name: "Integration tests"
+        run: "npm run test:integration"

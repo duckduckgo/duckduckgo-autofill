@@ -19,6 +19,7 @@ const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
 const {forms} = require('../scanForInputs')
 
 class InterfacePrototype {
+    mode = "test";
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     currentAttached = null
