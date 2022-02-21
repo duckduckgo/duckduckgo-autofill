@@ -31,7 +31,7 @@ export async function setup (ops = {}) {
 
     const puppeteerOps = {
         args,
-        headless: false
+        headless: true
     }
 
     const browser = await puppeteer.launch(puppeteerOps)

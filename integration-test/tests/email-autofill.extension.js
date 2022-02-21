@@ -3,7 +3,7 @@
  */
 import { setup } from '../helpers/harness.js'
 
-describe('Ensure navigator interface is injected', () => {
+describe('Ensure email autofill works in extension', () => {
     /**
      * @type {import("puppeteer").Browser}
      */
