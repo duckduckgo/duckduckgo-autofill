@@ -160,7 +160,8 @@ const {
   isTopFrame,
   supportsTopFrame,
   isDDGDomain,
-  formatDuckAddress
+  formatDuckAddress,
+  autofillEnabled
 } = require('../autofill-utils');
 
 const {
@@ -168,8 +169,16 @@ const {
   forms
 } = require('../scanForInputs.js');
 
+const {
+  processConfig
+} = require('@duckduckgo/content-scope-scripts/src/apple-utils');
+
 class AppleDeviceInterface extends InterfacePrototype {
   /* @type {Timeout | undefined} */
+  async isEnabled() {
+    return autofillEnabled(processConfig);
+  }
+
   constructor() {
     super();
 
@@ -508,7 +517,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 module.exports = AppleDeviceInterface;
 
-},{"../appleDeviceUtils/appleDeviceUtils":25,"../autofill-utils":27,"../scanForInputs.js":31,"./InterfacePrototype.js":6}],5:[function(require,module,exports){
+},{"../appleDeviceUtils/appleDeviceUtils":25,"../autofill-utils":27,"../scanForInputs.js":31,"./InterfacePrototype.js":6,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],5:[function(require,module,exports){
 "use strict";
 
 const InterfacePrototype = require('./InterfacePrototype.js');
@@ -519,7 +528,8 @@ const {
   isDDGDomain,
   sendAndWaitForAnswer,
   setValue,
-  formatDuckAddress
+  formatDuckAddress,
+  autofillEnabled
 } = require('../autofill-utils');
 
 const {
@@ -527,6 +537,25 @@ const {
 } = require('../scanForInputs.js');
 
 class ExtensionInterface extends InterfacePrototype {
+  async isEnabled() {
+    if (!autofillEnabled()) return false;
+    return new Promise(resolve => {
+      // Check if the site is marked to skip autofill
+      chrome.runtime.sendMessage({
+        registeredTempAutofillContentScript: true,
+        documentUrl: window.location.href
+      }, response => {
+        var _response$site, _response$site$broken;
+
+        if (!(response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill'))) {
+          resolve(true);
+        }
+
+        resolve(false);
+      });
+    });
+  }
+
   isDeviceSignedIn() {
     return this.hasLocalAddresses;
   }
@@ -645,7 +674,8 @@ const {
   isMobileApp,
   isDDGDomain,
   sendAndWaitForAnswer,
-  formatDuckAddress
+  formatDuckAddress,
+  autofillEnabled
 } = require('../autofill-utils');
 
 const {
@@ -824,7 +854,14 @@ class InterfacePrototype {
 
   postInit() {}
 
-  init() {
+  async isEnabled() {
+    return autofillEnabled();
+  }
+
+  async init() {
+    const isEnabled = await this.isEnabled();
+    if (!isEnabled) return;
+
     if (document.readyState === 'complete') {
       this.startInit();
     } else {
@@ -4638,6 +4675,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 };
 
 const autofillEnabled = processConfig => {
+  if (!window.isSecureContext) return false;
   let contentScope = null;
   let userUnprotectedDomains = null;
   let userPreferences = null; // INJECT contentScope HERE
@@ -4924,42 +4962,15 @@ require('./requestIdleCallback');
 
 (() => {
   try {
-    if (!window.isSecureContext) return;
-
     const deviceInterface = require('./DeviceInterface');
 
-    const {
-      processConfig
-    } = require('@duckduckgo/content-scope-scripts/src/apple-utils');
-
-    const {
-      autofillEnabled
-    } = require('./autofill-utils'); // chrome is only present in desktop browsers
-
-
-    if (typeof chrome === 'undefined') {
-      if (autofillEnabled(processConfig)) {
-        deviceInterface.init();
-      }
-    } else {
-      // Check if the site is marked to skip autofill
-      chrome.runtime.sendMessage({
-        registeredTempAutofillContentScript: true,
-        documentUrl: window.location.href
-      }, response => {
-        var _response$site, _response$site$broken;
-
-        if (!(response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill'))) {
-          deviceInterface.init();
-        }
-      });
-    }
+    deviceInterface.init();
   } catch (e) {
     console.error(e); // Noop, we errored
   }
 })();
 
-},{"./DeviceInterface":2,"./autofill-utils":27,"./requestIdleCallback":30,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],29:[function(require,module,exports){
+},{"./DeviceInterface":2,"./requestIdleCallback":30}],29:[function(require,module,exports){
 "use strict";
 
 module.exports = {

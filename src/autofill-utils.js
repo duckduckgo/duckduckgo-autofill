@@ -50,6 +50,8 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 }
 
 const autofillEnabled = (processConfig) => {
+    if (!window.isSecureContext) return false
+
     let contentScope = null
     let userUnprotectedDomains = null
     let userPreferences = null

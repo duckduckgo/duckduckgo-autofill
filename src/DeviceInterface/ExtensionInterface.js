@@ -3,11 +3,31 @@ const {
     SIGN_IN_MSG,
     notifyWebApp, isDDGDomain,
     sendAndWaitForAnswer, setValue,
-    formatDuckAddress
+    formatDuckAddress,
+    autofillEnabled
 } = require('../autofill-utils')
 const {scanForInputs} = require('../scanForInputs.js')
 
 class ExtensionInterface extends InterfacePrototype {
+    async isEnabled () {
+        if (!autofillEnabled()) return false
+        return new Promise(resolve => {
+            // Check if the site is marked to skip autofill
+            chrome.runtime.sendMessage(
+                {
+                    registeredTempAutofillContentScript: true,
+                    documentUrl: window.location.href
+                },
+                (response) => {
+                    if (!response?.site?.brokenFeatures?.includes('autofill')) {
+                        resolve(true)
+                    }
+                    resolve(false)
+                }
+            )
+        })
+    }
+
     isDeviceSignedIn () {
         return this.hasLocalAddresses
     }
