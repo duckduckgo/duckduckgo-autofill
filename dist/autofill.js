@@ -698,7 +698,10 @@ const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
 
 const {
   forms
-} = require('../scanForInputs');
+} = require('../scanForInputs'); // This may get replaced by a test script
+
+
+let isDDGTestMode = false;
 
 var _addresses = /*#__PURE__*/new WeakMap();
 
@@ -706,7 +709,7 @@ var _data2 = /*#__PURE__*/new WeakMap();
 
 class InterfacePrototype {
   constructor() {
-    _defineProperty(this, "mode", 'test');
+    _defineProperty(this, "mode", isDDGTestMode ? 'test' : 'production');
 
     _defineProperty(this, "attempts", 0);
 
