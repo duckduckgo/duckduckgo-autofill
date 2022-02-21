@@ -16,7 +16,7 @@
     "open-test-extension": "web-ext run -t chromium -u https://privacy-test-pages.glitch.me/ -s integration-test/extension",
     "test": "npm run test:unit && tsc",
     "test:passwords": "PASSWORD_STRESS_TEST=true jest generate.test.js",
-    "test:unit": "jest && npm run test:integration",
+    "test:unit": "jest",
     "test:integration": "npm run build && npm run copy-build-integration && jasmine --config=integration-test/config.js",
     "test:report": "jest --testResultsProcessor='./node_modules/jest-html-reporter' --no-colors --verbose=false",
     "test:watch": "jest --watch --verbose=false",
