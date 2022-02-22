@@ -73,12 +73,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             }, 100)
             return
         case 'ok':
-            return this.inboundCredential({
-                detail: {
-                    data: response.data,
-                    configType: response.configType
-                }
-            })
+            return this.activeFormSelectedDetail(response.data, response.configType)
         case 'stop':
             // Parent wants us to stop polling
 
@@ -101,12 +96,6 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     processMouseMove (event) {
         this.currentTooltip?.focus(event.detail.x, event.detail.y)
-    }
-
-    inboundCredential (e) {
-        const activeForm = this.currentAttached
-        if (activeForm === null) return
-        activeForm.autofillData(e.detail.data, e.detail.configType)
     }
 
     async setupAutofill ({shouldLog} = {shouldLog: false}) {

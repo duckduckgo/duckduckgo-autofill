@@ -203,6 +203,9 @@ class InterfacePrototype {
         if (!form) {
             return
         }
+        if (data.id === 'privateAddress') {
+            this.refreshAlias()
+        }
         if (type === 'email') {
             form.autofillEmail(data.email)
         } else {

@@ -44,11 +44,10 @@ ${includeStyles}
             }
         }
         this.registerClickableButton(this.usePersonalButton, () => {
-            this.fillForm(this.addresses.personalAddress)
+            this.fillForm('personalAddress')
         })
         this.registerClickableButton(this.usePrivateButton, () => {
-            const email = this.addresses.privateAddress
-            this.fillForm(email)
+            this.fillForm('privateAddress')
         })
 
         // Get the alias from the extension
@@ -56,10 +55,13 @@ ${includeStyles}
 
         this.init()
     }
-    async fillForm (address) {
+    /**
+     * @param {'personalAddress' | 'privateAddress'} id
+     */
+    async fillForm (id) {
+        const address = this.addresses[id]
         const formattedAddress = formatDuckAddress(address)
-        await this.interface.refreshAlias()
-        this.interface.selectedDetail({email: formattedAddress}, 'email')
+        this.interface.selectedDetail({email: formattedAddress, id}, 'email')
     }
 }
 
