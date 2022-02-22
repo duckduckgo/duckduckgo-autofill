@@ -238,12 +238,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         return;
 
       case 'ok':
-        return this.inboundCredential({
-          detail: {
-            data: response.data,
-            configType: response.configType
-          }
-        });
+        return this.activeFormSelectedDetail(response.data, response.configType);
 
       case 'stop':
         // Parent wants us to stop polling
@@ -270,12 +265,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     var _this$currentTooltip;
 
     (_this$currentTooltip = this.currentTooltip) === null || _this$currentTooltip === void 0 ? void 0 : _this$currentTooltip.focus(event.detail.x, event.detail.y);
-  }
-
-  inboundCredential(e) {
-    const activeForm = this.currentAttached;
-    if (activeForm === null) return;
-    activeForm.autofillData(e.detail.data, e.detail.configType);
   }
 
   async setupAutofill({
@@ -910,6 +899,10 @@ class InterfacePrototype {
 
     if (!form) {
       return;
+    }
+
+    if (data.id === 'privateAddress') {
+      this.refreshAlias();
     }
 
     if (type === 'email') {
@@ -4286,10 +4279,6 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
   }
 
   async fillForm(data) {
-    if (data.id === 'privateAddress') {
-      await this.interface.refreshAlias();
-    }
-
     this.interface.selectedDetail(data, this.config.type);
   }
 
@@ -4343,22 +4332,26 @@ ${includeStyles}
     };
 
     this.registerClickableButton(this.usePersonalButton, () => {
-      this.fillForm(this.addresses.personalAddress);
+      this.fillForm('personalAddress');
     });
     this.registerClickableButton(this.usePrivateButton, () => {
-      const email = this.addresses.privateAddress;
-      this.fillForm(email);
+      this.fillForm('privateAddress');
     }); // Get the alias from the extension
 
     this.interface.getAddresses().then(this.updateAddresses);
     this.init();
   }
+  /**
+   * @param {'personalAddress' | 'privateAddress'} id
+   */
 
-  async fillForm(address) {
+
+  async fillForm(id) {
+    const address = this.addresses[id];
     const formattedAddress = formatDuckAddress(address);
-    await this.interface.refreshAlias();
     this.interface.selectedDetail({
-      email: formattedAddress
+      email: formattedAddress,
+      id
     }, 'email');
   }
 

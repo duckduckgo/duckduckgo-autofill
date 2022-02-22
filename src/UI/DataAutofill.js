@@ -70,9 +70,6 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
         this.init()
     }
     async fillForm (data) {
-        if (data.id === 'privateAddress') {
-            await this.interface.refreshAlias()
-        }
         this.interface.selectedDetail(data, this.config.type)
     }
 }
