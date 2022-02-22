@@ -13,7 +13,7 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
- * @param device
+ * @param {import("./Form").Form} form
  * @return {string}
  */
 const getIdentitiesIcon = (input, {device}) => {

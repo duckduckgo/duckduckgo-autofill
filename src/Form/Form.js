@@ -135,7 +135,7 @@ class Form {
         // If the user has changed the value, we prompt to update the stored creds
         this.shouldPromptToStoreCredentials = true
 
-        this.execOnInputs(this.removeInputHighlight, dataType)
+        this.execOnInputs((input) => this.removeInputHighlight(input), dataType)
     }
 
     removeInputDecoration (input) {
@@ -143,7 +143,7 @@ class Form {
         input.removeAttribute(ATTR_AUTOFILL)
     }
     removeAllDecorations () {
-        this.execOnInputs(this.removeInputDecoration)
+        this.execOnInputs((input) => this.removeInputDecoration(input))
         this.listeners.forEach(({el, type, fn}) => el.removeEventListener(type, fn))
     }
     redecorateAllInputs () {
