@@ -27,3 +27,7 @@ jobs:
         run: "npm run test:unit"
       - name: "Password unit tests"
         run: "npm run test:passwords"
+      - name: "Install dependencies for CI integration tests"
+        run: sudo apt-get install xvfb
+      - run: npm rebuild puppeteer
+      - run: npm run test-int-x

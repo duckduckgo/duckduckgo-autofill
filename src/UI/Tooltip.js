@@ -3,7 +3,11 @@ const {getSubtypeFromType} = require('../Form/matching')
 
 class Tooltip {
     constructor (config, inputType, getPosition, deviceInterface) {
-        this.shadow = document.createElement('ddg-autofill').attachShadow({mode: 'closed'})
+        this.shadow = document.createElement('ddg-autofill').attachShadow({
+            mode: deviceInterface.mode === 'test'
+                ? 'open'
+                : 'closed'
+        })
         this.host = this.shadow.host
         this.config = config
         this.subtype = getSubtypeFromType(inputType)

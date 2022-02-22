@@ -32,8 +32,7 @@ module.exports = function (grunt) {
             target: 'src/**/*.js'
         },
         exec: {
-            copyAutofillStylesToCSS: 'cp src/UI/styles/autofill-tooltip-styles.js dist/autofill.css && sed -i "" \'/`/d\' dist/autofill.css',
-            copyHostStyles: 'cp src/UI/styles/autofill-host-styles.css dist/autofill-host-styles_chrome.css && cp src/UI/styles/autofill-host-styles.css dist/autofill-host-styles_firefox.css',
+            copyAssets: 'npm run copy-assets',
             copyHtml: 'cp src/TopAutofill.html dist/TopAutofill.html',
             // Firefox and Chrome treat relative url differently in injected scripts. This fixes it.
             updateFirefoxRelativeUrl: `sed -i "" "s/chrome-extension:\\/\\/__MSG_@@extension_id__\\/public/../g" dist/autofill-host-styles_firefox.css`
@@ -45,7 +44,7 @@ module.exports = function (grunt) {
         watch: {
             scripts: {
                 files: ['src/**/*.js'],
-                tasks: ['browserify']
+                tasks: ['browserify', 'exec:copyAssets']
             },
             html: {
                 files: ['src/**/*.html'],
@@ -53,17 +52,15 @@ module.exports = function (grunt) {
             },
             styles: {
                 files: ['src/**/*.css', 'src/UI/styles/*'],
-                tasks: ['exec:copyAutofillStylesToCSS', 'exec:copyHostStyles', 'exec:updateFirefoxRelativeUrl']
+                tasks: ['exec:copyAssets', 'exec:updateFirefoxRelativeUrl']
             }
         }
     })
 
     grunt.registerTask('default', [
-        'eslint',
         'browserify',
         'exec:copyHtml',
-        'exec:copyAutofillStylesToCSS',
-        'exec:copyHostStyles',
+        'exec:copyAssets',
         'exec:updateFirefoxRelativeUrl'
     ])
     grunt.registerTask('dev', ['default', 'watch'])

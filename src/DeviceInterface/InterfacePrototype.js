@@ -18,7 +18,11 @@ const {getInputConfigFromType} = require('../Form/inputTypeConfig')
 const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
 const {forms} = require('../scanForInputs')
 
+// This may get replaced by a test script
+let isDDGTestMode = false
+
 class InterfacePrototype {
+    mode = isDDGTestMode ? 'test' : 'production';
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     currentAttached = null

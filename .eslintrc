@@ -16,5 +16,5 @@
         "jasmine": true,
         "jest": true
     },
-    "ignorePatterns": ["src/**/*.d.ts", "dist/*"]
+    "ignorePatterns": ["src/**/*.d.ts", "dist/*", "integration-test/extension/autofill.js"]
 }

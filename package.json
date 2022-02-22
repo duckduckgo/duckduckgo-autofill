@@ -12,9 +12,14 @@
     "build": "grunt",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
+    "copy-assets": "node scripts/copy-assets.js",
+    "open-test-extension": "web-ext run -t chromium -u https://privacy-test-pages.glitch.me/ -s integration-test/extension",
     "test": "npm run test:unit && tsc",
     "test:passwords": "PASSWORD_STRESS_TEST=true jest generate.test.js",
     "test:unit": "jest",
+    "test:integration": "npm run build && npm run copy-assets && jasmine --config=integration-test/config.js",
+    "test:integration:ci": "npm run copy-assets && jasmine --config=integration-test/config.js",
+    "test-int-x": "xvfb-run --server-args='-screen 0 1024x768x24' npm run test:integration:ci",
     "test:report": "jest --testResultsProcessor='./node_modules/jest-html-reporter' --no-colors --verbose=false",
     "test:watch": "jest --watch --verbose=false",
     "tsc": "tsc",
@@ -42,12 +47,14 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-eslint": "^23.0.0",
     "grunt-exec": "^3.0.0",
+    "jasmine": "^4.0.2",
     "jest": "^27.4.7",
     "jest-chrome": "^0.7.1",
     "load-grunt-tasks": "^5.1.0",
     "markdown-it": "^12.2.0",
     "typescript": "^4.5.5",
-    "jest-html-reporter": "^3.4.2"
+    "jest-html-reporter": "^3.4.2",
+    "puppeteer": "^13.0.1"
   },
   "dependencies": {
     "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts"
