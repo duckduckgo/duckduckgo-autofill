@@ -2,7 +2,7 @@ const FormAnalyzer = require('./FormAnalyzer')
 const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp, isApp, getDaxBoundingBox} = require('../autofill-utils')
 const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
-const {ATTR_AUTOFILL} = require('../constants')
+const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = require('../constants')
 const {getInputConfig} = require('./inputTypeConfig.js')
 const {getUnifiedExpiryDate, formatCCYear, getCountryName} = require('./formatters')
 const {Matching} = require('./matching')
@@ -28,16 +28,7 @@ class Form {
         this.isSignup = this.formAnalyzer.isSignup
         this.device = deviceInterface
 
-        /** @type Record<'all' | SupportedMainTypes, Set> */
-        this.inputs = {
-            all: new Set(),
-            credentials: new Set(),
-            creditCard: new Set(),
-            identities: new Set(),
-            unknown: new Set()
-        }
-
-        this.touched = new Set()
+        this.touched = new WeakSet()
         this.listeners = new Set()
         this.activeInput = null
         // We set this to true to skip event listeners while we're autofilling
@@ -71,19 +62,25 @@ class Form {
     }
 
     getValues () {
-        const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
+        const fields = [
+            ...this.findInputByType('credentials'),
+            ...this.findInputByType('identities')
+        ]
+        const credentials = {}
+        fields.forEach((input) => {
             const subtype = getInputSubtype(input)
-            if (['username', 'password', 'emailAddress'].includes(subtype)) {
-                output[subtype] = input.value || output[subtype]
+            if (['username', 'password', 'emailAddress'].includes(subtype) && input.value) {
+                credentials[subtype] = input.value
             }
-            return output
-        }, {username: '', password: ''})
+        })
         // If we don't have a username, let's try and save the email if available.
         if (credentials.emailAddress && !credentials.username) {
             credentials.username = credentials.emailAddress
         }
-        delete credentials.emailAddress
-        return credentials
+        return {
+            username: credentials.username || '',
+            password: credentials.password || ''
+        }
     }
 
     hasValues () {
@@ -170,8 +167,31 @@ class Form {
             })
     }
 
-    execOnInputs (fn, inputType = 'all') {
-        const inputs = this.inputs[inputType]
+    /**
+     * @param {SupportedMainTypes | undefined} inputMainType
+     * @returns {HTMLInputElement[]}
+     */
+    findInputByType (inputMainType) {
+        const selector = inputMainType ? `[${ATTR_INPUT_TYPE}^="${inputMainType}."]` : `[${ATTR_INPUT_TYPE}]`
+        /** @type {NodeListOf<HTMLInputElement>} */
+        const inputs = this.form.querySelectorAll(selector)
+        return [...inputs]
+    }
+
+    /**
+     * @param {HTMLInputElement} input
+     * @returns {boolean}
+     */
+    isInputDecorated (input) {
+        return input.hasAttribute(ATTR_INPUT_TYPE)
+    }
+
+    /**
+     * @param {(HTMLInputElement) => void} fn
+     * @param {SupportedMainTypes | undefined} [inputType] Matches SupportedMainTypes or all if not passed.
+     */
+    execOnInputs (fn, inputType) {
+        const inputs = this.findInputByType(inputType)
         for (const input of inputs) {
             const {shouldDecorate} = getInputConfig(input)
             if (shouldDecorate(input, this)) fn(input)
@@ -179,14 +199,9 @@ class Form {
     }
 
     addInput (input) {
-        if (this.inputs.all.has(input)) return this
-
-        this.inputs.all.add(input)
+        if (this.isInputDecorated(input)) return this
 
         this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
-
-        const mainInputType = getInputMainType(input)
-        this.inputs[mainInputType].add(input)
 
         this.decorateInput(input)
 
@@ -328,6 +343,10 @@ class Form {
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
     }
 
+    /**
+     * @param {string} alias
+     * @param {SupportedMainTypes} dataType
+     */
     autofillEmail (alias, dataType = 'identities') {
         this.isAutofilling = true
         this.execOnInputs(
