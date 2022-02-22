@@ -28,7 +28,7 @@ class AndroidInterface extends InterfacePrototype {
     }
 
     getUserData () {
-        return window.EmailInterface.getUserData()
+        return Promise.resolve(null)
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
