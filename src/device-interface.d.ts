@@ -36,10 +36,22 @@ interface CreditCardObject {
      cardNumber?: number
 }
 
+interface InboundPMData {
+     credentials: CredentialsObject[],
+     creditCards: CreditCardObject[],
+     identities: IdentityObject[],
+     serializedInputContext: string,
+}
+
+interface TopContextData {
+     inputType: SupportedType
+}
+
 interface PMData {
      credentials: CredentialsObject[],
      creditCards: CreditCardObject[],
      identities: IdentityObject[],
+     topContextData?: TopContextData,
 }
 
 type APIResponse<Type> = Promise<{ success: [Type], error?: string }>

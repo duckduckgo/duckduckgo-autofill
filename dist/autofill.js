@@ -356,7 +356,9 @@ class AppleDeviceInterface extends InterfacePrototype {
       inputLeft: diffX,
       inputHeight: Math.floor(inputDimensions.height),
       inputWidth: Math.floor(inputDimensions.width),
-      inputType
+      serializedInputContext: JSON.stringify({
+        inputType
+      })
     };
     await wkSend('showAutofillParent', details); // Start listening for the user intiated credential
 
@@ -488,7 +490,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   async getCurrentInputType() {
     const {
       inputType
-    } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
+    } = this.getTopContextData() || {};
     return inputType;
   }
 
@@ -721,7 +723,8 @@ class InterfacePrototype {
       value: {
         credentials: [],
         creditCards: [],
-        identities: []
+        identities: [],
+        topContextData: undefined
       }
     });
   }
@@ -794,7 +797,7 @@ class InterfacePrototype {
   }
   /**
    * Stores init data coming from the device
-   * @param { PMData } data
+   * @param { InboundPMData } data
    */
 
 
@@ -809,9 +812,22 @@ class InterfacePrototype {
       fullName: formatFullName(identity)
     })); // Add addresses
 
-    data.identities = this.addDuckAddressesToIdentities(updatedIdentities);
+    _classPrivateFieldGet(this, _data2).identities = this.addDuckAddressesToIdentities(updatedIdentities);
+    _classPrivateFieldGet(this, _data2).creditCards = data.creditCards;
+    _classPrivateFieldGet(this, _data2).credentials = data.credentials; // Top autofill only
 
-    _classPrivateFieldSet(this, _data2, data);
+    if (data.serializedInputContext) {
+      try {
+        _classPrivateFieldGet(this, _data2).topContextData = JSON.parse(data.serializedInputContext);
+      } catch (e) {
+        console.error(e);
+        this.removeTooltip();
+      }
+    }
+  }
+
+  getTopContextData() {
+    return _classPrivateFieldGet(this, _data2).topContextData;
   }
 
   get hasLocalCredentials() {

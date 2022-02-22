@@ -169,7 +169,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             inputLeft: diffX,
             inputHeight: Math.floor(inputDimensions.height),
             inputWidth: Math.floor(inputDimensions.width),
-            inputType
+            serializedInputContext: JSON.stringify({inputType})
         }
 
         await wkSend('showAutofillParent', details)
@@ -272,7 +272,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async getCurrentInputType () {
-        const {inputType} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+        const {inputType} = this.getTopContextData() || {}
         return inputType
     }
 
