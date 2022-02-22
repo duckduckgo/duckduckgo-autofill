@@ -55,7 +55,8 @@ class InterfacePrototype {
     #data = {
         credentials: [],
         creditCards: [],
-        identities: []
+        identities: [],
+        topContextData: undefined
     }
 
     /**
@@ -101,7 +102,7 @@ class InterfacePrototype {
 
     /**
      * Stores init data coming from the device
-     * @param { PMData } data
+     * @param { InboundPMData } data
      */
     storeLocalData (data) {
         if (this.stripCredentials) {
@@ -114,8 +115,22 @@ class InterfacePrototype {
             fullName: formatFullName(identity)
         }))
         // Add addresses
-        data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
-        this.#data = data
+        this.#data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
+        this.#data.creditCards = data.creditCards
+        this.#data.credentials = data.credentials
+
+        // Top autofill only
+        if (data.serializedInputContext) {
+            try {
+                this.#data.topContextData = JSON.parse(data.serializedInputContext)
+            } catch (e) {
+                console.error(e)
+                this.removeTooltip()
+            }
+        }
+    }
+    getTopContextData () {
+        return this.#data.topContextData
     }
     get hasLocalCredentials () {
         return this.#data.credentials.length > 0
