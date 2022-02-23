@@ -3578,17 +3578,11 @@ class Matching {
 
   *getElementStrings(el, form, opts = {}) {
     let {
-      matchableStrings = ['id', 'nameAttr', 'labelText', 'placeholderAttr', 'relatedText']
+      matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText']
     } = opts;
 
     for (let matchableString of matchableStrings) {
       switch (matchableString) {
-        case 'id':
-          {
-            yield el.id;
-            break;
-          }
-
         case 'nameAttr':
           {
             yield el.name;
@@ -3607,6 +3601,12 @@ class Matching {
               yield el.placeholder || '';
             }
 
+            break;
+          }
+
+        case 'id':
+          {
+            yield el.id;
             break;
           }
 
