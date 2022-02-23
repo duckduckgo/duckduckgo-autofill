@@ -99,21 +99,19 @@ interface InputTypeConfigBase {
     getIconBase: (input: HTMLInputElement, form: Form) => string,
     shouldDecorate: (input: HTMLInputElement, form: Form) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: any) => string
-    displaySubtitlePropName: string,
-    autofillMethod: string // more specific here?
+    tooltipItem(data: any): TooltipItemRenderer;
 }
+
 interface CredentialsInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CredentialsObject) => string
+    tooltipItem(data: CredentialsObject): TooltipItemRenderer;
 }
 interface CreditCardInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CreditCardObject) => string
+    tooltipItem(data: CreditCardObject): TooltipItemRenderer;
 }
 interface IdentitiesInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: IdentitiesObject) => string
+    tooltipItem(data: IdentityObject): TooltipItemRenderer;
 }
 interface UnknownInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: () => string
 }
 
 type InputTypeConfigs =

@@ -11,7 +11,6 @@ const ddgGlobals = require('./captureDdgGlobals')
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
- * @returns {*}
  */
 const wkSend = (handler, data = {}) => {
     if (!(handler in window.webkit.messageHandlers)) {

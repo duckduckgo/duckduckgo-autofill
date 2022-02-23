@@ -2,7 +2,9 @@ const {isDDGApp, isApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
 const {getInputType, getMainTypeFromType, getInputSubtype} = require('./matching')
-const {getCountryDisplayName} = require('./formatters')
+const {CredentialsTooltipItem} = require('../InputTypes/Credentials')
+const {CreditCardTooltipItem} = require('../InputTypes/CreditCard')
+const {IdentityTooltipItem} = require('../InputTypes/Identity')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
@@ -31,11 +33,23 @@ const inputTypeConfig = {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (_input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
+        shouldDecorate: (input, {isLogin, device}) => {
+            // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
+            // saved password
+            if (isLogin) {
+                return device.hasLocalCredentials
+            }
+
+            // at this point, it's not a 'login' attempt, so we could offer to provide a password?
+            const subtype = getInputSubtype(input)
+            if (subtype === 'password') {
+                return true
+            }
+
+            return false
+        },
         dataType: 'Credentials',
-        displayTitlePropName: (_subtype, data) => data.username,
-        displaySubtitlePropName: '•••••••••••••••',
-        autofillMethod: 'getAutofillCredentials'
+        tooltipItem: (data) => new CredentialsTooltipItem(data)
     },
     /** @type {CreditCardInputTypeConfig} */
     creditCard: {
@@ -44,9 +58,7 @@ const inputTypeConfig = {
         getIconFilled: () => '',
         shouldDecorate: (_input, {device}) => device.hasLocalCreditCards,
         dataType: 'CreditCards',
-        displayTitlePropName: (_subtype, data) => data.title,
-        displaySubtitlePropName: 'displayNumber',
-        autofillMethod: 'getAutofillCreditCard'
+        tooltipItem: (data) => new CreditCardTooltipItem(data)
     },
     /** @type {IdentitiesInputTypeConfig} */
     identities: {
@@ -67,14 +79,7 @@ const inputTypeConfig = {
             return false
         },
         dataType: 'Identities',
-        displayTitlePropName: (subtype, data) => {
-            if (subtype === 'addressCountryCode') {
-                return getCountryDisplayName('en', data.addressCountryCode)
-            }
-            return data[subtype]
-        },
-        displaySubtitlePropName: 'title',
-        autofillMethod: 'getAutofillIdentity'
+        tooltipItem: (data) => new IdentityTooltipItem(data)
     },
     /** @type {UnknownInputTypeConfig} */
     unknown: {
@@ -83,9 +88,9 @@ const inputTypeConfig = {
         getIconFilled: () => '',
         shouldDecorate: () => false,
         dataType: '',
-        displayTitlePropName: () => 'unknown',
-        displaySubtitlePropName: '',
-        autofillMethod: ''
+        tooltipItem: (_data) => {
+            throw new Error('unreachable')
+        }
     }
 }
 

@@ -28,9 +28,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@babel/core": "^7.13.16",
-    "@babel/eslint-parser": "^7.13.14",
-    "@babel/preset-env": "^7.13.15",
+    "@babel/core": "^7.17.5",
+    "@babel/eslint-parser": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
     "@types/jest": "^27.4.0",
     "@types/node": "^16.11.7",
     "asana": "^0.18.6",
@@ -51,11 +51,11 @@
     "jasmine": "^4.0.2",
     "jest": "^27.4.7",
     "jest-chrome": "^0.7.1",
+    "jest-html-reporter": "^3.4.2",
     "load-grunt-tasks": "^5.1.0",
     "markdown-it": "^12.2.0",
-    "typescript": "^4.5.5",
-    "jest-html-reporter": "^3.4.2",
-    "puppeteer": "^13.0.1"
+    "puppeteer": "^13.0.1",
+    "typescript": "^4.5.5"
   },
   "dependencies": {
     "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts"

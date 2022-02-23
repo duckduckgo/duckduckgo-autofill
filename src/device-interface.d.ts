@@ -27,7 +27,7 @@ interface IdentityObject {
 interface CreditCardObject {
      id: string,
      title: string,
-     displaystring: string,
+     displayNumber: string,
      cardName?: string,
      cardstring?: string,
      cardSecurityCode?: string,
@@ -44,7 +44,8 @@ interface InboundPMData {
 }
 
 interface TopContextData {
-     inputType: SupportedType
+     inputType: SupportedType,
+     credentials?: CredentialsObject[]
 }
 
 interface PMData {
@@ -54,15 +55,16 @@ interface PMData {
      topContextData?: TopContextData,
 }
 
-type APIResponse<Type> = Promise<{ success: [Type], error?: string }>
+type APIResponse<Type> = Promise<{ success: Type[], error?: string }>
 
 interface EmailAddresses {
      privateAddress?: string,
      personalAddress?: string
 }
 
-interface InterfacePrototypeBase {
-     storeLocalAddresses(emailAddresses: EmailAddresses): void;
-     getActiveTooltip(): Tooltip;
-     removeTooltip(): void;
+type FeatureToggleNames =
+  | "password.generation"
+
+interface FeatureToggles {
+     supportsFeature(name: FeatureToggleNames): boolean;
 }

@@ -13,11 +13,14 @@ class Form {
     matching;
     /** @type {HTMLFormElement} */
     form;
-
+    /** @type {HTMLInputElement | null} */
+    activeInput;
+    /** @type {boolean | null} */
+    isSignup;
     /**
      * @param {HTMLFormElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {InterfacePrototypeBase} deviceInterface
+     * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
      * @param {Matching} [matching]
      */
     constructor (form, input, deviceInterface, matching) {
@@ -60,14 +63,26 @@ class Form {
         if (this.handlerExecuted) return
 
         const credentials = this.getValues()
-        if (credentials.password) {
-            // ask to store credentials and/or fireproof
-            if (this.shouldPromptToStoreCredentials) {
-                // @ts-ignore
-                this.device.storeCredentials(credentials)
-            }
-            this.handlerExecuted = true
+
+        // do nothing if password was absent
+        if (!credentials.password) return
+
+        // checks to determine if we should offer to store credentials and/or fireproof
+        const checks = [
+            this.shouldPromptToStoreCredentials,
+            this.device.shouldPromptToStoreCredentials({
+                formElement: this.form
+            })
+        ]
+
+        // if *any* of the checks are truthy, proceed to offer
+        if (checks.some(Boolean)) {
+            this.device.storeCredentials(credentials)
         }
+
+        // mark this form as being handled
+        // TODO(Shane): is this correct, what happens if a failed submission is retried?
+        this.handlerExecuted = true
     }
 
     getValues () {
@@ -281,7 +296,6 @@ class Form {
                 }
 
                 this.touched.add(input)
-                // @ts-ignore
                 this.device.attachTooltip(this, input, getPosition, click)
             }
         }
@@ -305,6 +319,7 @@ class Form {
     }
 
     autofillInput (input, string, dataType) {
+        // @ts-ignore
         const activeInputSubtype = getInputSubtype(this.activeInput)
         const inputSubtype = getInputSubtype(input)
         const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'

@@ -6,16 +6,12 @@ const {
 const Tooltip = require('./Tooltip')
 
 class DataAutofill extends Tooltip {
-    constructor (config, inputType, position, deviceInterface) {
-        super(config, inputType, position, deviceInterface)
-
-        this.data = this.interface[`getLocal${config.dataType}`]()
-
-        if (config.type === 'identities') {
-            // For identities, we don't show options where this subtype is not available
-            this.data = this.data.filter((singleData) => !!singleData[this.subtype])
-        }
-
+    /**
+     * @param {InputTypeConfigs} config
+     * @param {TooltipItemRenderer[]} items
+     * @param {{onSelect(id:string): void}} callbacks
+     */
+    render (config, items, callbacks) {
         const includeStyles = isApp
             ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
@@ -34,19 +30,18 @@ class DataAutofill extends Tooltip {
 ${includeStyles}
 <div class="wrapper wrapper--data ${topClass}">
     <div class="tooltip tooltip--data" hidden>
-        ${this.data.map((singleData) => `
-            ${shouldShowSeparator(singleData.id) ? '<hr />' : ''}
+        ${items.map((item) => `
+            ${shouldShowSeparator(item.id()) ? '<hr />' : ''}
             <button
                 class="tooltip__button tooltip__button--data tooltip__button--data--${config.type} js-autofill-button"
-                id="${singleData.id}"
+                id="${item.id()}"
             >
                 <span class="tooltip__button__text-container">
                     <span class="tooltip__button__primary-text">
-${singleData.id === 'privateAddress' ? 'Generated Private Address\n' : ''}
-${escapeXML(config.displayTitlePropName(this.subtype, singleData))}
+${escapeXML(item.primaryText(this.subtype))}
                     </span><br />
                     <span class="tooltip__button__secondary-text">
-${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitlePropName)}
+${escapeXML(item.secondaryText(this.subtype))}
                     </span>
                 </span>
             </button>
@@ -59,18 +54,12 @@ ${escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitle
 
         this.autofillButtons.forEach((btn) => {
             this.registerClickableButton(btn, () => {
-                this.interface[`${config.autofillMethod}`](btn.id).then(({success}) => {
-                    if (success) {
-                        this.fillForm(success)
-                    }
-                })
+                callbacks.onSelect(btn.id)
             })
         })
 
         this.init()
-    }
-    async fillForm (data) {
-        this.interface.selectedDetail(data, this.config.type)
+        return this
     }
 }
 
