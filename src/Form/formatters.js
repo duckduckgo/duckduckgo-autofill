@@ -9,9 +9,9 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
- * @param {number} year
+ * @param {string} year
  * @param {import("./Form").Form} form
- * @returns {number}
+ * @returns {string}
  */
 const formatCCYear = (input, year, form) => {
     const selector = form.matching.cssSelector('FORM_INPUTS_SELECTOR')
@@ -20,14 +20,14 @@ const formatCCYear = (input, year, form) => {
         checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)
     ) return year
 
-    return year - 2000
+    return `${Number(year) - 2000}`
 }
 
 /**
  * Get a unified expiry date with separator
  * @param {HTMLInputElement} input
- * @param {number} month
- * @param {number} year
+ * @param {string} month
+ * @param {string} year
  * @param {import("./Form").Form} form
  * @returns {string}
  */

@@ -79,7 +79,7 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
 /**
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 const setValueForInput = (el, val) => {
@@ -128,7 +128,7 @@ const fireEventsOnSelect = (el) => {
  * Selects an option of a select element
  * We assume Select is only used for dates, i.e. in the credit card
  * @param {HTMLSelectElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
@@ -166,7 +166,7 @@ const setValueForSelect = (el, val) => {
 /**
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 const setValue = (el, val) => {

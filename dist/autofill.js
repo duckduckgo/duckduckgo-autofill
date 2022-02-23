@@ -2327,21 +2327,21 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
- * @param {number} year
+ * @param {string} year
  * @param {import("./Form").Form} form
- * @returns {number}
+ * @returns {string}
  */
 
 const formatCCYear = (input, year, form) => {
   const selector = form.matching.cssSelector('FORM_INPUTS_SELECTOR');
   if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year;
-  return year - 2000;
+  return `${Number(year) - 2000}`;
 };
 /**
  * Get a unified expiry date with separator
  * @param {HTMLInputElement} input
- * @param {number} month
- * @param {number} year
+ * @param {string} month
+ * @param {string} year
  * @param {import("./Form").Form} form
  * @returns {string}
  */
@@ -5594,7 +5594,7 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
 /**
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 
@@ -5649,7 +5649,7 @@ const fireEventsOnSelect = el => {
  * Selects an option of a select element
  * We assume Select is only used for dates, i.e. in the credit card
  * @param {HTMLSelectElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 
@@ -5689,7 +5689,7 @@ const setValueForSelect = (el, val) => {
 /**
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 
