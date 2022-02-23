@@ -104,7 +104,7 @@ module.exports = [
     { html: 'chewy_checkout.html' },
     { html: 'everydayoil_checkout.html', expectedFailures: ['unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown'] },
     { html: 'stripeelements_checkout.html' },
-    { html: 'litmus_home_search.html', expectedFailures: ['unknown'] },
+    { html: 'litmus_home_search.html' },
     { html: 'litmus_home_new.html', expectedFailures: ['unknown', 'unknown'] },
     { html: 'asana_tasklist.html' },
     { html: 'asana_search.html' }
