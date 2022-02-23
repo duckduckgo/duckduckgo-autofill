@@ -3541,8 +3541,8 @@ class Matching {
 
   execVendorRegex(regex, el, form) {
     for (let elementString of this.getElementStrings(el, form)) {
-      elementString = elementString.toLowerCase();
       if (!elementString) continue;
+      elementString = elementString.toLowerCase();
 
       if (regex.test(elementString)) {
         return {
@@ -3559,7 +3559,7 @@ class Matching {
    * Yield strings in the order in which they should be checked against.
    *
    * Note: some strategies may not want to accept all strings, which is
-   * where `matchableStrings` helps. It defaults to when yuo see below but can
+   * where `matchableStrings` helps. It defaults to when you see below but can
    * be overridden.
    *
    * For example, `nameAttr` is first, since this has the highest chance of matching
@@ -3578,7 +3578,7 @@ class Matching {
 
   *getElementStrings(el, form, opts = {}) {
     let {
-      matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'relatedText']
+      matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText']
     } = opts;
 
     for (let matchableString of matchableStrings) {
@@ -3601,6 +3601,12 @@ class Matching {
               yield el.placeholder || '';
             }
 
+            break;
+          }
+
+        case 'id':
+          {
+            yield el.id;
             break;
           }
 
