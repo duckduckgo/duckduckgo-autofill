@@ -4,7 +4,8 @@ const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const {getInputConfig} = require('./inputTypeConfig.js')
-const {getUnifiedExpiryDate, formatCCYear, getCountryName} = require('./formatters')
+const {getUnifiedExpiryDate, formatCCYear, getCountryName,
+    prepareFormValuesForStorage, inferCountryCodeFromElement} = require('./formatters')
 const {Matching} = require('./matching')
 const {matchingConfiguration} = require('./matching-configuration')
 
@@ -85,25 +86,30 @@ class Form {
         this.handlerExecuted = true
     }
 
+    /** @return {DataStorageObject} */
     getValues () {
-        const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
-            const subtype = getInputSubtype(input)
-            if (['username', 'password', 'emailAddress'].includes(subtype)) {
-                output[subtype] = input.value || output[subtype]
-            }
-            return output
-        }, {username: '', password: ''})
-        // If we don't have a username, let's try and save the email if available.
-        if (credentials.emailAddress && !credentials.username) {
-            credentials.username = credentials.emailAddress
-        }
-        delete credentials.emailAddress
-        return credentials
+        const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
+            .reduce((output, inputEl) => {
+                const mainType = getInputMainType(inputEl)
+                const subtype = getInputSubtype(inputEl)
+                let value = inputEl.value || output[mainType]?.[subtype]
+                if (subtype === 'addressCountryCode') {
+                    value = inferCountryCodeFromElement(inputEl)
+                }
+                if (value) {
+                    output[mainType][subtype] = value
+                }
+                return output
+            }, {credentials: {}, creditCards: {}, identities: {}})
+
+        console.log('values', prepareFormValuesForStorage(formValues))
+        return prepareFormValuesForStorage(formValues)
     }
 
     hasValues () {
-        const {password} = this.getValues()
-        return !!password
+        const {credentials, creditCards, identities} = this.getValues()
+
+        return Boolean(credentials || creditCards || identities)
     }
 
     removeTooltip () {
