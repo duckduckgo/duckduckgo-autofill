@@ -175,7 +175,7 @@ class Matching {
             const ccMatchers = this.matcherList('cc')
             const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl)
             if (subtype && isValidCreditCardSubtype(subtype)) {
-                return `creditCard.${subtype}`
+                return `creditCards.${subtype}`
             }
         }
 
@@ -541,7 +541,7 @@ function getMainTypeFromType (type) {
     const mainType = type.split('.')[0]
     switch (mainType) {
     case 'credentials':
-    case 'creditCard':
+    case 'creditCards':
     case 'identities':
         return mainType
     }
@@ -617,10 +617,10 @@ function isValidCredentialsSubtype (supportedType) {
 
 /** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
 
-/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCard.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCards.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
 const supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
-    ...supportedCreditCardSubtypes.map((type) => `creditCard.${type}`),
+    ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
     ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
 ]
 

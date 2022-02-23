@@ -63,7 +63,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: null}
+            expValues: {credentials: undefined}
         },
         {
             testCase: 'form with only the password filled',
@@ -85,7 +85,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: null}
+            expValues: {credentials: undefined}
         },
         {
             testCase: 'complete checkout form',
@@ -179,7 +179,7 @@ describe('Test the form class reading values correctly', () => {
     <input value="Italia" autocomplete="country" />
 </form>`,
             expHasValues: false,
-            expValues: {identities: null}
+            expValues: {identities: undefined}
         },
         {
             testCase: 'incomplete creditCard form',
@@ -189,7 +189,7 @@ describe('Test the form class reading values correctly', () => {
     <input autocomplete="cc-number" value="4111111111111111">
 </form>`,
             expHasValues: false,
-            expValues: {username: 'testUsername', password: ''}
+            expValues: {creditCards: undefined}
         }
     ]
 
