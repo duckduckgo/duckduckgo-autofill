@@ -126,10 +126,12 @@ describe('matching', () => {
         expect(inferred).toBe(subtype)
     })
     it('should not continue past a ddg-matcher that has a "not" regex', () => {
-        const {formElement, inputs} = setFormHtml(`<input name="email-search" />`)
+        const {formElement, inputs} = setFormHtml(`<label>Email search<input name="email-search" /></label>`)
         const matching = new Matching({
             matchers: {
-                lists: {},
+                lists: {
+                    email: ['email']
+                },
                 fields: {
                     email: {
                         type: 'email',
@@ -153,11 +155,13 @@ describe('matching', () => {
                 },
                 'ddgMatcher': {
                     matchers: {
-                        'email-ddg': { match: 'email', not: 'search' }
+                        'email-ddg': { match: 'email', forceUnknown: 'search' }
                     }
                 },
                 'cssSelector': {
-                    selectors: {}
+                    selectors: {
+                        'FORM_INPUTS_SELECTOR': 'input'
+                    }
                 }
             }
         })

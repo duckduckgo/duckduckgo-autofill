@@ -232,7 +232,7 @@ class Matching {
                 }
                 if (!result.matched && result.proceed === false) {
                     // If we get here, do not allow subsequent strategies to continue
-                    break
+                    return undefined
                 }
             }
         }
@@ -301,7 +301,7 @@ class Matching {
             return {matched: false}
         }
 
-        let requiredScore = ['match', 'not', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
+        let requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
 
         /** @type {MatchableStrings[]} */
         const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText']
@@ -309,6 +309,16 @@ class Matching {
         for (let elementString of this.getElementStrings(el, form, {matchableStrings})) {
             if (!elementString) continue
             elementString = elementString.toLowerCase()
+
+            if (ddgMatcher.skip) {
+                let skipRegex = safeRegex(ddgMatcher.skip)
+                if (!skipRegex) {
+                    return { matched: false }
+                }
+                if (skipRegex.test(elementString)) {
+                    continue
+                }
+            }
 
             // Scoring to ensure all DDG tests are valid
             let score = 0
@@ -323,13 +333,13 @@ class Matching {
 
             // If a negated regex was provided, ensure it does not match
             // If it DOES match - then we need to prevent any future strategies from continuing
-            if (ddgMatcher.not) {
-                let notRegex = safeRegex(ddgMatcher.not)
+            if (ddgMatcher.forceUnknown) {
+                let notRegex = safeRegex(ddgMatcher.forceUnknown)
                 if (!notRegex) {
                     return { matched: false }
                 }
                 if (notRegex.test(elementString)) {
-                    return { matched: false }
+                    return { matched: false, proceed: false }
                 } else {
                     // All good here, increment the score
                     score++
