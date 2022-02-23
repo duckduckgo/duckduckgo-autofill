@@ -2695,6 +2695,18 @@ class AppleDeviceInterface extends InterfacePrototype {
     return wkSend('pmHandlerStoreCredentials', credentials);
   }
   /**
+<<<<<<< HEAD
+=======
+   * Sends form data to the native layer
+   * @param {DataStorageObject} data
+   */
+
+
+  storeFormData(data) {
+    return wkSend('pmHandlerStoreData', data);
+  }
+  /**
+>>>>>>> ab0355b8 (Fix comment)
    * Gets the init data from the device
    * @returns {APIResponse<PMData>}
    */

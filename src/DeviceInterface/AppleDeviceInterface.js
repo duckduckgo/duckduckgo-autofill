@@ -214,7 +214,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * Sends credentials to the native layer
+     * Sends form data to the native layer
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
