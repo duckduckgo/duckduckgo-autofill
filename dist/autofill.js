@@ -2671,15 +2671,15 @@ const matchingConfiguration = {
       matchers: {
         email: {
           match: '.mail',
-          not: 'search'
+          forceUnknown: 'search'
         },
         password: {
           match: 'password',
-          not: 'captcha'
+          forceUnknown: 'captcha'
         },
         username: {
           match: 'user((.)?(name|id|login))?$',
-          not: 'search'
+          forceUnknown: 'search'
         },
         // CC
         cardName: {
@@ -2693,15 +2693,15 @@ const matchingConfiguration = {
         },
         expirationMonth: {
           match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-          not: 'mm[/\\s.\\-_—–]'
+          forceUnknown: 'mm[/\\s.\\-_—–]'
         },
         expirationYear: {
           match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)',
-          not: 'mm[/\\s.\\-_—–]'
+          skip: 'mm[/\\s.\\-_—–]'
         },
         expiration: {
           match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-          not: 'invalid'
+          forceUnknown: 'invalid'
         },
         // Identities
         firstName: {
@@ -2715,27 +2715,29 @@ const matchingConfiguration = {
         },
         fullName: {
           match: '^(full.?|whole\\s)?name\\b',
-          not: 'company|org'
+          forceUnknown: 'company|org'
         },
         phone: {
           match: 'phone',
-          not: 'code|pass'
+          forceUnknown: 'code|pass'
         },
         addressStreet: {
           match: 'address',
-          not: 'email|\\bip\\b|address.*(2|two)|duck|log.?in|sign.?in'
+          forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in',
+          skip: 'address.*(2|two)'
         },
         addressStreet2: {
           match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
-          not: 'email|\\bip\\b|duck|log.?in|sign.?in'
+          forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in'
         },
         addressCity: {
           match: 'city|town',
-          not: 'vatican'
+          forceUnknown: 'vatican'
         },
         addressProvince: {
           match: 'state|province|region|county',
-          not: 'country|united'
+          forceUnknown: 'united',
+          skip: 'country'
         },
         addressPostalCode: {
           match: '\\bzip\\b|postal|post.?code'
@@ -3369,7 +3371,7 @@ class Matching {
 
         if (!result.matched && result.proceed === false) {
           // If we get here, do not allow subsequent strategies to continue
-          break;
+          return undefined;
         }
       }
     }
@@ -3465,7 +3467,7 @@ class Matching {
       };
     }
 
-    let requiredScore = ['match', 'not', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length;
+    let requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length;
     /** @type {MatchableStrings[]} */
 
     const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText'];
@@ -3474,7 +3476,22 @@ class Matching {
       matchableStrings
     })) {
       if (!elementString) continue;
-      elementString = elementString.toLowerCase(); // Scoring to ensure all DDG tests are valid
+      elementString = elementString.toLowerCase();
+
+      if (ddgMatcher.skip) {
+        let skipRegex = safeRegex(ddgMatcher.skip);
+
+        if (!skipRegex) {
+          return {
+            matched: false
+          };
+        }
+
+        if (skipRegex.test(elementString)) {
+          continue;
+        }
+      } // Scoring to ensure all DDG tests are valid
+
 
       let score = 0; // if the `match` regex fails, moves onto the next string
 
@@ -3486,8 +3503,8 @@ class Matching {
       score++; // If a negated regex was provided, ensure it does not match
       // If it DOES match - then we need to prevent any future strategies from continuing
 
-      if (ddgMatcher.not) {
-        let notRegex = safeRegex(ddgMatcher.not);
+      if (ddgMatcher.forceUnknown) {
+        let notRegex = safeRegex(ddgMatcher.forceUnknown);
 
         if (!notRegex) {
           return {
@@ -3497,7 +3514,8 @@ class Matching {
 
         if (notRegex.test(elementString)) {
           return {
-            matched: false
+            matched: false,
+            proceed: false
           };
         } else {
           // All good here, increment the score
