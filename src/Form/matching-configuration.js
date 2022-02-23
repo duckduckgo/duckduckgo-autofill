@@ -252,9 +252,9 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfiguration} */
         ddgMatcher: {
             matchers: {
-                email: {match: '.mail', not: 'search'},
-                password: {match: 'password', not: 'captcha'},
-                username: {match: 'user((.)?(name|id|login))?$', not: 'search'},
+                email: {match: '.mail', forceUnknown: 'search'},
+                password: {match: 'password', forceUnknown: 'captcha'},
+                username: {match: 'user((.)?(name|id|login))?$', forceUnknown: 'search'},
 
                 // CC
                 cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},
@@ -262,27 +262,27 @@ const matchingConfiguration = {
                 cardSecurityCode: {match: 'security.?code|card.?verif|cvv|csc|cvc'},
                 expirationMonth: {
                     match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-                    not: 'mm[/\\s.\\-_—–]'
+                    forceUnknown: 'mm[/\\s.\\-_—–]'
                 },
-                expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', not: 'mm[/\\s.\\-_—–]'},
+                expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]'},
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-                    not: 'invalid'
+                    forceUnknown: 'invalid'
                 },
 
                 // Identities
                 firstName: {match: '(first|given|fore).?name'},
                 middleName: {match: '(middle|additional).?name'},
                 lastName: {match: '(last|family|sur)[^i]?name'},
-                fullName: {match: '^(full.?|whole\\s)?name\\b', not: 'company|org'},
-                phone: {match: 'phone', not: 'code|pass'},
-                addressStreet: {match: 'address', not: 'email|\\bip\\b|address.*(2|two)|duck|log.?in|sign.?in'},
+                fullName: {match: '^(full.?|whole\\s)?name\\b', forceUnknown: 'company|org'},
+                phone: {match: 'phone', forceUnknown: 'code|pass'},
+                addressStreet: { match: 'address', forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in', skip: 'address.*(2|two)' },
                 addressStreet2: {
                     match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
-                    not: 'email|\\bip\\b|duck|log.?in|sign.?in'
+                    forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in'
                 },
-                addressCity: {match: 'city|town', not: 'vatican'},
-                addressProvince: {match: 'state|province|region|county', not: 'country|united'},
+                addressCity: {match: 'city|town', forceUnknown: 'vatican'},
+                addressProvince: {match: 'state|province|region|county', forceUnknown: 'united', skip: 'country'},
                 addressPostalCode: {match: '\\bzip\\b|postal|post.?code'},
                 addressCountryCode: {match: 'country'}
             }

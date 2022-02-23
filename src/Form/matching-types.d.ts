@@ -139,7 +139,8 @@ interface DDGMatcherConfiguration {
 
 interface DDGMatcher {
     match?: string;
-    not?: string
+    forceUnknown?: string
+    skip?: string
     matchableStrings?: MatchableStrings[]
     skipStrings?: MatchableStrings[]
     maxDigits?: number
