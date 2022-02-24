@@ -12,7 +12,13 @@ const {
 const {scanForInputs, forms} = require('../scanForInputs.js')
 const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
 
+/**
+ * @implements {FeatureToggles}
+ */
 class AppleDeviceInterface extends InterfacePrototype {
+    /** @type {FeatureToggleNames[]} */
+    #supportedFeatures = ['password.generation'];
+
     /* @type {Timeout | undefined} */
     pollingTimeout
 
@@ -37,7 +43,8 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async setupTopFrame () {
-        const inputType = await this.getCurrentInputType()
+        const topContextData = this.getTopContextData()
+        if (!topContextData) throw new Error('unreachable, topContextData should be available')
         // Provide dummy values, they're not used
         const getPosition = () => {
             return {
@@ -47,7 +54,8 @@ class AppleDeviceInterface extends InterfacePrototype {
                 width: 50
             }
         }
-        const tooltip = this.createTooltip(inputType, getPosition)
+        const tooltip = this.createTooltip(getPosition, topContextData)
+
         this.setActiveTooltip(tooltip)
     }
 
@@ -147,20 +155,31 @@ class AppleDeviceInterface extends InterfacePrototype {
         await wkSend('setSize', details)
     }
 
-    attachTooltipInner (form, input, inputType, getPosition, click) {
+    /**
+     * @param {import("../Form/Form").Form} form
+     * @param {HTMLInputElement} input
+     * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
+     * @param {{ x: number; y: number; }} click
+     * @param {TopContextData} topContextData
+     */
+    attachTooltipInner (form, input, getPosition, click, topContextData) {
         if (!isTopFrame && supportsTopFrame) {
             // TODO currently only mouse initiated events are supported
             if (!click) {
                 return
             }
-            this.showTopTooltip(inputType, click, getPosition())
+            this.showTopTooltip(click, getPosition(), topContextData)
             return
         }
-
-        super.attachTooltipInner(form, input, inputType, getPosition, click)
+        super.attachTooltipInner(form, input, getPosition, click, topContextData)
     }
 
-    async showTopTooltip (inputType, click, inputDimensions) {
+    /**
+     * @param {{ x: number; y: number; }} click
+     * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
+     * @param {TopContextData} [data]
+     */
+    async showTopTooltip (click, inputDimensions, data) {
         let diffX = Math.floor(click.x - inputDimensions.x)
         let diffY = Math.floor(click.y - inputDimensions.y)
 
@@ -169,12 +188,12 @@ class AppleDeviceInterface extends InterfacePrototype {
             inputLeft: diffX,
             inputHeight: Math.floor(inputDimensions.height),
             inputWidth: Math.floor(inputDimensions.width),
-            serializedInputContext: JSON.stringify({inputType})
+            serializedInputContext: JSON.stringify(data)
         }
 
         await wkSend('showAutofillParent', details)
 
-        // Start listening for the user intiated credential
+        // Start listening for the user initiated credential
         this.listenForSelectedCredential()
     }
 
@@ -242,7 +261,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     /**
      * Gets a single identity obj once the user requests it
      * @param {Number} id
-     * @returns {Promise<{success: IdentityObject | undefined}>}
+     * @returns {Promise<{success: IdentityObject|undefined}>}
      */
     getAutofillIdentity (id) {
         const identity = this.getLocalIdentities().find(({id: identityId}) => `${identityId}` === `${id}`)
@@ -285,6 +304,11 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
         )
         return formatDuckAddress(alias)
+    }
+
+    /** @param {FeatureToggleNames} name */
+    supportsFeature (name) {
+        return this.#supportedFeatures.includes(name)
     }
 }
 

@@ -45,6 +45,20 @@ const defaults = Object.freeze({
     getRandomValues: null
 })
 
+/**
+ * This is added here to ensure:
+ *
+ * 1) `getRandomValues` is called with the correct prototype chain
+ * 2) `window` is not accessed when in a node environment
+ * 3) `bind` is not called in a hot code path
+ *
+ * @type {{ getRandomValues: typeof window.crypto.getRandomValues }}
+ */
+const safeGlobals = {}
+if (typeof window !== 'undefined') {
+    safeGlobals.getRandomValues = window.crypto.getRandomValues.bind(window.crypto)
+}
+
 class Password {
     /**
      * @type {typeof defaults}
@@ -196,7 +210,7 @@ class Password {
      * @returns {number}
      */
     _randomNumberWithUniformDistribution (range) {
-        const getRandomValues = this.options.getRandomValues || window.crypto.getRandomValues
+        const getRandomValues = this.options.getRandomValues || safeGlobals.getRandomValues
         // Based on the algorithm described in https://pthree.org/2018/06/13/why-the-multiply-and-floor-rng-method-is-biased/
         const max = Math.floor(2 ** 32 / range) * range
         let x
