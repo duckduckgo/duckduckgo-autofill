@@ -428,6 +428,7 @@ class InterfacePrototype {
         if (this.currentTooltip) {
             this.currentTooltip.remove()
             this.currentTooltip = null
+            this.currentAttached = null
         }
     }
 
