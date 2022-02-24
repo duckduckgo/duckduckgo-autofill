@@ -9,19 +9,19 @@ class PasswordGenerator {
 
     /** @returns {boolean} */
     get generated () {
-        return this.#previous !== null;
+        return this.#previous !== null
     }
 
     /** @param {import('../packages/password').GenerateOptions} params */
-    generate(params) {
+    generate (params) {
         if (this.#previous) {
             return this.#previous
         }
 
-        this.#previous = generate(params);
+        this.#previous = generate(params)
 
-        return this.#previous;
+        return this.#previous
     }
 }
 
-module.exports.PasswordGenerator = PasswordGenerator;
+module.exports.PasswordGenerator = PasswordGenerator
