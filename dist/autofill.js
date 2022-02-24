@@ -3909,7 +3909,8 @@ class Form {
     let timeout = null;
 
     const handlerLabel = e => {
-      const control = e.target.control;
+      // Look for e.target OR it's closest parent to be a HTMLLabelElement
+      const control = e.target.closest('label').control;
       if (!control) return;
       storedClick.set(control, getMainClickCoords(e));
       clearTimeout(timeout); // Remove the stored click if the timer expires
