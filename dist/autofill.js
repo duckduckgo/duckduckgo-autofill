@@ -6950,10 +6950,12 @@ class PasswordGenerator {
   get generated() {
     return _classPrivateFieldGet(this, _previous) !== null;
   }
-  /** @param {import('../packages/password').GenerateOptions} params */
+  /** @param {import('../packages/password').GenerateOptions} [params] */
 
 
-  generate(params) {
+  generate() {
+    let params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     if (_classPrivateFieldGet(this, _previous)) {
       return _classPrivateFieldGet(this, _previous);
     }

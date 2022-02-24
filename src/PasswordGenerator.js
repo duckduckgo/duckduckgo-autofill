@@ -12,8 +12,8 @@ class PasswordGenerator {
         return this.#previous !== null
     }
 
-    /** @param {import('../packages/password').GenerateOptions} params */
-    generate (params) {
+    /** @param {import('../packages/password').GenerateOptions} [params] */
+    generate (params = {}) {
         if (this.#previous) {
             return this.#previous
         }
