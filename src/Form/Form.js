@@ -47,7 +47,7 @@ class Form {
         // We set this to true to skip event listeners while we're autofilling
         this.isAutofilling = false
         this.handlerExecuted = false
-        this.shouldPromptToStoreCredentials = true
+        this.shouldPromptToStoreData = true
 
         /**
          * @type {IntersectionObserver | null}
@@ -63,14 +63,12 @@ class Form {
     submitHandler () {
         if (this.handlerExecuted) return
 
-        const credentials = this.getValues()
-
-        // do nothing if password was absent
-        if (!credentials.password) return
+        const values = this.getValues()
 
         // checks to determine if we should offer to store credentials and/or fireproof
         const checks = [
-            this.shouldPromptToStoreCredentials,
+            this.shouldPromptToStoreData,
+            this.hasValues(values),
             this.device.shouldPromptToStoreCredentials({
                 formElement: this.form
             })
@@ -78,11 +76,10 @@ class Form {
 
         // if *any* of the checks are truthy, proceed to offer
         if (checks.some(Boolean)) {
-            this.device.storeCredentials(credentials)
+            this.device.storeFormData(values)
         }
 
         // mark this form as being handled
-        // TODO(Shane): is this correct, what happens if a failed submission is retried?
         this.handlerExecuted = true
     }
 
@@ -102,12 +99,16 @@ class Form {
                 return output
             }, {credentials: {}, creditCards: {}, identities: {}})
 
-        console.log('values', prepareFormValuesForStorage(formValues))
         return prepareFormValuesForStorage(formValues)
     }
 
-    hasValues () {
-        const {credentials, creditCards, identities} = this.getValues()
+    /**
+     * Determine if the form has values we want to store in the device
+     * @param {DataStorageObject} [values]
+     * @return {boolean}
+     */
+    hasValues (values) {
+        const {credentials, creditCards, identities} = values || this.getValues()
 
         return Boolean(credentials || creditCards || identities)
     }
@@ -361,7 +362,7 @@ class Form {
     }
 
     autofillData (data, dataType) {
-        this.shouldPromptToStoreCredentials = false
+        this.shouldPromptToStoreData = false
         this.isAutofilling = true
 
         this.execOnInputs((input) => {
