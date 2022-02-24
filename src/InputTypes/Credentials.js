@@ -36,7 +36,6 @@ function fromPassword (password) {
     return {
         id: GENERATED_ID,
         password: password,
-        lastUpdated: '',
         username: ''
     }
 }

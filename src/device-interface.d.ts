@@ -2,7 +2,6 @@ interface CredentialsObject {
      id: string,
      username: string,
      password?: string,
-     lastUpdated: string,
 }
 
 interface IdentityObject {
