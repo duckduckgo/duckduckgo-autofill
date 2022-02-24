@@ -17,8 +17,8 @@ const DataAutofill = require('../UI/DataAutofill')
 const {getInputConfigFromType} = require('../Form/inputTypeConfig')
 const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
 const {forms} = require('../scanForInputs')
-const {generate} = require('../../packages/password')
 const {fromPassword, GENERATED_ID} = require('../InputTypes/Credentials')
+const {PasswordGenerator} = require('../PasswordGenerator')
 
 // This may get replaced by a test script
 let isDDGTestMode = false
@@ -35,8 +35,8 @@ class InterfacePrototype {
     currentTooltip = null
     stripCredentials = true
 
-    /** @type {WeakMap<HTMLFormElement, string>} */
-    generatedPasswords = new WeakMap();
+    /** @type {PasswordGenerator} */
+    passwordGenerator = new PasswordGenerator();
 
     /** @type {{privateAddress: string, personalAddress: string}} */
     #addresses = {
@@ -340,31 +340,16 @@ class InterfacePrototype {
 
         // if all checks pass, generate and save a password
         if (checks.every(Boolean)) {
-            const password = this.createAndStorePassword(form.form, input)
+            const password = this.passwordGenerator.generate({
+                input: input.getAttribute('passwordrules'),
+                domain: window.location.hostname
+            })
 
             // append the new credential to the topContextData so that the top autofill can display it
             topContextData.credentials = [fromPassword(password)]
         }
 
         this.attachTooltipInner(form, input, getPosition, click, topContextData)
-    }
-
-    /**
-     * Create a new password once for a given HTMLFormElement
-     *
-     * @param {HTMLFormElement} formElement
-     * @param {HTMLInputElement} input
-     * @returns {string}
-     */
-    createAndStorePassword (formElement, input) {
-        const prev = this.generatedPasswords.get(formElement)
-        if (prev) return prev
-        const newPassword = generate({
-            input: input.getAttribute('passwordrules'),
-            domain: window.location.hostname
-        })
-        this.generatedPasswords.set(formElement, newPassword)
-        return newPassword
     }
 
     /**
@@ -379,7 +364,7 @@ class InterfacePrototype {
         if (!this.supportsFeature('password.generation')) return false
 
         // if we previously generated a password, allow it to be saved
-        if (this.generatedPasswords.has(options.formElement)) {
+        if (this.passwordGenerator.generated) {
             return true
         }
 
