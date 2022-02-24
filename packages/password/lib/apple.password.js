@@ -46,7 +46,13 @@ const defaults = Object.freeze({
 })
 
 /**
- * @type {{getRandomValues: typeof window.crypto.getRandomValues}}
+ * This is added here to ensure:
+ *
+ * 1) `getRandomValues` is called with the correct prototype chain
+ * 2) `window` is not accessed when in a node environment
+ * 3) `bind` is not called in a hot code path
+ *
+ * @type {{ getRandomValues: typeof window.crypto.getRandomValues }}
  */
 const safeGlobals = {}
 if (typeof window !== 'undefined') {

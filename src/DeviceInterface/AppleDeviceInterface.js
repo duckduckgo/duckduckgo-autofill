@@ -271,7 +271,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     /**
      * Gets a single complete credit card obj once the user requests it
      * @param {Number} id
-     * @returns {Promise<APIResponse<CreditCardObject>>}
+     * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
         return wkSendAndWait('pmHandlerGetCreditCard', { id })

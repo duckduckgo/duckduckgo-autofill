@@ -493,7 +493,7 @@ class InterfacePrototype {
     getAccounts () {}
     /** @returns {APIResponse<CredentialsObject>} */
     getAutofillCredentials (_id) { throw new Error('unimplemented') }
-    /** @returns {Promise<APIResponse<CreditCardObject>>} */
+    /** @returns {APIResponse<CreditCardObject>} */
     async getAutofillCreditCard (_id) { throw new Error('unimplemented') }
     /** @returns {Promise<{success: IdentityObject|undefined}>} */
     async getAutofillIdentity (_id) { throw new Error('unimplemented') }
