@@ -7552,7 +7552,6 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 };
 
 const autofillEnabled = processConfig => {
-  if (!window.isSecureContext) return false;
   let contentScope = null;
   let userUnprotectedDomains = null;
   let userPreferences = null; // INJECT contentScope HERE
@@ -7841,6 +7840,8 @@ module.exports = {
 require('./requestIdleCallback');
 
 (() => {
+  if (!window.isSecureContext) return false;
+
   try {
     const deviceInterface = require('./DeviceInterface');
 
