@@ -28,7 +28,13 @@ class AndroidInterface extends InterfacePrototype {
     }
 
     getUserData () {
-        return Promise.resolve(null)
+        let userData = null
+
+        try {
+            userData = JSON.parse(window.EmailInterface.getUserData())
+        } catch (e) {}
+
+        return Promise.resolve(userData)
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
