@@ -11,16 +11,24 @@ class IdentityTooltipItem {
         this.#data = data
     }
     id = () => String(this.#data.id)
-    primaryText = (subtype) => {
+    labelMedium = (subtype) => {
         if (subtype === 'addressCountryCode') {
             return getCountryDisplayName('en', this.#data.addressCountryCode || '')
         }
         if (this.#data.id === 'privateAddress') {
-            return 'Generated Private Address\n' + this.#data[subtype]
+            return 'Generated Private Address'
         }
         return this.#data[subtype]
     };
-    secondaryText = (_) => this.#data.title;
+    label (subtype) {
+        if (this.#data.id === 'privateAddress') {
+            return this.#data[subtype]
+        }
+        return null
+    }
+    labelSmall = (_) => {
+        return this.#data.title
+    };
 }
 
 module.exports.IdentityTooltipItem = IdentityTooltipItem

@@ -30,22 +30,22 @@ class DataAutofill extends Tooltip {
 ${includeStyles}
 <div class="wrapper wrapper--data ${topClass}">
     <div class="tooltip tooltip--data" hidden>
-        ${items.map((item) => `
+        ${items.map((item) => {
+        // these 2 are optional
+        const labelSmall = item.labelSmall?.(this.subtype)
+        const label = item.label?.(this.subtype)
+
+        return `
             ${shouldShowSeparator(item.id()) ? '<hr />' : ''}
-            <button
-                class="tooltip__button tooltip__button--data tooltip__button--data--${config.type} js-autofill-button"
-                id="${item.id()}"
-            >
+            <button id="${item.id()}" class="tooltip__button tooltip__button--data tooltip__button--data--${config.type} js-autofill-button" >
                 <span class="tooltip__button__text-container">
-                    <span class="tooltip__button__primary-text">
-${escapeXML(item.primaryText(this.subtype))}
-                    </span><br />
-                    <span class="tooltip__button__secondary-text">
-${escapeXML(item.secondaryText(this.subtype))}
-                    </span>
+                    <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
+                    ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
+                    ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
                 </span>
             </button>
-        `).join('')}
+        `
+    }).join('')}
     </div>
 </div>`
         this.wrapper = this.shadow.querySelector('.wrapper')

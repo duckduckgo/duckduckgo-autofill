@@ -9,8 +9,8 @@ class CreditCardTooltipItem {
         this.#data = data
     }
     id = () => String(this.#data.id)
-    primaryText = (_) => this.#data.title;
-    secondaryText = (_) => this.#data.displayNumber
+    labelMedium = (_) => this.#data.title;
+    labelSmall = (_) => this.#data.displayNumber
 }
 
 module.exports.CreditCardTooltipItem = CreditCardTooltipItem
