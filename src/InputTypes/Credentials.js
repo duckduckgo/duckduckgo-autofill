@@ -11,15 +11,15 @@ class CredentialsTooltipItem {
         this.#data = data
     }
     id = () => String(this.#data.id)
-    primaryText (_subtype) {
+    labelMedium (_subtype) {
         if (this.#data.id === GENERATED_ID) {
-            return 'Use DuckDuckGo suggested password\n' + this.#data.password
+            return 'Generated password'
         }
         return this.#data.username
     }
-    secondaryText (_subtype) {
+    labelSmall (_subtype) {
         if (this.#data.id === GENERATED_ID && this.#data.password) {
-            return 'Login information will be saved for this website'
+            return this.#data.password
         }
         return '•••••••••••••••'
     }
