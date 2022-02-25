@@ -17,15 +17,9 @@ class CredentialsTooltipItem {
         }
         return this.#data.username
     }
-    label () {
-        if (this.#data.id === GENERATED_ID) {
-            return this.#data.password
-        }
-        return null
-    }
     labelSmall (_subtype) {
         if (this.#data.id === GENERATED_ID && this.#data.password) {
-            return null
+            return this.#data.password
         }
         return '•••••••••••••••'
     }

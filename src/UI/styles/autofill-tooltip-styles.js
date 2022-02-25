@@ -142,7 +142,6 @@ module.exports = `
     margin-top: 5px; 
 }
 .label.label--medium {
-    font-weight: bold;
     letter-spacing: -0.08px;
     color: rgba(0,0,0,.9)
 }
