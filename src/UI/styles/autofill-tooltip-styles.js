@@ -1,7 +1,4 @@
 module.exports = `
-.label {
-    display: block;
-}
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
 }
@@ -135,6 +132,7 @@ module.exports = `
     margin: auto 0;
 }
 .label {
+    display: block;
     font-weight: 400;
     letter-spacing: -0.25px;
     color: rgba(0,0,0,.8);
