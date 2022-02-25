@@ -2682,8 +2682,6 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   async removeTooltip() {
-    // Ignore if there's no active form
-    if (this.currentAttached === null) return;
     if (!supportsTopFrame) return super.removeTooltip();
     await wkSend('closeAutofillParent', {});
   }
