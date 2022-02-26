@@ -1,4 +1,3 @@
-const https = require('https');
 const prev = require("../rules.json");
 
 module.exports = async ({github, context}) => {
@@ -25,22 +24,6 @@ module.exports = async ({github, context}) => {
     return res.join('\n');
 }
 
-function fetchRemote() {
-    return new Promise((resolve, error) => {
-        const chunks = [];
-        https.get('https://raw.githubusercontent.com/apple/password-manager-resources/main/quirks/password-rules.json', (res) => {
-            if (res.statusCode !== 200) {
-                return error(new Error(`none-200 response: ${res.statusCode}`))
-            }
-
-            res.on('data', (d) => {
-                chunks.push(d.toString());
-            });
-        }).on('error', (e) => {
-            console.error(e);
-            error(e);
-        }).on('close', () => {
-            resolve(JSON.parse(chunks.join("")))
-        })
-    })
+function fetchRemote(github) {
+    return github.request('https://raw.githubusercontent.com/apple/password-manager-resources/main/quirks/password-rules.json');
 }
