@@ -21,7 +21,7 @@ module.exports = async ({github, context}) => {
             res.push(`\trules: ${value['password-rules']}`)
         }
     }
-    return res.join('\n')
+    return res;
 }
 
 function fetchRemote (github) {
