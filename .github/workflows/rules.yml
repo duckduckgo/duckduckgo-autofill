@@ -1,0 +1,30 @@
+name: Password Rules
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./packages/password/scripts/compare-rules.js')
+            const result = await script({github, context})
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: result,
+            })
