@@ -2,7 +2,7 @@ const prev = require('../rules.json')
 
 module.exports = async ({github, context}) => {
     const res = []
-    const {data: remote} = await fetchRemote(github)
+    const remote = await fetchRemote(github)
     for (let [domain, value] of Object.entries(prev)) {
         if (!remote[domain]) {
             res.push(`local, not in remote: ${domain}`)
@@ -24,5 +24,5 @@ module.exports = async ({github, context}) => {
 }
 
 function fetchRemote (github) {
-    return github.request('https://raw.githubusercontent.com/apple/password-manager-resources/main/quirks/password-rules.json')
+    return github.json('https://raw.githubusercontent.com/apple/password-manager-resources/main/quirks/password-rules.json')
 }
