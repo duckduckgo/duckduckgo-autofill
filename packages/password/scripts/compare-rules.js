@@ -2,8 +2,8 @@ const prev = require('../rules.json')
 
 module.exports = async ({github, context}) => {
     const res = []
-    const remote = await fetchRemote(github)
-    console.log(remote);
+    const remote_t = await fetchRemote(github)
+    const remote = JSON.parse(remote_t.data);
     for (let [domain, value] of Object.entries(prev)) {
         if (!remote[domain]) {
             res.push(`local, not in remote: ${domain}`)
