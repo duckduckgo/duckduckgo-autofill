@@ -440,7 +440,7 @@ class Password {
     let x;
 
     do {
-      x = getRandomValues(new Uint8Array(1))[0];
+      x = getRandomValues(new Uint32Array(1))[0];
     } while (x >= max);
 
     return x % range;

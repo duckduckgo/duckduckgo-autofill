@@ -215,7 +215,7 @@ class Password {
         const max = Math.floor(2 ** 32 / range) * range
         let x
         do {
-            x = getRandomValues(new Uint8Array(1))[0]
+            x = getRandomValues(new Uint32Array(1))[0]
         } while (x >= max)
 
         return (x % range)
