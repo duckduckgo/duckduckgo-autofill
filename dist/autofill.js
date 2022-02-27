@@ -2358,7 +2358,6 @@ module.exports = deviceInterface;
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
-  notifyWebApp,
   isDDGDomain,
   sendAndWaitForAnswer
 } = require('../autofill-utils');
@@ -2384,25 +2383,21 @@ class AndroidInterface extends InterfacePrototype {
     return true;
   }
 
-  setupAutofill() {
-    let {
-      shouldLog
-    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-      shouldLog: false
-    };
-
+  async setupAutofill() {
     if (this.isDeviceSignedIn()) {
-      notifyWebApp({
-        deviceSignedIn: {
-          value: true,
-          shouldLog
-        }
-      });
       const cleanup = scanForInputs(this).init();
       this.addLogoutListener(cleanup);
-    } else {
-      this.trySigningIn();
     }
+  }
+
+  getUserData() {
+    let userData = null;
+
+    try {
+      userData = JSON.parse(window.EmailInterface.getUserData());
+    } catch (e) {}
+
+    return Promise.resolve(userData);
   }
 
   storeUserData(_ref) {
@@ -2444,10 +2439,8 @@ const {
 
 const {
   isApp,
-  notifyWebApp,
   isTopFrame,
   supportsTopFrame,
-  isDDGDomain,
   formatDuckAddress,
   autofillEnabled
 } = require('../autofill-utils');
@@ -2570,19 +2563,6 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   async setupAutofill() {
-    let {
-      shouldLog
-    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-      shouldLog: false
-    };
-
-    if (isDDGDomain()) {
-      // Tell the web app whether we're in the app
-      notifyWebApp({
-        isApp
-      });
-    }
-
     if (isApp) {
       await this.getAutofillInitData();
     }
@@ -2594,19 +2574,15 @@ class AppleDeviceInterface extends InterfacePrototype {
         await this.getAddresses();
       }
 
-      notifyWebApp({
-        deviceSignedIn: {
-          value: true,
-          shouldLog
-        }
-      });
       forms.forEach(form => form.redecorateAllInputs());
-    } else {
-      this.trySigningIn();
     }
 
     const cleanup = scanForInputs(this).init();
     this.addLogoutListener(cleanup);
+  }
+
+  getUserData() {
+    return wkSendAndWait('emailHandlerGetUserData');
   }
 
   async getAddresses() {
@@ -2842,7 +2818,6 @@ const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
   SIGN_IN_MSG,
-  notifyWebApp,
   isDDGDomain,
   sendAndWaitForAnswer,
   setValue,
@@ -2879,23 +2854,10 @@ class ExtensionInterface extends InterfacePrototype {
   }
 
   setupAutofill() {
-    let {
-      shouldLog
-    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-      shouldLog: false
-    };
-    this.getAddresses().then(_addresses => {
+    return this.getAddresses().then(_addresses => {
       if (this.hasLocalAddresses) {
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog
-          }
-        });
         const cleanup = scanForInputs(this).init();
         this.addLogoutListener(cleanup);
-      } else {
-        this.trySigningIn();
       }
     });
   }
@@ -2907,6 +2869,12 @@ class ExtensionInterface extends InterfacePrototype {
       this.storeLocalAddresses(data);
       return resolve(data);
     }));
+  }
+
+  getUserData() {
+    return new Promise(resolve => chrome.runtime.sendMessage({
+      getUserData: true
+    }, data => resolve(data)));
   }
 
   refreshAlias() {
@@ -2937,8 +2905,10 @@ class ExtensionInterface extends InterfacePrototype {
 
       switch (message.type) {
         case 'ddgUserReady':
-          this.setupAutofill({
-            shouldLog: true
+          this.setupAutofill().then(() => {
+            this.setupSettingsPage({
+              shouldLog: true
+            });
           });
           break;
 
@@ -2998,7 +2968,8 @@ const {
   isDDGDomain,
   sendAndWaitForAnswer,
   formatDuckAddress,
-  autofillEnabled
+  autofillEnabled,
+  notifyWebApp
 } = require('../autofill-utils');
 
 const {
@@ -3220,6 +3191,7 @@ class InterfacePrototype {
     listenForGlobalFormSubmission();
     this.addDeviceListeners();
     await this.setupAutofill();
+    await this.setupSettingsPage();
     this.postInit();
   }
 
@@ -3508,9 +3480,50 @@ class InterfacePrototype {
     }
   }
 
-  setupAutofill(_opts) {}
+  async setupSettingsPage() {
+    let {
+      shouldLog
+    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+      shouldLog: false
+    };
+
+    if (isDDGDomain()) {
+      notifyWebApp({
+        isApp
+      });
+
+      if (this.isDeviceSignedIn()) {
+        let userData;
+
+        try {
+          userData = await this.getUserData();
+        } catch (e) {}
+
+        const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog,
+            userData: hasUserData ? userData : undefined
+          }
+        });
+      } else {
+        this.trySigningIn();
+      }
+    }
+  }
+
+  async setupAutofill() {}
 
   getAddresses() {}
+  /**
+   * @returns {Promise<null|Record<any,any>>}
+   */
+
+
+  getUserData() {
+    return Promise.resolve(null);
+  }
 
   refreshAlias() {}
 
@@ -3521,7 +3534,8 @@ class InterfacePrototype {
         const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
 
         this.storeUserData(data);
-        this.setupAutofill({
+        await this.setupAutofill();
+        await this.setupSettingsPage({
           shouldLog: true
         });
       } else {
@@ -3538,7 +3552,9 @@ class InterfacePrototype {
 
   addLogoutListener(_fn) {}
 
-  isDeviceSignedIn() {}
+  isDeviceSignedIn() {
+    return false;
+  }
   /**
    * @returns {Promise<null|string>}
    */
@@ -3768,7 +3784,7 @@ class Form {
     if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
 
     this.shouldPromptToStoreCredentials = true;
-    this.execOnInputs(this.removeInputHighlight, dataType);
+    this.execOnInputs(input => this.removeInputHighlight(input), dataType);
   }
 
   removeInputDecoration(input) {
@@ -3777,7 +3793,7 @@ class Form {
   }
 
   removeAllDecorations() {
-    this.execOnInputs(this.removeInputDecoration);
+    this.execOnInputs(input => this.removeInputDecoration(input));
     this.listeners.forEach(_ref => {
       let {
         el,
@@ -4791,7 +4807,7 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
- * @param device
+ * @param {import("./Form").Form} form
  * @return {string}
  */
 
