@@ -170,6 +170,12 @@ const birthdayYear = `
 [name=date_of_birth_year], [name=date-of-birth-year],
 [name^=birthdate_y], [name^=birthdate-y]`
 
+const username = [
+    `${GENERIC_TEXT_FIELD}[autocomplete^=user]`,
+    // fix for `aa.com`
+    `${GENERIC_TEXT_FIELD}[name="loginId"]`
+]
+
 // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR
@@ -182,8 +188,7 @@ module.exports.__secret_do_not_use = {
     FORM_INPUTS_SELECTOR,
     email: email,
     password,
-    username: `${GENERIC_TEXT_FIELD}[autocomplete^=user]`,
-
+    username,
     cardName,
     cardNumber,
     cardSecurityCode,

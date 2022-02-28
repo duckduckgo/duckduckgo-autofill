@@ -107,5 +107,6 @@ module.exports = [
     { html: 'litmus_home_search.html' },
     { html: 'litmus_home_new.html', expectedFailures: ['unknown', 'unknown'] },
     { html: 'asana_tasklist.html' },
-    { html: 'asana_search.html' }
+    { html: 'asana_search.html' },
+    { html: 'aa_login.html' }
 ]

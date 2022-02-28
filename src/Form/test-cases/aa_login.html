@@ -1,0 +1,83 @@
+<form id="loginFormId" name="loginForm" action="/loyalty/login/submit" method="POST" autocomplete="off">
+    <input type="hidden" name="_CSRF" value="WKN6-8LKW-WAEL-CSXJ-A7OD-JB9I-MRP5-SU2K">
+    <c:choose>
+        <c:when test="false">
+            <input type="hidden" name="subscriptionProduct" value="">
+        </c:when>
+    </c:choose>
+    <div>
+        <input type="hidden" name="requestContextId" value="">
+        <input type="hidden" name="previousPage" value="/homePage.do">
+        <input type="hidden" name="continueUrl" value="">
+        <input type="hidden" name="CurrentProcessId" value="">
+
+        <input type="hidden" name="bookingPathStateId" value="">
+        <input type="hidden" name="marketId" value="">
+        <input type="hidden" name="discountCode" value="">
+        <input type="hidden" name="hdnOptionalLogin" value="">
+        <input type="hidden" name="PREVIOUS_QUERY_STRING" value="">
+        <input type="hidden" name="seatPayment">
+        <input type="hidden" name="vpayment">
+    </div>
+    <section class="section">
+        <div class="row-form">
+            <div class="span3">
+                <label for="loginId">
+                    AAdvantage # or username
+                    <span class="icon-required" aria-hidden="true"></span><span
+                        class="hidden-accessible">, required.</span>
+                    <input id="loginId" name="loginId" type="text" value="" size="10" maxlength="52" autocomplete="off"
+                           data-manual-scoring="username">
+                </label>
+            </div>
+            <div class="span3">
+                <label for="lastName">
+                    Last name
+                    <span class="icon-required" aria-hidden="true"></span><span
+                        class="hidden-accessible">, required.</span>
+                    <input id="lastName" name="lastName" type="text" value="" size="10" maxlength="35"
+                           autocomplete="off" data-manual-scoring="lastName">
+
+
+                </label>
+            </div>
+            <div class="span3">
+                <div class="tooltip-container">
+                    <label for="password">
+                        Password
+                        <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
+                        <input id="password" name="password" type="password" value="" size="10" maxlength="16"
+                               data-manual-scoring="password">
+
+
+                    </label>
+                    <button id="password-requirements-tooltip" type="button" class="btn-link"
+                            data-href="#password-requirements" data-behavior="tooltip">
+                        <span class="icon-info" aria-hidden="true"></span>
+                        <span class="hidden-accessible">Opens password pop-up</span>
+                    </button>
+                    <div id="password-requirements" class="is-hidden">
+                        Your password is case sensitive and must be<br>5-16 characters.
+                    </div>
+                </div>
+            </div>
+            <div class="span3 margin-top">
+                <div class="customComponent margin-top -verticalOffset">
+                    <input id="rememberMe" name="rememberMe" type="checkbox" value="true"><input type="hidden"
+                                                                                                 name="_rememberMe"
+                                                                                                 value="on">
+                    <label for="rememberMe">
+                        <span class="control"></span>
+                        Remember me
+                    </label>
+                </div>
+            </div>
+        </div>
+        <p class="label need-help-logging-in">
+            <a id="NeedHelpLogin" href="https://login.aa.com/miniMenu?locale=en_GB" target="_blank">
+                Need help logging in?
+                <span class="icon-newpage" aria-hidden="true"></span>
+            </a>
+        </p>
+    </section>
+</form>
