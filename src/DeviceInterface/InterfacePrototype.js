@@ -6,7 +6,8 @@ const {
     isDDGDomain,
     sendAndWaitForAnswer,
     formatDuckAddress,
-    autofillEnabled
+    autofillEnabled,
+    notifyWebApp
 } = require('../autofill-utils')
 const {getInputType, getSubtypeFromType} = require('../Form/matching')
 const {
@@ -173,6 +174,7 @@ class InterfacePrototype {
         listenForGlobalFormSubmission()
         this.addDeviceListeners()
         await this.setupAutofill()
+        await this.setupSettingsPage()
         this.postInit()
     }
 
@@ -446,8 +448,37 @@ class InterfacePrototype {
             break
         }
     }
-    setupAutofill (_opts) {}
+
+    async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
+        if (isDDGDomain()) {
+            notifyWebApp({isApp})
+
+            if (this.isDeviceSignedIn()) {
+                let userData
+                try {
+                    userData = await this.getUserData()
+                } catch (e) {}
+
+                const hasUserData = userData && !userData.error && Object.entries(userData).length > 0
+                notifyWebApp({
+                    deviceSignedIn: {
+                        value: true,
+                        shouldLog,
+                        userData: hasUserData ? userData : undefined
+                    }
+                })
+            } else {
+                this.trySigningIn()
+            }
+        }
+    }
+
+    async setupAutofill () {}
     getAddresses () {}
+    /**
+     * @returns {Promise<null|Record<any,any>>}
+     */
+    getUserData () { return Promise.resolve(null) }
     refreshAlias () {}
     async trySigningIn () {
         if (isDDGDomain()) {
@@ -456,7 +487,8 @@ class InterfacePrototype {
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
-                this.setupAutofill({shouldLog: true})
+                await this.setupAutofill()
+                await this.setupSettingsPage({shouldLog: true})
             } else {
                 console.warn('max attempts reached, bailing')
             }
@@ -467,7 +499,7 @@ class InterfacePrototype {
     addDeviceListeners () {}
     /** @param {() => void} _fn */
     addLogoutListener (_fn) {}
-    isDeviceSignedIn () {}
+    isDeviceSignedIn () { return false }
     /**
      * @returns {Promise<null|string>}
      */
