@@ -95,9 +95,9 @@ type SupportedMainTypes =
 
 interface InputTypeConfigBase {
     type: SupportedMainTypes,
-    getIconFilled: (input: HTMLInputElement, form: Form) => string,
-    getIconBase: (input: HTMLInputElement, form: Form) => string,
-    shouldDecorate: (input: HTMLInputElement, form: Form) => boolean,
+    getIconFilled: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
+    getIconBase: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
+    shouldDecorate: (input: HTMLInputElement, form: import("../Form/Form").Form) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
     tooltipItem(data: any): TooltipItemRenderer;
 }

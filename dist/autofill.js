@@ -4818,6 +4818,7 @@ const inputTypeConfig = {
     shouldDecorate: (input, _ref2) => {
       let {
         isLogin,
+        isSignup,
         device
       } = _ref2;
 
@@ -4828,10 +4829,12 @@ const inputTypeConfig = {
       } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
 
 
-      const subtype = getInputSubtype(input);
+      if (device.supportsFeature('password.generation') && isSignup) {
+        const subtype = getInputSubtype(input);
 
-      if (subtype === 'password') {
-        return true;
+        if (subtype === 'password') {
+          return true;
+        }
       }
 
       return false;
@@ -4869,11 +4872,11 @@ const inputTypeConfig = {
       if (isApp) {
         var _device$getLocalIdent;
 
-        return (_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]);
+        return Boolean((_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]));
       }
 
       if (subtype === 'emailAddress') {
-        return device.isDeviceSignedIn();
+        return Boolean(device.isDeviceSignedIn());
       }
 
       return false;
