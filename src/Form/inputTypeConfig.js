@@ -33,7 +33,7 @@ const inputTypeConfig = {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (input, {isLogin, isSignup, device}) => {
+        shouldDecorate: (input, {isLogin, device}) => {
             // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
             // saved password
             if (isLogin) {
@@ -41,7 +41,7 @@ const inputTypeConfig = {
             }
 
             // at this point, it's not a 'login' attempt, so we could offer to provide a password?
-            if (device.supportsFeature('password.generation') && isSignup) {
+            if (device.supportsFeature('password.generation')) {
                 const subtype = getInputSubtype(input)
                 if (subtype === 'password') {
                     return true

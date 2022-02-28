@@ -4818,7 +4818,6 @@ const inputTypeConfig = {
     shouldDecorate: (input, _ref2) => {
       let {
         isLogin,
-        isSignup,
         device
       } = _ref2;
 
@@ -4829,7 +4828,7 @@ const inputTypeConfig = {
       } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
 
 
-      if (device.supportsFeature('password.generation') && isSignup) {
+      if (device.supportsFeature('password.generation')) {
         const subtype = getInputSubtype(input);
 
         if (subtype === 'password') {
