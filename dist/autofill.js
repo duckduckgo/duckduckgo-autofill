@@ -6639,7 +6639,7 @@ const birthdayDay = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day
 const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m]";
 const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]";
 const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), // fix for `aa.com`
-"".concat(GENERIC_TEXT_FIELD, "[name=\"loginId\"]")]; // todo: these are still used directly right now, mostly in scanForInputs
+"input[name=\"loginId\"]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
