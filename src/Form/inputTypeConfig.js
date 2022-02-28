@@ -41,9 +41,11 @@ const inputTypeConfig = {
             }
 
             // at this point, it's not a 'login' attempt, so we could offer to provide a password?
-            const subtype = getInputSubtype(input)
-            if (subtype === 'password') {
-                return true
+            if (device.supportsFeature('password.generation')) {
+                const subtype = getInputSubtype(input)
+                if (subtype === 'password') {
+                    return true
+                }
             }
 
             return false
@@ -69,11 +71,11 @@ const inputTypeConfig = {
             const subtype = getInputSubtype(input)
 
             if (isApp) {
-                return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
+                return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))
             }
 
             if (subtype === 'emailAddress') {
-                return device.isDeviceSignedIn()
+                return Boolean(device.isDeviceSignedIn())
             }
 
             return false
