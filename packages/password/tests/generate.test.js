@@ -84,6 +84,7 @@ describe('password generation', () => {
             expect.assertions(1)
             generate({
                 ...args,
+                rules: vendorRules,
                 onError (e) {
                     expect(e).toBeInstanceOf(expectedErrorClass)
                 }
@@ -114,7 +115,7 @@ describe('password generation', () => {
         it('_selectPasswordRules throws when a full URL is given', () => {
             expect.assertions(1)
             try {
-                _selectPasswordRules('http://example.com')
+                _selectPasswordRules('http://example.com', vendorRules)
             } catch (e) {
                 expect(e).toBeInstanceOf(HostnameInputError)
             }
@@ -122,7 +123,7 @@ describe('password generation', () => {
         it('_selectPasswordRules throws when a host is given (with port)', () => {
             expect.assertions(1)
             try {
-                _selectPasswordRules('localhost:8080')
+                _selectPasswordRules('localhost:8080', vendorRules)
             } catch (e) {
                 expect(e).toBeInstanceOf(HostnameInputError)
             }
@@ -130,13 +131,13 @@ describe('password generation', () => {
         it('_selectPasswordRules throws when a URL cannot be constructed from input', () => {
             expect.assertions(1)
             try {
-                _selectPasswordRules('')
+                _selectPasswordRules('', vendorRules)
             } catch (e) {
                 expect(e).toBeInstanceOf(HostnameInputError)
             }
         })
         it('_selectPasswordRules returns undefined for a valid host with no match', () => {
-            expect(_selectPasswordRules('example.com')).toBeUndefined()
+            expect(_selectPasswordRules('example.com', {})).toBeUndefined()
         })
         it('_selectPasswordRules returns rules when its a direct match', () => {
             const actual = _selectPasswordRules('example.com', {
