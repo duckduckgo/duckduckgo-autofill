@@ -5805,6 +5805,10 @@ class Matching {
       return '';
     }
 
+    if (Array.isArray(match)) {
+      return match.join(',');
+    }
+
     return match;
   }
   /**
@@ -6635,7 +6639,9 @@ const addressPostalCode = "\n[name=zip], [name=zip2], [name=postal], [autocomple
 const addressCountryCode = "\n[name=country], [autocomplete=country],\n[name*=countryCode i], [name*=country-code i],\n[name*=countryName i], [name*=country-name i]";
 const birthdayDay = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d]";
 const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m]";
-const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]"; // todo: these are still used directly right now, mostly in scanForInputs
+const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]";
+const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), // fix for `aa.com`
+"input[name=\"loginId\"]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
@@ -6647,7 +6653,7 @@ module.exports.__secret_do_not_use = {
   FORM_INPUTS_SELECTOR,
   email: email,
   password,
-  username: "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"),
+  username,
   cardName,
   cardNumber,
   cardSecurityCode,

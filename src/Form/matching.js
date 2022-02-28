@@ -90,6 +90,9 @@ class Matching {
             console.warn('CSS selector not found for %s, using a default value', selectorName)
             return ''
         }
+        if (Array.isArray(match)) {
+            return match.join(',')
+        }
         return match
     }
 

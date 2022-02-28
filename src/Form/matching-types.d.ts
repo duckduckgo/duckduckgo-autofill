@@ -123,7 +123,7 @@ type InputTypeConfigs =
 type InputTypeConfig = Record<SupportedMainTypes, InputTypeConfigs>
 
 interface CssSelectorConfiguration {
-    selectors: RequiredCssSelectors | Record<MatcherTypeNames | string, string>
+    selectors: RequiredCssSelectors | Record<MatcherTypeNames | string, string | string[]>
 }
 
 interface VendorRegexConfiguration {
