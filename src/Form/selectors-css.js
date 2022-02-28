@@ -173,7 +173,7 @@ const birthdayYear = `
 const username = [
     `${GENERIC_TEXT_FIELD}[autocomplete^=user]`,
     // fix for `aa.com`
-    `${GENERIC_TEXT_FIELD}[name="loginId"]`
+    `[name="loginId"]`
 ]
 
 // todo: these are still used directly right now, mostly in scanForInputs
