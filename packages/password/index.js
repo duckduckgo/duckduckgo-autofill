@@ -38,7 +38,7 @@ function generate (options = {}) {
         }
     } catch (e) {
         // if an 'onError' callback was provided, forward all errors
-        if (options.onError && typeof options.onError === 'function') {
+        if (options?.onError && typeof options?.onError === 'function') {
             options.onError(e)
         } else {
             // otherwise, only console.error unknown errors (which could be implementation bugs)
