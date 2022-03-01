@@ -11,6 +11,7 @@ You can do the following with it
 
 ```javascript
 const password = require("@duckduckgo/autofill/packages/password");
+const rules = require("@duckduckgo/autofill/packages/password/rules.json");
 
 // generate a password with default settings
 const pw = password.generate()
@@ -18,19 +19,69 @@ const pw = password.generate()
 // generate a password with a given input, falling back to default
 const pw = password.generate({ input: "minlength: 30; required: lower, upper;"})
 
-// generate a password with rules from a known domain, falling back to default
-const pw = password.generate({ domain: "example.com" })
+// generate a password with rules from a known domain,
+// if it exists in the given rules, falling back to default
+const pw = password.generate({ domain: "example.com", rules })
 ```
 
 The API is designed to **never** throw an exception, it will always fall back to the default ruleset if there's
 anything wrong with the `input` or `domain`.
 
-Whilst in development however, you may want more feedback about an input that might be incorrect - for
+## Password rules
+
+This library includes a snapshot of [this file](https://github.com/apple/password-manager-resources/blob/main/quirks/password-rules.json) that you are free to include in your calls to `generate`. You'll need to require the file (in whichever way your bundler needs it) and pass it along with the `domain`. 
+
+```javascript
+const pw = password.generate({ 
+    domain: "example.com",
+    rules: require("@duckduckgo/autofill/packages/password/rules.json"),
+})
+```
+
+This gives you the flexibility to add/remove rules for each domain as you see fit - if this file was automatically included, then calls to `generate` would be bound to whatever was in that file. 
+
+**Example:** Here's how you could merge the base rules with some of your own
+
+```javascript
+const customRules = {
+    "example.com": { "password-rules": "min-length: 30; required: upper, lower, digit" },
+    "example.eu": { "password-rules": "min-length: 40; required: upper, lower, digit" }
+}
+
+// use the base rules, overriding/adding customRules.
+const pw = password.generate({
+    domain: "example.com",
+    rules: {
+        ...require("@duckduckgo/autofill/packages/password/rules.json"),
+        ...customRules
+    },
+})
+```
+
+Or, to remove rules for a given domain (where rules may have changed due to a backend update), you can do the following:
+
+```javascript
+const {
+    ['autify.com']: _autify,
+    ['axa.de']: _axa,
+    ...rules } = require("@duckduckgo/autofill/packages/password/rules.json");
+
+// this will fallback to default, since `autify.com` was removed from the ruleset  
+const pw = password.generate({
+    domain: "autify.com",
+    rules,
+})
+```
+
+## Error handling
+
+This public API will never throw an exception - it's designed to *always* produce a password. During development however, you may want more feedback about an input that might be incorrect - for
 that you can provide an `onError` callback to observe any thrown exceptions. 
 
 ```javascript
 const pw = password.generate({ 
     domain: "localhost:8080",
+    rules: require("@duckduckgo/autofill/packages/password/rules.json"),
     onError: (e) => {
         console.error(e)
     }

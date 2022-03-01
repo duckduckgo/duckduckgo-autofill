@@ -1,4 +1,5 @@
 const {generate} = require('../packages/password')
+const rules = require('../packages/password/rules.json')
 
 /**
  * Create a password once and reuse it.
@@ -18,7 +19,7 @@ class PasswordGenerator {
             return this.#previous
         }
 
-        this.#previous = generate(params)
+        this.#previous = generate({ ...params, rules })
 
         return this.#previous
     }

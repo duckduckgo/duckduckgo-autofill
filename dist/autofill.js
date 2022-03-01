@@ -98,15 +98,17 @@ function generate() {
     }
 
     if (typeof (options === null || options === void 0 ? void 0 : options.domain) === 'string') {
-      const rules = _selectPasswordRules(options.domain, options.rules);
+      if (options !== null && options !== void 0 && options.rules) {
+        const rules = _selectPasswordRules(options.domain, options.rules);
 
-      if (rules) {
-        return Password.generateOrThrow(rules);
+        if (rules) {
+          return Password.generateOrThrow(rules);
+        }
       }
     }
   } catch (e) {
     // if an 'onError' callback was provided, forward all errors
-    if (options.onError && typeof options.onError === 'function') {
+    if (options !== null && options !== void 0 && options.onError && typeof (options === null || options === void 0 ? void 0 : options.onError) === 'function') {
       options.onError(e);
     } else {
       // otherwise, only console.error unknown errors (which could be implementation bugs)
@@ -132,15 +134,13 @@ class HostnameInputError extends Error {}
 /**
  * @private
  * @param {string} inputHostname
- * @param {RulesFormat | null | undefined} [rules]
+ * @param {RulesFormat} rules
  * @returns {string | undefined}
  * @throws {HostnameInputError}
  */
 
 
 function _selectPasswordRules(inputHostname, rules) {
-  rules = rules || require('./rules.json');
-
   const hostname = _safeHostname(inputHostname); // direct match
 
 
@@ -193,7 +193,7 @@ module.exports.HostnameInputError = HostnameInputError;
 module.exports.ParserError = ParserError;
 module.exports.constants = constants;
 
-},{"./lib/apple.password":3,"./lib/constants":4,"./lib/rules-parser":5,"./rules.json":6}],3:[function(require,module,exports){
+},{"./lib/apple.password":3,"./lib/constants":4,"./lib/rules-parser":5}],3:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -6967,6 +6967,8 @@ function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { 
 const {
   generate
 } = require('../packages/password');
+
+const rules = require('../packages/password/rules.json');
 /**
  * Create a password once and reuse it.
  */
@@ -6996,7 +6998,9 @@ class PasswordGenerator {
       return _classPrivateFieldGet(this, _previous);
     }
 
-    _classPrivateFieldSet(this, _previous, generate(params));
+    _classPrivateFieldSet(this, _previous, generate({ ...params,
+      rules
+    }));
 
     return _classPrivateFieldGet(this, _previous);
   }
@@ -7005,7 +7009,7 @@ class PasswordGenerator {
 
 module.exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":2}],29:[function(require,module,exports){
+},{"../packages/password":2,"../packages/password/rules.json":6}],29:[function(require,module,exports){
 "use strict";
 
 const {

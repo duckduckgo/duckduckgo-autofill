@@ -29,14 +29,16 @@ function generate (options = {}) {
             return Password.generateOrThrow(options.input)
         }
         if (typeof options?.domain === 'string') {
-            const rules = _selectPasswordRules(options.domain, options.rules)
-            if (rules) {
-                return Password.generateOrThrow(rules)
+            if (options?.rules) {
+                const rules = _selectPasswordRules(options.domain, options.rules)
+                if (rules) {
+                    return Password.generateOrThrow(rules)
+                }
             }
         }
     } catch (e) {
         // if an 'onError' callback was provided, forward all errors
-        if (options.onError && typeof options.onError === 'function') {
+        if (options?.onError && typeof options?.onError === 'function') {
             options.onError(e)
         } else {
             // otherwise, only console.error unknown errors (which could be implementation bugs)
@@ -62,12 +64,11 @@ class HostnameInputError extends Error {}
 /**
  * @private
  * @param {string} inputHostname
- * @param {RulesFormat | null | undefined} [rules]
+ * @param {RulesFormat} rules
  * @returns {string | undefined}
  * @throws {HostnameInputError}
  */
 function _selectPasswordRules (inputHostname, rules) {
-    rules = rules || require('./rules.json')
     const hostname = _safeHostname(inputHostname)
     // direct match
     if (rules[hostname]) {
