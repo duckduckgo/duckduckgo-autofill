@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run test",
     "generate:html": "node html-testing/generate.js",
-    "rules:update": "node scripts/rules.js"
+    "rules:update": "node scripts/rules.js --write-rules-json"
   },
   "repository": {
     "type": "git",

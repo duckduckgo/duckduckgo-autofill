@@ -3,6 +3,15 @@ const {writeFileSync} = require('fs')
 const outputPath = join(__dirname, '..', 'rules.json')
 const REMOTE_URL = 'https://raw.githubusercontent.com/apple/password-manager-resources/main/quirks/password-rules.json'
 
+/**
+ * This file contains utilities for keeping our password rules in sync.
+ */
+
+/**
+ * @param {typeof import("../rules.json")} prev
+ * @param {typeof import("../rules.json")} next
+ * @returns {string[]}
+ */
 function summary (prev, next) {
     const lines = []
 
@@ -28,10 +37,16 @@ function summary (prev, next) {
     return lines
 }
 
+/**
+ * @param {typeof import("../rules.json")} rules
+ */
 function update (rules) {
     writeFileSync(outputPath, JSON.stringify(rules, null, 2))
 }
 
+/**
+ * @returns {Promise<typeof import("../rules.json")>}
+ */
 function download () {
     const https = require('https')
     return new Promise((resolve, reject) => {
@@ -48,11 +63,17 @@ function download () {
     })
 }
 
-if (!require.main) {
+if (process.argv.includes('--write-rules-json')) {
     download()
-        .then((rules) => update(rules))
-        .then(() => {
-            console.log('rules updated')
+        .then((remoteRules) => {
+            const current = require("../rules.json");
+            const lines = summary(current, remoteRules)
+            if (lines.length) {
+                update(remoteRules)
+                console.log('rules updated')
+            } else {
+                console.log("nothing to update")
+            }
         }).catch(e => {
             console.error(e)
             process.exit(1)
