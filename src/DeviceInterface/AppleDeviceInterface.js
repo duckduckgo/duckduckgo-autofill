@@ -5,10 +5,9 @@ const {
     isTopFrame,
     supportsTopFrame,
     formatDuckAddress,
-    autofillEnabled
 } = require('../autofill-utils')
 const {scanForInputs, forms} = require('../scanForInputs.js')
-const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
+const {Config} = require('@duckduckgo/content-scope-scripts/src/config/Config')
 
 /**
  * @implements {FeatureToggles}
@@ -21,7 +20,23 @@ class AppleDeviceInterface extends InterfacePrototype {
     pollingTimeout
 
     async isEnabled () {
-        return autofillEnabled(processConfig)
+        let contentScope = null
+        let userUnprotectedDomains = null
+        let userPreferences = null
+        // INJECT contentScope HERE
+        // INJECT userUnprotectedDomains HERE
+        // INJECT userPreferences HERE
+        try {
+            let config = new Config({
+                contentScope,
+                userUnprotectedDomains,
+                userPreferences,
+            });
+            return config.isFeatureRemoteEnabled('autofill')
+        } catch (e) {
+            console.error(e);
+            return false
+        }
     }
 
     constructor () {

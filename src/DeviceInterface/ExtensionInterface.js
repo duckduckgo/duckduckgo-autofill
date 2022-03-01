@@ -4,13 +4,11 @@ const {
     isDDGDomain,
     sendAndWaitForAnswer, setValue,
     formatDuckAddress,
-    autofillEnabled
 } = require('../autofill-utils')
 const {scanForInputs} = require('../scanForInputs.js')
 
 class ExtensionInterface extends InterfacePrototype {
     async isEnabled () {
-        if (!autofillEnabled()) return false
         return new Promise(resolve => {
             // Check if the site is marked to skip autofill
             chrome.runtime.sendMessage(

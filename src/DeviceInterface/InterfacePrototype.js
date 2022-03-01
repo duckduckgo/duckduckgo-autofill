@@ -6,7 +6,6 @@ const {
     isDDGDomain,
     sendAndWaitForAnswer,
     formatDuckAddress,
-    autofillEnabled,
     notifyWebApp
 } = require('../autofill-utils')
 const {getInputType, getSubtypeFromType} = require('../Form/matching')
@@ -181,7 +180,7 @@ class InterfacePrototype {
     postInit () {}
 
     async isEnabled () {
-        return autofillEnabled()
+        return false
     }
 
     async init () {
