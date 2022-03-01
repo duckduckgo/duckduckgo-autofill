@@ -63,16 +63,28 @@ function download () {
     })
 }
 
+/**
+ * @param {string[]} lines
+ */
+function intoMarkdown (lines) {
+    const header = '## Note: Password rules outdated'
+    const mainBody = '```\n' + lines.join('\n') + '\n```'
+    const updateTitle = '**You can update the rules with the following command**'
+    const updateCommand = '```sh\ncd packages/password && npm run rules:update\n```'
+    const footer = `Once you've updated the rules, commit the changes.`
+    return [header, mainBody, updateTitle, updateCommand, footer].join('\n')
+}
+
 if (process.argv.includes('--write-rules-json')) {
     download()
         .then((remoteRules) => {
-            const current = require("../rules.json");
+            const current = require('../rules.json')
             const lines = summary(current, remoteRules)
             if (lines.length) {
                 update(remoteRules)
                 console.log('rules updated')
             } else {
-                console.log("nothing to update")
+                console.log('nothing to update')
             }
         }).catch(e => {
             console.error(e)
@@ -83,4 +95,5 @@ if (process.argv.includes('--write-rules-json')) {
 module.exports.update = update
 module.exports.summary = summary
 module.exports.download = download
+module.exports.intoMarkdown = intoMarkdown
 module.exports.REMOTE_URL = REMOTE_URL
