@@ -1,8 +1,20 @@
-const {PASSWORD_SELECTOR, SUBMIT_BUTTON_SELECTOR} = require('./selectors')
+const {removeExcessWhitespace, Matching} = require('./matching')
+const {TEXT_LENGTH_CUTOFF} = require('../constants')
+const {matchingConfiguration} = require('./matching-configuration')
 
 class FormAnalyzer {
-    constructor (form, input) {
+    /** @type HTMLFormElement */
+    form;
+    /** @type Matching */
+    matching;
+    /**
+     * @param {HTMLFormElement} form
+     * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {Matching} [matching]
+     */
+    constructor (form, input, matching) {
         this.form = form
+        this.matching = matching || new Matching(matchingConfiguration)
         this.autofillSignal = 0
         this.signals = []
 
@@ -44,9 +56,9 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false, // Should check for login/signup forms
         shouldBeConservative = false // Should use the conservative signup regex
     }) {
-        const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in/i)
+        const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri/i)
         const positiveRegex = new RegExp(
-            /sign(ing)?.?up|join|regist(er|ration)|newsletter|subscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i
+            /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i
         )
         const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
         const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i)
@@ -93,11 +105,12 @@ class FormAnalyzer {
     evaluatePageHeadings () {
         const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]')
         if (headings) {
-            headings.forEach(({innerText}) => {
+            headings.forEach(({textContent}) => {
+                textContent = removeExcessWhitespace(textContent || '')
                 this.updateSignal({
-                    string: innerText,
+                    string: textContent,
                     strength: 0.5,
-                    signalType: `heading: ${innerText}`,
+                    signalType: `heading: ${textContent}`,
                     shouldCheckUnifiedForm: true,
                     shouldBeConservative: true
                 })
@@ -116,9 +129,11 @@ class FormAnalyzer {
             `)
         buttons.forEach(button => {
             // if the button has a form, it's not related to our input, because our input has no form here
-            if (!button.form && !button.closest('form')) {
-                this.evaluateElement(button)
-                this.evaluateElAttributes(button, 0.5)
+            if (button instanceof HTMLButtonElement) {
+                if (!button.form && !button.closest('form')) {
+                    this.evaluateElement(button)
+                    this.evaluateElAttributes(button, 0.5)
+                }
             }
         })
     }
@@ -130,18 +145,20 @@ class FormAnalyzer {
     getText (el) {
         // for buttons, we don't care about descendants, just get the whole text as is
         // this is important in order to give proper attribution of the text to the button
-        if (this.elementIs(el, 'BUTTON')) return el.innerText
+        if (this.elementIs(el, 'BUTTON')) return removeExcessWhitespace(el.textContent)
 
         if (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) return el.value
 
-        return Array.from(el.childNodes).reduce((text, child) =>
-            this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, '')
+        return removeExcessWhitespace(
+            Array.from(el.childNodes).reduce((text, child) =>
+                this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, '')
+        )
     }
 
     evaluateElement (el) {
         const string = this.getText(el)
 
-        if (el.matches(PASSWORD_SELECTOR)) {
+        if (el.matches(this.matching.cssSelector('password'))) {
             // These are explicit signals by the web author, so we weigh them heavily
             this.updateSignal({
                 string: el.getAttribute('autocomplete') || '',
@@ -151,9 +168,13 @@ class FormAnalyzer {
         }
 
         // check button contents
-        if (el.matches(SUBMIT_BUTTON_SELECTOR)) {
+        if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
             // If we're sure this is a submit button, it's a stronger signal
-            const strength = el.getAttribute('type') === 'submit' ? 20 : 2
+            const strength =
+                el.getAttribute('type') === 'submit' ||
+                /primary|submit/i.test(el.className) ||
+                el.offsetHeight * el.offsetWidth >= 10000
+                    ? 20 : 2
             this.updateSignal({string, strength, signalType: `submit: ${string}`})
         }
         // if a link points to relevant urls or contain contents outside the page…
@@ -166,7 +187,7 @@ class FormAnalyzer {
         } else {
             // any other case
             // only consider the el if it's a small text to avoid noisy disclaimers
-            if (el.innerText?.length < 50) {
+            if (removeExcessWhitespace(el.textContent)?.length < TEXT_LENGTH_CUTOFF) {
                 this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
             }
         }

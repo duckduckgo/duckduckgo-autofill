@@ -16,6 +16,7 @@
 /*
  * @see https://developers.google.com/web/updates/2015/08/using-requestidlecallback
  */
+// @ts-ignore
 window.requestIdleCallback = window.requestIdleCallback ||
     function (cb) {
         return setTimeout(function () {
@@ -33,3 +34,5 @@ window.cancelIdleCallback = window.cancelIdleCallback ||
     function (id) {
         clearTimeout(id)
     }
+
+module.exports = {}

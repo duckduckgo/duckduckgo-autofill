@@ -11,10 +11,13 @@ const ddgGlobals = require('./captureDdgGlobals')
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
- * @returns {*}
  */
-const wkSend = (handler, data = {}) =>
-    window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret}})
+const wkSend = (handler, data = {}) => {
+    if (!(handler in window.webkit.messageHandlers)) {
+        throw new Error(`Missing webkit handler: '${handler}'`)
+    }
+    return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret}})
+}
 
 /**
  * Generate a random method name and adds it to the global scope
@@ -44,7 +47,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
 const wkSendAndWait = async (handler, data = {}) => {
     if (hasModernWebkitAPI) {
         const response = await wkSend(handler, data)
-        return ddgGlobals.JSONparse(response)
+        return ddgGlobals.JSONparse(response || '{}')
     }
 
     try {
@@ -65,7 +68,7 @@ const wkSendAndWait = async (handler, data = {}) => {
 
         const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag])
         const decrypted = await decrypt(cipher, key, iv)
-        return ddgGlobals.JSONparse(decrypted)
+        return ddgGlobals.JSONparse(decrypted || '{}')
     } catch (e) {
         console.error('decryption failed', e)
         return {error: e}

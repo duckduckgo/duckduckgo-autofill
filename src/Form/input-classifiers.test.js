@@ -1,24 +1,47 @@
-const {getCCFieldSubtype, getUnifiedExpiryDate} = require('./input-classifiers')
+const fs = require('fs')
+const path = require('path')
+
+const {getUnifiedExpiryDate} = require('./formatters')
+const {scanForInputs} = require('../scanForInputs')
+const {Matching, getInputSubtype} = require('./matching')
+const {matchingConfiguration} = require('./matching-configuration')
+const {Form} = require('./Form')
+const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
+
+const CSS_MATCHERS_LIST = matchingConfiguration.matchers.lists['cc'].map(matcherName => {
+    return matchingConfiguration.matchers.fields[matcherName]
+})
+
+/**
+ * @param {HTMLInputElement} el
+ * @param {HTMLFormElement} form
+ * @returns {string|undefined}
+ */
+const getCCFieldSubtype = (el, form) => {
+    const matching = new Matching(matchingConfiguration)
+    return matching.subtypeFromMatchers(CSS_MATCHERS_LIST, el, form)
+}
 
 const renderInputWithLabel = () => {
     const input = document.createElement('input')
     input.id = 'inputId'
     const label = document.createElement('label')
     label.setAttribute('for', 'inputId')
-    const form = document.createElement('form')
-    form.append(input, label)
-    document.body.append(form)
-    return {input, label, form}
+    const formElement = document.createElement('form')
+    formElement.append(input, label)
+    document.body.append(formElement)
+    const form = new Form(formElement, input, new InterfacePrototype())
+    return { input, label, formElement: formElement, form }
 }
 
 const testRegexForCCLabels = (cases) => {
     Object.entries(cases).forEach(([expectedType, arr]) => {
         arr.forEach(({text, shouldMatch = true}) => {
             it(`"${text}" should ${shouldMatch ? '' : 'not '}match regex for ${expectedType}`, () => {
-                const {input, label, form} = renderInputWithLabel()
+                const {input, label, formElement} = renderInputWithLabel()
                 label.textContent = text
 
-                const subtype = getCCFieldSubtype(input, form)
+                const subtype = getCCFieldSubtype(input, formElement)
                 if (shouldMatch) {
                     expect(subtype).toBe(expectedType)
                 } else {
@@ -30,53 +53,11 @@ const testRegexForCCLabels = (cases) => {
 }
 
 afterEach(() => {
-    document.body.innerHTML = null
+    document.body.innerHTML = ''
 })
 
 describe('Input Classifiers', () => {
-    it('should match the selector for cardNumber', () => {
-        const {input, form} = renderInputWithLabel()
-        input.autocomplete = 'cc-number'
-        expect(getCCFieldSubtype(input, form)).toBe('cardNumber')
-    })
-
-    it('should match text in a nearby span', () => {
-        // Poor markup without a form proper labels and attributes
-        const markup = `
-<div class="form">
-    <div>
-        <span>Card Number</span>
-        <input />
-    </div>
-    <div>
-        <span>MM-YYYY</span>
-        <input />
-    </div>
-    <div>
-        <span>Security code</span>
-        <input />
-    </div>
-    <div>
-        <span>Random unrelated field</span>
-        <input />
-        <span hidden class="Error message">
-            Invalid field. Used to test that the word "invalid" doesn't trigger the expiry regex
-        </span>
-    </div>
-    <button>Buy now</button>
-</div>`
-        document.body.innerHTML = markup
-        const form = document.querySelector('.form')
-        const inputs = document.querySelectorAll('input')
-
-        expect(getCCFieldSubtype(inputs[0], form)).toBe('cardNumber')
-        expect(getCCFieldSubtype(inputs[1], form)).toBe('expiration')
-        expect(getUnifiedExpiryDate(inputs[1], 8, 2025, form)).toBe('08-2025')
-        expect(getCCFieldSubtype(inputs[2], form)).toBe('cardSecurityCode')
-        expect(getCCFieldSubtype(inputs[3], form)).toBeUndefined()
-    })
-
-    const ccLabeltestCases = {
+    const ccLabelTestCases = {
         cardName: [
             {text: 'credit card name'},
             {text: 'name on card'},
@@ -88,7 +69,6 @@ describe('Input Classifiers', () => {
             {text: 'Credit Card Number'},
             {text: 'number on card'},
             {text: 'card owner', shouldMatch: false}
-
         ],
         expirationMonth: [
             {text: 'expiry month'},
@@ -112,7 +92,7 @@ describe('Input Classifiers', () => {
             {text: 'card expiry mo', shouldMatch: false}
         ]
     }
-    testRegexForCCLabels(ccLabeltestCases)
+    testRegexForCCLabels(ccLabelTestCases)
 
     describe('Unified Expiration Date', () => {
         describe.each([
@@ -127,7 +107,7 @@ describe('Input Classifiers', () => {
             { text: 'mm - yy', expectedResult: '08-25' },
             { text: 'mm yy', expectedResult: '08 25' },
             { text: 'ie: 08.22', expectedResult: '08.25' }
-        ])('when checking for $text', ({ text, expectedResult }) => {
+        ])('when checking for "$text"', ({ text, expectedResult }) => {
             let elements
 
             beforeEach(() => {
@@ -149,5 +129,59 @@ describe('Input Classifiers', () => {
                 expect(getUnifiedExpiryDate(elements.input, 8, 2025, elements.form)).toBe(expectedResult)
             })
         })
+    })
+})
+
+const testCases = require('./test-cases/index')
+describe.each(testCases)('Test $html fields', (testCase) => {
+    const { html, expectedFailures = [], title = '__test__' } = testCase
+
+    const testTextString = expectedFailures.length > 0
+        ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
+        : `should NOT contain failures`
+
+    it(testTextString, () => {
+        const testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', html), 'utf-8')
+
+        document.body.innerHTML = testContent
+        document.title = title
+
+        scanForInputs(new InterfacePrototype(), new Map()).findEligibleInputs(document)
+
+        /**
+         * @type {NodeListOf<HTMLInputElement>}
+         */
+        const manuallyScoredFields = document.querySelectorAll('[data-manual-scoring]')
+
+        const scores = Array.from(manuallyScoredFields).map(field => {
+            const { manualScoring, ddgInputtype, ...rest } = field.dataset
+            // @ts-ignore
+            field.style = ''
+            return {
+                attrs: {
+                    name: field.name,
+                    id: field.id,
+                    dataset: rest
+                },
+                html: field.outerHTML,
+                inferredType: getInputSubtype(field),
+                manualScore: field.getAttribute('data-manual-scoring')
+            }
+        })
+        let bad = scores.filter(x => x.inferredType !== x.manualScore)
+        let failed = bad.map(x => x.manualScore)
+
+        if (bad.length !== expectedFailures.length) {
+            for (let score of bad) {
+                console.log(
+                    'manualType:   ' + JSON.stringify(score.manualScore),
+                    '\ninferredType: ' + JSON.stringify(score.inferredType),
+                    '\nid:          ', JSON.stringify(score.attrs.id),
+                    '\nname:        ', JSON.stringify(score.attrs.name),
+                    '\nHTML:        ', score.html
+                )
+            }
+        }
+        expect(failed).toStrictEqual(expectedFailures)
     })
 })

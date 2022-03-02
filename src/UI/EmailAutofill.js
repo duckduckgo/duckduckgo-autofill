@@ -1,13 +1,13 @@
 const {
     isApp,
-    formatAddress,
+    formatDuckAddress,
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
 
 class EmailAutofill extends Tooltip {
-    constructor (input, associatedForm, Interface) {
-        super(input, associatedForm, Interface)
+    constructor (config, inputType, position, deviceInterface) {
+        super(config, inputType, position, deviceInterface)
 
         this.addresses = this.interface.getLocalAddresses()
 
@@ -21,7 +21,7 @@ ${includeStyles}
     <div class="tooltip tooltip--email" hidden>
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
-                Use <span class="js-address">${formatAddress(escapeXML(this.addresses.personalAddress))}</span>
+                Use <span class="js-address">${formatDuckAddress(escapeXML(this.addresses.personalAddress))}</span>
             </span>
             <span class="tooltip__button--email__secondary-text">Blocks email trackers</span>
         </button>
@@ -38,23 +38,30 @@ ${includeStyles}
         this.addressEl = this.shadow.querySelector('.js-address')
 
         this.updateAddresses = (addresses) => {
-            if (addresses) {
+            if (addresses && this.addressEl) {
                 this.addresses = addresses
-                this.addressEl.textContent = formatAddress(addresses.personalAddress)
+                this.addressEl.textContent = formatDuckAddress(addresses.personalAddress)
             }
         }
         this.registerClickableButton(this.usePersonalButton, () => {
-            this.associatedForm.autofillEmail(formatAddress(this.addresses.personalAddress))
+            this.fillForm('personalAddress')
         })
         this.registerClickableButton(this.usePrivateButton, () => {
-            this.associatedForm.autofillEmail(formatAddress(this.addresses.privateAddress))
-            this.interface.refreshAlias()
+            this.fillForm('privateAddress')
         })
 
         // Get the alias from the extension
         this.interface.getAddresses().then(this.updateAddresses)
 
         this.init()
+    }
+    /**
+     * @param {'personalAddress' | 'privateAddress'} id
+     */
+    async fillForm (id) {
+        const address = this.addresses[id]
+        const formattedAddress = formatDuckAddress(address)
+        this.interface.selectedDetail({email: formattedAddress, id}, 'email')
     }
 }
 
