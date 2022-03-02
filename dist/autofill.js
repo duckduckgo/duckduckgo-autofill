@@ -1989,6 +1989,9 @@ module.exports={
   "leetchi.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&()*+,./:;<>?@\"_];"
   },
+  "lg.com": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-!#$%&'()*+,.:;=?@[^_{|}~]];"
+  },
   "live.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^'[]];"
   },
@@ -2241,6 +2244,9 @@ module.exports={
   "thameswater.co.uk": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
   },
+  "tix.soundrink.com": {
+    "password-rules": "minlength: 6; maxlength: 16;"
+  },
   "training.confluent.io": {
     "password-rules": "minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%*@^_~];"
   },
@@ -2326,7 +2332,6 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-
 },{}],7:[function(require,module,exports){
 "use strict";
 
