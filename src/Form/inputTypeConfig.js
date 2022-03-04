@@ -60,7 +60,7 @@ const inputTypeConfig = {
         dataType: 'Credentials',
         tooltipItem: (data) => new CredentialsTooltipItem(data)
     },
-    /** @type {CreditCardInputTypeConfig} */
+    /** @type {CreditCardsInputTypeConfig} */
     creditCards: {
         type: 'creditCards',
         getIconBase: () => '',
@@ -77,6 +77,8 @@ const inputTypeConfig = {
         getIconFilled: getIdentitiesIcon,
         shouldDecorate: (_input, {device}) => {
             if (!canBeDecorated(_input)) return false
+
+            const subtype = getInputSubtype(_input)
 
             if (isApp) {
                 return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))

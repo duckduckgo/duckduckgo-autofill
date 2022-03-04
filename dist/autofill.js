@@ -1,2340 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.processConfig = processConfig;
-
-function getTopLevelURL() {
-  try {
-    // FROM: https://stackoverflow.com/a/7739035/73479
-    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
-    if (window.location !== window.parent.location) {
-      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
-    } else {
-      return new URL(window.location.href);
-    }
-  } catch (error) {
-    return new URL(location.href);
-  }
-}
-
-function isUnprotectedDomain(topLevelUrl, featureList) {
-  let unprotectedDomain = false;
-  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : []; // walk up the domain to see if it's unprotected
-
-  while (domainParts.length > 1 && !unprotectedDomain) {
-    const partialDomain = domainParts.join('.');
-    unprotectedDomain = featureList.filter(domain => domain.domain === partialDomain).length > 0;
-    domainParts.shift();
-  }
-
-  return unprotectedDomain;
-}
-
-function processConfig(data, userList, preferences) {
-  const topLevelUrl = getTopLevelURL();
-  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
-  const enabledFeatures = Object.keys(data.features).filter(featureName => {
-    const feature = data.features[featureName];
-    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
-  });
-  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
-  preferences.site = {
-    domain: topLevelUrl.hostname,
-    isBroken,
-    allowlisted,
-    enabledFeatures
-  }; // TODO
-
-  preferences.cookie = {};
-  return preferences;
-}
-
-},{}],2:[function(require,module,exports){
-"use strict";
-
-const {
-  Password
-} = require('./lib/apple.password');
-
-const {
-  ParserError
-} = require('./lib/rules-parser');
-
-const {
-  constants
-} = require('./lib/constants');
-/**
- * @typedef {{
- *   domain?: string | null | undefined;
- *   input?: string | null | undefined;
- *   rules?: RulesFormat | null | undefined;
- *   onError?: ((error: unknown) => void) | null | undefined;
- * }} GenerateOptions
- */
-
-/**
- * Generate a random password based on the following attempts
- *
- * 1) using `options.input` if provided -> falling back to default ruleset
- * 2) using `options.domain` if provided -> falling back to default ruleset
- * 3) using default ruleset
- *
- * Note: This API is designed to never throw - if you want to observe errors
- * during development, you can provide an `onError` callback
- *
- * @param {GenerateOptions} [options]
- */
-
-
-function generate() {
-  let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-  try {
-    if (typeof (options === null || options === void 0 ? void 0 : options.input) === 'string') {
-      return Password.generateOrThrow(options.input);
-    }
-
-    if (typeof (options === null || options === void 0 ? void 0 : options.domain) === 'string') {
-      if (options !== null && options !== void 0 && options.rules) {
-        const rules = _selectPasswordRules(options.domain, options.rules);
-
-        if (rules) {
-          return Password.generateOrThrow(rules);
-        }
-      }
-    }
-  } catch (e) {
-    // if an 'onError' callback was provided, forward all errors
-    if (options !== null && options !== void 0 && options.onError && typeof (options === null || options === void 0 ? void 0 : options.onError) === 'function') {
-      options.onError(e);
-    } else {
-      // otherwise, only console.error unknown errors (which could be implementation bugs)
-      const isKnownError = e instanceof ParserError || e instanceof HostnameInputError;
-
-      if (!isKnownError) {
-        console.error(e);
-      }
-    }
-  } // At this point, we have to trust the generation will not throw
-  // as it is NOT using any user/page-provided data
-
-
-  return Password.generateDefault();
-} // An extension type to differentiate between known errors
-
-
-class HostnameInputError extends Error {}
-/**
- * @typedef {Record<string, {"password-rules": string}>} RulesFormat
- */
-
-/**
- * @private
- * @param {string} inputHostname
- * @param {RulesFormat} rules
- * @returns {string | undefined}
- * @throws {HostnameInputError}
- */
-
-
-function _selectPasswordRules(inputHostname, rules) {
-  const hostname = _safeHostname(inputHostname); // direct match
-
-
-  if (rules[hostname]) {
-    return rules[hostname]['password-rules'];
-  } // otherwise, start chopping off subdomains and re-joining to compare
-
-
-  const pieces = hostname.split('.');
-
-  while (pieces.length > 1) {
-    pieces.shift();
-    const joined = pieces.join('.');
-
-    if (rules[joined]) {
-      return rules[joined]['password-rules'];
-    }
-  }
-
-  return undefined;
-}
-/**
- * @private
- * @param {string} inputHostname;
- * @throws {HostnameInputError}
- * @returns {string}
- */
-
-
-function _safeHostname(inputHostname) {
-  if (inputHostname.startsWith('http:') || inputHostname.startsWith('https:')) {
-    throw new HostnameInputError('invalid input, you can only provide a hostname but you gave a scheme');
-  }
-
-  if (inputHostname.includes(':')) {
-    throw new HostnameInputError('invalid input, you can only provide a hostname but you gave a :port');
-  }
-
-  try {
-    const asUrl = new URL('https://' + inputHostname);
-    return asUrl.hostname;
-  } catch (e) {
-    throw new HostnameInputError("could not instantiate a URL from that hostname ".concat(inputHostname));
-  }
-}
-
-module.exports.generate = generate;
-module.exports._selectPasswordRules = _selectPasswordRules;
-module.exports.HostnameInputError = HostnameInputError;
-module.exports.ParserError = ParserError;
-module.exports.constants = constants;
-
-},{"./lib/apple.password":3,"./lib/constants":4,"./lib/rules-parser":5}],3:[function(require,module,exports){
-"use strict";
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/*
- *
- * NOTE:
- *
- * This file was created with inspiration from https://developer.apple.com/password-rules
- *
- * * The changes made by DuckDuckGo employees are:
- *
- * 1) removed all logic relating to 'more typeable passwords'
- * 2) reduced the number of password styles from 4 to only the 1 which suits our needs
- * 2) added JSDoc comments (for Typescript checking)
- *
- */
-const parser = require('./rules-parser');
-
-const {
-  constants
-} = require('./constants');
-/**
- * @typedef {{
- *     PasswordAllowedCharacters?: string,
- *     PasswordRequiredCharacters?: string[],
- *     PasswordRepeatedCharacterLimit?: number,
- *     PasswordConsecutiveCharacterLimit?: number,
- *     PasswordMinLength?: number,
- *     PasswordMaxLength?: number,
- * }} Requirements
- */
-
-/**
- * @typedef {{
- *     NumberOfRequiredRandomCharacters: number,
- *     PasswordAllowedCharacters: string,
- *     RequiredCharacterSets: string[]
- * }} PasswordParameters
- */
-
-
-const defaults = Object.freeze({
-  SCAN_SET_ORDER: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\\"'<>,.?/ ]",
-  defaultUnambiguousCharacters: 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789',
-  defaultPasswordLength: constants.MIN_LENGTH,
-  defaultPasswordRules: constants.DEFAULT_PASSWORD_RULES,
-  defaultRequiredCharacterSets: ['abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '0123456789'],
-
-  /**
-   * @type {typeof window.crypto.getRandomValues | typeof import("crypto").randomFillSync | null}
-   */
-  getRandomValues: null
-});
-/**
- * This is added here to ensure:
- *
- * 1) `getRandomValues` is called with the correct prototype chain
- * 2) `window` is not accessed when in a node environment
- * 3) `bind` is not called in a hot code path
- *
- * @type {{ getRandomValues: typeof window.crypto.getRandomValues }}
- */
-
-const safeGlobals = {};
-
-if (typeof window !== 'undefined') {
-  safeGlobals.getRandomValues = window.crypto.getRandomValues.bind(window.crypto);
-}
-
-class Password {
-  /**
-   * @type {typeof defaults}
-   */
-
-  /**
-   * @param {Partial<typeof defaults>} [options]
-   */
-  constructor() {
-    let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _defineProperty(this, "options", void 0);
-
-    this.options = { ...defaults,
-      ...options
-    };
-    return this;
-  }
-  /**
-   * This is here to provide external access to un-modified defaults
-   * in case they are needed for tests/verifications
-   * @type {typeof defaults}
-   */
-
-
-  /**
-   * Generates a password from the given input.
-   *
-   * Note: This method will throw an error if parsing fails - use with caution
-   *
-   * @example
-   *
-   * ```javascript
-   * const password = Password.generateOrThrow("minlength: 20")
-   * ```
-   * @public
-   * @param {string} inputString
-   * @param {Partial<typeof defaults>} [options]
-   * @throws {ParserError|Error}
-   * @returns {string}
-   */
-  static generateOrThrow(inputString) {
-    let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return new Password(options).parse(inputString).generate();
-  }
-  /**
-   * Generates a password using the default ruleset.
-   *
-   * @example
-   *
-   * ```javascript
-   * const password = Password.generateDefault()
-   * ```
-   *
-   * @public
-   * @param {Partial<typeof defaults>} [options]
-   * @returns {string}
-   */
-
-
-  static generateDefault() {
-    let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    return new Password(options).parse(Password.defaults.defaultPasswordRules).generate();
-  }
-  /**
-   * Convert a ruleset into it's internally-used component pieces.
-   *
-   * @param {string} inputString
-   * @throws {parser.ParserError|Error}
-   * @returns {{
-   *    requirements: Requirements;
-   *    parameters: PasswordParameters;
-   *    rules: parser.Rule[],
-   *    get entropy(): number;
-   *    generate: () => string;
-   * }}
-   */
-
-
-  parse(inputString) {
-    const rules = parser.parsePasswordRules(inputString);
-
-    const requirements = this._requirementsFromRules(rules);
-
-    if (!requirements) throw new Error('could not generate requirements for ' + JSON.stringify(inputString));
-
-    const parameters = this._passwordGenerationParametersDictionary(requirements);
-
-    return {
-      requirements,
-      parameters,
-      rules,
-
-      get entropy() {
-        return Math.log2(parameters.PasswordAllowedCharacters.length ** parameters.NumberOfRequiredRandomCharacters);
-      },
-
-      generate: () => {
-        const password = this._generatedPasswordMatchingRequirements(requirements, parameters);
-        /**
-         * The following is unreachable because if user input was incorrect then
-         * the parsing phase would throw. The following lines is to satisfy Typescript
-         */
-
-
-        if (password === '') throw new Error('unreachable');
-        return password;
-      }
-    };
-  }
-  /**
-   * Given an array of `Rule's`, convert into `Requirements`
-   *
-   * @param {parser.Rule[]} passwordRules
-   * @returns {Requirements | null}
-   */
-
-
-  _requirementsFromRules(passwordRules) {
-    /** @type {Requirements} */
-    const requirements = {};
-
-    for (let rule of passwordRules) {
-      if (rule.name === parser.RuleName.ALLOWED) {
-        console.assert(!('PasswordAllowedCharacters' in requirements));
-
-        const chars = this._charactersFromCharactersClasses(rule.value);
-
-        const scanSet = this._canonicalizedScanSetFromCharacters(chars);
-
-        if (scanSet) {
-          requirements.PasswordAllowedCharacters = scanSet;
-        }
-      } else if (rule.name === parser.RuleName.MAX_CONSECUTIVE) {
-        console.assert(!('PasswordRepeatedCharacterLimit' in requirements));
-        requirements.PasswordRepeatedCharacterLimit = rule.value;
-      } else if (rule.name === parser.RuleName.REQUIRED) {
-        let requiredCharacters = requirements.PasswordRequiredCharacters;
-
-        if (!requiredCharacters) {
-          requiredCharacters = requirements.PasswordRequiredCharacters = [];
-        }
-
-        requiredCharacters.push(this._canonicalizedScanSetFromCharacters(this._charactersFromCharactersClasses(rule.value)));
-      } else if (rule.name === parser.RuleName.MIN_LENGTH) {
-        requirements.PasswordMinLength = rule.value;
-      } else if (rule.name === parser.RuleName.MAX_LENGTH) {
-        requirements.PasswordMaxLength = rule.value;
-      }
-    } // Only include an allowed rule matching SCAN_SET_ORDER (all characters) when a required rule is also present.
-
-
-    if (requirements.PasswordAllowedCharacters === this.options.SCAN_SET_ORDER && !requirements.PasswordRequiredCharacters) {
-      delete requirements.PasswordAllowedCharacters;
-    } // Fix up PasswordRequiredCharacters, if needed.
-
-
-    if (requirements.PasswordRequiredCharacters && requirements.PasswordRequiredCharacters.length === 1 && requirements.PasswordRequiredCharacters[0] === this.options.SCAN_SET_ORDER) {
-      delete requirements.PasswordRequiredCharacters;
-    }
-
-    return Object.keys(requirements).length ? requirements : null;
-  }
-  /**
-   * @param {number} range
-   * @returns {number}
-   */
-
-
-  _randomNumberWithUniformDistribution(range) {
-    const getRandomValues = this.options.getRandomValues || safeGlobals.getRandomValues; // Based on the algorithm described in https://pthree.org/2018/06/13/why-the-multiply-and-floor-rng-method-is-biased/
-
-    const max = Math.floor(2 ** 32 / range) * range;
-    let x;
-
-    do {
-      x = getRandomValues(new Uint32Array(1))[0];
-    } while (x >= max);
-
-    return x % range;
-  }
-  /**
-   * @param {number} numberOfRequiredRandomCharacters
-   * @param {string} allowedCharacters
-   */
-
-
-  _classicPassword(numberOfRequiredRandomCharacters, allowedCharacters) {
-    const length = allowedCharacters.length;
-    const randomCharArray = Array(numberOfRequiredRandomCharacters);
-
-    for (let i = 0; i < numberOfRequiredRandomCharacters; i++) {
-      const index = this._randomNumberWithUniformDistribution(length);
-
-      randomCharArray[i] = allowedCharacters[index];
-    }
-
-    return randomCharArray.join('');
-  }
-  /**
-   * @param {string} password
-   * @param {number} consecutiveCharLimit
-   * @returns {boolean}
-   */
-
-
-  _passwordHasNotExceededConsecutiveCharLimit(password, consecutiveCharLimit) {
-    let longestConsecutiveCharLength = 1;
-    let firstConsecutiveCharIndex = 0; // Both "123" or "abc" and "321" or "cba" are considered consecutive.
-
-    let isSequenceAscending;
-
-    for (let i = 1; i < password.length; i++) {
-      const currCharCode = password.charCodeAt(i);
-      const prevCharCode = password.charCodeAt(i - 1);
-
-      if (isSequenceAscending) {
-        // If `isSequenceAscending` is defined, then we know that we are in the middle of an existing
-        // pattern. Check if the pattern continues based on whether the previous pattern was
-        // ascending or descending.
-        if (isSequenceAscending.valueOf() && currCharCode === prevCharCode + 1 || !isSequenceAscending.valueOf() && currCharCode === prevCharCode - 1) {
-          continue;
-        } // Take into account the case when the sequence transitions from descending
-        // to ascending.
-
-
-        if (currCharCode === prevCharCode + 1) {
-          firstConsecutiveCharIndex = i - 1;
-          isSequenceAscending = Boolean(true);
-          continue;
-        } // Take into account the case when the sequence transitions from ascending
-        // to descending.
-
-
-        if (currCharCode === prevCharCode - 1) {
-          firstConsecutiveCharIndex = i - 1;
-          isSequenceAscending = Boolean(false);
-          continue;
-        }
-
-        isSequenceAscending = null;
-      } else if (currCharCode === prevCharCode + 1) {
-        isSequenceAscending = Boolean(true);
-        continue;
-      } else if (currCharCode === prevCharCode - 1) {
-        isSequenceAscending = Boolean(false);
-        continue;
-      }
-
-      const currConsecutiveCharLength = i - firstConsecutiveCharIndex;
-
-      if (currConsecutiveCharLength > longestConsecutiveCharLength) {
-        longestConsecutiveCharLength = currConsecutiveCharLength;
-      }
-
-      firstConsecutiveCharIndex = i;
-    }
-
-    if (isSequenceAscending) {
-      const currConsecutiveCharLength = password.length - firstConsecutiveCharIndex;
-
-      if (currConsecutiveCharLength > longestConsecutiveCharLength) {
-        longestConsecutiveCharLength = currConsecutiveCharLength;
-      }
-    }
-
-    return longestConsecutiveCharLength <= consecutiveCharLimit;
-  }
-  /**
-   * @param {string} password
-   * @param {number} repeatedCharLimit
-   * @returns {boolean}
-   */
-
-
-  _passwordHasNotExceededRepeatedCharLimit(password, repeatedCharLimit) {
-    let longestRepeatedCharLength = 1;
-    let lastRepeatedChar = password.charAt(0);
-    let lastRepeatedCharIndex = 0;
-
-    for (let i = 1; i < password.length; i++) {
-      const currChar = password.charAt(i);
-
-      if (currChar === lastRepeatedChar) {
-        continue;
-      }
-
-      const currRepeatedCharLength = i - lastRepeatedCharIndex;
-
-      if (currRepeatedCharLength > longestRepeatedCharLength) {
-        longestRepeatedCharLength = currRepeatedCharLength;
-      }
-
-      lastRepeatedChar = currChar;
-      lastRepeatedCharIndex = i;
-    }
-
-    return longestRepeatedCharLength <= repeatedCharLimit;
-  }
-  /**
-   * @param {string} password
-   * @param {string[]} requiredCharacterSets
-   * @returns {boolean}
-   */
-
-
-  _passwordContainsRequiredCharacters(password, requiredCharacterSets) {
-    const requiredCharacterSetsLength = requiredCharacterSets.length;
-    const passwordLength = password.length;
-
-    for (let i = 0; i < requiredCharacterSetsLength; i++) {
-      const requiredCharacterSet = requiredCharacterSets[i];
-      let hasRequiredChar = false;
-
-      for (let j = 0; j < passwordLength; j++) {
-        const char = password.charAt(j);
-
-        if (requiredCharacterSet.indexOf(char) !== -1) {
-          hasRequiredChar = true;
-          break;
-        }
-      }
-
-      if (!hasRequiredChar) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-  /**
-   * @param {string} string1
-   * @param {string} string2
-   * @returns {boolean}
-   */
-
-
-  _stringsHaveAtLeastOneCommonCharacter(string1, string2) {
-    const string2Length = string2.length;
-
-    for (let i = 0; i < string2Length; i++) {
-      const char = string2.charAt(i);
-
-      if (string1.indexOf(char) !== -1) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-  /**
-   * @param {Requirements} requirements
-   * @returns {PasswordParameters}
-   */
-
-
-  _passwordGenerationParametersDictionary(requirements) {
-    let minPasswordLength = requirements.PasswordMinLength;
-    const maxPasswordLength = requirements.PasswordMaxLength; // @ts-ignore
-
-    if (minPasswordLength > maxPasswordLength) {
-      // Resetting invalid value of min length to zero means "ignore min length parameter in password generation".
-      minPasswordLength = 0;
-    }
-
-    const requiredCharacterArray = requirements.PasswordRequiredCharacters;
-    let allowedCharacters = requirements.PasswordAllowedCharacters;
-    let requiredCharacterSets = this.options.defaultRequiredCharacterSets;
-
-    if (requiredCharacterArray) {
-      const mutatedRequiredCharacterSets = [];
-      const requiredCharacterArrayLength = requiredCharacterArray.length;
-
-      for (let i = 0; i < requiredCharacterArrayLength; i++) {
-        const requiredCharacters = requiredCharacterArray[i];
-
-        if (allowedCharacters && this._stringsHaveAtLeastOneCommonCharacter(requiredCharacters, allowedCharacters)) {
-          mutatedRequiredCharacterSets.push(requiredCharacters);
-        }
-      }
-
-      requiredCharacterSets = mutatedRequiredCharacterSets;
-    } // If requirements allow, we will generateOrThrow the password in default format: "xxx-xxx-xxx-xxx".
-
-
-    let numberOfRequiredRandomCharacters = this.options.defaultPasswordLength;
-
-    if (minPasswordLength && minPasswordLength > numberOfRequiredRandomCharacters) {
-      numberOfRequiredRandomCharacters = minPasswordLength;
-    }
-
-    if (maxPasswordLength && maxPasswordLength < numberOfRequiredRandomCharacters) {
-      numberOfRequiredRandomCharacters = maxPasswordLength;
-    }
-
-    if (!allowedCharacters) {
-      allowedCharacters = this.options.defaultUnambiguousCharacters;
-    } // In default password format, we use dashes only as separators, not as symbols you can encounter at a random position.
-
-
-    if (!requiredCharacterSets) {
-      requiredCharacterSets = this.options.defaultRequiredCharacterSets;
-    } // If we have more requirements of the type "need a character from set" than the length of the password we want to generateOrThrow, then
-    // we will never be able to meet these requirements, and we'll end up in an infinite loop generating passwords. To avoid this,
-    // reset required character sets if the requirements are impossible to meet.
-
-
-    if (requiredCharacterSets.length > numberOfRequiredRandomCharacters) {
-      requiredCharacterSets = [];
-    } // Do not require any character sets that do not contain allowed characters.
-
-
-    const requiredCharacterSetsLength = requiredCharacterSets.length;
-    const mutatedRequiredCharacterSets = [];
-    const allowedCharactersLength = allowedCharacters.length;
-
-    for (let i = 0; i < requiredCharacterSetsLength; i++) {
-      const requiredCharacterSet = requiredCharacterSets[i];
-      let requiredCharacterSetContainsAllowedCharacters = false;
-
-      for (let j = 0; j < allowedCharactersLength; j++) {
-        const character = allowedCharacters.charAt(j);
-
-        if (requiredCharacterSet.indexOf(character) !== -1) {
-          requiredCharacterSetContainsAllowedCharacters = true;
-          break;
-        }
-      }
-
-      if (requiredCharacterSetContainsAllowedCharacters) {
-        mutatedRequiredCharacterSets.push(requiredCharacterSet);
-      }
-    }
-
-    requiredCharacterSets = mutatedRequiredCharacterSets;
-    return {
-      NumberOfRequiredRandomCharacters: numberOfRequiredRandomCharacters,
-      PasswordAllowedCharacters: allowedCharacters,
-      RequiredCharacterSets: requiredCharacterSets
-    };
-  }
-  /**
-   * @param {Requirements | null} requirements
-   * @param {PasswordParameters} [parameters]
-   * @returns {string}
-   */
-
-
-  _generatedPasswordMatchingRequirements(requirements, parameters) {
-    requirements = requirements || {};
-    parameters = parameters || this._passwordGenerationParametersDictionary(requirements);
-    const numberOfRequiredRandomCharacters = parameters.NumberOfRequiredRandomCharacters;
-    const repeatedCharLimit = requirements.PasswordRepeatedCharacterLimit;
-    const allowedCharacters = parameters.PasswordAllowedCharacters;
-    const shouldCheckRepeatedCharRequirement = !!repeatedCharLimit;
-
-    while (true) {
-      const password = this._classicPassword(numberOfRequiredRandomCharacters, allowedCharacters);
-
-      if (!this._passwordContainsRequiredCharacters(password, parameters.RequiredCharacterSets)) {
-        continue;
-      }
-
-      if (shouldCheckRepeatedCharRequirement) {
-        if (repeatedCharLimit !== undefined && repeatedCharLimit >= 1 && !this._passwordHasNotExceededRepeatedCharLimit(password, repeatedCharLimit)) {
-          continue;
-        }
-      }
-
-      const consecutiveCharLimit = requirements.PasswordConsecutiveCharacterLimit;
-
-      if (consecutiveCharLimit && consecutiveCharLimit >= 1) {
-        if (!this._passwordHasNotExceededConsecutiveCharLimit(password, consecutiveCharLimit)) {
-          continue;
-        }
-      }
-
-      return password || '';
-    }
-  }
-  /**
-   * @param {parser.CustomCharacterClass | parser.NamedCharacterClass} characterClass
-   * @returns {string[]}
-   */
-
-
-  _scanSetFromCharacterClass(characterClass) {
-    if (characterClass instanceof parser.CustomCharacterClass) {
-      return characterClass.characters;
-    }
-
-    console.assert(characterClass instanceof parser.NamedCharacterClass);
-
-    switch (characterClass.name) {
-      case parser.Identifier.ASCII_PRINTABLE:
-      case parser.Identifier.UNICODE:
-        return this.options.SCAN_SET_ORDER.split('');
-
-      case parser.Identifier.DIGIT:
-        return this.options.SCAN_SET_ORDER.substring(this.options.SCAN_SET_ORDER.indexOf('0'), this.options.SCAN_SET_ORDER.indexOf('9') + 1).split('');
-
-      case parser.Identifier.LOWER:
-        return this.options.SCAN_SET_ORDER.substring(this.options.SCAN_SET_ORDER.indexOf('a'), this.options.SCAN_SET_ORDER.indexOf('z') + 1).split('');
-
-      case parser.Identifier.SPECIAL:
-        return this.options.SCAN_SET_ORDER.substring(this.options.SCAN_SET_ORDER.indexOf('-'), this.options.SCAN_SET_ORDER.indexOf(']') + 1).split('');
-
-      case parser.Identifier.UPPER:
-        return this.options.SCAN_SET_ORDER.substring(this.options.SCAN_SET_ORDER.indexOf('A'), this.options.SCAN_SET_ORDER.indexOf('Z') + 1).split('');
-    }
-
-    console.assert(false, parser.SHOULD_NOT_BE_REACHED);
-    return [];
-  }
-  /**
-   * @param {(parser.CustomCharacterClass | parser.NamedCharacterClass)[]} characterClasses
-   */
-
-
-  _charactersFromCharactersClasses(characterClasses) {
-    const output = [];
-
-    for (let characterClass of characterClasses) {
-      output.push(...this._scanSetFromCharacterClass(characterClass));
-    }
-
-    return output;
-  }
-  /**
-   * @param {string[]} characters
-   * @returns {string}
-   */
-
-
-  _canonicalizedScanSetFromCharacters(characters) {
-    if (!characters.length) {
-      return '';
-    }
-
-    let shadowCharacters = Array.prototype.slice.call(characters);
-    shadowCharacters.sort((a, b) => this.options.SCAN_SET_ORDER.indexOf(a) - this.options.SCAN_SET_ORDER.indexOf(b));
-    let uniqueCharacters = [shadowCharacters[0]];
-
-    for (let i = 1, length = shadowCharacters.length; i < length; ++i) {
-      if (shadowCharacters[i] === shadowCharacters[i - 1]) {
-        continue;
-      }
-
-      uniqueCharacters.push(shadowCharacters[i]);
-    }
-
-    return uniqueCharacters.join('');
-  }
-
-}
-
-_defineProperty(Password, "defaults", defaults);
-
-module.exports.Password = Password;
-
-},{"./constants":4,"./rules-parser":5}],4:[function(require,module,exports){
-"use strict";
-
-const MIN_LENGTH = 20;
-const MAX_LENGTH = 30;
-const DEFAULT_PASSWORD_RULES = "minlength: ".concat(MIN_LENGTH, "; maxlength: ").concat(MAX_LENGTH, ";");
-const constants = {
-  MIN_LENGTH,
-  MAX_LENGTH,
-  DEFAULT_PASSWORD_RULES
-};
-module.exports.constants = constants;
-
-},{}],5:[function(require,module,exports){
-"use strict";
-
-// Copyright (c) 2019 - 2020 Apple Inc. Licensed under MIT License.
-
-/*
- *
- * NOTE:
- *
- * This file was taken as intended from https://github.com/apple/password-manager-resources.
- *
- * The only additions from DuckDuckGo employees are
- *
- * 1) exporting some identifiers
- * 2) adding some JSDoc comments
- * 3) making this parser throw when it cannot produce any rules
- *    ^ the default implementation still returns a base-line ruleset, which we didn't want.
- *
- */
-const Identifier = {
-  ASCII_PRINTABLE: 'ascii-printable',
-  DIGIT: 'digit',
-  LOWER: 'lower',
-  SPECIAL: 'special',
-  UNICODE: 'unicode',
-  UPPER: 'upper'
-};
-const RuleName = {
-  ALLOWED: 'allowed',
-  MAX_CONSECUTIVE: 'max-consecutive',
-  REQUIRED: 'required',
-  MIN_LENGTH: 'minlength',
-  MAX_LENGTH: 'maxlength'
-};
-const CHARACTER_CLASS_START_SENTINEL = '[';
-const CHARACTER_CLASS_END_SENTINEL = ']';
-const PROPERTY_VALUE_SEPARATOR = ',';
-const PROPERTY_SEPARATOR = ';';
-const PROPERTY_VALUE_START_SENTINEL = ':';
-const SPACE_CODE_POINT = ' '.codePointAt(0);
-const SHOULD_NOT_BE_REACHED = 'Should not be reached';
-
-class Rule {
-  constructor(name, value) {
-    this._name = name;
-    this.value = value;
-  }
-
-  get name() {
-    return this._name;
-  }
-
-  toString() {
-    return JSON.stringify(this);
-  }
-
-}
-
-;
-
-class NamedCharacterClass {
-  constructor(name) {
-    console.assert(_isValidRequiredOrAllowedPropertyValueIdentifier(name));
-    this._name = name;
-  }
-
-  get name() {
-    return this._name.toLowerCase();
-  }
-
-  toString() {
-    return this._name;
-  }
-
-  toHTMLString() {
-    return this._name;
-  }
-
-}
-
-;
-
-class ParserError extends Error {}
-
-;
-
-class CustomCharacterClass {
-  constructor(characters) {
-    console.assert(characters instanceof Array);
-    this._characters = characters;
-  }
-
-  get characters() {
-    return this._characters;
-  }
-
-  toString() {
-    return "[".concat(this._characters.join(''), "]");
-  }
-
-  toHTMLString() {
-    return "[".concat(this._characters.join('').replace('"', '&quot;'), "]");
-  }
-
-}
-
-; // MARK: Lexer functions
-
-function _isIdentifierCharacter(c) {
-  console.assert(c.length === 1); // eslint-disable-next-line no-mixed-operators
-
-  return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c === '-';
-}
-
-function _isASCIIDigit(c) {
-  console.assert(c.length === 1);
-  return c >= '0' && c <= '9';
-}
-
-function _isASCIIPrintableCharacter(c) {
-  console.assert(c.length === 1);
-  return c >= ' ' && c <= '~';
-}
-
-function _isASCIIWhitespace(c) {
-  console.assert(c.length === 1);
-  return c === ' ' || c === '\f' || c === '\n' || c === '\r' || c === '\t';
-} // MARK: ASCII printable character bit set and canonicalization functions
-
-
-function _bitSetIndexForCharacter(c) {
-  console.assert(c.length === 1); // @ts-ignore
-
-  return c.codePointAt(0) - SPACE_CODE_POINT;
-}
-
-function _characterAtBitSetIndex(index) {
-  return String.fromCodePoint(index + SPACE_CODE_POINT);
-}
-
-function _markBitsForNamedCharacterClass(bitSet, namedCharacterClass) {
-  console.assert(bitSet instanceof Array);
-  console.assert(namedCharacterClass.name !== Identifier.UNICODE);
-  console.assert(namedCharacterClass.name !== Identifier.ASCII_PRINTABLE);
-
-  if (namedCharacterClass.name === Identifier.UPPER) {
-    bitSet.fill(true, _bitSetIndexForCharacter('A'), _bitSetIndexForCharacter('Z') + 1);
-  } else if (namedCharacterClass.name === Identifier.LOWER) {
-    bitSet.fill(true, _bitSetIndexForCharacter('a'), _bitSetIndexForCharacter('z') + 1);
-  } else if (namedCharacterClass.name === Identifier.DIGIT) {
-    bitSet.fill(true, _bitSetIndexForCharacter('0'), _bitSetIndexForCharacter('9') + 1);
-  } else if (namedCharacterClass.name === Identifier.SPECIAL) {
-    bitSet.fill(true, _bitSetIndexForCharacter(' '), _bitSetIndexForCharacter('/') + 1);
-    bitSet.fill(true, _bitSetIndexForCharacter(':'), _bitSetIndexForCharacter('@') + 1);
-    bitSet.fill(true, _bitSetIndexForCharacter('['), _bitSetIndexForCharacter('`') + 1);
-    bitSet.fill(true, _bitSetIndexForCharacter('{'), _bitSetIndexForCharacter('~') + 1);
-  } else {
-    console.assert(false, SHOULD_NOT_BE_REACHED, namedCharacterClass);
-  }
-}
-
-function _markBitsForCustomCharacterClass(bitSet, customCharacterClass) {
-  for (let character of customCharacterClass.characters) {
-    bitSet[_bitSetIndexForCharacter(character)] = true;
-  }
-}
-
-function _canonicalizedPropertyValues(propertyValues, keepCustomCharacterClassFormatCompliant) {
-  // @ts-ignore
-  let asciiPrintableBitSet = new Array('~'.codePointAt(0) - ' '.codePointAt(0) + 1);
-
-  for (let propertyValue of propertyValues) {
-    if (propertyValue instanceof NamedCharacterClass) {
-      if (propertyValue.name === Identifier.UNICODE) {
-        return [new NamedCharacterClass(Identifier.UNICODE)];
-      }
-
-      if (propertyValue.name === Identifier.ASCII_PRINTABLE) {
-        return [new NamedCharacterClass(Identifier.ASCII_PRINTABLE)];
-      }
-
-      _markBitsForNamedCharacterClass(asciiPrintableBitSet, propertyValue);
-    } else if (propertyValue instanceof CustomCharacterClass) {
-      _markBitsForCustomCharacterClass(asciiPrintableBitSet, propertyValue);
-    }
-  }
-
-  let charactersSeen = [];
-
-  function checkRange(start, end) {
-    let temp = [];
-
-    for (let i = _bitSetIndexForCharacter(start); i <= _bitSetIndexForCharacter(end); ++i) {
-      if (asciiPrintableBitSet[i]) {
-        temp.push(_characterAtBitSetIndex(i));
-      }
-    }
-
-    let result = temp.length === _bitSetIndexForCharacter(end) - _bitSetIndexForCharacter(start) + 1;
-
-    if (!result) {
-      charactersSeen = charactersSeen.concat(temp);
-    }
-
-    return result;
-  }
-
-  let hasAllUpper = checkRange('A', 'Z');
-  let hasAllLower = checkRange('a', 'z');
-  let hasAllDigits = checkRange('0', '9'); // Check for special characters, accounting for characters that are given special treatment (i.e. '-' and ']')
-
-  let hasAllSpecial = false;
-  let hasDash = false;
-  let hasRightSquareBracket = false;
-  let temp = [];
-
-  for (let i = _bitSetIndexForCharacter(' '); i <= _bitSetIndexForCharacter('/'); ++i) {
-    if (!asciiPrintableBitSet[i]) {
-      continue;
-    }
-
-    let character = _characterAtBitSetIndex(i);
-
-    if (keepCustomCharacterClassFormatCompliant && character === '-') {
-      hasDash = true;
-    } else {
-      temp.push(character);
-    }
-  }
-
-  for (let i = _bitSetIndexForCharacter(':'); i <= _bitSetIndexForCharacter('@'); ++i) {
-    if (asciiPrintableBitSet[i]) {
-      temp.push(_characterAtBitSetIndex(i));
-    }
-  }
-
-  for (let i = _bitSetIndexForCharacter('['); i <= _bitSetIndexForCharacter('`'); ++i) {
-    if (!asciiPrintableBitSet[i]) {
-      continue;
-    }
-
-    let character = _characterAtBitSetIndex(i);
-
-    if (keepCustomCharacterClassFormatCompliant && character === ']') {
-      hasRightSquareBracket = true;
-    } else {
-      temp.push(character);
-    }
-  }
-
-  for (let i = _bitSetIndexForCharacter('{'); i <= _bitSetIndexForCharacter('~'); ++i) {
-    if (asciiPrintableBitSet[i]) {
-      temp.push(_characterAtBitSetIndex(i));
-    }
-  }
-
-  if (hasDash) {
-    temp.unshift('-');
-  }
-
-  if (hasRightSquareBracket) {
-    temp.push(']');
-  }
-
-  let numberOfSpecialCharacters = _bitSetIndexForCharacter('/') - _bitSetIndexForCharacter(' ') + 1 + (_bitSetIndexForCharacter('@') - _bitSetIndexForCharacter(':') + 1) + (_bitSetIndexForCharacter('`') - _bitSetIndexForCharacter('[') + 1) + (_bitSetIndexForCharacter('~') - _bitSetIndexForCharacter('{') + 1);
-  hasAllSpecial = temp.length === numberOfSpecialCharacters;
-
-  if (!hasAllSpecial) {
-    charactersSeen = charactersSeen.concat(temp);
-  }
-
-  let result = [];
-
-  if (hasAllUpper && hasAllLower && hasAllDigits && hasAllSpecial) {
-    return [new NamedCharacterClass(Identifier.ASCII_PRINTABLE)];
-  }
-
-  if (hasAllUpper) {
-    result.push(new NamedCharacterClass(Identifier.UPPER));
-  }
-
-  if (hasAllLower) {
-    result.push(new NamedCharacterClass(Identifier.LOWER));
-  }
-
-  if (hasAllDigits) {
-    result.push(new NamedCharacterClass(Identifier.DIGIT));
-  }
-
-  if (hasAllSpecial) {
-    result.push(new NamedCharacterClass(Identifier.SPECIAL));
-  }
-
-  if (charactersSeen.length) {
-    result.push(new CustomCharacterClass(charactersSeen));
-  }
-
-  return result;
-} // MARK: Parser functions
-
-
-function _indexOfNonWhitespaceCharacter(input) {
-  let position = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  console.assert(position >= 0);
-  console.assert(position <= input.length);
-  let length = input.length;
-
-  while (position < length && _isASCIIWhitespace(input[position])) {
-    ++position;
-  }
-
-  return position;
-}
-
-function _parseIdentifier(input, position) {
-  console.assert(position >= 0);
-  console.assert(position < input.length);
-  console.assert(_isIdentifierCharacter(input[position]));
-  let length = input.length;
-  let seenIdentifiers = [];
-
-  do {
-    let c = input[position];
-
-    if (!_isIdentifierCharacter(c)) {
-      break;
-    }
-
-    seenIdentifiers.push(c);
-    ++position;
-  } while (position < length);
-
-  return [seenIdentifiers.join(''), position];
-}
-
-function _isValidRequiredOrAllowedPropertyValueIdentifier(identifier) {
-  return identifier && Object.values(Identifier).includes(identifier.toLowerCase());
-}
-
-function _parseCustomCharacterClass(input, position) {
-  console.assert(position >= 0);
-  console.assert(position < input.length);
-  console.assert(input[position] === CHARACTER_CLASS_START_SENTINEL);
-  let length = input.length;
-  ++position;
-
-  if (position >= length) {
-    // console.error('Found end-of-line instead of character class character')
-    return [null, position];
-  }
-
-  let initialPosition = position;
-  let result = [];
-
-  do {
-    let c = input[position];
-
-    if (!_isASCIIPrintableCharacter(c)) {
-      ++position;
-      continue;
-    }
-
-    if (c === '-' && position - initialPosition > 0) {
-      // FIXME: Should this be an error?
-      console.warn("Ignoring '-'; a '-' may only appear as the first character in a character class");
-      ++position;
-      continue;
-    }
-
-    result.push(c);
-    ++position;
-
-    if (c === CHARACTER_CLASS_END_SENTINEL) {
-      break;
-    }
-  } while (position < length);
-
-  if (position < length && input[position] !== CHARACTER_CLASS_END_SENTINEL) {
-    // Fix up result; we over consumed.
-    result.pop();
-    return [result, position];
-  } else if (position === length && input[position - 1] === CHARACTER_CLASS_END_SENTINEL) {
-    // Fix up result; we over consumed.
-    result.pop();
-    return [result, position];
-  }
-
-  if (position < length && input[position] === CHARACTER_CLASS_END_SENTINEL) {
-    return [result, position + 1];
-  } // console.error('Found end-of-line instead of end of character class')
-
-
-  return [null, position];
-}
-
-function _parsePasswordRequiredOrAllowedPropertyValue(input, position) {
-  console.assert(position >= 0);
-  console.assert(position < input.length);
-  let length = input.length;
-  let propertyValues = [];
-
-  while (true) {
-    if (_isIdentifierCharacter(input[position])) {
-      let identifierStartPosition = position; // eslint-disable-next-line no-redeclare
-
-      var [propertyValue, position] = _parseIdentifier(input, position);
-
-      if (!_isValidRequiredOrAllowedPropertyValueIdentifier(propertyValue)) {
-        // console.error('Unrecognized property value identifier: ' + propertyValue)
-        return [null, identifierStartPosition];
-      }
-
-      propertyValues.push(new NamedCharacterClass(propertyValue));
-    } else if (input[position] === CHARACTER_CLASS_START_SENTINEL) {
-      // eslint-disable-next-line no-redeclare
-      var [propertyValue, position] = _parseCustomCharacterClass(input, position);
-
-      if (propertyValue && propertyValue.length) {
-        propertyValues.push(new CustomCharacterClass(propertyValue));
-      }
-    } else {
-      // console.error('Failed to find start of property value: ' + input.substr(position))
-      return [null, position];
-    }
-
-    position = _indexOfNonWhitespaceCharacter(input, position);
-
-    if (position >= length || input[position] === PROPERTY_SEPARATOR) {
-      break;
-    }
-
-    if (input[position] === PROPERTY_VALUE_SEPARATOR) {
-      position = _indexOfNonWhitespaceCharacter(input, position + 1);
-
-      if (position >= length) {
-        // console.error('Found end-of-line instead of start of next property value')
-        return [null, position];
-      }
-
-      continue;
-    } // console.error('Failed to find start of next property or property value: ' + input.substr(position))
-
-
-    return [null, position];
-  }
-
-  return [propertyValues, position];
-}
-/**
- * @param input
- * @param position
- * @returns {[Rule|null, number, string|undefined]}
- * @private
- */
-
-
-function _parsePasswordRule(input, position) {
-  console.assert(position >= 0);
-  console.assert(position < input.length);
-  console.assert(_isIdentifierCharacter(input[position]));
-  let length = input.length;
-  var mayBeIdentifierStartPosition = position; // eslint-disable-next-line no-redeclare
-
-  var [identifier, position] = _parseIdentifier(input, position);
-
-  if (!Object.values(RuleName).includes(identifier)) {
-    // console.error('Unrecognized property name: ' + identifier)
-    return [null, mayBeIdentifierStartPosition, undefined];
-  }
-
-  if (position >= length) {
-    // console.error('Found end-of-line instead of start of property value')
-    return [null, position, undefined];
-  }
-
-  if (input[position] !== PROPERTY_VALUE_START_SENTINEL) {
-    // console.error('Failed to find start of property value: ' + input.substr(position))
-    return [null, position, undefined];
-  }
-
-  let property = {
-    name: identifier,
-    value: null
-  };
-  position = _indexOfNonWhitespaceCharacter(input, position + 1); // Empty value
-
-  if (position >= length || input[position] === PROPERTY_SEPARATOR) {
-    return [new Rule(property.name, property.value), position, undefined];
-  }
-
-  switch (identifier) {
-    case RuleName.ALLOWED:
-    case RuleName.REQUIRED:
-      {
-        // eslint-disable-next-line no-redeclare
-        var [propertyValue, position] = _parsePasswordRequiredOrAllowedPropertyValue(input, position);
-
-        if (propertyValue) {
-          property.value = propertyValue;
-        }
-
-        return [new Rule(property.name, property.value), position, undefined];
-      }
-
-    case RuleName.MAX_CONSECUTIVE:
-      {
-        // eslint-disable-next-line no-redeclare
-        var [propertyValue, position] = _parseMaxConsecutivePropertyValue(input, position);
-
-        if (propertyValue) {
-          property.value = propertyValue;
-        }
-
-        return [new Rule(property.name, property.value), position, undefined];
-      }
-
-    case RuleName.MIN_LENGTH:
-    case RuleName.MAX_LENGTH:
-      {
-        // eslint-disable-next-line no-redeclare
-        var [propertyValue, position] = _parseMinLengthMaxLengthPropertyValue(input, position);
-
-        if (propertyValue) {
-          property.value = propertyValue;
-        }
-
-        return [new Rule(property.name, property.value), position, undefined];
-      }
-  }
-
-  console.assert(false, SHOULD_NOT_BE_REACHED);
-  return [null, -1, undefined];
-}
-
-function _parseMinLengthMaxLengthPropertyValue(input, position) {
-  return _parseInteger(input, position);
-}
-
-function _parseMaxConsecutivePropertyValue(input, position) {
-  return _parseInteger(input, position);
-}
-
-function _parseInteger(input, position) {
-  console.assert(position >= 0);
-  console.assert(position < input.length);
-
-  if (!_isASCIIDigit(input[position])) {
-    // console.error('Failed to parse value of type integer; not a number: ' + input.substr(position))
-    return [null, position];
-  }
-
-  let length = input.length; // let initialPosition = position
-
-  let result = 0;
-
-  do {
-    result = 10 * result + parseInt(input[position], 10);
-    ++position;
-  } while (position < length && input[position] !== PROPERTY_SEPARATOR && _isASCIIDigit(input[position]));
-
-  if (position >= length || input[position] === PROPERTY_SEPARATOR) {
-    return [result, position];
-  } // console.error('Failed to parse value of type integer; not a number: ' + input.substr(initialPosition))
-
-
-  return [null, position];
-}
-/**
- * @param input
- * @returns {[Rule[]|null, string|undefined]}
- * @private
- */
-
-
-function _parsePasswordRulesInternal(input) {
-  let parsedProperties = [];
-  let length = input.length;
-
-  var position = _indexOfNonWhitespaceCharacter(input);
-
-  while (position < length) {
-    if (!_isIdentifierCharacter(input[position])) {
-      // console.warn('Failed to find start of property: ' + input.substr(position))
-      return [parsedProperties, undefined];
-    } // eslint-disable-next-line no-redeclare
-
-
-    var [parsedProperty, position, message] = _parsePasswordRule(input, position);
-
-    if (parsedProperty && parsedProperty.value) {
-      parsedProperties.push(parsedProperty);
-    }
-
-    position = _indexOfNonWhitespaceCharacter(input, position);
-
-    if (position >= length) {
-      break;
-    }
-
-    if (input[position] === PROPERTY_SEPARATOR) {
-      position = _indexOfNonWhitespaceCharacter(input, position + 1);
-
-      if (position >= length) {
-        return [parsedProperties, undefined];
-      }
-
-      continue;
-    } // console.error('Failed to find start of next property: ' + input.substr(position))
-
-
-    return [null, message || 'Failed to find start of next property: ' + input.substr(position)];
-  }
-
-  return [parsedProperties, undefined];
-}
-/**
- * @param {string} input
- * @param {boolean} [formatRulesForMinifiedVersion]
- * @returns {Rule[]}
- */
-
-
-function parsePasswordRules(input, formatRulesForMinifiedVersion) {
-  let [passwordRules, maybeMessage] = _parsePasswordRulesInternal(input);
-
-  if (!passwordRules) {
-    throw new ParserError(maybeMessage);
-  }
-
-  if (passwordRules.length === 0) {
-    throw new ParserError('No valid rules were provided');
-  } // When formatting rules for minified version, we should keep the formatted rules
-  // as similar to the input as possible. Avoid copying required rules to allowed rules.
-
-
-  let suppressCopyingRequiredToAllowed = formatRulesForMinifiedVersion;
-  let requiredRules = [];
-  let newAllowedValues = [];
-  let minimumMaximumConsecutiveCharacters = null;
-  let maximumMinLength = 0;
-  let minimumMaxLength = null;
-
-  for (let rule of passwordRules) {
-    switch (rule.name) {
-      case RuleName.MAX_CONSECUTIVE:
-        minimumMaximumConsecutiveCharacters = minimumMaximumConsecutiveCharacters ? Math.min(rule.value, minimumMaximumConsecutiveCharacters) : rule.value;
-        break;
-
-      case RuleName.MIN_LENGTH:
-        maximumMinLength = Math.max(rule.value, maximumMinLength);
-        break;
-
-      case RuleName.MAX_LENGTH:
-        minimumMaxLength = minimumMaxLength ? Math.min(rule.value, minimumMaxLength) : rule.value;
-        break;
-
-      case RuleName.REQUIRED:
-        rule.value = _canonicalizedPropertyValues(rule.value, formatRulesForMinifiedVersion);
-        requiredRules.push(rule);
-
-        if (!suppressCopyingRequiredToAllowed) {
-          newAllowedValues = newAllowedValues.concat(rule.value);
-        }
-
-        break;
-
-      case RuleName.ALLOWED:
-        newAllowedValues = newAllowedValues.concat(rule.value);
-        break;
-    }
-  }
-
-  let newPasswordRules = [];
-
-  if (maximumMinLength > 0) {
-    newPasswordRules.push(new Rule(RuleName.MIN_LENGTH, maximumMinLength));
-  }
-
-  if (minimumMaxLength !== null) {
-    newPasswordRules.push(new Rule(RuleName.MAX_LENGTH, minimumMaxLength));
-  }
-
-  if (minimumMaximumConsecutiveCharacters !== null) {
-    newPasswordRules.push(new Rule(RuleName.MAX_CONSECUTIVE, minimumMaximumConsecutiveCharacters));
-  }
-
-  let sortedRequiredRules = requiredRules.sort(function (a, b) {
-    const namedCharacterClassOrder = [Identifier.LOWER, Identifier.UPPER, Identifier.DIGIT, Identifier.SPECIAL, Identifier.ASCII_PRINTABLE, Identifier.UNICODE];
-    let aIsJustOneNamedCharacterClass = a.value.length === 1 && a.value[0] instanceof NamedCharacterClass;
-    let bIsJustOneNamedCharacterClass = b.value.length === 1 && b.value[0] instanceof NamedCharacterClass;
-
-    if (aIsJustOneNamedCharacterClass && !bIsJustOneNamedCharacterClass) {
-      return -1;
-    }
-
-    if (!aIsJustOneNamedCharacterClass && bIsJustOneNamedCharacterClass) {
-      return 1;
-    }
-
-    if (aIsJustOneNamedCharacterClass && bIsJustOneNamedCharacterClass) {
-      let aIndex = namedCharacterClassOrder.indexOf(a.value[0].name);
-      let bIndex = namedCharacterClassOrder.indexOf(b.value[0].name);
-      return aIndex - bIndex;
-    }
-
-    return 0;
-  });
-  newPasswordRules = newPasswordRules.concat(sortedRequiredRules);
-  newAllowedValues = _canonicalizedPropertyValues(newAllowedValues, suppressCopyingRequiredToAllowed);
-
-  if (!suppressCopyingRequiredToAllowed && !newAllowedValues.length) {
-    newAllowedValues = [new NamedCharacterClass(Identifier.ASCII_PRINTABLE)];
-  }
-
-  if (newAllowedValues.length) {
-    newPasswordRules.push(new Rule(RuleName.ALLOWED, newAllowedValues));
-  }
-
-  return newPasswordRules;
-}
-
-module.exports.parsePasswordRules = parsePasswordRules;
-module.exports.Identifier = Identifier;
-module.exports.RuleName = RuleName;
-module.exports.SHOULD_NOT_BE_REACHED = SHOULD_NOT_BE_REACHED;
-module.exports.Rule = Rule;
-module.exports.ParserError = ParserError;
-module.exports.NamedCharacterClass = NamedCharacterClass;
-module.exports.CustomCharacterClass = CustomCharacterClass;
-
-},{}],6:[function(require,module,exports){
-module.exports={
-  "163.com": {
-    "password-rules": "minlength: 6; maxlength: 16;"
-  },
-  "1800flowers.com": {
-    "password-rules": "minlength: 6; required: lower, upper; required: digit;"
-  },
-  "access.service.gov.uk": {
-    "password-rules": "minlength: 10; required: lower; required: upper; required: digit; required: special;"
-  },
-  "admiral.com": {
-    "password-rules": "minlength: 8; required: digit; required: [- !\"#$&'()*+,.:;<=>?@[^_`{|}~]]; allowed: lower, upper;"
-  },
-  "ae.com": {
-    "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;"
-  },
-  "aetna.com": {
-    "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 2; required: upper; required: digit; allowed: lower, [-_&#@];"
-  },
-  "airasia.com": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
-  },
-  "ajisushionline.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [ !#$%&*?@];"
-  },
-  "aliexpress.com": {
-    "password-rules": "minlength: 6; maxlength: 20; allowed: lower, upper, digit;"
-  },
-  "alliantcreditunion.com": {
-    "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$*];"
-  },
-  "allianz.com.br": {
-    "password-rules": "minlength: 4; maxlength: 4;"
-  },
-  "americanexpress.com": {
-    "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 4; required: lower, upper; required: digit; allowed: [%&_?#=];"
-  },
-  "anatel.gov.br": {
-    "password-rules": "minlength: 6; maxlength: 15; allowed: lower, upper, digit;"
-  },
-  "ancestry.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [-!\"#$%&'()*+,./:;<=>?@[^_`{|}~]];"
-  },
-  "angieslist.com": {
-    "password-rules": "minlength: 6; maxlength: 15;"
-  },
-  "anthem.com": {
-    "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!$*?@|];"
-  },
-  "app.digio.in": {
-    "password-rules": "minlength: 8; maxlength: 15;"
-  },
-  "app.parkmobile.io": {
-    "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@#$%^&];"
-  },
-  "apple.com": {
-    "password-rules": "minlength: 8; maxlength: 63; required: lower; required: upper; required: digit; allowed: ascii-printable;"
-  },
-  "areariservata.bancaetica.it": {
-    "password-rules": "minlength: 8; maxlength: 10; required: lower; required: upper; required: digit; required: [!#&*+/=@_];"
-  },
-  "artscyclery.com": {
-    "password-rules": "minlength: 6; maxlength: 19;"
-  },
-  "astonmartinf1.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;"
-  },
-  "autify.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!\"#$%&'()*+,./:;<=>?@[^_`{|}~]];"
-  },
-  "axa.de": {
-    "password-rules": "minlength: 8; maxlength: 65; required: lower; required: upper; required: digit; allowed: [-!\"§$%&/()=?;:_+*'#];"
-  },
-  "baidu.com": {
-    "password-rules": "minlength: 6; maxlength: 14;"
-  },
-  "bancochile.cl": {
-    "password-rules": "minlength: 8; maxlength: 8; required: lower; required: upper; required: digit;"
-  },
-  "bankofamerica.com": {
-    "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-@#*()+={}/?~;,._];"
-  },
-  "battle.net": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower, upper; allowed: digit, special;"
-  },
-  "bcassessment.ca": {
-    "password-rules": "minlength: 8; maxlength: 14;"
-  },
-  "belkin.com": {
-    "password-rules": "minlength: 8; required: lower, upper; required: digit; required: [$!@~_,%&];"
-  },
-  "benefitslogin.discoverybenefits.com": {
-    "password-rules": "minlength: 10; required: upper; required: digit; required: [!#$%&*?@]; allowed: lower;"
-  },
-  "benjerry.com": {
-    "password-rules": "required: upper; required: upper; required: digit; required: digit; required: special; required: special; allowed: lower;"
-  },
-  "bestbuy.com": {
-    "password-rules": "minlength: 20; required: lower; required: upper; required: digit; required: special;"
-  },
-  "bhphotovideo.com": {
-    "password-rules": "maxlength: 15;"
-  },
-  "billerweb.com": {
-    "password-rules": "minlength: 8; max-consecutive: 2; required: digit; required: upper,lower;"
-  },
-  "biovea.com": {
-    "password-rules": "maxlength: 19;"
-  },
-  "bitly.com": {
-    "password-rules": "minlength: 6; required: lower; required: upper; required: digit; required: [`!@#$%^&*()+~{}'\";:<>?]];"
-  },
-  "bloomingdales.com": {
-    "password-rules": "minlength: 7; maxlength: 16; required: lower, upper; required: digit; required: [`!@#$%^&*()+~{}'\";:<>?]];"
-  },
-  "bluesguitarunleashed.com": {
-    "password-rules": "allowed: lower, upper, digit, [!$#@];"
-  },
-  "bochk.com": {
-    "password-rules": "minlength: 8; maxlength: 12; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [#$%&()*+,.:;<=>?@_];"
-  },
-  "box.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: digit;"
-  },
-  "brighthorizons.com": {
-    "password-rules": "minlength: 8; maxlength: 16;"
-  },
-  "callofduty.com": {
-    "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 2; required: lower, upper; required: digit;"
-  },
-  "capitalone.com": {
-    "password-rules": "minlength: 8; maxlength: 32; required: lower, upper; required: digit; allowed: [-_./\\@$*&!#];"
-  },
-  "cardbenefitservices.com": {
-    "password-rules": "minlength: 7; maxlength: 100; required: lower, upper; required: digit;"
-  },
-  "cb2.com": {
-    "password-rules": "minlength: 7; maxlength: 18; required: lower, upper; required: digit;"
-  },
-  "cecredentialtrust.com": {
-    "password-rules": "minlength: 12; required: lower; required: upper; required: digit; required: [!#$%&*@^];"
-  },
-  "chase.com": {
-    "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 2; required: lower, upper; required: digit; required: [!#$%+/=@~];"
-  },
-  "cigna.co.uk": {
-    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;"
-  },
-  "cigna.com": {
-    "password-rules": "minlength: 8; maxlength: 12; required: upper; required: digit; required: [_!.&@]; allowed: lower;"
-  },
-  "citi.com": {
-    "password-rules": "minlength: 6; maxlength: 50; max-consecutive: 2; required: lower, upper; required: digit; allowed: [_!@$]"
-  },
-  "claimlookup.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@#$%^&+=!];"
-  },
-  "claro.com.br": {
-    "password-rules": "minlength: 8; required: lower; allowed: upper, digit, [-!@#$%&*_+=<>];"
-  },
-  "clien.net": {
-    "password-rules": "minlength: 5; required: lower, upper; required: digit;"
-  },
-  "collectivehealth.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
-  },
-  "comcastpaymentcenter.com": {
-    "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 2;required: lower, upper; required: digit;"
-  },
-  "comed.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-~!@#$%^&*_+=`|(){}[:;\"'<>,.?/\\]];"
-  },
-  "commerzbank.de": {
-    "password-rules": "minlength: 5; maxlength: 8; required: lower, upper; required: digit;"
-  },
-  "consorsbank.de": {
-    "password-rules": "minlength: 5; maxlength: 5; required: lower, upper, digit;"
-  },
-  "consorsfinanz.de": {
-    "password-rules": "minlength: 6; maxlength: 15; allowed: lower, upper, digit, [-.];"
-  },
-  "costco.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower, upper; allowed: digit, [-!#$%&'()*+/:;=?@[^_`{|}~]];"
-  },
-  "coursera.com": {
-    "password-rules": "minlength: 8; maxlength: 72;"
-  },
-  "cox.com": {
-    "password-rules": "minlength: 8; maxlength: 24; required: digit; required: upper,lower; allowed: [!#$%()*@^];"
-  },
-  "crateandbarrel.com": {
-    "password-rules": "minlength: 9; maxlength: 64; required: lower; required: upper; required: digit; required: [!\"#$%&()*,.:<>?@^_{|}];"
-  },
-  "cvs.com": {
-    "password-rules": "minlength: 8; maxlength: 25; required: lower, upper; required: digit; allowed: [!@#$%^&*()];"
-  },
-  "dailymail.co.uk": {
-    "password-rules": "minlength: 5; maxlength: 15;"
-  },
-  "dan.org": {
-    "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@$%^&*];"
-  },
-  "danawa.com": {
-    "password-rules": "minlength: 8; maxlength: 21; required: lower, upper; required: digit; required: [!@$%^&*];"
-  },
-  "darty.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
-  },
-  "dbs.com.hk": {
-    "password-rules": "minlength: 8; maxlength: 30; required: lower; required: upper; required: digit;"
-  },
-  "decluttr.com": {
-    "password-rules": "minlength: 8; maxlength: 45; required: lower; required: upper; required: digit;"
-  },
-  "delta.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit;"
-  },
-  "deutsche-bank.de": {
-    "password-rules": "minlength: 5; maxlength: 5; required: lower, upper, digit;"
-  },
-  "devstore.cn": {
-    "password-rules": "minlength: 6; maxlength: 12;"
-  },
-  "dickssportinggoods.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@^];"
-  },
-  "dkb.de": {
-    "password-rules": "minlength: 8; maxlength: 38; required: lower, upper; required: digit; allowed: [-äüöÄÜÖß!$%&/()=?+#,.:];"
-  },
-  "dmm.com": {
-    "password-rules": "minlength: 4; maxlength: 16; required: lower; required: upper; required: digit;"
-  },
-  "dowjones.com": {
-    "password-rules": "maxlength: 15;"
-  },
-  "ea.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;"
-  },
-  "easycoop.com": {
-    "password-rules": "minlength: 8; required: upper; required: special; allowed: lower, digit;"
-  },
-  "easyjet.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: [-];"
-  },
-  "ebrap.org": {
-    "password-rules": "minlength: 15; required: lower; required: lower; required: upper; required: upper; required: digit; required: digit; required: [-!@#$%^&*()_+|~=`{}[:\";'?,./.]]; required: [-!@#$%^&*()_+|~=`{}[:\";'?,./.]];"
-  },
-  "ecompanystore.com": {
-    "password-rules": "minlength: 8; maxlength: 16; max-consecutive: 2; required: lower; required: upper; required: digit; required: [#$%*+.=@^_];"
-  },
-  "eddservices.edd.ca.gov": {
-    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit; required: [!@#$%^&*()];"
-  },
-  "empower-retirement.com": {
-    "password-rules": "minlength: 8; maxlength: 16;"
-  },
-  "epicgames.com": {
-    "password-rules": "minlength: 7; required: lower; required: upper; required: digit; required: [-!\"#$%&'()*+,./:;<=>?@[^_`{|}~]];"
-  },
-  "epicmix.com": {
-    "password-rules": "minlength: 8; maxlength: 16;"
-  },
-  "equifax.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [!$*+@];"
-  },
-  "essportal.excelityglobal.com": {
-    "password-rules": "minlength: 6; maxlength: 8; allowed: lower, upper, digit;"
-  },
-  "ettoday.net": {
-    "password-rules": "minlength: 6; maxlength: 12;"
-  },
-  "examservice.com.tw": {
-    "password-rules": "minlength: 6; maxlength: 8;"
-  },
-  "expertflyer.com": {
-    "password-rules": "minlength: 5; maxlength: 16; required: lower, upper; required: digit;"
-  },
-  "extraspace.com": {
-    "password-rules": "minlength: 8; maxlength: 20; allowed: lower; required: upper, digit, [!#$%&*?@];"
-  },
-  "ezpassva.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
-  },
-  "fc2.com": {
-    "password-rules": "minlength: 8; maxlength: 16;"
-  },
-  "fedex.com": {
-    "password-rules": "minlength: 8; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-!@#$%^&*_+=`|(){}[:;,.?]];"
-  },
-  "fidelity.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: lower; allowed: upper,digit,[!$%'()+,./:;=?@^_|~];"
-  },
-  "flysas.com": {
-    "password-rules": "minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; required: [-~!@#$%^&_+=`|(){}[:\"'<>,.?]];"
-  },
-  "fnac.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
-  },
-  "fuelrewards.com": {
-    "password-rules": "minlength: 8; maxlength: 16; allowed: upper,lower,digit,[!#$%@];"
-  },
-  "gamestop.com": {
-    "password-rules": "minlength: 8; maxlength: 225; required: lower; required: upper; required: digit; required: [!@#$%];"
-  },
-  "getflywheel.com": {
-    "password-rules": "minlength: 7; maxlength: 72;"
-  },
-  "girlscouts.org": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [$#!];"
-  },
-  "gmx.net": {
-    "password-rules": "minlength: 8; maxlength: 40; allowed: lower, upper, digit, [-<=>~!|()@#{}$%,.?^'&*_+`:;\"[]];"
-  },
-  "google.com": {
-    "password-rules": "minlength: 8; allowed: lower, upper, digit, [-!\"#$%&'()*+,./:;<=>?@[^_{|}~]];"
-  },
-  "guardiananytime.com": {
-    "password-rules": "minlength: 8; maxlength: 50; max-consecutive: 2; required: lower; required: upper; required: digit, [-~!@#$%^&*_+=`|(){}[:;,.?]];"
-  },
-  "gwl.greatwestlife.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [-!#$%_=+<>];"
-  },
-  "hangseng.com": {
-    "password-rules": "minlength: 8; maxlength: 30; required: lower; required: upper; required: digit;"
-  },
-  "hawaiianairlines.com": {
-    "password-rules": "maxlength: 16;"
-  },
-  "hertz.com": {
-    "password-rules": "minlength: 8; maxlength: 30; max-consecutive: 3; required: lower; required: upper; required: digit; required: [#$%^&!@];"
-  },
-  "hetzner.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit, special;"
-  },
-  "hilton.com": {
-    "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
-  },
-  "hkbea.com": {
-    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;"
-  },
-  "hkexpress.com": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: special;"
-  },
-  "hotels.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: digit; allowed: lower, upper, [@$!#()&^*%];"
-  },
-  "hotwire.com": {
-    "password-rules": "minlength: 6; maxlength: 30; allowed: lower, upper, digit, [-~!@#$%^&*_+=`|(){}[:;\"'<>,.?]];"
-  },
-  "hrblock.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [$#%!];"
-  },
-  "hsbc.com.hk": {
-    "password-rules": "minlength: 6; maxlength: 30; required: lower; required: upper; required: digit; allowed: ['.@_];"
-  },
-  "hsbc.com.my": {
-    "password-rules": "minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!$*.=?@_'];"
-  },
-  "hypovereinsbank.de": {
-    "password-rules": "minlength: 6; maxlength: 10; required: lower, upper, digit; allowed: [!\"#$%&()*+:;<=>?@[{}~]];"
-  },
-  "hyresbostader.se": {
-    "password-rules": "minlength: 6; maxlength: 20; required: lower, upper; required: digit;"
-  },
-  "id.sonyentertainmentnetwork.com": {
-    "password-rules": "minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!@#^&*=+;:];"
-  },
-  "identitytheft.gov": {
-    "password-rules": "allowed: lower, upper, digit, [!#%&*@^];"
-  },
-  "idestination.info": {
-    "password-rules": "maxlength: 15;"
-  },
-  "impots.gouv.fr": {
-    "password-rules": "minlength: 12; maxlength: 128; required: lower; required: digit; allowed: [-!#$%&*+/=?^_'.{|}];"
-  },
-  "indochino.com": {
-    "password-rules": "minlength: 6; maxlength: 15; required: upper; required: digit; allowed: lower, special;"
-  },
-  "internationalsos.com": {
-    "password-rules": "required: lower; required: upper; required: digit; required: [@#$%^&+=_];"
-  },
-  "irctc.co.in": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$%^&*()+];"
-  },
-  "irs.gov": {
-    "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [!#$%&*@];"
-  },
-  "jal.co.jp": {
-    "password-rules": "minlength: 8; maxlength: 16;"
-  },
-  "japanpost.jp": {
-    "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower;"
-  },
-  "jordancu-onlinebanking.org": {
-    "password-rules": "minlength: 6; maxlength: 32; allowed: upper, lower, digit,[-!\"#$%&'()*+,.:;<=>?@[^_`{|}~]];"
-  },
-  "keldoc.com": {
-    "password-rules": "minlength: 12; required: lower; required: upper; required: digit; required: [!@#$%^&*];"
-  },
-  "key.harvard.edu": {
-    "password-rules": "minlength: 10; maxlength: 100; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^[']];"
-  },
-  "kfc.ca": {
-    "password-rules": "minlength: 6; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$%&?*];"
-  },
-  "klm.com": {
-    "password-rules": "minlength: 8; maxlength: 12;"
-  },
-  "la-z-boy.com": {
-    "password-rules": "minlength: 6; maxlength: 15; required: lower, upper; required: digit;"
-  },
-  "ladwp.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: digit; allowed: lower, upper;"
-  },
-  "launtel.net.au": {
-    "password-rules": "minlength: 8; required: digit; required: digit; allowed: lower, upper;"
-  },
-  "leetchi.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&()*+,./:;<>?@\"_];"
-  },
-  "lg.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-!#$%&'()*+,.:;=?@[^_{|}~]];"
-  },
-  "live.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^'[]];"
-  },
-  "lloydsbank.co.uk": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: digit; allowed: upper;"
-  },
-  "lowes.com": {
-    "password-rules": "minlength: 8; maxlength: 12; required: lower, upper; required: digit;"
-  },
-  "lsacsso.b2clogin.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit, [-!#$%&*?@^_];"
-  },
-  "lufthansa.com": {
-    "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [!#$%&()*+,./:;<>?@\"_];"
-  },
-  "macys.com": {
-    "password-rules": "minlength: 7; maxlength: 16; allowed: lower, upper, digit, [~!@#$%^&*+`(){}[:;\"'<>?]];"
-  },
-  "mailbox.org": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [-!$\"%&/()=*+#.,;:@?{}[]];"
-  },
-  "makemytrip.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [@$!%*#?&];"
-  },
-  "marriott.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; allowed: [$!#&@?%=];"
-  },
-  "maybank2u.com.my": {
-    "password-rules": "minlength: 8; maxlength: 12; max-consecutive: 2; required: lower; required: upper; required: digit; required: [-~!@#$%^&*_+=`|(){}[:;\"'<>,.?];"
-  },
-  "medicare.gov": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@!$%^*()];"
-  },
-  "metlife.com": {
-    "password-rules": "minlength: 6; maxlength: 20;"
-  },
-  "microsoft.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: special;"
-  },
-  "minecraft.com": {
-    "password-rules": "minlength: 8; required: lower, upper; required: digit; allowed: ascii-printable;"
-  },
-  "mintmobile.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: special; allowed: [!#$%&()*+:;=@[^_`{}~]];"
-  },
-  "mlb.com": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!\"#$%&'()*+,./:;<=>?[\\^_`{|}~]];"
-  },
-  "mpv.tickets.com": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
-  },
-  "my.konami.net": {
-    "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
-  },
-  "myaccess.dmdc.osd.mil": {
-    "password-rules": "minlength: 9; maxlength: 20; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^'[]];"
-  },
-  "mygoodtogo.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower, upper, digit;"
-  },
-  "myhealthrecord.com": {
-    "password-rules": "minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];"
-  },
-  "mysubaru.com": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!#$%()*+,./:;=?@\\^`~];"
-  },
-  "naver.com": {
-    "password-rules": "minlength: 6; maxlength: 16;"
-  },
-  "nelnet.net": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit, [!@#$&*];"
-  },
-  "netflix.com": {
-    "password-rules": "minlength: 4; maxlength: 60; required: lower, upper, digit; allowed: special;"
-  },
-  "netgear.com": {
-    "password-rules": "minlength: 6; maxlength: 128; allowed: lower, upper, digit, [!@#$%^&*()];"
-  },
-  "nowinstock.net": {
-    "password-rules": "minlength: 6; maxlength: 20; allowed: lower, upper, digit;"
-  },
-  "order.wendys.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; allowed: [!#$%&()*+/=?^_{}];"
-  },
-  "ototoy.jp": {
-    "password-rules": "minlength: 8; allowed: upper,lower,digit,[- .=_];"
-  },
-  "packageconciergeadmin.com": {
-    "password-rules": "minlength: 4; maxlength: 4; allowed: digit;"
-  },
-  "paypal.com": {
-    "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit, [!@#$%^&*()];"
-  },
-  "payvgm.youraccountadvantage.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: special;"
-  },
-  "pilotflyingj.com": {
-    "password-rules": "minlength: 7; required: digit; allowed: lower, upper;"
-  },
-  "pixnet.cc": {
-    "password-rules": "minlength: 4; maxlength: 16; allowed: lower, upper;"
-  },
-  "planetary.org": {
-    "password-rules": "minlength: 5; maxlength: 20; required: lower; required: upper; required: digit; allowed: ascii-printable;"
-  },
-  "portal.edd.ca.gov": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&()*@^];"
-  },
-  "portals.emblemhealth.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&'()*+,./:;<>?@\\^_`{|}~[]];"
-  },
-  "portlandgeneral.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%&*?@];"
-  },
-  "poste.it": {
-    "password-rules": "minlength: 8; maxlength: 16; max-consecutive: 2; required: lower; required: upper; required: digit; required: special;"
-  },
-  "posteo.de": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit, [-~!#$%&_+=|(){}[:;\"’<>,.? ]];"
-  },
-  "powells.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [\"!@#$%^&*(){}[]];"
-  },
-  "preferredhotels.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&()*+@^_];"
-  },
-  "premier.ticketek.com.au": {
-    "password-rules": "minlength: 6; maxlength: 16;"
-  },
-  "prepaid.bankofamerica.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!@#$%^&*()+~{}'\";:<>?];"
-  },
-  "prestocard.ca": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit,[!\"#$%&'()*+,<>?@];"
-  },
-  "propelfuels.com": {
-    "password-rules": "minlength: 6; maxlength: 16;"
-  },
-  "qdosstatusreview.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&@^];"
-  },
-  "questdiagnostics.com": {
-    "password-rules": "minlength: 8; maxlength: 30; required: upper, lower; required: digit, [!#$%&()*+<>?@^_~];"
-  },
-  "rejsekort.dk": {
-    "password-rules": "minlength: 7; maxlength: 15; required: lower; required: upper; required: digit;"
-  },
-  "renaud-bray.com": {
-    "password-rules": "minlength: 8; maxlength: 38; allowed: upper,lower,digit;"
-  },
-  "ring.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!@#$%^&*<>?];"
-  },
-  "riteaid.com": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
-  },
-  "robinhood.com": {
-    "password-rules": "minlength: 10;"
-  },
-  "rogers.com": {
-    "password-rules": "minlength: 8; required: lower, upper; required: digit; required: [!@#$];"
-  },
-  "ruc.dk": {
-    "password-rules": "minlength: 6; maxlength: 8; required: lower, upper; required: [-!#%&(){}*+;%/<=>?_];"
-  },
-  "runescape.com": {
-    "password-rules": "minlength: 5; maxlength: 20; required: lower; required: upper; required: digit;"
-  },
-  "ruten.com.tw": {
-    "password-rules": "minlength: 6; maxlength: 15; required: lower, upper;"
-  },
-  "salslimo.com": {
-    "password-rules": "minlength: 8; maxlength: 50; required: upper; required: lower; required: digit; required: [!@#$&*];"
-  },
-  "santahelenasaude.com.br": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [-!@#$%&*_+=<>];"
-  },
-  "santander.de": {
-    "password-rules": "minlength: 8; maxlength: 12; required: lower, upper; required: digit; allowed: [-!#$%&'()*,.:;=?^{}];"
-  },
-  "sbisec.co.jp": {
-    "password-rules": "minlength: 10; maxlength: 20; allowed: upper,lower,digit;"
-  },
-  "secure-arborfcu.org": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [!#$%&'()+,.:?@[_`~]];"
-  },
-  "secure.orclinic.com": {
-    "password-rules": "minlength: 6; maxlength: 15; required: lower; required: digit; allowed: ascii-printable;"
-  },
-  "secure.snnow.ca": {
-    "password-rules": "minlength: 7; maxlength: 16; required: digit; allowed: lower, upper;"
-  },
-  "secure.wa.aaa.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: ascii-printable;"
-  },
-  "sephora.com": {
-    "password-rules": "minlength: 6; maxlength: 12;"
-  },
-  "serviziconsolari.esteri.it": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
-  },
-  "servizioelettriconazionale.it": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [!#$%&*?@^_~];"
-  },
-  "sfwater.org": {
-    "password-rules": "minlength: 10; maxlength: 30; required: digit; allowed: lower, upper, [!@#$%*()_+^}{:;?.];"
-  },
-  "signin.ea.com": {
-    "password-rules": "minlength: 8; maxlength: 64; required: lower, upper; required: digit; allowed: [-!@#^&*=+;:];"
-  },
-  "southwest.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: upper; required: digit; allowed: lower, [!@#$%^*(),.;:/\\];"
-  },
-  "speedway.com": {
-    "password-rules": "minlength: 4; maxlength: 8; required: digit;"
-  },
-  "spirit.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!@#$%^&*()];"
-  },
-  "splunk.com": {
-    "password-rules": "minlength: 8; maxlength: 64; required: lower; required: upper; required: digit; required: [-!@#$%&*_+=<>];"
-  },
-  "ssa.gov": {
-    "password-rules": "required: lower; required: upper; required: digit; required: [~!@#$%^&*];"
-  },
-  "store.nvidia.com": {
-    "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [-!@#$%^*~:;&><[{}|_+=?]];"
-  },
-  "store.steampowered.com": {
-    "password-rules": "minlength: 6; required: lower; required: upper; required: digit; allowed: [~!@#$%^&*];"
-  },
-  "successfactors.eu": {
-    "password-rules": "minlength: 8; maxlength: 18; required: lower; required: upper; required: digit,[-!\"#$%&'()*+,.:;<=>?@[^_`{|}~]];"
-  },
-  "sulamericaseguros.com.br": {
-    "password-rules": "minlength: 6; maxlength: 6;"
-  },
-  "sunlife.com": {
-    "password-rules": "minlength: 8; maxlength: 10; required: digit; required: lower, upper;"
-  },
-  "t-mobile.net": {
-    "password-rules": "minlength: 8; maxlength: 16;"
-  },
-  "target.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower, upper; required: digit, [-!\"#$%&'()*+,./:;=?@[\\^_`{|}~];"
-  },
-  "telekom-dienste.de": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [#$%&()*+,./<=>?@_{|}~];"
-  },
-  "thameswater.co.uk": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
-  },
-  "tix.soundrink.com": {
-    "password-rules": "minlength: 6; maxlength: 16;"
-  },
-  "training.confluent.io": {
-    "password-rules": "minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%*@^_~];"
-  },
-  "twitter.com": {
-    "password-rules": "minlength: 8;"
-  },
-  "ubisoft.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [-]; required: [!@#$%^&*()+];"
-  },
-  "udel.edu": {
-    "password-rules": "minlength: 12; maxlength: 30; required: lower; required: upper; required: digit; required: [!@#$%^&*()+];"
-  },
-  "user.ornl.gov": {
-    "password-rules": "minlength: 8; maxlength: 30; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$%./_];"
-  },
-  "usps.com": {
-    "password-rules": "minlength: 8; maxlength: 50; max-consecutive: 2; required: lower; required: upper; required: digit; allowed: [-!\"#&'()+,./?@];"
-  },
-  "vanguard.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: digit;"
-  },
-  "vanguardinvestor.co.uk": {
-    "password-rules": "minlength: 8; maxlength: 50; required: lower; required: upper; required: digit; required: digit;"
-  },
-  "ventrachicago.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit, [!@#$%^];"
-  },
-  "verizonwireless.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower, upper; required: digit; allowed: unicode;"
-  },
-  "vetsfirstchoice.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [?!@$%^+=&];"
-  },
-  "virginmobile.ca": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$@];"
-  },
-  "visa.com": {
-    "password-rules": "minlength: 6; maxlength: 32;"
-  },
-  "visabenefits-auth.axa-assistance.us": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!\"#$%&()*,.:<>?@^{|}];"
-  },
-  "vivo.com.br": {
-    "password-rules": "maxlength: 6; max-consecutive: 3; allowed: digit;"
-  },
-  "walkhighlands.co.uk": {
-    "password-rules": "minlength: 9; maxlength: 15; required: lower; required: upper; required: digit; allowed: special;"
-  },
-  "walmart.com": {
-    "password-rules": "allowed: lower, upper, digit, [-(~!@#$%^&*_+=`|(){}[:;\"'<>,.?]];"
-  },
-  "waze.com": {
-    "password-rules": "minlength: 8; maxlength: 64; required: lower, upper, digit;"
-  },
-  "wccls.org": {
-    "password-rules": "minlength: 4; maxlength: 16; allowed: lower, upper, digit;"
-  },
-  "web.de": {
-    "password-rules": "minlength: 8; maxlength: 40; allowed: lower, upper, digit, [-<=>~!|()@#{}$%,.?^'&*_+`:;\"[]];"
-  },
-  "wegmans.com": {
-    "password-rules": "minlength: 8; required: digit; required: upper,lower; required: [!#$%&*+=?@^];"
-  },
-  "weibo.com": {
-    "password-rules": "minlength: 6; maxlength: 16;"
-  },
-  "wsj.com": {
-    "password-rules": "minlength: 5; maxlength: 15; required: digit; allowed: lower, upper, [-~!@#$^*_=`|(){}[:;\"'<>,.?]];"
-  },
-  "xfinity.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower, upper; required: digit;"
-  },
-  "xvoucher.com": {
-    "password-rules": "minlength: 11; required: upper; required: digit; required: [!@#$%&_];"
-  },
-  "yatra.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&'()+,.:?@[_`~]];"
-  },
-  "zdf.de": {
-    "password-rules": "minlength: 8; required: upper; required: digit; allowed: lower, special;"
-  },
-  "zoom.us": {
-    "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
-  }
-}
-},{}],7:[function(require,module,exports){
-"use strict";
-
 const {
   isDDGApp,
   isAndroid
@@ -2357,12 +23,13 @@ const deviceInterface = (() => {
 
 module.exports = deviceInterface;
 
-},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./autofill-utils":36}],8:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":2,"./DeviceInterface/AppleDeviceInterface":3,"./DeviceInterface/ExtensionInterface":4,"./autofill-utils":26}],2:[function(require,module,exports){
 "use strict";
 
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
+  notifyWebApp,
   isDDGDomain,
   sendAndWaitForAnswer
 } = require('../autofill-utils');
@@ -2388,31 +55,32 @@ class AndroidInterface extends InterfacePrototype {
     return true;
   }
 
-  async setupAutofill() {
+  setupAutofill({
+    shouldLog
+  } = {
+    shouldLog: false
+  }) {
     if (this.isDeviceSignedIn()) {
+      notifyWebApp({
+        deviceSignedIn: {
+          value: true,
+          shouldLog
+        }
+      });
       const cleanup = scanForInputs(this).init();
       this.addLogoutListener(cleanup);
+    } else {
+      this.trySigningIn();
     }
   }
 
-  getUserData() {
-    let userData = null;
-
-    try {
-      userData = JSON.parse(window.EmailInterface.getUserData());
-    } catch (e) {}
-
-    return Promise.resolve(userData);
-  }
-
-  storeUserData(_ref) {
-    let {
-      addUserData: {
-        token,
-        userName,
-        cohort
-      }
-    } = _ref;
+  storeUserData({
+    addUserData: {
+      token,
+      userName,
+      cohort
+    }
+  }) {
     return window.EmailInterface.storeCredentials(token, userName, cohort);
   }
 
@@ -2420,20 +88,8 @@ class AndroidInterface extends InterfacePrototype {
 
 module.exports = AndroidInterface;
 
-},{"../autofill-utils":36,"../scanForInputs.js":40,"./InterfacePrototype.js":11}],9:[function(require,module,exports){
+},{"../autofill-utils":26,"../scanForInputs.js":31,"./InterfacePrototype.js":5}],3:[function(require,module,exports){
 "use strict";
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
 const InterfacePrototype = require('./InterfacePrototype.js');
 
@@ -2444,10 +100,9 @@ const {
 
 const {
   isApp,
-  isTopFrame,
-  supportsTopFrame,
-  formatDuckAddress,
-  autofillEnabled
+  notifyWebApp,
+  isDDGDomain,
+  formatDuckAddress
 } = require('../autofill-utils');
 
 const {
@@ -2455,119 +110,19 @@ const {
   forms
 } = require('../scanForInputs.js');
 
-const {
-  processConfig
-} = require('@duckduckgo/content-scope-scripts/src/apple-utils');
-/**
- * @implements {FeatureToggles}
- */
-
-
-var _supportedFeatures = /*#__PURE__*/new WeakMap();
-
 class AppleDeviceInterface extends InterfacePrototype {
-  /** @type {FeatureToggleNames[]} */
-
-  /* @type {Timeout | undefined} */
-  async isEnabled() {
-    return autofillEnabled(processConfig);
-  }
-
-  constructor() {
-    super();
-
-    _classPrivateFieldInitSpec(this, _supportedFeatures, {
-      writable: true,
-      value: ['password.generation']
-    });
-
-    _defineProperty(this, "pollingTimeout", void 0);
-
-    if (isTopFrame) {
-      this.stripCredentials = false;
-      window.addEventListener('mouseMove', this);
-    } else {
-      // This is always added as a child frame needs to be informed of a parent frame scroll
-      window.addEventListener('scroll', this);
+  async setupAutofill({
+    shouldLog
+  } = {
+    shouldLog: false
+  }) {
+    if (isDDGDomain()) {
+      // Tell the web app whether we're in the app
+      notifyWebApp({
+        isApp
+      });
     }
-  }
 
-  postInit() {
-    if (!isTopFrame) return;
-    this.setupTopFrame();
-  }
-
-  async setupTopFrame() {
-    const topContextData = this.getTopContextData();
-    if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
-
-    const getPosition = () => {
-      return {
-        x: 0,
-        y: 0,
-        height: 50,
-        width: 50
-      };
-    };
-
-    const tooltip = this.createTooltip(getPosition, topContextData);
-    this.setActiveTooltip(tooltip);
-  }
-  /**
-   * Poll the native listener until the user has selected a credential.
-   * Message return types are:
-   * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
-   *     - This also is triggered when the close event is called and prevents any edge case continued polling.
-   * - 'ok' is when the user has selected a credential and the value can be injected into the page.
-   * - 'none' is when the tooltip is open in the native window however hasn't been entered.
-   * @returns {Promise<void>}
-   */
-
-
-  async listenForSelectedCredential() {
-    // Prevent two timeouts from happening
-    clearTimeout(this.pollingTimeout);
-    const response = await wkSendAndWait('getSelectedCredentials');
-
-    switch (response.type) {
-      case 'none':
-        // Parent hasn't got a selected credential yet
-        this.pollingTimeout = setTimeout(() => {
-          this.listenForSelectedCredential();
-        }, 100);
-        return;
-
-      case 'ok':
-        return this.activeFormSelectedDetail(response.data, response.configType);
-
-      case 'stop':
-        // Parent wants us to stop polling
-        break;
-    }
-  }
-
-  handleEvent(event) {
-    switch (event.type) {
-      case 'mouseMove':
-        this.processMouseMove(event);
-        break;
-
-      case 'scroll':
-        this.removeTooltip();
-        break;
-
-      default:
-        super.handleEvent(event);
-    }
-  }
-
-  processMouseMove(event) {
-    var _this$currentTooltip;
-
-    (_this$currentTooltip = this.currentTooltip) === null || _this$currentTooltip === void 0 ? void 0 : _this$currentTooltip.focus(event.detail.x, event.detail.y);
-  }
-
-  async setupAutofill() {
     if (isApp) {
       await this.getAutofillInitData();
     }
@@ -2579,15 +134,19 @@ class AppleDeviceInterface extends InterfacePrototype {
         await this.getAddresses();
       }
 
+      notifyWebApp({
+        deviceSignedIn: {
+          value: true,
+          shouldLog
+        }
+      });
       forms.forEach(form => form.redecorateAllInputs());
+    } else {
+      this.trySigningIn();
     }
 
     const cleanup = scanForInputs(this).init();
     this.addLogoutListener(cleanup);
-  }
-
-  getUserData() {
-    return wkSendAndWait('emailHandlerGetUserData');
   }
 
   async getAddresses() {
@@ -2615,66 +174,13 @@ class AppleDeviceInterface extends InterfacePrototype {
     return !!isAppSignedIn;
   }
 
-  async setSize(details) {
-    await wkSend('setSize', details);
-  }
-  /**
-   * @param {import("../Form/Form").Form} form
-   * @param {HTMLInputElement} input
-   * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
-   * @param {{ x: number; y: number; }} click
-   * @param {TopContextData} topContextData
-   */
-
-
-  attachTooltipInner(form, input, getPosition, click, topContextData) {
-    if (!isTopFrame && supportsTopFrame) {
-      // TODO currently only mouse initiated events are supported
-      if (!click) {
-        return;
-      }
-
-      this.showTopTooltip(click, getPosition(), topContextData);
-      return;
+  storeUserData({
+    addUserData: {
+      token,
+      userName,
+      cohort
     }
-
-    super.attachTooltipInner(form, input, getPosition, click, topContextData);
-  }
-  /**
-   * @param {{ x: number; y: number; }} click
-   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-   * @param {TopContextData} [data]
-   */
-
-
-  async showTopTooltip(click, inputDimensions, data) {
-    let diffX = Math.floor(click.x - inputDimensions.x);
-    let diffY = Math.floor(click.y - inputDimensions.y);
-    const details = {
-      inputTop: diffY,
-      inputLeft: diffX,
-      inputHeight: Math.floor(inputDimensions.height),
-      inputWidth: Math.floor(inputDimensions.width),
-      serializedInputContext: JSON.stringify(data)
-    };
-    await wkSend('showAutofillParent', details); // Start listening for the user initiated credential
-
-    this.listenForSelectedCredential();
-  }
-
-  async removeTooltip() {
-    if (!supportsTopFrame) return super.removeTooltip();
-    await wkSend('closeAutofillParent', {});
-  }
-
-  storeUserData(_ref) {
-    let {
-      addUserData: {
-        token,
-        userName,
-        cohort
-      }
-    } = _ref;
+  }) {
     return wkSend('emailHandlerStoreToken', {
       token,
       username: userName,
@@ -2688,6 +194,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   /**
    * Sends credentials to the native layer
    * @param {{username: string, password: string}} credentials
+   * @deprecated
    */
 
 
@@ -2695,8 +202,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     return wkSend('pmHandlerStoreCredentials', credentials);
   }
   /**
-<<<<<<< HEAD
-=======
    * Sends form data to the native layer
    * @param {DataStorageObject} data
    */
@@ -2706,7 +211,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     return wkSend('pmHandlerStoreData', data);
   }
   /**
->>>>>>> ab0355b8 (Fix comment)
    * Gets the init data from the device
    * @returns {APIResponse<PMData>}
    */
@@ -2756,17 +260,14 @@ class AppleDeviceInterface extends InterfacePrototype {
   /**
    * Gets a single identity obj once the user requests it
    * @param {Number} id
-   * @returns {Promise<{success: IdentityObject|undefined}>}
+   * @returns {Promise<{success: IdentityObject | undefined}>}
    */
 
 
   getAutofillIdentity(id) {
-    const identity = this.getLocalIdentities().find(_ref2 => {
-      let {
-        id: identityId
-      } = _ref2;
-      return "".concat(identityId) === "".concat(id);
-    });
+    const identity = this.getLocalIdentities().find(({
+      id: identityId
+    }) => "".concat(identityId) === "".concat(id));
     return Promise.resolve({
       success: identity
     });
@@ -2782,30 +283,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     return wkSendAndWait('pmHandlerGetCreditCard', {
       id
     });
-  } // Used to encode data to send back to the child autofill
-
-
-  async selectedDetail(detailIn, configType) {
-    if (isTopFrame) {
-      let detailsEntries = Object.entries(detailIn).map(_ref3 => {
-        let [key, value] = _ref3;
-        return [key, String(value)];
-      });
-      const data = Object.fromEntries(detailsEntries);
-      wkSend('selectedDetail', {
-        data,
-        configType
-      });
-    } else {
-      this.activeFormSelectedDetail(detailIn, configType);
-    }
-  }
-
-  async getCurrentInputType() {
-    const {
-      inputType
-    } = this.getTopContextData() || {};
-    return inputType;
   }
 
   async getAlias() {
@@ -2817,29 +294,23 @@ class AppleDeviceInterface extends InterfacePrototype {
     });
     return formatDuckAddress(alias);
   }
-  /** @param {FeatureToggleNames} name */
-
-
-  supportsFeature(name) {
-    return _classPrivateFieldGet(this, _supportedFeatures).includes(name);
-  }
 
 }
 
 module.exports = AppleDeviceInterface;
 
-},{"../appleDeviceUtils/appleDeviceUtils":34,"../autofill-utils":36,"../scanForInputs.js":40,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
+},{"../appleDeviceUtils/appleDeviceUtils":24,"../autofill-utils":26,"../scanForInputs.js":31,"./InterfacePrototype.js":5}],4:[function(require,module,exports){
 "use strict";
 
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
   SIGN_IN_MSG,
+  notifyWebApp,
   isDDGDomain,
   sendAndWaitForAnswer,
   setValue,
-  formatDuckAddress,
-  autofillEnabled
+  formatDuckAddress
 } = require('../autofill-utils');
 
 const {
@@ -2847,34 +318,27 @@ const {
 } = require('../scanForInputs.js');
 
 class ExtensionInterface extends InterfacePrototype {
-  async isEnabled() {
-    if (!autofillEnabled()) return false;
-    return new Promise(resolve => {
-      // Check if the site is marked to skip autofill
-      chrome.runtime.sendMessage({
-        registeredTempAutofillContentScript: true,
-        documentUrl: window.location.href
-      }, response => {
-        var _response$site, _response$site$broken;
-
-        if (!(response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill'))) {
-          resolve(true);
-        }
-
-        resolve(false);
-      });
-    });
-  }
-
   isDeviceSignedIn() {
     return this.hasLocalAddresses;
   }
 
-  setupAutofill() {
-    return this.getAddresses().then(_addresses => {
+  setupAutofill({
+    shouldLog
+  } = {
+    shouldLog: false
+  }) {
+    this.getAddresses().then(_addresses => {
       if (this.hasLocalAddresses) {
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog
+          }
+        });
         const cleanup = scanForInputs(this).init();
         this.addLogoutListener(cleanup);
+      } else {
+        this.trySigningIn();
       }
     });
   }
@@ -2886,12 +350,6 @@ class ExtensionInterface extends InterfacePrototype {
       this.storeLocalAddresses(data);
       return resolve(data);
     }));
-  }
-
-  getUserData() {
-    return new Promise(resolve => chrome.runtime.sendMessage({
-      getUserData: true
-    }, data => resolve(data)));
   }
 
   refreshAlias() {
@@ -2922,10 +380,8 @@ class ExtensionInterface extends InterfacePrototype {
 
       switch (message.type) {
         case 'ddgUserReady':
-          this.setupAutofill().then(() => {
-            this.setupSettingsPage({
-              shouldLog: true
-            });
+          this.setupAutofill({
+            shouldLog: true
           });
           break;
 
@@ -2958,14 +414,8 @@ class ExtensionInterface extends InterfacePrototype {
 
 module.exports = ExtensionInterface;
 
-},{"../autofill-utils":36,"../scanForInputs.js":40,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../autofill-utils":26,"../scanForInputs.js":31,"./InterfacePrototype.js":5}],5:[function(require,module,exports){
 "use strict";
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
 
@@ -2984,14 +434,12 @@ const {
   isMobileApp,
   isDDGDomain,
   sendAndWaitForAnswer,
-  formatDuckAddress,
-  autofillEnabled,
-  notifyWebApp
+  formatDuckAddress
 } = require('../autofill-utils');
 
 const {
-  getInputType,
-  getSubtypeFromType
+  getInputMainType,
+  getInputSubtype
 } = require('../Form/matching');
 
 const {
@@ -3006,46 +454,13 @@ const {
   getInputConfigFromType
 } = require('../Form/inputTypeConfig');
 
-const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission');
-
-const {
-  forms
-} = require('../scanForInputs');
-
-const {
-  fromPassword,
-  GENERATED_ID
-} = require('../InputTypes/Credentials');
-
-const {
-  PasswordGenerator
-} = require('../PasswordGenerator'); // This may get replaced by a test script
-
-
-let isDDGTestMode = false;
-/**
- * @implements {FeatureToggles}
- */
-
 var _addresses = /*#__PURE__*/new WeakMap();
 
 var _data2 = /*#__PURE__*/new WeakMap();
 
 class InterfacePrototype {
   constructor() {
-    _defineProperty(this, "mode", isDDGTestMode ? 'test' : 'production');
-
-    _defineProperty(this, "attempts", 0);
-
-    _defineProperty(this, "currentAttached", null);
-
-    _defineProperty(this, "currentTooltip", null);
-
-    _defineProperty(this, "stripCredentials", true);
-
-    _defineProperty(this, "passwordGenerator", new PasswordGenerator());
-
-    _classPrivateFieldInitSpec(this, _addresses, {
+    _addresses.set(this, {
       writable: true,
       value: {
         privateAddress: '',
@@ -3053,16 +468,21 @@ class InterfacePrototype {
       }
     });
 
-    _classPrivateFieldInitSpec(this, _data2, {
+    _data2.set(this, {
       writable: true,
       value: {
         credentials: [],
         creditCards: [],
-        identities: [],
-        topContextData: undefined
+        identities: []
       }
     });
+
+    this.attempts = 0;
+    this.currentAttached = null;
+    this.currentTooltip = null;
   }
+  /** @type {{privateAddress: string, personalAddress: string}} */
+
 
   get hasLocalAddresses() {
     var _classPrivateFieldGet2, _classPrivateFieldGet3;
@@ -3079,12 +499,9 @@ class InterfacePrototype {
 
 
     const identities = this.getLocalIdentities();
-    const privateAddressIdentity = identities.find(_ref => {
-      let {
-        id
-      } = _ref;
-      return id === 'privateAddress';
-    }); // If we had previously stored them, just update the private address
+    const privateAddressIdentity = identities.find(({
+      id
+    }) => id === 'privateAddress'); // If we had previously stored them, just update the private address
 
     if (privateAddressIdentity) {
       privateAddressIdentity.emailAddress = formatDuckAddress(addresses.privateAddress);
@@ -3096,13 +513,6 @@ class InterfacePrototype {
   /** @type { PMData } */
 
 
-  /**
-   * @returns {Promise<import('../Form/matching').SupportedTypes>}
-   */
-  async getCurrentInputType() {
-    throw new Error('Not implemented');
-  }
-
   addDuckAddressesToIdentities(identities) {
     if (!this.hasLocalAddresses) return identities;
     const newIdentities = [];
@@ -3113,12 +523,9 @@ class InterfacePrototype {
     privateAddress = formatDuckAddress(privateAddress);
     personalAddress = formatDuckAddress(personalAddress); // Get the duck addresses in identities
 
-    const duckEmailsInIdentities = identities.reduce((duckEmails, _ref2) => {
-      let {
-        emailAddress: email
-      } = _ref2;
-      return email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
-    }, []); // Only add the personal duck address to identities if the user hasn't
+    const duckEmailsInIdentities = identities.reduce((duckEmails, {
+      emailAddress: email
+    }) => email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails, []); // Only add the personal duck address to identities if the user hasn't
     // already manually added it
 
     if (!duckEmailsInIdentities.includes(personalAddress)) {
@@ -3138,37 +545,21 @@ class InterfacePrototype {
   }
   /**
    * Stores init data coming from the device
-   * @param { InboundPMData } data
+   * @param { PMData } data
    */
 
 
   storeLocalData(data) {
-    if (this.stripCredentials) {
-      data.credentials.forEach(cred => delete cred.password);
-      data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode);
-    } // Store the full name as a separate field to simplify autocomplete
-
+    data.credentials.forEach(cred => delete cred.password);
+    data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode); // Store the full name as a separate field to simplify autocomplete
 
     const updatedIdentities = data.identities.map(identity => ({ ...identity,
       fullName: formatFullName(identity)
     })); // Add addresses
 
-    _classPrivateFieldGet(this, _data2).identities = this.addDuckAddressesToIdentities(updatedIdentities);
-    _classPrivateFieldGet(this, _data2).creditCards = data.creditCards;
-    _classPrivateFieldGet(this, _data2).credentials = data.credentials; // Top autofill only
+    data.identities = this.addDuckAddressesToIdentities(updatedIdentities);
 
-    if (data.serializedInputContext) {
-      try {
-        _classPrivateFieldGet(this, _data2).topContextData = JSON.parse(data.serializedInputContext);
-      } catch (e) {
-        console.error(e);
-        this.removeTooltip();
-      }
-    }
-  }
-
-  getTopContextData() {
-    return _classPrivateFieldGet(this, _data2).topContextData;
+    _classPrivateFieldSet(this, _data2, data);
   }
 
   get hasLocalCredentials() {
@@ -3176,13 +567,7 @@ class InterfacePrototype {
   }
 
   getLocalCredentials() {
-    return _classPrivateFieldGet(this, _data2).credentials.map(cred => {
-      const {
-        password,
-        ...rest
-      } = cred;
-      return rest;
-    });
+    return _classPrivateFieldGet(this, _data2).credentials.map(cred => delete cred.password && cred);
   }
 
   get hasLocalIdentities() {
@@ -3196,79 +581,27 @@ class InterfacePrototype {
   get hasLocalCreditCards() {
     return _classPrivateFieldGet(this, _data2).creditCards.length > 0;
   }
-  /** @return {CreditCardObject[]} */
-
 
   getLocalCreditCards() {
     return _classPrivateFieldGet(this, _data2).creditCards;
   }
 
-  async startInit() {
-    window.addEventListener('pointerdown', this, true);
-    listenForGlobalFormSubmission();
-    this.addDeviceListeners();
-    await this.setupAutofill();
-    await this.setupSettingsPage();
-    this.postInit();
-  }
-
-  postInit() {}
-
-  async isEnabled() {
-    return autofillEnabled();
-  }
-
-  async init() {
-    const isEnabled = await this.isEnabled();
-    if (!isEnabled) return;
+  init() {
+    const start = () => {
+      this.addDeviceListeners();
+      this.setupAutofill();
+    };
 
     if (document.readyState === 'complete') {
-      this.startInit();
+      start();
     } else {
-      window.addEventListener('load', () => {
-        this.startInit();
-      });
+      window.addEventListener('load', start);
     }
-  } // Global listener for event delegation
-
-
-  pointerDownListener(e) {
-    if (!e.isTrusted) return; // @ts-ignore
-
-    if (e.target.nodeName === 'DDG-AUTOFILL') {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const activeTooltip = this.getActiveTooltip();
-      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.dispatchClick();
-    } else {
-      this.removeTooltip();
-    }
-
-    if (!isApp) return; // Check for clicks on submit buttons
-
-    const matchingForm = [...forms.values()].find(form => {
-      const btns = [...form.submitButtons]; // @ts-ignore
-
-      if (btns.includes(e.target)) return true; // @ts-ignore
-
-      if (btns.find(btn => btn.contains(e.target))) return true;
-    });
-    matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
   }
-  /**
-   * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
-   * @param {string} type
-   */
 
-
-  async selectedDetail(data, type) {
+  selectedDetail(data, type) {
     this.activeFormSelectedDetail(data, type);
   }
-  /**
-   * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
-   * @param {string} type
-   */
-
 
   activeFormSelectedDetail(data, type) {
     const form = this.currentAttached;
@@ -3277,207 +610,51 @@ class InterfacePrototype {
       return;
     }
 
-    if (data.id === 'privateAddress') {
-      this.refreshAlias();
-    }
-
-    if (type === 'email' && 'email' in data) {
+    if (type === 'email') {
       form.autofillEmail(data.email);
     } else {
       form.autofillData(data, type);
     }
-
-    this.removeTooltip();
   }
-  /**
-   * @param {()=>void} getPosition
-   * @param {TopContextData} topContextData
-   */
 
-
-  createTooltip(getPosition, topContextData) {
-    const config = getInputConfigFromType(topContextData.inputType); // Attach close listeners
-
+  createTooltip(inputType, subtype, getPosition) {
+    window.addEventListener('pointerdown', () => this.removeTooltip(), {
+      capture: true,
+      once: true
+    });
     window.addEventListener('input', () => this.removeTooltip(), {
       once: true
     });
+    const config = getInputConfigFromType(inputType);
 
     if (isApp) {
-      // collect the data for each item to display
-      const data = this.dataForAutofill(config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
-
-      const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
-
-      return new DataAutofill(config, topContextData.inputType, getPosition, this).render(config, asRenderers, {
-        onSelect: id => this.onSelect(config, data, id)
-      });
+      return new DataAutofill(config, subtype, getPosition, this);
     } else {
-      return new EmailAutofill(config, topContextData.inputType, getPosition, this);
+      return new EmailAutofill(config, subtype, getPosition, this);
     }
   }
-  /**
-   * Before the DataAutofill opens, we collect the data based on the config.type
-   * @param {InputTypeConfigs} config
-   * @param {import('../Form/matching').SupportedTypes} inputType
-   * @param {TopContextData} [data]
-   * @returns {(CredentialsObject|CreditCardObject|IdentityObject)[]}
-   */
 
-
-  dataForAutofill(config, inputType, data) {
-    const subtype = getSubtypeFromType(inputType);
-
-    if (config.type === 'identities') {
-      return this.getLocalIdentities().filter(identity => !!identity[subtype]);
-    }
-
-    if (config.type === 'creditCard') {
-      return this.getLocalCreditCards();
-    }
-
-    if (config.type === 'credentials') {
-      if (data) {
-        if (Array.isArray(data.credentials) && data.credentials.length > 0) {
-          return data.credentials;
-        } else {
-          return this.getLocalCredentials();
-        }
-      }
-    }
-
-    return [];
-  }
-  /**
-   * @param {import("../Form/Form").Form} form
-   * @param {HTMLInputElement} input
-   * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-   * @param {{ x: number; y: number; }} click
-   */
-
-
-  attachTooltip(form, input, getPosition, click) {
+  attachTooltip(form, input, getPosition) {
     form.activeInput = input;
     this.currentAttached = form;
-    const inputType = getInputType(input);
+    const inputType = getInputMainType(input);
+    const subtype = getInputSubtype(input);
 
     if (isMobileApp) {
       this.getAlias().then(alias => {
-        var _form$activeInput;
-
-        if (alias) form.autofillEmail(alias);else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
+        if (alias) form.autofillEmail(alias);else form.activeInput.focus();
       });
-      return;
+    } else {
+      if (this.currentTooltip) return;
+      this.currentTooltip = this.createTooltip(inputType, subtype, getPosition);
+      form.intObs.observe(input);
     }
-    /** @type {TopContextData} */
-
-
-    const topContextData = {
-      inputType
-    }; // A list of checks to determine if we need to generate a password
-
-    const checks = [inputType === 'credentials.password', this.supportsFeature('password.generation'), form.isSignup]; // if all checks pass, generate and save a password
-
-    if (checks.every(Boolean)) {
-      const password = this.passwordGenerator.generate({
-        input: input.getAttribute('passwordrules'),
-        domain: window.location.hostname
-      }); // append the new credential to the topContextData so that the top autofill can display it
-
-      topContextData.credentials = [fromPassword(password)];
-    }
-
-    this.attachTooltipInner(form, input, getPosition, click, topContextData);
-  }
-  /**
-   * If the device was capable of generating password, and it
-   * previously did so for the form in question, then offer to
-   * save the credentials
-   *
-   * @param {{ formElement?: HTMLFormElement; }} options
-   */
-
-
-  shouldPromptToStoreCredentials(options) {
-    if (!options.formElement) return false;
-    if (!this.supportsFeature('password.generation')) return false; // if we previously generated a password, allow it to be saved
-
-    if (this.passwordGenerator.generated) {
-      return true;
-    }
-
-    return false;
-  }
-  /**
-   * When an item was selected, we then call back to the device
-   * to fetch the full suite of data needed to complete the autofill
-   *
-   * @param {InputTypeConfigs} config
-   * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
-   * @param {string|number} id
-   */
-
-
-  onSelect(config, items, id) {
-    id = String(id);
-    const matchingData = items.find(item => String(item.id) === id);
-    if (!matchingData) throw new Error('unreachable (fatal)');
-
-    const dataPromise = (() => {
-      switch (config.type) {
-        case 'creditCard':
-          return this.getAutofillCreditCard(id);
-
-        case 'identities':
-          return this.getAutofillIdentity(id);
-
-        case 'credentials':
-          {
-            if (id === GENERATED_ID) {
-              return Promise.resolve({
-                success: matchingData
-              });
-            }
-
-            return this.getAutofillCredentials(id);
-          }
-
-        default:
-          throw new Error('unreachable!');
-      }
-    })(); // wait for the data back from the device
-
-
-    dataPromise.then(response => {
-      if (response.success) {
-        return this.selectedDetail(response.success, config.type);
-      } else {
-        return Promise.reject(new Error('none-success response'));
-      }
-    }).catch(e => {
-      console.error(e);
-      return this.removeTooltip();
-    });
-  }
-  /**
-   * @param {import("../Form/Form").Form} form
-   * @param {any} input
-   * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-   * @param {{ x: number; y: number; }} _click
-   * @param {TopContextData} data
-   */
-
-
-  attachTooltipInner(form, input, getPosition, _click, data) {
-    if (this.currentTooltip) return;
-    this.currentTooltip = this.createTooltip(getPosition, data);
-    form.showingTooltip(input);
   }
 
   async removeTooltip() {
     if (this.currentTooltip) {
       this.currentTooltip.remove();
       this.currentTooltip = null;
-      this.currentAttached = null;
     }
   }
 
@@ -3485,62 +662,11 @@ class InterfacePrototype {
     return this.currentTooltip;
   }
 
-  setActiveTooltip(tooltip) {
-    this.currentTooltip = tooltip;
-  }
+  handleEvent(_event) {}
 
-  handleEvent(event) {
-    switch (event.type) {
-      case 'pointerdown':
-        this.pointerDownListener(event);
-        break;
-    }
-  }
-
-  async setupSettingsPage() {
-    let {
-      shouldLog
-    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-      shouldLog: false
-    };
-
-    if (isDDGDomain()) {
-      notifyWebApp({
-        isApp
-      });
-
-      if (this.isDeviceSignedIn()) {
-        let userData;
-
-        try {
-          userData = await this.getUserData();
-        } catch (e) {}
-
-        const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog,
-            userData: hasUserData ? userData : undefined
-          }
-        });
-      } else {
-        this.trySigningIn();
-      }
-    }
-  }
-
-  async setupAutofill() {}
+  setupAutofill(_opts) {}
 
   getAddresses() {}
-  /**
-   * @returns {Promise<null|Record<any,any>>}
-   */
-
-
-  getUserData() {
-    return Promise.resolve(null);
-  }
 
   refreshAlias() {}
 
@@ -3551,8 +677,7 @@ class InterfacePrototype {
         const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
 
         this.storeUserData(data);
-        await this.setupAutofill();
-        await this.setupSettingsPage({
+        this.setupAutofill({
           shouldLog: true
         });
       } else {
@@ -3569,9 +694,7 @@ class InterfacePrototype {
 
   addLogoutListener(_fn) {}
 
-  isDeviceSignedIn() {
-    return false;
-  }
+  isDeviceSignedIn() {}
   /**
    * @returns {Promise<null|string>}
    */
@@ -3585,38 +708,18 @@ class InterfacePrototype {
   storeCredentials(_opts) {}
 
   getAccounts() {}
-  /** @returns {APIResponse<CredentialsObject>} */
 
-
-  getAutofillCredentials(_id) {
-    throw new Error('unimplemented');
-  }
-  /** @returns {APIResponse<CreditCardObject>} */
-
-
-  async getAutofillCreditCard(_id) {
-    throw new Error('unimplemented');
-  }
-  /** @returns {Promise<{success: IdentityObject|undefined}>} */
-
-
-  async getAutofillIdentity(_id) {
-    throw new Error('unimplemented');
-  }
+  getAutofillCredentials(_id) {}
 
   openManagePasswords() {}
-  /** @param {FeatureToggleNames} _name */
 
-
-  supportsFeature(_name) {
-    return false;
-  }
+  storeFormData(_values) {}
 
 }
 
 module.exports = InterfacePrototype;
 
-},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../InputTypes/Credentials":25,"../PasswordGenerator":28,"../UI/DataAutofill":29,"../UI/EmailAutofill":30,"../autofill-utils":36,"../scanForInputs":40}],12:[function(require,module,exports){
+},{"../Form/formatters":9,"../Form/inputTypeConfig":11,"../Form/matching":16,"../UI/DataAutofill":19,"../UI/EmailAutofill":20,"../autofill-utils":26}],6:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -3654,7 +757,9 @@ const {
 const {
   getUnifiedExpiryDate,
   formatCCYear,
-  getCountryName
+  getCountryName,
+  prepareFormValuesForStorage,
+  inferCountryCodeFromElement
 } = require('./formatters');
 
 const {
@@ -3670,28 +775,41 @@ class Form {
 
   /** @type {HTMLFormElement} */
 
-  /** @type {HTMLInputElement | null} */
-
-  /** @type {boolean | null} */
-
   /**
    * @param {HTMLFormElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
-   * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+   * @param {InterfacePrototypeBase} deviceInterface
    * @param {Matching} [matching]
    */
-  constructor(form, input, deviceInterface, matching) {
+  constructor(form, _input, deviceInterface, matching) {
     _defineProperty(this, "matching", void 0);
 
     _defineProperty(this, "form", void 0);
 
-    _defineProperty(this, "activeInput", void 0);
+    _defineProperty(this, "autofillInput", (input, string, dataType) => {
+      const activeInputSubtype = getInputSubtype(this.activeInput);
+      const inputSubtype = getInputSubtype(input);
+      const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'; // Don't override values for identities, unless it's the current input or we're autofilling email
 
-    _defineProperty(this, "isSignup", void 0);
+      if (dataType === 'identities' && // only for identities
+      input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
+      this.activeInput !== input && // and this is not the active input
+      !isEmailAutofill // and we're not auto-filling email
+      ) return; // do not overwrite the value
+
+      const successful = setValue(input, string);
+      if (!successful) return;
+      input.classList.add('ddg-autofilled');
+      addInlineStyles(input, getIconStylesAutofilled(input, this)); // If the user changes the value, remove the decoration
+
+      input.addEventListener('input', e => this.removeAllHighlights(e, dataType), {
+        once: true
+      });
+    });
 
     this.form = form;
     this.matching = matching || new Matching(matchingConfiguration);
-    this.formAnalyzer = new FormAnalyzer(form, input, matching);
+    this.formAnalyzer = new FormAnalyzer(form, _input, matching);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
     this.device = deviceInterface;
@@ -3700,7 +818,7 @@ class Form {
     this.inputs = {
       all: new Set(),
       credentials: new Set(),
-      creditCard: new Set(),
+      creditCards: new Set(),
       identities: new Set(),
       unknown: new Set()
     };
@@ -3710,139 +828,147 @@ class Form {
 
     this.isAutofilling = false;
     this.handlerExecuted = false;
-    this.shouldPromptToStoreCredentials = true;
+    this.shouldPromptToStoreData = true;
+
+    this.submitHandler = () => {
+      if (this.handlerExecuted) return;
+      const values = this.getValues();
+
+      if (this.hasValues(values)) {
+        // ask to store credentials and/or fireproof
+        if (this.shouldPromptToStoreData) {
+          this.device.storeFormData(values);
+        }
+
+        this.handlerExecuted = true;
+      }
+    };
+    /**
+     * Get values from the form and format them for our device storage
+     * @return {DataStorageObject}
+     */
+
+
+    this.getValues = () => {
+      const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards].reduce((output, inputEl) => {
+        var _output$mainType;
+
+        const mainType = getInputMainType(inputEl);
+        const subtype = getInputSubtype(inputEl);
+        let value = inputEl.value || ((_output$mainType = output[mainType]) === null || _output$mainType === void 0 ? void 0 : _output$mainType[subtype]);
+
+        if (subtype === 'addressCountryCode') {
+          value = inferCountryCodeFromElement(inputEl);
+        }
+
+        if (value) {
+          output[mainType][subtype] = value;
+        }
+
+        return output;
+      }, {
+        credentials: {},
+        creditCards: {},
+        identities: {}
+      });
+      return prepareFormValuesForStorage(formValues);
+    };
+    /**
+     * Determine if the form has values we want to store in the device
+     * @param {DataStorageObject} [values]
+     * @return {boolean}
+     */
+
+
+    this.hasValues = values => {
+      const {
+        credentials,
+        creditCards,
+        identities
+      } = values || this.getValues();
+      return Boolean(credentials || creditCards || identities);
+    };
     /**
      * @type {IntersectionObserver | null}
      */
+
 
     this.intObs = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) this.removeTooltip();
       }
     });
-    this.categorizeInputs();
-  }
 
-  submitHandler() {
-    if (this.handlerExecuted) return;
-    const credentials = this.getValues(); // do nothing if password was absent
+    this.removeTooltip = e => {
+      var _this$intObs;
 
-    if (!credentials.password) return; // checks to determine if we should offer to store credentials and/or fireproof
+      const tooltip = this.device.getActiveTooltip();
 
-    const checks = [this.shouldPromptToStoreCredentials, this.device.shouldPromptToStoreCredentials({
-      formElement: this.form
-    })]; // if *any* of the checks are truthy, proceed to offer
-
-    if (checks.some(Boolean)) {
-      this.device.storeCredentials(credentials);
-    } // mark this form as being handled
-    // TODO(Shane): is this correct, what happens if a failed submission is retried?
-
-
-    this.handlerExecuted = true;
-  }
-
-  getValues() {
-    const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
-      const subtype = getInputSubtype(input);
-
-      if (['username', 'password', 'emailAddress'].includes(subtype)) {
-        output[subtype] = input.value || output[subtype];
+      if (this.isAutofilling || !tooltip || e && e.target === tooltip.host) {
+        return;
       }
 
-      return output;
-    }, {
-      username: '',
-      password: ''
-    }); // If we don't have a username, let's try and save the email if available.
+      this.device.removeTooltip();
+      (_this$intObs = this.intObs) === null || _this$intObs === void 0 ? void 0 : _this$intObs.disconnect();
+      window.removeEventListener('pointerdown', this.removeTooltip, {
+        capture: true
+      });
+    };
 
-    if (credentials.emailAddress && !credentials.username) {
-      credentials.username = credentials.emailAddress;
-    }
+    this.removeInputHighlight = input => {
+      removeInlineStyles(input, getIconStylesAutofilled(input, this));
+      input.classList.remove('ddg-autofilled');
+      this.addAutofillStyles(input);
+    };
 
-    delete credentials.emailAddress;
-    return credentials;
-  }
+    this.removeAllHighlights = (e, dataType) => {
+      // This ensures we are not removing the highlight ourselves when autofilling more than once
+      if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
 
-  hasValues() {
-    const {
-      password
-    } = this.getValues();
-    return !!password;
-  }
+      this.shouldPromptToStoreData = true;
+      this.execOnInputs(this.removeInputHighlight, dataType);
+    };
 
-  removeTooltip() {
-    var _this$intObs;
+    this.removeInputDecoration = input => {
+      removeInlineStyles(input, getIconStylesBase(input, this));
+      input.removeAttribute(ATTR_AUTOFILL);
+    };
 
-    const tooltip = this.device.getActiveTooltip();
-
-    if (this.isAutofilling || !tooltip) {
-      return;
-    }
-
-    this.device.removeTooltip();
-    (_this$intObs = this.intObs) === null || _this$intObs === void 0 ? void 0 : _this$intObs.disconnect();
-  }
-
-  showingTooltip(input) {
-    var _this$intObs2;
-
-    (_this$intObs2 = this.intObs) === null || _this$intObs2 === void 0 ? void 0 : _this$intObs2.observe(input);
-  }
-
-  removeInputHighlight(input) {
-    removeInlineStyles(input, getIconStylesAutofilled(input, this));
-    input.classList.remove('ddg-autofilled');
-    this.addAutofillStyles(input);
-  }
-
-  removeAllHighlights(e, dataType) {
-    // This ensures we are not removing the highlight ourselves when autofilling more than once
-    if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
-
-    this.shouldPromptToStoreCredentials = true;
-    this.execOnInputs(input => this.removeInputHighlight(input), dataType);
-  }
-
-  removeInputDecoration(input) {
-    removeInlineStyles(input, getIconStylesBase(input, this));
-    input.removeAttribute(ATTR_AUTOFILL);
-  }
-
-  removeAllDecorations() {
-    this.execOnInputs(input => this.removeInputDecoration(input));
-    this.listeners.forEach(_ref => {
-      let {
+    this.removeAllDecorations = () => {
+      this.execOnInputs(this.removeInputDecoration);
+      this.listeners.forEach(({
         el,
         type,
         fn
-      } = _ref;
-      return el.removeEventListener(type, fn);
-    });
-  }
+      }) => el.removeEventListener(type, fn));
+    };
 
-  redecorateAllInputs() {
-    this.removeAllDecorations();
-    this.execOnInputs(input => this.decorateInput(input));
-  }
+    this.redecorateAllInputs = () => {
+      this.removeAllDecorations();
+      this.execOnInputs(input => this.decorateInput(input));
+    };
 
-  resetAllInputs() {
-    this.execOnInputs(input => {
-      setValue(input, '');
-      this.removeInputHighlight(input);
-    });
-    if (this.activeInput) this.activeInput.focus();
-  }
+    this.resetAllInputs = () => {
+      this.execOnInputs(input => {
+        setValue(input, '');
+        this.removeInputHighlight(input);
+      });
+      if (this.activeInput) this.activeInput.focus();
+    };
 
-  dismissTooltip() {
-    this.removeTooltip();
-  } // This removes all listeners to avoid memory leaks and weird behaviours
+    this.dismissTooltip = () => {
+      this.removeTooltip();
+    }; // This removes all listeners to avoid memory leaks and weird behaviours
 
 
-  destroy() {
-    this.removeAllDecorations();
-    this.removeTooltip();
-    this.intObs = null;
+    this.destroy = () => {
+      this.removeAllDecorations();
+      this.removeTooltip();
+      this.intObs = null;
+    };
+
+    this.categorizeInputs();
+    return this;
   }
 
   categorizeInputs() {
@@ -3862,8 +988,7 @@ class Form {
     });
   }
 
-  execOnInputs(fn) {
-    let inputType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'all';
+  execOnInputs(fn, inputType = 'all') {
     const inputs = this.inputs[inputType];
 
     for (const input of inputs) {
@@ -3925,36 +1050,9 @@ class Form {
       });
     }
 
-    function getMainClickCoords(e) {
-      if (!e.isTrusted) return;
-      const isMainMouseButton = e.button === 0;
-      if (!isMainMouseButton) return;
-      return {
-        x: e.clientX,
-        y: e.clientY
-      };
-    } // Store the click to a label so we can use the click when the field is focused
-
-
-    let storedClick = new WeakMap();
-    let timeout = null;
-
-    const handlerLabel = e => {
-      // Look for e.target OR it's closest parent to be a HTMLLabelElement
-      const control = e.target.closest('label').control;
-      if (!control) return;
-      storedClick.set(control, getMainClickCoords(e));
-      clearTimeout(timeout); // Remove the stored click if the timer expires
-
-      timeout = setTimeout(() => {
-        storedClick = new WeakMap();
-      }, 1000);
-    };
-
     const handler = e => {
       if (this.device.getActiveTooltip() || this.isAutofilling) return;
       const input = e.target;
-      let click = null;
 
       const getPosition = () => {
         // In extensions, the tooltip is centered on the Dax icon
@@ -3963,12 +1061,9 @@ class Form {
 
 
       if (e.type === 'pointerdown') {
-        click = getMainClickCoords(e);
-        if (!click) return;
-      } else if (storedClick) {
-        // Reuse a previous click if one exists for this element
-        click = storedClick.get(input);
-        storedClick.delete(input);
+        if (!e.isTrusted) return;
+        const isMainMouseButton = e.button === 0;
+        if (!isMainMouseButton) return;
       }
 
       if (this.shouldOpenTooltip(e, input)) {
@@ -3977,17 +1072,15 @@ class Form {
           e.stopImmediatePropagation();
         }
 
-        this.touched.add(input);
-        this.device.attachTooltip(this, input, getPosition, click);
+        this.touched.add(input); // @ts-ignore
+
+        this.device.attachTooltip(this, input, getPosition);
       }
     };
 
     if (input.nodeName !== 'SELECT') {
       const events = ['pointerdown'];
       if (!isMobileApp) events.push('focus');
-      input.labels.forEach(label => {
-        this.addListener(label, 'pointerdown', handlerLabel);
-      });
       events.forEach(ev => this.addListener(input, ev, handler));
     }
 
@@ -4000,30 +1093,7 @@ class Form {
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
   }
 
-  autofillInput(input, string, dataType) {
-    // @ts-ignore
-    const activeInputSubtype = getInputSubtype(this.activeInput);
-    const inputSubtype = getInputSubtype(input);
-    const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'; // Don't override values for identities, unless it's the current input or we're autofilling email
-
-    if (dataType === 'identities' && // only for identities
-    input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
-    this.activeInput !== input && // and this is not the active input
-    !isEmailAutofill // and we're not auto-filling email
-    ) return; // do not overwrite the value
-
-    const successful = setValue(input, string);
-    if (!successful) return;
-    input.classList.add('ddg-autofilled');
-    addInlineStyles(input, getIconStylesAutofilled(input, this)); // If the user changes the value, remove the decoration
-
-    input.addEventListener('input', e => this.removeAllHighlights(e, dataType), {
-      once: true
-    });
-  }
-
-  autofillEmail(alias) {
-    let dataType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'identities';
+  autofillEmail(alias, dataType = 'identities') {
     this.isAutofilling = true;
     this.execOnInputs(input => this.autofillInput(input, alias, dataType), dataType);
     this.isAutofilling = false;
@@ -4031,7 +1101,7 @@ class Form {
   }
 
   autofillData(data, dataType) {
-    this.shouldPromptToStoreCredentials = false;
+    this.shouldPromptToStoreData = false;
     this.isAutofilling = true;
     this.execOnInputs(input => {
       const inputSubtype = getInputSubtype(input);
@@ -4059,7 +1129,7 @@ class Form {
 
 module.exports.Form = Form;
 
-},{"../autofill-utils":36,"../constants":38,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22,"./matching-configuration":21}],13:[function(require,module,exports){
+},{"../autofill-utils":26,"../constants":28,"./FormAnalyzer":7,"./formatters":9,"./inputStyles":10,"./inputTypeConfig.js":11,"./matching":16,"./matching-configuration":15}],7:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -4126,21 +1196,20 @@ class FormAnalyzer {
     return this;
   }
 
-  updateSignal(_ref) {
-    let {
-      string,
-      // The string to check
-      strength,
-      // Strength of the signal
-      signalType = 'generic',
-      // For debugging purposes, we give a name to the signal
-      shouldFlip = false,
-      // Flips the signals, i.e. when a link points outside. See below
-      shouldCheckUnifiedForm = false,
-      // Should check for login/signup forms
-      shouldBeConservative = false // Should use the conservative signup regex
+  updateSignal({
+    string,
+    // The string to check
+    strength,
+    // Strength of the signal
+    signalType = 'generic',
+    // For debugging purposes, we give a name to the signal
+    shouldFlip = false,
+    // Flips the signals, i.e. when a link points outside. See below
+    shouldCheckUnifiedForm = false,
+    // Should check for login/signup forms
+    shouldBeConservative = false // Should use the conservative signup regex
 
-    } = _ref;
+  }) {
     const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri/i);
     const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i);
     const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
@@ -4165,9 +1234,7 @@ class FormAnalyzer {
     return this;
   }
 
-  evaluateElAttributes(el) {
-    let signalStrength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
-    let isInput = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  evaluateElAttributes(el, signalStrength = 3, isInput = false) {
     Array.from(el.attributes).forEach(attr => {
       if (attr.name === 'style') return;
       const attributeString = "".concat(attr.name, "=").concat(attr.value);
@@ -4193,10 +1260,9 @@ class FormAnalyzer {
     const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]');
 
     if (headings) {
-      headings.forEach(_ref2 => {
-        let {
-          textContent
-        } = _ref2;
+      headings.forEach(({
+        textContent
+      }) => {
         textContent = removeExcessWhitespace(textContent || '');
         this.updateSignal({
           string: textContent,
@@ -4310,266 +1376,572 @@ class FormAnalyzer {
 
 module.exports = FormAnalyzer;
 
-},{"../constants":38,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
+},{"../constants":28,"./matching":16,"./matching-configuration":15}],8:[function(require,module,exports){
 "use strict";
 
-// Country names object using 2-letter country codes to reference country name
-// ISO 3166 Alpha-2 Format: [2 letter Country Code]: [Country Name]
-// Sorted alphabetical by country name (special characters on bottom)
-// Source: https://gist.github.com/incredimike/1469814#file-variouscountrylistformats-js-L272
+/**
+ * Country names object using 2-letter country codes to reference country name
+ * Derived from the Intl.DisplayNames implementation
+ * @source https://stackoverflow.com/a/70517921/1948947
+ */
+const COUNTRY_CODES_TO_NAMES = {
+  AC: 'Ascension Island',
+  AD: 'Andorra',
+  AE: 'United Arab Emirates',
+  AF: 'Afghanistan',
+  AG: 'Antigua & Barbuda',
+  AI: 'Anguilla',
+  AL: 'Albania',
+  AM: 'Armenia',
+  AN: 'Curaçao',
+  AO: 'Angola',
+  AQ: 'Antarctica',
+  AR: 'Argentina',
+  AS: 'American Samoa',
+  AT: 'Austria',
+  AU: 'Australia',
+  AW: 'Aruba',
+  AX: 'Åland Islands',
+  AZ: 'Azerbaijan',
+  BA: 'Bosnia & Herzegovina',
+  BB: 'Barbados',
+  BD: 'Bangladesh',
+  BE: 'Belgium',
+  BF: 'Burkina Faso',
+  BG: 'Bulgaria',
+  BH: 'Bahrain',
+  BI: 'Burundi',
+  BJ: 'Benin',
+  BL: 'St. Barthélemy',
+  BM: 'Bermuda',
+  BN: 'Brunei',
+  BO: 'Bolivia',
+  BQ: 'Caribbean Netherlands',
+  BR: 'Brazil',
+  BS: 'Bahamas',
+  BT: 'Bhutan',
+  BU: 'Myanmar (Burma)',
+  BV: 'Bouvet Island',
+  BW: 'Botswana',
+  BY: 'Belarus',
+  BZ: 'Belize',
+  CA: 'Canada',
+  CC: 'Cocos (Keeling) Islands',
+  CD: 'Congo - Kinshasa',
+  CF: 'Central African Republic',
+  CG: 'Congo - Brazzaville',
+  CH: 'Switzerland',
+  CI: 'Côte d’Ivoire',
+  CK: 'Cook Islands',
+  CL: 'Chile',
+  CM: 'Cameroon',
+  CN: 'China mainland',
+  CO: 'Colombia',
+  CP: 'Clipperton Island',
+  CR: 'Costa Rica',
+  CS: 'Serbia',
+  CU: 'Cuba',
+  CV: 'Cape Verde',
+  CW: 'Curaçao',
+  CX: 'Christmas Island',
+  CY: 'Cyprus',
+  CZ: 'Czechia',
+  DD: 'Germany',
+  DE: 'Germany',
+  DG: 'Diego Garcia',
+  DJ: 'Djibouti',
+  DK: 'Denmark',
+  DM: 'Dominica',
+  DO: 'Dominican Republic',
+  DY: 'Benin',
+  DZ: 'Algeria',
+  EA: 'Ceuta & Melilla',
+  EC: 'Ecuador',
+  EE: 'Estonia',
+  EG: 'Egypt',
+  EH: 'Western Sahara',
+  ER: 'Eritrea',
+  ES: 'Spain',
+  ET: 'Ethiopia',
+  EU: 'European Union',
+  EZ: 'Eurozone',
+  FI: 'Finland',
+  FJ: 'Fiji',
+  FK: 'Falkland Islands',
+  FM: 'Micronesia',
+  FO: 'Faroe Islands',
+  FR: 'France',
+  FX: 'France',
+  GA: 'Gabon',
+  GB: 'United Kingdom',
+  GD: 'Grenada',
+  GE: 'Georgia',
+  GF: 'French Guiana',
+  GG: 'Guernsey',
+  GH: 'Ghana',
+  GI: 'Gibraltar',
+  GL: 'Greenland',
+  GM: 'Gambia',
+  GN: 'Guinea',
+  GP: 'Guadeloupe',
+  GQ: 'Equatorial Guinea',
+  GR: 'Greece',
+  GS: 'So. Georgia & So. Sandwich Isl.',
+  GT: 'Guatemala',
+  GU: 'Guam',
+  GW: 'Guinea-Bissau',
+  GY: 'Guyana',
+  HK: 'Hong Kong',
+  HM: 'Heard & McDonald Islands',
+  HN: 'Honduras',
+  HR: 'Croatia',
+  HT: 'Haiti',
+  HU: 'Hungary',
+  HV: 'Burkina Faso',
+  IC: 'Canary Islands',
+  ID: 'Indonesia',
+  IE: 'Ireland',
+  IL: 'Israel',
+  IM: 'Isle of Man',
+  IN: 'India',
+  IO: 'Chagos Archipelago',
+  IQ: 'Iraq',
+  IR: 'Iran',
+  IS: 'Iceland',
+  IT: 'Italy',
+  JE: 'Jersey',
+  JM: 'Jamaica',
+  JO: 'Jordan',
+  JP: 'Japan',
+  KE: 'Kenya',
+  KG: 'Kyrgyzstan',
+  KH: 'Cambodia',
+  KI: 'Kiribati',
+  KM: 'Comoros',
+  KN: 'St. Kitts & Nevis',
+  KP: 'North Korea',
+  KR: 'South Korea',
+  KW: 'Kuwait',
+  KY: 'Cayman Islands',
+  KZ: 'Kazakhstan',
+  LA: 'Laos',
+  LB: 'Lebanon',
+  LC: 'St. Lucia',
+  LI: 'Liechtenstein',
+  LK: 'Sri Lanka',
+  LR: 'Liberia',
+  LS: 'Lesotho',
+  LT: 'Lithuania',
+  LU: 'Luxembourg',
+  LV: 'Latvia',
+  LY: 'Libya',
+  MA: 'Morocco',
+  MC: 'Monaco',
+  MD: 'Moldova',
+  ME: 'Montenegro',
+  MF: 'St. Martin',
+  MG: 'Madagascar',
+  MH: 'Marshall Islands',
+  MK: 'North Macedonia',
+  ML: 'Mali',
+  MM: 'Myanmar (Burma)',
+  MN: 'Mongolia',
+  MO: 'Macao',
+  MP: 'Northern Mariana Islands',
+  MQ: 'Martinique',
+  MR: 'Mauritania',
+  MS: 'Montserrat',
+  MT: 'Malta',
+  MU: 'Mauritius',
+  MV: 'Maldives',
+  MW: 'Malawi',
+  MX: 'Mexico',
+  MY: 'Malaysia',
+  MZ: 'Mozambique',
+  NA: 'Namibia',
+  NC: 'New Caledonia',
+  NE: 'Niger',
+  NF: 'Norfolk Island',
+  NG: 'Nigeria',
+  NH: 'Vanuatu',
+  NI: 'Nicaragua',
+  NL: 'Netherlands',
+  NO: 'Norway',
+  NP: 'Nepal',
+  NR: 'Nauru',
+  NU: 'Niue',
+  NZ: 'New Zealand',
+  OM: 'Oman',
+  PA: 'Panama',
+  PE: 'Peru',
+  PF: 'French Polynesia',
+  PG: 'Papua New Guinea',
+  PH: 'Philippines',
+  PK: 'Pakistan',
+  PL: 'Poland',
+  PM: 'St. Pierre & Miquelon',
+  PN: 'Pitcairn Islands',
+  PR: 'Puerto Rico',
+  PS: 'Palestinian Territories',
+  PT: 'Portugal',
+  PW: 'Palau',
+  PY: 'Paraguay',
+  QA: 'Qatar',
+  QO: 'Outlying Oceania',
+  RE: 'Réunion',
+  RH: 'Zimbabwe',
+  RO: 'Romania',
+  RS: 'Serbia',
+  RU: 'Russia',
+  RW: 'Rwanda',
+  SA: 'Saudi Arabia',
+  SB: 'Solomon Islands',
+  SC: 'Seychelles',
+  SD: 'Sudan',
+  SE: 'Sweden',
+  SG: 'Singapore',
+  SH: 'St. Helena',
+  SI: 'Slovenia',
+  SJ: 'Svalbard & Jan Mayen',
+  SK: 'Slovakia',
+  SL: 'Sierra Leone',
+  SM: 'San Marino',
+  SN: 'Senegal',
+  SO: 'Somalia',
+  SR: 'Suriname',
+  SS: 'South Sudan',
+  ST: 'São Tomé & Príncipe',
+  SU: 'Russia',
+  SV: 'El Salvador',
+  SX: 'Sint Maarten',
+  SY: 'Syria',
+  SZ: 'Eswatini',
+  TA: 'Tristan da Cunha',
+  TC: 'Turks & Caicos Islands',
+  TD: 'Chad',
+  TF: 'French Southern Territories',
+  TG: 'Togo',
+  TH: 'Thailand',
+  TJ: 'Tajikistan',
+  TK: 'Tokelau',
+  TL: 'Timor-Leste',
+  TM: 'Turkmenistan',
+  TN: 'Tunisia',
+  TO: 'Tonga',
+  TP: 'Timor-Leste',
+  TR: 'Turkey',
+  TT: 'Trinidad & Tobago',
+  TV: 'Tuvalu',
+  TW: 'Taiwan',
+  TZ: 'Tanzania',
+  UA: 'Ukraine',
+  UG: 'Uganda',
+  UK: 'United Kingdom',
+  UM: 'U.S. Outlying Islands',
+  UN: 'United Nations',
+  US: 'United States',
+  UY: 'Uruguay',
+  UZ: 'Uzbekistan',
+  VA: 'Vatican City',
+  VC: 'St. Vincent & Grenadines',
+  VD: 'Vietnam',
+  VE: 'Venezuela',
+  VG: 'British Virgin Islands',
+  VI: 'U.S. Virgin Islands',
+  VN: 'Vietnam',
+  VU: 'Vanuatu',
+  WF: 'Wallis & Futuna',
+  WS: 'Samoa',
+  XA: 'Pseudo-Accents',
+  XB: 'Pseudo-Bidi',
+  XK: 'Kosovo',
+  YD: 'Yemen',
+  YE: 'Yemen',
+  YT: 'Mayotte',
+  YU: 'Serbia',
+  ZA: 'South Africa',
+  ZM: 'Zambia',
+  ZR: 'Congo - Kinshasa',
+  ZW: 'Zimbabwe',
+  ZZ: 'Unknown Region'
+};
+/**
+ * Country names object using country name to reference 2-letter country codes
+ * Derived from the solution above with
+ * Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(entry => [entry[1], entry[0]]))
+ */
+
+const COUNTRY_NAMES_TO_CODES = {
+  'Ascension Island': 'AC',
+  Andorra: 'AD',
+  'United Arab Emirates': 'AE',
+  Afghanistan: 'AF',
+  'Antigua & Barbuda': 'AG',
+  Anguilla: 'AI',
+  Albania: 'AL',
+  Armenia: 'AM',
+  'Curaçao': 'CW',
+  Angola: 'AO',
+  Antarctica: 'AQ',
+  Argentina: 'AR',
+  'American Samoa': 'AS',
+  Austria: 'AT',
+  Australia: 'AU',
+  Aruba: 'AW',
+  'Åland Islands': 'AX',
+  Azerbaijan: 'AZ',
+  'Bosnia & Herzegovina': 'BA',
+  Barbados: 'BB',
+  Bangladesh: 'BD',
+  Belgium: 'BE',
+  'Burkina Faso': 'HV',
+  Bulgaria: 'BG',
+  Bahrain: 'BH',
+  Burundi: 'BI',
+  Benin: 'DY',
+  'St. Barthélemy': 'BL',
+  Bermuda: 'BM',
+  Brunei: 'BN',
+  Bolivia: 'BO',
+  'Caribbean Netherlands': 'BQ',
+  Brazil: 'BR',
+  Bahamas: 'BS',
+  Bhutan: 'BT',
+  'Myanmar (Burma)': 'MM',
+  'Bouvet Island': 'BV',
+  Botswana: 'BW',
+  Belarus: 'BY',
+  Belize: 'BZ',
+  Canada: 'CA',
+  'Cocos (Keeling) Islands': 'CC',
+  'Congo - Kinshasa': 'ZR',
+  'Central African Republic': 'CF',
+  'Congo - Brazzaville': 'CG',
+  Switzerland: 'CH',
+  'Côte d’Ivoire': 'CI',
+  'Cook Islands': 'CK',
+  Chile: 'CL',
+  Cameroon: 'CM',
+  'China mainland': 'CN',
+  Colombia: 'CO',
+  'Clipperton Island': 'CP',
+  'Costa Rica': 'CR',
+  Serbia: 'YU',
+  Cuba: 'CU',
+  'Cape Verde': 'CV',
+  'Christmas Island': 'CX',
+  Cyprus: 'CY',
+  Czechia: 'CZ',
+  Germany: 'DE',
+  'Diego Garcia': 'DG',
+  Djibouti: 'DJ',
+  Denmark: 'DK',
+  Dominica: 'DM',
+  'Dominican Republic': 'DO',
+  Algeria: 'DZ',
+  'Ceuta & Melilla': 'EA',
+  Ecuador: 'EC',
+  Estonia: 'EE',
+  Egypt: 'EG',
+  'Western Sahara': 'EH',
+  Eritrea: 'ER',
+  Spain: 'ES',
+  Ethiopia: 'ET',
+  'European Union': 'EU',
+  Eurozone: 'EZ',
+  Finland: 'FI',
+  Fiji: 'FJ',
+  'Falkland Islands': 'FK',
+  Micronesia: 'FM',
+  'Faroe Islands': 'FO',
+  France: 'FX',
+  Gabon: 'GA',
+  'United Kingdom': 'UK',
+  Grenada: 'GD',
+  Georgia: 'GE',
+  'French Guiana': 'GF',
+  Guernsey: 'GG',
+  Ghana: 'GH',
+  Gibraltar: 'GI',
+  Greenland: 'GL',
+  Gambia: 'GM',
+  Guinea: 'GN',
+  Guadeloupe: 'GP',
+  'Equatorial Guinea': 'GQ',
+  Greece: 'GR',
+  'So. Georgia & So. Sandwich Isl.': 'GS',
+  Guatemala: 'GT',
+  Guam: 'GU',
+  'Guinea-Bissau': 'GW',
+  Guyana: 'GY',
+  'Hong Kong': 'HK',
+  'Heard & McDonald Islands': 'HM',
+  Honduras: 'HN',
+  Croatia: 'HR',
+  Haiti: 'HT',
+  Hungary: 'HU',
+  'Canary Islands': 'IC',
+  Indonesia: 'ID',
+  Ireland: 'IE',
+  Israel: 'IL',
+  'Isle of Man': 'IM',
+  India: 'IN',
+  'Chagos Archipelago': 'IO',
+  Iraq: 'IQ',
+  Iran: 'IR',
+  Iceland: 'IS',
+  Italy: 'IT',
+  Jersey: 'JE',
+  Jamaica: 'JM',
+  Jordan: 'JO',
+  Japan: 'JP',
+  Kenya: 'KE',
+  Kyrgyzstan: 'KG',
+  Cambodia: 'KH',
+  Kiribati: 'KI',
+  Comoros: 'KM',
+  'St. Kitts & Nevis': 'KN',
+  'North Korea': 'KP',
+  'South Korea': 'KR',
+  Kuwait: 'KW',
+  'Cayman Islands': 'KY',
+  Kazakhstan: 'KZ',
+  Laos: 'LA',
+  Lebanon: 'LB',
+  'St. Lucia': 'LC',
+  Liechtenstein: 'LI',
+  'Sri Lanka': 'LK',
+  Liberia: 'LR',
+  Lesotho: 'LS',
+  Lithuania: 'LT',
+  Luxembourg: 'LU',
+  Latvia: 'LV',
+  Libya: 'LY',
+  Morocco: 'MA',
+  Monaco: 'MC',
+  Moldova: 'MD',
+  Montenegro: 'ME',
+  'St. Martin': 'MF',
+  Madagascar: 'MG',
+  'Marshall Islands': 'MH',
+  'North Macedonia': 'MK',
+  Mali: 'ML',
+  Mongolia: 'MN',
+  Macao: 'MO',
+  'Northern Mariana Islands': 'MP',
+  Martinique: 'MQ',
+  Mauritania: 'MR',
+  Montserrat: 'MS',
+  Malta: 'MT',
+  Mauritius: 'MU',
+  Maldives: 'MV',
+  Malawi: 'MW',
+  Mexico: 'MX',
+  Malaysia: 'MY',
+  Mozambique: 'MZ',
+  Namibia: 'NA',
+  'New Caledonia': 'NC',
+  Niger: 'NE',
+  'Norfolk Island': 'NF',
+  Nigeria: 'NG',
+  Vanuatu: 'VU',
+  Nicaragua: 'NI',
+  Netherlands: 'NL',
+  Norway: 'NO',
+  Nepal: 'NP',
+  Nauru: 'NR',
+  Niue: 'NU',
+  'New Zealand': 'NZ',
+  Oman: 'OM',
+  Panama: 'PA',
+  Peru: 'PE',
+  'French Polynesia': 'PF',
+  'Papua New Guinea': 'PG',
+  Philippines: 'PH',
+  Pakistan: 'PK',
+  Poland: 'PL',
+  'St. Pierre & Miquelon': 'PM',
+  'Pitcairn Islands': 'PN',
+  'Puerto Rico': 'PR',
+  'Palestinian Territories': 'PS',
+  Portugal: 'PT',
+  Palau: 'PW',
+  Paraguay: 'PY',
+  Qatar: 'QA',
+  'Outlying Oceania': 'QO',
+  'Réunion': 'RE',
+  Zimbabwe: 'ZW',
+  Romania: 'RO',
+  Russia: 'SU',
+  Rwanda: 'RW',
+  'Saudi Arabia': 'SA',
+  'Solomon Islands': 'SB',
+  Seychelles: 'SC',
+  Sudan: 'SD',
+  Sweden: 'SE',
+  Singapore: 'SG',
+  'St. Helena': 'SH',
+  Slovenia: 'SI',
+  'Svalbard & Jan Mayen': 'SJ',
+  Slovakia: 'SK',
+  'Sierra Leone': 'SL',
+  'San Marino': 'SM',
+  Senegal: 'SN',
+  Somalia: 'SO',
+  Suriname: 'SR',
+  'South Sudan': 'SS',
+  'São Tomé & Príncipe': 'ST',
+  'El Salvador': 'SV',
+  'Sint Maarten': 'SX',
+  Syria: 'SY',
+  Eswatini: 'SZ',
+  'Tristan da Cunha': 'TA',
+  'Turks & Caicos Islands': 'TC',
+  Chad: 'TD',
+  'French Southern Territories': 'TF',
+  Togo: 'TG',
+  Thailand: 'TH',
+  Tajikistan: 'TJ',
+  Tokelau: 'TK',
+  'Timor-Leste': 'TP',
+  Turkmenistan: 'TM',
+  Tunisia: 'TN',
+  Tonga: 'TO',
+  Turkey: 'TR',
+  'Trinidad & Tobago': 'TT',
+  Tuvalu: 'TV',
+  Taiwan: 'TW',
+  Tanzania: 'TZ',
+  Ukraine: 'UA',
+  Uganda: 'UG',
+  'U.S. Outlying Islands': 'UM',
+  'United Nations': 'UN',
+  'United States': 'US',
+  Uruguay: 'UY',
+  Uzbekistan: 'UZ',
+  'Vatican City': 'VA',
+  'St. Vincent & Grenadines': 'VC',
+  Vietnam: 'VN',
+  Venezuela: 'VE',
+  'British Virgin Islands': 'VG',
+  'U.S. Virgin Islands': 'VI',
+  'Wallis & Futuna': 'WF',
+  Samoa: 'WS',
+  'Pseudo-Accents': 'XA',
+  'Pseudo-Bidi': 'XB',
+  Kosovo: 'XK',
+  Yemen: 'YE',
+  Mayotte: 'YT',
+  'South Africa': 'ZA',
+  Zambia: 'ZM',
+  'Unknown Region': 'ZZ'
+};
 module.exports = {
-  'AF': 'Afghanistan',
-  'AL': 'Albania',
-  'DZ': 'Algeria',
-  'AS': 'American Samoa',
-  'AD': 'Andorra',
-  'AO': 'Angola',
-  'AI': 'Anguilla',
-  'AQ': 'Antarctica',
-  'AG': 'Antigua and Barbuda',
-  'AR': 'Argentina',
-  'AM': 'Armenia',
-  'AW': 'Aruba',
-  'AU': 'Australia',
-  'AT': 'Austria',
-  'AZ': 'Azerbaijan',
-  'BS': 'Bahamas (the)',
-  'BH': 'Bahrain',
-  'BD': 'Bangladesh',
-  'BB': 'Barbados',
-  'BY': 'Belarus',
-  'BE': 'Belgium',
-  'BZ': 'Belize',
-  'BJ': 'Benin',
-  'BM': 'Bermuda',
-  'BT': 'Bhutan',
-  'BO': 'Bolivia (Plurinational State of)',
-  'BQ': 'Bonaire, Sint Eustatius and Saba',
-  'BA': 'Bosnia and Herzegovina',
-  'BW': 'Botswana',
-  'BV': 'Bouvet Island',
-  'BR': 'Brazil',
-  'IO': 'British Indian Ocean Territory (the)',
-  'BN': 'Brunei Darussalam',
-  'BG': 'Bulgaria',
-  'BF': 'Burkina Faso',
-  'BI': 'Burundi',
-  'CV': 'Cabo Verde',
-  'KH': 'Cambodia',
-  'CM': 'Cameroon',
-  'CA': 'Canada',
-  'KY': 'Cayman Islands (the)',
-  'CF': 'Central African Republic (the)',
-  'TD': 'Chad',
-  'CL': 'Chile',
-  'CN': 'China',
-  'CX': 'Christmas Island',
-  'CC': 'Cocos (Keeling) Islands (the)',
-  'CO': 'Colombia',
-  'KM': 'Comoros (the)',
-  'CD': 'Congo (the Democratic Republic of the)',
-  'CG': 'Congo (the)',
-  'CK': 'Cook Islands (the)',
-  'CR': 'Costa Rica',
-  'HR': 'Croatia',
-  'CU': 'Cuba',
-  'CW': 'Curaçao',
-  'CY': 'Cyprus',
-  'CZ': 'Czechia',
-  'CI': "Côte d'Ivoire",
-  'DK': 'Denmark',
-  'DJ': 'Djibouti',
-  'DM': 'Dominica',
-  'DO': 'Dominican Republic (the)',
-  'EC': 'Ecuador',
-  'EG': 'Egypt',
-  'SV': 'El Salvador',
-  'GQ': 'Equatorial Guinea',
-  'ER': 'Eritrea',
-  'EE': 'Estonia',
-  'SZ': 'Eswatini',
-  'ET': 'Ethiopia',
-  'FK': 'Falkland Islands (the) [Malvinas]',
-  'FO': 'Faroe Islands (the)',
-  'FJ': 'Fiji',
-  'FI': 'Finland',
-  'FR': 'France',
-  'GF': 'French Guiana',
-  'PF': 'French Polynesia',
-  'TF': 'French Southern Territories (the)',
-  'GA': 'Gabon',
-  'GM': 'Gambia (the)',
-  'GE': 'Georgia',
-  'DE': 'Germany',
-  'GH': 'Ghana',
-  'GI': 'Gibraltar',
-  'GR': 'Greece',
-  'GL': 'Greenland',
-  'GD': 'Grenada',
-  'GP': 'Guadeloupe',
-  'GU': 'Guam',
-  'GT': 'Guatemala',
-  'GG': 'Guernsey',
-  'GN': 'Guinea',
-  'GW': 'Guinea-Bissau',
-  'GY': 'Guyana',
-  'HT': 'Haiti',
-  'HM': 'Heard Island and McDonald Islands',
-  'VA': 'Holy See (the)',
-  'HN': 'Honduras',
-  'HK': 'Hong Kong',
-  'HU': 'Hungary',
-  'IS': 'Iceland',
-  'IN': 'India',
-  'ID': 'Indonesia',
-  'IR': 'Iran (Islamic Republic of)',
-  'IQ': 'Iraq',
-  'IE': 'Ireland',
-  'IM': 'Isle of Man',
-  'IL': 'Israel',
-  'IT': 'Italy',
-  'JM': 'Jamaica',
-  'JP': 'Japan',
-  'JE': 'Jersey',
-  'JO': 'Jordan',
-  'KZ': 'Kazakhstan',
-  'KE': 'Kenya',
-  'KI': 'Kiribati',
-  'KP': "Korea (the Democratic People's Republic of)",
-  'KR': 'Korea (the Republic of)',
-  'KW': 'Kuwait',
-  'KG': 'Kyrgyzstan',
-  'LA': "Lao People's Democratic Republic (the)",
-  'LV': 'Latvia',
-  'LB': 'Lebanon',
-  'LS': 'Lesotho',
-  'LR': 'Liberia',
-  'LY': 'Libya',
-  'LI': 'Liechtenstein',
-  'LT': 'Lithuania',
-  'LU': 'Luxembourg',
-  'MO': 'Macao',
-  'MG': 'Madagascar',
-  'MW': 'Malawi',
-  'MY': 'Malaysia',
-  'MV': 'Maldives',
-  'ML': 'Mali',
-  'MT': 'Malta',
-  'MH': 'Marshall Islands (the)',
-  'MQ': 'Martinique',
-  'MR': 'Mauritania',
-  'MU': 'Mauritius',
-  'YT': 'Mayotte',
-  'MX': 'Mexico',
-  'FM': 'Micronesia (Federated States of)',
-  'MD': 'Moldova (the Republic of)',
-  'MC': 'Monaco',
-  'MN': 'Mongolia',
-  'ME': 'Montenegro',
-  'MS': 'Montserrat',
-  'MA': 'Morocco',
-  'MZ': 'Mozambique',
-  'MM': 'Myanmar',
-  'NA': 'Namibia',
-  'NR': 'Nauru',
-  'NP': 'Nepal',
-  'NL': 'Netherlands (the)',
-  'NC': 'New Caledonia',
-  'NZ': 'New Zealand',
-  'NI': 'Nicaragua',
-  'NE': 'Niger (the)',
-  'NG': 'Nigeria',
-  'NU': 'Niue',
-  'NF': 'Norfolk Island',
-  'MP': 'Northern Mariana Islands (the)',
-  'NO': 'Norway',
-  'OM': 'Oman',
-  'PK': 'Pakistan',
-  'PW': 'Palau',
-  'PS': 'Palestine, State of',
-  'PA': 'Panama',
-  'PG': 'Papua New Guinea',
-  'PY': 'Paraguay',
-  'PE': 'Peru',
-  'PH': 'Philippines (the)',
-  'PN': 'Pitcairn',
-  'PL': 'Poland',
-  'PT': 'Portugal',
-  'PR': 'Puerto Rico',
-  'QA': 'Qatar',
-  'MK': 'Republic of North Macedonia',
-  'RO': 'Romania',
-  'RU': 'Russian Federation (the)',
-  'RW': 'Rwanda',
-  'RE': 'Réunion',
-  'BL': 'Saint Barthélemy',
-  'SH': 'Saint Helena, Ascension and Tristan da Cunha',
-  'KN': 'Saint Kitts and Nevis',
-  'LC': 'Saint Lucia',
-  'MF': 'Saint Martin (French part)',
-  'PM': 'Saint Pierre and Miquelon',
-  'VC': 'Saint Vincent and the Grenadines',
-  'WS': 'Samoa',
-  'SM': 'San Marino',
-  'ST': 'Sao Tome and Principe',
-  'SA': 'Saudi Arabia',
-  'SN': 'Senegal',
-  'RS': 'Serbia',
-  'SC': 'Seychelles',
-  'SL': 'Sierra Leone',
-  'SG': 'Singapore',
-  'SX': 'Sint Maarten (Dutch part)',
-  'SK': 'Slovakia',
-  'SI': 'Slovenia',
-  'SB': 'Solomon Islands',
-  'SO': 'Somalia',
-  'ZA': 'South Africa',
-  'GS': 'South Georgia and the South Sandwich Islands',
-  'SS': 'South Sudan',
-  'ES': 'Spain',
-  'LK': 'Sri Lanka',
-  'SD': 'Sudan (the)',
-  'SR': 'Suriname',
-  'SJ': 'Svalbard and Jan Mayen',
-  'SE': 'Sweden',
-  'CH': 'Switzerland',
-  'SY': 'Syrian Arab Republic',
-  'TW': 'Taiwan',
-  'TJ': 'Tajikistan',
-  'TZ': 'Tanzania, United Republic of',
-  'TH': 'Thailand',
-  'TL': 'Timor-Leste',
-  'TG': 'Togo',
-  'TK': 'Tokelau',
-  'TO': 'Tonga',
-  'TT': 'Trinidad and Tobago',
-  'TN': 'Tunisia',
-  'TR': 'Turkey',
-  'TM': 'Turkmenistan',
-  'TC': 'Turks and Caicos Islands (the)',
-  'TV': 'Tuvalu',
-  'UG': 'Uganda',
-  'UA': 'Ukraine',
-  'AE': 'United Arab Emirates (the)',
-  'GB': 'United Kingdom of Great Britain and Northern Ireland (the)',
-  'UM': 'United States Minor Outlying Islands (the)',
-  'US': 'United States of America (the)',
-  'UY': 'Uruguay',
-  'UZ': 'Uzbekistan',
-  'VU': 'Vanuatu',
-  'VE': 'Venezuela (Bolivarian Republic of)',
-  'VN': 'Viet Nam',
-  'VG': 'Virgin Islands (British)',
-  'VI': 'Virgin Islands (U.S.)',
-  'WF': 'Wallis and Futuna',
-  'EH': 'Western Sahara',
-  'YE': 'Yemen',
-  'ZM': 'Zambia',
-  'ZW': 'Zimbabwe',
-  'AX': 'Åland Islands'
+  COUNTRY_CODES_TO_NAMES,
+  COUNTRY_NAMES_TO_CODES
 };
 
-},{}],15:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 var _templateObject, _templateObject2;
@@ -4581,7 +1953,10 @@ const {
   checkPlaceholderAndLabels
 } = require('./matching');
 
-const COUNTRY_NAMES = require('./countryNames'); // Matches strings like mm/yy, mm-yyyy, mm-aa
+const {
+  COUNTRY_CODES_TO_NAMES,
+  COUNTRY_NAMES_TO_CODES
+} = require('./countryNames'); // Matches strings like mm/yy, mm-yyyy, mm-aa
 
 
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
@@ -4620,14 +1995,11 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
   return "".concat(paddedMonth).concat(separator).concat(formattedYear);
 };
 
-const formatFullName = _ref => {
-  let {
-    firstName = '',
-    middleName = '',
-    lastName = ''
-  } = _ref;
-  return "".concat(firstName, " ").concat(middleName ? middleName + ' ' : '').concat(lastName).trim();
-};
+const formatFullName = ({
+  firstName = '',
+  middleName = '',
+  lastName = ''
+}) => "".concat(firstName, " ").concat(middleName ? middleName + ' ' : '').concat(lastName).trim();
 /**
  * Tries to look up a human-readable country name from the country code
  * @param {string} locale
@@ -4643,7 +2015,7 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
     });
     return regionNames.of(addressCountryCode);
   } catch (e) {
-    return COUNTRY_NAMES[addressCountryCode] || addressCountryCode;
+    return COUNTRY_CODES_TO_NAMES[addressCountryCode] || addressCountryCode;
   }
 };
 /**
@@ -4665,8 +2037,7 @@ const inferElementLocale = el => {
  */
 
 
-const getCountryName = function (el) {
-  let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+const getCountryName = (el, options = {}) => {
   const {
     addressCountryCode
   } = options;
@@ -4696,16 +2067,160 @@ const getCountryName = function (el) {
 
   return localisedCountryName;
 };
+/**
+ * Try to get a map of localised country names to code, or falls back to the English map
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ */
+
+
+const getLocalisedCountryNamesToCodes = el => {
+  if (typeof Intl.DisplayNames !== 'function') return COUNTRY_NAMES_TO_CODES; // Try to infer the field language or fallback to en
+
+  const elLocale = inferElementLocale(el);
+  return Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(([code]) => [getCountryDisplayName(elLocale, code), code]));
+};
+/**
+ * Try to infer a country code from an element we identified as identities.addressCountryCode
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @return {string}
+ */
+
+
+const inferCountryCodeFromElement = el => {
+  if (COUNTRY_CODES_TO_NAMES[el.value]) return el.value;
+  if (COUNTRY_NAMES_TO_CODES[el.value]) return COUNTRY_NAMES_TO_CODES[el.value];
+  const localisedCountryNamesToCodes = getLocalisedCountryNamesToCodes(el);
+  if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value];
+
+  if (el instanceof HTMLSelectElement) {
+    var _el$selectedOptions$;
+
+    const selectedText = (_el$selectedOptions$ = el.selectedOptions[0]) === null || _el$selectedOptions$ === void 0 ? void 0 : _el$selectedOptions$.text;
+    if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText;
+    if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText];
+    if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText];
+  }
+
+  return '';
+};
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
+
+
+const shouldStoreCredentials = ({
+  credentials
+}) => Boolean(credentials.password);
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
+
+
+const shouldStoreIdentities = ({
+  identities
+}) => Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
+
+
+const shouldStoreCreditCards = ({
+  creditCards
+}) => Boolean(creditCards.cardNumber && creditCards.cardSecurityCode);
+/**
+ * Formats form data into an object to send to the device for storage
+ * If values are insufficient for a complete entry, they are discarded
+ * @param {InternalDataStorageObject} formValues
+ * @return {DataStorageObject}
+ */
+
+
+const prepareFormValuesForStorage = formValues => {
+  let {
+    credentials,
+    identities,
+    creditCards
+  } = formValues;
+  /** Fixes for credentials **/
+  // Don't store if there isn't enough data
+
+  if (shouldStoreCredentials(formValues)) {
+    // If we don't have a username to match a password, let's see if the email is available
+    if (credentials.password && !credentials.username && identities.emailAddress) {
+      credentials.username = identities.emailAddress;
+    }
+  } else {
+    // @ts-ignore
+    credentials = null;
+  }
+  /** Fixes for identities **/
+  // Don't store if there isn't enough data
+
+
+  if (shouldStoreIdentities(formValues)) {
+    if (identities.fullName) {
+      // If the fullname can be easily split into two, we'll store it as first and last
+      const nameParts = identities.fullName.trim().split(/\s+/);
+
+      if (nameParts.length === 2) {
+        identities.firstName = nameParts[0];
+        identities.lastName = nameParts[1];
+      } else {
+        // If we can't split it, just store it as first name
+        identities.firstName = identities.fullName;
+      }
+
+      delete identities.fullName;
+    }
+  } else {
+    // @ts-ignore
+    identities = null;
+  }
+  /** Fixes for credit cards **/
+  // Don't store if there isn't enough data
+
+
+  if (shouldStoreCreditCards(formValues)) {
+    if (creditCards.expiration) {
+      const [expirationMonth, expirationYear] = creditCards.expiration.split(/\D/);
+      creditCards.expirationMonth = expirationMonth;
+      creditCards.expirationYear = expirationYear;
+      delete creditCards.expiration;
+    }
+
+    if (Number(creditCards.expirationYear) <= 2020) {
+      creditCards.expirationYear = "".concat(Number(creditCards.expirationYear) + 2000);
+    }
+
+    if (creditCards.cardNumber) {
+      creditCards.cardNumber = creditCards.cardNumber.replaceAll(/\D/g, '');
+    }
+  } else {
+    // @ts-ignore
+    creditCards = null;
+  }
+
+  return {
+    credentials,
+    identities,
+    creditCards
+  };
+};
 
 module.exports = {
   formatCCYear,
   getUnifiedExpiryDate,
   formatFullName,
   getCountryDisplayName,
-  getCountryName
+  getCountryName,
+  inferCountryCodeFromElement,
+  prepareFormValuesForStorage
 };
 
-},{"./countryNames":14,"./matching":22}],16:[function(require,module,exports){
+},{"./countryNames":8,"./matching":16}],10:[function(require,module,exports){
 "use strict";
 
 const {
@@ -4720,8 +2235,7 @@ const {
  */
 
 
-const getIcon = function (input, form) {
-  let type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'base';
+const getIcon = (input, form, type = 'base') => {
   const config = getInputConfig(input);
 
   if (type === 'base') {
@@ -4786,7 +2300,7 @@ module.exports = {
   getIconStylesAutofilled
 };
 
-},{"./inputTypeConfig.js":17}],17:[function(require,module,exports){
+},{"./inputTypeConfig.js":11}],11:[function(require,module,exports){
 "use strict";
 
 const {
@@ -4801,22 +2315,13 @@ const {
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon');
 
 const {
-  getInputType,
-  getMainTypeFromType,
+  getInputMainType,
   getInputSubtype
 } = require('./matching');
 
 const {
-  CredentialsTooltipItem
-} = require('../InputTypes/Credentials');
-
-const {
-  CreditCardTooltipItem
-} = require('../InputTypes/CreditCard');
-
-const {
-  IdentityTooltipItem
-} = require('../InputTypes/Identity'); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+  getCountryDisplayName
+} = require('./formatters'); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 
 
 const isFirefox = navigator.userAgent.includes('Firefox');
@@ -4824,18 +2329,25 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
- * @param {import("./Form").Form} form
+ * @param device
  * @return {string}
  */
 
-const getIdentitiesIcon = (input, _ref) => {
-  let {
-    device
-  } = _ref;
+const getIdentitiesIcon = (input, {
+  device
+}) => {
   const subtype = getInputSubtype(input);
   if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg;
   return '';
 };
+/**
+ * Inputs with readOnly or disabled should never be decorated
+ * @param {HTMLInputElement} input
+ * @return {boolean}
+ */
+
+
+const canBeDecorated = input => !input.readOnly && !input.disabled;
 /**
  * A map of config objects. These help by centralising here some complexity
  * @type {InputTypeConfig}
@@ -4848,46 +2360,28 @@ const inputTypeConfig = {
     type: 'credentials',
     getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
     getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-    shouldDecorate: (input, _ref2) => {
-      let {
-        isLogin,
-        device
-      } = _ref2;
-
-      // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
-      // saved password
-      if (isLogin) {
-        return device.hasLocalCredentials;
-      } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
-
-
-      if (device.supportsFeature('password.generation')) {
-        const subtype = getInputSubtype(input);
-
-        if (subtype === 'password') {
-          return true;
-        }
-      }
-
-      return false;
-    },
+    shouldDecorate: (_input, {
+      isLogin,
+      device
+    }) => canBeDecorated(_input) && isLogin && device.hasLocalCredentials,
     dataType: 'Credentials',
-    tooltipItem: data => new CredentialsTooltipItem(data)
+    displayTitlePropName: (_subtype, data) => data.username,
+    displaySubtitlePropName: '•••••••••••••••',
+    autofillMethod: 'getAutofillCredentials'
   },
 
-  /** @type {CreditCardInputTypeConfig} */
-  creditCard: {
-    type: 'creditCard',
+  /** @type {CreditCardsInputTypeConfig} */
+  creditCards: {
+    type: 'creditCards',
     getIconBase: () => '',
     getIconFilled: () => '',
-    shouldDecorate: (_input, _ref3) => {
-      let {
-        device
-      } = _ref3;
-      return device.hasLocalCreditCards;
-    },
+    shouldDecorate: (_input, {
+      device
+    }) => canBeDecorated(_input) && device.hasLocalCreditCards,
     dataType: 'CreditCards',
-    tooltipItem: data => new CreditCardTooltipItem(data)
+    displayTitlePropName: (_subtype, data) => data.title,
+    displaySubtitlePropName: 'displayNumber',
+    autofillMethod: 'getAutofillCreditCard'
   },
 
   /** @type {IdentitiesInputTypeConfig} */
@@ -4895,26 +2389,34 @@ const inputTypeConfig = {
     type: 'identities',
     getIconBase: getIdentitiesIcon,
     getIconFilled: getIdentitiesIcon,
-    shouldDecorate: (input, _ref4) => {
-      let {
-        device
-      } = _ref4;
-      const subtype = getInputSubtype(input);
+    shouldDecorate: (_input, {
+      device
+    }) => {
+      if (!canBeDecorated(_input)) return false;
+      const subtype = getInputSubtype(_input);
 
       if (isApp) {
         var _device$getLocalIdent;
 
-        return Boolean((_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]));
+        return (_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]);
       }
 
       if (subtype === 'emailAddress') {
-        return Boolean(device.isDeviceSignedIn());
+        return device.isDeviceSignedIn();
       }
 
       return false;
     },
     dataType: 'Identities',
-    tooltipItem: data => new IdentityTooltipItem(data)
+    displayTitlePropName: (subtype, data) => {
+      if (subtype === 'addressCountryCode') {
+        return getCountryDisplayName('en', data.addressCountryCode);
+      }
+
+      return data[subtype];
+    },
+    displaySubtitlePropName: 'title',
+    autofillMethod: 'getAutofillIdentity'
   },
 
   /** @type {UnknownInputTypeConfig} */
@@ -4924,9 +2426,9 @@ const inputTypeConfig = {
     getIconFilled: () => '',
     shouldDecorate: () => false,
     dataType: '',
-    tooltipItem: _data => {
-      throw new Error('unreachable');
-    }
+    displayTitlePropName: () => 'unknown',
+    displaySubtitlePropName: '',
+    autofillMethod: ''
   }
 };
 /**
@@ -4936,19 +2438,18 @@ const inputTypeConfig = {
  */
 
 const getInputConfig = input => {
-  const inputType = getInputType(input);
+  const inputType = getInputMainType(input);
   return getInputConfigFromType(inputType);
 };
 /**
  * Retrieves configs from an input type
- * @param {import('./matching').SupportedTypes | string} inputType
+ * @param {SupportedMainTypes | string} inputType
  * @returns {InputTypeConfigs}
  */
 
 
 const getInputConfigFromType = inputType => {
-  const inputMainType = getMainTypeFromType(inputType);
-  return inputTypeConfig[inputMainType];
+  return inputTypeConfig[inputType || 'unknown'];
 };
 
 module.exports = {
@@ -4956,7 +2457,7 @@ module.exports = {
   getInputConfigFromType
 };
 
-},{"../InputTypes/Credentials":25,"../InputTypes/CreditCard":26,"../InputTypes/Identity":27,"../UI/img/ddgPasswordIcon":32,"../autofill-utils":36,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
+},{"../UI/img/ddgPasswordIcon":22,"../autofill-utils":26,"./formatters":9,"./logo-svg":14,"./matching":16}],12:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -5008,7 +2509,7 @@ const extractLabelStrings = element => {
 
 module.exports.extractLabelStrings = extractLabelStrings;
 
-},{}],19:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 const {
@@ -5021,13 +2522,6 @@ const listenForGlobalFormSubmission = () => {
   if (!isApp) return;
 
   try {
-    window.addEventListener('submit', e => {
-      var _forms$get;
-
-      return (// @ts-ignore
-        (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler()
-      );
-    }, true);
     const observer = new PerformanceObserver(list => {
       const entries = list.getEntries().filter(entry => // @ts-ignore why does TS not know about `entry.initiatorType`?
       ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && entry.name.match(/login|sign-in|signin|session/));
@@ -5044,7 +2538,7 @@ const listenForGlobalFormSubmission = () => {
 
 module.exports = listenForGlobalFormSubmission;
 
-},{"../autofill-utils":36,"../scanForInputs":40}],20:[function(require,module,exports){
+},{"../autofill-utils":26,"../scanForInputs":31}],14:[function(require,module,exports){
 "use strict";
 
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
@@ -5052,7 +2546,7 @@ module.exports = {
   daxBase64
 };
 
-},{}],21:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 const css = require('./selectors-css');
@@ -5294,15 +2788,15 @@ const matchingConfiguration = {
       matchers: {
         email: {
           match: '.mail',
-          forceUnknown: 'search'
+          not: 'search'
         },
         password: {
           match: 'password',
-          forceUnknown: 'captcha'
+          not: 'captcha'
         },
         username: {
           match: 'user((.)?(name|id|login))?$',
-          forceUnknown: 'search'
+          not: 'search'
         },
         // CC
         cardName: {
@@ -5316,15 +2810,15 @@ const matchingConfiguration = {
         },
         expirationMonth: {
           match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-          forceUnknown: 'mm[/\\s.\\-_—–]'
+          not: 'mm[/\\s.\\-_—–]'
         },
         expirationYear: {
           match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)',
-          skip: 'mm[/\\s.\\-_—–]'
+          not: 'mm[/\\s.\\-_—–]'
         },
         expiration: {
           match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-          forceUnknown: 'invalid'
+          not: 'invalid'
         },
         // Identities
         firstName: {
@@ -5338,29 +2832,27 @@ const matchingConfiguration = {
         },
         fullName: {
           match: '^(full.?|whole\\s)?name\\b',
-          forceUnknown: 'company|org'
+          not: 'company|org'
         },
         phone: {
           match: 'phone',
-          forceUnknown: 'code|pass'
+          not: 'code|pass'
         },
         addressStreet: {
           match: 'address',
-          forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in',
-          skip: 'address.*(2|two)'
+          not: 'email|\\bip\\b|address.*(2|two)|duck|log.?in|sign.?in'
         },
         addressStreet2: {
           match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
-          forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in'
+          not: 'email|\\bip\\b|duck|log.?in|sign.?in'
         },
         addressCity: {
           match: 'city|town',
-          forceUnknown: 'vatican'
+          not: 'vatican'
         },
         addressProvince: {
           match: 'state|province|region|county',
-          forceUnknown: 'united',
-          skip: 'country'
+          not: 'country|united'
         },
         addressPostalCode: {
           match: '\\bzip\\b|postal|post.?code'
@@ -5667,14 +3159,10 @@ const matchingConfiguration = {
 };
 module.exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":23}],22:[function(require,module,exports){
+},{"./selectors-css":17}],16:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
 
 function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
 
@@ -5737,32 +3225,32 @@ class Matching {
    * @param {MatchingConfiguration} config
    */
   constructor(config) {
-    _classPrivateFieldInitSpec(this, _config, {
+    _config.set(this, {
       writable: true,
       value: void 0
     });
 
-    _classPrivateFieldInitSpec(this, _cssSelectors, {
+    _cssSelectors.set(this, {
       writable: true,
       value: void 0
     });
 
-    _classPrivateFieldInitSpec(this, _ddgMatchers, {
+    _ddgMatchers.set(this, {
       writable: true,
       value: void 0
     });
 
-    _classPrivateFieldInitSpec(this, _vendorRegExpCache, {
+    _vendorRegExpCache.set(this, {
       writable: true,
       value: void 0
     });
 
-    _classPrivateFieldInitSpec(this, _matcherLists, {
+    _matcherLists.set(this, {
       writable: true,
       value: void 0
     });
 
-    _classPrivateFieldInitSpec(this, _defaultStrategyOrder, {
+    _defaultStrategyOrder.set(this, {
       writable: true,
       value: ['cssSelector', 'ddgMatcher', 'vendorRegex']
     });
@@ -5836,10 +3324,6 @@ class Matching {
     if (!match) {
       console.warn('CSS selector not found for %s, using a default value', selectorName);
       return '';
-    }
-
-    if (Array.isArray(match)) {
-      return match.join(',');
     }
 
     return match;
@@ -5921,23 +3405,19 @@ class Matching {
    * @param {HTMLInputElement|HTMLSelectElement} input
    * @param {HTMLFormElement} formEl
    * @param {{isLogin?: boolean}} [opts]
-   * @returns {SupportedTypes}
+   * @returns {SupportedSubTypes | string}
    */
 
 
-  inferInputType(input, formEl) {
-    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    const presetType = getInputType(input);
-    if (presetType !== 'unknown') return presetType; // For CC forms we run aggressive matches, so we want to make sure we only
+  inferInputType(input, formEl, opts = {}) {
+    const presetType = input.getAttribute(ATTR_INPUT_TYPE);
+    if (presetType) return presetType; // For CC forms we run aggressive matches, so we want to make sure we only
     // run them on actual CC forms to avoid false positives and expensive loops
 
     if (this.isCCForm(formEl)) {
       const ccMatchers = this.matcherList('cc');
       const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl);
-
-      if (subtype && isValidCreditCardSubtype(subtype)) {
-        return "creditCard.".concat(subtype);
-      }
+      if (subtype) return "creditCard.".concat(subtype);
     }
 
     if (input instanceof HTMLInputElement) {
@@ -5956,11 +3436,7 @@ class Matching {
 
     const idMatchers = this.matcherList('id');
     const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl);
-
-    if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
-      return "identities.".concat(idSubtype);
-    }
-
+    if (idSubtype) return "identities.".concat(idSubtype);
     return 'unknown';
   }
   /**
@@ -5972,8 +3448,7 @@ class Matching {
    */
 
 
-  setInputType(input, formEl) {
-    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  setInputType(input, formEl, opts = {}) {
     const type = this.inferInputType(input, formEl, opts);
     input.setAttribute(ATTR_INPUT_TYPE, type);
     return type;
@@ -6004,7 +3479,7 @@ class Matching {
 
         if (!result.matched && result.proceed === false) {
           // If we get here, do not allow subsequent strategies to continue
-          return undefined;
+          break;
         }
       }
     }
@@ -6100,7 +3575,7 @@ class Matching {
       };
     }
 
-    let requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length;
+    let requiredScore = ['match', 'not', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length;
     /** @type {MatchableStrings[]} */
 
     const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText'];
@@ -6109,22 +3584,7 @@ class Matching {
       matchableStrings
     })) {
       if (!elementString) continue;
-      elementString = elementString.toLowerCase();
-
-      if (ddgMatcher.skip) {
-        let skipRegex = safeRegex(ddgMatcher.skip);
-
-        if (!skipRegex) {
-          return {
-            matched: false
-          };
-        }
-
-        if (skipRegex.test(elementString)) {
-          continue;
-        }
-      } // Scoring to ensure all DDG tests are valid
-
+      elementString = elementString.toLowerCase(); // Scoring to ensure all DDG tests are valid
 
       let score = 0; // if the `match` regex fails, moves onto the next string
 
@@ -6136,8 +3596,8 @@ class Matching {
       score++; // If a negated regex was provided, ensure it does not match
       // If it DOES match - then we need to prevent any future strategies from continuing
 
-      if (ddgMatcher.forceUnknown) {
-        let notRegex = safeRegex(ddgMatcher.forceUnknown);
+      if (ddgMatcher.not) {
+        let notRegex = safeRegex(ddgMatcher.not);
 
         if (!notRegex) {
           return {
@@ -6147,8 +3607,7 @@ class Matching {
 
         if (notRegex.test(elementString)) {
           return {
-            matched: false,
-            proceed: false
+            matched: false
           };
         } else {
           // All good here, increment the score
@@ -6192,8 +3651,8 @@ class Matching {
 
   execVendorRegex(regex, el, form) {
     for (let elementString of this.getElementStrings(el, form)) {
-      if (!elementString) continue;
       elementString = elementString.toLowerCase();
+      if (!elementString) continue;
 
       if (regex.test(elementString)) {
         return {
@@ -6210,7 +3669,7 @@ class Matching {
    * Yield strings in the order in which they should be checked against.
    *
    * Note: some strategies may not want to accept all strings, which is
-   * where `matchableStrings` helps. It defaults to when you see below but can
+   * where `matchableStrings` helps. It defaults to when yuo see below but can
    * be overridden.
    *
    * For example, `nameAttr` is first, since this has the highest chance of matching
@@ -6227,10 +3686,9 @@ class Matching {
    */
 
 
-  *getElementStrings(el, form) {
-    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  *getElementStrings(el, form, opts = {}) {
     let {
-      matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText']
+      matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'relatedText']
     } = opts;
 
     for (let matchableString of matchableStrings) {
@@ -6253,12 +3711,6 @@ class Matching {
               yield el.placeholder || '';
             }
 
-            break;
-          }
-
-        case 'id':
-          {
-            yield el.id;
             break;
           }
 
@@ -6329,13 +3781,10 @@ class Matching {
 
     if (hasCCSelectorChild) return true; // Read form attributes to find a signal
 
-    const hasCCAttribute = [...formEl.attributes].some(_ref => {
-      let {
-        name,
-        value
-      } = _ref;
-      return /(credit|payment).?card/i.test("".concat(name, "=").concat(value));
-    });
+    const hasCCAttribute = [...formEl.attributes].some(({
+      name,
+      value
+    }) => /(credit|payment).?card/i.test("".concat(name, "=").concat(value)));
     if (hasCCAttribute) return true; // Match form textContent against common cc fields (includes hidden labels)
 
     const textMatches = (_formEl$textContent = formEl.textContent) === null || _formEl$textContent === void 0 ? void 0 : _formEl$textContent.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
@@ -6349,7 +3798,9 @@ class Matching {
 
 }
 /**
- *  @returns {SupportedTypes}
+ * Retrieves the input main type
+ * @param {HTMLInputElement} input
+ * @returns {SupportedMainTypes | string}
  */
 
 
@@ -6372,130 +3823,23 @@ _defineProperty(Matching, "emptyConfig", {
   }
 });
 
-function getInputType(input) {
-  const attr = input.getAttribute(ATTR_INPUT_TYPE);
+const getInputMainType = input => {
+  var _input$getAttribute;
 
-  if (isValidSupportedType(attr)) {
-    return attr;
-  }
-
-  return 'unknown';
-}
-/**
- * Retrieves the main type
- * @param {SupportedTypes | string} type
- * @returns {SupportedMainTypes}
- */
-
-
-function getMainTypeFromType(type) {
-  const mainType = type.split('.')[0];
-
-  switch (mainType) {
-    case 'credentials':
-    case 'creditCard':
-    case 'identities':
-      return mainType;
-  }
-
-  return 'unknown';
-}
-/**
- * Retrieves the input main type
- * @param {HTMLInputElement} input
- * @returns {SupportedMainTypes}
- */
-
-
-const getInputMainType = input => getMainTypeFromType(getInputType(input));
-/** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
-
-
-const supportedIdentitiesSubtypes =
-/** @type {const} */
-['emailAddress', 'firstName', 'middleName', 'lastName', 'fullName', 'phone', 'addressStreet', 'addressStreet2', 'addressCity', 'addressProvince', 'addressPostalCode', 'addressCountryCode', 'birthdayDay', 'birthdayMonth', 'birthdayYear'];
-/**
- * @param {SupportedTypes | any} supportedType
- * @returns {supportedType is SupportedIdentitiesSubTypes}
- */
-
-function isValidIdentitiesSubtype(supportedType) {
-  return supportedIdentitiesSubtypes.includes(supportedType);
-}
-/** @typedef {supportedCreditCardSubtypes[number]} SupportedCreditCardSubTypes */
-
-
-const supportedCreditCardSubtypes =
-/** @type {const} */
-['cardName', 'cardNumber', 'cardSecurityCode', 'expirationMonth', 'expirationYear', 'expiration'];
-/**
- * @param {SupportedTypes | any} supportedType
- * @returns {supportedType is SupportedCreditCardSubTypes}
- */
-
-function isValidCreditCardSubtype(supportedType) {
-  return supportedCreditCardSubtypes.includes(supportedType);
-}
-/** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
-
-
-const supportedCredentialsSubtypes =
-/** @type {const} */
-['password', 'username'];
-/**
- * @param {SupportedTypes | any} supportedType
- * @returns {supportedType is SupportedCredentialsSubTypes}
- */
-
-function isValidCredentialsSubtype(supportedType) {
-  return supportedCredentialsSubtypes.includes(supportedType);
-}
-/** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
-
-/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCard.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
-
-
-const supportedTypes = [...supportedIdentitiesSubtypes.map(type => "identities.".concat(type)), ...supportedCreditCardSubtypes.map(type => "creditCard.".concat(type)), ...supportedCredentialsSubtypes.map(type => "credentials.".concat(type))];
-/**
- * Retrieves the subtype
- * @param {SupportedTypes | string} type
- * @returns {SupportedSubTypes | 'unknown'}
- */
-
-function getSubtypeFromType(type) {
-  const subType = type === null || type === void 0 ? void 0 : type.split('.')[1];
-  const validType = isValidSubtype(subType);
-  return validType ? subType : 'unknown';
-}
-/**
- * @param {SupportedSubTypes | any} supportedSubType
- * @returns {supportedSubType is SupportedSubTypes}
- */
-
-
-function isValidSubtype(supportedSubType) {
-  return isValidIdentitiesSubtype(supportedSubType) || isValidCreditCardSubtype(supportedSubType) || isValidCredentialsSubtype(supportedSubType);
-}
-/**
- * @param {SupportedTypes | any} supportedType
- * @returns {supportedType is SupportedTypes}
- */
-
-
-function isValidSupportedType(supportedType) {
-  return supportedTypes.includes(supportedType);
-}
+  return ((_input$getAttribute = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute === void 0 ? void 0 : _input$getAttribute.split('.')[0]) || 'unknown';
+};
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement|Element} input
- * @returns {SupportedSubTypes | 'unknown'}
+ * @returns {SupportedSubTypes | string}
  */
 
 
-function getInputSubtype(input) {
-  const type = getInputType(input);
-  return getSubtypeFromType(type);
-}
+const getInputSubtype = input => {
+  var _input$getAttribute2, _input$getAttribute3;
+
+  return ((_input$getAttribute2 = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute2 === void 0 ? void 0 : _input$getAttribute2.split('.')[1]) || ((_input$getAttribute3 = input.getAttribute(ATTR_INPUT_TYPE)) === null || _input$getAttribute3 === void 0 ? void 0 : _input$getAttribute3.split('.')[0]) || 'unknown';
+};
 /**
  * Remove whitespace of more than 2 in a row and trim the string
  * @param string
@@ -6503,8 +3847,7 @@ function getInputSubtype(input) {
  */
 
 
-const removeExcessWhitespace = function () {
-  let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+const removeExcessWhitespace = (string = '') => {
   return string.replace(/\n/g, ' ').replace(/\s{2,}/, ' ').trim();
 };
 /**
@@ -6630,12 +3973,9 @@ const safeRegex = string => {
 };
 
 module.exports = {
-  getInputType,
   getInputSubtype,
-  getSubtypeFromType,
   removeExcessWhitespace,
   getInputMainType,
-  getMainTypeFromType,
   getExplicitLabelsText,
   getRelatedText,
   matchInPlaceholderAndLabels,
@@ -6644,7 +3984,7 @@ module.exports = {
   Matching
 };
 
-},{"../constants":38,"./label-util":18,"./vendor-regex":24}],23:[function(require,module,exports){
+},{"../constants":28,"./label-util":12,"./vendor-regex":18}],17:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -6672,9 +4012,7 @@ const addressPostalCode = "\n[name=zip], [name=zip2], [name=postal], [autocomple
 const addressCountryCode = "\n[name=country], [autocomplete=country],\n[name*=countryCode i], [name*=country-code i],\n[name*=countryName i], [name*=country-name i]";
 const birthdayDay = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d]";
 const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m]";
-const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]";
-const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), // fix for `aa.com`
-"input[name=\"loginId\"]"]; // todo: these are still used directly right now, mostly in scanForInputs
+const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]"; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
@@ -6686,7 +4024,7 @@ module.exports.__secret_do_not_use = {
   FORM_INPUTS_SELECTOR,
   email: email,
   password,
-  username,
+  username: "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"),
   cardName,
   cardNumber,
   cardSecurityCode,
@@ -6709,7 +4047,7 @@ module.exports.__secret_do_not_use = {
   birthdayYear
 };
 
-},{}],24:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 /**
@@ -6766,284 +4104,26 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 
 module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
-},{}],25:[function(require,module,exports){
-"use strict";
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
-
-const GENERATED_ID = '__generated__';
-/**
- * @implements {TooltipItemRenderer}
- */
-
-var _data = /*#__PURE__*/new WeakMap();
-
-class CredentialsTooltipItem {
-  /** @type {CredentialsObject} */
-
-  /** @param {CredentialsObject} data */
-  constructor(data) {
-    _classPrivateFieldInitSpec(this, _data, {
-      writable: true,
-      value: void 0
-    });
-
-    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
-
-    _classPrivateFieldSet(this, _data, data);
-  }
-
-  labelMedium(_subtype) {
-    if (_classPrivateFieldGet(this, _data).id === GENERATED_ID) {
-      return 'Generated password';
-    }
-
-    return _classPrivateFieldGet(this, _data).username;
-  }
-
-  labelSmall(_subtype) {
-    if (_classPrivateFieldGet(this, _data).id === GENERATED_ID && _classPrivateFieldGet(this, _data).password) {
-      return _classPrivateFieldGet(this, _data).password;
-    }
-
-    return '•••••••••••••••';
-  }
-
-}
-/**
- * Generate a stand-in 'CredentialsObject' from a
- * given (generated) password.
- *
- * @param {string} password
- * @returns {CredentialsObject}
- */
-
-
-function fromPassword(password) {
-  return {
-    id: GENERATED_ID,
-    password: password,
-    username: ''
-  };
-}
-
-module.exports.CredentialsTooltipItem = CredentialsTooltipItem;
-module.exports.fromPassword = fromPassword;
-module.exports.GENERATED_ID = GENERATED_ID;
-
-},{}],26:[function(require,module,exports){
-"use strict";
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
-
-var _data = /*#__PURE__*/new WeakMap();
-
-/**
- * @implements {TooltipItemRenderer}
- */
-class CreditCardTooltipItem {
-  /** @type {CreditCardObject} */
-
-  /** @param {CreditCardObject} data */
-  constructor(data) {
-    _classPrivateFieldInitSpec(this, _data, {
-      writable: true,
-      value: void 0
-    });
-
-    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
-
-    _defineProperty(this, "labelMedium", _ => _classPrivateFieldGet(this, _data).title);
-
-    _defineProperty(this, "labelSmall", _ => _classPrivateFieldGet(this, _data).displayNumber);
-
-    _classPrivateFieldSet(this, _data, data);
-  }
-
-}
-
-module.exports.CreditCardTooltipItem = CreditCardTooltipItem;
-
-},{}],27:[function(require,module,exports){
-"use strict";
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
-
-const {
-  getCountryDisplayName
-} = require('../Form/formatters');
-/**
- * @implements {TooltipItemRenderer}
- */
-
-
-var _data = /*#__PURE__*/new WeakMap();
-
-class IdentityTooltipItem {
-  /** @type {IdentityObject} */
-
-  /** @param {IdentityObject} data */
-  constructor(data) {
-    _classPrivateFieldInitSpec(this, _data, {
-      writable: true,
-      value: void 0
-    });
-
-    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
-
-    _defineProperty(this, "labelMedium", subtype => {
-      if (subtype === 'addressCountryCode') {
-        return getCountryDisplayName('en', _classPrivateFieldGet(this, _data).addressCountryCode || '');
-      }
-
-      if (_classPrivateFieldGet(this, _data).id === 'privateAddress') {
-        return 'Generated Private Address';
-      }
-
-      return _classPrivateFieldGet(this, _data)[subtype];
-    });
-
-    _defineProperty(this, "labelSmall", _ => {
-      return _classPrivateFieldGet(this, _data).title;
-    });
-
-    _classPrivateFieldSet(this, _data, data);
-  }
-
-  label(subtype) {
-    if (_classPrivateFieldGet(this, _data).id === 'privateAddress') {
-      return _classPrivateFieldGet(this, _data)[subtype];
-    }
-
-    return null;
-  }
-
-}
-
-module.exports.IdentityTooltipItem = IdentityTooltipItem;
-
-},{"../Form/formatters":15}],28:[function(require,module,exports){
-"use strict";
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
-
-function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-const {
-  generate
-} = require('../packages/password');
-
-const rules = require('../packages/password/rules.json');
-/**
- * Create a password once and reuse it.
- */
-
-
-var _previous = /*#__PURE__*/new WeakMap();
-
-class PasswordGenerator {
-  constructor() {
-    _classPrivateFieldInitSpec(this, _previous, {
-      writable: true,
-      value: null
-    });
-  }
-
-  /** @returns {boolean} */
-  get generated() {
-    return _classPrivateFieldGet(this, _previous) !== null;
-  }
-  /** @param {import('../packages/password').GenerateOptions} [params] */
-
-
-  generate() {
-    let params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    if (_classPrivateFieldGet(this, _previous)) {
-      return _classPrivateFieldGet(this, _previous);
-    }
-
-    _classPrivateFieldSet(this, _previous, generate({ ...params,
-      rules
-    }));
-
-    return _classPrivateFieldGet(this, _previous);
-  }
-
-}
-
-module.exports.PasswordGenerator = PasswordGenerator;
-
-},{"../packages/password":2,"../packages/password/rules.json":6}],29:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 const {
   isApp,
-  isTopFrame,
   escapeXML
 } = require('../autofill-utils');
 
 const Tooltip = require('./Tooltip');
 
 class DataAutofill extends Tooltip {
-  /**
-   * @param {InputTypeConfigs} config
-   * @param {TooltipItemRenderer[]} items
-   * @param {{onSelect(id:string): void}} callbacks
-   */
-  render(config, items, callbacks) {
+  constructor(config, subtype, position, deviceInterface) {
+    super(config, subtype, position, deviceInterface);
+    this.data = this.interface["getLocal".concat(config.dataType)]();
+
+    if (config.type === 'identities') {
+      // For identities, we don't show options where this subtype is not available
+      this.data = this.data.filter(singleData => !!singleData[subtype]);
+    }
+
     const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
 
@@ -7053,32 +4133,34 @@ class DataAutofill extends Tooltip {
       return shouldShow;
     };
 
-    const topClass = isTopFrame ? 'top-autofill' : '';
-    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
-      var _item$labelSmall, _item$label;
-
-      // these 2 are optional
-      const labelSmall = (_item$labelSmall = item.labelSmall) === null || _item$labelSmall === void 0 ? void 0 : _item$labelSmall.call(item, this.subtype);
-      const label = (_item$label = item.label) === null || _item$label === void 0 ? void 0 : _item$label.call(item, this.subtype);
-      return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data tooltip__button--data--").concat(config.type, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat(escapeXML(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat(escapeXML(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat(escapeXML(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
-    }).join(''), "\n    </div>\n</div>");
+    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--data\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(this.data.map(singleData => "\n            ".concat(shouldShowSeparator(singleData.id) ? '<hr />' : '', "\n            <button\n                class=\"tooltip__button tooltip__button--data tooltip__button--data--").concat(config.type, " js-autofill-button\"\n                id=\"").concat(singleData.id, "\"\n            >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"tooltip__button__primary-text\">\n").concat(singleData.id === 'privateAddress' ? 'Generated Private Address\n' : '', "\n").concat(escapeXML(config.displayTitlePropName(subtype, singleData)), "\n                    </span><br />\n                    <span class=\"tooltip__button__secondary-text\">\n").concat(escapeXML(singleData[config.displaySubtitlePropName] || config.displaySubtitlePropName), "\n                    </span>\n                </span>\n            </button>\n        ")).join(''), "\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
     this.autofillButtons.forEach(btn => {
       this.registerClickableButton(btn, () => {
-        callbacks.onSelect(btn.id);
+        this.interface["".concat(config.autofillMethod)](btn.id).then(({
+          success
+        }) => {
+          if (success) {
+            this.fillForm(success);
+            if (btn.id === 'privateAddress') this.interface.refreshAlias();
+          }
+        });
       });
     });
     this.init();
-    return this;
+  }
+
+  fillForm(data) {
+    this.interface.selectedDetail(data, this.config.type);
   }
 
 }
 
 module.exports = DataAutofill;
 
-},{"../autofill-utils":36,"./Tooltip":31,"./styles/autofill-tooltip-styles.js":33}],30:[function(require,module,exports){
+},{"../autofill-utils":26,"./Tooltip":21,"./styles/autofill-tooltip-styles.js":23}],20:[function(require,module,exports){
 "use strict";
 
 const {
@@ -7090,8 +4172,8 @@ const {
 const Tooltip = require('./Tooltip');
 
 class EmailAutofill extends Tooltip {
-  constructor(config, inputType, position, deviceInterface) {
-    super(config, inputType, position, deviceInterface);
+  constructor(config, subtype, position, deviceInterface) {
+    super(config, subtype, position, deviceInterface);
     this.addresses = this.interface.getLocalAddresses();
     const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat(formatDuckAddress(escapeXML(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
@@ -7109,26 +4191,21 @@ class EmailAutofill extends Tooltip {
     };
 
     this.registerClickableButton(this.usePersonalButton, () => {
-      this.fillForm('personalAddress');
+      this.fillForm(this.addresses.personalAddress);
     });
     this.registerClickableButton(this.usePrivateButton, () => {
-      this.fillForm('privateAddress');
+      this.fillForm(this.addresses.privateAddress);
+      this.interface.refreshAlias();
     }); // Get the alias from the extension
 
     this.interface.getAddresses().then(this.updateAddresses);
     this.init();
   }
-  /**
-   * @param {'personalAddress' | 'privateAddress'} id
-   */
 
-
-  async fillForm(id) {
-    const address = this.addresses[id];
+  fillForm(address) {
     const formattedAddress = formatDuckAddress(address);
     this.interface.selectedDetail({
-      email: formattedAddress,
-      id
+      email: formattedAddress
     }, 'email');
   }
 
@@ -7136,23 +4213,18 @@ class EmailAutofill extends Tooltip {
 
 module.exports = EmailAutofill;
 
-},{"../autofill-utils":36,"./Tooltip":31,"./styles/autofill-tooltip-styles.js":33}],31:[function(require,module,exports){
+},{"../autofill-utils":26,"./Tooltip":21,"./styles/autofill-tooltip-styles.js":23}],21:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const {
   safeExecute,
-  addInlineStyles,
-  isTopFrame
+  addInlineStyles
 } = require('../autofill-utils');
 
-const {
-  getSubtypeFromType
-} = require('../Form/matching');
-
 class Tooltip {
-  constructor(config, inputType, getPosition, deviceInterface) {
+  constructor(config, subtype, getPosition, deviceInterface) {
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
@@ -7172,11 +4244,12 @@ class Tooltip {
     _defineProperty(this, "clickableButtons", new Map());
 
     this.shadow = document.createElement('ddg-autofill').attachShadow({
-      mode: deviceInterface.mode === 'test' ? 'open' : 'closed'
+      mode: 'closed'
     });
     this.host = this.shadow.host;
     this.config = config;
-    this.subtype = getSubtypeFromType(inputType);
+    this.subtype = subtype;
+    this.device = deviceInterface;
     this.tooltip = null;
     this.getPosition = getPosition;
     const forcedVisibilityStyles = {
@@ -7217,18 +4290,6 @@ class Tooltip {
     }
   }
 
-  focus(x, y) {
-    var _this$shadow$elementF, _this$shadow$elementF2;
-
-    const focusableElements = 'button';
-    const currentFocusClassName = 'currentFocus';
-    const currentFocused = this.shadow.querySelectorAll(".".concat(currentFocusClassName));
-    [...currentFocused].forEach(el => {
-      el.classList.remove(currentFocusClassName);
-    });
-    (_this$shadow$elementF = this.shadow.elementFromPoint(x, y)) === null || _this$shadow$elementF === void 0 ? void 0 : (_this$shadow$elementF2 = _this$shadow$elementF.closest(focusableElements)) === null || _this$shadow$elementF2 === void 0 ? void 0 : _this$shadow$elementF2.classList.add(currentFocusClassName);
-  }
-
   checkPosition() {
     if (this.animationFrame) {
       window.cancelAnimationFrame(this.animationFrame);
@@ -7251,11 +4312,10 @@ class Tooltip {
     });
   }
 
-  updatePosition(_ref) {
-    let {
-      left,
-      top
-    } = _ref;
+  updatePosition({
+    left,
+    top
+  }) {
     const shadow = this.shadow; // If the stylesheet is not loaded wait for load (Chrome bug)
 
     if (!shadow.styleSheets.length) {
@@ -7277,11 +4337,6 @@ class Tooltip {
     }
 
     let newRule = ".wrapper {transform: translate(".concat(left, "px, ").concat(top, "px);}");
-
-    if (isTopFrame) {
-      newRule = '.wrapper {transform: none; }';
-    }
-
     shadow.styleSheets[0].insertRule(newRule, this.transformRuleIndex);
   }
 
@@ -7297,7 +4352,7 @@ class Tooltip {
         this.count++;
       } else {
         // Remove the tooltip from the form to cleanup listeners and observers
-        this.interface.removeTooltip();
+        this.device.removeTooltip();
         console.info("DDG autofill bailing out");
       }
     }
@@ -7326,28 +4381,6 @@ class Tooltip {
     }
   }
 
-  setupSizeListener() {
-    if (!isTopFrame) return; // Listen to layout and paint changes to register the size
-
-    const observer = new PerformanceObserver(() => {
-      this.setSize();
-    });
-    observer.observe({
-      entryTypes: ['layout-shift', 'paint']
-    });
-  }
-
-  setSize() {
-    if (!isTopFrame) return;
-    const innerNode = this.shadow.querySelector('.wrapper--data'); // Shouldn't be possible
-
-    if (!innerNode) return;
-    this.interface.setSize({
-      height: innerNode.clientHeight,
-      width: innerNode.clientWidth
-    });
-  }
-
   init() {
     var _this$stylesheet2;
 
@@ -7368,15 +4401,13 @@ class Tooltip {
     window.addEventListener('scroll', this, {
       capture: true
     });
-    this.setSize();
-    this.setupSizeListener();
   }
 
 }
 
 module.exports = Tooltip;
 
-},{"../Form/matching":22,"../autofill-utils":36}],32:[function(require,module,exports){
+},{"../autofill-utils":26}],22:[function(require,module,exports){
 "use strict";
 
 const ddgPasswordIconBase = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tYmFzZTwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tYmFzZSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IlVuaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjMzMzMsMi42NjY2NyBDMTAuMjI4OCwyLjY2NjY3IDkuMzMzMzMsMy41NjIxIDkuMzMzMzMsNC42NjY2NyBDOS4zMzMzMyw1Ljc3MTI0IDEwLjIyODgsNi42NjY2NyAxMS4zMzMzLDYuNjY2NjcgQzEyLjQzNzksNi42NjY2NyAxMy4zMzMzLDUuNzcxMjQgMTMuMzMzMyw0LjY2NjY3IEMxMy4zMzMzLDMuNTYyMSAxMi40Mzc5LDIuNjY2NjcgMTEuMzMzMywyLjY2NjY3IFogTTEwLjY2NjcsNC42NjY2NyBDMTAuNjY2Nyw0LjI5ODQ4IDEwLjk2NTEsNCAxMS4zMzMzLDQgQzExLjcwMTUsNCAxMiw0LjI5ODQ4IDEyLDQuNjY2NjcgQzEyLDUuMDM0ODYgMTEuNzAxNSw1LjMzMzMzIDExLjMzMzMsNS4zMzMzMyBDMTAuOTY1MSw1LjMzMzMzIDEwLjY2NjcsNS4wMzQ4NiAxMC42NjY3LDQuNjY2NjcgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC42NjY3LDAgQzcuNzIxMTUsMCA1LjMzMzMzLDIuMzg3ODEgNS4zMzMzMyw1LjMzMzMzIEM1LjMzMzMzLDUuNzYxMTkgNS4zODM4NSw2LjE3Nzk4IDUuNDc5NDUsNi41Nzc3NSBMMC4xOTUyNjIsMTEuODYxOSBDMC4wNzAyMzc5LDExLjk4NyAwLDEyLjE1NjUgMCwxMi4zMzMzIEwwLDE1LjMzMzMgQzAsMTUuNzAxNSAwLjI5ODQ3NywxNiAwLjY2NjY2NywxNiBMMy4zMzMzMywxNiBDNC4wNjk3MSwxNiA0LjY2NjY3LDE1LjQwMyA0LjY2NjY3LDE0LjY2NjcgTDQuNjY2NjcsMTQgTDUuMzMzMzMsMTQgQzYuMDY5NzEsMTQgNi42NjY2NywxMy40MDMgNi42NjY2NywxMi42NjY3IEw2LjY2NjY3LDExLjMzMzMgTDgsMTEuMzMzMyBDOC4xNzY4MSwxMS4zMzMzIDguMzQ2MzgsMTEuMjYzMSA4LjQ3MTQxLDExLjEzODEgTDkuMTU5MDYsMTAuNDUwNCBDOS42Mzc3MiwxMC41OTEyIDEwLjE0MzksMTAuNjY2NyAxMC42NjY3LDEwLjY2NjcgQzEzLjYxMjIsMTAuNjY2NyAxNiw4LjI3ODg1IDE2LDUuMzMzMzMgQzE2LDIuMzg3ODEgMTMuNjEyMiwwIDEwLjY2NjcsMCBaIE02LjY2NjY3LDUuMzMzMzMgQzYuNjY2NjcsMy4xMjQxOSA4LjQ1NzUzLDEuMzMzMzMgMTAuNjY2NywxLjMzMzMzIEMxMi44NzU4LDEuMzMzMzMgMTQuNjY2NywzLjEyNDE5IDE0LjY2NjcsNS4zMzMzMyBDMTQuNjY2Nyw3LjU0MjQ3IDEyLjg3NTgsOS4zMzMzMyAxMC42NjY3LDkuMzMzMzMgQzEwLjE1NTgsOS4zMzMzMyA5LjY2ODg2LDkuMjM3OSA5LjIyMTUyLDkuMDY0NSBDOC45NzUyOCw4Ljk2OTA1IDguNjk1OTEsOS4wMjc5NSA4LjUwOTE2LDkuMjE0NjkgTDcuNzIzODYsMTAgTDYsMTAgQzUuNjMxODEsMTAgNS4zMzMzMywxMC4yOTg1IDUuMzMzMzMsMTAuNjY2NyBMNS4zMzMzMywxMi42NjY3IEw0LDEyLjY2NjcgQzMuNjMxODEsMTIuNjY2NyAzLjMzMzMzLDEyLjk2NTEgMy4zMzMzMywxMy4zMzMzIEwzLjMzMzMzLDE0LjY2NjcgTDEuMzMzMzMsMTQuNjY2NyBMMS4zMzMzMywxMi42MDk1IEw2LjY5Nzg3LDcuMjQ0OTQgQzYuODc1MDIsNy4wNjc3OSA2LjkzNzksNi44MDYyOSA2Ljg2MDY1LDYuNTY3OTggQzYuNzM0ODksNi4xNzk5NyA2LjY2NjY3LDUuNzY1MjcgNi42NjY2Nyw1LjMzMzMzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
@@ -7396,12 +4427,12 @@ module.exports = {
   ddgIdentityIconBase
 };
 
-},{}],33:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
-module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px; \n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCard::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
+module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n.wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n.tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data {\n    top: 100%;\n    left: 100%;\n    width: 315px;\n    padding: 4px;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n    font-size: 13px;\n    line-height: 14px;\n    color: #222222;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n.tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 4px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    align-items: center;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center;\n}\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.tooltip__button__primary-text {\n    font-size: 13px;\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.8)\n}\n.tooltip__button__primary-text::first-line {\n    font-size: 12px;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.9)\n}\n.tooltip__button__secondary-text {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button:hover .tooltip__button__primary-text,\n.tooltip__button:hover .tooltip__button__secondary-text {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tYmFzZTwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tYmFzZSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IlVuaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjMzMzMsMi42NjY2NyBDMTAuMjI4OCwyLjY2NjY3IDkuMzMzMzMsMy41NjIxIDkuMzMzMzMsNC42NjY2NyBDOS4zMzMzMyw1Ljc3MTI0IDEwLjIyODgsNi42NjY2NyAxMS4zMzMzLDYuNjY2NjcgQzEyLjQzNzksNi42NjY2NyAxMy4zMzMzLDUuNzcxMjQgMTMuMzMzMyw0LjY2NjY3IEMxMy4zMzMzLDMuNTYyMSAxMi40Mzc5LDIuNjY2NjcgMTEuMzMzMywyLjY2NjY3IFogTTEwLjY2NjcsNC42NjY2NyBDMTAuNjY2Nyw0LjI5ODQ4IDEwLjk2NTEsNCAxMS4zMzMzLDQgQzExLjcwMTUsNCAxMiw0LjI5ODQ4IDEyLDQuNjY2NjcgQzEyLDUuMDM0ODYgMTEuNzAxNSw1LjMzMzMzIDExLjMzMzMsNS4zMzMzMyBDMTAuOTY1MSw1LjMzMzMzIDEwLjY2NjcsNS4wMzQ4NiAxMC42NjY3LDQuNjY2NjcgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC42NjY3LDAgQzcuNzIxMTUsMCA1LjMzMzMzLDIuMzg3ODEgNS4zMzMzMyw1LjMzMzMzIEM1LjMzMzMzLDUuNzYxMTkgNS4zODM4NSw2LjE3Nzk4IDUuNDc5NDUsNi41Nzc3NSBMMC4xOTUyNjIsMTEuODYxOSBDMC4wNzAyMzc5LDExLjk4NyAwLDEyLjE1NjUgMCwxMi4zMzMzIEwwLDE1LjMzMzMgQzAsMTUuNzAxNSAwLjI5ODQ3NywxNiAwLjY2NjY2NywxNiBMMy4zMzMzMywxNiBDNC4wNjk3MSwxNiA0LjY2NjY3LDE1LjQwMyA0LjY2NjY3LDE0LjY2NjcgTDQuNjY2NjcsMTQgTDUuMzMzMzMsMTQgQzYuMDY5NzEsMTQgNi42NjY2NywxMy40MDMgNi42NjY2NywxMi42NjY3IEw2LjY2NjY3LDExLjMzMzMgTDgsMTEuMzMzMyBDOC4xNzY4MSwxMS4zMzMzIDguMzQ2MzgsMTEuMjYzMSA4LjQ3MTQxLDExLjEzODEgTDkuMTU5MDYsMTAuNDUwNCBDOS42Mzc3MiwxMC41OTEyIDEwLjE0MzksMTAuNjY2NyAxMC42NjY3LDEwLjY2NjcgQzEzLjYxMjIsMTAuNjY2NyAxNiw4LjI3ODg1IDE2LDUuMzMzMzMgQzE2LDIuMzg3ODEgMTMuNjEyMiwwIDEwLjY2NjcsMCBaIE02LjY2NjY3LDUuMzMzMzMgQzYuNjY2NjcsMy4xMjQxOSA4LjQ1NzUzLDEuMzMzMzMgMTAuNjY2NywxLjMzMzMzIEMxMi44NzU4LDEuMzMzMzMgMTQuNjY2NywzLjEyNDE5IDE0LjY2NjcsNS4zMzMzMyBDMTQuNjY2Nyw3LjU0MjQ3IDEyLjg3NTgsOS4zMzMzMyAxMC42NjY3LDkuMzMzMzMgQzEwLjE1NTgsOS4zMzMzMyA5LjY2ODg2LDkuMjM3OSA5LjIyMTUyLDkuMDY0NSBDOC45NzUyOCw4Ljk2OTA1IDguNjk1OTEsOS4wMjc5NSA4LjUwOTE2LDkuMjE0NjkgTDcuNzIzODYsMTAgTDYsMTAgQzUuNjMxODEsMTAgNS4zMzMzMywxMC4yOTg1IDUuMzMzMzMsMTAuNjY2NyBMNS4zMzMzMywxMi42NjY3IEw0LDEyLjY2NjcgQzMuNjMxODEsMTIuNjY2NyAzLjMzMzMzLDEyLjk2NTEgMy4zMzMzMywxMy4zMzMzIEwzLjMzMzMzLDE0LjY2NjcgTDEuMzMzMzMsMTQuNjY2NyBMMS4zMzMzMywxMi42MDk1IEw2LjY5Nzg3LDcuMjQ0OTQgQzYuODc1MDIsNy4wNjc3OSA2LjkzNzksNi44MDYyOSA2Ljg2MDY1LDYuNTY3OTggQzYuNzM0ODksNi4xNzk5NyA2LjY2NjY3LDUuNzY1MjcgNi42NjY2Nyw1LjMzMzMzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCard::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress:hover::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 
-},{}],34:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 // Do not remove -- Apple devices change this when they support modern webkit messaging
@@ -7415,22 +4446,15 @@ const ddgGlobals = require('./captureDdgGlobals');
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
+ * @returns {*}
  */
 
 
-const wkSend = function (handler) {
-  let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  if (!(handler in window.webkit.messageHandlers)) {
-    throw new Error("Missing webkit handler: '".concat(handler, "'"));
+const wkSend = (handler, data = {}) => window.webkit.messageHandlers[handler].postMessage({ ...data,
+  messageHandling: { ...data.messageHandling,
+    secret
   }
-
-  return window.webkit.messageHandlers[handler].postMessage({ ...data,
-    messageHandling: { ...data.messageHandling,
-      secret
-    }
-  });
-};
+});
 /**
  * Generate a random method name and adds it to the global scope
  * The native layer will use this method to send the response
@@ -7445,8 +4469,8 @@ const generateRandomMethod = (randomMethodName, callback) => {
     // configurable, To allow for deletion later
     configurable: true,
     writable: false,
-    value: function () {
-      callback(...arguments);
+    value: (...args) => {
+      callback(...args);
       delete ddgGlobals.window[randomMethodName];
     }
   });
@@ -7459,9 +4483,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
  */
 
 
-const wkSendAndWait = async function (handler) {
-  let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
+const wkSendAndWait = async (handler, data = {}) => {
   if (hasModernWebkitAPI) {
     const response = await wkSend(handler, data);
     return ddgGlobals.JSONparse(response || '{}');
@@ -7528,7 +4550,7 @@ module.exports = {
   wkSendAndWait
 };
 
-},{"./captureDdgGlobals":35}],35:[function(require,module,exports){
+},{"./captureDdgGlobals":25}],25:[function(require,module,exports){
 "use strict";
 
 // Capture the globals we need on page start
@@ -7554,21 +4576,17 @@ const secretGlobals = {
 };
 module.exports = secretGlobals;
 
-},{}],36:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 const {
   getInputSubtype
 } = require('./Form/matching');
 
-let isApp = false;
-let isTopFrame = false;
-let supportsTopFrame = false; // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
+let isApp = false; // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
 // INJECT isApp HERE
-// INJECT isTopFrame HERE
-// INJECT supportsTopFrame HERE
 
-let isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp || isTopFrame;
+const isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp;
 const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
 const isMobileApp = isDDGApp && !isApp;
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -7609,29 +4627,6 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 
     window.addEventListener('message', handler);
   });
-};
-
-const autofillEnabled = processConfig => {
-  let contentScope = null;
-  let userUnprotectedDomains = null;
-  let userPreferences = null; // INJECT contentScope HERE
-  // INJECT userUnprotectedDomains HERE
-  // INJECT userPreferences HERE
-
-  if (!contentScope) {
-    // Return enabled for platforms that haven't implemented the config yet
-    return true;
-  } // Check config on Apple platforms
-
-
-  const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
-  const site = privacyConfig.site;
-
-  if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
-    return false;
-  }
-
-  return true;
 }; // Access the original setter (needed to bypass React's implementation on mobile)
 // @ts-ignore
 
@@ -7829,10 +4824,7 @@ const isEventWithinDax = (e, input) => {
  */
 
 
-const addInlineStyles = (el, styles) => Object.entries(styles).forEach(_ref => {
-  let [property, val] = _ref;
-  return el.style.setProperty(property, val, 'important');
-});
+const addInlineStyles = (el, styles) => Object.entries(styles).forEach(([property, val]) => el.style.setProperty(property, val, 'important'));
 /**
  * Removes inline styles from a prop:value object
  * @param {HTMLElement} el
@@ -7871,16 +4863,13 @@ function escapeXML(str) {
 
 module.exports = {
   isApp,
-  isTopFrame,
   isDDGApp,
   isAndroid,
   isMobileApp,
-  supportsTopFrame,
   DDG_DOMAIN_REGEX,
   isDDGDomain,
   notifyWebApp,
   sendAndWaitForAnswer,
-  autofillEnabled,
   setValue,
   safeExecute,
   getDaxBoundingBox,
@@ -7893,25 +4882,40 @@ module.exports = {
   escapeXML
 };
 
-},{"./Form/matching":22}],37:[function(require,module,exports){
+},{"./Form/matching":16}],27:[function(require,module,exports){
 "use strict";
 
-// Polyfills/shims
-require('./requestIdleCallback');
-
 (() => {
-  if (!window.isSecureContext) return false;
-
   try {
-    const deviceInterface = require('./DeviceInterface');
+    if (!window.isSecureContext) return;
 
-    deviceInterface.init();
+    const listenForGlobalFormSubmission = require('./Form/listenForFormSubmission');
+
+    const inject = require('./inject'); // chrome is only present in desktop browsers
+
+
+    if (typeof chrome === 'undefined') {
+      listenForGlobalFormSubmission();
+      inject();
+    } else {
+      // Check if the site is marked to skip autofill
+      chrome.runtime.sendMessage({
+        registeredTempAutofillContentScript: true,
+        documentUrl: window.location.href
+      }, response => {
+        var _response$site, _response$site$broken;
+
+        if (!(response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill'))) {
+          inject();
+        }
+      });
+    }
   } catch (e) {
     console.error(e); // Noop, we errored
   }
 })();
 
-},{"./DeviceInterface":7,"./requestIdleCallback":39}],38:[function(require,module,exports){
+},{"./Form/listenForFormSubmission":13,"./inject":29}],28:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -7920,7 +4924,62 @@ module.exports = {
   TEXT_LENGTH_CUTOFF: 50
 };
 
-},{}],39:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
+"use strict";
+
+// Polyfills/shims
+require('./requestIdleCallback');
+
+const {
+  forms
+} = require('./scanForInputs');
+
+const {
+  isApp
+} = require('./autofill-utils');
+
+const deviceInterface = require('./DeviceInterface');
+
+const inject = () => {
+  // Global listener for event delegation
+  window.addEventListener('pointerdown', e => {
+    if (!e.isTrusted) return; // @ts-ignore
+
+    if (e.target.nodeName === 'DDG-AUTOFILL') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const activeTooltip = deviceInterface.getActiveTooltip();
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.dispatchClick();
+    }
+
+    if (!isApp) return; // Check for clicks on submit buttons
+
+    const matchingForm = [...forms.values()].find(form => {
+      const btns = [...form.submitButtons]; // @ts-ignore
+
+      if (btns.includes(e.target)) return true; // @ts-ignore
+
+      if (btns.find(btn => btn.contains(e.target))) return true;
+    });
+    matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
+  }, true);
+
+  if (isApp) {
+    window.addEventListener('submit', e => {
+      var _forms$get;
+
+      return (// @ts-ignore
+        (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler()
+      );
+    }, true);
+  }
+
+  deviceInterface.init();
+};
+
+module.exports = inject;
+
+},{"./DeviceInterface":1,"./autofill-utils":26,"./requestIdleCallback":30,"./scanForInputs":31}],30:[function(require,module,exports){
 "use strict";
 
 /*!
@@ -7962,7 +5021,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 
 module.exports = {};
 
-},{}],40:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 const {
@@ -7995,9 +5054,7 @@ const _forms = new Map();
  */
 
 
-const scanForInputs = function (DeviceInterface) {
-  let forms = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _forms;
-
+const scanForInputs = (DeviceInterface, forms = _forms) => {
   const getParentForm = input => {
     if (input.form) return input.form;
     let element = input; // traverse the DOM to search for related inputs
@@ -8117,4 +5174,4 @@ module.exports = {
   forms: _forms
 };
 
-},{"./Form/Form":12,"./Form/selectors-css":23,"./autofill-utils":36}]},{},[37]);
+},{"./Form/Form":6,"./Form/selectors-css":17,"./autofill-utils":26}]},{},[27]);

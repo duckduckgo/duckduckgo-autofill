@@ -517,6 +517,7 @@ class InterfacePrototype {
     async getAutofillIdentity (_id) { throw new Error('unimplemented') }
 
     openManagePasswords () {}
+    storeFormData (_values) {}
 
     /** @param {FeatureToggleNames} _name */
     supportsFeature (_name) {
