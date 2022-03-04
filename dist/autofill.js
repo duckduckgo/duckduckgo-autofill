@@ -98,15 +98,17 @@ function generate() {
     }
 
     if (typeof (options === null || options === void 0 ? void 0 : options.domain) === 'string') {
-      const rules = _selectPasswordRules(options.domain, options.rules);
+      if (options !== null && options !== void 0 && options.rules) {
+        const rules = _selectPasswordRules(options.domain, options.rules);
 
-      if (rules) {
-        return Password.generateOrThrow(rules);
+        if (rules) {
+          return Password.generateOrThrow(rules);
+        }
       }
     }
   } catch (e) {
     // if an 'onError' callback was provided, forward all errors
-    if (options.onError && typeof options.onError === 'function') {
+    if (options !== null && options !== void 0 && options.onError && typeof (options === null || options === void 0 ? void 0 : options.onError) === 'function') {
       options.onError(e);
     } else {
       // otherwise, only console.error unknown errors (which could be implementation bugs)
@@ -132,15 +134,13 @@ class HostnameInputError extends Error {}
 /**
  * @private
  * @param {string} inputHostname
- * @param {RulesFormat | null | undefined} [rules]
+ * @param {RulesFormat} rules
  * @returns {string | undefined}
  * @throws {HostnameInputError}
  */
 
 
 function _selectPasswordRules(inputHostname, rules) {
-  rules = rules || require('./rules.json');
-
   const hostname = _safeHostname(inputHostname); // direct match
 
 
@@ -193,7 +193,7 @@ module.exports.HostnameInputError = HostnameInputError;
 module.exports.ParserError = ParserError;
 module.exports.constants = constants;
 
-},{"./lib/apple.password":3,"./lib/constants":4,"./lib/rules-parser":5,"./rules.json":6}],3:[function(require,module,exports){
+},{"./lib/apple.password":3,"./lib/constants":4,"./lib/rules-parser":5}],3:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -440,7 +440,7 @@ class Password {
     let x;
 
     do {
-      x = getRandomValues(new Uint8Array(1))[0];
+      x = getRandomValues(new Uint32Array(1))[0];
     } while (x >= max);
 
     return x % range;
@@ -1989,6 +1989,9 @@ module.exports={
   "leetchi.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&()*+,./:;<>?@\"_];"
   },
+  "lg.com": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-!#$%&'()*+,.:;=?@[^_{|}~]];"
+  },
   "live.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^'[]];"
   },
@@ -2241,6 +2244,9 @@ module.exports={
   "thameswater.co.uk": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
   },
+  "tix.soundrink.com": {
+    "password-rules": "minlength: 6; maxlength: 16;"
+  },
   "training.confluent.io": {
     "password-rules": "minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%*@^_~];"
   },
@@ -2326,7 +2332,6 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-
 },{}],7:[function(require,module,exports){
 "use strict";
 
@@ -2358,7 +2363,6 @@ module.exports = deviceInterface;
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
-  notifyWebApp,
   isDDGDomain,
   sendAndWaitForAnswer
 } = require('../autofill-utils');
@@ -2384,25 +2388,21 @@ class AndroidInterface extends InterfacePrototype {
     return true;
   }
 
-  setupAutofill() {
-    let {
-      shouldLog
-    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-      shouldLog: false
-    };
-
+  async setupAutofill() {
     if (this.isDeviceSignedIn()) {
-      notifyWebApp({
-        deviceSignedIn: {
-          value: true,
-          shouldLog
-        }
-      });
       const cleanup = scanForInputs(this).init();
       this.addLogoutListener(cleanup);
-    } else {
-      this.trySigningIn();
     }
+  }
+
+  getUserData() {
+    let userData = null;
+
+    try {
+      userData = JSON.parse(window.EmailInterface.getUserData());
+    } catch (e) {}
+
+    return Promise.resolve(userData);
   }
 
   storeUserData(_ref) {
@@ -2444,10 +2444,8 @@ const {
 
 const {
   isApp,
-  notifyWebApp,
   isTopFrame,
   supportsTopFrame,
-  isDDGDomain,
   formatDuckAddress,
   autofillEnabled
 } = require('../autofill-utils');
@@ -2570,19 +2568,6 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   async setupAutofill() {
-    let {
-      shouldLog
-    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-      shouldLog: false
-    };
-
-    if (isDDGDomain()) {
-      // Tell the web app whether we're in the app
-      notifyWebApp({
-        isApp
-      });
-    }
-
     if (isApp) {
       await this.getAutofillInitData();
     }
@@ -2594,19 +2579,15 @@ class AppleDeviceInterface extends InterfacePrototype {
         await this.getAddresses();
       }
 
-      notifyWebApp({
-        deviceSignedIn: {
-          value: true,
-          shouldLog
-        }
-      });
       forms.forEach(form => form.redecorateAllInputs());
-    } else {
-      this.trySigningIn();
     }
 
     const cleanup = scanForInputs(this).init();
     this.addLogoutListener(cleanup);
+  }
+
+  getUserData() {
+    return wkSendAndWait('emailHandlerGetUserData');
   }
 
   async getAddresses() {
@@ -2852,7 +2833,6 @@ const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
   SIGN_IN_MSG,
-  notifyWebApp,
   isDDGDomain,
   sendAndWaitForAnswer,
   setValue,
@@ -2889,23 +2869,10 @@ class ExtensionInterface extends InterfacePrototype {
   }
 
   setupAutofill() {
-    let {
-      shouldLog
-    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-      shouldLog: false
-    };
-    this.getAddresses().then(_addresses => {
+    return this.getAddresses().then(_addresses => {
       if (this.hasLocalAddresses) {
-        notifyWebApp({
-          deviceSignedIn: {
-            value: true,
-            shouldLog
-          }
-        });
         const cleanup = scanForInputs(this).init();
         this.addLogoutListener(cleanup);
-      } else {
-        this.trySigningIn();
       }
     });
   }
@@ -2917,6 +2884,12 @@ class ExtensionInterface extends InterfacePrototype {
       this.storeLocalAddresses(data);
       return resolve(data);
     }));
+  }
+
+  getUserData() {
+    return new Promise(resolve => chrome.runtime.sendMessage({
+      getUserData: true
+    }, data => resolve(data)));
   }
 
   refreshAlias() {
@@ -2947,8 +2920,10 @@ class ExtensionInterface extends InterfacePrototype {
 
       switch (message.type) {
         case 'ddgUserReady':
-          this.setupAutofill({
-            shouldLog: true
+          this.setupAutofill().then(() => {
+            this.setupSettingsPage({
+              shouldLog: true
+            });
           });
           break;
 
@@ -3008,7 +2983,8 @@ const {
   isDDGDomain,
   sendAndWaitForAnswer,
   formatDuckAddress,
-  autofillEnabled
+  autofillEnabled,
+  notifyWebApp
 } = require('../autofill-utils');
 
 const {
@@ -3230,6 +3206,7 @@ class InterfacePrototype {
     listenForGlobalFormSubmission();
     this.addDeviceListeners();
     await this.setupAutofill();
+    await this.setupSettingsPage();
     this.postInit();
   }
 
@@ -3518,9 +3495,50 @@ class InterfacePrototype {
     }
   }
 
-  setupAutofill(_opts) {}
+  async setupSettingsPage() {
+    let {
+      shouldLog
+    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+      shouldLog: false
+    };
+
+    if (isDDGDomain()) {
+      notifyWebApp({
+        isApp
+      });
+
+      if (this.isDeviceSignedIn()) {
+        let userData;
+
+        try {
+          userData = await this.getUserData();
+        } catch (e) {}
+
+        const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
+        notifyWebApp({
+          deviceSignedIn: {
+            value: true,
+            shouldLog,
+            userData: hasUserData ? userData : undefined
+          }
+        });
+      } else {
+        this.trySigningIn();
+      }
+    }
+  }
+
+  async setupAutofill() {}
 
   getAddresses() {}
+  /**
+   * @returns {Promise<null|Record<any,any>>}
+   */
+
+
+  getUserData() {
+    return Promise.resolve(null);
+  }
 
   refreshAlias() {}
 
@@ -3531,7 +3549,8 @@ class InterfacePrototype {
         const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
 
         this.storeUserData(data);
-        this.setupAutofill({
+        await this.setupAutofill();
+        await this.setupSettingsPage({
           shouldLog: true
         });
       } else {
@@ -3548,7 +3567,9 @@ class InterfacePrototype {
 
   addLogoutListener(_fn) {}
 
-  isDeviceSignedIn() {}
+  isDeviceSignedIn() {
+    return false;
+  }
   /**
    * @returns {Promise<null|string>}
    */
@@ -3792,7 +3813,7 @@ class Form {
     if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
 
     this.shouldPromptToStoreCredentials = true;
-    this.execOnInputs(this.removeInputHighlight, dataType);
+    this.execOnInputs(input => this.removeInputHighlight(input), dataType);
   }
 
   removeInputDecoration(input) {
@@ -3801,7 +3822,7 @@ class Form {
   }
 
   removeAllDecorations() {
-    this.execOnInputs(this.removeInputDecoration);
+    this.execOnInputs(input => this.removeInputDecoration(input));
     this.listeners.forEach(_ref => {
       let {
         el,
@@ -5278,7 +5299,7 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
- * @param device
+ * @param {import("./Form").Form} form
  * @return {string}
  */
 
@@ -5323,10 +5344,12 @@ const inputTypeConfig = {
       } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
 
 
-      const subtype = getInputSubtype(input);
+      if (device.supportsFeature('password.generation')) {
+        const subtype = getInputSubtype(input);
 
-      if (subtype === 'password') {
-        return true;
+        if (subtype === 'password') {
+          return true;
+        }
       }
 
       return false;
@@ -5365,11 +5388,11 @@ const inputTypeConfig = {
       if (isApp) {
         var _device$getLocalIdent;
 
-        return (_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]);
+        return Boolean((_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]));
       }
 
       if (subtype === 'emailAddress') {
-        return device.isDeviceSignedIn();
+        return Boolean(device.isDeviceSignedIn());
       }
 
       return false;
@@ -6299,6 +6322,10 @@ class Matching {
       return '';
     }
 
+    if (Array.isArray(match)) {
+      return match.join(',');
+    }
+
     return match;
   }
   /**
@@ -7129,7 +7156,9 @@ const addressPostalCode = "\n[name=zip], [name=zip2], [name=postal], [autocomple
 const addressCountryCode = "\n[name=country], [autocomplete=country],\n[name*=countryCode i], [name*=country-code i],\n[name*=countryName i], [name*=country-name i]";
 const birthdayDay = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d]";
 const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m]";
-const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]"; // todo: these are still used directly right now, mostly in scanForInputs
+const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]";
+const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), // fix for `aa.com`
+"input[name=\"loginId\"]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
@@ -7141,7 +7170,7 @@ module.exports.__secret_do_not_use = {
   FORM_INPUTS_SELECTOR,
   email: email,
   password,
-  username: "".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"),
+  username,
   cardName,
   cardNumber,
   cardSecurityCode,
@@ -7439,6 +7468,8 @@ function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { 
 const {
   generate
 } = require('../packages/password');
+
+const rules = require('../packages/password/rules.json');
 /**
  * Create a password once and reuse it.
  */
@@ -7468,7 +7499,9 @@ class PasswordGenerator {
       return _classPrivateFieldGet(this, _previous);
     }
 
-    _classPrivateFieldSet(this, _previous, generate(params));
+    _classPrivateFieldSet(this, _previous, generate({ ...params,
+      rules
+    }));
 
     return _classPrivateFieldGet(this, _previous);
   }
@@ -7477,7 +7510,7 @@ class PasswordGenerator {
 
 module.exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":2}],29:[function(require,module,exports){
+},{"../packages/password":2,"../packages/password/rules.json":6}],29:[function(require,module,exports){
 "use strict";
 
 const {
