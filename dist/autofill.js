@@ -5785,7 +5785,7 @@ const matchingConfiguration = {
           forceUnknown: 'captcha'
         },
         username: {
-          match: 'user((.)?(name|id|login))?$',
+          match: 'user((.)?(name|id|login).?)?$',
           forceUnknown: 'search'
         },
         // CC
