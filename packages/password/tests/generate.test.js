@@ -1,6 +1,7 @@
 const { constants, _selectPasswordRules, HostnameInputError, ParserError, generate } = require('../')
 const vendorRules = require('../rules.json')
 const fc = require('fast-check')
+const {Password} = require('../lib/apple.password')
 
 function testUniqueTimes (domain, passwordRules, num = 10) {
     const pws = []
@@ -28,6 +29,24 @@ describe('password generation', () => {
             const defaultPw = generate({input: constants.DEFAULT_PASSWORD_RULES})
             expect(defaultPw.length).toBeGreaterThanOrEqual(constants.MIN_LENGTH)
             expect(defaultPw.length).toBeLessThanOrEqual(constants.MAX_LENGTH)
+        })
+        it('creates matches snapshot requirements', () => {
+            const pw = new Password()
+            const { parameters } = pw.parse(constants.DEFAULT_PASSWORD_RULES)
+
+            /**
+             * This snapshot is added as a human-readable check that the internal params
+             * are correct and are not changed by accident.
+             */
+            expect(parameters).toMatchInlineSnapshot(`
+Object {
+  "NumberOfRequiredRandomCharacters": 20,
+  "PasswordAllowedCharacters": "abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789-!#$%&?",
+  "RequiredCharacterSets": Array [
+    "-!#$%&?",
+  ],
+}
+`)
         })
         it('handles any value for `input`', () => {
             fc.assert(
