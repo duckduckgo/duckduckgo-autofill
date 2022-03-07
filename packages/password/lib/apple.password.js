@@ -11,8 +11,8 @@
  * 2) added JSDoc comments (for Typescript checking)
  *
  */
-const parser = require('./rules-parser')
-const {constants} = require('./constants')
+import * as parser from './rules-parser.js'
+import {constants} from './constants.js'
 
 /**
  * @typedef {{
@@ -547,4 +547,4 @@ class Password {
     }
 }
 
-module.exports.Password = Password
+export { Password }

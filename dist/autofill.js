@@ -55,17 +55,31 @@ function processConfig(data, userList, preferences) {
 },{}],2:[function(require,module,exports){
 "use strict";
 
-const {
-  Password
-} = require('./lib/apple.password');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.HostnameInputError = void 0;
+Object.defineProperty(exports, "ParserError", {
+  enumerable: true,
+  get: function () {
+    return _rulesParser.ParserError;
+  }
+});
+exports._selectPasswordRules = _selectPasswordRules;
+Object.defineProperty(exports, "constants", {
+  enumerable: true,
+  get: function () {
+    return _constants.constants;
+  }
+});
+exports.generate = generate;
 
-const {
-  ParserError
-} = require('./lib/rules-parser');
+var _applePassword = require("./lib/apple.password.js");
 
-const {
-  constants
-} = require('./lib/constants');
+var _rulesParser = require("./lib/rules-parser.js");
+
+var _constants = require("./lib/constants.js");
+
 /**
  * @typedef {{
  *   domain?: string | null | undefined;
@@ -87,14 +101,12 @@ const {
  *
  * @param {GenerateOptions} [options]
  */
-
-
 function generate() {
   let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   try {
     if (typeof (options === null || options === void 0 ? void 0 : options.input) === 'string') {
-      return Password.generateOrThrow(options.input);
+      return _applePassword.Password.generateOrThrow(options.input);
     }
 
     if (typeof (options === null || options === void 0 ? void 0 : options.domain) === 'string') {
@@ -102,7 +114,7 @@ function generate() {
         const rules = _selectPasswordRules(options.domain, options.rules);
 
         if (rules) {
-          return Password.generateOrThrow(rules);
+          return _applePassword.Password.generateOrThrow(rules);
         }
       }
     }
@@ -112,7 +124,7 @@ function generate() {
       options.onError(e);
     } else {
       // otherwise, only console.error unknown errors (which could be implementation bugs)
-      const isKnownError = e instanceof ParserError || e instanceof HostnameInputError;
+      const isKnownError = e instanceof _rulesParser.ParserError || e instanceof HostnameInputError;
 
       if (!isKnownError) {
         console.error(e);
@@ -122,7 +134,7 @@ function generate() {
   // as it is NOT using any user/page-provided data
 
 
-  return Password.generateDefault();
+  return _applePassword.Password.generateDefault();
 } // An extension type to differentiate between known errors
 
 
@@ -139,6 +151,8 @@ class HostnameInputError extends Error {}
  * @throws {HostnameInputError}
  */
 
+
+exports.HostnameInputError = HostnameInputError;
 
 function _selectPasswordRules(inputHostname, rules) {
   const hostname = _safeHostname(inputHostname); // direct match
@@ -187,35 +201,24 @@ function _safeHostname(inputHostname) {
   }
 }
 
-module.exports.generate = generate;
-module.exports._selectPasswordRules = _selectPasswordRules;
-module.exports.HostnameInputError = HostnameInputError;
-module.exports.ParserError = ParserError;
-module.exports.constants = constants;
-
-},{"./lib/apple.password":3,"./lib/constants":4,"./lib/rules-parser":5}],3:[function(require,module,exports){
+},{"./lib/apple.password.js":3,"./lib/constants.js":4,"./lib/rules-parser.js":5}],3:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Password = void 0;
+
+var parser = _interopRequireWildcard(require("./rules-parser.js"));
+
+var _constants = require("./constants.js");
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/*
- *
- * NOTE:
- *
- * This file was created with inspiration from https://developer.apple.com/password-rules
- *
- * * The changes made by DuckDuckGo employees are:
- *
- * 1) removed all logic relating to 'more typeable passwords'
- * 2) reduced the number of password styles from 4 to only the 1 which suits our needs
- * 2) added JSDoc comments (for Typescript checking)
- *
- */
-const parser = require('./rules-parser');
-
-const {
-  constants
-} = require('./constants');
 /**
  * @typedef {{
  *     PasswordAllowedCharacters?: string,
@@ -234,13 +237,11 @@ const {
  *     RequiredCharacterSets: string[]
  * }} PasswordParameters
  */
-
-
 const defaults = Object.freeze({
   SCAN_SET_ORDER: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\\"'<>,.?/ ]",
   defaultUnambiguousCharacters: 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789',
-  defaultPasswordLength: constants.MIN_LENGTH,
-  defaultPasswordRules: constants.DEFAULT_PASSWORD_RULES,
+  defaultPasswordLength: _constants.constants.MIN_LENGTH,
+  defaultPasswordRules: _constants.constants.DEFAULT_PASSWORD_RULES,
   defaultRequiredCharacterSets: ['abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '0123456789'],
 
   /**
@@ -820,18 +821,22 @@ class Password {
 
 }
 
+exports.Password = Password;
+
 _defineProperty(Password, "defaults", defaults);
 
-module.exports.Password = Password;
-
-},{"./constants":4,"./rules-parser":5}],4:[function(require,module,exports){
+},{"./constants.js":4,"./rules-parser.js":5}],4:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.constants = void 0;
 const MIN_LENGTH = 20;
 const MAX_LENGTH = 30;
 const REQUIRED_CHARS = '-!?$&#%';
 const DEFAULT_UNAMBIGUOUS_CHARS = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
-const DEFAULT_PASSWORD_RULES = ["minlength: ".concat(MIN_LENGTH), "maxlength: ".concat(MAX_LENGTH), "required: [".concat(REQUIRED_CHARS, "]"), "allowed: [".concat(DEFAULT_UNAMBIGUOUS_CHARS, "]")].join(';');
+const DEFAULT_PASSWORD_RULES = ["minlength: ".concat(MIN_LENGTH), "maxlength: ".concat(MAX_LENGTH), "required: [".concat(REQUIRED_CHARS, "]"), "allowed: [".concat(DEFAULT_UNAMBIGUOUS_CHARS, "]")].join('; ');
 const constants = {
   MIN_LENGTH,
   MAX_LENGTH,
@@ -839,11 +844,16 @@ const constants = {
   REQUIRED_CHARS,
   DEFAULT_UNAMBIGUOUS_CHARS
 };
-module.exports.constants = constants;
+exports.constants = constants;
 
 },{}],5:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.SHOULD_NOT_BE_REACHED = exports.RuleName = exports.Rule = exports.ParserError = exports.NamedCharacterClass = exports.Identifier = exports.CustomCharacterClass = void 0;
+exports.parsePasswordRules = parsePasswordRules;
 // Copyright (c) 2019 - 2020 Apple Inc. Licensed under MIT License.
 
 /*
@@ -868,6 +878,7 @@ const Identifier = {
   UNICODE: 'unicode',
   UPPER: 'upper'
 };
+exports.Identifier = Identifier;
 const RuleName = {
   ALLOWED: 'allowed',
   MAX_CONSECUTIVE: 'max-consecutive',
@@ -875,6 +886,7 @@ const RuleName = {
   MIN_LENGTH: 'minlength',
   MAX_LENGTH: 'maxlength'
 };
+exports.RuleName = RuleName;
 const CHARACTER_CLASS_START_SENTINEL = '[';
 const CHARACTER_CLASS_END_SENTINEL = ']';
 const PROPERTY_VALUE_SEPARATOR = ',';
@@ -882,6 +894,7 @@ const PROPERTY_SEPARATOR = ';';
 const PROPERTY_VALUE_START_SENTINEL = ':';
 const SPACE_CODE_POINT = ' '.codePointAt(0);
 const SHOULD_NOT_BE_REACHED = 'Should not be reached';
+exports.SHOULD_NOT_BE_REACHED = SHOULD_NOT_BE_REACHED;
 
 class Rule {
   constructor(name, value) {
@@ -899,6 +912,7 @@ class Rule {
 
 }
 
+exports.Rule = Rule;
 ;
 
 class NamedCharacterClass {
@@ -921,10 +935,12 @@ class NamedCharacterClass {
 
 }
 
+exports.NamedCharacterClass = NamedCharacterClass;
 ;
 
 class ParserError extends Error {}
 
+exports.ParserError = ParserError;
 ;
 
 class CustomCharacterClass {
@@ -947,6 +963,7 @@ class CustomCharacterClass {
 
 }
 
+exports.CustomCharacterClass = CustomCharacterClass;
 ; // MARK: Lexer functions
 
 function _isIdentifierCharacter(c) {
@@ -1561,15 +1578,6 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
 
   return newPasswordRules;
 }
-
-module.exports.parsePasswordRules = parsePasswordRules;
-module.exports.Identifier = Identifier;
-module.exports.RuleName = RuleName;
-module.exports.SHOULD_NOT_BE_REACHED = SHOULD_NOT_BE_REACHED;
-module.exports.Rule = Rule;
-module.exports.ParserError = ParserError;
-module.exports.NamedCharacterClass = NamedCharacterClass;
-module.exports.CustomCharacterClass = CustomCharacterClass;
 
 },{}],6:[function(require,module,exports){
 module.exports={

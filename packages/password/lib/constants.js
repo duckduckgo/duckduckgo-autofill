@@ -7,7 +7,7 @@ const DEFAULT_PASSWORD_RULES = [
     `maxlength: ${MAX_LENGTH}`,
     `required: [${REQUIRED_CHARS}]`,
     `allowed: [${DEFAULT_UNAMBIGUOUS_CHARS}]`
-].join(';')
+].join('; ')
 
 const constants = {
     MIN_LENGTH,
@@ -17,4 +17,4 @@ const constants = {
     DEFAULT_UNAMBIGUOUS_CHARS
 }
 
-module.exports.constants = constants
+export { constants }
