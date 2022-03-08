@@ -31,7 +31,7 @@
 
         const {parameters, entropy} = new Password().parse(Password.defaults.defaultPasswordRules);
         elements.parameters.textContent = JSON.stringify(parameters, null, 2);
-        elements.entropy.textContent += `Entropy: ${entropy}`;
+        elements.entropy.textContent = `Entropy: ${entropy}`;
     </script>
 </body>
 </html>
