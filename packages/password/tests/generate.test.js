@@ -1,6 +1,7 @@
 const { constants, _selectPasswordRules, HostnameInputError, ParserError, generate } = require('../')
 const vendorRules = require('../rules.json')
 const fc = require('fast-check')
+const {Password} = require('../lib/apple.password')
 
 function testUniqueTimes (domain, passwordRules, num = 10) {
     const pws = []
@@ -21,13 +22,31 @@ describe('password generation', () => {
     describe('public api', () => {
         it('creates rules with no arguments', () => {
             const defaultPw = generate()
-            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.MIN_LENGTH)
-            expect(defaultPw.length).toBeLessThanOrEqual(constants.MAX_LENGTH)
+            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.DEFAULT_MIN_LENGTH)
+            expect(defaultPw.length).toBeLessThanOrEqual(constants.DEFAULT_MAX_LENGTH)
         })
         it('creates from default rules', () => {
             const defaultPw = generate({input: constants.DEFAULT_PASSWORD_RULES})
-            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.MIN_LENGTH)
-            expect(defaultPw.length).toBeLessThanOrEqual(constants.MAX_LENGTH)
+            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.DEFAULT_MIN_LENGTH)
+            expect(defaultPw.length).toBeLessThanOrEqual(constants.DEFAULT_MAX_LENGTH)
+        })
+        it('creates matches snapshot requirements', () => {
+            const pw = new Password()
+            const { parameters } = pw.parse(constants.DEFAULT_PASSWORD_RULES)
+
+            /**
+             * This snapshot is added as a human-readable check that the internal params
+             * are correct and are not changed by accident.
+             */
+            expect(parameters).toMatchInlineSnapshot(`
+{
+  "NumberOfRequiredRandomCharacters": 20,
+  "PasswordAllowedCharacters": "abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789-!#$%&?",
+  "RequiredCharacterSets": [
+    "-!#$%&?",
+  ],
+}
+`)
         })
         it('handles any value for `input`', () => {
             fc.assert(
@@ -105,9 +124,10 @@ describe('password generation', () => {
                 fc.property(fc.string(), data => {
                     const pw = generate({input: data})
                     return typeof pw === 'string' &&
-                        pw.length >= constants.MIN_LENGTH &&
-                        pw.length <= constants.MAX_LENGTH
-                })
+                        pw.length >= constants.DEFAULT_MIN_LENGTH &&
+                        pw.length <= constants.DEFAULT_MAX_LENGTH
+                }),
+                { seed: -1660958584, path: '0:0', endOnFailure: true }
             )
         })
     })
