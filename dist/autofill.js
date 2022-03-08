@@ -240,7 +240,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 const defaults = Object.freeze({
   SCAN_SET_ORDER: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\\"'<>,.?/ ]",
   defaultUnambiguousCharacters: 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789',
-  defaultPasswordLength: _constants.constants.MIN_LENGTH,
+  defaultPasswordLength: _constants.constants.DEFAULT_MIN_LENGTH,
   defaultPasswordRules: _constants.constants.DEFAULT_PASSWORD_RULES,
   defaultRequiredCharacterSets: ['abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '0123456789'],
 
@@ -832,16 +832,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.constants = void 0;
-const MIN_LENGTH = 20;
-const MAX_LENGTH = 30;
-const REQUIRED_CHARS = '-!?$&#%';
+const DEFAULT_MIN_LENGTH = 20;
+const DEFAULT_MAX_LENGTH = 30;
+const DEFAULT_REQUIRED_CHARS = '-!?$&#%';
 const DEFAULT_UNAMBIGUOUS_CHARS = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
-const DEFAULT_PASSWORD_RULES = ["minlength: ".concat(MIN_LENGTH), "maxlength: ".concat(MAX_LENGTH), "required: [".concat(REQUIRED_CHARS, "]"), "allowed: [".concat(DEFAULT_UNAMBIGUOUS_CHARS, "]")].join('; ');
+const DEFAULT_PASSWORD_RULES = ["minlength: ".concat(DEFAULT_MIN_LENGTH), "maxlength: ".concat(DEFAULT_MAX_LENGTH), "required: [".concat(DEFAULT_REQUIRED_CHARS, "]"), "allowed: [".concat(DEFAULT_UNAMBIGUOUS_CHARS, "]")].join('; ');
 const constants = {
-  MIN_LENGTH,
-  MAX_LENGTH,
+  DEFAULT_MIN_LENGTH,
+  DEFAULT_MAX_LENGTH,
   DEFAULT_PASSWORD_RULES,
-  REQUIRED_CHARS,
+  DEFAULT_REQUIRED_CHARS,
   DEFAULT_UNAMBIGUOUS_CHARS
 };
 exports.constants = constants;

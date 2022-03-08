@@ -12,20 +12,26 @@
     <pre><code id="rules"></code></pre>
     <pre><code id="parameters"></code></pre>
     <pre><code id="password"></code></pre>
+    <pre><code id="entropy"></code></pre>
     <script type="module">
         import {generate} from "./index.js";
         import {Password} from './lib/apple.password.js'
-        const pws = [];
-        for (let i = 0; i < 10; i++) {
-            pws.push(generate())
+        const elements = {
+            rules: document.querySelector("#rules"),
+            parameters: document.querySelector("#parameters"),
+            password: document.querySelector("#password"),
+            entropy: document.querySelector("#entropy"),
         }
-        document.querySelector("#password").textContent = pws.join('\n');
-        document.querySelector("#rules").textContent = Password.defaults.defaultPasswordRules;
+        const passwords = [];
+        for (let i = 0; i < 10; i++) {
+            passwords.push(generate())
+        }
+        elements.password.textContent = passwords.join('\n');
+        elements.rules.textContent = Password.defaults.defaultPasswordRules;
 
         const {parameters, entropy} = new Password().parse(Password.defaults.defaultPasswordRules);
-        document.querySelector("#parameters").textContent = JSON.stringify(parameters, null, 2);
-        document.querySelector("#parameters").textContent += '\n' + "Entropy: " + entropy;
-
+        elements.parameters.textContent = JSON.stringify(parameters, null, 2);
+        elements.entropy.textContent += `Entropy: ${entropy}`;
     </script>
 </body>
 </html>
