@@ -1,5 +1,8 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp, isApp, getDaxBoundingBox} = require('../autofill-utils')
+const {
+    addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
+    isMobileApp, isApp, getDaxBoundingBox, isLikelyASubmitButton
+} = require('../autofill-utils')
 const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
@@ -181,15 +184,18 @@ class Form {
 
     get submitButtons () {
         const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
-        return [...this.form.querySelectorAll(selector)]
-            .filter((button) => {
-                const content = button.textContent || ''
-                const ariaLabel = button.getAttribute('aria-label') || ''
-                // @ts-ignore
-                const title = button.title || ''
-                // trying to exclude the little buttons to show and hide passwords
-                return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
-            })
+        const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+
+        const likelySubmitButton = allButtons.find(isLikelyASubmitButton)
+        if (likelySubmitButton) return [likelySubmitButton]
+
+        return allButtons.filter((button) => {
+            const content = button.textContent || ''
+            const ariaLabel = button.getAttribute('aria-label') || ''
+            const title = button.title || ''
+            // trying to exclude the little buttons to show and hide passwords
+            return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
+        })
     }
 
     execOnInputs (fn, inputType = 'all') {
