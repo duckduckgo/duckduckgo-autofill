@@ -22,13 +22,13 @@ describe('password generation', () => {
     describe('public api', () => {
         it('creates rules with no arguments', () => {
             const defaultPw = generate()
-            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.MIN_LENGTH)
-            expect(defaultPw.length).toBeLessThanOrEqual(constants.MAX_LENGTH)
+            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.DEFAULT_MIN_LENGTH)
+            expect(defaultPw.length).toBeLessThanOrEqual(constants.DEFAULT_MAX_LENGTH)
         })
         it('creates from default rules', () => {
             const defaultPw = generate({input: constants.DEFAULT_PASSWORD_RULES})
-            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.MIN_LENGTH)
-            expect(defaultPw.length).toBeLessThanOrEqual(constants.MAX_LENGTH)
+            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.DEFAULT_MIN_LENGTH)
+            expect(defaultPw.length).toBeLessThanOrEqual(constants.DEFAULT_MAX_LENGTH)
         })
         it('creates matches snapshot requirements', () => {
             const pw = new Password()
@@ -39,10 +39,10 @@ describe('password generation', () => {
              * are correct and are not changed by accident.
              */
             expect(parameters).toMatchInlineSnapshot(`
-Object {
+{
   "NumberOfRequiredRandomCharacters": 20,
   "PasswordAllowedCharacters": "abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789-!#$%&?",
-  "RequiredCharacterSets": Array [
+  "RequiredCharacterSets": [
     "-!#$%&?",
   ],
 }
@@ -124,9 +124,10 @@ Object {
                 fc.property(fc.string(), data => {
                     const pw = generate({input: data})
                     return typeof pw === 'string' &&
-                        pw.length >= constants.MIN_LENGTH &&
-                        pw.length <= constants.MAX_LENGTH
-                })
+                        pw.length >= constants.DEFAULT_MIN_LENGTH &&
+                        pw.length <= constants.DEFAULT_MAX_LENGTH
+                }),
+                { seed: -1660958584, path: '0:0', endOnFailure: true }
             )
         })
     })
