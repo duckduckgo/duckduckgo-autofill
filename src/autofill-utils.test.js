@@ -21,7 +21,7 @@ afterEach(() => {
     document.body.innerHTML = ''
 })
 
-describe('value setting', function () {
+describe('value setting on inputs', function () {
     it('should set value & dispatch events in the correct order', () => {
         const {input, events} = renderInputWithEvents()
         setValue(input, '123456')
@@ -38,6 +38,48 @@ describe('value setting', function () {
             'keyup',
             'change'
         ])
+    })
+})
+
+const renderInputWithSelect = () => {
+    document.body.innerHTML = `
+    <select name="country">
+        <option value="GB">Great Britain</option>
+        <option value="US">USA</option>
+    </select>
+    `
+
+    const events = []
+    const select = document.querySelector('select')
+    if (!select) throw new Error('unreachable')
+
+    select.addEventListener('mousedown', () => events.push('mousedown'))
+    select.addEventListener('mouseup', () => events.push('mouseup'))
+    select.addEventListener('click', () => events.push('click'))
+    select.addEventListener('change', () => events.push('change'))
+
+    return {select, events}
+}
+
+describe('value setting on selects', function () {
+    it('should set value & dispatch events when value has changed', () => {
+        const {select, events} = renderInputWithSelect()
+        setValue(select, 'US')
+        expect(events).toStrictEqual([
+            'mousedown',
+            'mouseup',
+            'click',
+            'change',
+            'mousedown',
+            'mouseup',
+            'click',
+            'change'
+        ])
+    })
+    it('should not fire any events when the value has not changed', () => {
+        const {select, events} = renderInputWithSelect()
+        setValue(select, 'GB')
+        expect(events).toStrictEqual([])
     })
 })
 

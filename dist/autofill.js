@@ -8262,15 +8262,14 @@ const setValueForInput = (el, val) => {
 
 
 const fireEventsOnSelect = el => {
+  /** @type {Event[]} */
   const events = [new Event('mousedown', {
-    bubbles: true
-  }), new Event('focus', {
-    bubbles: true
-  }), new Event('change', {
     bubbles: true
   }), new Event('mouseup', {
     bubbles: true
   }), new Event('click', {
+    bubbles: true
+  }), new Event('change', {
     bubbles: true
   })]; // Events fire on the select el, not option
 
@@ -8302,6 +8301,7 @@ const setValueForSelect = (el, val) => {
 
 
     if (value.includes(String(val))) {
+      if (option.selected) return false;
       option.selected = true;
       fireEventsOnSelect(el);
       return true;
@@ -8310,6 +8310,7 @@ const setValueForSelect = (el, val) => {
 
   for (const option of el.options) {
     if (option.innerText.includes(String(val))) {
+      if (option.selected) return false;
       option.selected = true;
       fireEventsOnSelect(el);
       return true;
