@@ -252,7 +252,7 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfiguration} */
         ddgMatcher: {
             matchers: {
-                email: {match: '.mail', forceUnknown: 'search'},
+                email: {match: '.mail', forceUnknown: 'search|filter|subject'},
                 password: {match: 'password', forceUnknown: 'captcha'},
                 username: {match: 'user((.)?(name|id|login).?)?$', forceUnknown: 'search'},
 
@@ -283,7 +283,7 @@ const matchingConfiguration = {
                 },
                 addressCity: {match: 'city|town', forceUnknown: 'vatican'},
                 addressProvince: {match: 'state|province|region|county', forceUnknown: 'united', skip: 'country'},
-                addressPostalCode: {match: '\\bzip\\b|postal|post.?code'},
+                addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code'},
                 addressCountryCode: {match: 'country'}
             }
         },
@@ -677,7 +677,7 @@ const matchingConfiguration = {
                         '|suburb' + // en-AU
                         '|ciudad|provincia|localidad|poblacion' + // es
                         '|ville|commune' + // fr-FR
-                        '|localita' + // it-IT
+                        '|localit(a|à)|citt(a|à)' + // it-IT
                         '|市区町村' + // ja-JP
                         '|cidade' + // pt-BR, pt-PT
                         '|Город' + // ru
