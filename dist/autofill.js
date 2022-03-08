@@ -3642,7 +3642,8 @@ const {
   isEventWithinDax,
   isMobileApp,
   isApp,
-  getDaxBoundingBox
+  getDaxBoundingBox,
+  isLikelyASubmitButton
 } = require('../autofill-utils');
 
 const {
@@ -3876,10 +3877,14 @@ class Form {
 
   get submitButtons() {
     const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR');
-    return [...this.form.querySelectorAll(selector)].filter(button => {
+    const allButtons =
+    /** @type {HTMLElement[]} */
+    [...this.form.querySelectorAll(selector)];
+    const likelySubmitButton = allButtons.find(isLikelyASubmitButton);
+    if (likelySubmitButton) return [likelySubmitButton];
+    return allButtons.filter(button => {
       const content = button.textContent || '';
-      const ariaLabel = button.getAttribute('aria-label') || ''; // @ts-ignore
-
+      const ariaLabel = button.getAttribute('aria-label') || '';
       const title = button.title || ''; // trying to exclude the little buttons to show and hide passwords
 
       return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title);
@@ -4101,6 +4106,10 @@ const {
   matchingConfiguration
 } = require('./matching-configuration');
 
+const {
+  isLikelyASubmitButton
+} = require('../autofill-utils');
+
 class FormAnalyzer {
   /** @type HTMLFormElement */
 
@@ -4276,7 +4285,7 @@ class FormAnalyzer {
 
     if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
       // If we're sure this is a submit button, it's a stronger signal
-      const strength = el.getAttribute('type') === 'submit' || /primary|submit/i.test(el.className) || el.offsetHeight * el.offsetWidth >= 10000 ? 20 : 2;
+      const strength = isLikelyASubmitButton(el) ? 20 : 2;
       this.updateSignal({
         string,
         strength,
@@ -4334,7 +4343,7 @@ class FormAnalyzer {
 
 module.exports = FormAnalyzer;
 
-},{"../constants":38,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
+},{"../autofill-utils":36,"../constants":38,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -5790,7 +5799,7 @@ const matchingConfiguration = {
       matchers: {
         email: {
           match: '.mail',
-          forceUnknown: 'search'
+          forceUnknown: 'search|filter|subject'
         },
         password: {
           match: 'password',
@@ -5859,7 +5868,7 @@ const matchingConfiguration = {
           skip: 'country'
         },
         addressPostalCode: {
-          match: '\\bzip\\b|postal|post.?code'
+          match: '\\bzip\\b|postal\b|post.?code'
         },
         addressCountryCode: {
           match: 'country'
@@ -6025,7 +6034,7 @@ const matchingConfiguration = {
         '|suburb' + // en-AU
         '|ciudad|provincia|localidad|poblacion' + // es
         '|ville|commune' + // fr-FR
-        '|localita' + // it-IT
+        '|localit(a|à)|citt(a|à)' + // it-IT
         '|市区町村' + // ja-JP
         '|cidade' + // pt-BR, pt-PT
         '|Город' + // ru
@@ -7145,7 +7154,7 @@ module.exports = {
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
-const email = "\ninput:not([type])[name*=mail i],\ninput[type=\"\"][name*=mail i],\ninput[type=text][name*=mail i],\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]),\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
+const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
 const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])";
@@ -7160,9 +7169,9 @@ const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name
 const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
 const fullName = "\n[name=name], [autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
 const phone = "\n[name*=phone i], [name*=mobile i], [autocomplete=tel]";
-const addressStreet1 = "\n[name=address], [autocomplete=street-address], [autocomplete=address-line1],\n[name=street],\n[name=ppw-line1]";
-const addressStreet2 = "\n[name=address], [autocomplete=address-line2],\n[name=ppw-line2]";
-const addressCity = "\n[name=city], [autocomplete=address-level2],\n[name=ppw-city]";
+const addressStreet1 = "\n[name=address], [autocomplete=street-address], [autocomplete=address-line1],\n[name=street],\n[name=ppw-line1], [name*=addressLine1 i]";
+const addressStreet2 = "\n[name=address], [autocomplete=address-line2],\n[name=ppw-line2], [name*=addressLine2 i]";
+const addressCity = "\n[name=city], [autocomplete=address-level2],\n[name=ppw-city], [name*=addressCity i]";
 const addressProvince = "\n[name=province], [name=state], [autocomplete=address-level1]";
 const addressPostalCode = "\n[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],\n[name*=postalCode i], [name*=zipcode i]";
 const addressCountryCode = "\n[name=country], [autocomplete=country],\n[name*=countryCode i], [name*=country-code i],\n[name*=countryName i], [name*=country-name i]";
@@ -8364,6 +8373,17 @@ function escapeXML(str) {
   };
   return String(str).replace(/[&"'<>/]/g, m => replacements[m]);
 }
+/**
+ * Determines if an element is likely to be a submit button
+ * @param {HTMLElement} el A button, input, anchor or other element with role=button
+ * @return {boolean}
+ */
+
+
+const isLikelyASubmitButton = el => el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+/primary|submit/i.test(el.className) || // has high-signal submit classes
+el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250x40px
+
 
 module.exports = {
   isApp,
@@ -8386,7 +8406,8 @@ module.exports = {
   SIGN_IN_MSG,
   ADDRESS_DOMAIN,
   formatDuckAddress,
-  escapeXML
+  escapeXML,
+  isLikelyASubmitButton
 };
 
 },{"./Form/matching":22}],37:[function(require,module,exports){
