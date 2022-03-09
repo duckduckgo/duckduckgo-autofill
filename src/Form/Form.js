@@ -63,6 +63,10 @@ class Form {
         this.categorizeInputs()
     }
 
+    hasFocus () {
+        return this.form.contains(document.activeElement)
+    }
+
     isValid () {
         if (this.form instanceof HTMLFormElement) {
             return this.form.checkValidity()
