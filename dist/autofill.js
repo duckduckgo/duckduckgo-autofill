@@ -3730,8 +3730,25 @@ class Form {
     this.categorizeInputs();
   }
 
+  hasFocus() {
+    return this.form.contains(document.activeElement);
+  }
+
+  isValid() {
+    if (this.form instanceof HTMLFormElement) {
+      return this.form.checkValidity();
+    }
+
+    let validity = true;
+    this.execOnInputs(input => {
+      if (input.validity && !input.validity.valid) validity = false;
+    });
+    return validity;
+  }
+
   submitHandler() {
     if (this.handlerExecuted) return;
+    if (!this.isValid()) return;
     const values = this.getValues(); // checks to determine if we should offer to store credentials and/or fireproof
 
     const checks = [this.shouldPromptToStoreData, this.hasValues(values), this.device.shouldPromptToStoreCredentials({
@@ -3882,6 +3899,12 @@ class Form {
       return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title);
     });
   }
+  /**
+   * Executes a function on input elements. Can be limited to certain element types
+   * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
+   * @param {'all' | SupportedMainTypes} inputType
+   */
+
 
   execOnInputs(fn) {
     let inputType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'all';
@@ -4042,6 +4065,12 @@ class Form {
       once: true
     });
   }
+  /**
+   * Autofill method for email protection only
+   * @param {string} alias
+   * @param {'all' | SupportedMainTypes} dataType
+   */
+
 
   autofillEmail(alias) {
     let dataType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'identities';
@@ -4058,11 +4087,11 @@ class Form {
       const inputSubtype = getInputSubtype(input);
       let autofillData = data[inputSubtype];
 
-      if (inputSubtype === 'expiration') {
+      if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
         autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this);
       }
 
-      if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
+      if (inputSubtype === 'expirationYear' && input instanceof HTMLInputElement) {
         autofillData = formatCCYear(input, autofillData, this);
       }
 
@@ -5103,7 +5132,9 @@ const shouldStoreCreditCards = _ref5 => {
   let {
     creditCards
   } = _ref5;
-  return Boolean(creditCards.cardNumber && creditCards.cardSecurityCode);
+  return Boolean(creditCards.cardNumber && (creditCards.cardSecurityCode || // Some forms (Amazon) don't have the cvv, so we still save if there's everything else
+  creditCards.cardName && ( // Expiration can be unified or separate
+  creditCards.expiration || creditCards.expirationYear && creditCards.expirationMonth)));
 };
 /**
  * Formats form data into an object to send to the device for storage
@@ -5525,6 +5556,12 @@ const listenForGlobalFormSubmission = () => {
         (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler()
       );
     }, true);
+    window.addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        const focusedForm = [...forms.values()].find(form => form.hasFocus());
+        focusedForm === null || focusedForm === void 0 ? void 0 : focusedForm.submitHandler();
+      }
+    });
     const observer = new PerformanceObserver(list => {
       const entries = list.getEntries().filter(entry => // @ts-ignore why does TS not know about `entry.initiatorType`?
       ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && entry.name.match(/login|sign-in|signin|session/));
