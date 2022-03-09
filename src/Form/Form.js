@@ -198,6 +198,11 @@ class Form {
         })
     }
 
+    /**
+     * Executes a function on input elements. Can be limited to certain element types
+     * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
+     * @param {'all' | SupportedMainTypes} inputType
+     */
     execOnInputs (fn, inputType = 'all') {
         const inputs = this.inputs[inputType]
         for (const input of inputs) {
@@ -357,6 +362,11 @@ class Form {
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
     }
 
+    /**
+     * Autofill method for email protection only
+     * @param {string} alias
+     * @param {'all' | SupportedMainTypes} dataType
+     */
     autofillEmail (alias, dataType = 'identities') {
         this.isAutofilling = true
         this.execOnInputs(
@@ -375,11 +385,11 @@ class Form {
             const inputSubtype = getInputSubtype(input)
             let autofillData = data[inputSubtype]
 
-            if (inputSubtype === 'expiration') {
+            if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
                 autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this)
             }
 
-            if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
+            if (inputSubtype === 'expirationYear' && input instanceof HTMLInputElement) {
                 autofillData = formatCCYear(input, autofillData, this)
             }
 
