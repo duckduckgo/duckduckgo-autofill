@@ -63,8 +63,22 @@ class Form {
         this.categorizeInputs()
     }
 
+    isValid () {
+        if (this.form instanceof HTMLFormElement) {
+            return this.form.checkValidity()
+        }
+
+        let validity = true
+        this.execOnInputs((input) => {
+            if (input.validity && !input.validity.valid) validity = false
+        })
+        return validity
+    }
+
     submitHandler () {
         if (this.handlerExecuted) return
+
+        if (!this.isValid()) return
 
         const values = this.getValues()
 
