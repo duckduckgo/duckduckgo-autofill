@@ -2849,7 +2849,7 @@ const {
   sendAndWaitForAnswer,
   setValue,
   formatDuckAddress,
-  autofillEnabled
+  isAutofillEnabledFromProcessedConfig
 } = require('../autofill-utils');
 
 const {
@@ -2858,20 +2858,12 @@ const {
 
 class ExtensionInterface extends InterfacePrototype {
   async isEnabled() {
-    if (!autofillEnabled()) return false;
     return new Promise(resolve => {
-      // Check if the site is marked to skip autofill
       chrome.runtime.sendMessage({
         registeredTempAutofillContentScript: true,
         documentUrl: window.location.href
       }, response => {
-        var _response$site, _response$site$broken;
-
-        if (!(response !== null && response !== void 0 && (_response$site = response.site) !== null && _response$site !== void 0 && (_response$site$broken = _response$site.brokenFeatures) !== null && _response$site$broken !== void 0 && _response$site$broken.includes('autofill'))) {
-          resolve(true);
-        }
-
-        resolve(false);
+        resolve(isAutofillEnabledFromProcessedConfig(response));
       });
     });
   }
@@ -8129,8 +8121,12 @@ const autofillEnabled = processConfig => {
   } // Check config on Apple platforms
 
 
-  const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
-  const site = privacyConfig.site;
+  const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
+  return isAutofillEnabledFromProcessedConfig(processedConfig);
+};
+
+const isAutofillEnabledFromProcessedConfig = processedConfig => {
+  const site = processedConfig.site;
 
   if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
     return false;
@@ -8396,6 +8392,7 @@ module.exports = {
   isDDGDomain,
   notifyWebApp,
   sendAndWaitForAnswer,
+  isAutofillEnabledFromProcessedConfig,
   autofillEnabled,
   setValue,
   safeExecute,

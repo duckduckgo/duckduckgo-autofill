@@ -63,8 +63,12 @@ const autofillEnabled = (processConfig) => {
     }
 
     // Check config on Apple platforms
-    const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
-    const site = privacyConfig.site
+    const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
+    return isAutofillEnabledFromProcessedConfig(processedConfig)
+}
+
+const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
+    const site = processedConfig.site
     if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
         return false
     }
@@ -284,6 +288,7 @@ module.exports = {
     isDDGDomain,
     notifyWebApp,
     sendAndWaitForAnswer,
+    isAutofillEnabledFromProcessedConfig,
     autofillEnabled,
     setValue,
     safeExecute,

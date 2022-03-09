@@ -1,4 +1,4 @@
-const {setValue} = require('./autofill-utils')
+const {setValue, isAutofillEnabledFromProcessedConfig} = require('./autofill-utils')
 
 const renderInputWithEvents = () => {
     const input = document.createElement('input')
@@ -38,5 +38,39 @@ describe('value setting', function () {
             'keyup',
             'change'
         ])
+    })
+})
+
+describe('config checking', () => {
+    it('autofill in enabledFeatures should enable', () => {
+        expect(isAutofillEnabledFromProcessedConfig({
+            site: {
+                isBroken: false,
+                enabledFeatures: ['autofill']
+            }
+        })).toBe(true)
+
+        expect(isAutofillEnabledFromProcessedConfig({
+            site: {
+                isBroken: false,
+                enabledFeatures: []
+            }
+        })).toBe(false)
+    })
+
+    it('autofill in isBroken should disable', () => {
+        expect(isAutofillEnabledFromProcessedConfig({
+            site: {
+                isBroken: false,
+                enabledFeatures: ['autofill']
+            }
+        })).toBe(true)
+
+        expect(isAutofillEnabledFromProcessedConfig({
+            site: {
+                isBroken: true,
+                enabledFeatures: ['autofill']
+            }
+        })).toBe(false)
     })
 })
