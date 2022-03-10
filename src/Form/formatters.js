@@ -84,9 +84,9 @@ const getCountryName = (el, options = {}) => {
         const englishCountryName = getCountryDisplayName('en', addressCountryCode)
         // This regex matches both the localised and English country names
         const countryNameRegex = new RegExp(String.raw`${
-            localisedCountryName.replaceAll(' ', '.?')
+            localisedCountryName.replace(/ /g, '.?')
         }|${
-            englishCountryName.replaceAll(' ', '.?')
+            englishCountryName.replace(/ /g, '.?')
         }`, 'i')
         const countryCodeRegex = new RegExp(String.raw`\b${addressCountryCode}\b`, 'i')
 
@@ -237,7 +237,7 @@ const prepareFormValuesForStorage = (formValues) => {
             creditCards.expirationYear = `${Number(creditCards.expirationYear) + 2000}`
         }
         if (creditCards.cardNumber) {
-            creditCards.cardNumber = creditCards.cardNumber.replaceAll(/\D/g, '')
+            creditCards.cardNumber = creditCards.cardNumber.replace(/\D/g, '')
         }
     } else {
         creditCards = undefined

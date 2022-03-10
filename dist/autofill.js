@@ -5060,7 +5060,7 @@ const getCountryName = function (el) {
   if (el.nodeName === 'SELECT') {
     const englishCountryName = getCountryDisplayName('en', addressCountryCode); // This regex matches both the localised and English country names
 
-    const countryNameRegex = new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["", "|", ""])), localisedCountryName.replaceAll(' ', '.?'), englishCountryName.replaceAll(' ', '.?')), 'i');
+    const countryNameRegex = new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["", "|", ""])), localisedCountryName.replace(/ /g, '.?'), englishCountryName.replace(/ /g, '.?')), 'i');
     const countryCodeRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), addressCountryCode), 'i'); // We check the country code first because it's more accurate
 
     if (el instanceof HTMLSelectElement) {
@@ -5230,7 +5230,7 @@ const prepareFormValuesForStorage = formValues => {
     }
 
     if (creditCards.cardNumber) {
-      creditCards.cardNumber = creditCards.cardNumber.replaceAll(/\D/g, '');
+      creditCards.cardNumber = creditCards.cardNumber.replace(/\D/g, '');
     }
   } else {
     creditCards = undefined;
