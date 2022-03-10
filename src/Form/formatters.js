@@ -203,14 +203,17 @@ const prepareFormValuesForStorage = (formValues) => {
     // Don't store if there isn't enough data
     if (shouldStoreIdentities(formValues)) {
         if (identities.fullName) {
-            // If the fullname can be easily split into two, we'll store it as first and last
-            const nameParts = identities.fullName.trim().split(/\s+/)
-            if (nameParts.length === 2) {
-                identities.firstName = nameParts[0]
-                identities.lastName = nameParts[1]
-            } else {
-                // If we can't split it, just store it as first name
-                identities.firstName = identities.fullName
+            // when forms have both first/last and fullName we keep the individual values and drop the fullName
+            if (!(identities.firstName && identities.lastName)) {
+                // If the fullname can be easily split into two, we'll store it as first and last
+                const nameParts = identities.fullName.trim().split(/\s+/)
+                if (nameParts.length === 2) {
+                    identities.firstName = nameParts[0]
+                    identities.lastName = nameParts[1]
+                } else {
+                    // If we can't split it, just store it as first name
+                    identities.firstName = identities.fullName
+                }
             }
             delete identities.fullName
         }
