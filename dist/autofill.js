@@ -3729,15 +3729,26 @@ class Form {
     });
     this.categorizeInputs();
   }
+  /**
+   * Checks if the form element contains the activeElement
+   * @return {boolean}
+   */
+
 
   hasFocus() {
     return this.form.contains(document.activeElement);
   }
+  /**
+   * Checks that the form element doesn't contain an invalid field
+   * @return {boolean}
+   */
+
 
   isValid() {
     if (this.form instanceof HTMLFormElement) {
       return this.form.checkValidity();
-    }
+    } // If the container is not a valid form, we must check fields individually
+
 
     let validity = true;
     this.execOnInputs(input => {
@@ -3913,7 +3924,7 @@ class Form {
     const inputs = this.inputs[inputType];
 
     for (const input of inputs) {
-      let canExecute = true;
+      let canExecute = true; // sometimes we want to execute even if we didn't decorate
 
       if (shouldCheckForDecorate) {
         const {
