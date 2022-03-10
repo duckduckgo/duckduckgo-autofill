@@ -40,8 +40,6 @@ describe('Test the form class reading values correctly', () => {
             expHasValues: true,
             expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
         },
-        /*
-        TODO: uncomment when Shane's branch is merged
         {
             testCase: 'form with readonly email fields and password',
             form: `
@@ -53,7 +51,6 @@ describe('Test the form class reading values correctly', () => {
             expHasValues: true,
             expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
         },
-        */
         {
             testCase: 'form with empty fields',
             form: `
@@ -156,8 +153,6 @@ describe('Test the form class reading values correctly', () => {
                 }
             }
         },
-        /*
-        TODO: uncomment when Shane's branch is merged
         {
             testCase: 'test localised country code with text input',
             form: `
@@ -170,7 +165,6 @@ describe('Test the form class reading values correctly', () => {
             expHasValues: true,
             expValues: {identities: {addressCountryCode: 'IT'}}
         },
-        */
         {
             testCase: 'incomplete identities form',
             form: `
@@ -190,6 +184,27 @@ describe('Test the form class reading values correctly', () => {
 </form>`,
             expHasValues: false,
             expValues: {creditCards: undefined}
+        },
+        {
+            testCase: 'creditCard form with all values except cvv',
+            form: `
+<form>
+    <label for="frmNameCC">Name on card</label>
+    <input name="ccname" id="frmNameCC" placeholder="Full Name" autocomplete="cc-name" value="Peppa Pig">
+    <label for="frmCCNum">Card Number</label>
+    <input name="cardnumber" id="frmCCNum" autocomplete="cc-number" value="4111111111111111">
+    <label for="frmCCExp">Expiry</label>
+    <input name="cc-exp" id="frmCCExp" placeholder="MM-YYYY" autocomplete="cc-exp" value="12-2028">
+</form>`,
+            expHasValues: true,
+            expValues: {
+                creditCards: {
+                    cardName: 'Peppa Pig',
+                    expirationMonth: '12',
+                    expirationYear: '2028',
+                    cardNumber: '4111111111111111'
+                }
+            }
         }
     ]
 
