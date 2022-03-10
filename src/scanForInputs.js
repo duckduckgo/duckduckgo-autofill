@@ -2,7 +2,7 @@ const {Form} = require('./Form/Form')
 const {notifyWebApp} = require('./autofill-utils')
 const {SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR} = require('./Form/selectors-css')
 
-/** @type Map<HTMLFormElement, Form> */
+/** @type Map<HTMLElement, Form> */
 const _forms = new Map()
 
 /**
@@ -11,7 +11,7 @@ const _forms = new Map()
  * the synchronous mutations via findEligibleInputs
  *
  * @param DeviceInterface
- * @param {Map<HTMLFormElement, Form>} [forms]
+ * @param {Map<HTMLElement, Form>} [forms]
  * @returns {{
  *   init: () => () => void,
  *   findEligibleInputs: (element: Element|Document) => void
