@@ -313,26 +313,8 @@ class Matching {
             if (!elementString) continue
             elementString = elementString.toLowerCase()
 
-            if (ddgMatcher.skip) {
-                let skipRegex = safeRegex(ddgMatcher.skip)
-                if (!skipRegex) {
-                    return { matched: false }
-                }
-                if (skipRegex.test(elementString)) {
-                    continue
-                }
-            }
-
             // Scoring to ensure all DDG tests are valid
             let score = 0
-
-            // if the `match` regex fails, moves onto the next string
-            if (!matchRexExp.test(elementString)) {
-                continue
-            }
-
-            // Otherwise, increment the score
-            score++
 
             // If a negated regex was provided, ensure it does not match
             // If it DOES match - then we need to prevent any future strategies from continuing
@@ -348,6 +330,24 @@ class Matching {
                     score++
                 }
             }
+
+            if (ddgMatcher.skip) {
+                let skipRegex = safeRegex(ddgMatcher.skip)
+                if (!skipRegex) {
+                    return { matched: false }
+                }
+                if (skipRegex.test(elementString)) {
+                    continue
+                }
+            }
+
+            // if the `match` regex fails, moves onto the next string
+            if (!matchRexExp.test(elementString)) {
+                continue
+            }
+
+            // Otherwise, increment the score
+            score++
 
             // If a 'maxDigits' rule was provided, validate it
             if (ddgMatcher.maxDigits) {

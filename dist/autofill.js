@@ -5872,7 +5872,7 @@ const matchingConfiguration = {
         },
         expirationMonth: {
           match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-          forceUnknown: 'mm[/\\s.\\-_—–]'
+          skip: 'mm[/\\s.\\-_—–]'
         },
         expirationYear: {
           match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)',
@@ -5880,7 +5880,7 @@ const matchingConfiguration = {
         },
         expiration: {
           match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-          forceUnknown: 'invalid'
+          skip: 'invalid'
         },
         // Identities
         firstName: {
@@ -5898,16 +5898,17 @@ const matchingConfiguration = {
         },
         phone: {
           match: 'phone',
-          forceUnknown: 'code|pass'
+          skip: 'code|pass'
         },
         addressStreet: {
           match: 'address',
-          forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in',
-          skip: 'address.*(2|two)'
+          forceUnknown: '\\bip\\b|duck',
+          skip: 'address.*(2|two)|email|log.?in|sign.?in'
         },
         addressStreet2: {
           match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
-          forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in'
+          forceUnknown: '\\bip\\b|duck',
+          skip: 'email|log.?in|sign.?in'
         },
         addressCity: {
           match: 'city|town',
@@ -6665,31 +6666,9 @@ class Matching {
       matchableStrings
     })) {
       if (!elementString) continue;
-      elementString = elementString.toLowerCase();
+      elementString = elementString.toLowerCase(); // Scoring to ensure all DDG tests are valid
 
-      if (ddgMatcher.skip) {
-        let skipRegex = safeRegex(ddgMatcher.skip);
-
-        if (!skipRegex) {
-          return {
-            matched: false
-          };
-        }
-
-        if (skipRegex.test(elementString)) {
-          continue;
-        }
-      } // Scoring to ensure all DDG tests are valid
-
-
-      let score = 0; // if the `match` regex fails, moves onto the next string
-
-      if (!matchRexExp.test(elementString)) {
-        continue;
-      } // Otherwise, increment the score
-
-
-      score++; // If a negated regex was provided, ensure it does not match
+      let score = 0; // If a negated regex was provided, ensure it does not match
       // If it DOES match - then we need to prevent any future strategies from continuing
 
       if (ddgMatcher.forceUnknown) {
@@ -6710,8 +6689,29 @@ class Matching {
           // All good here, increment the score
           score++;
         }
-      } // If a 'maxDigits' rule was provided, validate it
+      }
 
+      if (ddgMatcher.skip) {
+        let skipRegex = safeRegex(ddgMatcher.skip);
+
+        if (!skipRegex) {
+          return {
+            matched: false
+          };
+        }
+
+        if (skipRegex.test(elementString)) {
+          continue;
+        }
+      } // if the `match` regex fails, moves onto the next string
+
+
+      if (!matchRexExp.test(elementString)) {
+        continue;
+      } // Otherwise, increment the score
+
+
+      score++; // If a 'maxDigits' rule was provided, validate it
 
       if (ddgMatcher.maxDigits) {
         const digitLength = elementString.replace(/[^0-9]/g, '').length;
