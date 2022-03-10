@@ -215,3 +215,112 @@ describe('Test the form class reading values correctly', () => {
         expect(formValues).toMatchObject(expValues)
     })
 })
+
+describe('Form validity is reported correctly', () => {
+    const testCases = [
+        {
+            testCase: 'valid form with validation',
+            form: `
+<form>
+    <input autocomplete="cc-name" required value="Peppa Pig">
+    <input autocomplete="cc-number" required value="4111111111111111">
+</form>`,
+            expIsValid: true
+        },
+        {
+            testCase: 'valid form because of no validation',
+            form: `
+<form>
+    <input autocomplete="cc-name" value="Peppa Pig">
+    <input autocomplete="cc-number" value="4111111111111111">
+</form>`,
+            expIsValid: true
+        },
+        {
+            testCase: 'valid non-standard form',
+            form: `
+<div id="form">
+    <input autocomplete="cc-name" required value="Peppa Pig">
+    <input autocomplete="cc-number" required value="4111111111111111">
+</div>`,
+            expIsValid: true
+        },
+        {
+            testCase: 'invalid form',
+            form: `
+<form>
+    <input autocomplete="cc-name" required value="">
+    <input autocomplete="cc-number" minlength="10" value="4111">
+</form>`,
+            expIsValid: false
+        },
+        {
+            testCase: 'invalid non-standard form',
+            form: `
+<div id="form">
+    <input autocomplete="cc-name" required value="">
+    <input autocomplete="cc-number" required value="">
+</div>`,
+            expIsValid: false
+        },
+        {
+            testCase: 'invalid non-standard form because of invalid undecorated field',
+            form: `
+<div id="form">
+    <input autocomplete="cc-name" value="">
+    <input autocomplete="cc-number" value="">
+    <input type="text" required value="">
+</div>`,
+            expIsValid: false
+        }
+    ]
+
+    test.each(testCases)('Test $testCase', (
+        {
+            form,
+            expIsValid
+        }) => {
+        document.body.innerHTML = form
+        // When we require autofill, the script scores the fields in the DOM
+        const {forms, scanForInputs} = require('../scanForInputs')
+
+        scanForInputs(new InterfacePrototype()).findEligibleInputs(document)
+
+        const formEl = /** @type {HTMLElement} */ (document.querySelector('form, #form'))
+        if (!formEl) throw new Error('unreachable')
+        const formClass = forms.get(formEl)
+        const isValid = formClass?.isValid()
+
+        expect(isValid).toBe(expIsValid)
+    })
+})
+
+describe('Check form has focus', () => {
+    test('focus detected correctly', () => {
+        document.body.innerHTML = `
+<form>
+    <input autocomplete="cc-name" required value="Peppa Pig">
+    <input autocomplete="cc-number" required value="4111111111111111">
+</form>`
+
+        // When we require autofill, the script scores the fields in the DOM
+        const {forms, scanForInputs} = require('../scanForInputs')
+
+        scanForInputs(new InterfacePrototype()).findEligibleInputs(document)
+
+        const formEl = /** @type {HTMLFormElement} */ (document.querySelector('form'))
+        if (!formEl) throw new Error('unreachable')
+        const formClass = forms.get(formEl)
+
+        expect(formClass?.hasFocus()).toBe(false)
+
+        const input = formEl.querySelector('input')
+        input?.focus()
+
+        expect(formClass?.hasFocus()).toBe(true)
+
+        input?.blur()
+
+        expect(formClass?.hasFocus()).toBe(false)
+    })
+})
