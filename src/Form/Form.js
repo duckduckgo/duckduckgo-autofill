@@ -75,7 +75,7 @@ class Form {
         let validity = true
         this.execOnInputs((input) => {
             if (input.validity && !input.validity.valid) validity = false
-        })
+        }, 'all', false)
         return validity
     }
 
@@ -220,12 +220,17 @@ class Form {
      * Executes a function on input elements. Can be limited to certain element types
      * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
      * @param {'all' | SupportedMainTypes} inputType
+     * @param {boolean} shouldCheckForDecorate
      */
-    execOnInputs (fn, inputType = 'all') {
+    execOnInputs (fn, inputType = 'all', shouldCheckForDecorate = true) {
         const inputs = this.inputs[inputType]
         for (const input of inputs) {
-            const {shouldDecorate} = getInputConfig(input)
-            if (shouldDecorate(input, this)) fn(input)
+            let canExecute = true
+            if (shouldCheckForDecorate) {
+                const {shouldDecorate} = getInputConfig(input)
+                canExecute = shouldDecorate(input, this)
+            }
+            if (canExecute) fn(input)
         }
     }
 
