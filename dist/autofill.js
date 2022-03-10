@@ -5151,9 +5151,16 @@ const shouldStoreCreditCards = _ref5 => {
   let {
     creditCards
   } = _ref5;
-  return Boolean(creditCards.cardNumber && (creditCards.cardSecurityCode || // Some forms (Amazon) don't have the cvv, so we still save if there's everything else
-  creditCards.cardName && ( // Expiration can be unified or separate
-  creditCards.expiration || creditCards.expirationYear && creditCards.expirationMonth)));
+  if (!creditCards.cardNumber) return false;
+  if (creditCards.cardSecurityCode) return true; // Some forms (Amazon) don't have the cvv, so we still save if there's everything else
+
+  if (creditCards.cardName) {
+    // Expiration can be unified or separate
+    if (creditCards.expiration) return true;
+    return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
+  }
+
+  return false;
 };
 /**
  * Formats form data into an object to send to the device for storage
