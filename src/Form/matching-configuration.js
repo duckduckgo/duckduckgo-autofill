@@ -252,9 +252,9 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfiguration} */
         ddgMatcher: {
             matchers: {
-                email: {match: '.mail', forceUnknown: 'search'},
+                email: {match: '.mail', forceUnknown: 'search|filter|subject'},
                 password: {match: 'password', forceUnknown: 'captcha'},
-                username: {match: 'user((.)?(name|id|login))?$', forceUnknown: 'search'},
+                username: {match: 'user((.)?(name|id|login).?)?$', forceUnknown: 'search'},
 
                 // CC
                 cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},
@@ -262,12 +262,12 @@ const matchingConfiguration = {
                 cardSecurityCode: {match: 'security.?code|card.?verif|cvv|csc|cvc'},
                 expirationMonth: {
                     match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-                    forceUnknown: 'mm[/\\s.\\-_—–]'
+                    skip: 'mm[/\\s.\\-_—–]'
                 },
                 expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]'},
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-                    forceUnknown: 'invalid'
+                    skip: 'invalid'
                 },
 
                 // Identities
@@ -275,15 +275,20 @@ const matchingConfiguration = {
                 middleName: {match: '(middle|additional).?name'},
                 lastName: {match: '(last|family|sur)[^i]?name'},
                 fullName: {match: '^(full.?|whole\\s)?name\\b', forceUnknown: 'company|org'},
-                phone: {match: 'phone', forceUnknown: 'code|pass'},
-                addressStreet: { match: 'address', forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in', skip: 'address.*(2|two)' },
+                phone: {match: 'phone', skip: 'code|pass'},
+                addressStreet: {
+                    match: 'address',
+                    forceUnknown: '\\bip\\b|duck',
+                    skip: 'address.*(2|two)|email|log.?in|sign.?in'
+                },
                 addressStreet2: {
                     match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
-                    forceUnknown: 'email|\\bip\\b|duck|log.?in|sign.?in'
+                    forceUnknown: '\\bip\\b|duck',
+                    skip: 'email|log.?in|sign.?in'
                 },
                 addressCity: {match: 'city|town', forceUnknown: 'vatican'},
                 addressProvince: {match: 'state|province|region|county', forceUnknown: 'united', skip: 'country'},
-                addressPostalCode: {match: '\\bzip\\b|postal|post.?code'},
+                addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code'},
                 addressCountryCode: {match: 'country'}
             }
         },
@@ -677,7 +682,7 @@ const matchingConfiguration = {
                         '|suburb' + // en-AU
                         '|ciudad|provincia|localidad|poblacion' + // es
                         '|ville|commune' + // fr-FR
-                        '|localita' + // it-IT
+                        '|localit(a|à)|citt(a|à)' + // it-IT
                         '|市区町村' + // ja-JP
                         '|cidade' + // pt-BR, pt-PT
                         '|Город' + // ru

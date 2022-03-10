@@ -119,14 +119,14 @@ describe('Input Classifiers', () => {
                 elements.input.placeholder = text
 
                 expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
-                expect(getUnifiedExpiryDate(elements.input, 8, 2025, elements.form)).toBe(expectedResult)
+                expect(getUnifiedExpiryDate(elements.input, '8', '2025', elements.form)).toBe(expectedResult)
             })
 
             it('matches for label text', () => {
                 elements.label.textContent = text
 
                 expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
-                expect(getUnifiedExpiryDate(elements.input, 8, 2025, elements.form)).toBe(expectedResult)
+                expect(getUnifiedExpiryDate(elements.input, '8', '2025', elements.form)).toBe(expectedResult)
             })
         })
     })

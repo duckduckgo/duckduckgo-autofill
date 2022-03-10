@@ -175,7 +175,7 @@ class Matching {
             const ccMatchers = this.matcherList('cc')
             const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl)
             if (subtype && isValidCreditCardSubtype(subtype)) {
-                return `creditCard.${subtype}`
+                return `creditCards.${subtype}`
             }
         }
 
@@ -313,26 +313,8 @@ class Matching {
             if (!elementString) continue
             elementString = elementString.toLowerCase()
 
-            if (ddgMatcher.skip) {
-                let skipRegex = safeRegex(ddgMatcher.skip)
-                if (!skipRegex) {
-                    return { matched: false }
-                }
-                if (skipRegex.test(elementString)) {
-                    continue
-                }
-            }
-
             // Scoring to ensure all DDG tests are valid
             let score = 0
-
-            // if the `match` regex fails, moves onto the next string
-            if (!matchRexExp.test(elementString)) {
-                continue
-            }
-
-            // Otherwise, increment the score
-            score++
 
             // If a negated regex was provided, ensure it does not match
             // If it DOES match - then we need to prevent any future strategies from continuing
@@ -348,6 +330,24 @@ class Matching {
                     score++
                 }
             }
+
+            if (ddgMatcher.skip) {
+                let skipRegex = safeRegex(ddgMatcher.skip)
+                if (!skipRegex) {
+                    return { matched: false }
+                }
+                if (skipRegex.test(elementString)) {
+                    continue
+                }
+            }
+
+            // if the `match` regex fails, moves onto the next string
+            if (!matchRexExp.test(elementString)) {
+                continue
+            }
+
+            // Otherwise, increment the score
+            score++
 
             // If a 'maxDigits' rule was provided, validate it
             if (ddgMatcher.maxDigits) {
@@ -541,7 +541,7 @@ function getMainTypeFromType (type) {
     const mainType = type.split('.')[0]
     switch (mainType) {
     case 'credentials':
-    case 'creditCard':
+    case 'creditCards':
     case 'identities':
         return mainType
     }
@@ -617,10 +617,10 @@ function isValidCredentialsSubtype (supportedType) {
 
 /** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
 
-/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCard.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCards.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
 const supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
-    ...supportedCreditCardSubtypes.map((type) => `creditCard.${type}`),
+    ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
     ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
 ]
 

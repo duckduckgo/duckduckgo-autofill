@@ -294,7 +294,7 @@ class InterfacePrototype {
         if (config.type === 'identities') {
             return this.getLocalIdentities().filter(identity => !!identity[subtype])
         }
-        if (config.type === 'creditCard') {
+        if (config.type === 'creditCards') {
             return this.getLocalCreditCards()
         }
         if (config.type === 'credentials') {
@@ -388,7 +388,7 @@ class InterfacePrototype {
 
         const dataPromise = (() => {
             switch (config.type) {
-            case 'creditCard': return this.getAutofillCreditCard(id)
+            case 'creditCards': return this.getAutofillCreditCard(id)
             case 'identities': return this.getAutofillIdentity(id)
             case 'credentials': {
                 if (id === GENERATED_ID) {
@@ -517,6 +517,7 @@ class InterfacePrototype {
     async getAutofillIdentity (_id) { throw new Error('unimplemented') }
 
     openManagePasswords () {}
+    storeFormData (_values) {}
 
     /** @param {FeatureToggleNames} _name */
     supportsFeature (_name) {

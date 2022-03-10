@@ -1,10 +1,14 @@
 const FormAnalyzer = require('./FormAnalyzer')
-const {addInlineStyles, removeInlineStyles, setValue, isEventWithinDax, isMobileApp, isApp, getDaxBoundingBox} = require('../autofill-utils')
+const {
+    addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
+    isMobileApp, isApp, getDaxBoundingBox, isLikelyASubmitButton
+} = require('../autofill-utils')
 const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const {getInputConfig} = require('./inputTypeConfig.js')
-const {getUnifiedExpiryDate, formatCCYear, getCountryName} = require('./formatters')
+const {getUnifiedExpiryDate, formatCCYear, getCountryName,
+    prepareFormValuesForStorage, inferCountryCodeFromElement} = require('./formatters')
 const {Matching} = require('./matching')
 const {matchingConfiguration} = require('./matching-configuration')
 
@@ -35,7 +39,7 @@ class Form {
         this.inputs = {
             all: new Set(),
             credentials: new Set(),
-            creditCard: new Set(),
+            creditCards: new Set(),
             identities: new Set(),
             unknown: new Set()
         }
@@ -46,7 +50,7 @@ class Form {
         // We set this to true to skip event listeners while we're autofilling
         this.isAutofilling = false
         this.handlerExecuted = false
-        this.shouldPromptToStoreCredentials = true
+        this.shouldPromptToStoreData = true
 
         /**
          * @type {IntersectionObserver | null}
@@ -59,17 +63,42 @@ class Form {
         this.categorizeInputs()
     }
 
+    /**
+     * Checks if the form element contains the activeElement
+     * @return {boolean}
+     */
+    hasFocus () {
+        return this.form.contains(document.activeElement)
+    }
+
+    /**
+     * Checks that the form element doesn't contain an invalid field
+     * @return {boolean}
+     */
+    isValid () {
+        if (this.form instanceof HTMLFormElement) {
+            return this.form.checkValidity()
+        }
+
+        // If the container is not a valid form, we must check fields individually
+        let validity = true
+        this.execOnInputs((input) => {
+            if (input.validity && !input.validity.valid) validity = false
+        }, 'all', false)
+        return validity
+    }
+
     submitHandler () {
         if (this.handlerExecuted) return
 
-        const credentials = this.getValues()
+        if (!this.isValid()) return
 
-        // do nothing if password was absent
-        if (!credentials.password) return
+        const values = this.getValues()
 
         // checks to determine if we should offer to store credentials and/or fireproof
         const checks = [
-            this.shouldPromptToStoreCredentials,
+            this.shouldPromptToStoreData,
+            this.hasValues(values),
             this.device.shouldPromptToStoreCredentials({
                 formElement: this.form
             })
@@ -77,33 +106,41 @@ class Form {
 
         // if *any* of the checks are truthy, proceed to offer
         if (checks.some(Boolean)) {
-            this.device.storeCredentials(credentials)
+            this.device.storeFormData(values)
         }
 
         // mark this form as being handled
-        // TODO(Shane): is this correct, what happens if a failed submission is retried?
         this.handlerExecuted = true
     }
 
+    /** @return {DataStorageObject} */
     getValues () {
-        const credentials = [...this.inputs.credentials, ...this.inputs.identities].reduce((output, input) => {
-            const subtype = getInputSubtype(input)
-            if (['username', 'password', 'emailAddress'].includes(subtype)) {
-                output[subtype] = input.value || output[subtype]
-            }
-            return output
-        }, {username: '', password: ''})
-        // If we don't have a username, let's try and save the email if available.
-        if (credentials.emailAddress && !credentials.username) {
-            credentials.username = credentials.emailAddress
-        }
-        delete credentials.emailAddress
-        return credentials
+        const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
+            .reduce((output, inputEl) => {
+                const mainType = getInputMainType(inputEl)
+                const subtype = getInputSubtype(inputEl)
+                let value = inputEl.value || output[mainType]?.[subtype]
+                if (subtype === 'addressCountryCode') {
+                    value = inferCountryCodeFromElement(inputEl)
+                }
+                if (value) {
+                    output[mainType][subtype] = value
+                }
+                return output
+            }, {credentials: {}, creditCards: {}, identities: {}})
+
+        return prepareFormValuesForStorage(formValues)
     }
 
-    hasValues () {
-        const {password} = this.getValues()
-        return !!password
+    /**
+     * Determine if the form has values we want to store in the device
+     * @param {DataStorageObject} [values]
+     * @return {boolean}
+     */
+    hasValues (values) {
+        const {credentials, creditCards, identities} = values || this.getValues()
+
+        return Boolean(credentials || creditCards || identities)
     }
 
     removeTooltip () {
@@ -174,22 +211,36 @@ class Form {
 
     get submitButtons () {
         const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
-        return [...this.form.querySelectorAll(selector)]
-            .filter((button) => {
-                const content = button.textContent || ''
-                const ariaLabel = button.getAttribute('aria-label') || ''
-                // @ts-ignore
-                const title = button.title || ''
-                // trying to exclude the little buttons to show and hide passwords
-                return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
-            })
+        const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+
+        const likelySubmitButton = allButtons.find(isLikelyASubmitButton)
+        if (likelySubmitButton) return [likelySubmitButton]
+
+        return allButtons.filter((button) => {
+            const content = button.textContent || ''
+            const ariaLabel = button.getAttribute('aria-label') || ''
+            const title = button.title || ''
+            // trying to exclude the little buttons to show and hide passwords
+            return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
+        })
     }
 
-    execOnInputs (fn, inputType = 'all') {
+    /**
+     * Executes a function on input elements. Can be limited to certain element types
+     * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
+     * @param {'all' | SupportedMainTypes} inputType
+     * @param {boolean} shouldCheckForDecorate
+     */
+    execOnInputs (fn, inputType = 'all', shouldCheckForDecorate = true) {
         const inputs = this.inputs[inputType]
         for (const input of inputs) {
-            const {shouldDecorate} = getInputConfig(input)
-            if (shouldDecorate(input, this)) fn(input)
+            let canExecute = true
+            // sometimes we want to execute even if we didn't decorate
+            if (shouldCheckForDecorate) {
+                const {shouldDecorate} = getInputConfig(input)
+                canExecute = shouldDecorate(input, this)
+            }
+            if (canExecute) fn(input)
         }
     }
 
@@ -344,6 +395,11 @@ class Form {
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
     }
 
+    /**
+     * Autofill method for email protection only
+     * @param {string} alias
+     * @param {'all' | SupportedMainTypes} dataType
+     */
     autofillEmail (alias, dataType = 'identities') {
         this.isAutofilling = true
         this.execOnInputs(
@@ -355,18 +411,18 @@ class Form {
     }
 
     autofillData (data, dataType) {
-        this.shouldPromptToStoreCredentials = false
+        this.shouldPromptToStoreData = false
         this.isAutofilling = true
 
         this.execOnInputs((input) => {
             const inputSubtype = getInputSubtype(input)
             let autofillData = data[inputSubtype]
 
-            if (inputSubtype === 'expiration') {
+            if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
                 autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this)
             }
 
-            if (inputSubtype === 'expirationYear' && input.nodeName === 'INPUT') {
+            if (inputSubtype === 'expirationYear' && input instanceof HTMLInputElement) {
                 autofillData = formatCCYear(input, autofillData, this)
             }
 

@@ -1,5 +1,5 @@
 const {matchInPlaceholderAndLabels, checkPlaceholderAndLabels} = require('./matching')
-const COUNTRY_NAMES = require('./countryNames')
+const {COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES} = require('./countryNames')
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
@@ -9,9 +9,9 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
  * @param {HTMLInputElement} input
- * @param {number} year
+ * @param {string} year
  * @param {import("./Form").Form} form
- * @returns {number}
+ * @returns {string}
  */
 const formatCCYear = (input, year, form) => {
     const selector = form.matching.cssSelector('FORM_INPUTS_SELECTOR')
@@ -20,14 +20,14 @@ const formatCCYear = (input, year, form) => {
         checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)
     ) return year
 
-    return year - 2000
+    return `${Number(year) - 2000}`
 }
 
 /**
  * Get a unified expiry date with separator
  * @param {HTMLInputElement} input
- * @param {number} month
- * @param {number} year
+ * @param {string} month
+ * @param {string} year
  * @param {import("./Form").Form} form
  * @returns {string}
  */
@@ -54,7 +54,7 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
         const regionNames = new Intl.DisplayNames([locale], { type: 'region' })
         return regionNames.of(addressCountryCode)
     } catch (e) {
-        return COUNTRY_NAMES[addressCountryCode] || addressCountryCode
+        return COUNTRY_CODES_TO_NAMES[addressCountryCode] || addressCountryCode
     }
 }
 
@@ -110,10 +110,148 @@ const getCountryName = (el, options = {}) => {
     return localisedCountryName
 }
 
+/**
+ * Try to get a map of localised country names to code, or falls back to the English map
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ */
+const getLocalisedCountryNamesToCodes = (el) => {
+    if (typeof Intl.DisplayNames !== 'function') return COUNTRY_NAMES_TO_CODES
+
+    // Try to infer the field language or fallback to en
+    const elLocale = inferElementLocale(el)
+
+    return Object.fromEntries(
+        Object.entries(COUNTRY_CODES_TO_NAMES)
+            .map(([code]) => [getCountryDisplayName(elLocale, code), code])
+    )
+}
+
+/**
+ * Try to infer a country code from an element we identified as identities.addressCountryCode
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @return {string}
+ */
+const inferCountryCodeFromElement = (el) => {
+    if (COUNTRY_CODES_TO_NAMES[el.value]) return el.value
+    if (COUNTRY_NAMES_TO_CODES[el.value]) return COUNTRY_NAMES_TO_CODES[el.value]
+
+    const localisedCountryNamesToCodes = getLocalisedCountryNamesToCodes(el)
+    if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value]
+
+    if (el instanceof HTMLSelectElement) {
+        const selectedText = el.selectedOptions[0]?.text
+        if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText
+        if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText]
+        if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText]
+    }
+    return ''
+}
+
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
+const shouldStoreCredentials = ({credentials}) =>
+    Boolean(credentials.password)
+
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
+const shouldStoreIdentities = ({identities}) =>
+    Boolean(
+        (identities.firstName || identities.fullName) &&
+        identities.addressStreet &&
+        identities.addressCity
+    )
+
+/**
+ * @param {InternalDataStorageObject} credentials
+ * @return {boolean}
+ */
+const shouldStoreCreditCards = ({creditCards}) => {
+    if (!creditCards.cardNumber) return false
+    if (creditCards.cardSecurityCode) return true
+    // Some forms (Amazon) don't have the cvv, so we still save if there's everything else
+    if (creditCards.cardName) {
+        // Expiration can be unified or separate
+        if (creditCards.expiration) return true
+        return Boolean(creditCards.expirationYear && creditCards.expirationMonth)
+    }
+    return false
+}
+
+/**
+ * Formats form data into an object to send to the device for storage
+ * If values are insufficient for a complete entry, they are discarded
+ * @param {InternalDataStorageObject} formValues
+ * @return {DataStorageObject}
+ */
+const prepareFormValuesForStorage = (formValues) => {
+    /** @type {Partial<InternalDataStorageObject>} */
+    let {credentials, identities, creditCards} = formValues
+
+    /** Fixes for credentials **/
+    // Don't store if there isn't enough data
+    if (shouldStoreCredentials(formValues)) {
+        // If we don't have a username to match a password, let's see if the email is available
+        if (credentials.password && !credentials.username && identities.emailAddress) {
+            credentials.username = identities.emailAddress
+        }
+    } else {
+        credentials = undefined
+    }
+
+    /** Fixes for identities **/
+    // Don't store if there isn't enough data
+    if (shouldStoreIdentities(formValues)) {
+        if (identities.fullName) {
+            // when forms have both first/last and fullName we keep the individual values and drop the fullName
+            if (!(identities.firstName && identities.lastName)) {
+                // If the fullname can be easily split into two, we'll store it as first and last
+                const nameParts = identities.fullName.trim().split(/\s+/)
+                if (nameParts.length === 2) {
+                    identities.firstName = nameParts[0]
+                    identities.lastName = nameParts[1]
+                } else {
+                    // If we can't split it, just store it as first name
+                    identities.firstName = identities.fullName
+                }
+            }
+            delete identities.fullName
+        }
+    } else {
+        identities = undefined
+    }
+
+    /** Fixes for credit cards **/
+    // Don't store if there isn't enough data
+    if (shouldStoreCreditCards(formValues)) {
+        if (creditCards.expiration) {
+            const [expirationMonth, expirationYear] = creditCards.expiration.split(/\D/)
+            creditCards.expirationMonth = expirationMonth
+            creditCards.expirationYear = expirationYear
+            delete creditCards.expiration
+        }
+        if (Number(creditCards.expirationYear) <= 2020) {
+            creditCards.expirationYear = `${Number(creditCards.expirationYear) + 2000}`
+        }
+        if (creditCards.cardNumber) {
+            creditCards.cardNumber = creditCards.cardNumber.replaceAll(/\D/g, '')
+        }
+    } else {
+        creditCards = undefined
+    }
+
+    return {credentials, identities, creditCards}
+}
+
 module.exports = {
     formatCCYear,
     getUnifiedExpiryDate,
     formatFullName,
     getCountryDisplayName,
-    getCountryName
+    getCountryName,
+    inferCountryCodeFromElement,
+    prepareFormValuesForStorage
 }
