@@ -172,13 +172,10 @@ const shouldStoreIdentities = ({identities}) =>
 const shouldStoreCreditCards = ({creditCards}) => {
     if (!creditCards.cardNumber) return false
     if (creditCards.cardSecurityCode) return true
-    // Some forms (Amazon) don't have the cvv, so we still save if there's everything else
-    if (creditCards.cardName) {
-        // Expiration can be unified or separate
-        if (creditCards.expiration) return true
-        return Boolean(creditCards.expirationYear && creditCards.expirationMonth)
-    }
-    return false
+    // Some forms (Amazon) don't have the cvv, so we still save if there's the expiration
+    if (creditCards.expiration) return true
+    // Expiration can also be two separate values
+    return Boolean(creditCards.expirationYear && creditCards.expirationMonth)
 }
 
 /**
@@ -190,6 +187,11 @@ const shouldStoreCreditCards = ({creditCards}) => {
 const prepareFormValuesForStorage = (formValues) => {
     /** @type {Partial<InternalDataStorageObject>} */
     let {credentials, identities, creditCards} = formValues
+
+    // If we have an identity name but not a card name, copy it over there
+    if (!creditCards.cardName && (identities?.fullName || identities?.firstName)) {
+        creditCards.cardName = identities?.fullName || formatFullName(identities)
+    }
 
     /** Fixes for credentials **/
     // Don't store if there isn't enough data
