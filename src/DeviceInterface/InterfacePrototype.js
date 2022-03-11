@@ -262,9 +262,6 @@ class InterfacePrototype {
     createTooltip (getPosition, topContextData) {
         const config = getInputConfigFromType(topContextData.inputType)
 
-        // Attach close listeners
-        window.addEventListener('input', () => this.removeTooltip(), {once: true})
-
         if (isApp) {
             // collect the data for each item to display
             const data = this.dataForAutofill(config, topContextData.inputType, topContextData)
@@ -351,7 +348,19 @@ class InterfacePrototype {
             topContextData.credentials = [fromPassword(password)]
         }
 
+        this.attachCloseListeners()
+
         this.attachTooltipInner(form, input, getPosition, click, topContextData)
+    }
+
+    attachCloseListeners () {
+        window.addEventListener('input', this)
+        window.addEventListener('keydown', this)
+    }
+
+    removeCloseListeners () {
+        window.removeEventListener('input', this)
+        window.removeEventListener('keydown', this)
     }
 
     /**
@@ -428,6 +437,7 @@ class InterfacePrototype {
 
     async removeTooltip () {
         if (this.currentTooltip) {
+            this.removeCloseListeners()
             this.currentTooltip.remove()
             this.currentTooltip = null
             this.currentAttached = null
@@ -443,6 +453,14 @@ class InterfacePrototype {
     }
     handleEvent (event) {
         switch (event.type) {
+        case 'keydown':
+            if (event.code === 'Escape' || event.code === 'Tab') {
+                this.removeTooltip()
+            }
+            break
+        case 'input':
+            this.removeTooltip()
+            break
         case 'pointerdown':
             this.pointerDownListener(event)
             break

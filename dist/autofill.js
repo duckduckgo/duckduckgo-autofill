@@ -2498,7 +2498,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     if (isTopFrame) {
       this.stripCredentials = false;
       window.addEventListener('mouseMove', this);
-    } else {
+    } else if (supportsTopFrame) {
       // This is always added as a child frame needs to be informed of a parent frame scroll
       window.addEventListener('scroll', this);
     }
@@ -2676,6 +2676,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
   async removeTooltip() {
     if (!supportsTopFrame) return super.removeTooltip();
+    this.removeCloseListeners();
     await wkSend('closeAutofillParent', {});
   }
 
@@ -3298,11 +3299,7 @@ class InterfacePrototype {
 
 
   createTooltip(getPosition, topContextData) {
-    const config = getInputConfigFromType(topContextData.inputType); // Attach close listeners
-
-    window.addEventListener('input', () => this.removeTooltip(), {
-      once: true
-    });
+    const config = getInputConfigFromType(topContextData.inputType);
 
     if (isApp) {
       // collect the data for each item to display
@@ -3388,7 +3385,18 @@ class InterfacePrototype {
       topContextData.credentials = [fromPassword(password)];
     }
 
+    this.attachCloseListeners();
     this.attachTooltipInner(form, input, getPosition, click, topContextData);
+  }
+
+  attachCloseListeners() {
+    window.addEventListener('input', this);
+    window.addEventListener('keydown', this);
+  }
+
+  removeCloseListeners() {
+    window.removeEventListener('input', this);
+    window.removeEventListener('keydown', this);
   }
   /**
    * If the device was capable of generating password, and it
@@ -3477,6 +3485,7 @@ class InterfacePrototype {
 
   async removeTooltip() {
     if (this.currentTooltip) {
+      this.removeCloseListeners();
       this.currentTooltip.remove();
       this.currentTooltip = null;
       this.currentAttached = null;
@@ -3493,6 +3502,17 @@ class InterfacePrototype {
 
   handleEvent(event) {
     switch (event.type) {
+      case 'keydown':
+        if (event.code === 'Escape' || event.code === 'Tab') {
+          this.removeTooltip();
+        }
+
+        break;
+
+      case 'input':
+        this.removeTooltip();
+        break;
+
       case 'pointerdown':
         this.pointerDownListener(event);
         break;

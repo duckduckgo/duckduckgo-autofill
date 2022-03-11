@@ -29,7 +29,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         if (isTopFrame) {
             this.stripCredentials = false
             window.addEventListener('mouseMove', this)
-        } else {
+        } else if (supportsTopFrame) {
             // This is always added as a child frame needs to be informed of a parent frame scroll
             window.addEventListener('scroll', this)
         }
@@ -193,6 +193,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     async removeTooltip () {
         if (!supportsTopFrame) return super.removeTooltip()
+        this.removeCloseListeners()
         await wkSend('closeAutofillParent', {})
     }
 
