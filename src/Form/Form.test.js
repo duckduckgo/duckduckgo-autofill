@@ -114,23 +114,20 @@ describe('Test the form class reading values correctly', () => {
         <input name="bill-country" id="frmCountryB" placeholder="USA" autocomplete="billing country" value="United States">
     </fieldset>
 
-    <div id="paymentSec">
-        <fieldset>
-            <legend>Payment</legend>
-            <label for="frmNameCC">Name on card</label>
-            <input name="ccname" id="frmNameCC" placeholder="Full Name" autocomplete="cc-name" value="Peppa Pig">
-            <label for="frmCCNum">Card Number</label>
-            <input name="cardnumber" id="frmCCNum" autocomplete="cc-number" value="4111111111111111">
-            <label for="frmCCCVC">CVC</label>
-            <input name="cvc" id="frmCCCVC" autocomplete="cc-csc" value="123">
-            <label for="frmCCExp">Expiry</label>
-            <input name="cc-exp" id="frmCCExp" placeholder="MM-YYYY" autocomplete="cc-exp" value="12-2028">
-            <div>
-                <button class="btn" id="butCheckout">Check Out</button>
-            </div>
-        </fieldset>
-</div>
-    </form>`,
+    <fieldset>
+        <legend>Payment</legend>
+        <label for="frmNameCC">Name on card</label>
+        <input name="ccname" id="frmNameCC" placeholder="Full Name" autocomplete="cc-name" value="Peppa Pig">
+        <label for="frmCCNum">Card Number</label>
+        <input name="cardnumber" id="frmCCNum" autocomplete="cc-number" value="4111111111111111">
+        <label for="frmCCCVC">CVC</label>
+        <input name="cvc" id="frmCCCVC" autocomplete="cc-csc" value="123">
+        <label for="frmCCExp">Expiry</label>
+        <input name="cc-exp" id="frmCCExp" placeholder="MM-YYYY" autocomplete="cc-exp" value="12-2028">
+  
+        <button class="btn" id="butCheckout">Check Out</button>
+    </fieldset>
+</form>`,
             expHasValues: true,
             expValues: {
                 identities: {
@@ -194,12 +191,48 @@ describe('Test the form class reading values correctly', () => {
     <label for="frmCCNum">Card Number</label>
     <input name="cardnumber" id="frmCCNum" autocomplete="cc-number" value="4111111111111111">
     <label for="frmCCExp">Expiry</label>
-    <input name="cc-exp" id="frmCCExp" placeholder="MM-YYYY" autocomplete="cc-exp" value="12-2028">
+    <input name="cc-exp" id="frmCCExp" placeholder="YYYY-MM" autocomplete="cc-exp" value="2028-12">
 </form>`,
             expHasValues: true,
             expValues: {
                 creditCards: {
                     cardName: 'Peppa Pig',
+                    expirationMonth: '12',
+                    expirationYear: '2028',
+                    cardNumber: '4111111111111111'
+                }
+            }
+        },
+        {
+            testCase: 'creditCard form with all values but name and identities name in adjacent field',
+            form: `
+<form method="post" id="usrForm">
+    <fieldset>
+        <legend>Contact Info</legend>
+        <label for="frmNameA">Name</label>
+        <input name="name" id="frmNameA" placeholder="Full name" autocomplete="name" value="Peppa Pig">
+        <label for="frmEmailA">Email</label>
+        <input type="email" name="email" id="frmEmailA" placeholder="name@example.com" autocomplete="email" value="peppapig@email.com">
+    </fieldset>
+
+    <fieldset>
+        <legend>Payment</legend>
+        <label for="frmCCNum">Card Number</label>
+        <input name="cardnumber" id="frmCCNum" autocomplete="cc-number" value="4111111111111111">
+        <label for="frmCCCVC">CVC</label>
+        <input name="cvc" id="frmCCCVC" autocomplete="cc-csc" value="123">
+        <label for="frmCCExp">Expiry</label>
+        <input name="cc-exp" id="frmCCExp" placeholder="MM-YYYY" autocomplete="cc-exp" value="12-2028">
+        
+        <button class="btn" id="butCheckout">Check Out</button>
+    </fieldset>
+</form>`,
+            expHasValues: true,
+            expValues: {
+                identities: undefined,
+                creditCards: {
+                    cardName: 'Peppa Pig',
+                    cardSecurityCode: '123',
                     expirationMonth: '12',
                     expirationYear: '2028',
                     cardNumber: '4111111111111111'
