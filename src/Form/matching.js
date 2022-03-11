@@ -90,6 +90,9 @@ class Matching {
             console.warn('CSS selector not found for %s, using a default value', selectorName)
             return ''
         }
+        if (Array.isArray(match)) {
+            return match.join(',')
+        }
         return match
     }
 
@@ -160,18 +163,20 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLFormElement} formEl
      * @param {{isLogin?: boolean}} [opts]
-     * @returns {SupportedSubTypes | string}
+     * @returns {SupportedTypes}
      */
     inferInputType (input, formEl, opts = {}) {
-        const presetType = input.getAttribute(ATTR_INPUT_TYPE)
-        if (presetType) return presetType
+        const presetType = getInputType(input)
+        if (presetType !== 'unknown') return presetType
 
         // For CC forms we run aggressive matches, so we want to make sure we only
         // run them on actual CC forms to avoid false positives and expensive loops
         if (this.isCCForm(formEl)) {
             const ccMatchers = this.matcherList('cc')
             const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl)
-            if (subtype) return `creditCard.${subtype}`
+            if (subtype && isValidCreditCardSubtype(subtype)) {
+                return `creditCards.${subtype}`
+            }
         }
 
         if (input instanceof HTMLInputElement) {
@@ -190,7 +195,9 @@ class Matching {
 
         const idMatchers = this.matcherList('id')
         const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl)
-        if (idSubtype) return `identities.${idSubtype}`
+        if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
+            return `identities.${idSubtype}`
+        }
 
         return 'unknown'
     }
@@ -228,7 +235,7 @@ class Matching {
                 }
                 if (!result.matched && result.proceed === false) {
                     // If we get here, do not allow subsequent strategies to continue
-                    break
+                    return undefined
                 }
             }
         }
@@ -297,7 +304,7 @@ class Matching {
             return {matched: false}
         }
 
-        let requiredScore = ['match', 'not', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
+        let requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
 
         /** @type {MatchableStrings[]} */
         const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText']
@@ -309,6 +316,31 @@ class Matching {
             // Scoring to ensure all DDG tests are valid
             let score = 0
 
+            // If a negated regex was provided, ensure it does not match
+            // If it DOES match - then we need to prevent any future strategies from continuing
+            if (ddgMatcher.forceUnknown) {
+                let notRegex = safeRegex(ddgMatcher.forceUnknown)
+                if (!notRegex) {
+                    return { matched: false }
+                }
+                if (notRegex.test(elementString)) {
+                    return { matched: false, proceed: false }
+                } else {
+                    // All good here, increment the score
+                    score++
+                }
+            }
+
+            if (ddgMatcher.skip) {
+                let skipRegex = safeRegex(ddgMatcher.skip)
+                if (!skipRegex) {
+                    return { matched: false }
+                }
+                if (skipRegex.test(elementString)) {
+                    continue
+                }
+            }
+
             // if the `match` regex fails, moves onto the next string
             if (!matchRexExp.test(elementString)) {
                 continue
@@ -316,21 +348,6 @@ class Matching {
 
             // Otherwise, increment the score
             score++
-
-            // If a negated regex was provided, ensure it does not match
-            // If it DOES match - then we need to prevent any future strategies from continuing
-            if (ddgMatcher.not) {
-                let notRegex = safeRegex(ddgMatcher.not)
-                if (!notRegex) {
-                    return { matched: false }
-                }
-                if (notRegex.test(elementString)) {
-                    return { matched: false }
-                } else {
-                    // All good here, increment the score
-                    score++
-                }
-            }
 
             // If a 'maxDigits' rule was provided, validate it
             if (ddgMatcher.maxDigits) {
@@ -359,8 +376,8 @@ class Matching {
      */
     execVendorRegex (regex, el, form) {
         for (let elementString of this.getElementStrings(el, form)) {
-            elementString = elementString.toLowerCase()
             if (!elementString) continue
+            elementString = elementString.toLowerCase()
             if (regex.test(elementString)) {
                 return { matched: true }
             }
@@ -372,7 +389,7 @@ class Matching {
      * Yield strings in the order in which they should be checked against.
      *
      * Note: some strategies may not want to accept all strings, which is
-     * where `matchableStrings` helps. It defaults to when yuo see below but can
+     * where `matchableStrings` helps. It defaults to when you see below but can
      * be overridden.
      *
      * For example, `nameAttr` is first, since this has the highest chance of matching
@@ -389,7 +406,7 @@ class Matching {
      */
     * getElementStrings (el, form, opts = {}) {
         let {
-            matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'relatedText']
+            matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText']
         } = opts
         for (let matchableString of matchableStrings) {
             switch (matchableString) {
@@ -405,6 +422,10 @@ class Matching {
                 if (el instanceof HTMLInputElement) {
                     yield el.placeholder || ''
                 }
+                break
+            }
+            case 'id': {
+                yield el.id
                 break
             }
             case 'relatedText': {
@@ -501,23 +522,146 @@ class Matching {
 }
 
 /**
+ *  @returns {SupportedTypes}
+ */
+function getInputType (input) {
+    const attr = input.getAttribute(ATTR_INPUT_TYPE)
+    if (isValidSupportedType(attr)) {
+        return attr
+    }
+    return 'unknown'
+}
+
+/**
+ * Retrieves the main type
+ * @param {SupportedTypes | string} type
+ * @returns {SupportedMainTypes}
+ */
+function getMainTypeFromType (type) {
+    const mainType = type.split('.')[0]
+    switch (mainType) {
+    case 'credentials':
+    case 'creditCards':
+    case 'identities':
+        return mainType
+    }
+    return 'unknown'
+}
+
+/**
  * Retrieves the input main type
  * @param {HTMLInputElement} input
- * @returns {SupportedMainTypes | string}
+ * @returns {SupportedMainTypes}
  */
 const getInputMainType = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
-    'unknown'
+    getMainTypeFromType(getInputType(input))
+
+/** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
+const supportedIdentitiesSubtypes = /** @type {const} */ ([
+    'emailAddress',
+    'firstName',
+    'middleName',
+    'lastName',
+    'fullName',
+    'phone',
+    'addressStreet',
+    'addressStreet2',
+    'addressCity',
+    'addressProvince',
+    'addressPostalCode',
+    'addressCountryCode',
+    'birthdayDay',
+    'birthdayMonth',
+    'birthdayYear'
+])
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedIdentitiesSubTypes}
+ */
+function isValidIdentitiesSubtype (supportedType) {
+    return supportedIdentitiesSubtypes.includes(supportedType)
+}
+
+/** @typedef {supportedCreditCardSubtypes[number]} SupportedCreditCardSubTypes */
+const supportedCreditCardSubtypes = /** @type {const} */ ([
+    'cardName',
+    'cardNumber',
+    'cardSecurityCode',
+    'expirationMonth',
+    'expirationYear',
+    'expiration'
+])
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCreditCardSubTypes}
+ */
+function isValidCreditCardSubtype (supportedType) {
+    return supportedCreditCardSubtypes.includes(supportedType)
+}
+
+/** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
+const supportedCredentialsSubtypes = /** @type {const} */ ([
+    'password',
+    'username'
+])
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedCredentialsSubTypes}
+ */
+function isValidCredentialsSubtype (supportedType) {
+    return supportedCredentialsSubtypes.includes(supportedType)
+}
+
+/** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
+
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCards.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
+const supportedTypes = [
+    ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
+    ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
+    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+]
+
+/**
+ * Retrieves the subtype
+ * @param {SupportedTypes | string} type
+ * @returns {SupportedSubTypes | 'unknown'}
+ */
+function getSubtypeFromType (type) {
+    const subType = type?.split('.')[1]
+    const validType = isValidSubtype(subType)
+    return validType ? subType : 'unknown'
+}
+
+/**
+ * @param {SupportedSubTypes | any} supportedSubType
+ * @returns {supportedSubType is SupportedSubTypes}
+ */
+function isValidSubtype (supportedSubType) {
+    return isValidIdentitiesSubtype(supportedSubType) ||
+           isValidCreditCardSubtype(supportedSubType) ||
+           isValidCredentialsSubtype(supportedSubType)
+}
+
+/**
+ * @param {SupportedTypes | any} supportedType
+ * @returns {supportedType is SupportedTypes}
+ */
+function isValidSupportedType (supportedType) {
+    return supportedTypes.includes(supportedType)
+}
 
 /**
  * Retrieves the input subtype
  * @param {HTMLInputElement|Element} input
- * @returns {SupportedSubTypes | string}
+ * @returns {SupportedSubTypes | 'unknown'}
  */
-const getInputSubtype = (input) =>
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[1] ||
-    input.getAttribute(ATTR_INPUT_TYPE)?.split('.')[0] ||
-    'unknown'
+function getInputSubtype (input) {
+    const type = getInputType(input)
+    return getSubtypeFromType(type)
+}
 
 /**
  * Remove whitespace of more than 2 in a row and trim the string
@@ -644,9 +788,12 @@ const safeRegex = (string) => {
 }
 
 module.exports = {
+    getInputType,
     getInputSubtype,
+    getSubtypeFromType,
     removeExcessWhitespace,
     getInputMainType,
+    getMainTypeFromType,
     getExplicitLabelsText,
     getRelatedText,
     matchInPlaceholderAndLabels,

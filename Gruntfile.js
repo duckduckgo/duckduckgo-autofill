@@ -12,7 +12,12 @@ module.exports = function (grunt) {
             dist: {
                 options: {
                     transform: [
-                        ['babelify', { presets: ['@babel/preset-env'] }]
+                        [
+                            'babelify', {
+                                presets: ['@babel/preset-env'],
+                                global: true
+                            }
+                        ]
                     ]
                 },
                 files: {
@@ -27,10 +32,8 @@ module.exports = function (grunt) {
             target: 'src/**/*.js'
         },
         exec: {
-            copyAutofillStylesToCSS: 'cp src/UI/styles/autofill-tooltip-styles.js dist/autofill.css && sed -i "" \'/`/d\' dist/autofill.css',
-            copyHostStyles: 'cp src/UI/styles/autofill-host-styles.css dist/autofill-host-styles_chrome.css && cp src/UI/styles/autofill-host-styles.css dist/autofill-host-styles_firefox.css',
-            // Firefox and Chrome treat relative url differently in injected scripts. This fixes it.
-            updateFirefoxRelativeUrl: `sed -i "" "s/chrome-extension:\\/\\/__MSG_@@extension_id__\\/public/../g" dist/autofill-host-styles_firefox.css`
+            copyAssets: 'npm run copy-assets',
+            copyHtml: 'cp src/TopAutofill.html dist/TopAutofill.html'
         },
         /**
          * Run predefined tasks whenever watched files are added,
@@ -38,22 +41,24 @@ module.exports = function (grunt) {
          */
         watch: {
             scripts: {
-                files: ['src/**/*.js'],
-                tasks: ['browserify']
+                files: ['src/**/*.js', 'packages/password/**/*.{json,js}'],
+                tasks: ['browserify', 'exec:copyAssets']
+            },
+            html: {
+                files: ['src/**/*.html'],
+                tasks: ['exec:copyHtml']
             },
             styles: {
                 files: ['src/**/*.css', 'src/UI/styles/*'],
-                tasks: ['exec:copyAutofillStylesToCSS', 'exec:copyHostStyles', 'exec:updateFirefoxRelativeUrl']
+                tasks: ['exec:copyAssets']
             }
         }
     })
 
     grunt.registerTask('default', [
-        'eslint',
         'browserify',
-        'exec:copyAutofillStylesToCSS',
-        'exec:copyHostStyles',
-        'exec:updateFirefoxRelativeUrl'
+        'exec:copyHtml',
+        'exec:copyAssets'
     ])
     grunt.registerTask('dev', ['default', 'watch'])
 }

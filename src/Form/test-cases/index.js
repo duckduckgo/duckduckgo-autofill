@@ -93,7 +93,7 @@ module.exports = [
     { html: 'rottentomatoes_signup.html' },
     { html: 'costco_login.html' },
     { html: 'costco_signup.html' },
-    { html: 'costco_checkout.html', expectedFailures: ['unknown', 'unknown'] },
+    { html: 'costco_checkout.html' },
     { html: 'kroger_login.html' },
     { html: 'kroger_signup.html', expectedFailures: ['unknown'] },
     { html: 'kroger_checkout.html', expectedFailures: ['unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown'] },
@@ -103,5 +103,12 @@ module.exports = [
     { html: 'chewy_signup.html' },
     { html: 'chewy_checkout.html' },
     { html: 'everydayoil_checkout.html', expectedFailures: ['unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown'] },
-    { html: 'stripeelements_checkout.html', expectedFailures: ['unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'addressPostalCode'] }
+    { html: 'stripeelements_checkout.html' },
+    { html: 'litmus_home_search.html' },
+    { html: 'litmus_home_new.html', expectedFailures: ['unknown', 'unknown'] },
+    { html: 'asana_tasklist.html' },
+    { html: 'asana_search.html' },
+    { html: 'aa_login.html' },
+    { html: 'hackernews_login_signup.html' },
+    { html: 'mkelectricalcontracting_contact.html' }
 ]

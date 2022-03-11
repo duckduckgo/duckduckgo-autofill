@@ -2,7 +2,6 @@ interface CredentialsObject {
      id: string,
      username: string,
      password?: string,
-     lastUpdated: string,
 }
 
 interface IdentityObject {
@@ -24,33 +23,66 @@ interface IdentityObject {
      emailAddress?: string,
 }
 
+interface InternalIdentityObject extends IdentityObject {
+     fullName?: string
+}
+
 interface CreditCardObject {
      id: string,
      title: string,
-     displaystring: string,
+     displayNumber: string,
      cardName?: string,
-     cardstring?: string,
      cardSecurityCode?: string,
      expirationMonth?: string,
      expirationYear?: string,
-     cardNumber?: number
+     cardNumber?: string
+}
+
+interface InternalCreditCardObject extends CreditCardObject {
+     expiration?: string
+}
+
+interface InboundPMData {
+     credentials: CredentialsObject[],
+     creditCards: CreditCardObject[],
+     identities: IdentityObject[],
+     serializedInputContext: string,
+}
+
+interface TopContextData {
+     inputType: SupportedType,
+     credentials?: CredentialsObject[]
 }
 
 interface PMData {
      credentials: CredentialsObject[],
      creditCards: CreditCardObject[],
      identities: IdentityObject[],
+     topContextData?: TopContextData,
 }
 
-type APIResponse<Type> = Promise<{ success: [Type], error?: string }>
+interface DataStorageObject {
+     credentials?: CredentialsObject,
+     creditCards?: CreditCardObject,
+     identities?: IdentityObject,
+}
+
+interface InternalDataStorageObject {
+     credentials: CredentialsObject,
+     creditCards: InternalCreditCardObject,
+     identities: InternalIdentityObject,
+}
+
+type APIResponse<Type> = Promise<{ success: Type[], error?: string }>
 
 interface EmailAddresses {
      privateAddress?: string,
      personalAddress?: string
 }
 
-interface InterfacePrototypeBase {
-     storeLocalAddresses(emailAddresses: EmailAddresses): void;
-     getActiveTooltip(): Tooltip;
-     removeTooltip(): void;
+type FeatureToggleNames =
+  | "password.generation"
+
+interface FeatureToggles {
+     supportsFeature(name: FeatureToggleNames): boolean;
 }

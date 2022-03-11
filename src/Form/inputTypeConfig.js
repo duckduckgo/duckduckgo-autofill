@@ -1,8 +1,10 @@
 const {isDDGApp, isApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {getInputMainType, getInputSubtype} = require('./matching')
-const {getCountryDisplayName} = require('./formatters')
+const {getInputType, getMainTypeFromType, getInputSubtype} = require('./matching')
+const {CredentialsTooltipItem} = require('../InputTypes/Credentials')
+const {CreditCardTooltipItem} = require('../InputTypes/CreditCard')
+const {IdentityTooltipItem} = require('../InputTypes/Identity')
 
 // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
 const isFirefox = navigator.userAgent.includes('Firefox')
@@ -11,7 +13,7 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
- * @param device
+ * @param {import("./Form").Form} form
  * @return {string}
  */
 const getIdentitiesIcon = (input, {device}) => {
@@ -20,6 +22,13 @@ const getIdentitiesIcon = (input, {device}) => {
 
     return ''
 }
+
+/**
+ * Inputs with readOnly or disabled should never be decorated
+ * @param {HTMLInputElement} input
+ * @return {boolean}
+ */
+const canBeDecorated = (input) => !input.readOnly && !input.disabled
 
 /**
  * A map of config objects. These help by centralising here some complexity
@@ -31,50 +40,58 @@ const inputTypeConfig = {
         type: 'credentials',
         getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
         getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-        shouldDecorate: (_input, {isLogin, device}) => isLogin && device.hasLocalCredentials,
+        shouldDecorate: (input, {isLogin, device}) => {
+            // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
+            // saved password
+            if (isLogin) {
+                return device.hasLocalCredentials
+            }
+
+            // at this point, it's not a 'login' attempt, so we could offer to provide a password?
+            if (device.supportsFeature('password.generation')) {
+                const subtype = getInputSubtype(input)
+                if (subtype === 'password') {
+                    return true
+                }
+            }
+
+            return false
+        },
         dataType: 'Credentials',
-        displayTitlePropName: (_subtype, data) => data.username,
-        displaySubtitlePropName: '•••••••••••••••',
-        autofillMethod: 'getAutofillCredentials'
+        tooltipItem: (data) => new CredentialsTooltipItem(data)
     },
-    /** @type {CreditCardInputTypeConfig} */
-    creditCard: {
-        type: 'creditCard',
+    /** @type {CreditCardsInputTypeConfig} */
+    creditCards: {
+        type: 'creditCards',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (_input, {device}) => device.hasLocalCreditCards,
+        shouldDecorate: (_input, {device}) =>
+            canBeDecorated(_input) && device.hasLocalCreditCards,
         dataType: 'CreditCards',
-        displayTitlePropName: (_subtype, data) => data.title,
-        displaySubtitlePropName: 'displayNumber',
-        autofillMethod: 'getAutofillCreditCard'
+        tooltipItem: (data) => new CreditCardTooltipItem(data)
     },
     /** @type {IdentitiesInputTypeConfig} */
     identities: {
         type: 'identities',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
-        shouldDecorate: (input, {device}) => {
-            const subtype = getInputSubtype(input)
+        shouldDecorate: (_input, {device}) => {
+            if (!canBeDecorated(_input)) return false
+
+            const subtype = getInputSubtype(_input)
 
             if (isApp) {
-                return device.getLocalIdentities()?.some((identity) => !!identity[subtype])
+                return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))
             }
 
             if (subtype === 'emailAddress') {
-                return device.isDeviceSignedIn()
+                return Boolean(device.isDeviceSignedIn())
             }
 
             return false
         },
         dataType: 'Identities',
-        displayTitlePropName: (subtype, data) => {
-            if (subtype === 'addressCountryCode') {
-                return getCountryDisplayName('en', data.addressCountryCode)
-            }
-            return data[subtype]
-        },
-        displaySubtitlePropName: 'title',
-        autofillMethod: 'getAutofillIdentity'
+        tooltipItem: (data) => new IdentityTooltipItem(data)
     },
     /** @type {UnknownInputTypeConfig} */
     unknown: {
@@ -83,9 +100,9 @@ const inputTypeConfig = {
         getIconFilled: () => '',
         shouldDecorate: () => false,
         dataType: '',
-        displayTitlePropName: () => 'unknown',
-        displaySubtitlePropName: '',
-        autofillMethod: ''
+        tooltipItem: (_data) => {
+            throw new Error('unreachable')
+        }
     }
 }
 
@@ -95,17 +112,18 @@ const inputTypeConfig = {
  * @returns {InputTypeConfigs}
  */
 const getInputConfig = (input) => {
-    const inputType = getInputMainType(input)
+    const inputType = getInputType(input)
     return getInputConfigFromType(inputType)
 }
 
 /**
  * Retrieves configs from an input type
- * @param {SupportedMainTypes | string} inputType
+ * @param {import('./matching').SupportedTypes | string} inputType
  * @returns {InputTypeConfigs}
  */
 const getInputConfigFromType = (inputType) => {
-    return inputTypeConfig[inputType || 'unknown']
+    const inputMainType = getMainTypeFromType(inputType)
+    return inputTypeConfig[inputMainType]
 }
 
 module.exports = {

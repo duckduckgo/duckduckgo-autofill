@@ -84,9 +84,9 @@ describe('matching', () => {
         { html: `<input placeholder="captcha-password" />`, subtype: 'unknown' },
         { html: `<input placeholder="username" />`, subtype: 'credentials.username' },
         { html: `<input name="username-search" />`, subtype: 'unknown' },
-        { html: `<input name="cc-name" />`, subtype: 'creditCard.cardName' },
-        { html: `<input name="accountholdername" /><!-- second input is to trigger cc type --><input name="cc-number"/>`, subtype: 'creditCard.cardName' },
-        { html: `<input name="Срок действия карты" /><!-- second input is to trigger cc type --><input name="cc-number"/>`, subtype: 'creditCard.expirationMonth' },
+        { html: `<input name="cc-name" />`, subtype: 'creditCards.cardName' },
+        { html: `<input name="accountholdername" /><!-- second input is to trigger cc type --><input name="cc-number"/>`, subtype: 'creditCards.cardName' },
+        { html: `<input name="Срок действия карты" /><!-- second input is to trigger cc type --><input name="cc-number"/>`, subtype: 'creditCards.expirationMonth' },
         { html: `<input placeholder="ZIP code" autocomplete="shipping postal-code" type="text" name="checkout[shipping_address][zip]"/>`, subtype: 'identities.addressPostalCode' },
         { html: `<input autocomplete="on" id="address_line2" name="address_line2" type="text">`, subtype: 'identities.addressStreet2' },
         { html: `<input name="ADDRESS_LINE_1" type="text" aria-required="true" aria-describedby="ariaId_29" aria-labelledby="ariaId_30" autocomplete="off-street-address" aria-autocomplete="list">`, subtype: 'identities.addressStreet' },
@@ -126,10 +126,12 @@ describe('matching', () => {
         expect(inferred).toBe(subtype)
     })
     it('should not continue past a ddg-matcher that has a "not" regex', () => {
-        const {formElement, inputs} = setFormHtml(`<input name="email-search" />`)
+        const {formElement, inputs} = setFormHtml(`<label>Email search<input name="email-search" /></label>`)
         const matching = new Matching({
             matchers: {
-                lists: {},
+                lists: {
+                    email: ['email']
+                },
                 fields: {
                     email: {
                         type: 'email',
@@ -153,11 +155,13 @@ describe('matching', () => {
                 },
                 'ddgMatcher': {
                     matchers: {
-                        'email-ddg': { match: 'email', not: 'search' }
+                        'email-ddg': { match: 'email', forceUnknown: 'search' }
                     }
                 },
                 'cssSelector': {
-                    selectors: {}
+                    selectors: {
+                        'FORM_INPUTS_SELECTOR': 'input'
+                    }
                 }
             }
         })

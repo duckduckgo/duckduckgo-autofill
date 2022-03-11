@@ -1,6 +1,5 @@
 const InterfacePrototype = require('./InterfacePrototype.js')
 const {
-    notifyWebApp,
     isDDGDomain, sendAndWaitForAnswer
 } = require('../autofill-utils')
 const {scanForInputs} = require('../scanForInputs.js')
@@ -21,14 +20,21 @@ class AndroidInterface extends InterfacePrototype {
         return true
     }
 
-    setupAutofill ({shouldLog} = {shouldLog: false}) {
+    async setupAutofill () {
         if (this.isDeviceSignedIn()) {
-            notifyWebApp({ deviceSignedIn: {value: true, shouldLog} })
             const cleanup = scanForInputs(this).init()
             this.addLogoutListener(cleanup)
-        } else {
-            this.trySigningIn()
         }
+    }
+
+    getUserData () {
+        let userData = null
+
+        try {
+            userData = JSON.parse(window.EmailInterface.getUserData())
+        } catch (e) {}
+
+        return Promise.resolve(userData)
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {

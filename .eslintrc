@@ -2,7 +2,9 @@
     "extends": "standard",
     "parser": "@babel/eslint-parser",
     "parserOptions": {
-        "ecmaVersion": 2020
+        "ecmaVersion": 2020,
+        "requireConfigFile" : false,
+        "babelOptions": { "configFile": "./babel.config.js" }
     },
     "rules": {
         "indent": ["error", 4],
@@ -14,5 +16,5 @@
         "jasmine": true,
         "jest": true
     },
-    "ignorePatterns": ["src/**/*.d.ts", "dist/*"]
+    "ignorePatterns": ["src/**/*.d.ts", "dist/*", "integration-test/extension/autofill.js"]
 }

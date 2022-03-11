@@ -89,58 +89,41 @@ type MatchingResult = {
 
 type SupportedMainTypes =
     | 'credentials'
-    | 'creditCard'
+    | 'creditCards'
     | 'identities'
     | 'unknown'
 
-type SupportedSubTypes =
-    | SupportedMainTypes
-    | 'credentials.username'
-    | 'credentials.password'
-    | 'creditCards.cardName'
-    | 'creditCards.cardNumber'
-    | 'creditCards.cardSecurityCode'
-    | 'creditCards.expirationMonth'
-    | 'creditCards.expirationYear'
-    | 'creditCards.expiration'
-
-type SupportedSubTypesOrString =
-    | SupportedSubTypes
-    | string
-
 interface InputTypeConfigBase {
     type: SupportedMainTypes,
-    getIconFilled: (input: HTMLInputElement, form: Form) => string,
-    getIconBase: (input: HTMLInputElement, form: Form) => string,
-    shouldDecorate: (input: HTMLInputElement, form: Form) => boolean,
+    getIconFilled: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
+    getIconBase: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
+    shouldDecorate: (input: HTMLInputElement, form: import("../Form/Form").Form) => boolean,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: any) => string
-    displaySubtitlePropName: string,
-    autofillMethod: string // more specific here?
+    tooltipItem(data: any): TooltipItemRenderer;
 }
+
 interface CredentialsInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CredentialsObject) => string
+    tooltipItem(data: CredentialsObject): TooltipItemRenderer;
 }
-interface CreditCardInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: CreditCardObject) => string
+interface CreditCardsInputTypeConfig extends InputTypeConfigBase {
+    tooltipItem(data: CreditCardObject): TooltipItemRenderer;
 }
 interface IdentitiesInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: (subtype: SupportedSubtypesOrString, data: IdentitiesObject) => string
+    tooltipItem(data: IdentityObject): TooltipItemRenderer;
 }
 interface UnknownInputTypeConfig extends InputTypeConfigBase {
-    displayTitlePropName: () => string
 }
 
 type InputTypeConfigs =
     | CredentialsInputTypeConfig
-    | CreditCardInputTypeConfig
+    | CreditCardsInputTypeConfig
     | IdentitiesInputTypeConfig
     | UnknownInputTypeConfig
 
 type InputTypeConfig = Record<SupportedMainTypes, InputTypeConfigs>
 
 interface CssSelectorConfiguration {
-    selectors: RequiredCssSelectors | Record<MatcherTypeNames | string, string>
+    selectors: RequiredCssSelectors | Record<MatcherTypeNames | string, string | string[]>
 }
 
 interface VendorRegexConfiguration {
@@ -154,7 +137,8 @@ interface DDGMatcherConfiguration {
 
 interface DDGMatcher {
     match?: string;
-    not?: string
+    forceUnknown?: string
+    skip?: string
     matchableStrings?: MatchableStrings[]
     skipStrings?: MatchableStrings[]
     maxDigits?: number

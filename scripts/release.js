@@ -50,6 +50,7 @@ const run = async () => {
             .replace('[[commit]]', commit)
             .replace('[[release_url]]', `<a href="${releaseUrl}">${releaseUrl}</a>`)
             .replace('[[notes]]', releaseNotes)
+            .replace(/<\/?p>/ig, '\n')
 
     console.info('Updating task and moving to Release section...')
 
@@ -84,6 +85,6 @@ const run = async () => {
 }
 
 run().catch((e) => {
-    console.error(e)
+    console.error(e.value?.errors)
     process.exit(1)
 })

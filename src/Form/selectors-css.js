@@ -9,17 +9,17 @@ button:not([role=switch]):not([role=link]),
 [role=button]`
 
 const email = `
-input:not([type])[name*=mail i],
-input[type=""][name*=mail i],
-input[type=text][name*=mail i],
-input:not([type])[placeholder*=mail i]:not([placeholder*=search i]),
-input[type=text][placeholder*=mail i]:not([placeholder*=search i]),
-input[type=""][placeholder*=mail i]:not([placeholder*=search i]),
-input:not([type])[placeholder*=mail i]:not([placeholder*=search i]),
+input:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input[type=""][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input[type=""][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[type=email],
 input[type=text][aria-label*=mail i]:not([aria-label*=search i]),
 input:not([type])[aria-label*=mail i]:not([aria-label*=search i]),
-input[type=text][placeholder*=mail i]:not([placeholder*=search i]),
+input[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[autocomplete=email]`
 
 // We've seen non-standard types like 'user'. This selector should get them, too
@@ -130,15 +130,15 @@ const phone = `
 const addressStreet1 = `
 [name=address], [autocomplete=street-address], [autocomplete=address-line1],
 [name=street],
-[name=ppw-line1]`
+[name=ppw-line1], [name*=addressLine1 i]`
 
 const addressStreet2 = `
 [name=address], [autocomplete=address-line2],
-[name=ppw-line2]`
+[name=ppw-line2], [name*=addressLine2 i]`
 
 const addressCity = `
 [name=city], [autocomplete=address-level2],
-[name=ppw-city]`
+[name=ppw-city], [name*=addressCity i]`
 
 const addressProvince = `
 [name=province], [name=state], [autocomplete=address-level1]`
@@ -170,6 +170,12 @@ const birthdayYear = `
 [name=date_of_birth_year], [name=date-of-birth-year],
 [name^=birthdate_y], [name^=birthdate-y]`
 
+const username = [
+    `${GENERIC_TEXT_FIELD}[autocomplete^=user]`,
+    // fix for `aa.com`
+    `input[name="loginId"]`
+]
+
 // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR
@@ -182,8 +188,7 @@ module.exports.__secret_do_not_use = {
     FORM_INPUTS_SELECTOR,
     email: email,
     password,
-    username: `${GENERIC_TEXT_FIELD}[autocomplete^=user]`,
-
+    username,
     cardName,
     cardNumber,
     cardSecurityCode,

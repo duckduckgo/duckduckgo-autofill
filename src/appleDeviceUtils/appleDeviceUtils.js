@@ -11,10 +11,13 @@ const ddgGlobals = require('./captureDdgGlobals')
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
- * @returns {*}
  */
-const wkSend = (handler, data = {}) =>
-    window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret}})
+const wkSend = (handler, data = {}) => {
+    if (!(handler in window.webkit.messageHandlers)) {
+        throw new Error(`Missing webkit handler: '${handler}'`)
+    }
+    return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret}})
+}
 
 /**
  * Generate a random method name and adds it to the global scope

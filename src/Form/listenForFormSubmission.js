@@ -5,6 +5,18 @@ const listenForGlobalFormSubmission = () => {
     if (!isApp) return
 
     try {
+        window.addEventListener('submit', (e) =>
+            // @ts-ignore
+            forms.get(e.target)?.submitHandler(),
+        true)
+
+        window.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const focusedForm = [...forms.values()].find((form) => form.hasFocus())
+                focusedForm?.submitHandler()
+            }
+        })
+
         const observer = new PerformanceObserver((list) => {
             const entries = list.getEntries().filter((entry) =>
                 // @ts-ignore why does TS not know about `entry.initiatorType`?

@@ -5,22 +5,39 @@ const {
     isMobileApp,
     isDDGDomain,
     sendAndWaitForAnswer,
-    formatDuckAddress
+    formatDuckAddress,
+    autofillEnabled,
+    notifyWebApp
 } = require('../autofill-utils')
-const {getInputMainType, getInputSubtype} = require('../Form/matching')
+const {getInputType, getSubtypeFromType} = require('../Form/matching')
 const {
     formatFullName
 } = require('../Form/formatters')
 const EmailAutofill = require('../UI/EmailAutofill')
 const DataAutofill = require('../UI/DataAutofill')
 const {getInputConfigFromType} = require('../Form/inputTypeConfig')
+const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
+const {forms} = require('../scanForInputs')
+const {fromPassword, GENERATED_ID} = require('../InputTypes/Credentials')
+const {PasswordGenerator} = require('../PasswordGenerator')
 
+// This may get replaced by a test script
+let isDDGTestMode = false
+
+/**
+ * @implements {FeatureToggles}
+ */
 class InterfacePrototype {
-    constructor () {
-        this.attempts = 0
-        this.currentAttached = null
-        this.currentTooltip = null
-    }
+    mode = isDDGTestMode ? 'test' : 'production';
+    attempts = 0
+    /** @type {import("../Form/Form").Form | null} */
+    currentAttached = null
+    /** @type {import("../UI/Tooltip") | null} */
+    currentTooltip = null
+    stripCredentials = true
+
+    /** @type {PasswordGenerator} */
+    passwordGenerator = new PasswordGenerator();
 
     /** @type {{privateAddress: string, personalAddress: string}} */
     #addresses = {
@@ -51,7 +68,15 @@ class InterfacePrototype {
     #data = {
         credentials: [],
         creditCards: [],
-        identities: []
+        identities: [],
+        topContextData: undefined
+    }
+
+    /**
+     * @returns {Promise<import('../Form/matching').SupportedTypes>}
+     */
+    async getCurrentInputType () {
+        throw new Error('Not implemented')
     }
 
     addDuckAddressesToIdentities (identities) {
@@ -90,25 +115,44 @@ class InterfacePrototype {
 
     /**
      * Stores init data coming from the device
-     * @param { PMData } data
+     * @param { InboundPMData } data
      */
     storeLocalData (data) {
-        data.credentials.forEach((cred) => delete cred.password)
-        data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        if (this.stripCredentials) {
+            data.credentials.forEach((cred) => delete cred.password)
+            data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        }
         // Store the full name as a separate field to simplify autocomplete
         const updatedIdentities = data.identities.map((identity) => ({
             ...identity,
             fullName: formatFullName(identity)
         }))
         // Add addresses
-        data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
-        this.#data = data
+        this.#data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
+        this.#data.creditCards = data.creditCards
+        this.#data.credentials = data.credentials
+
+        // Top autofill only
+        if (data.serializedInputContext) {
+            try {
+                this.#data.topContextData = JSON.parse(data.serializedInputContext)
+            } catch (e) {
+                console.error(e)
+                this.removeTooltip()
+            }
+        }
+    }
+    getTopContextData () {
+        return this.#data.topContextData
     }
     get hasLocalCredentials () {
         return this.#data.credentials.length > 0
     }
     getLocalCredentials () {
-        return this.#data.credentials.map(cred => delete cred.password && cred)
+        return this.#data.credentials.map(cred => {
+            const { password, ...rest } = cred
+            return rest
+        })
     }
     get hasLocalIdentities () {
         return this.#data.identities.length > 0
@@ -119,73 +163,284 @@ class InterfacePrototype {
     get hasLocalCreditCards () {
         return this.#data.creditCards.length > 0
     }
+    /** @return {CreditCardObject[]} */
     getLocalCreditCards () {
         return this.#data.creditCards
     }
 
-    init () {
-        const start = () => {
-            this.addDeviceListeners()
-            this.setupAutofill()
-        }
+    async startInit () {
+        window.addEventListener('pointerdown', this, true)
+
+        listenForGlobalFormSubmission()
+        this.addDeviceListeners()
+        await this.setupAutofill()
+        await this.setupSettingsPage()
+        this.postInit()
+    }
+
+    postInit () {}
+
+    async isEnabled () {
+        return autofillEnabled()
+    }
+
+    async init () {
+        const isEnabled = await this.isEnabled()
+        if (!isEnabled) return
         if (document.readyState === 'complete') {
-            start()
+            this.startInit()
         } else {
-            window.addEventListener('load', start)
+            window.addEventListener('load', () => {
+                this.startInit()
+            })
         }
     }
 
-    selectedDetail (data, type) {
+    // Global listener for event delegation
+    pointerDownListener (e) {
+        if (!e.isTrusted) return
+
+        // @ts-ignore
+        if (e.target.nodeName === 'DDG-AUTOFILL') {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+
+            const activeTooltip = this.getActiveTooltip()
+            activeTooltip?.dispatchClick()
+        } else {
+            this.removeTooltip()
+        }
+
+        if (!isApp) return
+
+        // Check for clicks on submit buttons
+        const matchingForm = [...forms.values()].find(
+            (form) => {
+                const btns = [...form.submitButtons]
+                // @ts-ignore
+                if (btns.includes(e.target)) return true
+
+                // @ts-ignore
+                if (btns.find((btn) => btn.contains(e.target))) return true
+            }
+        )
+        matchingForm?.submitHandler()
+    }
+
+    /**
+     * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
+     * @param {string} type
+     */
+    async selectedDetail (data, type) {
         this.activeFormSelectedDetail(data, type)
     }
 
+    /**
+     * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
+     * @param {string} type
+     */
     activeFormSelectedDetail (data, type) {
         const form = this.currentAttached
         if (!form) {
             return
         }
-        if (type === 'email') {
+        if (data.id === 'privateAddress') {
+            this.refreshAlias()
+        }
+        if (type === 'email' && 'email' in data) {
             form.autofillEmail(data.email)
         } else {
             form.autofillData(data, type)
         }
+        this.removeTooltip()
     }
 
-    createTooltip (inputType, subtype, getPosition) {
-        window.addEventListener('pointerdown', () => this.removeTooltip(), {capture: true, once: true})
-        window.addEventListener('input', () => this.removeTooltip(), {once: true})
-
-        const config = getInputConfigFromType(inputType)
+    /**
+     * @param {()=>void} getPosition
+     * @param {TopContextData} topContextData
+     */
+    createTooltip (getPosition, topContextData) {
+        const config = getInputConfigFromType(topContextData.inputType)
 
         if (isApp) {
-            return new DataAutofill(config, subtype, getPosition, this)
+            // collect the data for each item to display
+            const data = this.dataForAutofill(config, topContextData.inputType, topContextData)
+
+            // convert the data into tool tip item renderers
+            const asRenderers = data.map(d => config.tooltipItem(d))
+
+            // construct the autofill
+            return new DataAutofill(config, topContextData.inputType, getPosition, this)
+                .render(config, asRenderers, {
+                    onSelect: (id) => this.onSelect(config, data, id)
+                })
         } else {
-            return new EmailAutofill(config, subtype, getPosition, this)
+            return new EmailAutofill(config, topContextData.inputType, getPosition, this)
         }
     }
 
-    attachTooltip (form, input, getPosition) {
+    /**
+     * Before the DataAutofill opens, we collect the data based on the config.type
+     * @param {InputTypeConfigs} config
+     * @param {import('../Form/matching').SupportedTypes} inputType
+     * @param {TopContextData} [data]
+     * @returns {(CredentialsObject|CreditCardObject|IdentityObject)[]}
+     */
+    dataForAutofill (config, inputType, data) {
+        const subtype = getSubtypeFromType(inputType)
+        if (config.type === 'identities') {
+            return this.getLocalIdentities().filter(identity => !!identity[subtype])
+        }
+        if (config.type === 'creditCards') {
+            return this.getLocalCreditCards()
+        }
+        if (config.type === 'credentials') {
+            if (data) {
+                if (Array.isArray(data.credentials) && data.credentials.length > 0) {
+                    return data.credentials
+                } else {
+                    return this.getLocalCredentials()
+                }
+            }
+        }
+        return []
+    }
+
+    /**
+     * @param {import("../Form/Form").Form} form
+     * @param {HTMLInputElement} input
+     * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
+     * @param {{ x: number; y: number; }} click
+     */
+    attachTooltip (form, input, getPosition, click) {
         form.activeInput = input
         this.currentAttached = form
-        const inputType = getInputMainType(input)
-        const subtype = getInputSubtype(input)
+        const inputType = getInputType(input)
 
         if (isMobileApp) {
             this.getAlias().then((alias) => {
                 if (alias) form.autofillEmail(alias)
-                else form.activeInput.focus()
+                else form.activeInput?.focus()
             })
-        } else {
-            if (this.currentTooltip) return
-            this.currentTooltip = this.createTooltip(inputType, subtype, getPosition)
-            form.intObs.observe(input)
+            return
         }
+
+        /** @type {TopContextData} */
+        const topContextData = {
+            inputType
+        }
+
+        // A list of checks to determine if we need to generate a password
+        const checks = [
+            inputType === 'credentials.password',
+            this.supportsFeature('password.generation'),
+            form.isSignup
+        ]
+
+        // if all checks pass, generate and save a password
+        if (checks.every(Boolean)) {
+            const password = this.passwordGenerator.generate({
+                input: input.getAttribute('passwordrules'),
+                domain: window.location.hostname
+            })
+
+            // append the new credential to the topContextData so that the top autofill can display it
+            topContextData.credentials = [fromPassword(password)]
+        }
+
+        this.attachCloseListeners()
+
+        this.attachTooltipInner(form, input, getPosition, click, topContextData)
+    }
+
+    attachCloseListeners () {
+        window.addEventListener('input', this)
+        window.addEventListener('keydown', this)
+    }
+
+    removeCloseListeners () {
+        window.removeEventListener('input', this)
+        window.removeEventListener('keydown', this)
+    }
+
+    /**
+     * If the device was capable of generating password, and it
+     * previously did so for the form in question, then offer to
+     * save the credentials
+     *
+     * @param {{ formElement?: HTMLFormElement; }} options
+     */
+    shouldPromptToStoreCredentials (options) {
+        if (!options.formElement) return false
+        if (!this.supportsFeature('password.generation')) return false
+
+        // if we previously generated a password, allow it to be saved
+        if (this.passwordGenerator.generated) {
+            return true
+        }
+
+        return false
+    }
+
+    /**
+     * When an item was selected, we then call back to the device
+     * to fetch the full suite of data needed to complete the autofill
+     *
+     * @param {InputTypeConfigs} config
+     * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
+     * @param {string|number} id
+     */
+    onSelect (config, items, id) {
+        id = String(id)
+        const matchingData = items.find(item => String(item.id) === id)
+        if (!matchingData) throw new Error('unreachable (fatal)')
+
+        const dataPromise = (() => {
+            switch (config.type) {
+            case 'creditCards': return this.getAutofillCreditCard(id)
+            case 'identities': return this.getAutofillIdentity(id)
+            case 'credentials': {
+                if (id === GENERATED_ID) {
+                    return Promise.resolve({ success: matchingData })
+                }
+                return this.getAutofillCredentials(id)
+            }
+            default: throw new Error('unreachable!')
+            }
+        })()
+
+        // wait for the data back from the device
+        dataPromise.then(response => {
+            if (response.success) {
+                return this.selectedDetail(response.success, config.type)
+            } else {
+                return Promise.reject(new Error('none-success response'))
+            }
+        }).catch(e => {
+            console.error(e)
+            return this.removeTooltip()
+        })
+    }
+
+    /**
+     * @param {import("../Form/Form").Form} form
+     * @param {any} input
+     * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
+     * @param {{ x: number; y: number; }} _click
+     * @param {TopContextData} data
+     */
+    attachTooltipInner (form, input, getPosition, _click, data) {
+        if (this.currentTooltip) return
+        this.currentTooltip = this.createTooltip(getPosition, data)
+        form.showingTooltip(input)
     }
 
     async removeTooltip () {
         if (this.currentTooltip) {
+            this.removeCloseListeners()
             this.currentTooltip.remove()
             this.currentTooltip = null
+            this.currentAttached = null
         }
     }
 
@@ -193,9 +448,55 @@ class InterfacePrototype {
         return this.currentTooltip
     }
 
-    handleEvent (_event) {}
-    setupAutofill (_opts) {}
+    setActiveTooltip (tooltip) {
+        this.currentTooltip = tooltip
+    }
+    handleEvent (event) {
+        switch (event.type) {
+        case 'keydown':
+            if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+                this.removeTooltip()
+            }
+            break
+        case 'input':
+            this.removeTooltip()
+            break
+        case 'pointerdown':
+            this.pointerDownListener(event)
+            break
+        }
+    }
+
+    async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
+        if (isDDGDomain()) {
+            notifyWebApp({isApp})
+
+            if (this.isDeviceSignedIn()) {
+                let userData
+                try {
+                    userData = await this.getUserData()
+                } catch (e) {}
+
+                const hasUserData = userData && !userData.error && Object.entries(userData).length > 0
+                notifyWebApp({
+                    deviceSignedIn: {
+                        value: true,
+                        shouldLog,
+                        userData: hasUserData ? userData : undefined
+                    }
+                })
+            } else {
+                this.trySigningIn()
+            }
+        }
+    }
+
+    async setupAutofill () {}
     getAddresses () {}
+    /**
+     * @returns {Promise<null|Record<any,any>>}
+     */
+    getUserData () { return Promise.resolve(null) }
     refreshAlias () {}
     async trySigningIn () {
         if (isDDGDomain()) {
@@ -204,18 +505,19 @@ class InterfacePrototype {
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
-                this.setupAutofill({shouldLog: true})
+                await this.setupAutofill()
+                await this.setupSettingsPage({shouldLog: true})
             } else {
                 console.warn('max attempts reached, bailing')
             }
         }
     }
     storeUserData (_data) {}
-    addDeviceListeners () {}
 
+    addDeviceListeners () {}
     /** @param {() => void} _fn */
     addLogoutListener (_fn) {}
-    isDeviceSignedIn () {}
+    isDeviceSignedIn () { return false }
     /**
      * @returns {Promise<null|string>}
      */
@@ -225,8 +527,20 @@ class InterfacePrototype {
     // PM endpoints
     storeCredentials (_opts) {}
     getAccounts () {}
-    getAutofillCredentials (_id) {}
+    /** @returns {APIResponse<CredentialsObject>} */
+    getAutofillCredentials (_id) { throw new Error('unimplemented') }
+    /** @returns {APIResponse<CreditCardObject>} */
+    async getAutofillCreditCard (_id) { throw new Error('unimplemented') }
+    /** @returns {Promise<{success: IdentityObject|undefined}>} */
+    async getAutofillIdentity (_id) { throw new Error('unimplemented') }
+
     openManagePasswords () {}
+    storeFormData (_values) {}
+
+    /** @param {FeatureToggleNames} _name */
+    supportsFeature (_name) {
+        return false
+    }
 }
 
 module.exports = InterfacePrototype
