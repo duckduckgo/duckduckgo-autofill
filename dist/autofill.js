@@ -8495,8 +8495,9 @@ function escapeXML(str) {
 
 const isLikelyASubmitButton = el => el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
 /primary|submit/i.test(el.className) || // has high-signal submit classes
-el.offsetHeight * el.offsetWidth >= 10000 || // it's a large element, at least 250x40px
-/submit|send|confirm|save/i.test(el.textContent || el.title);
+/submit|send|confirm|save/i.test(el.textContent || el.title) || // has high-signal text
+el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250x40px
+
 
 module.exports = {
   isApp,
