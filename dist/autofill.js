@@ -3503,7 +3503,7 @@ class InterfacePrototype {
   handleEvent(event) {
     switch (event.type) {
       case 'keydown':
-        if (event.code === 'Escape' || event.code === 'Tab') {
+        if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
           this.removeTooltip();
         }
 
@@ -5138,6 +5138,28 @@ const inferCountryCodeFromElement = el => {
   return '';
 };
 /**
+ * Gets separate expiration month and year from a single string
+ * @param {string} expiration
+ * @return {{expirationYear: string, expirationMonth: string}}
+ */
+
+
+const getMMAndYYYYFromString = expiration => {
+  const values = expiration.match(/(\d+)/g) || [];
+  return values === null || values === void 0 ? void 0 : values.reduce((output, current) => {
+    if (Number(current) > 12) {
+      output.expirationYear = current.padStart(4, '20');
+    } else {
+      output.expirationMonth = current.padStart(2, '0');
+    }
+
+    return output;
+  }, {
+    expirationYear: '',
+    expirationMonth: ''
+  });
+};
+/**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
@@ -5172,15 +5194,11 @@ const shouldStoreCreditCards = _ref5 => {
     creditCards
   } = _ref5;
   if (!creditCards.cardNumber) return false;
-  if (creditCards.cardSecurityCode) return true; // Some forms (Amazon) don't have the cvv, so we still save if there's everything else
+  if (creditCards.cardSecurityCode) return true; // Some forms (Amazon) don't have the cvv, so we still save if there's the expiration
 
-  if (creditCards.cardName) {
-    // Expiration can be unified or separate
-    if (creditCards.expiration) return true;
-    return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
-  }
+  if (creditCards.expiration) return true; // Expiration can also be two separate values
 
-  return false;
+  return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
 };
 /**
  * Formats form data into an object to send to the device for storage
@@ -5191,14 +5209,23 @@ const shouldStoreCreditCards = _ref5 => {
 
 
 const prepareFormValuesForStorage = formValues => {
+  var _identities, _identities2;
+
   /** @type {Partial<InternalDataStorageObject>} */
   let {
     credentials,
     identities,
     creditCards
-  } = formValues;
+  } = formValues; // If we have an identity name but not a card name, copy it over there
+
+  if (!creditCards.cardName && ((_identities = identities) !== null && _identities !== void 0 && _identities.fullName || (_identities2 = identities) !== null && _identities2 !== void 0 && _identities2.firstName)) {
+    var _identities3;
+
+    creditCards.cardName = ((_identities3 = identities) === null || _identities3 === void 0 ? void 0 : _identities3.fullName) || formatFullName(identities);
+  }
   /** Fixes for credentials **/
   // Don't store if there isn't enough data
+
 
   if (shouldStoreCredentials(formValues)) {
     // If we don't have a username to match a password, let's see if the email is available
@@ -5238,16 +5265,19 @@ const prepareFormValuesForStorage = formValues => {
 
 
   if (shouldStoreCreditCards(formValues)) {
+    var _creditCards$expirati;
+
     if (creditCards.expiration) {
-      const [expirationMonth, expirationYear] = creditCards.expiration.split(/\D/);
+      const {
+        expirationMonth,
+        expirationYear
+      } = getMMAndYYYYFromString(creditCards.expiration);
       creditCards.expirationMonth = expirationMonth;
       creditCards.expirationYear = expirationYear;
       delete creditCards.expiration;
     }
 
-    if (Number(creditCards.expirationYear) <= 2020) {
-      creditCards.expirationYear = "".concat(Number(creditCards.expirationYear) + 2000);
-    }
+    creditCards.expirationYear = (_creditCards$expirati = creditCards.expirationYear) === null || _creditCards$expirati === void 0 ? void 0 : _creditCards$expirati.padStart(4, '20');
 
     if (creditCards.cardNumber) {
       creditCards.cardNumber = creditCards.cardNumber.replace(/\D/g, '');
@@ -5270,6 +5300,7 @@ module.exports = {
   getCountryDisplayName,
   getCountryName,
   inferCountryCodeFromElement,
+  getMMAndYYYYFromString,
   prepareFormValuesForStorage
 };
 
@@ -8465,6 +8496,7 @@ function escapeXML(str) {
 
 const isLikelyASubmitButton = el => el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
 /primary|submit/i.test(el.className) || // has high-signal submit classes
+/submit|send|confirm|save/i.test(el.textContent || el.title) || // has high-signal text
 el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250x40px
 
 

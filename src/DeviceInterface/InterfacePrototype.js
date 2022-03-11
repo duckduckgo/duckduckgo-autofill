@@ -454,7 +454,7 @@ class InterfacePrototype {
     handleEvent (event) {
         switch (event.type) {
         case 'keydown':
-            if (event.code === 'Escape' || event.code === 'Tab') {
+            if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
                 this.removeTooltip()
             }
             break

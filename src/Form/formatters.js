@@ -148,6 +148,23 @@ const inferCountryCodeFromElement = (el) => {
 }
 
 /**
+ * Gets separate expiration month and year from a single string
+ * @param {string} expiration
+ * @return {{expirationYear: string, expirationMonth: string}}
+ */
+const getMMAndYYYYFromString = (expiration) => {
+    const values = expiration.match(/(\d+)/g) || []
+    return values?.reduce((output, current) => {
+        if (Number(current) > 12) {
+            output.expirationYear = current.padStart(4, '20')
+        } else {
+            output.expirationMonth = current.padStart(2, '0')
+        }
+        return output
+    }, {expirationYear: '', expirationMonth: ''})
+}
+
+/**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
@@ -172,13 +189,10 @@ const shouldStoreIdentities = ({identities}) =>
 const shouldStoreCreditCards = ({creditCards}) => {
     if (!creditCards.cardNumber) return false
     if (creditCards.cardSecurityCode) return true
-    // Some forms (Amazon) don't have the cvv, so we still save if there's everything else
-    if (creditCards.cardName) {
-        // Expiration can be unified or separate
-        if (creditCards.expiration) return true
-        return Boolean(creditCards.expirationYear && creditCards.expirationMonth)
-    }
-    return false
+    // Some forms (Amazon) don't have the cvv, so we still save if there's the expiration
+    if (creditCards.expiration) return true
+    // Expiration can also be two separate values
+    return Boolean(creditCards.expirationYear && creditCards.expirationMonth)
 }
 
 /**
@@ -190,6 +204,11 @@ const shouldStoreCreditCards = ({creditCards}) => {
 const prepareFormValuesForStorage = (formValues) => {
     /** @type {Partial<InternalDataStorageObject>} */
     let {credentials, identities, creditCards} = formValues
+
+    // If we have an identity name but not a card name, copy it over there
+    if (!creditCards.cardName && (identities?.fullName || identities?.firstName)) {
+        creditCards.cardName = identities?.fullName || formatFullName(identities)
+    }
 
     /** Fixes for credentials **/
     // Don't store if there isn't enough data
@@ -228,14 +247,12 @@ const prepareFormValuesForStorage = (formValues) => {
     // Don't store if there isn't enough data
     if (shouldStoreCreditCards(formValues)) {
         if (creditCards.expiration) {
-            const [expirationMonth, expirationYear] = creditCards.expiration.split(/\D/)
+            const {expirationMonth, expirationYear} = getMMAndYYYYFromString(creditCards.expiration)
             creditCards.expirationMonth = expirationMonth
             creditCards.expirationYear = expirationYear
             delete creditCards.expiration
         }
-        if (Number(creditCards.expirationYear) <= 2020) {
-            creditCards.expirationYear = `${Number(creditCards.expirationYear) + 2000}`
-        }
+        creditCards.expirationYear = creditCards.expirationYear?.padStart(4, '20')
         if (creditCards.cardNumber) {
             creditCards.cardNumber = creditCards.cardNumber.replace(/\D/g, '')
         }
@@ -253,5 +270,6 @@ module.exports = {
     getCountryDisplayName,
     getCountryName,
     inferCountryCodeFromElement,
+    getMMAndYYYYFromString,
     prepareFormValuesForStorage
 }
