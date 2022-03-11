@@ -320,7 +320,7 @@ class InterfacePrototype {
      * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
      * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-     * @param {{ x: number; y: number; }} click
+     * @param {{ x: number; y: number; } | null} click
      */
     attachTooltip (form, input, getPosition, click) {
         form.activeInput = input
@@ -436,7 +436,7 @@ class InterfacePrototype {
      * @param {import("../Form/Form").Form} form
      * @param {any} input
      * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-     * @param {{ x: number; y: number; }} _click
+     * @param {{ x: number; y: number; } | null} _click
      * @param {TopContextData} data
      */
     attachTooltipInner (form, input, getPosition, _click, data) {

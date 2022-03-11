@@ -2642,7 +2642,7 @@ class AppleDeviceInterface extends InterfacePrototype {
    * @param {import("../Form/Form").Form} form
    * @param {HTMLInputElement} input
    * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
-   * @param {{ x: number; y: number; }} click
+   * @param {{ x: number; y: number; } | null} click
    * @param {TopContextData} topContextData
    */
 
@@ -2654,30 +2654,64 @@ class AppleDeviceInterface extends InterfacePrototype {
     } = this.globalConfig;
 
     if (!isTopFrame && supportsTopFrame) {
-      // TODO currently only mouse initiated events are supported
-      if (!click) {
+      const showTooltipAtPosition = () => {
+        this.showTopTooltip(click, getPosition(), topContextData);
+      };
+
+      if (!click && !this.elementIsInViewport(getPosition())) {
+        input.scrollIntoView(true);
+        setTimeout(showTooltipAtPosition, 500);
         return;
       }
 
-      this.showTopTooltip(click, getPosition(), topContextData);
+      showTooltipAtPosition();
       return;
     }
 
     super.attachTooltipInner(form, input, getPosition, click, topContextData);
   }
   /**
-   * @param {{ x: number; y: number; }} click
+   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
+   * @returns {boolean}
+   */
+
+
+  elementIsInViewport(inputDimensions) {
+    if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
+      return false;
+    }
+
+    const viewport = document.documentElement;
+
+    if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
+      return false;
+    }
+
+    return true;
+  }
+  /**
+   * @param {{ x: number; y: number; } | null} click
    * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
    * @param {TopContextData} [data]
    */
 
 
   async showTopTooltip(click, inputDimensions, data) {
-    let diffX = Math.floor(click.x - inputDimensions.x);
-    let diffY = Math.floor(click.y - inputDimensions.y);
+    let diffX = inputDimensions.x;
+    let diffY = inputDimensions.y;
+
+    if (click) {
+      diffX -= click.x;
+      diffY -= click.y;
+    } else if (!this.elementIsInViewport(inputDimensions)) {
+      // If the focus event is outside the viewport ignore, we've already tried to scroll to it
+      return;
+    }
+
     const details = {
-      inputTop: diffY,
-      inputLeft: diffX,
+      wasFromClick: Boolean(click),
+      inputTop: Math.floor(diffY),
+      inputLeft: Math.floor(diffX),
       inputHeight: Math.floor(inputDimensions.height),
       inputWidth: Math.floor(inputDimensions.width),
       serializedInputContext: JSON.stringify(data)
@@ -3384,7 +3418,7 @@ class InterfacePrototype {
    * @param {import("../Form/Form").Form} form
    * @param {HTMLInputElement} input
    * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-   * @param {{ x: number; y: number; }} click
+   * @param {{ x: number; y: number; } | null} click
    */
 
 
@@ -3506,7 +3540,7 @@ class InterfacePrototype {
    * @param {import("../Form/Form").Form} form
    * @param {any} input
    * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-   * @param {{ x: number; y: number; }} _click
+   * @param {{ x: number; y: number; } | null} _click
    * @param {TopContextData} data
    */
 
