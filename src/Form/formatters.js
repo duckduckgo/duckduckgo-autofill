@@ -148,6 +148,23 @@ const inferCountryCodeFromElement = (el) => {
 }
 
 /**
+ * Gets separate expiration month and year from a single string
+ * @param {string} expiration
+ * @return {{expirationYear: string, expirationMonth: string}}
+ */
+const getMMAndYYYYFromString = (expiration) => {
+    const values = expiration.match(/(\d+)/g) || []
+    return values?.reduce((output, current) => {
+        if (Number(current) > 12) {
+            output.expirationYear = current.padStart(4, '20')
+        } else {
+            output.expirationMonth = current.padStart(2, '0')
+        }
+        return output
+    }, {expirationYear: '', expirationMonth: ''})
+}
+
+/**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
@@ -230,14 +247,12 @@ const prepareFormValuesForStorage = (formValues) => {
     // Don't store if there isn't enough data
     if (shouldStoreCreditCards(formValues)) {
         if (creditCards.expiration) {
-            const [expirationMonth, expirationYear] = creditCards.expiration.split(/\D/)
+            const {expirationMonth, expirationYear} = getMMAndYYYYFromString(creditCards.expiration)
             creditCards.expirationMonth = expirationMonth
             creditCards.expirationYear = expirationYear
             delete creditCards.expiration
         }
-        if (Number(creditCards.expirationYear) <= 2020) {
-            creditCards.expirationYear = `${Number(creditCards.expirationYear) + 2000}`
-        }
+        creditCards.expirationYear = creditCards.expirationYear?.padStart(4, '20')
         if (creditCards.cardNumber) {
             creditCards.cardNumber = creditCards.cardNumber.replace(/\D/g, '')
         }
@@ -255,5 +270,6 @@ module.exports = {
     getCountryDisplayName,
     getCountryName,
     inferCountryCodeFromElement,
+    getMMAndYYYYFromString,
     prepareFormValuesForStorage
 }
