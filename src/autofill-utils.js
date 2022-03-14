@@ -270,6 +270,7 @@ function escapeXML (str) {
     return String(str).replace(/[&"'<>/]/g, m => replacements[m])
 }
 
+const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|sign|log.?([io])n|buy|purchase|check.?out/i
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
@@ -278,7 +279,7 @@ function escapeXML (str) {
 const isLikelyASubmitButton = (el) =>
     el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
     /primary|submit/i.test(el.className) || // has high-signal submit classes
-    /submit|send|confirm|save/i.test(el.textContent || el.title) || // has high-signal text
+    SUBMIT_BUTTON_REGEX.test(el.textContent || el.title) || // has high-signal text
     el.offsetHeight * el.offsetWidth >= 10000 // it's a large element, at least 250x40px
 
 module.exports = {
