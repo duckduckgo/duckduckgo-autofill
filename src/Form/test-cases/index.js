@@ -74,9 +74,9 @@ module.exports = [
     { html: 'idme_signup.html' },
     { html: 'merriamwebster_login.html' },
     { html: 'merriamwebster_signup.html' },
-    { html: 'steam_login.html', expectedFailures: ['username'] },
+    { html: 'steam_login.html' },
     { html: 'steam_signup.html' },
-    { html: 'steam_checkout.html', expectedFailures: ['expirationMonth', 'expirationYear', 'addressProvince', 'addressCountryCode', 'unknown', 'unknown', 'addressProvince', 'addressCountryCode', 'cardSecurityCode'] },
+    { html: 'steam_checkout.html', expectedFailures: ['expirationMonth', 'expirationYear', 'addressProvince', 'addressCountryCode', 'unknown', 'addressCountryCode', 'cardSecurityCode'] },
     { html: 'mapquest_login.html' },
     { html: 'mapquest_signup.html', expectedFailures: ['birthdayMonth', 'birthdayDay', 'birthdayYear'] },
     { html: 'fox_login.html' },
@@ -108,5 +108,7 @@ module.exports = [
     { html: 'litmus_home_new.html', expectedFailures: ['unknown', 'unknown'] },
     { html: 'asana_tasklist.html' },
     { html: 'asana_search.html' },
-    { html: 'aa_login.html' }
+    { html: 'aa_login.html' },
+    { html: 'hackernews_login_signup.html' },
+    { html: 'mkelectricalcontracting_contact.html' }
 ]

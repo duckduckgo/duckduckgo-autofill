@@ -1,6 +1,6 @@
-const { Password } = require('../lib/apple.password')
-const fc = require('fast-check')
-const {ParserError} = require('../lib/rules-parser')
+import {Password} from '../lib/apple.password'
+import {assert, property, integer, string, array} from 'fast-check'
+import {ParserError} from '../lib/rules-parser'
 
 describe('password implementation, internal API', () => {
     it('should expose generateOrThrow', () => {
@@ -25,8 +25,8 @@ describe('password implementation, internal API', () => {
         expect(entropy).toBeGreaterThanOrEqual(80)
     })
     it('should produce positive integers from ranges _randomNumberWithUniformDistribution', () => {
-        fc.assert(
-            fc.property(fc.integer({min: 1}), data => {
+        assert(
+            property(integer({min: 1}), data => {
                 const password = new Password()
                 const result = password._randomNumberWithUniformDistribution(data)
                 return result >= 0
@@ -34,8 +34,8 @@ describe('password implementation, internal API', () => {
         )
     })
     it('should produce boolean _passwordHasNotExceededConsecutiveCharLimit', () => {
-        fc.assert(
-            fc.property(fc.string(), fc.integer(), (str, int) => {
+        assert(
+            property(string(), integer(), (str, int) => {
                 const password = new Password()
                 const result = password._passwordHasNotExceededConsecutiveCharLimit(str, int)
                 return typeof result === 'boolean'
@@ -43,8 +43,8 @@ describe('password implementation, internal API', () => {
         )
     })
     it('should produce string from _canonicalizedScanSetFromCharacters', () => {
-        fc.assert(
-            fc.property(fc.array(fc.string()), (strArray) => {
+        assert(
+            property(array(string()), (strArray) => {
                 const password = new Password()
                 const result = password._canonicalizedScanSetFromCharacters(strArray)
                 return typeof result === 'string'
@@ -52,8 +52,8 @@ describe('password implementation, internal API', () => {
         )
     })
     it('should produce string from _classicPassword', () => {
-        fc.assert(
-            fc.property(fc.integer({min: 1, max: 60}), fc.string(), (int, str) => {
+        assert(
+            property(integer({min: 1, max: 60}), string(), (int, str) => {
                 const password = new Password()
                 const result = password._classicPassword(int, str)
                 return typeof result === 'string'
@@ -61,8 +61,8 @@ describe('password implementation, internal API', () => {
         )
     })
     it('should produce boolean from _passwordHasNotExceededRepeatedCharLimit', () => {
-        fc.assert(
-            fc.property(fc.integer({min: 1, max: 60}), fc.string(), (limit, str) => {
+        assert(
+            property(integer({min: 1, max: 60}), string(), (limit, str) => {
                 const password = new Password()
                 const result = password._passwordHasNotExceededRepeatedCharLimit(str, limit)
                 return typeof result === 'boolean'
@@ -70,8 +70,8 @@ describe('password implementation, internal API', () => {
         )
     })
     it('should produce boolean from _passwordContainsRequiredCharacters', () => {
-        fc.assert(
-            fc.property(fc.string(), fc.array(fc.string()), (pw, strArray) => {
+        assert(
+            property(string(), array(string()), (pw, strArray) => {
                 const password = new Password()
                 const result = password._passwordContainsRequiredCharacters(pw, strArray)
                 return typeof result === 'boolean'

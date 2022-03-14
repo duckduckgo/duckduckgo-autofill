@@ -1,6 +1,6 @@
-const {Password} = require('./lib/apple.password')
-const {ParserError} = require('./lib/rules-parser')
-const {constants} = require('./lib/constants')
+import {Password} from './lib/apple.password.js'
+import {ParserError} from './lib/rules-parser.js'
+import {constants} from './lib/constants.js'
 
 /**
  * @typedef {{
@@ -108,8 +108,10 @@ function _safeHostname (inputHostname) {
     }
 }
 
-module.exports.generate = generate
-module.exports._selectPasswordRules = _selectPasswordRules
-module.exports.HostnameInputError = HostnameInputError
-module.exports.ParserError = ParserError
-module.exports.constants = constants
+export {
+    generate,
+    _selectPasswordRules,
+    HostnameInputError,
+    ParserError,
+    constants
+}

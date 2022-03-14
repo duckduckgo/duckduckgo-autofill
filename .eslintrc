@@ -4,7 +4,7 @@
     "parserOptions": {
         "ecmaVersion": 2020,
         "requireConfigFile" : false,
-        "babelOptions": { "configFile": "./.babelrc" }
+        "babelOptions": { "configFile": "./babel.config.js" }
     },
     "rules": {
         "indent": ["error", 4],

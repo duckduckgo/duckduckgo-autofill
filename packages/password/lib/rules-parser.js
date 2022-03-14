@@ -634,11 +634,13 @@ function parsePasswordRules (input, formatRulesForMinifiedVersion) {
     return newPasswordRules
 }
 
-module.exports.parsePasswordRules = parsePasswordRules
-module.exports.Identifier = Identifier
-module.exports.RuleName = RuleName
-module.exports.SHOULD_NOT_BE_REACHED = SHOULD_NOT_BE_REACHED
-module.exports.Rule = Rule
-module.exports.ParserError = ParserError
-module.exports.NamedCharacterClass = NamedCharacterClass
-module.exports.CustomCharacterClass = CustomCharacterClass
+export {
+    parsePasswordRules,
+    Identifier,
+    RuleName,
+    SHOULD_NOT_BE_REACHED,
+    Rule,
+    ParserError,
+    NamedCharacterClass,
+    CustomCharacterClass
+}

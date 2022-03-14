@@ -63,8 +63,12 @@ const autofillEnabled = (processConfig) => {
     }
 
     // Check config on Apple platforms
-    const privacyConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
-    const site = privacyConfig.site
+    const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
+    return isAutofillEnabledFromProcessedConfig(processedConfig)
+}
+
+const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
+    const site = processedConfig.site
     if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
         return false
     }
@@ -79,7 +83,7 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
 /**
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 const setValueForInput = (el, val) => {
@@ -111,13 +115,14 @@ const setValueForInput = (el, val) => {
  * @param {HTMLSelectElement} el
  */
 const fireEventsOnSelect = (el) => {
+    /** @type {Event[]} */
     const events = [
         new Event('mousedown', {bubbles: true}),
-        new Event('focus', {bubbles: true}),
-        new Event('change', {bubbles: true}),
         new Event('mouseup', {bubbles: true}),
-        new Event('click', {bubbles: true})
+        new Event('click', {bubbles: true}),
+        new Event('change', {bubbles: true})
     ]
+
     // Events fire on the select el, not option
     events.forEach((ev) => el.dispatchEvent(ev))
     events.forEach((ev) => el.dispatchEvent(ev))
@@ -128,7 +133,7 @@ const fireEventsOnSelect = (el) => {
  * Selects an option of a select element
  * We assume Select is only used for dates, i.e. in the credit card
  * @param {HTMLSelectElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
@@ -146,6 +151,7 @@ const setValueForSelect = (el, val) => {
         }
         // TODO: try to match localised month names
         if (value.includes(String(val))) {
+            if (option.selected) return false
             option.selected = true
             fireEventsOnSelect(el)
             return true
@@ -154,6 +160,7 @@ const setValueForSelect = (el, val) => {
 
     for (const option of el.options) {
         if (option.innerText.includes(String(val))) {
+            if (option.selected) return false
             option.selected = true
             fireEventsOnSelect(el)
             return true
@@ -166,7 +173,7 @@ const setValueForSelect = (el, val) => {
 /**
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
- * @param {string | number} val
+ * @param {string} val
  * @return {boolean}
  */
 const setValue = (el, val) => {
@@ -263,6 +270,17 @@ function escapeXML (str) {
     return String(str).replace(/[&"'<>/]/g, m => replacements[m])
 }
 
+/**
+ * Determines if an element is likely to be a submit button
+ * @param {HTMLElement} el A button, input, anchor or other element with role=button
+ * @return {boolean}
+ */
+const isLikelyASubmitButton = (el) =>
+    el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+    /primary|submit/i.test(el.className) || // has high-signal submit classes
+    /submit|send|confirm|save/i.test(el.textContent || el.title) || // has high-signal text
+    el.offsetHeight * el.offsetWidth >= 10000 // it's a large element, at least 250x40px
+
 module.exports = {
     isApp,
     isTopFrame,
@@ -274,6 +292,7 @@ module.exports = {
     isDDGDomain,
     notifyWebApp,
     sendAndWaitForAnswer,
+    isAutofillEnabledFromProcessedConfig,
     autofillEnabled,
     setValue,
     safeExecute,
@@ -284,5 +303,6 @@ module.exports = {
     SIGN_IN_MSG,
     ADDRESS_DOMAIN,
     formatDuckAddress,
-    escapeXML
+    escapeXML,
+    isLikelyASubmitButton
 }

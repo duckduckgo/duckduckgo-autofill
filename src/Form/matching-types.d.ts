@@ -89,7 +89,7 @@ type MatchingResult = {
 
 type SupportedMainTypes =
     | 'credentials'
-    | 'creditCard'
+    | 'creditCards'
     | 'identities'
     | 'unknown'
 
@@ -105,7 +105,7 @@ interface InputTypeConfigBase {
 interface CredentialsInputTypeConfig extends InputTypeConfigBase {
     tooltipItem(data: CredentialsObject): TooltipItemRenderer;
 }
-interface CreditCardInputTypeConfig extends InputTypeConfigBase {
+interface CreditCardsInputTypeConfig extends InputTypeConfigBase {
     tooltipItem(data: CreditCardObject): TooltipItemRenderer;
 }
 interface IdentitiesInputTypeConfig extends InputTypeConfigBase {
@@ -116,7 +116,7 @@ interface UnknownInputTypeConfig extends InputTypeConfigBase {
 
 type InputTypeConfigs =
     | CredentialsInputTypeConfig
-    | CreditCardInputTypeConfig
+    | CreditCardsInputTypeConfig
     | IdentitiesInputTypeConfig
     | UnknownInputTypeConfig
 

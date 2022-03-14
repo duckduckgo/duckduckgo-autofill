@@ -23,16 +23,23 @@ interface IdentityObject {
      emailAddress?: string,
 }
 
+interface InternalIdentityObject extends IdentityObject {
+     fullName?: string
+}
+
 interface CreditCardObject {
      id: string,
      title: string,
      displayNumber: string,
      cardName?: string,
-     cardstring?: string,
      cardSecurityCode?: string,
      expirationMonth?: string,
      expirationYear?: string,
-     cardNumber?: number
+     cardNumber?: string
+}
+
+interface InternalCreditCardObject extends CreditCardObject {
+     expiration?: string
 }
 
 interface InboundPMData {
@@ -52,6 +59,18 @@ interface PMData {
      creditCards: CreditCardObject[],
      identities: IdentityObject[],
      topContextData?: TopContextData,
+}
+
+interface DataStorageObject {
+     credentials?: CredentialsObject,
+     creditCards?: CreditCardObject,
+     identities?: IdentityObject,
+}
+
+interface InternalDataStorageObject {
+     credentials: CredentialsObject,
+     creditCards: InternalCreditCardObject,
+     identities: InternalIdentityObject,
 }
 
 type APIResponse<Type> = Promise<{ success: Type[], error?: string }>

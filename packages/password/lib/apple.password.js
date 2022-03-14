@@ -11,8 +11,8 @@
  * 2) added JSDoc comments (for Typescript checking)
  *
  */
-const parser = require('./rules-parser')
-const {constants} = require('./constants')
+import * as parser from './rules-parser.js'
+import {constants} from './constants.js'
 
 /**
  * @typedef {{
@@ -36,7 +36,7 @@ const {constants} = require('./constants')
 const defaults = Object.freeze({
     SCAN_SET_ORDER: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\\"'<>,.?/ ]",
     defaultUnambiguousCharacters: 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789',
-    defaultPasswordLength: constants.MIN_LENGTH,
+    defaultPasswordLength: constants.DEFAULT_MIN_LENGTH,
     defaultPasswordRules: constants.DEFAULT_PASSWORD_RULES,
     defaultRequiredCharacterSets: ['abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '0123456789'],
     /**
@@ -547,4 +547,4 @@ class Password {
     }
 }
 
-module.exports.Password = Password
+export { Password }
