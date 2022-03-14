@@ -5915,7 +5915,7 @@ const matchingConfiguration = {
           forceUnknown: 'captcha'
         },
         username: {
-          match: '(user|account)((.)?(name|id|login).?)?$',
+          match: '(user|account|apple)((.)?(name|id|login).?)?$',
           forceUnknown: 'search'
         },
         // CC
