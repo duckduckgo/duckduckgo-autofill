@@ -117,18 +117,7 @@ class Form {
 
         const values = this.getValues()
 
-        // checks to determine if we should offer to store credentials and/or fireproof
-        const checks = [
-            (this.shouldPromptToStoreData && this.hasValues(values)),
-            this.device.shouldPromptToStoreCredentials({
-                formElement: this.form
-            })
-        ]
-
-        // if *any* of the checks are truthy, proceed to offer
-        if (checks.some(Boolean)) {
-            this.device.storeFormData(values)
-        }
+        this.device.postSubmit?.(values, this)
 
         // mark this form as being handled
         this.handlerExecuted = true
@@ -460,6 +449,8 @@ class Form {
         }, dataType)
 
         this.isAutofilling = false
+
+        this.device.postAutofill?.(data, this.getValues())
 
         this.removeTooltip()
     }

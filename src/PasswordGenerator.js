@@ -13,6 +13,11 @@ class PasswordGenerator {
         return this.#previous !== null
     }
 
+    /** @returns {string|null} */
+    get password () {
+        return this.#previous
+    }
+
     /** @param {import('../packages/password').GenerateOptions} [params] */
     generate (params = {}) {
         if (this.#previous) {
