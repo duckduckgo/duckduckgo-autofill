@@ -110,5 +110,6 @@ module.exports = [
     { html: 'asana_search.html' },
     { html: 'aa_login.html' },
     { html: 'hackernews_login_signup.html' },
-    { html: 'mkelectricalcontracting_contact.html' }
+    { html: 'mkelectricalcontracting_contact.html' },
+    { html: 'mbank_login.html' }
 ]

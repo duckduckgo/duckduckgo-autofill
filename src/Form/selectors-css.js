@@ -173,7 +173,10 @@ const birthdayYear = `
 const username = [
     `${GENERIC_TEXT_FIELD}[autocomplete^=user]`,
     // fix for `aa.com`
-    `input[name="loginId"]`
+    `input[name="loginId"]`,
+    // fix for https://online.mbank.pl/pl/Login
+    `input[name="userID"]`,
+    `input[id="login-id"]`
 ]
 
 // todo: these are still used directly right now, mostly in scanForInputs
