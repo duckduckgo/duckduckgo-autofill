@@ -150,6 +150,15 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const scanner = createScanner(new InterfacePrototype(createGlobalConfig()))
         scanner.findEligibleInputs(document)
 
+        const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()
+        const identifiedSubmitButtons = document.querySelectorAll('[data-manual-submit]')
+
+        identifiedSubmitButtons.forEach(function (manualButton) {
+            expect(detectedSubmitButtons).toContain(manualButton)
+        })
+
+        expect(detectedSubmitButtons.length).toEqual(identifiedSubmitButtons.length)
+
         /**
          * @type {NodeListOf<HTMLInputElement>}
          */
