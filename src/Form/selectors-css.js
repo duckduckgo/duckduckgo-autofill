@@ -6,6 +6,7 @@ const SUBMIT_BUTTON_SELECTOR = `
 input[type=submit],
 input[type=button],
 button:not([role=switch]):not([role=link]),
+[class*=submit i][class*=button i],
 [role=button]`
 
 const email = `
