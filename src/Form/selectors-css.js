@@ -159,7 +159,7 @@ const birthdayDay = `
 [name=date_of_birth_day], [name=date-of-birth-day],
 [name^=birthdate_d], [name^=birthdate-d]`
 
-const birthdayMonth = ` 
+const birthdayMonth = `
 [name=bday-month],
 [name=birthday_month], [name=birthday-month],
 [name=date_of_birth_month], [name=date-of-birth-month],
