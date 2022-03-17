@@ -246,6 +246,8 @@ afterAll(() => {
         '\n' + Object.keys(totalFieldsByType).sort().map((type) => {
             return '\n' + (type + ':').padEnd(24) +
                     (Math.round((totalFailuresByFieldType[type] / totalFieldsByType[type]) * 100) + '%').padEnd(4) +
+                    ' | ' + String(totalFailuresByFieldType[type]).padStart(4) +
+                    ' out of ' + String(totalFieldsByType[type]).padStart(4) + ' fields | ' +
                     ' (' + Math.round((totalFailuresByFieldType[type] / totalFailedFields) * 100) + '% of all failures)'
         }).join('') + '\n'
     )
