@@ -653,7 +653,7 @@
     <div class="step__footer" data-step-footer="">
 
         <button name="button" type="submit" id="continue_button" class="step__footer__continue-btn btn"
-            aria-busy="false"><span class="btn__content" data-continue-button-content="true">Continue to
+            aria-busy="false" data-manual-submit><span class="btn__content" data-continue-button-content="true">Continue to
                 shipping</span><svg class="icon-svg icon-svg--size-18 btn__spinner icon-svg--spinner-button"
                 aria-hidden="true" focusable="false">
                 <use xlink:href="#spinner-button"></use>
@@ -923,4 +923,25 @@
 </div>          </div>
       </div>
 </div>
+</div>
+
+<!-- submit button at end of form -->
+
+<div class="step__footer" data-step-footer="">
+    <input type="hidden" name="checkout[total_price]" id="checkout_total_price" value="1800" autocomplete="off">
+    <input type="hidden" name="complete" value="1" autocomplete="off">
+
+    <div class="shown-if-js">
+      <button name="button" type="submit" id="continue_button" class="step__footer__continue-btn btn" aria-busy="false" data-manual-submit=""><span class="btn__content" data-continue-button-content="true">Pay now</span><svg class="icon-svg icon-svg--size-18 btn__spinner icon-svg--spinner-button" aria-hidden="true" focusable="false"> <use xlink:href="#spinner-button"></use> </svg></button>
+      <div class="shown-on-mobile">
+        
+      </div>
+    </div>
+    <div class="hidden-if-js">
+      <button name="button" type="submit" id="continue_button" class="step__footer__continue-btn btn" aria-busy="false" data-manual-submit=""><span class="btn__content" data-continue-button-content="true">Pay now</span><svg class="icon-svg icon-svg--size-18 btn__spinner icon-svg--spinner-button" aria-hidden="true" focusable="false"> <use xlink:href="#spinner-button"></use> </svg></button>
+    </div>
+    <a class="step__footer__previous-link" href="/9929092/checkouts/868e36f38a836ea66fd4faa0d5d056bb?step=shipping_method"><svg focusable="false" aria-hidden="true" class="icon-svg icon-svg--color-accent icon-svg--size-10 previous-link__icon" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M8 1L7 0 3 4 2 5l1 1 4 4 1-1-4-4"></path></svg><span class="step__footer__previous-link-content">Return to shipping</span></a>
+    <div class="step__footer__review-notice-text hidden-on-mobile">
+      
+    </div>
 </div>
