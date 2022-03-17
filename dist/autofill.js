@@ -5915,7 +5915,7 @@ const matchingConfiguration = {
           forceUnknown: 'captcha'
         },
         username: {
-          match: '(user|account)((.)?(name|id|login).?)?$',
+          match: '(user|account|apple)((.)?(name|id|login).?)?$',
           forceUnknown: 'search'
         },
         // CC
@@ -5923,7 +5923,8 @@ const matchingConfiguration = {
           match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'
         },
         cardNumber: {
-          match: 'card.*number|number.*card'
+          match: 'card.*number|number.*card',
+          forceUnknown: 'plus'
         },
         cardSecurityCode: {
           match: 'security.?code|card.?verif|cvv|csc|cvc'
@@ -7262,16 +7263,16 @@ module.exports = {
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
-const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
+const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[class*=submit i][class*=button i],\n[role=button]";
 const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
-const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])";
+const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i])";
 const cardName = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
-const cardNumber = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name=\"cardnumber\"],\ninput[name=\"card-number\"],\ninput[name*=creditCardNumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
-const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name=\"securityCode\"]";
-const expirationMonth = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth],\n[name=\"expiration-month\"],\n[name*=ExpDate_Month i],\n[id*=expiration-month i]";
-const expirationYear = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear],\n[name=\"expiration-year\"],\n[name*=ExpDate_Year i],\n[id*=expiration-year i]";
+const cardNumber = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name*=card i][name*=number i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
+const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name*=security i][name*=code i]";
+const expirationMonth = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i]";
+const expirationYear = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i]";
 const expiration = "\n[autocomplete=\"cc-exp\"],\n[name=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i]";
 const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firstname i], [autocomplete*=firstname i],\n[name*=first-name i], [autocomplete*=first-name i],\n[name*=first_name i], [autocomplete*=first_name i],\n[name*=givenname i], [autocomplete*=givenname i],\n[name*=given-name i],\n[name*=given_name i], [autocomplete*=given_name i],\n[name*=forename i], [autocomplete*=forename i]";
 const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
@@ -7283,12 +7284,14 @@ const addressStreet2 = "\n[name=address], [autocomplete=address-line2],\n[name=p
 const addressCity = "\n[name=city], [autocomplete=address-level2],\n[name=ppw-city], [name*=addressCity i]";
 const addressProvince = "\n[name=province], [name=state], [autocomplete=address-level1]";
 const addressPostalCode = "\n[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],\n[name*=postalCode i], [name*=zipcode i]";
-const addressCountryCode = "\n[name=country], [autocomplete=country],\n[name*=countryCode i], [name*=country-code i],\n[name*=countryName i], [name*=country-name i]";
+const addressCountryCode = ["[name=country], [autocomplete=country],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
+];
 const birthdayDay = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d]";
 const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m]";
 const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]";
-const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), // fix for `aa.com`
-"input[name=\"loginId\"]"]; // todo: these are still used directly right now, mostly in scanForInputs
+const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), "input[name=username]", // fix for `aa.com`
+"input[name=\"loginId\"]", // fix for https://online.mbank.pl/pl/Login
+"input[name=\"userID\"]", "input[id=\"login-id\"]", "input[name=accountname]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
@@ -8487,16 +8490,17 @@ function escapeXML(str) {
   };
   return String(str).replace(/[&"'<>/]/g, m => replacements[m]);
 }
+
+const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|sign|log.?([io])n|buy|purchase|check.?out/i;
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
  * @return {boolean}
  */
 
-
 const isLikelyASubmitButton = el => el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
 /primary|submit/i.test(el.className) || // has high-signal submit classes
-/submit|send|confirm|save/i.test(el.textContent || el.title) || // has high-signal text
+SUBMIT_BUTTON_REGEX.test(el.textContent || el.title) || // has high-signal text
 el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250x40px
 
 

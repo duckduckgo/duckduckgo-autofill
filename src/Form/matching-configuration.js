@@ -254,11 +254,11 @@ const matchingConfiguration = {
             matchers: {
                 email: {match: '.mail', forceUnknown: 'search|filter|subject'},
                 password: {match: 'password', forceUnknown: 'captcha'},
-                username: {match: '(user|account)((.)?(name|id|login).?)?$', forceUnknown: 'search'},
+                username: {match: '(user|account|apple)((.)?(name|id|login).?)?$', forceUnknown: 'search'},
 
                 // CC
                 cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},
-                cardNumber: {match: 'card.*number|number.*card'},
+                cardNumber: {match: 'card.*number|number.*card', forceUnknown: 'plus'},
                 cardSecurityCode: {match: 'security.?code|card.?verif|cvv|csc|cvc'},
                 expirationMonth: {
                     match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',

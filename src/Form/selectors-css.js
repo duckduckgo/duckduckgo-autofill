@@ -6,6 +6,7 @@ const SUBMIT_BUTTON_SELECTOR = `
 input[type=submit],
 input[type=button],
 button:not([role=switch]):not([role=link]),
+[class*=submit i][class*=button i],
 [role=button]`
 
 const email = `
@@ -26,7 +27,7 @@ input[autocomplete=email]`
 const GENERIC_TEXT_FIELD = `
 input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])`
 
-const password = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code])`
+const password = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i])`
 
 const cardName = `
 input[autocomplete="cc-name"],
@@ -45,9 +46,7 @@ input[autocomplete="cardnumber"],
 input[autocomplete="card-number"],
 input[name="ccnumber"],
 input[name="cc-number"],
-input[name="cardnumber"],
-input[name="card-number"],
-input[name*=creditCardNumber i],
+input[name*=card i][name*=number i],
 input[id*=cardnumber i],
 input[id*=card-number i],
 input[id*=card_number i]`
@@ -61,25 +60,25 @@ input[name="cvc"],
 input[name="cc-cvc"],
 input[name="cc-csc"],
 input[name="csc"],
-input[name="securityCode"]`
+input[name*=security i][name*=code i]`
 
 const expirationMonth = `
 [autocomplete="cc-exp-month"],
 [name="ccmonth"],
 [name="ppw-expirationDate_month"],
 [name=cardExpiryMonth],
-[name="expiration-month"],
 [name*=ExpDate_Month i],
-[id*=expiration-month i]`
+[name*=expiration i][name*=month i],
+[id*=expiration i][id*=month i]`
 
 const expirationYear = `
 [autocomplete="cc-exp-year"],
 [name="ccyear"],
 [name="ppw-expirationDate_year"],
 [name=cardExpiryYear],
-[name="expiration-year"],
 [name*=ExpDate_Year i],
-[id*=expiration-year i]`
+[name*=expiration i][name*=year i],
+[id*=expiration i][id*=year i]`
 
 const expiration = `
 [autocomplete="cc-exp"],
@@ -147,10 +146,12 @@ const addressPostalCode = `
 [name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],
 [name*=postalCode i], [name*=zipcode i]`
 
-const addressCountryCode = `
-[name=country], [autocomplete=country],
-[name*=countryCode i], [name*=country-code i],
-[name*=countryName i], [name*=country-name i]`
+const addressCountryCode = [
+    `[name=country], [autocomplete=country],
+     [name*=countryCode i], [name*=country-code i],
+     [name*=countryName i], [name*=country-name i]`,
+    `select.idms-address-country` // Fix for Apple signup
+]
 
 const birthdayDay = `
 [name=bday-day],
@@ -172,8 +173,13 @@ const birthdayYear = `
 
 const username = [
     `${GENERIC_TEXT_FIELD}[autocomplete^=user]`,
+    `input[name=username]`,
     // fix for `aa.com`
-    `input[name="loginId"]`
+    `input[name="loginId"]`,
+    // fix for https://online.mbank.pl/pl/Login
+    `input[name="userID"]`,
+    `input[id="login-id"]`,
+    `input[name=accountname]`
 ]
 
 // todo: these are still used directly right now, mostly in scanForInputs
