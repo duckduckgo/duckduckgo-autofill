@@ -1728,9 +1728,6 @@ module.exports={
   "cigna.co.uk": {
     "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;"
   },
-  "cigna.com": {
-    "password-rules": "minlength: 8; maxlength: 12; required: upper; required: digit; required: [_!.&@]; allowed: lower;"
-  },
   "citi.com": {
     "password-rules": "minlength: 6; maxlength: 50; max-consecutive: 2; required: lower, upper; required: digit; allowed: [_!@$]"
   },
