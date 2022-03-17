@@ -1728,9 +1728,6 @@ module.exports={
   "cigna.co.uk": {
     "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;"
   },
-  "cigna.com": {
-    "password-rules": "minlength: 8; maxlength: 12; required: upper; required: digit; required: [_!.&@]; allowed: lower;"
-  },
   "citi.com": {
     "password-rules": "minlength: 6; maxlength: 50; max-consecutive: 2; required: lower, upper; required: digit; allowed: [_!@$]"
   },
@@ -3128,14 +3125,14 @@ class InterfacePrototype {
       newIdentities.push({
         id: 'personalAddress',
         emailAddress: personalAddress,
-        title: 'Blocks Email Trackers'
+        title: 'Blocks email trackers'
       });
     }
 
     newIdentities.push({
       id: 'privateAddress',
       emailAddress: privateAddress,
-      title: 'Blocks Email Trackers and hides Your Address'
+      title: 'Blocks email trackers and hides your address'
     });
     return [...identities, ...newIdentities];
   }
@@ -7556,7 +7553,7 @@ class IdentityTooltipItem {
       }
 
       if (_classPrivateFieldGet(this, _data).id === 'privateAddress') {
-        return 'Generated Private Address';
+        return 'Generated Private Duck Address';
       }
 
       return _classPrivateFieldGet(this, _data)[subtype];
