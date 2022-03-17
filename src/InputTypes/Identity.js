@@ -16,7 +16,7 @@ class IdentityTooltipItem {
             return getCountryDisplayName('en', this.#data.addressCountryCode || '')
         }
         if (this.#data.id === 'privateAddress') {
-            return 'Generated Private Address'
+            return 'Generated Private Duck Address'
         }
         return this.#data[subtype]
     };
