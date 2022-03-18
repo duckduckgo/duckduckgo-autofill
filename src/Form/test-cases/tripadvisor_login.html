@@ -32,7 +32,7 @@ require('ta/registration/RegController').toggleForms('regSignIn', 'regForgotPass
     </script>
     <div class="coreRegCTAWrapper"><button type="submit"
             class="ui_button primary coreRegPrimaryButton regSubmitBtnEvent"
-            onclick="require('ta/registration/Tracking').trackRegSubmitBtnClick('regSignIn', 'sign_up_and_save', '40486');require('ta/Core/TA.Record').trackEventOnPage('reg_trigger', 'regSignIn_submit_button_click', 'Reg Form | sign_up_and_save', '40486');require('ta/registration/RegController').submitForm(event, document.getElementById('regSignIn'), signin_options);">Sign
+            onclick="require('ta/registration/Tracking').trackRegSubmitBtnClick('regSignIn', 'sign_up_and_save', '40486');require('ta/Core/TA.Record').trackEventOnPage('reg_trigger', 'regSignIn_submit_button_click', 'Reg Form | sign_up_and_save', '40486');require('ta/registration/RegController').submitForm(event, document.getElementById('regSignIn'), signin_options);" data-manual-submit>Sign
             in</button>
         <div class="textInHorizontalLine"><span>Not a member?</span></div><button type="button" class="coreRegTextLink"
             onclick="require('ta/registration/RegController').resetAllOverlays();require('ta/Core/TA.Record').trackEventOnPage('reg_trigger', 'sign_up_link_click', 'Reg Form | sign_up_and_save', '40486');require('ta/registration/loadRegJquery')('.joinNowForFree').show();require('ta/registration/RegController').toggleForms('regSignIn', 'regSignUp');require('ta/registration/RegController').resizeFrame();"><span
