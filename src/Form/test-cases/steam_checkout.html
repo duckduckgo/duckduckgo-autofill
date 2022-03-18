@@ -1184,7 +1184,7 @@
                             <div class="button_row">
                                 <a tabindex="300" href="javascript:SubmitPaymentInfoForm();"
                                     id="submit_payment_info_btn" class="btnv6_green_white_innerfade btn_medium continue"
-                                    style="display: block;">
+                                    style="display: block;" data-manual-submit>
                                     <span>Continue</span>
                                 </a>
                                 <div id="payment_method_previous_button" style="display: none;">
@@ -1205,7 +1205,7 @@
 
     <form method="post" accept-charset="utf-8" name="shipping_info_form" id="shipping_info_form" action=""
         onsubmit="SubmitShippingInfoForm(); return false;">
-        <div id="shipping_info_tab" class="checkout_tab" style="display: none;">
+        <div id="shipping_info_tab" class="checkout_tab">
             <div class="checkout_content">
                 <h3 id="shipping_header" class="tab_header">Shipping information</h3>
                 <div id="shipping_info_entry">
@@ -1700,7 +1700,7 @@
                     <br clear="all">
                     <div class="button_row">
                         <a tabindex="300" href="javascript:SubmitShippingInfoForm(false);" id="submit_payment_info_btn"
-                            class="btnv6_blue_hoverfade btn_medium">
+                            class="btnv6_blue_hoverfade btn_medium" data-manual-submit>
                             <span>
                                 Continue </span>
                         </a>
