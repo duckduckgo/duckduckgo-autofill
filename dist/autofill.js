@@ -2451,7 +2451,7 @@ function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { 
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
-  wkSendAndWait
+  createTransport
 } = require('../appleDeviceUtils/appleDeviceUtils');
 
 const {
@@ -2469,7 +2469,6 @@ const {
 } = require('@duckduckgo/content-scope-scripts/src/apple-utils');
 /**
  * @implements {FeatureToggles}
- * @implements {Transport}
  */
 
 
@@ -2479,6 +2478,8 @@ class AppleDeviceInterface extends InterfacePrototype {
   /** @type {FeatureToggleNames[]} */
 
   /* @type {Timeout | undefined} */
+
+  /** @type {Transport} */
   async isEnabled() {
     return autofillEnabled(this.globalConfig, processConfig);
   }
@@ -2492,6 +2493,8 @@ class AppleDeviceInterface extends InterfacePrototype {
     });
 
     _defineProperty(this, "pollingTimeout", void 0);
+
+    _defineProperty(this, "transport", createTransport(this.globalConfig));
 
     if (this.globalConfig.isTopFrame) {
       this.stripCredentials = false;
@@ -2537,7 +2540,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   async listenForSelectedCredential() {
     // Prevent two timeouts from happening
     clearTimeout(this.pollingTimeout);
-    const response = await this.send('getSelectedCredentials');
+    const response = await this.transport.send('getSelectedCredentials');
 
     switch (response.type) {
       case 'none':
@@ -2597,20 +2600,20 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   getUserData() {
-    return this.send('emailHandlerGetUserData');
+    return this.transport.send('emailHandlerGetUserData');
   }
 
   async getAddresses() {
     if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await this.send('emailHandlerGetAddresses');
+    } = await this.transport.send('emailHandlerGetAddresses');
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await this.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
+    await this.transport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
 
     if (this.globalConfig.isApp) this.getAddresses();
   }
@@ -2618,7 +2621,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   async _checkDeviceSignedIn() {
     const {
       isAppSignedIn
-    } = await this.send('emailHandlerCheckAppSignedInStatus');
+    } = await this.transport.send('emailHandlerCheckAppSignedInStatus');
 
     this.isDeviceSignedIn = () => !!isAppSignedIn;
 
@@ -2626,7 +2629,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   async setSize(details) {
-    await this.send('setSize', details);
+    await this.transport.send('setSize', details);
   }
   /**
    * @param {import("../Form/Form").Form} form
@@ -2672,7 +2675,7 @@ class AppleDeviceInterface extends InterfacePrototype {
       inputWidth: Math.floor(inputDimensions.width),
       serializedInputContext: JSON.stringify(data)
     };
-    await this.send('showAutofillParent', details); // Start listening for the user initiated credential
+    await this.transport.send('showAutofillParent', details); // Start listening for the user initiated credential
 
     this.listenForSelectedCredential();
   }
@@ -2680,7 +2683,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   async removeTooltip() {
     if (!this.globalConfig.supportsTopFrame) return super.removeTooltip();
     this.removeCloseListeners();
-    await this.send('closeAutofillParent', {});
+    await this.transport.send('closeAutofillParent', {});
   }
 
   storeUserData(_ref) {
@@ -2691,7 +2694,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         cohort
       }
     } = _ref;
-    return this.send('emailHandlerStoreToken', {
+    return this.transport.send('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
@@ -2709,7 +2712,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   storeCredentials(credentials) {
-    return this.send('pmHandlerStoreCredentials', credentials);
+    return this.transport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
    * Sends form data to the native layer
@@ -2718,7 +2721,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   storeFormData(data) {
-    return this.send('pmHandlerStoreData', data);
+    return this.transport.send('pmHandlerStoreData', data);
   }
   /**
    * Gets the init data from the device
@@ -2727,7 +2730,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   async getAutofillInitData() {
-    const response = await this.send('pmHandlerGetAutofillInitData');
+    const response = await this.transport.send('pmHandlerGetAutofillInitData');
     this.storeLocalData(response.success);
     return response;
   }
@@ -2739,7 +2742,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   getAutofillCredentials(id) {
-    return this.send('pmHandlerGetAutofillCredentials', {
+    return this.transport.send('pmHandlerGetAutofillCredentials', {
       id
     });
   }
@@ -2749,7 +2752,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   openManagePasswords() {
-    return this.send('pmHandlerOpenManagePasswords');
+    return this.transport.send('pmHandlerOpenManagePasswords');
   }
   /**
    * Opens the native UI for managing identities
@@ -2757,7 +2760,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   openManageIdentities() {
-    return this.send('pmHandlerOpenManageIdentities');
+    return this.transport.send('pmHandlerOpenManageIdentities');
   }
   /**
    * Opens the native UI for managing credit cards
@@ -2765,7 +2768,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   openManageCreditCards() {
-    return this.send('pmHandlerOpenManageCreditCards');
+    return this.transport.send('pmHandlerOpenManageCreditCards');
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -2793,7 +2796,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   getAutofillCreditCard(id) {
-    return this.send('pmHandlerGetCreditCard', {
+    return this.transport.send('pmHandlerGetCreditCard', {
       id
     });
   } // Used to encode data to send back to the child autofill
@@ -2806,7 +2809,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         return [key, String(value)];
       });
       const data = Object.fromEntries(detailsEntries);
-      this.send('selectedDetail', {
+      this.transport.send('selectedDetail', {
         data,
         configType
       });
@@ -2825,7 +2828,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   async getAlias() {
     const {
       alias
-    } = await this.send('emailHandlerGetAlias', {
+    } = await this.transport.send('emailHandlerGetAlias', {
       requiresUserPermission: !this.globalConfig.isApp,
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
     });
@@ -2836,19 +2839,6 @@ class AppleDeviceInterface extends InterfacePrototype {
 
   supportsFeature(name) {
     return _classPrivateFieldGet(this, _supportedFeatures).includes(name);
-  }
-  /**
-   * @param {string} name
-   * @param {any} [data]
-   * @returns {Promise<any>}
-   */
-
-
-  send(name, data) {
-    return wkSendAndWait(name, data, {
-      secret: this.globalConfig.secret,
-      hasModernWebkitAPI: this.globalConfig.hasModernWebkitAPI
-    });
   }
 
 }
@@ -8122,7 +8112,6 @@ const wkSendAndWait = async function (handler) {
   } = opts;
 
   if (hasModernWebkitAPI) {
-    console.log('jere?');
     const response = await wkSend(handler, data, opts);
     return ddgGlobals.JSONparse(response || '{}');
   }
@@ -8182,9 +8171,32 @@ const decrypt = async (ciphertext, key, iv) => {
   let dec = new ddgGlobals.TextDecoder();
   return dec.decode(decrypted);
 };
+/**
+ * Create a wrapper around the webkit messaging that conforms
+ * to the Transport interface
+ *
+ * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
+ * @returns {Transport}
+ */
+
+
+function createTransport(config) {
+  /** @type {Transport} */
+  const transport = {
+    // this is a separate variable to ensure type-safety is not lost when returning directly
+    send(name, data) {
+      return wkSendAndWait(name, data, {
+        secret: config.secret,
+        hasModernWebkitAPI: config.hasModernWebkitAPI
+      });
+    }
+
+  };
+  return transport;
+}
 
 module.exports = {
-  wkSendAndWait
+  createTransport
 };
 
 },{"./captureDdgGlobals":35}],35:[function(require,module,exports){

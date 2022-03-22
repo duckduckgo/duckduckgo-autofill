@@ -1,5 +1,5 @@
 const InterfacePrototype = require('./InterfacePrototype.js')
-const {wkSendAndWait} = require('../appleDeviceUtils/appleDeviceUtils')
+const {createTransport} = require('../appleDeviceUtils/appleDeviceUtils')
 const {
     formatDuckAddress,
     autofillEnabled
@@ -9,7 +9,6 @@ const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-uti
 
 /**
  * @implements {FeatureToggles}
- * @implements {Transport}
  */
 class AppleDeviceInterface extends InterfacePrototype {
     /** @type {FeatureToggleNames[]} */
@@ -17,6 +16,9 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /* @type {Timeout | undefined} */
     pollingTimeout
+
+    /** @type {Transport} */
+    transport = createTransport(this.globalConfig)
 
     async isEnabled () {
         return autofillEnabled(this.globalConfig, processConfig)
@@ -68,7 +70,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         // Prevent two timeouts from happening
         clearTimeout(this.pollingTimeout)
 
-        const response = await this.send('getSelectedCredentials')
+        const response = await this.transport.send('getSelectedCredentials')
         switch (response.type) {
         case 'none':
             // Parent hasn't got a selected credential yet
@@ -120,31 +122,31 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     getUserData () {
-        return this.send('emailHandlerGetUserData')
+        return this.transport.send('emailHandlerGetUserData')
     }
 
     async getAddresses () {
         if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await this.send('emailHandlerGetAddresses')
+        const {addresses} = await this.transport.send('emailHandlerGetAddresses')
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
     async refreshAlias () {
-        await this.send('emailHandlerRefreshAlias')
+        await this.transport.send('emailHandlerRefreshAlias')
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
 
     async _checkDeviceSignedIn () {
-        const {isAppSignedIn} = await this.send('emailHandlerCheckAppSignedInStatus')
+        const {isAppSignedIn} = await this.transport.send('emailHandlerCheckAppSignedInStatus')
         this.isDeviceSignedIn = () => !!isAppSignedIn
         return !!isAppSignedIn
     }
 
     async setSize (details) {
-        await this.send('setSize', details)
+        await this.transport.send('setSize', details)
     }
 
     /**
@@ -184,7 +186,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             serializedInputContext: JSON.stringify(data)
         }
 
-        await this.send('showAutofillParent', details)
+        await this.transport.send('showAutofillParent', details)
 
         // Start listening for the user initiated credential
         this.listenForSelectedCredential()
@@ -193,11 +195,11 @@ class AppleDeviceInterface extends InterfacePrototype {
     async removeTooltip () {
         if (!this.globalConfig.supportsTopFrame) return super.removeTooltip()
         this.removeCloseListeners()
-        await this.send('closeAutofillParent', {})
+        await this.transport.send('closeAutofillParent', {})
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.send('emailHandlerStoreToken', { token, username: userName, cohort })
+        return this.transport.send('emailHandlerStoreToken', { token, username: userName, cohort })
     }
 
     /**
@@ -210,7 +212,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @deprecated
      */
     storeCredentials (credentials) {
-        return this.send('pmHandlerStoreCredentials', credentials)
+        return this.transport.send('pmHandlerStoreCredentials', credentials)
     }
 
     /**
@@ -218,7 +220,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        return this.send('pmHandlerStoreData', data)
+        return this.transport.send('pmHandlerStoreData', data)
     }
 
     /**
@@ -226,7 +228,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<PMData>}
      */
     async getAutofillInitData () {
-        const response = await this.send('pmHandlerGetAutofillInitData')
+        const response = await this.transport.send('pmHandlerGetAutofillInitData')
         this.storeLocalData(response.success)
         return response
     }
@@ -237,28 +239,28 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return this.send('pmHandlerGetAutofillCredentials', { id })
+        return this.transport.send('pmHandlerGetAutofillCredentials', { id })
     }
 
     /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {
-        return this.send('pmHandlerOpenManagePasswords')
+        return this.transport.send('pmHandlerOpenManagePasswords')
     }
 
     /**
      * Opens the native UI for managing identities
      */
     openManageIdentities () {
-        return this.send('pmHandlerOpenManageIdentities')
+        return this.transport.send('pmHandlerOpenManageIdentities')
     }
 
     /**
      * Opens the native UI for managing credit cards
      */
     openManageCreditCards () {
-        return this.send('pmHandlerOpenManageCreditCards')
+        return this.transport.send('pmHandlerOpenManageCreditCards')
     }
 
     /**
@@ -277,7 +279,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.send('pmHandlerGetCreditCard', { id })
+        return this.transport.send('pmHandlerGetCreditCard', { id })
     }
 
     // Used to encode data to send back to the child autofill
@@ -287,7 +289,7 @@ class AppleDeviceInterface extends InterfacePrototype {
                 return [key, String(value)]
             })
             const data = Object.fromEntries(detailsEntries)
-            this.send('selectedDetail', { data, configType })
+            this.transport.send('selectedDetail', { data, configType })
         } else {
             this.activeFormSelectedDetail(detailIn, configType)
         }
@@ -299,7 +301,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async getAlias () {
-        const {alias} = await this.send(
+        const {alias} = await this.transport.send(
             'emailHandlerGetAlias',
             {
                 requiresUserPermission: !this.globalConfig.isApp,
@@ -312,18 +314,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     /** @param {FeatureToggleNames} name */
     supportsFeature (name) {
         return this.#supportedFeatures.includes(name)
-    }
-
-    /**
-     * @param {string} name
-     * @param {any} [data]
-     * @returns {Promise<any>}
-     */
-    send (name, data) {
-        return wkSendAndWait(name, data, {
-            secret: this.globalConfig.secret,
-            hasModernWebkitAPI: this.globalConfig.hasModernWebkitAPI
-        })
     }
 }
 
