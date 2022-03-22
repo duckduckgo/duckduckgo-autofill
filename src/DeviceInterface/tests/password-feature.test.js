@@ -33,7 +33,7 @@ describe('AppleDeviceInterface: preAttachTooltip', () => {
         const actual = device.preAttachTooltip(inputTopContext, input, {isSignup: true})
         expect(actual).toStrictEqual(expected)
     })
-    it('doesnt add a password when inputType is not credentials.password', () => {
+    it('does NOT add a password when inputType is not credentials.password', () => {
         const device = new AppleDeviceInterface()
         device.passwordGenerator.generate() // this is done just to make the test deterministic
         const input = document.createElement('input')
