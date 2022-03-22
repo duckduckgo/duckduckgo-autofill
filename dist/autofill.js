@@ -8066,13 +8066,13 @@ const ddgGlobals = require('./captureDdgGlobals');
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
- * @param {{hasModernWebkitAPI?: boolean, secret?: string}} [opts]
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  */
 
 
 const wkSend = function (handler) {
   let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  let opts = arguments.length > 2 ? arguments[2] : undefined;
 
   if (!(handler in window.webkit.messageHandlers)) {
     throw new Error("Missing webkit handler: '".concat(handler, "'"));
@@ -8122,6 +8122,7 @@ const wkSendAndWait = async function (handler) {
   } = opts;
 
   if (hasModernWebkitAPI) {
+    console.log('jere?');
     const response = await wkSend(handler, data, opts);
     return ddgGlobals.JSONparse(response || '{}');
   }
@@ -8141,7 +8142,7 @@ const wkSendAndWait = async function (handler) {
         key: ddgGlobals.Arrayfrom(key),
         iv: ddgGlobals.Arrayfrom(iv)
       };
-      wkSend(handler, data);
+      wkSend(handler, data, opts);
     });
     const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag]);
     const decrypted = await decrypt(cipher, key, iv);
