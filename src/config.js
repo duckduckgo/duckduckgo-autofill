@@ -1,5 +1,7 @@
 /**
- * @return {GlobalConfig}
+ * This is a centralised place to contain all string/variable replacements
+ *
+ * @returns {GlobalConfig}
  */
 function createGlobalConfig () {
     let isApp = false
