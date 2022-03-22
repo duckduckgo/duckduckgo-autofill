@@ -1,6 +1,4 @@
 const {
-    isApp,
-    isTopFrame,
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
@@ -12,6 +10,7 @@ class DataAutofill extends Tooltip {
      * @param {{onSelect(id:string): void}} callbacks
      */
     render (config, items, callbacks) {
+        const {isApp, isTopFrame} = this.interface.globalConfig
         const includeStyles = isApp
             ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`

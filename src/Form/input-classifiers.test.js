@@ -30,7 +30,7 @@ const renderInputWithLabel = () => {
     const formElement = document.createElement('form')
     formElement.append(input, label)
     document.body.append(formElement)
-    const form = new Form(formElement, input, new InterfacePrototype())
+    const form = new Form(formElement, input, new InterfacePrototype(createGlobalConfig()))
     return { input, label, formElement: formElement, form }
 }
 
@@ -133,6 +133,7 @@ describe('Input Classifiers', () => {
 })
 
 const testCases = require('./test-cases/index')
+const {createGlobalConfig} = require('../config')
 let testResults = []
 
 describe.each(testCases)('Test $html fields', (testCase) => {
@@ -148,7 +149,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         document.body.innerHTML = testContent
         document.title = title
 
-        scanForInputs(new InterfacePrototype(), new Map()).findEligibleInputs(document)
+        scanForInputs(new InterfacePrototype(createGlobalConfig()), new Map()).findEligibleInputs(document)
 
         /**
          * @type {NodeListOf<HTMLInputElement>}
