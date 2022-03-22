@@ -36,13 +36,11 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * Sends message to the webkit layer and waits for the specified response
  * @param {String} handler
  * @param {*} data
- * @param {{hasModernWebkitAPI?: boolean, secret?: string}} [opts]
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  * @returns {Promise<*>}
  */
 const wkSendAndWait = async (handler, data = {}, opts = {}) => {
-    const {hasModernWebkitAPI = false, secret = ''} = opts
-
-    if (hasModernWebkitAPI) {
+    if (opts.hasModernWebkitAPI) {
         const response = await wkSend(handler, data, opts)
         return ddgGlobals.JSONparse(response || '{}')
     }
@@ -56,7 +54,7 @@ const wkSendAndWait = async (handler, data = {}, opts = {}) => {
             generateRandomMethod(randMethodName, resolve)
             data.messageHandling = {
                 methodName: randMethodName,
-                secret,
+                secret: opts.secret,
                 key: ddgGlobals.Arrayfrom(key),
                 iv: ddgGlobals.Arrayfrom(iv)
             }
