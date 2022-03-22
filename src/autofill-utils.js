@@ -72,13 +72,14 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
  * @param {string} val
+ * @param {GlobalConfig} [config]
  * @return {boolean}
  */
-const setValueForInput = (el, val) => {
+const setValueForInput = (el, val, config) => {
     // Avoid keyboard flashing on Android
-    // if (!isAndroid) {
-    //     el.focus()
-    // }
+    if (!config?.isAndroid) {
+        el.focus()
+    }
 
     el.dispatchEvent(new Event('keydown', {bubbles: true}))
 
@@ -162,10 +163,11 @@ const setValueForSelect = (el, val) => {
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string} val
+ * @param {GlobalConfig} [config]
  * @return {boolean}
  */
-const setValue = (el, val) => {
-    if (el instanceof HTMLInputElement) return setValueForInput(el, val)
+const setValue = (el, val, config) => {
+    if (el instanceof HTMLInputElement) return setValueForInput(el, val, config)
     if (el instanceof HTMLSelectElement) return setValueForSelect(el, val)
 
     return false
