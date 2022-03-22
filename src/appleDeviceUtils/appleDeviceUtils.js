@@ -96,6 +96,24 @@ const decrypt = async (ciphertext, key, iv) => {
     return dec.decode(decrypted)
 }
 
-module.exports = {
-    wkSendAndWait
+/**
+ * Create a wrapper around the webkit messaging that conforms
+ * to the Transport interface
+ *
+ * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
+ * @returns {Transport}
+ */
+function createTransport (config) {
+    /** @type {Transport} */
+    const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
+        send (name, data) {
+            return wkSendAndWait(name, data, {
+                secret: config.secret,
+                hasModernWebkitAPI: config.hasModernWebkitAPI
+            })
+        }
+    }
+    return transport
 }
+
+module.exports = { createTransport }

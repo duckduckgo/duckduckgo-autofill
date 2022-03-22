@@ -1,5 +1,5 @@
-const {wkSendAndWait} = require('./appleDeviceUtils')
 const {createGlobalConfig} = require('../config')
+const {createTransport} = require('./appleDeviceUtils')
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data
@@ -33,10 +33,8 @@ window.webkit = {messageHandlers: {
 describe('wkSendAndWait', () => {
     it('returns the expected unencrypted data', async () => {
         const config = createGlobalConfig()
-        const response = await wkSendAndWait('testMock', {}, {
-            secret: config.secret,
-            hasModernWebkitAPI: false // this is the default
-        })
+        const transport = createTransport(config)
+        const response = await transport.send('testMock', {})
         expect(response.data).toBe('test')
     })
 })
