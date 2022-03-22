@@ -19,15 +19,11 @@ const {forms} = require('../scanForInputs')
 const {fromPassword, GENERATED_ID} = require('../InputTypes/Credentials')
 const {PasswordGenerator} = require('../PasswordGenerator')
 
-// This may get replaced by a test script
-let isDDGTestMode = false
-
 /**
  * @implements {FeatureToggles}
  * @implements {GlobalConfigImpl}
  */
 class InterfacePrototype {
-    mode = isDDGTestMode ? 'test' : 'production';
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     currentAttached = null

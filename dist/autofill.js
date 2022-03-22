@@ -3036,14 +3036,12 @@ const {
 
 const {
   PasswordGenerator
-} = require('../PasswordGenerator'); // This may get replaced by a test script
-
-
-let isDDGTestMode = false;
+} = require('../PasswordGenerator');
 /**
  * @implements {FeatureToggles}
  * @implements {GlobalConfigImpl}
  */
+
 
 var _addresses = /*#__PURE__*/new WeakMap();
 
@@ -3062,8 +3060,6 @@ class InterfacePrototype {
 
   /** @param {GlobalConfig} config */
   constructor(config) {
-    _defineProperty(this, "mode", isDDGTestMode ? 'test' : 'production');
-
     _defineProperty(this, "attempts", 0);
 
     _defineProperty(this, "currentAttached", null);
@@ -7843,7 +7839,7 @@ class Tooltip {
     _defineProperty(this, "clickableButtons", new Map());
 
     this.shadow = document.createElement('ddg-autofill').attachShadow({
-      mode: deviceInterface.mode === 'test' ? 'open' : 'closed'
+      mode: deviceInterface.globalConfig.isDDGTestMode ? 'open' : 'closed'
     });
     this.host = this.shadow.host;
     this.config = config;
@@ -8604,7 +8600,9 @@ require('./requestIdleCallback');
 "use strict";
 
 /**
- * @return {GlobalConfig}
+ * This is a centralised place to contain all string/variable replacements
+ *
+ * @returns {GlobalConfig}
  */
 function createGlobalConfig() {
   let isApp = false;

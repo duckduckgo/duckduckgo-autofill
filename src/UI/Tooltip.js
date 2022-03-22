@@ -10,7 +10,7 @@ class Tooltip {
      */
     constructor (config, inputType, getPosition, deviceInterface) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({
-            mode: deviceInterface.mode === 'test'
+            mode: deviceInterface.globalConfig.isDDGTestMode
                 ? 'open'
                 : 'closed'
         })
