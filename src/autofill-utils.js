@@ -1,17 +1,5 @@
 const {getInputSubtype} = require('./Form/matching')
 
-let isApp = false
-let isTopFrame = false
-let supportsTopFrame = false
-// Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
-// INJECT isApp HERE
-// INJECT isTopFrame HERE
-// INJECT supportsTopFrame HERE
-
-let isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp || isTopFrame
-const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent)
-const isMobileApp = isDDGApp && !isApp
-
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
 
 const SIGN_IN_MSG = { signMeIn: true }
@@ -49,18 +37,18 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     })
 }
 
-const autofillEnabled = (processConfig) => {
-    let contentScope = null
-    let userUnprotectedDomains = null
-    let userPreferences = null
-    // INJECT contentScope HERE
-    // INJECT userUnprotectedDomains HERE
-    // INJECT userPreferences HERE
-
-    if (!contentScope) {
+/**
+ * @param {GlobalConfig} globalConfig
+ * @param [processConfig]
+ * @return {boolean}
+ */
+const autofillEnabled = (globalConfig, processConfig) => {
+    if (!globalConfig.contentScope) {
         // Return enabled for platforms that haven't implemented the config yet
         return true
     }
+
+    const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig
 
     // Check config on Apple platforms
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
@@ -88,9 +76,9 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  */
 const setValueForInput = (el, val) => {
     // Avoid keyboard flashing on Android
-    if (!isAndroid) {
-        el.focus()
-    }
+    // if (!isAndroid) {
+    //     el.focus()
+    // }
 
     el.dispatchEvent(new Event('keydown', {bubbles: true}))
 
@@ -293,12 +281,6 @@ const isLikelyASubmitButton = (el) =>
     el.offsetHeight * el.offsetWidth >= 10000 // it's a large element, at least 250x40px
 
 module.exports = {
-    isApp,
-    isTopFrame,
-    isDDGApp,
-    isAndroid,
-    isMobileApp,
-    supportsTopFrame,
     DDG_DOMAIN_REGEX,
     isDDGDomain,
     notifyWebApp,

@@ -1,22 +1,16 @@
-// Do not remove -- Apple devices change this when they support modern webkit messaging
-let hasModernWebkitAPI = false
-// INJECT hasModernWebkitAPI HERE
-
-// The native layer will inject a randomised secret here and use it to verify the origin
-let secret = 'PLACEHOLDER_SECRET'
-
 const ddgGlobals = require('./captureDdgGlobals')
 
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} [opts]
  */
-const wkSend = (handler, data = {}) => {
+const wkSend = (handler, data = {}, opts = {}) => {
     if (!(handler in window.webkit.messageHandlers)) {
         throw new Error(`Missing webkit handler: '${handler}'`)
     }
-    return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret}})
+    return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret: opts.secret}})
 }
 
 /**
@@ -42,11 +36,14 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * Sends message to the webkit layer and waits for the specified response
  * @param {String} handler
  * @param {*} data
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} [opts]
  * @returns {Promise<*>}
  */
-const wkSendAndWait = async (handler, data = {}) => {
+const wkSendAndWait = async (handler, data = {}, opts = {}) => {
+    const {hasModernWebkitAPI = false, secret = ''} = opts
+
     if (hasModernWebkitAPI) {
-        const response = await wkSend(handler, data)
+        const response = await wkSend(handler, data, opts)
         return ddgGlobals.JSONparse(response || '{}')
     }
 
@@ -100,6 +97,5 @@ const decrypt = async (ciphertext, key, iv) => {
 }
 
 module.exports = {
-    wkSend,
     wkSendAndWait
 }

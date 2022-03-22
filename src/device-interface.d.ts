@@ -86,3 +86,27 @@ type FeatureToggleNames =
 interface FeatureToggles {
      supportsFeature(name: FeatureToggleNames): boolean;
 }
+
+interface Transport {
+     send(name: string, data?: any): Promise<any>
+}
+
+interface GlobalConfig {
+     isApp: boolean;
+     isDDGApp: boolean;
+     isAndroid: boolean;
+     isFirefox: boolean;
+     isMobileApp: boolean;
+     isTopFrame: boolean;
+     secret: string;
+     supportsTopFrame: boolean;
+     hasModernWebkitAPI: boolean;
+     contentScope: Record<string, any> | null;
+     userUnprotectedDomains: string[] | null;
+     userPreferences: Record<string, any> | null;
+     isDDGTestMode: boolean;
+}
+
+interface GlobalConfigImpl {
+     globalConfig: GlobalConfig
+}

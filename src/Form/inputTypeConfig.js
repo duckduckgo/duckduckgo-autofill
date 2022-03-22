@@ -1,14 +1,9 @@
-const {isDDGApp, isApp} = require('../autofill-utils')
 const {daxBase64} = require('./logo-svg')
 const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
 const {getInputType, getMainTypeFromType, getInputSubtype} = require('./matching')
 const {CredentialsTooltipItem} = require('../InputTypes/Credentials')
 const {CreditCardTooltipItem} = require('../InputTypes/CreditCard')
 const {IdentityTooltipItem} = require('../InputTypes/Identity')
-
-// In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
-const isFirefox = navigator.userAgent.includes('Firefox')
-const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
 
 /**
  * Get the icon for the identities (currently only Dax for emails)
@@ -17,6 +12,9 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
  * @return {string}
  */
 const getIdentitiesIcon = (input, {device}) => {
+    // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+    const { isDDGApp, isFirefox } = device.globalConfig
+    const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
     const subtype = getInputSubtype(input)
     if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg
 
@@ -80,7 +78,7 @@ const inputTypeConfig = {
 
             const subtype = getInputSubtype(_input)
 
-            if (isApp) {
+            if (device.globalConfig.isApp) {
                 return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))
             }
 
