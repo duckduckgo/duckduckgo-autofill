@@ -2939,7 +2939,7 @@ class ExtensionInterface extends InterfacePrototype {
           break;
 
         case 'contextualAutofill':
-          setValue(activeEl, formatDuckAddress(message.alias));
+          setValue(activeEl, formatDuckAddress(message.alias), this.globalConfig);
           activeEl.classList.add('ddg-autofilled');
           this.refreshAlias(); // If the user changes the alias, remove the decoration
 
@@ -3913,7 +3913,7 @@ class Form {
 
   resetAllInputs() {
     this.execOnInputs(input => {
-      setValue(input, '');
+      setValue(input, '', this.device.globalConfig);
       this.removeInputHighlight(input);
     });
     if (this.activeInput) this.activeInput.focus();
@@ -4115,7 +4115,7 @@ class Form {
     !isEmailAutofill // and we're not auto-filling email
     ) return; // do not overwrite the value
 
-    const successful = setValue(input, string);
+    const successful = setValue(input, string, this.device.globalConfig);
     if (!successful) return;
     input.classList.add('ddg-autofilled');
     addInlineStyles(input, getIconStylesAutofilled(input, this)); // If the user changes the value, remove the decoration
@@ -8311,14 +8311,16 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
  * @param {string} val
+ * @param {GlobalConfig} [config]
  * @return {boolean}
  */
 
-const setValueForInput = (el, val) => {
+const setValueForInput = (el, val, config) => {
   // Avoid keyboard flashing on Android
-  // if (!isAndroid) {
-  //     el.focus()
-  // }
+  if (!(config !== null && config !== void 0 && config.isAndroid)) {
+    el.focus();
+  }
+
   el.dispatchEvent(new Event('keydown', {
     bubbles: true
   }));
@@ -8406,12 +8408,13 @@ const setValueForSelect = (el, val) => {
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string} val
+ * @param {GlobalConfig} [config]
  * @return {boolean}
  */
 
 
-const setValue = (el, val) => {
-  if (el instanceof HTMLInputElement) return setValueForInput(el, val);
+const setValue = (el, val, config) => {
+  if (el instanceof HTMLInputElement) return setValueForInput(el, val, config);
   if (el instanceof HTMLSelectElement) return setValueForSelect(el, val);
   return false;
 };

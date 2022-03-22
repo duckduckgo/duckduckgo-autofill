@@ -189,7 +189,7 @@ class Form {
     }
     resetAllInputs () {
         this.execOnInputs((input) => {
-            setValue(input, '')
+            setValue(input, '', this.device.globalConfig)
             this.removeInputHighlight(input)
         })
         if (this.activeInput) this.activeInput.focus()
@@ -384,7 +384,7 @@ class Form {
             !isEmailAutofill // and we're not auto-filling email
         ) return // do not overwrite the value
 
-        const successful = setValue(input, string)
+        const successful = setValue(input, string, this.device.globalConfig)
 
         if (!successful) return
 

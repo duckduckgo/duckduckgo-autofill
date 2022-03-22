@@ -88,7 +88,7 @@ class ExtensionInterface extends InterfacePrototype {
                 })
                 break
             case 'contextualAutofill':
-                setValue(activeEl, formatDuckAddress(message.alias))
+                setValue(activeEl, formatDuckAddress(message.alias), this.globalConfig)
                 activeEl.classList.add('ddg-autofilled')
                 this.refreshAlias()
 
