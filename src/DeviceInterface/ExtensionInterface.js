@@ -1,7 +1,6 @@
 const InterfacePrototype = require('./InterfacePrototype.js')
 const {
     SIGN_IN_MSG,
-    isDDGDomain,
     sendAndWaitForAnswer, setValue,
     formatDuckAddress,
     isAutofillEnabledFromProcessedConfig
@@ -61,7 +60,7 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     async trySigningIn () {
-        if (isDDGDomain()) {
+        if (this.globalConfig.isDDGDomain) {
             const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
             this.storeUserData(data)
         }

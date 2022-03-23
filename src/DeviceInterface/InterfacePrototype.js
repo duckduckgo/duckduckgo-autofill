@@ -1,7 +1,6 @@
 const {
     ADDRESS_DOMAIN,
     SIGN_IN_MSG,
-    isDDGDomain,
     sendAndWaitForAnswer,
     formatDuckAddress,
     autofillEnabled,
@@ -174,8 +173,8 @@ class InterfacePrototype {
 
     async startInit () {
         window.addEventListener('pointerdown', this, true)
-
         listenForGlobalFormSubmission()
+
         this.addDeviceListeners()
         await this.setupAutofill()
         await this.setupSettingsPage()
@@ -472,7 +471,7 @@ class InterfacePrototype {
     }
 
     async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
-        if (isDDGDomain()) {
+        if (this.globalConfig.isDDGDomain) {
             notifyWebApp({isApp: this.globalConfig.isApp})
 
             if (this.isDeviceSignedIn()) {
@@ -505,7 +504,7 @@ class InterfacePrototype {
 
     refreshAlias () {}
     async trySigningIn () {
-        if (isDDGDomain()) {
+        if (this.globalConfig.isDDGDomain) {
             if (this.attempts < 10) {
                 this.attempts++
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')

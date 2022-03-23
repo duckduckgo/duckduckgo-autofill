@@ -1,16 +1,10 @@
 const {getInputSubtype} = require('./Form/matching')
 
-const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
-
 const SIGN_IN_MSG = { signMeIn: true }
-
-const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX)
 
 // Send a message to the web app (only on DDG domains)
 const notifyWebApp = (message) => {
-    if (isDDGDomain()) {
-        window.postMessage(message, window.origin)
-    }
+    window.postMessage(message, window.origin)
 }
 /**
  * Sends a message and returns a Promise that resolves with the response
@@ -283,8 +277,6 @@ const isLikelyASubmitButton = (el) =>
     el.offsetHeight * el.offsetWidth >= 10000 // it's a large element, at least 250x40px
 
 module.exports = {
-    DDG_DOMAIN_REGEX,
-    isDDGDomain,
     notifyWebApp,
     sendAndWaitForAnswer,
     isAutofillEnabledFromProcessedConfig,

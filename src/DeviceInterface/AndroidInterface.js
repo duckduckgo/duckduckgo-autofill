@@ -1,6 +1,6 @@
 const InterfacePrototype = require('./InterfacePrototype.js')
 const {
-    isDDGDomain, sendAndWaitForAnswer
+    sendAndWaitForAnswer
 } = require('../autofill-utils')
 const {scanForInputs} = require('../scanForInputs.js')
 
@@ -14,7 +14,7 @@ class AndroidInterface extends InterfacePrototype {
 
     isDeviceSignedIn () {
         // isDeviceSignedIn is only available on DDG domains...
-        if (isDDGDomain()) return window.EmailInterface.isSignedIn() === 'true'
+        if (this.globalConfig.isDDGDomain) return window.EmailInterface.isSignedIn() === 'true'
 
         // ...on other domains we assume true because the script wouldn't exist otherwise
         return true

@@ -105,6 +105,7 @@ interface GlobalConfig {
      userUnprotectedDomains: string[] | null;
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
+     isDDGDomain: boolean;
 }
 
 interface GlobalConfigImpl {

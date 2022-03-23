@@ -2376,7 +2376,6 @@ module.exports = deviceInterface;
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
-  isDDGDomain,
   sendAndWaitForAnswer
 } = require('../autofill-utils');
 
@@ -2396,7 +2395,7 @@ class AndroidInterface extends InterfacePrototype {
 
   isDeviceSignedIn() {
     // isDeviceSignedIn is only available on DDG domains...
-    if (isDDGDomain()) return window.EmailInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
+    if (this.globalConfig.isDDGDomain) return window.EmailInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
 
     return true;
   }
@@ -2852,7 +2851,6 @@ const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
   SIGN_IN_MSG,
-  isDDGDomain,
   sendAndWaitForAnswer,
   setValue,
   formatDuckAddress,
@@ -2910,7 +2908,7 @@ class ExtensionInterface extends InterfacePrototype {
   }
 
   async trySigningIn() {
-    if (isDDGDomain()) {
+    if (this.globalConfig.isDDGDomain) {
       const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData');
       this.storeUserData(data);
     }
@@ -2989,7 +2987,6 @@ function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { 
 const {
   ADDRESS_DOMAIN,
   SIGN_IN_MSG,
-  isDDGDomain,
   sendAndWaitForAnswer,
   formatDuckAddress,
   autofillEnabled,
@@ -3542,7 +3539,7 @@ class InterfacePrototype {
       shouldLog: false
     };
 
-    if (isDDGDomain()) {
+    if (this.globalConfig.isDDGDomain) {
       notifyWebApp({
         isApp: this.globalConfig.isApp
       });
@@ -3585,7 +3582,7 @@ class InterfacePrototype {
   refreshAlias() {}
 
   async trySigningIn() {
-    if (isDDGDomain()) {
+    if (this.globalConfig.isDDGDomain) {
       if (this.attempts < 10) {
         this.attempts++;
         const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
@@ -8238,18 +8235,12 @@ const {
   getInputSubtype
 } = require('./Form/matching');
 
-const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
 const SIGN_IN_MSG = {
   signMeIn: true
-};
-
-const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX); // Send a message to the web app (only on DDG domains)
-
+}; // Send a message to the web app (only on DDG domains)
 
 const notifyWebApp = message => {
-  if (isDDGDomain()) {
-    window.postMessage(message, window.origin);
-  }
+  window.postMessage(message, window.origin);
 };
 /**
  * Sends a message and returns a Promise that resolves with the response
@@ -8570,8 +8561,6 @@ el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250
 
 
 module.exports = {
-  DDG_DOMAIN_REGEX,
-  isDDGDomain,
   notifyWebApp,
   sendAndWaitForAnswer,
   isAutofillEnabledFromProcessedConfig,
@@ -8611,11 +8600,13 @@ require('./requestIdleCallback');
 },{"./DeviceInterface":7,"./requestIdleCallback":40}],38:[function(require,module,exports){
 "use strict";
 
+const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
 /**
  * This is a centralised place to contain all string/variable replacements
  *
  * @returns {GlobalConfig}
  */
+
 function createGlobalConfig() {
   let isApp = false;
   let isTopFrame = false;
@@ -8639,6 +8630,7 @@ function createGlobalConfig() {
   const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
   const isMobileApp = isDDGApp && !isApp;
   const isFirefox = navigator.userAgent.includes('Firefox');
+  const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
   return {
     isApp,
     isDDGApp,
@@ -8652,11 +8644,13 @@ function createGlobalConfig() {
     contentScope,
     userUnprotectedDomains,
     userPreferences,
-    isDDGTestMode
+    isDDGTestMode,
+    isDDGDomain
   };
 }
 
 module.exports.createGlobalConfig = createGlobalConfig;
+module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
 },{}],39:[function(require,module,exports){
 "use strict";
@@ -8733,7 +8727,7 @@ const _forms = new Map();
  * to either `init` if in the context of a webpage, or alternatively just perform
  * the synchronous mutations via findEligibleInputs
  *
- * @param DeviceInterface
+ * @param {import("./DeviceInterface/InterfacePrototype")} device
  * @param {Map<HTMLElement, Form>} [forms]
  * @returns {{
  *   init: () => () => void,
@@ -8742,7 +8736,7 @@ const _forms = new Map();
  */
 
 
-const scanForInputs = function (DeviceInterface) {
+const scanForInputs = function (device) {
   let forms = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _forms;
 
   const getParentForm = input => {
@@ -8785,7 +8779,7 @@ const scanForInputs = function (DeviceInterface) {
         forms.delete(childForm);
       }
 
-      forms.set(parentForm, new Form(parentForm, input, DeviceInterface));
+      forms.set(parentForm, new Form(parentForm, input, device));
     }
   };
 
@@ -8825,11 +8819,14 @@ const scanForInputs = function (DeviceInterface) {
       form.removeAllDecorations();
     });
     forms.clear();
-    notifyWebApp({
-      deviceSignedIn: {
-        value: false
-      }
-    });
+
+    if (device.globalConfig.isDDGDomain) {
+      notifyWebApp({
+        deviceSignedIn: {
+          value: false
+        }
+      });
+    }
   };
   /**
    * Requiring consumers to explicitly call this `init` method allows

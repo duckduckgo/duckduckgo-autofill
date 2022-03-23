@@ -1,3 +1,5 @@
+const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
+
 /**
  * This is a centralised place to contain all string/variable replacements
  *
@@ -33,6 +35,8 @@ function createGlobalConfig () {
     const isMobileApp = isDDGApp && !isApp
     const isFirefox = navigator.userAgent.includes('Firefox')
 
+    const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX))
+
     return {
         isApp,
         isDDGApp,
@@ -46,8 +50,10 @@ function createGlobalConfig () {
         contentScope,
         userUnprotectedDomains,
         userPreferences,
-        isDDGTestMode
+        isDDGTestMode,
+        isDDGDomain
     }
 }
 
 module.exports.createGlobalConfig = createGlobalConfig
+module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX
