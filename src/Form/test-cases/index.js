@@ -111,5 +111,10 @@ module.exports = [
     { html: 'aa_login.html' },
     { html: 'hackernews_login_signup.html' },
     { html: 'mkelectricalcontracting_contact.html' },
-    { html: 'mbank_login.html' }
+    { html: 'mbank_login.html' },
+    { html: 'samash_checkout.html', expectedFailures: ['emailAddress'] },
+    { html: 'samash_checkout_international.html' },
+    { html: 'samash_login.html' },
+    { html: 'samash_signup.html' },
+    { html: 'financialtimes_login.html', title: 'Login' }
 ]
