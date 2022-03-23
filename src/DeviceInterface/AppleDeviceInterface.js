@@ -12,7 +12,7 @@ const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-uti
  */
 class AppleDeviceInterface extends InterfacePrototype {
     /** @type {FeatureToggleNames[]} */
-    #supportedFeatures = ['password.generation'];
+    #supportedFeatures = [];
 
     /* @type {Timeout | undefined} */
     pollingTimeout
@@ -26,6 +26,12 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     constructor (config) {
         super(config)
+
+        // Only enable 'password.generation' if we're on the macOS app (for now);
+        if (this.globalConfig.isApp) {
+            this.#supportedFeatures.push('password.generation')
+        }
+
         if (this.globalConfig.isTopFrame) {
             this.stripCredentials = false
             window.addEventListener('mouseMove', this)

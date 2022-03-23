@@ -2484,16 +2484,20 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   constructor(config) {
-    super(config);
+    super(config); // Only enable 'password.generation' if we're on the macOS app (for now);
 
     _classPrivateFieldInitSpec(this, _supportedFeatures, {
       writable: true,
-      value: ['password.generation']
+      value: []
     });
 
     _defineProperty(this, "pollingTimeout", void 0);
 
     _defineProperty(this, "transport", createTransport(this.globalConfig));
+
+    if (this.globalConfig.isApp) {
+      _classPrivateFieldGet(this, _supportedFeatures).push('password.generation');
+    }
 
     if (this.globalConfig.isTopFrame) {
       this.stripCredentials = false;
