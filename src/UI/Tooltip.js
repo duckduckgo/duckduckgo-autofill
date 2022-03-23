@@ -1,10 +1,16 @@
-const {safeExecute, addInlineStyles, isTopFrame} = require('../autofill-utils')
+const {safeExecute, addInlineStyles} = require('../autofill-utils')
 const {getSubtypeFromType} = require('../Form/matching')
 
 class Tooltip {
+    /**
+     * @param config
+     * @param inputType
+     * @param getPosition
+     * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+     */
     constructor (config, inputType, getPosition, deviceInterface) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({
-            mode: deviceInterface.mode === 'test'
+            mode: deviceInterface.globalConfig.isDDGTestMode
                 ? 'open'
                 : 'closed'
         })
@@ -89,7 +95,7 @@ class Tooltip {
         }
 
         let newRule = `.wrapper {transform: translate(${left}px, ${top}px);}`
-        if (isTopFrame) {
+        if (this.interface.globalConfig.isTopFrame) {
             newRule = '.wrapper {transform: none; }'
         }
         shadow.styleSheets[0].insertRule(newRule, this.transformRuleIndex)
@@ -145,7 +151,7 @@ class Tooltip {
         }
     }
     setupSizeListener () {
-        if (!isTopFrame) return
+        if (!this.interface.globalConfig.isTopFrame) return
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
             this.setSize()
@@ -153,7 +159,7 @@ class Tooltip {
         observer.observe({entryTypes: ['layout-shift', 'paint']})
     }
     setSize () {
-        if (!isTopFrame) return
+        if (!this.interface.globalConfig.isTopFrame) return
         const innerNode = this.shadow.querySelector('.wrapper--data')
         // Shouldn't be possible
         if (!innerNode) return

@@ -1,9 +1,6 @@
 const {
     ADDRESS_DOMAIN,
     SIGN_IN_MSG,
-    isApp,
-    isMobileApp,
-    isDDGDomain,
     sendAndWaitForAnswer,
     formatDuckAddress,
     autofillEnabled,
@@ -21,14 +18,11 @@ const {forms} = require('../scanForInputs')
 const {fromPassword, GENERATED_ID} = require('../InputTypes/Credentials')
 const {PasswordGenerator} = require('../PasswordGenerator')
 
-// This may get replaced by a test script
-let isDDGTestMode = false
-
 /**
  * @implements {FeatureToggles}
+ * @implements {GlobalConfigImpl}
  */
 class InterfacePrototype {
-    mode = isDDGTestMode ? 'test' : 'production';
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     currentAttached = null
@@ -44,6 +38,15 @@ class InterfacePrototype {
         privateAddress: '',
         personalAddress: ''
     }
+
+    /** @type {GlobalConfig} */
+    globalConfig;
+
+    /** @param {GlobalConfig} config */
+    constructor (config) {
+        this.globalConfig = config
+    }
+
     get hasLocalAddresses () {
         return !!(this.#addresses?.privateAddress && this.#addresses?.personalAddress)
     }
@@ -170,8 +173,8 @@ class InterfacePrototype {
 
     async startInit () {
         window.addEventListener('pointerdown', this, true)
-
         listenForGlobalFormSubmission()
+
         this.addDeviceListeners()
         await this.setupAutofill()
         await this.setupSettingsPage()
@@ -181,7 +184,7 @@ class InterfacePrototype {
     postInit () {}
 
     async isEnabled () {
-        return autofillEnabled()
+        return autofillEnabled(this.globalConfig)
     }
 
     async init () {
@@ -211,7 +214,7 @@ class InterfacePrototype {
             this.removeTooltip()
         }
 
-        if (!isApp) return
+        if (!this.globalConfig.isApp) return
 
         // Check for clicks on submit buttons
         const matchingForm = [...forms.values()].find(
@@ -262,7 +265,7 @@ class InterfacePrototype {
     createTooltip (getPosition, topContextData) {
         const config = getInputConfigFromType(topContextData.inputType)
 
-        if (isApp) {
+        if (this.globalConfig.isApp) {
             // collect the data for each item to display
             const data = this.dataForAutofill(config, topContextData.inputType, topContextData)
 
@@ -317,7 +320,7 @@ class InterfacePrototype {
         this.currentAttached = form
         const inputType = getInputType(input)
 
-        if (isMobileApp) {
+        if (this.globalConfig.isMobileApp) {
             this.getAlias().then((alias) => {
                 if (alias) form.autofillEmail(alias)
                 else form.activeInput?.focus()
@@ -468,8 +471,8 @@ class InterfacePrototype {
     }
 
     async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
-        if (isDDGDomain()) {
-            notifyWebApp({isApp})
+        if (this.globalConfig.isDDGDomain) {
+            notifyWebApp({isApp: this.globalConfig.isApp})
 
             if (this.isDeviceSignedIn()) {
                 let userData
@@ -492,14 +495,16 @@ class InterfacePrototype {
     }
 
     async setupAutofill () {}
-    getAddresses () {}
-    /**
-     * @returns {Promise<null|Record<any,any>>}
-     */
+
+    /** @returns {Promise<EmailAddresses>} */
+    async getAddresses () { throw new Error('unimplemented') }
+
+    /** @returns {Promise<null|Record<any,any>>} */
     getUserData () { return Promise.resolve(null) }
+
     refreshAlias () {}
     async trySigningIn () {
-        if (isDDGDomain()) {
+        if (this.globalConfig.isDDGDomain) {
             if (this.attempts < 10) {
                 this.attempts++
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
@@ -536,6 +541,9 @@ class InterfacePrototype {
 
     openManagePasswords () {}
     storeFormData (_values) {}
+
+    /** @param {{height: number, width: number}} _args */
+    setSize (_args) {}
 
     /** @param {FeatureToggleNames} _name */
     supportsFeature (_name) {

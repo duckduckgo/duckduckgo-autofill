@@ -1,17 +1,22 @@
 const {
-    isApp,
     formatDuckAddress,
     escapeXML
 } = require('../autofill-utils')
 const Tooltip = require('./Tooltip')
 
 class EmailAutofill extends Tooltip {
+    /**
+     * @param config
+     * @param inputType
+     * @param position
+     * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+     */
     constructor (config, inputType, position, deviceInterface) {
         super(config, inputType, position, deviceInterface)
 
         this.addresses = this.interface.getLocalAddresses()
 
-        const includeStyles = isApp
+        const includeStyles = deviceInterface.globalConfig.isApp
             ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
 

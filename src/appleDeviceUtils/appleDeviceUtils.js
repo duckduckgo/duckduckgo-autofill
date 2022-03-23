@@ -1,22 +1,16 @@
-// Do not remove -- Apple devices change this when they support modern webkit messaging
-let hasModernWebkitAPI = false
-// INJECT hasModernWebkitAPI HERE
-
-// The native layer will inject a randomised secret here and use it to verify the origin
-let secret = 'PLACEHOLDER_SECRET'
-
 const ddgGlobals = require('./captureDdgGlobals')
 
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  */
-const wkSend = (handler, data = {}) => {
+const wkSend = (handler, data = {}, opts) => {
     if (!(handler in window.webkit.messageHandlers)) {
         throw new Error(`Missing webkit handler: '${handler}'`)
     }
-    return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret}})
+    return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret: opts.secret}})
 }
 
 /**
@@ -42,11 +36,12 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * Sends message to the webkit layer and waits for the specified response
  * @param {String} handler
  * @param {*} data
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  * @returns {Promise<*>}
  */
-const wkSendAndWait = async (handler, data = {}) => {
-    if (hasModernWebkitAPI) {
-        const response = await wkSend(handler, data)
+const wkSendAndWait = async (handler, data = {}, opts = {}) => {
+    if (opts.hasModernWebkitAPI) {
+        const response = await wkSend(handler, data, opts)
         return ddgGlobals.JSONparse(response || '{}')
     }
 
@@ -59,11 +54,11 @@ const wkSendAndWait = async (handler, data = {}) => {
             generateRandomMethod(randMethodName, resolve)
             data.messageHandling = {
                 methodName: randMethodName,
-                secret,
+                secret: opts.secret,
                 key: ddgGlobals.Arrayfrom(key),
                 iv: ddgGlobals.Arrayfrom(iv)
             }
-            wkSend(handler, data)
+            wkSend(handler, data, opts)
         })
 
         const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag])
@@ -99,7 +94,24 @@ const decrypt = async (ciphertext, key, iv) => {
     return dec.decode(decrypted)
 }
 
-module.exports = {
-    wkSend,
-    wkSendAndWait
+/**
+ * Create a wrapper around the webkit messaging that conforms
+ * to the Transport interface
+ *
+ * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
+ * @returns {Transport}
+ */
+function createTransport (config) {
+    /** @type {Transport} */
+    const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
+        send (name, data) {
+            return wkSendAndWait(name, data, {
+                secret: config.secret,
+                hasModernWebkitAPI: config.hasModernWebkitAPI
+            })
+        }
+    }
+    return transport
 }
+
+module.exports = { createTransport }

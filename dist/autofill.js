@@ -2348,9 +2348,8 @@ module.exports={
 "use strict";
 
 const {
-  isDDGApp,
-  isAndroid
-} = require('./autofill-utils');
+  createGlobalConfig
+} = require('./config');
 
 const AndroidInterface = require('./DeviceInterface/AndroidInterface');
 
@@ -2360,22 +2359,23 @@ const AppleDeviceInterface = require('./DeviceInterface/AppleDeviceInterface'); 
 
 
 const deviceInterface = (() => {
-  if (isDDGApp) {
-    return isAndroid ? new AndroidInterface() : new AppleDeviceInterface();
+  const globalConfig = createGlobalConfig();
+
+  if (globalConfig.isDDGApp) {
+    return globalConfig.isAndroid ? new AndroidInterface(globalConfig) : new AppleDeviceInterface(globalConfig);
   }
 
-  return new ExtensionInterface();
+  return new ExtensionInterface(globalConfig);
 })();
 
 module.exports = deviceInterface;
 
-},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./autofill-utils":36}],8:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./config":38}],8:[function(require,module,exports){
 "use strict";
 
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
-  isDDGDomain,
   sendAndWaitForAnswer
 } = require('../autofill-utils');
 
@@ -2395,7 +2395,7 @@ class AndroidInterface extends InterfacePrototype {
 
   isDeviceSignedIn() {
     // isDeviceSignedIn is only available on DDG domains...
-    if (isDDGDomain()) return window.EmailInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
+    if (this.globalConfig.isDDGDomain) return window.EmailInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
 
     return true;
   }
@@ -2432,7 +2432,7 @@ class AndroidInterface extends InterfacePrototype {
 
 module.exports = AndroidInterface;
 
-},{"../autofill-utils":36,"../scanForInputs.js":40,"./InterfacePrototype.js":11}],9:[function(require,module,exports){
+},{"../autofill-utils":36,"../scanForInputs.js":41,"./InterfacePrototype.js":11}],9:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -2450,14 +2450,10 @@ function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { 
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
-  wkSend,
-  wkSendAndWait
+  createTransport
 } = require('../appleDeviceUtils/appleDeviceUtils');
 
 const {
-  isApp,
-  isTopFrame,
-  supportsTopFrame,
   formatDuckAddress,
   autofillEnabled
 } = require('../autofill-utils');
@@ -2481,31 +2477,39 @@ class AppleDeviceInterface extends InterfacePrototype {
   /** @type {FeatureToggleNames[]} */
 
   /* @type {Timeout | undefined} */
+
+  /** @type {Transport} */
   async isEnabled() {
-    return autofillEnabled(processConfig);
+    return autofillEnabled(this.globalConfig, processConfig);
   }
 
-  constructor() {
-    super();
+  constructor(config) {
+    super(config); // Only enable 'password.generation' if we're on the macOS app (for now);
 
     _classPrivateFieldInitSpec(this, _supportedFeatures, {
       writable: true,
-      value: ['password.generation']
+      value: []
     });
 
     _defineProperty(this, "pollingTimeout", void 0);
 
-    if (isTopFrame) {
+    _defineProperty(this, "transport", createTransport(this.globalConfig));
+
+    if (this.globalConfig.isApp) {
+      _classPrivateFieldGet(this, _supportedFeatures).push('password.generation');
+    }
+
+    if (this.globalConfig.isTopFrame) {
       this.stripCredentials = false;
       window.addEventListener('mouseMove', this);
-    } else if (supportsTopFrame) {
+    } else if (this.globalConfig.supportsTopFrame) {
       // This is always added as a child frame needs to be informed of a parent frame scroll
       window.addEventListener('scroll', this);
     }
   }
 
   postInit() {
-    if (!isTopFrame) return;
+    if (!this.globalConfig.isTopFrame) return;
     this.setupTopFrame();
   }
 
@@ -2539,7 +2543,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   async listenForSelectedCredential() {
     // Prevent two timeouts from happening
     clearTimeout(this.pollingTimeout);
-    const response = await wkSendAndWait('getSelectedCredentials');
+    const response = await this.transport.send('getSelectedCredentials');
 
     switch (response.type) {
       case 'none':
@@ -2580,14 +2584,14 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   async setupAutofill() {
-    if (isApp) {
+    if (this.globalConfig.isApp) {
       await this.getAutofillInitData();
     }
 
     const signedIn = await this._checkDeviceSignedIn();
 
     if (signedIn) {
-      if (isApp) {
+      if (this.globalConfig.isApp) {
         await this.getAddresses();
       }
 
@@ -2599,28 +2603,28 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   getUserData() {
-    return wkSendAndWait('emailHandlerGetUserData');
+    return this.transport.send('emailHandlerGetUserData');
   }
 
   async getAddresses() {
-    if (!isApp) return this.getAlias();
+    if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await wkSendAndWait('emailHandlerGetAddresses');
+    } = await this.transport.send('emailHandlerGetAddresses');
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await wkSendAndWait('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
+    await this.transport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
 
-    if (isApp) this.getAddresses();
+    if (this.globalConfig.isApp) this.getAddresses();
   }
 
   async _checkDeviceSignedIn() {
     const {
       isAppSignedIn
-    } = await wkSendAndWait('emailHandlerCheckAppSignedInStatus');
+    } = await this.transport.send('emailHandlerCheckAppSignedInStatus');
 
     this.isDeviceSignedIn = () => !!isAppSignedIn;
 
@@ -2628,7 +2632,7 @@ class AppleDeviceInterface extends InterfacePrototype {
   }
 
   async setSize(details) {
-    await wkSend('setSize', details);
+    await this.transport.send('setSize', details);
   }
   /**
    * @param {import("../Form/Form").Form} form
@@ -2640,6 +2644,11 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   attachTooltipInner(form, input, getPosition, click, topContextData) {
+    const {
+      isTopFrame,
+      supportsTopFrame
+    } = this.globalConfig;
+
     if (!isTopFrame && supportsTopFrame) {
       // TODO currently only mouse initiated events are supported
       if (!click) {
@@ -2669,15 +2678,15 @@ class AppleDeviceInterface extends InterfacePrototype {
       inputWidth: Math.floor(inputDimensions.width),
       serializedInputContext: JSON.stringify(data)
     };
-    await wkSend('showAutofillParent', details); // Start listening for the user initiated credential
+    await this.transport.send('showAutofillParent', details); // Start listening for the user initiated credential
 
     this.listenForSelectedCredential();
   }
 
   async removeTooltip() {
-    if (!supportsTopFrame) return super.removeTooltip();
+    if (!this.globalConfig.supportsTopFrame) return super.removeTooltip();
     this.removeCloseListeners();
-    await wkSend('closeAutofillParent', {});
+    await this.transport.send('closeAutofillParent', {});
   }
 
   storeUserData(_ref) {
@@ -2688,7 +2697,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         cohort
       }
     } = _ref;
-    return wkSend('emailHandlerStoreToken', {
+    return this.transport.send('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
@@ -2706,7 +2715,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   storeCredentials(credentials) {
-    return wkSend('pmHandlerStoreCredentials', credentials);
+    return this.transport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
    * Sends form data to the native layer
@@ -2715,7 +2724,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   storeFormData(data) {
-    return wkSend('pmHandlerStoreData', data);
+    return this.transport.send('pmHandlerStoreData', data);
   }
   /**
    * Gets the init data from the device
@@ -2724,7 +2733,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   async getAutofillInitData() {
-    const response = await wkSendAndWait('pmHandlerGetAutofillInitData');
+    const response = await this.transport.send('pmHandlerGetAutofillInitData');
     this.storeLocalData(response.success);
     return response;
   }
@@ -2736,7 +2745,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   getAutofillCredentials(id) {
-    return wkSendAndWait('pmHandlerGetAutofillCredentials', {
+    return this.transport.send('pmHandlerGetAutofillCredentials', {
       id
     });
   }
@@ -2746,7 +2755,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   openManagePasswords() {
-    return wkSend('pmHandlerOpenManagePasswords');
+    return this.transport.send('pmHandlerOpenManagePasswords');
   }
   /**
    * Opens the native UI for managing identities
@@ -2754,7 +2763,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   openManageIdentities() {
-    return wkSend('pmHandlerOpenManageIdentities');
+    return this.transport.send('pmHandlerOpenManageIdentities');
   }
   /**
    * Opens the native UI for managing credit cards
@@ -2762,7 +2771,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   openManageCreditCards() {
-    return wkSend('pmHandlerOpenManageCreditCards');
+    return this.transport.send('pmHandlerOpenManageCreditCards');
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -2790,20 +2799,20 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 
   getAutofillCreditCard(id) {
-    return wkSendAndWait('pmHandlerGetCreditCard', {
+    return this.transport.send('pmHandlerGetCreditCard', {
       id
     });
   } // Used to encode data to send back to the child autofill
 
 
   async selectedDetail(detailIn, configType) {
-    if (isTopFrame) {
+    if (this.globalConfig.isTopFrame) {
       let detailsEntries = Object.entries(detailIn).map(_ref3 => {
         let [key, value] = _ref3;
         return [key, String(value)];
       });
       const data = Object.fromEntries(detailsEntries);
-      wkSend('selectedDetail', {
+      this.transport.send('selectedDetail', {
         data,
         configType
       });
@@ -2822,9 +2831,9 @@ class AppleDeviceInterface extends InterfacePrototype {
   async getAlias() {
     const {
       alias
-    } = await wkSendAndWait('emailHandlerGetAlias', {
-      requiresUserPermission: !isApp,
-      shouldConsumeAliasIfProvided: !isApp
+    } = await this.transport.send('emailHandlerGetAlias', {
+      requiresUserPermission: !this.globalConfig.isApp,
+      shouldConsumeAliasIfProvided: !this.globalConfig.isApp
     });
     return formatDuckAddress(alias);
   }
@@ -2839,14 +2848,13 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 module.exports = AppleDeviceInterface;
 
-},{"../appleDeviceUtils/appleDeviceUtils":34,"../autofill-utils":36,"../scanForInputs.js":40,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
+},{"../appleDeviceUtils/appleDeviceUtils":34,"../autofill-utils":36,"../scanForInputs.js":41,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
 "use strict";
 
 const InterfacePrototype = require('./InterfacePrototype.js');
 
 const {
   SIGN_IN_MSG,
-  isDDGDomain,
   sendAndWaitForAnswer,
   setValue,
   formatDuckAddress,
@@ -2904,7 +2912,7 @@ class ExtensionInterface extends InterfacePrototype {
   }
 
   async trySigningIn() {
-    if (isDDGDomain()) {
+    if (this.globalConfig.isDDGDomain) {
       const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData');
       this.storeUserData(data);
     }
@@ -2933,7 +2941,7 @@ class ExtensionInterface extends InterfacePrototype {
           break;
 
         case 'contextualAutofill':
-          setValue(activeEl, formatDuckAddress(message.alias));
+          setValue(activeEl, formatDuckAddress(message.alias), this.globalConfig);
           activeEl.classList.add('ddg-autofilled');
           this.refreshAlias(); // If the user changes the alias, remove the decoration
 
@@ -2961,7 +2969,7 @@ class ExtensionInterface extends InterfacePrototype {
 
 module.exports = ExtensionInterface;
 
-},{"../autofill-utils":36,"../scanForInputs.js":40,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../autofill-utils":36,"../scanForInputs.js":41,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
 "use strict";
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
@@ -2983,9 +2991,6 @@ function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { 
 const {
   ADDRESS_DOMAIN,
   SIGN_IN_MSG,
-  isApp,
-  isMobileApp,
-  isDDGDomain,
   sendAndWaitForAnswer,
   formatDuckAddress,
   autofillEnabled,
@@ -3022,22 +3027,30 @@ const {
 
 const {
   PasswordGenerator
-} = require('../PasswordGenerator'); // This may get replaced by a test script
-
-
-let isDDGTestMode = false;
+} = require('../PasswordGenerator');
 /**
  * @implements {FeatureToggles}
+ * @implements {GlobalConfigImpl}
  */
+
 
 var _addresses = /*#__PURE__*/new WeakMap();
 
 var _data2 = /*#__PURE__*/new WeakMap();
 
 class InterfacePrototype {
-  constructor() {
-    _defineProperty(this, "mode", isDDGTestMode ? 'test' : 'production');
+  /** @type {import("../Form/Form").Form | null} */
 
+  /** @type {import("../UI/Tooltip") | null} */
+
+  /** @type {PasswordGenerator} */
+
+  /** @type {{privateAddress: string, personalAddress: string}} */
+
+  /** @type {GlobalConfig} */
+
+  /** @param {GlobalConfig} config */
+  constructor(config) {
     _defineProperty(this, "attempts", 0);
 
     _defineProperty(this, "currentAttached", null);
@@ -3056,6 +3069,8 @@ class InterfacePrototype {
       }
     });
 
+    _defineProperty(this, "globalConfig", void 0);
+
     _classPrivateFieldInitSpec(this, _data2, {
       writable: true,
       value: {
@@ -3065,6 +3080,8 @@ class InterfacePrototype {
         topContextData: undefined
       }
     });
+
+    this.globalConfig = config;
   }
 
   get hasLocalAddresses() {
@@ -3218,7 +3235,7 @@ class InterfacePrototype {
   postInit() {}
 
   async isEnabled() {
-    return autofillEnabled();
+    return autofillEnabled(this.globalConfig);
   }
 
   async init() {
@@ -3247,7 +3264,7 @@ class InterfacePrototype {
       this.removeTooltip();
     }
 
-    if (!isApp) return; // Check for clicks on submit buttons
+    if (!this.globalConfig.isApp) return; // Check for clicks on submit buttons
 
     const matchingForm = [...forms.values()].find(form => {
       const btns = [...form.submitButtons]; // @ts-ignore
@@ -3301,7 +3318,7 @@ class InterfacePrototype {
   createTooltip(getPosition, topContextData) {
     const config = getInputConfigFromType(topContextData.inputType);
 
-    if (isApp) {
+    if (this.globalConfig.isApp) {
       // collect the data for each item to display
       const data = this.dataForAutofill(config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
 
@@ -3359,7 +3376,7 @@ class InterfacePrototype {
     this.currentAttached = form;
     const inputType = getInputType(input);
 
-    if (isMobileApp) {
+    if (this.globalConfig.isMobileApp) {
       this.getAlias().then(alias => {
         var _form$activeInput;
 
@@ -3526,9 +3543,9 @@ class InterfacePrototype {
       shouldLog: false
     };
 
-    if (isDDGDomain()) {
+    if (this.globalConfig.isDDGDomain) {
       notifyWebApp({
-        isApp
+        isApp: this.globalConfig.isApp
       });
 
       if (this.isDeviceSignedIn()) {
@@ -3553,11 +3570,13 @@ class InterfacePrototype {
   }
 
   async setupAutofill() {}
+  /** @returns {Promise<EmailAddresses>} */
 
-  getAddresses() {}
-  /**
-   * @returns {Promise<null|Record<any,any>>}
-   */
+
+  async getAddresses() {
+    throw new Error('unimplemented');
+  }
+  /** @returns {Promise<null|Record<any,any>>} */
 
 
   getUserData() {
@@ -3567,7 +3586,7 @@ class InterfacePrototype {
   refreshAlias() {}
 
   async trySigningIn() {
-    if (isDDGDomain()) {
+    if (this.globalConfig.isDDGDomain) {
       if (this.attempts < 10) {
         this.attempts++;
         const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
@@ -3629,6 +3648,10 @@ class InterfacePrototype {
   openManagePasswords() {}
 
   storeFormData(_values) {}
+  /** @param {{height: number, width: number}} _args */
+
+
+  setSize(_args) {}
   /** @param {FeatureToggleNames} _name */
 
 
@@ -3640,7 +3663,7 @@ class InterfacePrototype {
 
 module.exports = InterfacePrototype;
 
-},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../InputTypes/Credentials":25,"../PasswordGenerator":28,"../UI/DataAutofill":29,"../UI/EmailAutofill":30,"../autofill-utils":36,"../scanForInputs":40}],12:[function(require,module,exports){
+},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../InputTypes/Credentials":25,"../PasswordGenerator":28,"../UI/DataAutofill":29,"../UI/EmailAutofill":30,"../autofill-utils":36,"../scanForInputs":41}],12:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -3652,8 +3675,6 @@ const {
   removeInlineStyles,
   setValue,
   isEventWithinDax,
-  isMobileApp,
-  isApp,
   getDaxBoundingBox,
   isLikelyASubmitButton,
   isVisible
@@ -3901,7 +3922,7 @@ class Form {
 
   resetAllInputs() {
     this.execOnInputs(input => {
-      setValue(input, '');
+      setValue(input, '', this.device.globalConfig);
       this.removeInputHighlight(input);
     });
     if (this.activeInput) this.activeInput.focus();
@@ -4049,7 +4070,7 @@ class Form {
 
       const getPosition = () => {
         // In extensions, the tooltip is centered on the Dax icon
-        return isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input);
+        return this.device.globalConfig.isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input);
       }; // Checks for mousedown event
 
 
@@ -4063,7 +4084,7 @@ class Form {
       }
 
       if (this.shouldOpenTooltip(e, input)) {
-        if (isEventWithinDax(e, input) || isMobileApp) {
+        if (isEventWithinDax(e, input) || this.device.globalConfig.isMobileApp) {
           e.preventDefault();
           e.stopImmediatePropagation();
         }
@@ -4075,7 +4096,7 @@ class Form {
 
     if (input.nodeName !== 'SELECT') {
       const events = ['pointerdown'];
-      if (!isMobileApp) events.push('focus');
+      if (!this.device.globalConfig.isMobileApp) events.push('focus');
       input.labels.forEach(label => {
         this.addListener(label, 'pointerdown', handlerLabel);
       });
@@ -4086,7 +4107,7 @@ class Form {
   }
 
   shouldOpenTooltip(e, input) {
-    if (isApp) return true;
+    if (this.device.globalConfig.isApp) return true;
     const inputType = getInputMainType(input);
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
   }
@@ -4105,7 +4126,7 @@ class Form {
     !isEmailAutofill // and we're not auto-filling email
     ) return; // do not overwrite the value
 
-    const successful = setValue(input, string);
+    const successful = setValue(input, string, this.device.globalConfig);
     if (!successful) return;
     input.classList.add('ddg-autofilled');
     addInlineStyles(input, getIconStylesAutofilled(input, this)); // If the user changes the value, remove the decoration
@@ -4158,7 +4179,7 @@ class Form {
 
 module.exports.Form = Form;
 
-},{"../autofill-utils":36,"../constants":38,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22,"./matching-configuration":21}],13:[function(require,module,exports){
+},{"../autofill-utils":36,"../constants":39,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22,"./matching-configuration":21}],13:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -4413,7 +4434,7 @@ class FormAnalyzer {
 
 module.exports = FormAnalyzer;
 
-},{"../autofill-utils":36,"../constants":38,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
+},{"../autofill-utils":36,"../constants":39,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -5399,11 +5420,6 @@ module.exports = {
 "use strict";
 
 const {
-  isDDGApp,
-  isApp
-} = require('../autofill-utils');
-
-const {
   daxBase64
 } = require('./logo-svg');
 
@@ -5425,11 +5441,7 @@ const {
 
 const {
   IdentityTooltipItem
-} = require('../InputTypes/Identity'); // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
-
-
-const isFirefox = navigator.userAgent.includes('Firefox');
-const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
+} = require('../InputTypes/Identity');
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
@@ -5437,10 +5449,17 @@ const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img
  * @return {string}
  */
 
+
 const getIdentitiesIcon = (input, _ref) => {
   let {
     device
   } = _ref;
+  // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+  const {
+    isDDGApp,
+    isFirefox
+  } = device.globalConfig;
+  const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
   const subtype = getInputSubtype(input);
   if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg;
   return '';
@@ -5519,7 +5538,7 @@ const inputTypeConfig = {
       if (!canBeDecorated(_input)) return false;
       const subtype = getInputSubtype(_input);
 
-      if (isApp) {
+      if (device.globalConfig.isApp) {
         var _device$getLocalIdent;
 
         return Boolean((_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]));
@@ -5574,7 +5593,7 @@ module.exports = {
   getInputConfigFromType
 };
 
-},{"../InputTypes/Credentials":25,"../InputTypes/CreditCard":26,"../InputTypes/Identity":27,"../UI/img/ddgPasswordIcon":32,"../autofill-utils":36,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
+},{"../InputTypes/Credentials":25,"../InputTypes/CreditCard":26,"../InputTypes/Identity":27,"../UI/img/ddgPasswordIcon":32,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -5668,7 +5687,7 @@ const listenForGlobalFormSubmission = () => {
 
 module.exports = listenForGlobalFormSubmission;
 
-},{"../autofill-utils":36,"../scanForInputs":40}],20:[function(require,module,exports){
+},{"../autofill-utils":36,"../scanForInputs":41}],20:[function(require,module,exports){
 "use strict";
 
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
@@ -7269,7 +7288,7 @@ module.exports = {
   Matching
 };
 
-},{"../constants":38,"./label-util":18,"./vendor-regex":24}],23:[function(require,module,exports){
+},{"../constants":39,"./label-util":18,"./vendor-regex":24}],23:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -7657,8 +7676,6 @@ module.exports.PasswordGenerator = PasswordGenerator;
 "use strict";
 
 const {
-  isApp,
-  isTopFrame,
   escapeXML
 } = require('../autofill-utils');
 
@@ -7671,6 +7688,10 @@ class DataAutofill extends Tooltip {
    * @param {{onSelect(id:string): void}} callbacks
    */
   render(config, items, callbacks) {
+    const {
+      isApp,
+      isTopFrame
+    } = this.interface.globalConfig;
     const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
 
@@ -7709,7 +7730,6 @@ module.exports = DataAutofill;
 "use strict";
 
 const {
-  isApp,
   formatDuckAddress,
   escapeXML
 } = require('../autofill-utils');
@@ -7717,10 +7737,16 @@ const {
 const Tooltip = require('./Tooltip');
 
 class EmailAutofill extends Tooltip {
+  /**
+   * @param config
+   * @param inputType
+   * @param position
+   * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+   */
   constructor(config, inputType, position, deviceInterface) {
     super(config, inputType, position, deviceInterface);
     this.addresses = this.interface.getLocalAddresses();
-    const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
+    const includeStyles = deviceInterface.globalConfig.isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat(formatDuckAddress(escapeXML(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
@@ -7770,8 +7796,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 const {
   safeExecute,
-  addInlineStyles,
-  isTopFrame
+  addInlineStyles
 } = require('../autofill-utils');
 
 const {
@@ -7779,6 +7804,12 @@ const {
 } = require('../Form/matching');
 
 class Tooltip {
+  /**
+   * @param config
+   * @param inputType
+   * @param getPosition
+   * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+   */
   constructor(config, inputType, getPosition, deviceInterface) {
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
 
@@ -7799,7 +7830,7 @@ class Tooltip {
     _defineProperty(this, "clickableButtons", new Map());
 
     this.shadow = document.createElement('ddg-autofill').attachShadow({
-      mode: deviceInterface.mode === 'test' ? 'open' : 'closed'
+      mode: deviceInterface.globalConfig.isDDGTestMode ? 'open' : 'closed'
     });
     this.host = this.shadow.host;
     this.config = config;
@@ -7905,7 +7936,7 @@ class Tooltip {
 
     let newRule = ".wrapper {transform: translate(".concat(left, "px, ").concat(top, "px);}");
 
-    if (isTopFrame) {
+    if (this.interface.globalConfig.isTopFrame) {
       newRule = '.wrapper {transform: none; }';
     }
 
@@ -7954,7 +7985,7 @@ class Tooltip {
   }
 
   setupSizeListener() {
-    if (!isTopFrame) return; // Listen to layout and paint changes to register the size
+    if (!this.interface.globalConfig.isTopFrame) return; // Listen to layout and paint changes to register the size
 
     const observer = new PerformanceObserver(() => {
       this.setSize();
@@ -7965,7 +7996,7 @@ class Tooltip {
   }
 
   setSize() {
-    if (!isTopFrame) return;
+    if (!this.interface.globalConfig.isTopFrame) return;
     const innerNode = this.shadow.querySelector('.wrapper--data'); // Shouldn't be possible
 
     if (!innerNode) return;
@@ -8031,22 +8062,18 @@ module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box
 },{}],34:[function(require,module,exports){
 "use strict";
 
-// Do not remove -- Apple devices change this when they support modern webkit messaging
-let hasModernWebkitAPI = false; // INJECT hasModernWebkitAPI HERE
-// The native layer will inject a randomised secret here and use it to verify the origin
-
-let secret = 'PLACEHOLDER_SECRET';
-
 const ddgGlobals = require('./captureDdgGlobals');
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  */
 
 
 const wkSend = function (handler) {
   let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let opts = arguments.length > 2 ? arguments[2] : undefined;
 
   if (!(handler in window.webkit.messageHandlers)) {
     throw new Error("Missing webkit handler: '".concat(handler, "'"));
@@ -8054,7 +8081,7 @@ const wkSend = function (handler) {
 
   return window.webkit.messageHandlers[handler].postMessage({ ...data,
     messageHandling: { ...data.messageHandling,
-      secret
+      secret: opts.secret
     }
   });
 };
@@ -8082,15 +8109,17 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * Sends message to the webkit layer and waits for the specified response
  * @param {String} handler
  * @param {*} data
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  * @returns {Promise<*>}
  */
 
 
 const wkSendAndWait = async function (handler) {
   let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  if (hasModernWebkitAPI) {
-    const response = await wkSend(handler, data);
+  if (opts.hasModernWebkitAPI) {
+    const response = await wkSend(handler, data, opts);
     return ddgGlobals.JSONparse(response || '{}');
   }
 
@@ -8105,11 +8134,11 @@ const wkSendAndWait = async function (handler) {
       generateRandomMethod(randMethodName, resolve);
       data.messageHandling = {
         methodName: randMethodName,
-        secret,
+        secret: opts.secret,
         key: ddgGlobals.Arrayfrom(key),
         iv: ddgGlobals.Arrayfrom(iv)
       };
-      wkSend(handler, data);
+      wkSend(handler, data, opts);
     });
     const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag]);
     const decrypted = await decrypt(cipher, key, iv);
@@ -8149,10 +8178,32 @@ const decrypt = async (ciphertext, key, iv) => {
   let dec = new ddgGlobals.TextDecoder();
   return dec.decode(decrypted);
 };
+/**
+ * Create a wrapper around the webkit messaging that conforms
+ * to the Transport interface
+ *
+ * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
+ * @returns {Transport}
+ */
+
+
+function createTransport(config) {
+  /** @type {Transport} */
+  const transport = {
+    // this is a separate variable to ensure type-safety is not lost when returning directly
+    send(name, data) {
+      return wkSendAndWait(name, data, {
+        secret: config.secret,
+        hasModernWebkitAPI: config.hasModernWebkitAPI
+      });
+    }
+
+  };
+  return transport;
+}
 
 module.exports = {
-  wkSend,
-  wkSendAndWait
+  createTransport
 };
 
 },{"./captureDdgGlobals":35}],35:[function(require,module,exports){
@@ -8188,28 +8239,12 @@ const {
   getInputSubtype
 } = require('./Form/matching');
 
-let isApp = false;
-let isTopFrame = false;
-let supportsTopFrame = false; // Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
-// INJECT isApp HERE
-// INJECT isTopFrame HERE
-// INJECT supportsTopFrame HERE
-
-let isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp || isTopFrame;
-const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
-const isMobileApp = isDDGApp && !isApp;
-const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
 const SIGN_IN_MSG = {
   signMeIn: true
-};
-
-const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX); // Send a message to the web app (only on DDG domains)
-
+}; // Send a message to the web app (only on DDG domains)
 
 const notifyWebApp = message => {
-  if (isDDGDomain()) {
-    window.postMessage(message, window.origin);
-  }
+  window.postMessage(message, window.origin);
 };
 /**
  * Sends a message and returns a Promise that resolves with the response
@@ -8237,19 +8272,24 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     window.addEventListener('message', handler);
   });
 };
+/**
+ * @param {GlobalConfig} globalConfig
+ * @param [processConfig]
+ * @return {boolean}
+ */
 
-const autofillEnabled = processConfig => {
-  let contentScope = null;
-  let userUnprotectedDomains = null;
-  let userPreferences = null; // INJECT contentScope HERE
-  // INJECT userUnprotectedDomains HERE
-  // INJECT userPreferences HERE
 
-  if (!contentScope) {
+const autofillEnabled = (globalConfig, processConfig) => {
+  if (!globalConfig.contentScope) {
     // Return enabled for platforms that haven't implemented the config yet
     return true;
-  } // Check config on Apple platforms
+  }
 
+  const {
+    contentScope,
+    userUnprotectedDomains,
+    userPreferences
+  } = globalConfig; // Check config on Apple platforms
 
   const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
   return isAutofillEnabledFromProcessedConfig(processedConfig);
@@ -8272,12 +8312,13 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
  * @param {string} val
+ * @param {GlobalConfig} [config]
  * @return {boolean}
  */
 
-const setValueForInput = (el, val) => {
+const setValueForInput = (el, val, config) => {
   // Avoid keyboard flashing on Android
-  if (!isAndroid) {
+  if (!(config !== null && config !== void 0 && config.isAndroid)) {
     el.focus();
   }
 
@@ -8368,12 +8409,13 @@ const setValueForSelect = (el, val) => {
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string} val
+ * @param {GlobalConfig} [config]
  * @return {boolean}
  */
 
 
-const setValue = (el, val) => {
-  if (el instanceof HTMLInputElement) return setValueForInput(el, val);
+const setValue = (el, val, config) => {
+  if (el instanceof HTMLInputElement) return setValueForInput(el, val, config);
   if (el instanceof HTMLSelectElement) return setValueForSelect(el, val);
   return false;
 };
@@ -8523,14 +8565,6 @@ el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250
 
 
 module.exports = {
-  isApp,
-  isTopFrame,
-  isDDGApp,
-  isAndroid,
-  isMobileApp,
-  supportsTopFrame,
-  DDG_DOMAIN_REGEX,
-  isDDGDomain,
   notifyWebApp,
   sendAndWaitForAnswer,
   isAutofillEnabledFromProcessedConfig,
@@ -8567,7 +8601,62 @@ require('./requestIdleCallback');
   }
 })();
 
-},{"./DeviceInterface":7,"./requestIdleCallback":39}],38:[function(require,module,exports){
+},{"./DeviceInterface":7,"./requestIdleCallback":40}],38:[function(require,module,exports){
+"use strict";
+
+const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
+/**
+ * This is a centralised place to contain all string/variable replacements
+ *
+ * @returns {GlobalConfig}
+ */
+
+function createGlobalConfig() {
+  let isApp = false;
+  let isTopFrame = false;
+  let supportsTopFrame = false; // Do not remove -- Apple devices change this when they support modern webkit messaging
+
+  let hasModernWebkitAPI = false; // INJECT isApp HERE
+  // INJECT isTopFrame HERE
+  // INJECT supportsTopFrame HERE
+  // INJECT hasModernWebkitAPI HERE
+
+  let isDDGTestMode = false;
+  let contentScope = null;
+  let userUnprotectedDomains = null;
+  let userPreferences = null; // INJECT contentScope HERE
+  // INJECT userUnprotectedDomains HERE
+  // INJECT userPreferences HERE
+  // The native layer will inject a randomised secret here and use it to verify the origin
+
+  let secret = 'PLACEHOLDER_SECRET';
+  let isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp || isTopFrame;
+  const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
+  const isMobileApp = isDDGApp && !isApp;
+  const isFirefox = navigator.userAgent.includes('Firefox');
+  const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
+  return {
+    isApp,
+    isDDGApp,
+    isAndroid,
+    isFirefox,
+    isMobileApp,
+    isTopFrame,
+    secret,
+    supportsTopFrame,
+    hasModernWebkitAPI,
+    contentScope,
+    userUnprotectedDomains,
+    userPreferences,
+    isDDGTestMode,
+    isDDGDomain
+  };
+}
+
+module.exports.createGlobalConfig = createGlobalConfig;
+module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
+
+},{}],39:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -8576,7 +8665,7 @@ module.exports = {
   TEXT_LENGTH_CUTOFF: 50
 };
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 /*!
@@ -8618,7 +8707,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 
 module.exports = {};
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 const {
@@ -8642,7 +8731,7 @@ const _forms = new Map();
  * to either `init` if in the context of a webpage, or alternatively just perform
  * the synchronous mutations via findEligibleInputs
  *
- * @param DeviceInterface
+ * @param {import("./DeviceInterface/InterfacePrototype")} device
  * @param {Map<HTMLElement, Form>} [forms]
  * @returns {{
  *   init: () => () => void,
@@ -8651,7 +8740,7 @@ const _forms = new Map();
  */
 
 
-const scanForInputs = function (DeviceInterface) {
+const scanForInputs = function (device) {
   let forms = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _forms;
 
   const getParentForm = input => {
@@ -8694,7 +8783,7 @@ const scanForInputs = function (DeviceInterface) {
         forms.delete(childForm);
       }
 
-      forms.set(parentForm, new Form(parentForm, input, DeviceInterface));
+      forms.set(parentForm, new Form(parentForm, input, device));
     }
   };
 
@@ -8734,11 +8823,14 @@ const scanForInputs = function (DeviceInterface) {
       form.removeAllDecorations();
     });
     forms.clear();
-    notifyWebApp({
-      deviceSignedIn: {
-        value: false
-      }
-    });
+
+    if (device.globalConfig.isDDGDomain) {
+      notifyWebApp({
+        deviceSignedIn: {
+          value: false
+        }
+      });
+    }
   };
   /**
    * Requiring consumers to explicitly call this `init` method allows

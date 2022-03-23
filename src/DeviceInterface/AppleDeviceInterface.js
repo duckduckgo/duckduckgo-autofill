@@ -1,9 +1,6 @@
 const InterfacePrototype = require('./InterfacePrototype.js')
-const {wkSend, wkSendAndWait} = require('../appleDeviceUtils/appleDeviceUtils')
+const {createTransport} = require('../appleDeviceUtils/appleDeviceUtils')
 const {
-    isApp,
-    isTopFrame,
-    supportsTopFrame,
     formatDuckAddress,
     autofillEnabled
 } = require('../autofill-utils')
@@ -15,28 +12,37 @@ const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-uti
  */
 class AppleDeviceInterface extends InterfacePrototype {
     /** @type {FeatureToggleNames[]} */
-    #supportedFeatures = ['password.generation'];
+    #supportedFeatures = [];
 
     /* @type {Timeout | undefined} */
     pollingTimeout
 
+    /** @type {Transport} */
+    transport = createTransport(this.globalConfig)
+
     async isEnabled () {
-        return autofillEnabled(processConfig)
+        return autofillEnabled(this.globalConfig, processConfig)
     }
 
-    constructor () {
-        super()
-        if (isTopFrame) {
+    constructor (config) {
+        super(config)
+
+        // Only enable 'password.generation' if we're on the macOS app (for now);
+        if (this.globalConfig.isApp) {
+            this.#supportedFeatures.push('password.generation')
+        }
+
+        if (this.globalConfig.isTopFrame) {
             this.stripCredentials = false
             window.addEventListener('mouseMove', this)
-        } else if (supportsTopFrame) {
+        } else if (this.globalConfig.supportsTopFrame) {
             // This is always added as a child frame needs to be informed of a parent frame scroll
             window.addEventListener('scroll', this)
         }
     }
 
     postInit () {
-        if (!isTopFrame) return
+        if (!this.globalConfig.isTopFrame) return
         this.setupTopFrame()
     }
 
@@ -70,7 +76,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         // Prevent two timeouts from happening
         clearTimeout(this.pollingTimeout)
 
-        const response = await wkSendAndWait('getSelectedCredentials')
+        const response = await this.transport.send('getSelectedCredentials')
         switch (response.type) {
         case 'none':
             // Parent hasn't got a selected credential yet
@@ -105,13 +111,13 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async setupAutofill () {
-        if (isApp) {
+        if (this.globalConfig.isApp) {
             await this.getAutofillInitData()
         }
 
         const signedIn = await this._checkDeviceSignedIn()
         if (signedIn) {
-            if (isApp) {
+            if (this.globalConfig.isApp) {
                 await this.getAddresses()
             }
             forms.forEach(form => form.redecorateAllInputs())
@@ -122,31 +128,31 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     getUserData () {
-        return wkSendAndWait('emailHandlerGetUserData')
+        return this.transport.send('emailHandlerGetUserData')
     }
 
     async getAddresses () {
-        if (!isApp) return this.getAlias()
+        if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await wkSendAndWait('emailHandlerGetAddresses')
+        const {addresses} = await this.transport.send('emailHandlerGetAddresses')
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
     async refreshAlias () {
-        await wkSendAndWait('emailHandlerRefreshAlias')
+        await this.transport.send('emailHandlerRefreshAlias')
         // On macOS we also update the addresses stored locally
-        if (isApp) this.getAddresses()
+        if (this.globalConfig.isApp) this.getAddresses()
     }
 
     async _checkDeviceSignedIn () {
-        const {isAppSignedIn} = await wkSendAndWait('emailHandlerCheckAppSignedInStatus')
+        const {isAppSignedIn} = await this.transport.send('emailHandlerCheckAppSignedInStatus')
         this.isDeviceSignedIn = () => !!isAppSignedIn
         return !!isAppSignedIn
     }
 
     async setSize (details) {
-        await wkSend('setSize', details)
+        await this.transport.send('setSize', details)
     }
 
     /**
@@ -157,6 +163,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {TopContextData} topContextData
      */
     attachTooltipInner (form, input, getPosition, click, topContextData) {
+        const {isTopFrame, supportsTopFrame} = this.globalConfig
         if (!isTopFrame && supportsTopFrame) {
             // TODO currently only mouse initiated events are supported
             if (!click) {
@@ -185,20 +192,20 @@ class AppleDeviceInterface extends InterfacePrototype {
             serializedInputContext: JSON.stringify(data)
         }
 
-        await wkSend('showAutofillParent', details)
+        await this.transport.send('showAutofillParent', details)
 
         // Start listening for the user initiated credential
         this.listenForSelectedCredential()
     }
 
     async removeTooltip () {
-        if (!supportsTopFrame) return super.removeTooltip()
+        if (!this.globalConfig.supportsTopFrame) return super.removeTooltip()
         this.removeCloseListeners()
-        await wkSend('closeAutofillParent', {})
+        await this.transport.send('closeAutofillParent', {})
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return wkSend('emailHandlerStoreToken', { token, username: userName, cohort })
+        return this.transport.send('emailHandlerStoreToken', { token, username: userName, cohort })
     }
 
     /**
@@ -211,7 +218,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @deprecated
      */
     storeCredentials (credentials) {
-        return wkSend('pmHandlerStoreCredentials', credentials)
+        return this.transport.send('pmHandlerStoreCredentials', credentials)
     }
 
     /**
@@ -219,7 +226,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        return wkSend('pmHandlerStoreData', data)
+        return this.transport.send('pmHandlerStoreData', data)
     }
 
     /**
@@ -227,7 +234,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<PMData>}
      */
     async getAutofillInitData () {
-        const response = await wkSendAndWait('pmHandlerGetAutofillInitData')
+        const response = await this.transport.send('pmHandlerGetAutofillInitData')
         this.storeLocalData(response.success)
         return response
     }
@@ -238,28 +245,28 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return wkSendAndWait('pmHandlerGetAutofillCredentials', { id })
+        return this.transport.send('pmHandlerGetAutofillCredentials', { id })
     }
 
     /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {
-        return wkSend('pmHandlerOpenManagePasswords')
+        return this.transport.send('pmHandlerOpenManagePasswords')
     }
 
     /**
      * Opens the native UI for managing identities
      */
     openManageIdentities () {
-        return wkSend('pmHandlerOpenManageIdentities')
+        return this.transport.send('pmHandlerOpenManageIdentities')
     }
 
     /**
      * Opens the native UI for managing credit cards
      */
     openManageCreditCards () {
-        return wkSend('pmHandlerOpenManageCreditCards')
+        return this.transport.send('pmHandlerOpenManageCreditCards')
     }
 
     /**
@@ -278,17 +285,17 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return wkSendAndWait('pmHandlerGetCreditCard', { id })
+        return this.transport.send('pmHandlerGetCreditCard', { id })
     }
 
     // Used to encode data to send back to the child autofill
     async selectedDetail (detailIn, configType) {
-        if (isTopFrame) {
+        if (this.globalConfig.isTopFrame) {
             let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
                 return [key, String(value)]
             })
             const data = Object.fromEntries(detailsEntries)
-            wkSend('selectedDetail', { data, configType })
+            this.transport.send('selectedDetail', { data, configType })
         } else {
             this.activeFormSelectedDetail(detailIn, configType)
         }
@@ -300,11 +307,11 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async getAlias () {
-        const {alias} = await wkSendAndWait(
+        const {alias} = await this.transport.send(
             'emailHandlerGetAlias',
             {
-                requiresUserPermission: !isApp,
-                shouldConsumeAliasIfProvided: !isApp
+                requiresUserPermission: !this.globalConfig.isApp,
+                shouldConsumeAliasIfProvided: !this.globalConfig.isApp
             }
         )
         return formatDuckAddress(alias)

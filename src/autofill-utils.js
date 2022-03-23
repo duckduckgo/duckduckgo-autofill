@@ -1,28 +1,10 @@
 const {getInputSubtype} = require('./Form/matching')
 
-let isApp = false
-let isTopFrame = false
-let supportsTopFrame = false
-// Do not modify or remove the next line -- the app code will replace it with `isApp = true;`
-// INJECT isApp HERE
-// INJECT isTopFrame HERE
-// INJECT supportsTopFrame HERE
-
-let isDDGApp = /(iPhone|iPad|Android|Mac).*DuckDuckGo\/[0-9]/i.test(window.navigator.userAgent) || isApp || isTopFrame
-const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent)
-const isMobileApp = isDDGApp && !isApp
-
-const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)
-
 const SIGN_IN_MSG = { signMeIn: true }
-
-const isDDGDomain = () => window.location.href.match(DDG_DOMAIN_REGEX)
 
 // Send a message to the web app (only on DDG domains)
 const notifyWebApp = (message) => {
-    if (isDDGDomain()) {
-        window.postMessage(message, window.origin)
-    }
+    window.postMessage(message, window.origin)
 }
 /**
  * Sends a message and returns a Promise that resolves with the response
@@ -49,18 +31,18 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     })
 }
 
-const autofillEnabled = (processConfig) => {
-    let contentScope = null
-    let userUnprotectedDomains = null
-    let userPreferences = null
-    // INJECT contentScope HERE
-    // INJECT userUnprotectedDomains HERE
-    // INJECT userPreferences HERE
-
-    if (!contentScope) {
+/**
+ * @param {GlobalConfig} globalConfig
+ * @param [processConfig]
+ * @return {boolean}
+ */
+const autofillEnabled = (globalConfig, processConfig) => {
+    if (!globalConfig.contentScope) {
         // Return enabled for platforms that haven't implemented the config yet
         return true
     }
+
+    const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig
 
     // Check config on Apple platforms
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
@@ -84,11 +66,12 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  * Ensures the value is set properly and dispatches events to simulate real user action
  * @param {HTMLInputElement} el
  * @param {string} val
+ * @param {GlobalConfig} [config]
  * @return {boolean}
  */
-const setValueForInput = (el, val) => {
+const setValueForInput = (el, val, config) => {
     // Avoid keyboard flashing on Android
-    if (!isAndroid) {
+    if (!config?.isAndroid) {
         el.focus()
     }
 
@@ -174,10 +157,11 @@ const setValueForSelect = (el, val) => {
  * Sets or selects a value to a form element
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {string} val
+ * @param {GlobalConfig} [config]
  * @return {boolean}
  */
-const setValue = (el, val) => {
-    if (el instanceof HTMLInputElement) return setValueForInput(el, val)
+const setValue = (el, val, config) => {
+    if (el instanceof HTMLInputElement) return setValueForInput(el, val, config)
     if (el instanceof HTMLSelectElement) return setValueForSelect(el, val)
 
     return false
@@ -293,14 +277,6 @@ const isLikelyASubmitButton = (el) =>
     el.offsetHeight * el.offsetWidth >= 10000 // it's a large element, at least 250x40px
 
 module.exports = {
-    isApp,
-    isTopFrame,
-    isDDGApp,
-    isAndroid,
-    isMobileApp,
-    supportsTopFrame,
-    DDG_DOMAIN_REGEX,
-    isDDGDomain,
     notifyWebApp,
     sendAndWaitForAnswer,
     isAutofillEnabledFromProcessedConfig,

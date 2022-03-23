@@ -1,7 +1,7 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {
     addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
-    isMobileApp, isApp, getDaxBoundingBox, isLikelyASubmitButton, isVisible
+    getDaxBoundingBox, isLikelyASubmitButton, isVisible
 } = require('../autofill-utils')
 const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
@@ -197,7 +197,7 @@ class Form {
     }
     resetAllInputs () {
         this.execOnInputs((input) => {
-            setValue(input, '')
+            setValue(input, '', this.device.globalConfig)
             this.removeInputHighlight(input)
         })
         if (this.activeInput) this.activeInput.focus()
@@ -336,7 +336,7 @@ class Form {
             let click = null
             const getPosition = () => {
                 // In extensions, the tooltip is centered on the Dax icon
-                return isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
+                return this.device.globalConfig.isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
             }
 
             // Checks for mousedown event
@@ -350,7 +350,7 @@ class Form {
             }
 
             if (this.shouldOpenTooltip(e, input)) {
-                if (isEventWithinDax(e, input) || isMobileApp) {
+                if (isEventWithinDax(e, input) || this.device.globalConfig.isMobileApp) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
                 }
@@ -362,7 +362,7 @@ class Form {
 
         if (input.nodeName !== 'SELECT') {
             const events = ['pointerdown']
-            if (!isMobileApp) events.push('focus')
+            if (!this.device.globalConfig.isMobileApp) events.push('focus')
             input.labels.forEach((label) => {
                 this.addListener(label, 'pointerdown', handlerLabel)
             })
@@ -372,7 +372,7 @@ class Form {
     }
 
     shouldOpenTooltip (e, input) {
-        if (isApp) return true
+        if (this.device.globalConfig.isApp) return true
 
         const inputType = getInputMainType(input)
         return (!this.touched.has(input) && this.areAllInputsEmpty(inputType)) || isEventWithinDax(e, input)
@@ -395,7 +395,7 @@ class Form {
             !isEmailAutofill // and we're not auto-filling email
         ) return // do not overwrite the value
 
-        const successful = setValue(input, string)
+        const successful = setValue(input, string, this.device.globalConfig)
 
         if (!successful) return
 

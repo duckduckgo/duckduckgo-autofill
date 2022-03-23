@@ -10,14 +10,14 @@ const _forms = new Map()
  * to either `init` if in the context of a webpage, or alternatively just perform
  * the synchronous mutations via findEligibleInputs
  *
- * @param DeviceInterface
+ * @param {import("./DeviceInterface/InterfacePrototype")} device
  * @param {Map<HTMLElement, Form>} [forms]
  * @returns {{
  *   init: () => () => void,
  *   findEligibleInputs: (element: Element|Document) => void
  * }}
  */
-const scanForInputs = (DeviceInterface, forms = _forms) => {
+const scanForInputs = (device, forms = _forms) => {
     const getParentForm = (input) => {
         if (input.form) return input.form
 
@@ -55,7 +55,7 @@ const scanForInputs = (DeviceInterface, forms = _forms) => {
                 forms.delete(childForm)
             }
 
-            forms.set(parentForm, new Form(parentForm, input, DeviceInterface))
+            forms.set(parentForm, new Form(parentForm, input, device))
         }
     }
 
@@ -93,7 +93,9 @@ const scanForInputs = (DeviceInterface, forms = _forms) => {
             form.removeAllDecorations()
         })
         forms.clear()
-        notifyWebApp({ deviceSignedIn: {value: false} })
+        if (device.globalConfig.isDDGDomain) {
+            notifyWebApp({ deviceSignedIn: {value: false} })
+        }
     }
 
     /**
