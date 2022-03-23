@@ -60,6 +60,15 @@ class Form {
                 if (!entry.isIntersecting) this.removeTooltip()
             }
         })
+
+        // This ensures we fire the handler again if the form is changed
+        this.addListener(form, 'input', () => {
+            if (!this.isAutofilling) {
+                this.handlerExecuted = false
+                this.shouldPromptToStoreData = true
+            }
+        })
+
         this.categorizeInputs()
     }
 
