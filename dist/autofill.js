@@ -3117,7 +3117,7 @@ class InterfacePrototype {
       let {
         emailAddress: email
       } = _ref2;
-      return email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
+      return email !== null && email !== void 0 && email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
     }, []); // Only add the personal duck address to identities if the user hasn't
     // already manually added it
 
@@ -3652,7 +3652,8 @@ const {
   isMobileApp,
   isApp,
   getDaxBoundingBox,
-  isLikelyASubmitButton
+  isLikelyASubmitButton,
+  isVisible
 } = require('../autofill-utils');
 
 const {
@@ -3743,6 +3744,13 @@ class Form {
       for (const entry of entries) {
         if (!entry.isIntersecting) this.removeTooltip();
       }
+    }); // This ensures we fire the handler again if the form is changed
+
+    this.addListener(form, 'input', () => {
+      if (!this.isAutofilling) {
+        this.handlerExecuted = false;
+        this.shouldPromptToStoreData = true;
+      }
     });
     this.categorizeInputs();
   }
@@ -3779,7 +3787,7 @@ class Form {
     if (!this.isValid()) return;
     const values = this.getValues(); // checks to determine if we should offer to store credentials and/or fireproof
 
-    const checks = [this.shouldPromptToStoreData, this.hasValues(values), this.device.shouldPromptToStoreCredentials({
+    const checks = [this.shouldPromptToStoreData && this.hasValues(values), this.device.shouldPromptToStoreCredentials({
       formElement: this.form
     })]; // if *any* of the checks are truthy, proceed to offer
 
@@ -4081,7 +4089,9 @@ class Form {
   }
 
   autofillInput(input, string, dataType) {
-    // @ts-ignore
+    // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
+    if (input instanceof HTMLInputElement && !isVisible(input)) return; // @ts-ignore
+
     const activeInputSubtype = getInputSubtype(this.activeInput);
     const inputSubtype = getInputSubtype(input);
     const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'; // Don't override values for identities, unless it's the current input or we're autofilling email
@@ -4358,9 +4368,7 @@ class FormAnalyzer {
         strength: 1,
         signalType: "external link: ".concat(string),
         shouldFlip: true
-      }); // if (/forgot password/i.test(el.textContent)) {
-      //     this.updateSignal({})
-      // }
+      });
     } else {
       var _removeExcessWhitespa;
 
@@ -8394,6 +8402,14 @@ const safeExecute = (el, fn) => {
   intObs.observe(el);
 };
 /**
+ * Checks that an element is potentially viewable (even if off-screen)
+ * @param {HTMLElement} el
+ * @return {boolean}
+ */
+
+
+const isVisible = el => el.clientWidth !== 0 && el.clientHeight !== 0 && (el.style.opacity !== '' ? parseFloat(el.style.opacity) > 0 : true);
+/**
  * Gets the bounding box of the icon
  * @param {HTMLInputElement} input
  * @returns {{top: number, left: number, bottom: number, width: number, x: number, y: number, right: number, height: number}}
@@ -8518,6 +8534,7 @@ module.exports = {
   autofillEnabled,
   setValue,
   safeExecute,
+  isVisible,
   getDaxBoundingBox,
   isEventWithinDax,
   addInlineStyles,
