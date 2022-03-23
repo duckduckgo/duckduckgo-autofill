@@ -274,7 +274,7 @@ const matchingConfiguration = {
                 firstName: {match: '(first|given|fore).?name'},
                 middleName: {match: '(middle|additional).?name'},
                 lastName: {match: '(last|family|sur)[^i]?name'},
-                fullName: {match: '^(full.?|whole\\s)?name\\b', forceUnknown: 'company|org'},
+                fullName: {match: '^(full.?|whole\\s)?name\\b', forceUnknown: 'company|org|item'},
                 phone: {match: 'phone', skip: 'code|pass'},
                 addressStreet: {
                     match: 'address',

@@ -1,7 +1,7 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {
     addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
-    isMobileApp, isApp, getDaxBoundingBox, isLikelyASubmitButton
+    isMobileApp, isApp, getDaxBoundingBox, isLikelyASubmitButton, isVisible
 } = require('../autofill-utils')
 const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
@@ -60,6 +60,15 @@ class Form {
                 if (!entry.isIntersecting) this.removeTooltip()
             }
         })
+
+        // This ensures we fire the handler again if the form is changed
+        this.addListener(form, 'input', () => {
+            if (!this.isAutofilling) {
+                this.handlerExecuted = false
+                this.shouldPromptToStoreData = true
+            }
+        })
+
         this.categorizeInputs()
     }
 
@@ -97,8 +106,7 @@ class Form {
 
         // checks to determine if we should offer to store credentials and/or fireproof
         const checks = [
-            this.shouldPromptToStoreData,
-            this.hasValues(values),
+            (this.shouldPromptToStoreData && this.hasValues(values)),
             this.device.shouldPromptToStoreCredentials({
                 formElement: this.form
             })
@@ -371,6 +379,9 @@ class Form {
     }
 
     autofillInput (input, string, dataType) {
+        // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
+        if (input instanceof HTMLInputElement && !isVisible(input)) return
+
         // @ts-ignore
         const activeInputSubtype = getInputSubtype(this.activeInput)
         const inputSubtype = getInputSubtype(input)

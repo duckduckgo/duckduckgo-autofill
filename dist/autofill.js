@@ -2010,6 +2010,9 @@ module.exports={
   "lowes.com": {
     "password-rules": "minlength: 8; maxlength: 12; required: lower, upper; required: digit;"
   },
+  "loyalty.accor.com": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&=@];"
+  },
   "lsacsso.b2clogin.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit, [-!#$%&*?@^_];"
   },
@@ -3117,7 +3120,7 @@ class InterfacePrototype {
       let {
         emailAddress: email
       } = _ref2;
-      return email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
+      return email !== null && email !== void 0 && email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
     }, []); // Only add the personal duck address to identities if the user hasn't
     // already manually added it
 
@@ -3652,7 +3655,8 @@ const {
   isMobileApp,
   isApp,
   getDaxBoundingBox,
-  isLikelyASubmitButton
+  isLikelyASubmitButton,
+  isVisible
 } = require('../autofill-utils');
 
 const {
@@ -3743,6 +3747,13 @@ class Form {
       for (const entry of entries) {
         if (!entry.isIntersecting) this.removeTooltip();
       }
+    }); // This ensures we fire the handler again if the form is changed
+
+    this.addListener(form, 'input', () => {
+      if (!this.isAutofilling) {
+        this.handlerExecuted = false;
+        this.shouldPromptToStoreData = true;
+      }
     });
     this.categorizeInputs();
   }
@@ -3779,7 +3790,7 @@ class Form {
     if (!this.isValid()) return;
     const values = this.getValues(); // checks to determine if we should offer to store credentials and/or fireproof
 
-    const checks = [this.shouldPromptToStoreData, this.hasValues(values), this.device.shouldPromptToStoreCredentials({
+    const checks = [this.shouldPromptToStoreData && this.hasValues(values), this.device.shouldPromptToStoreCredentials({
       formElement: this.form
     })]; // if *any* of the checks are truthy, proceed to offer
 
@@ -4081,7 +4092,9 @@ class Form {
   }
 
   autofillInput(input, string, dataType) {
-    // @ts-ignore
+    // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
+    if (input instanceof HTMLInputElement && !isVisible(input)) return; // @ts-ignore
+
     const activeInputSubtype = getInputSubtype(this.activeInput);
     const inputSubtype = getInputSubtype(input);
     const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'; // Don't override values for identities, unless it's the current input or we're autofilling email
@@ -4351,7 +4364,7 @@ class FormAnalyzer {
     } // if a link points to relevant urls or contain contents outside the page…
 
 
-    if (this.elementIs(el, 'A') && el.href && el.href !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK') {
+    if (this.elementIs(el, 'A') && el.href && el.href !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
       // …and matches one of the regexes, we assume the match is not pertinent to the current form
       this.updateSignal({
         string,
@@ -5950,7 +5963,7 @@ const matchingConfiguration = {
         },
         fullName: {
           match: '^(full.?|whole\\s)?name\\b',
-          forceUnknown: 'company|org'
+          forceUnknown: 'company|org|item'
         },
         phone: {
           match: 'phone',
@@ -7261,7 +7274,7 @@ module.exports = {
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[class*=submit i][class*=button i],\n[role=button]";
-const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
+const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
 const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i])";
@@ -8392,6 +8405,14 @@ const safeExecute = (el, fn) => {
   intObs.observe(el);
 };
 /**
+ * Checks that an element is potentially viewable (even if off-screen)
+ * @param {HTMLElement} el
+ * @return {boolean}
+ */
+
+
+const isVisible = el => el.clientWidth !== 0 && el.clientHeight !== 0 && (el.style.opacity !== '' ? parseFloat(el.style.opacity) > 0 : true);
+/**
  * Gets the bounding box of the icon
  * @param {HTMLInputElement} input
  * @returns {{top: number, left: number, bottom: number, width: number, x: number, y: number, right: number, height: number}}
@@ -8516,6 +8537,7 @@ module.exports = {
   autofillEnabled,
   setValue,
   safeExecute,
+  isVisible,
   getDaxBoundingBox,
   isEventWithinDax,
   addInlineStyles,

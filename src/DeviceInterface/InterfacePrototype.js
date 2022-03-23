@@ -90,7 +90,7 @@ class InterfacePrototype {
         // Get the duck addresses in identities
         const duckEmailsInIdentities = identities.reduce(
             (duckEmails, { emailAddress: email }) =>
-                email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails,
+                email?.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails,
             []
         )
 
