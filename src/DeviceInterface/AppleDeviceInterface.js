@@ -25,7 +25,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         // Only enable 'password.generation' if we're on the macOS app (for now);
         if (this.globalConfig.isApp) {
-            this.#supportedFeatures.push('password.generation')
+            this.supportedFeatures.push('password.generation')
         }
 
         if (this.globalConfig.isTopFrame) {
