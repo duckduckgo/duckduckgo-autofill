@@ -1,7 +1,7 @@
 const FormAnalyzer = require('./FormAnalyzer')
 const {
     addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
-    isMobileApp, isApp, getDaxBoundingBox, isLikelyASubmitButton
+    isMobileApp, isApp, getDaxBoundingBox, isLikelyASubmitButton, isVisible
 } = require('../autofill-utils')
 const {getInputSubtype, getInputMainType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
@@ -371,6 +371,9 @@ class Form {
     }
 
     autofillInput (input, string, dataType) {
+        // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
+        if (input instanceof HTMLInputElement && !isVisible(input)) return
+
         // @ts-ignore
         const activeInputSubtype = getInputSubtype(this.activeInput)
         const inputSubtype = getInputSubtype(input)

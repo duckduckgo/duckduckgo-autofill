@@ -205,6 +205,16 @@ const safeExecute = (el, fn) => {
 }
 
 /**
+ * Checks that an element is potentially viewable (even if off-screen)
+ * @param {HTMLElement} el
+ * @return {boolean}
+ */
+const isVisible = (el) =>
+    el.clientWidth !== 0 &&
+    el.clientHeight !== 0 &&
+    (el.style.opacity !== '' ? parseFloat(el.style.opacity) > 0 : true)
+
+/**
  * Gets the bounding box of the icon
  * @param {HTMLInputElement} input
  * @returns {{top: number, left: number, bottom: number, width: number, x: number, y: number, right: number, height: number}}
@@ -297,6 +307,7 @@ module.exports = {
     autofillEnabled,
     setValue,
     safeExecute,
+    isVisible,
     getDaxBoundingBox,
     isEventWithinDax,
     addInlineStyles,
