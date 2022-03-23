@@ -177,7 +177,8 @@ class FormAnalyzer {
         // if a link points to relevant urls or contain contents outside the page…
         if (
             (this.elementIs(el, 'A') && el.href && el.href !== '#') ||
-            (el.getAttribute('role') || '').toUpperCase() === 'LINK'
+            (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
+            el.matches('button[class*=secondary]')
         ) {
             // …and matches one of the regexes, we assume the match is not pertinent to the current form
             this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip: true})
