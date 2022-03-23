@@ -3745,7 +3745,6 @@ class Form {
       }
     });
     this.categorizeInputs();
-    console.log('form: ', this);
   }
   /**
    * Checks if the form element contains the activeElement
