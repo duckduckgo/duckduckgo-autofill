@@ -97,8 +97,7 @@ class Form {
 
         // checks to determine if we should offer to store credentials and/or fireproof
         const checks = [
-            this.shouldPromptToStoreData,
-            this.hasValues(values),
+            (this.shouldPromptToStoreData && this.hasValues(values)),
             this.device.shouldPromptToStoreCredentials({
                 formElement: this.form
             })
