@@ -5,6 +5,7 @@ module.exports = [
     { html: 'wikipedia_donation.html' },
     { html: 'amazon_login.html' },
     { html: 'amazon_signup.html' },
+    { html: 'amazon_business_signup.html' },
     { html: 'amazon_address.html' },
     { html: 'facebook_login.html' },
     { html: 'facebook_signup.html' },
@@ -116,5 +117,10 @@ module.exports = [
     { html: 'samash_checkout_international.html' },
     { html: 'samash_login.html' },
     { html: 'samash_signup.html' },
-    { html: 'financialtimes_login.html', title: 'Login' }
+    { html: 'financialtimes_login.html', title: 'Login' },
+    { html: 'stackoverflow_login.html' },
+    { html: 'stackoverflow_signup.html' },
+    { html: 'stackoverflow_talent_login.html' },
+    { html: 'stackoverflow_talent_contact.html' },
+    { html: 'techradar_newsletter.html' }
 ]
