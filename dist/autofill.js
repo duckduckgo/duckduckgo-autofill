@@ -2340,6 +2340,9 @@ module.exports={
   "zdf.de": {
     "password-rules": "minlength: 8; required: upper; required: digit; allowed: lower, special;"
   },
+  "zara.com": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
+  },
   "zoom.us": {
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
