@@ -122,5 +122,11 @@ module.exports = [
     { html: 'stackoverflow_signup.html' },
     { html: 'stackoverflow_talent_login.html' },
     { html: 'stackoverflow_talent_contact.html' },
-    { html: 'techradar_newsletter.html' }
+    { html: 'techradar_newsletter.html' },
+    { html: 'github_login.html' },
+    { html: 'github_signup.html' },
+    { html: 'imdb_login.html' },
+    { html: 'imdb_signup.html' },
+    { html: 'kleinanzeigen_login.html' },
+    { html: 'kleinanzeigen_signup.html' },
 ]
