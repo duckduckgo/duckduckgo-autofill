@@ -129,4 +129,6 @@ module.exports = [
     { html: 'imdb_signup.html' },
     { html: 'kleinanzeigen_login.html' },
     { html: 'kleinanzeigen_signup.html' },
+    { html: 'ign_login.html' },
+    { html: 'ign_signup.html', expectedFailures: ['username'] },
 ]
