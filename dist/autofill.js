@@ -2340,6 +2340,9 @@ module.exports={
   "zdf.de": {
     "password-rules": "minlength: 8; required: upper; required: digit; allowed: lower, special;"
   },
+  "zara.com": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
+  },
   "zoom.us": {
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
@@ -5673,7 +5676,7 @@ const listenForGlobalFormSubmission = () => {
     });
     const observer = new PerformanceObserver(list => {
       const entries = list.getEntries().filter(entry => // @ts-ignore why does TS not know about `entry.initiatorType`?
-      ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && entry.name.match(/login|sign-in|signin|session/));
+      ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && entry.name.match(/login|sign-in|signin/));
       if (!entries.length) return;
       const filledForm = [...forms.values()].find(form => form.hasValues());
       filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler();
