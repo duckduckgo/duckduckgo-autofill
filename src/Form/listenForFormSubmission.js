@@ -21,7 +21,7 @@ const listenForGlobalFormSubmission = () => {
             const entries = list.getEntries().filter((entry) =>
                 // @ts-ignore why does TS not know about `entry.initiatorType`?
                 ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) &&
-                entry.name.match(/login|sign-in|signin|session/)
+                entry.name.match(/login|sign-in|signin/)
             )
 
             if (!entries.length) return
