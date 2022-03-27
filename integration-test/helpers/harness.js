@@ -1,92 +1,87 @@
 import * as fs from 'fs'
-import * as os from 'os'
 import * as path from 'path'
 import * as http from 'http'
-import puppeteer from 'puppeteer'
-import { spawnSync } from 'child_process'
-
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000
-if (process.env.KEEP_OPEN) {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000 * 1000
-}
+import {join} from 'path'
+import {tmpdir} from 'os'
+import {mkdtempSync} from 'fs'
+import {chromium, firefox} from '@playwright/test'
 
 const DATA_DIR_PREFIX = 'ddg-temp-'
 
-export async function setup (ops = {}) {
-    const { withExtension = false } = ops
-    const tmpDirPrefix = path.join(os.tmpdir(), DATA_DIR_PREFIX)
-    const dataDir = fs.mkdtempSync(tmpDirPrefix)
-    const args = [
-        `--user-data-dir=${dataDir}`
-    ]
-    if (withExtension) {
-        args.push('--disable-extensions-except=integration-test/extension')
-        args.push('--load-extension=integration-test/extension')
-    }
+/**
+ * A simple file server, this is done manually here to enable us
+ * to manipulate some requests if needed.
+ * @param {string|number} [port]
+ * @return {{address: AddressInfo, urlForPath(path: string): string, close(): void, url: module:url.URL}}
+ */
+export function setupServer (port) {
 
-    // github actions
-    if (process.env.CI) {
-        args.push('--no-sandbox')
-    }
+    const server = http.createServer(function (req, res) {
+        const url = new URL(req.url, `http://${req.headers.host}`)
+        const importUrl = new URL(import.meta.url)
+        const dirname = importUrl.pathname.replace(/\/[^/]*$/, '')
+        const pathname = path.join(dirname, '../pages', url.pathname)
 
-    const puppeteerOps = {
-        args,
-        headless: false
-    }
+        fs.readFile(pathname, (err, data) => {
+            if (err) {
+                res.writeHead(404)
+                res.end(JSON.stringify(err))
+                return
+            }
+            res.writeHead(200)
+            res.end(data)
+        })
+    }).listen(port)
 
-    const browser = await puppeteer.launch(puppeteerOps)
-    // for some reason we need to init a blank page
-    // before the extension is initialized
-    await browser.newPage()
-    const servers = []
+    const address = server.address();
+    const url = new URL("http://localhost:" + address.port);
 
-    async function teardown () {
-        if (process.env.KEEP_OPEN) {
-            return new Promise((resolve) => {
-                browser.on('disconnected', async () => {
-                    await teardownInternal()
-                    resolve()
-                })
-            })
-        } else {
-            await teardownInternal()
+    return {
+        address,
+        url,
+        urlForPath(path) {
+            const local_url = new URL(path, url);
+            return local_url.href;
+        },
+        close() {
+            server.close();
         }
     }
+}
 
-    async function teardownInternal () {
-        await Promise.all(servers.map(server => server.close()))
-        await browser.close()
+/**
+ * @param {import("@playwright/test").test} test
+ */
+export function withChromeExtensionContext(test) {
+    return test.extend({
+        context: async ({ browserName }, use, testInfo) => {
+            testInfo.skip(testInfo.project.name !== "chromium");
+            const tmpDirPrefix = join(tmpdir(), DATA_DIR_PREFIX)
+            const dataDir = mkdtempSync(tmpDirPrefix)
+            const browserTypes = { chromium, firefox }
+            const launchOptions = {
+                devtools: true,
+                headless: false,
+                viewport: {
+                    width: 1920,
+                    height: 1080
+                },
+                args: [
+                    '--disable-extensions-except=integration-test/extension',
+                    '--load-extension=integration-test/extension'
+                ]
+            }
+            const context = await browserTypes[browserName].launchPersistentContext(
+                dataDir,
+                launchOptions
+            )
+            await use(context)
+            await context.close()
+        },
+    })
+}
 
-        // necessary so e.g. local storage
-        // doesn't carry over between test runs
-        spawnSync('rm', ['-rf', dataDir])
-    }
-
-    /**
-     * @param {number|string} [port]
-     * @returns {http.Server}
-     */
-    function setupServer (port) {
-        const server = http.createServer(function (req, res) {
-            const url = new URL(req.url, `http://${req.headers.host}`)
-            const importUrl = new URL(import.meta.url)
-            const dirname = importUrl.pathname.replace(/\/[^/]*$/, '')
-            const pathname = path.join(dirname, '../pages', url.pathname)
-
-            fs.readFile(pathname, (err, data) => {
-                if (err) {
-                    res.writeHead(404)
-                    res.end(JSON.stringify(err))
-                    return
-                }
-                res.writeHead(200)
-                res.end(data)
-            })
-        }).listen(port)
-        servers.push(server)
-        return server
-    }
-
+export async function setup (ops = {}) {
     /**
      * A wrapper around page.goto() that supports sending additional
      * arguments to content-scope's init methods + waits for a known
@@ -123,5 +118,5 @@ export async function setup (ops = {}) {
         // })
     }
 
-    return { browser, teardown, setupServer, gotoAndWait }
+    return { teardown, setupServer, gotoAndWait }
 }
