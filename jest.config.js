@@ -19,5 +19,10 @@ module.exports = {
     // ensure snapshots are in a JSON format
     snapshotFormat: {
         printBasicPrototype: false
-    }
+    },
+
+    testPathIgnorePatterns: [
+        '/node_modules/',
+        '<rootDir>/integration-test'
+    ]
 }

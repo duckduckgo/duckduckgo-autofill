@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as http from 'http'
 import {join} from 'path'
 import {tmpdir} from 'os'
-import {mkdtempSync} from 'fs'
+import {mkdtempSync, readFileSync} from 'fs'
 import {chromium, firefox} from '@playwright/test'
 
 const DATA_DIR_PREFIX = 'ddg-temp-'
@@ -15,7 +15,6 @@ const DATA_DIR_PREFIX = 'ddg-temp-'
  * @return {{address: AddressInfo, urlForPath(path: string): string, close(): void, url: module:url.URL}}
  */
 export function setupServer (port) {
-
     const server = http.createServer(function (req, res) {
         const url = new URL(req.url, `http://${req.headers.host}`)
         const importUrl = new URL(import.meta.url)
@@ -33,18 +32,18 @@ export function setupServer (port) {
         })
     }).listen(port)
 
-    const address = server.address();
-    const url = new URL("http://localhost:" + address.port);
+    const address = server.address()
+    const url = new URL('http://localhost:' + address.port)
 
     return {
         address,
         url,
-        urlForPath(path) {
-            const local_url = new URL(path, url);
-            return local_url.href;
+        urlForPath (path) {
+            const nextUrl = new URL(path, url)
+            return nextUrl.href
         },
-        close() {
-            server.close();
+        close () {
+            server.close()
         }
     }
 }
@@ -52,10 +51,12 @@ export function setupServer (port) {
 /**
  * @param {import("@playwright/test").test} test
  */
-export function withChromeExtensionContext(test) {
+export function withChromeExtensionContext (test) {
     return test.extend({
         context: async ({ browserName }, use, testInfo) => {
-            testInfo.skip(testInfo.project.name !== "chromium");
+            // ensure this test setup cannot be used by anything other than chrome
+            testInfo.skip(testInfo.project.name !== 'chromium')
+
             const tmpDirPrefix = join(tmpdir(), DATA_DIR_PREFIX)
             const dataDir = mkdtempSync(tmpDirPrefix)
             const browserTypes = { chromium, firefox }
@@ -77,46 +78,42 @@ export function withChromeExtensionContext(test) {
             )
             await use(context)
             await context.close()
-        },
+        }
     })
 }
 
-export async function setup (ops = {}) {
-    /**
-     * A wrapper around page.goto() that supports sending additional
-     * arguments to content-scope's init methods + waits for a known
-     * indicators to avoid race conditions
-     *
-     * @param {import("puppeteer").Page} page
-     * @param {string} urlString
-     * @param {Record<string, any>} [args]
-     * @returns {Promise<void>}
-     */
-    async function gotoAndWait (page, urlString, args = {}) {
-        const url = new URL(urlString)
-
-        // Append the flag so that the script knows to wait for incoming args.
-        // url.searchParams.append('wait-for-init-args', 'true')
-
-        await page.goto(url.href, {waitUntil: 'networkidle0'})
-
-        // // wait until contentScopeFeatures.load() has completed
-        // await page.waitForFunction(() => {
-        //     return window.__content_scope_status === 'loaded'
-        // })
-        //
-        // const evalString = `
-        //     const detail = ${JSON.stringify(args)}
-        //     const evt = new CustomEvent('content-scope-init-args', { detail })
-        //     document.dispatchEvent(evt)
-        // `
-        // await page.evaluate(evalString)
-        //
-        // // wait until contentScopeFeatures.init(args) has completed
-        // await page.waitForFunction(() => {
-        //     return window.__content_scope_status === 'initialized'
-        // })
+/**
+ * @param {import("playwright").Page} page
+ * @param {Record<string, string | boolean>} replacements
+ * @return {Promise<void>}
+ */
+export async function withStringReplacements (page, replacements) {
+    const content = readFileSync('./dist/autofill.js', 'utf8')
+    let output = content
+    for (let [keyName, value] of Object.entries(replacements)) {
+        output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${value};`)
     }
+    await page.addInitScript({content: output})
+}
 
-    return { teardown, setupServer, gotoAndWait }
+/**
+ * @param {import("playwright").Page} page
+ * @param {Record<string, any>} mocks
+ */
+export async function withMockedWebkit (page, mocks) {
+    await page.addInitScript({content: `
+    ((mocks) => {
+        window.webkit = {
+                messageHandlers: {}
+            }
+        
+            for (let [msgName, response] of Object.entries(mocks)) {
+                window.webkit.messageHandlers[msgName] = {
+                    postMessage: async () => {
+                        return JSON.stringify(response);
+                    }
+                }
+            }    
+        })(${JSON.stringify(mocks)})
+    `})
 }
