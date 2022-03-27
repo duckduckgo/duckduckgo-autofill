@@ -17,7 +17,7 @@ test.describe('Ensure email autofill works in chrome extension', () => {
         server.close();
     })
     test('should select and populate email autofill', async ({page}) => {
-        const selector = '[data-ddg-inputtype="identities.emailAddress"]'
+        const selector = '[data-ddg-insputtype="identities.emailAddress"]'
         const email = 'shane-123@duck.com'
         await page.goto(server.urlForPath("email-autofill.html"))
 
