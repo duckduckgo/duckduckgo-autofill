@@ -8,6 +8,21 @@ import {chromium, firefox} from '@playwright/test'
 
 const DATA_DIR_PREFIX = 'ddg-temp-'
 
+export const constants = {
+    pages: {
+        "email-autofill": "email-autofill.html"
+    },
+    fields: {
+        email: {
+            personalAddress: `shane-123@duck.com`,
+            privateAddress0: '0@duck.com',
+            selectors: {
+                identity: '[data-ddg-inputtype="identities.emailAddress"]',
+            }
+        }
+    }
+}
+
 /**
  * A simple file server, this is done manually here to enable us
  * to manipulate some requests if needed.
@@ -93,7 +108,7 @@ export async function withStringReplacements (page, replacements) {
     for (let [keyName, value] of Object.entries(replacements)) {
         output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${value};`)
     }
-    await page.addInitScript({content: output})
+    await page.addInitScript(output)
 }
 
 /**
@@ -101,19 +116,17 @@ export async function withStringReplacements (page, replacements) {
  * @param {Record<string, any>} mocks
  */
 export async function withMockedWebkit (page, mocks) {
-    await page.addInitScript({content: `
-    ((mocks) => {
+    await page.addInitScript((mocks) => {
         window.webkit = {
-                messageHandlers: {}
-            }
-        
-            for (let [msgName, response] of Object.entries(mocks)) {
-                window.webkit.messageHandlers[msgName] = {
-                    postMessage: async () => {
-                        return JSON.stringify(response);
-                    }
+            messageHandlers: {}
+        }
+
+        for (let [msgName, response] of Object.entries(mocks)) {
+            window.webkit.messageHandlers[msgName] = {
+                postMessage: async () => {
+                    return JSON.stringify(response);
                 }
-            }    
-        })(${JSON.stringify(mocks)})
-    `})
+            }
+        }
+    }, mocks);
 }

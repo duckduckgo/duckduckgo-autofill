@@ -1,4 +1,4 @@
-import {setupServer, withMockedWebkit, withStringReplacements} from '../helpers/harness.js'
+import {constants, setupServer, withMockedWebkit, withStringReplacements} from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
 
 /**
@@ -16,6 +16,8 @@ test.describe('scanning', () => {
     })
     test('should decorate the email field when signed in', async ({page, browserName}) => {
         test.skip(browserName !== 'webkit')
+
+        const { selectors } = constants.fields.email;
 
         // Mock the native calls with just enough data to get the script running
         await withMockedWebkit(page, {
@@ -44,10 +46,9 @@ test.describe('scanning', () => {
             hasModernWebkitAPI: true
         })
 
-        const selector = '[data-ddg-inputtype="identities.emailAddress"]'
-        await page.goto(server.urlForPath('email-autofill.html'))
+        await page.goto(server.urlForPath(constants.pages['email-autofill']))
 
         // if we get this far, then we know the interface has initialized, and an initial scan was complete ✅
-        await page.waitForSelector(selector)
+        await page.waitForSelector(selectors.identity)
     })
 })

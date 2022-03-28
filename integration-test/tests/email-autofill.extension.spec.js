@@ -1,4 +1,4 @@
-import {setupServer, withChromeExtensionContext} from '../helpers/harness.js'
+import { constants, setupServer, withChromeExtensionContext} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 
 /**
@@ -17,22 +17,22 @@ test.describe('Ensure email autofill works in chrome extension', () => {
         server.close()
     })
     test('should select and populate email autofill', async ({page}) => {
-        const selector = '[data-ddg-inputtype="identities.emailAddress"]'
-        const email = 'shane-123@duck.com'
-        await page.goto(server.urlForPath('email-autofill.html'))
+        const {personalAddress, privateAddress0, selectors} = constants.fields.email;
 
-        const input = page.locator(selector)
+        await page.goto(server.urlForPath(constants.pages['email-autofill']))
+
+        const input = page.locator(selectors.identity)
 
         // click the input field (not within Dax icon)
         await input.click()
 
-        const first = await page.locator(`text=Use ${email} Blocks email trackers`)
+        const first = await page.locator(`text=Use ${personalAddress} Blocks email trackers`)
         const second = await page.locator(`text=Use a Private Address Blocks email trackers and hides your address`)
 
         await first.click()
 
         // ensure autofill populates the field
-        await expect(input).toHaveValue(email)
+        await expect(input).toHaveValue(personalAddress)
 
         // now ensure a second click into the input doesn't show the dropdown
         await input.click()
@@ -48,10 +48,7 @@ test.describe('Ensure email autofill works in chrome extension', () => {
 
         await page.waitForTimeout(500)
 
-        // now get the second value
-        const v = await input.inputValue()
-
-        // the extension script generates random numbers for the 'private' address.
-        expect(v.match(/\d\d?@duck\.com/)).toBeTruthy()
+        // now ensure the second value is the private address
+        await expect(input).toHaveValue(privateAddress0);
     })
 })

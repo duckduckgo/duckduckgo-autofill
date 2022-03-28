@@ -1,5 +1,5 @@
 // const domain = 'duck.co'
-let random = Math.round(Math.random() * 10)
+let random = 0;
 const userData = {
     userName: 'shane-123',
     nextAlias: random
