@@ -146,4 +146,13 @@ module.exports = [
     { html: 'kijiji_signup.html' },
     { html: 'leo_login.html' },
     { html: 'leo_signup.html' },
+    { html: 'mylo_login.html' },
+    { html: 'mylo_signup.html', expectedFailures: ['emailAddress'] },
+    { html: 'esquire_newsletter.html' },
+    { html: 'wired_login.html' },
+    { html: 'wired_signup.html' },
+    { html: 'wired_checkout.html' },
+    { html: 'wired_newsletter.html' },
+    { html: 'tinypass_login.html' },
+    { html: 'tinypass_signup.html' },
 ]
