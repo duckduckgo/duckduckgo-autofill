@@ -10,14 +10,14 @@ const DATA_DIR_PREFIX = 'ddg-temp-'
 
 export const constants = {
     pages: {
-        "email-autofill": "email-autofill.html"
+        'email-autofill': 'email-autofill.html'
     },
     fields: {
         email: {
             personalAddress: `shane-123@duck.com`,
             privateAddress0: '0@duck.com',
             selectors: {
-                identity: '[data-ddg-inputtype="identities.emailAddress"]',
+                identity: '[data-ddg-inputtype="identities.emailAddress"]'
             }
         }
     }
@@ -124,9 +124,9 @@ export async function withMockedWebkit (page, mocks) {
         for (let [msgName, response] of Object.entries(mocks)) {
             window.webkit.messageHandlers[msgName] = {
                 postMessage: async () => {
-                    return JSON.stringify(response);
+                    return JSON.stringify(response)
                 }
             }
         }
-    }, mocks);
+    }, mocks)
 }

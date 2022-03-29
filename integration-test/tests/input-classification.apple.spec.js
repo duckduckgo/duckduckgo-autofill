@@ -17,7 +17,7 @@ test.describe('scanning', () => {
     test('should decorate the email field when signed in', async ({page, browserName}) => {
         test.skip(browserName !== 'webkit')
 
-        const { selectors } = constants.fields.email;
+        const { selectors } = constants.fields.email
 
         // Mock the native calls with just enough data to get the script running
         await withMockedWebkit(page, {

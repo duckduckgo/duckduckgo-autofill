@@ -1,4 +1,4 @@
-import { constants, setupServer, withChromeExtensionContext} from '../helpers/harness.js'
+import { constants, setupServer, withChromeExtensionContext } from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 
 /**
@@ -17,7 +17,7 @@ test.describe('Ensure email autofill works in chrome extension', () => {
         server.close()
     })
     test('should select and populate email autofill', async ({page}) => {
-        const {personalAddress, privateAddress0, selectors} = constants.fields.email;
+        const {personalAddress, privateAddress0, selectors} = constants.fields.email
 
         await page.goto(server.urlForPath(constants.pages['email-autofill']))
 
@@ -49,6 +49,6 @@ test.describe('Ensure email autofill works in chrome extension', () => {
         await page.waitForTimeout(500)
 
         // now ensure the second value is the private address
-        await expect(input).toHaveValue(privateAddress0);
+        await expect(input).toHaveValue(privateAddress0)
     })
 })
