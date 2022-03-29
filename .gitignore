@@ -16,3 +16,6 @@ Thumbs.db
 
 # Editor files
 .idea
+
+test-results/
+playwright-report/
