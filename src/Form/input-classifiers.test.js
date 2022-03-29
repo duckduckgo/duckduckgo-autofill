@@ -2,15 +2,11 @@ const fs = require('fs')
 const path = require('path')
 
 const {getUnifiedExpiryDate} = require('./formatters')
-const {scanForInputs} = require('../scanForInputs')
+const {createScanner} = require('../Scanner')
 const {Matching, getInputSubtype} = require('./matching')
 const {matchingConfiguration} = require('./matching-configuration')
 const {Form} = require('./Form')
 const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
-
-const CSS_MATCHERS_LIST = matchingConfiguration.matchers.lists['cc'].map(matcherName => {
-    return matchingConfiguration.matchers.fields[matcherName]
-})
 
 /**
  * @param {HTMLInputElement} el
@@ -19,7 +15,8 @@ const CSS_MATCHERS_LIST = matchingConfiguration.matchers.lists['cc'].map(matcher
  */
 const getCCFieldSubtype = (el, form) => {
     const matching = new Matching(matchingConfiguration)
-    return matching.subtypeFromMatchers(CSS_MATCHERS_LIST, el, form)
+    matching.setActiveElementStrings(el, form)
+    return matching.subtypeFromMatchers('cc', el)
 }
 
 const renderInputWithLabel = () => {
@@ -31,7 +28,7 @@ const renderInputWithLabel = () => {
     formElement.append(input, label)
     document.body.append(formElement)
     const form = new Form(formElement, input, new InterfacePrototype(createGlobalConfig()))
-    return { input, label, formElement: formElement, form }
+    return {input, label, formElement: formElement, form}
 }
 
 const testRegexForCCLabels = (cases) => {
@@ -137,7 +134,7 @@ const {createGlobalConfig} = require('../config')
 let testResults = []
 
 describe.each(testCases)('Test $html fields', (testCase) => {
-    const { html, expectedFailures = [], title = '__test__' } = testCase
+    const {html, expectedFailures = [], title = '__test__'} = testCase
 
     const testTextString = expectedFailures.length > 0
         ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
@@ -149,7 +146,8 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         document.body.innerHTML = testContent
         document.title = title
 
-        scanForInputs(new InterfacePrototype(createGlobalConfig()), new Map()).findEligibleInputs(document)
+        const scanner = createScanner(new InterfacePrototype(createGlobalConfig()))
+        scanner.findEligibleInputs(document)
 
         /**
          * @type {NodeListOf<HTMLInputElement>}
@@ -157,7 +155,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const manuallyScoredFields = document.querySelectorAll('[data-manual-scoring]')
 
         const scores = Array.from(manuallyScoredFields).map(field => {
-            const { manualScoring, ddgInputtype, ...rest } = field.dataset
+            const {manualScoring, ddgInputtype, ...rest} = field.dataset
             // @ts-ignore
             field.style = ''
             return {

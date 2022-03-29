@@ -1,5 +1,6 @@
-const { Matching } = require('./matching')
+const {Matching, getRelatedText} = require('./matching')
 const {matchingConfiguration} = require('./matching-configuration')
+const {FORM_INPUTS_SELECTOR} = require('./selectors-css')
 
 const setFormHtml = (html) => {
     document.body.innerHTML = `
@@ -20,10 +21,9 @@ beforeEach(() => {
 })
 
 describe('css-selector matching', () => {
-    const selectors = matchingConfiguration.strategies.cssSelector.selectors
     it.each([
-        { html: `<input name=mail />`, selector: selectors['email'], matched: true },
-        { html: `<input name=oops! />`, selector: selectors['email'], matched: false }
+        { html: `<input name=mail />`, selector: 'email', matched: true },
+        { html: `<input name=oops! />`, selector: 'email', matched: false }
     ])(`$html: '$matched'`, (args) => {
         const { html, matched, selector } = args
         const { inputs } = setFormHtml(html)
@@ -35,17 +35,17 @@ describe('css-selector matching', () => {
 })
 
 describe('ddg-matchers matching', () => {
-    const matchers = matchingConfiguration.strategies.ddgMatcher.matchers
     it.each([
-        { html: `<input placeholder=email />`, matcher: matchers.email, matched: true },
-        { html: `<input placeholder=mail />`, matcher: matchers.email, matched: false },
-        { html: `<input placeholder=email-search />`, matcher: matchers.email, matched: false }
+        { html: `<input placeholder=email />`, matcher: 'email', matched: true },
+        { html: `<input placeholder=mail />`, matcher: 'email', matched: false },
+        { html: `<input placeholder=email-search />`, matcher: 'email', matched: false }
     ])(`$html: '$matcher': $matched`, (args) => {
         const { html, matched, matcher } = args
         const { inputs, formElement } = setFormHtml(html)
 
         const matching = new Matching(matchingConfiguration)
-        const result = matching.execDDGMatcher(matcher, inputs[0], formElement)
+        matching.setActiveElementStrings(inputs[0], formElement)
+        const result = matching.execDDGMatcher(matcher)
         expect(result.matched).toBe(matched)
     })
 })
@@ -61,9 +61,8 @@ describe('vendor-regexes matching', () => {
         const { inputs, formElement } = setFormHtml(html)
 
         const matching = new Matching(matchingConfiguration)
-        const regex = matching.vendorRegex(regexName)
-        if (!regex) throw new Error('unreachable, vendor regex missing')
-        const result = matching.execVendorRegex(regex, inputs[0], formElement)
+        matching.setActiveElementStrings(inputs[0], formElement)
+        const result = matching.execVendorRegex(regexName)
         expect(result.matched).toBe(matched)
     })
 })
@@ -72,7 +71,8 @@ describe('matching', () => {
     it('default config', () => {
         const matching = new Matching(Matching.emptyConfig)
         const {formElement, inputs} = setFormHtml(`<input name=email />`)
-        const actual = matching.inferInputType(inputs[0], formElement)
+        matching.setActiveElementStrings(inputs[0], formElement)
+        const actual = matching.inferInputType(['email', 'id', 'password', 'cc', 'username'], inputs[0], formElement)
         expect(actual).toBe('unknown')
     })
     it.each([
@@ -122,7 +122,7 @@ describe('matching', () => {
         const { formElement, inputs } = setFormHtml(html)
 
         const matching = new Matching(matchingConfiguration)
-        const inferred = matching.inferInputType(inputs[0], formElement)
+        const inferred = matching.inferInputType(['email', 'id', 'password', 'cc', 'username'], inputs[0], formElement)
         expect(inferred).toBe(subtype)
     })
     it('should not continue past a ddg-matcher that has a "not" regex', () => {
@@ -165,11 +165,28 @@ describe('matching', () => {
                 }
             }
         })
-        const asEmail = matching.inferInputType(inputs[0], formElement)
+        const asEmail = matching.inferInputType(['email'], inputs[0], formElement)
         /**
          * This should be 'unknown' because the negated 'search' regex in teh ddg-matcher should prevent
          * further strategies like the following vendor one
          */
         expect(asEmail).toBe('unknown')
+    })
+})
+
+describe('utils', () => {
+    it('can detect related text', () => {
+        const {inputs, formElement} = setFormHtml(`
+<form>
+<div>
+    <div class="row">
+        <div class="col-xs-6 text-right">First Name</div>
+        <div class="col-xs-6"><input type="text" size="20" name="02frstname" value=""></div>
+    </div>
+</div>
+</form>
+        `)
+        const relatedText = getRelatedText(inputs[0], formElement, FORM_INPUTS_SELECTOR)
+        expect(relatedText).toBe('First Name')
     })
 })

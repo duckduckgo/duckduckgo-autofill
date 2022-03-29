@@ -1,4 +1,5 @@
 const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
+const {createScanner} = require('../Scanner')
 const {createGlobalConfig} = require('../config')
 
 afterEach(() => {
@@ -250,13 +251,11 @@ describe('Test the form class reading values correctly', () => {
         }) => {
         document.body.innerHTML = form
         // When we require autofill, the script scores the fields in the DOM
-        const {forms, scanForInputs} = require('../scanForInputs')
 
-        scanForInputs(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
-
+        const scanner = createScanner(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
         const formEl = document.querySelector('form')
         if (!formEl) throw new Error('unreachable')
-        const formClass = forms.get(formEl)
+        const formClass = scanner.forms.get(formEl)
         const hasValues = formClass?.hasValues()
         const formValues = formClass?.getValues()
 
@@ -331,13 +330,11 @@ describe('Form validity is reported correctly', () => {
         }) => {
         document.body.innerHTML = form
         // When we require autofill, the script scores the fields in the DOM
-        const {forms, scanForInputs} = require('../scanForInputs')
-
-        scanForInputs(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
+        const scanner = createScanner(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
 
         const formEl = /** @type {HTMLElement} */ (document.querySelector('form, #form'))
         if (!formEl) throw new Error('unreachable')
-        const formClass = forms.get(formEl)
+        const formClass = scanner.forms.get(formEl)
         const isValid = formClass?.isValid()
 
         expect(isValid).toBe(expIsValid)
@@ -353,13 +350,11 @@ describe('Check form has focus', () => {
 </form>`
 
         // When we require autofill, the script scores the fields in the DOM
-        const {forms, scanForInputs} = require('../scanForInputs')
-
-        scanForInputs(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
+        const scanner = createScanner(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
 
         const formEl = /** @type {HTMLFormElement} */ (document.querySelector('form'))
         if (!formEl) throw new Error('unreachable')
-        const formClass = forms.get(formEl)
+        const formClass = scanner.forms.get(formEl)
 
         expect(formClass?.hasFocus()).toBe(false)
 

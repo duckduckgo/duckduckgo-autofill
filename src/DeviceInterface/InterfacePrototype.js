@@ -14,9 +14,9 @@ const EmailAutofill = require('../UI/EmailAutofill')
 const DataAutofill = require('../UI/DataAutofill')
 const {getInputConfigFromType} = require('../Form/inputTypeConfig')
 const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
-const {forms} = require('../scanForInputs')
 const {fromPassword, GENERATED_ID} = require('../InputTypes/Credentials')
 const {PasswordGenerator} = require('../PasswordGenerator')
+const {createScanner} = require('../Scanner')
 
 /**
  * @implements {FeatureToggles}
@@ -29,6 +29,8 @@ class InterfacePrototype {
     /** @type {import("../UI/Tooltip") | null} */
     currentTooltip = null
     stripCredentials = true
+    /** @type {number} */
+    initialSetupDelayMs = 0
 
     /** @type {PasswordGenerator} */
     passwordGenerator = new PasswordGenerator();
@@ -42,9 +44,15 @@ class InterfacePrototype {
     /** @type {GlobalConfig} */
     globalConfig;
 
+    /** @type {import('../Scanner').Scanner} */
+    scanner;
+
     /** @param {GlobalConfig} config */
     constructor (config) {
         this.globalConfig = config
+        this.scanner = createScanner(this, {
+            initialDelay: this.initialSetupDelayMs
+        })
     }
 
     get hasLocalAddresses () {
@@ -172,9 +180,8 @@ class InterfacePrototype {
     }
 
     async startInit () {
-        window.addEventListener('pointerdown', this, true)
-        listenForGlobalFormSubmission()
-
+        window.addEventListener('pointerdown', this)
+        listenForGlobalFormSubmission(this.scanner.forms)
         this.addDeviceListeners()
         await this.setupAutofill()
         await this.setupSettingsPage()
@@ -203,21 +210,27 @@ class InterfacePrototype {
     pointerDownListener (e) {
         if (!e.isTrusted) return
 
-        // @ts-ignore
-        if (e.target.nodeName === 'DDG-AUTOFILL') {
-            e.preventDefault()
-            e.stopImmediatePropagation()
+        if (this.globalConfig.isTopFrame) {
+            // @ts-ignore
+            if (e.target.nodeName === 'DDG-AUTOFILL') {
+                e.preventDefault()
+                e.stopImmediatePropagation()
 
-            const activeTooltip = this.getActiveTooltip()
-            activeTooltip?.dispatchClick()
+                const activeTooltip = this.getActiveTooltip()
+                activeTooltip?.dispatchClick()
+            } else {
+                this.removeTooltip()
+            }
         } else {
-            this.removeTooltip()
+            if (this.globalConfig.supportsTopFrame) {
+                this.removeTooltip()
+            }
         }
 
         if (!this.globalConfig.isApp) return
 
         // Check for clicks on submit buttons
-        const matchingForm = [...forms.values()].find(
+        const matchingForm = [...this.scanner.forms.values()].find(
             (form) => {
                 const btns = [...form.submitButtons]
                 // @ts-ignore
@@ -265,7 +278,7 @@ class InterfacePrototype {
     createTooltip (getPosition, topContextData) {
         const config = getInputConfigFromType(topContextData.inputType)
 
-        if (this.globalConfig.isApp) {
+        if (this.globalConfig.tooltipKind === 'modern') {
             // collect the data for each item to display
             const data = this.dataForAutofill(config, topContextData.inputType, topContextData)
 
@@ -371,7 +384,7 @@ class InterfacePrototype {
      * previously did so for the form in question, then offer to
      * save the credentials
      *
-     * @param {{ formElement?: HTMLFormElement; }} options
+     * @param {{ formElement?: HTMLElement; }} options
      */
     shouldPromptToStoreCredentials (options) {
         if (!options.formElement) return false
@@ -548,6 +561,11 @@ class InterfacePrototype {
     /** @param {FeatureToggleNames} _name */
     supportsFeature (_name) {
         return false
+    }
+
+    /** @returns {string} */
+    tooltipStyles () {
+        return `<style>${require('../UI/styles/autofill-tooltip-styles.js')}</style>`
     }
 }
 

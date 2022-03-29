@@ -105,6 +105,7 @@ function createTransport (config) {
     /** @type {Transport} */
     const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
         send (name, data) {
+            console.log('🍎➡️', name, data)
             return wkSendAndWait(name, data, {
                 secret: config.secret,
                 hasModernWebkitAPI: config.hasModernWebkitAPI

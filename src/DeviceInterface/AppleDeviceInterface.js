@@ -4,7 +4,6 @@ const {
     formatDuckAddress,
     autofillEnabled
 } = require('../autofill-utils')
-const {scanForInputs, forms} = require('../scanForInputs.js')
 const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
 
 /**
@@ -20,6 +19,9 @@ class AppleDeviceInterface extends InterfacePrototype {
     /** @type {Transport} */
     transport = createTransport(this.globalConfig)
 
+    /** @override */
+    initialSetupDelayMs = 500
+
     async isEnabled () {
         return autofillEnabled(this.globalConfig, processConfig)
     }
@@ -30,6 +32,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         // Only enable 'password.generation' if we're on the macOS app (for now);
         if (this.globalConfig.isApp) {
             this.#supportedFeatures.push('password.generation')
+            this.#supportedFeatures.push('inputType.identities')
         }
 
         if (this.globalConfig.isTopFrame) {
@@ -94,6 +97,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     handleEvent (event) {
+        console.log(event)
         switch (event.type) {
         case 'mouseMove':
             this.processMouseMove(event)
@@ -120,10 +124,10 @@ class AppleDeviceInterface extends InterfacePrototype {
             if (this.globalConfig.isApp) {
                 await this.getAddresses()
             }
-            forms.forEach(form => form.redecorateAllInputs())
+            this.scanner.forms.forEach(form => form.redecorateAllInputs())
         }
 
-        const cleanup = scanForInputs(this).init()
+        const cleanup = this.scanner.init()
         this.addLogoutListener(cleanup)
     }
 

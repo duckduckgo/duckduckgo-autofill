@@ -1,0 +1,454 @@
+[
+  {
+    "url": "poor-markup-form.html",
+    "duration": "24.20"
+  },
+  {
+    "url": "wikipedia_login.html",
+    "duration": "19.30"
+  },
+  {
+    "url": "wikipedia_signup.html",
+    "duration": "59.70"
+  },
+  {
+    "url": "wikipedia_donation.html",
+    "duration": "86.20"
+  },
+  {
+    "url": "amazon_login.html",
+    "duration": "0.60"
+  },
+  {
+    "url": "amazon_signup.html",
+    "duration": "0.50"
+  },
+  {
+    "url": "amazon_address.html",
+    "duration": "51.40"
+  },
+  {
+    "url": "facebook_login.html",
+    "duration": "17.20"
+  },
+  {
+    "url": "facebook_signup.html",
+    "duration": "66.70"
+  },
+  {
+    "url": "twitter_login.html",
+    "duration": "20.10"
+  },
+  {
+    "url": "twitter_signup.html",
+    "duration": "62.70"
+  },
+  {
+    "url": "fandom_login.html",
+    "duration": "15.40"
+  },
+  {
+    "url": "fandom_signup.html",
+    "duration": "63.00"
+  },
+  {
+    "url": "pinterest_login.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "pinterest_signup.html",
+    "duration": "0.50"
+  },
+  {
+    "url": "reddit_login.html",
+    "duration": "59.80"
+  },
+  {
+    "url": "reddit_signup.html",
+    "duration": "32.40"
+  },
+  {
+    "url": "yelp_login.html",
+    "duration": "15.30"
+  },
+  {
+    "url": "yelp_signup.html",
+    "duration": "44.50"
+  },
+  {
+    "url": "instagram_login.html",
+    "duration": "18.50"
+  },
+  {
+    "url": "instagram_signup.html",
+    "duration": "20.20"
+  },
+  {
+    "url": "ebay_login.html",
+    "duration": "19.90"
+  },
+  {
+    "url": "ebay_signup.html",
+    "duration": "28.10"
+  },
+  {
+    "url": "ebay_checkout.html",
+    "duration": "18.40"
+  },
+  {
+    "url": "walmart_login.html",
+    "duration": "20.40"
+  },
+  {
+    "url": "walmart_signup.html",
+    "duration": "33.20"
+  },
+  {
+    "url": "walmart_checkout.html",
+    "duration": "72.90"
+  },
+  {
+    "url": "craigslist_account.html",
+    "duration": "19.10"
+  },
+  {
+    "url": "healthline_newsletter.html",
+    "duration": "11.80"
+  },
+  {
+    "url": "tripadvisor_login.html",
+    "duration": "17.80"
+  },
+  {
+    "url": "tripadvisor_signup.html",
+    "duration": "22.80"
+  },
+  {
+    "url": "linkedin_login.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "linkedin_signup.html",
+    "duration": "0.50"
+  },
+  {
+    "url": "webmd_login.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "webmd_signup.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "netflix_login.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "netflix_signup.html",
+    "duration": "16.80"
+  },
+  {
+    "url": "apple_login.html",
+    "duration": "15.20"
+  },
+  {
+    "url": "apple_signup.html",
+    "duration": "88.30"
+  },
+  {
+    "url": "apple_checkout.html",
+    "duration": "56.70"
+  },
+  {
+    "url": "homedepot_login.html",
+    "duration": "12.20"
+  },
+  {
+    "url": "homedepot_signup.html",
+    "duration": "19.60"
+  },
+  {
+    "url": "yahoo_login.html",
+    "duration": "19.00"
+  },
+  {
+    "url": "yahoo_signup.html",
+    "duration": "64.30"
+  },
+  {
+    "url": "cnn_newsletter.html",
+    "duration": "13.20"
+  },
+  {
+    "url": "etsy_login.html",
+    "duration": "18.20"
+  },
+  {
+    "url": "etsy_signup.html",
+    "duration": "20.10"
+  },
+  {
+    "url": "etsy_checkout.html",
+    "duration": "0.30"
+  },
+  {
+    "url": "google_login.html",
+    "duration": "49.90"
+  },
+  {
+    "url": "google_signup.html",
+    "duration": "24.40"
+  },
+  {
+    "url": "google_store_checkout.html",
+    "duration": "89.50"
+  },
+  {
+    "url": "indeed_login_signup.html",
+    "duration": "15.40"
+  },
+  {
+    "url": "target_login.html",
+    "duration": "17.40"
+  },
+  {
+    "url": "target_signup.html",
+    "duration": "0.50"
+  },
+  {
+    "url": "target_checkout.html",
+    "duration": "54.80"
+  },
+  {
+    "url": "microsoft_login.html",
+    "duration": "12.40"
+  },
+  {
+    "url": "microsoft_signup.html",
+    "duration": "48.50"
+  },
+  {
+    "url": "nytimes_login_signup.html",
+    "duration": "17.20"
+  },
+  {
+    "url": "mayoclinic_login.html",
+    "duration": "17.70"
+  },
+  {
+    "url": "mayoclinic_signup.html",
+    "duration": "67.50"
+  },
+  {
+    "url": "espn_login.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "espn_signup.html",
+    "duration": "0.50"
+  },
+  {
+    "url": "usps_login.html",
+    "duration": "19.00"
+  },
+  {
+    "url": "usps_signup.html",
+    "duration": "178.90"
+  },
+  {
+    "url": "usps_checkout.html",
+    "duration": "76.70"
+  },
+  {
+    "url": "quizlet_login.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "quizlet_signup.html",
+    "duration": "0.70"
+  },
+  {
+    "url": "quizlet_checkout.html",
+    "duration": "66.10"
+  },
+  {
+    "url": "lowes_login.html",
+    "duration": "17.50"
+  },
+  {
+    "url": "lowes_signup.html",
+    "duration": "27.50"
+  },
+  {
+    "url": "lowes_checkout.html",
+    "duration": "53.70"
+  },
+  {
+    "url": "idme_login.html",
+    "duration": "22.20"
+  },
+  {
+    "url": "idme_signup.html",
+    "duration": "18.70"
+  },
+  {
+    "url": "merriamwebster_login.html",
+    "duration": "16.10"
+  },
+  {
+    "url": "merriamwebster_signup.html",
+    "duration": "19.70"
+  },
+  {
+    "url": "steam_login.html",
+    "duration": "37.10"
+  },
+  {
+    "url": "steam_signup.html",
+    "duration": "68.30"
+  },
+  {
+    "url": "steam_checkout.html",
+    "duration": "141.20"
+  },
+  {
+    "url": "mapquest_login.html",
+    "duration": "14.60"
+  },
+  {
+    "url": "mapquest_signup.html",
+    "duration": "69.50"
+  },
+  {
+    "url": "fox_login.html",
+    "duration": "13.70"
+  },
+  {
+    "url": "fox_signup.html",
+    "duration": "63.10"
+  },
+  {
+    "url": "allrecipes_login_signup.html",
+    "duration": "18.50"
+  },
+  {
+    "url": "quora_login.html",
+    "duration": "17.40"
+  },
+  {
+    "url": "quora_signup.html",
+    "duration": "21.60"
+  },
+  {
+    "url": "britannica_login.html",
+    "duration": "14.20"
+  },
+  {
+    "url": "britannica_signup.html",
+    "duration": "21.00"
+  },
+  {
+    "url": "bestbuy_login.html",
+    "duration": "15.60"
+  },
+  {
+    "url": "bestbuy_signup.html",
+    "duration": "29.60"
+  },
+  {
+    "url": "bestbuy_checkout.html",
+    "duration": "48.20"
+  },
+  {
+    "url": "rottentomatoes_login.html",
+    "duration": "15.80"
+  },
+  {
+    "url": "rottentomatoes_signup.html",
+    "duration": "21.90"
+  },
+  {
+    "url": "costco_login.html",
+    "duration": "20.70"
+  },
+  {
+    "url": "costco_signup.html",
+    "duration": "55.50"
+  },
+  {
+    "url": "costco_checkout.html",
+    "duration": "94.10"
+  },
+  {
+    "url": "kroger_login.html",
+    "duration": "17.60"
+  },
+  {
+    "url": "kroger_signup.html",
+    "duration": "72.70"
+  },
+  {
+    "url": "kroger_checkout.html",
+    "duration": "89.70"
+  },
+  {
+    "url": "wayfair_login_signup.html",
+    "duration": "14.30"
+  },
+  {
+    "url": "wayfair_checkout.html",
+    "duration": "48.90"
+  },
+  {
+    "url": "chewy_login.html",
+    "duration": "18.10"
+  },
+  {
+    "url": "chewy_signup.html",
+    "duration": "21.60"
+  },
+  {
+    "url": "chewy_checkout.html",
+    "duration": "62.60"
+  },
+  {
+    "url": "everydayoil_checkout.html",
+    "duration": "120.40"
+  },
+  {
+    "url": "stripeelements_checkout.html",
+    "duration": "113.80"
+  },
+  {
+    "url": "litmus_home_search.html",
+    "duration": "18.90"
+  },
+  {
+    "url": "litmus_home_new.html",
+    "duration": "17.60"
+  },
+  {
+    "url": "asana_tasklist.html",
+    "duration": "51.10"
+  },
+  {
+    "url": "asana_search.html",
+    "duration": "40.50"
+  },
+  {
+    "url": "aa_login.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "hackernews_login_signup.html",
+    "duration": "0.30"
+  },
+  {
+    "url": "mkelectricalcontracting_contact.html",
+    "duration": "0.40"
+  },
+  {
+    "url": "mbank_login.html",
+    "duration": "24.20"
+  }
+]

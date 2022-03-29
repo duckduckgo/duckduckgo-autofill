@@ -36,8 +36,10 @@ function createGlobalConfig () {
     const isFirefox = navigator.userAgent.includes('Firefox')
 
     const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX))
+    const hasExtensionApi = !(typeof chrome === 'undefined' || typeof chrome.runtime === 'undefined')
 
-    return {
+    /** @type {GlobalConfig} */
+    const config = {
         isApp,
         isDDGApp,
         isAndroid,
@@ -51,8 +53,15 @@ function createGlobalConfig () {
         userUnprotectedDomains,
         userPreferences,
         isDDGTestMode,
-        isDDGDomain
+        isDDGDomain,
+        hasExtensionApi,
+        tooltipKind: 'modern',
+        isBrowser: !isApp && !hasExtensionApi
     }
+
+    console.log({config})
+
+    return config
 }
 
 module.exports.createGlobalConfig = createGlobalConfig

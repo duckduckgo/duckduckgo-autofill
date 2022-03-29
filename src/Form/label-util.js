@@ -10,9 +10,9 @@ const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
  * @returns {string[]}
  *          All strings in an element.
  */
-const extractLabelStrings = (element) => {
+const extractElementStrings = (element) => {
     const strings = []
-    const _extractLabelStrings = el => {
+    const _extractElementStrings = el => {
         if (EXCLUDED_TAGS.includes(el.tagName)) {
             return
         }
@@ -31,11 +31,11 @@ const extractLabelStrings = (element) => {
             if (nodeType !== node.ELEMENT_NODE && nodeType !== node.TEXT_NODE) {
                 continue
             }
-            _extractLabelStrings(node)
+            _extractElementStrings(node)
         }
     }
-    _extractLabelStrings(element)
+    _extractElementStrings(element)
     return strings
 }
 
-module.exports.extractLabelStrings = extractLabelStrings
+module.exports.extractElementStrings = extractElementStrings

@@ -4,12 +4,12 @@ const {matchingConfiguration} = require('./matching-configuration')
 const {isLikelyASubmitButton} = require('../autofill-utils')
 
 class FormAnalyzer {
-    /** @type HTMLFormElement */
+    /** @type HTMLElement */
     form;
     /** @type Matching */
     matching;
     /**
-     * @param {HTMLFormElement} form
+     * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
      */

@@ -1,6 +1,7 @@
 const {createCacheableVendorRegexes} = require('./vendor-regex')
 const {TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE} = require('../constants')
-const {extractLabelStrings} = require('./label-util')
+const {extractElementStrings} = require('./label-util')
+const {FORM_INPUTS_SELECTOR} = require('./selectors-css')
 
 /**
  * An abstraction around the concept of classifying input fields.
@@ -28,6 +29,15 @@ class Matching {
 
     /** @type {Array<StrategyNames>} */
     #defaultStrategyOrder = ['cssSelector', 'ddgMatcher', 'vendorRegex']
+
+    /** @type {Record<MatchableStrings, string>} */
+    activeElementStrings = {
+        nameAttr: '',
+        labelText: '',
+        placeholderAttr: '',
+        relatedText: '',
+        id: ''
+    }
 
     /**
      * @param {MatchingConfiguration} config
@@ -63,6 +73,14 @@ class Matching {
                 this.#matcherLists[listName].push(this.#config.matchers.fields[fieldName])
             }
         }
+    }
+
+    /**
+     * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {HTMLElement} formEl
+     */
+    setActiveElementStrings (input, formEl) {
+        this.activeElementStrings = this.getElementStrings(input, formEl)
     }
 
     /**
@@ -160,43 +178,49 @@ class Matching {
     /**
      * Tries to infer the input type for an input
      *
+     * @param {(keyof MatcherLists)[]} matcherLists
      * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {HTMLFormElement} formEl
+     * @param {HTMLElement} formEl
      * @param {{isLogin?: boolean}} [opts]
      * @returns {SupportedTypes}
      */
-    inferInputType (input, formEl, opts = {}) {
+    inferInputType (matcherLists, input, formEl, opts = {}) {
         const presetType = getInputType(input)
-        if (presetType !== 'unknown') return presetType
+        if (presetType !== 'unknown') {
+            return presetType
+        }
 
-        // For CC forms we run aggressive matches, so we want to make sure we only
-        // run them on actual CC forms to avoid false positives and expensive loops
-        if (this.isCCForm(formEl)) {
-            const ccMatchers = this.matcherList('cc')
-            const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl)
+        this.setActiveElementStrings(input, formEl)
+
+        // // For CC forms we run aggressive matches, so we want to make sure we only
+        // // run them on actual CC forms to avoid false positives and expensive loops
+        if (matcherLists.includes('cc') && this.isCCForm(formEl)) {
+            const subtype = this.subtypeFromMatchers('cc', input)
             if (subtype && isValidCreditCardSubtype(subtype)) {
                 return `creditCards.${subtype}`
             }
         }
 
         if (input instanceof HTMLInputElement) {
-            if (this.isPassword(input, formEl)) {
+            if (this.subtypeFromMatchers('password', input)) {
                 return 'credentials.password'
             }
 
-            if (this.isEmail(input, formEl)) {
+            if (this.subtypeFromMatchers('email', input)) {
                 return opts.isLogin ? 'credentials.username' : 'identities.emailAddress'
             }
 
-            if (this.isUserName(input, formEl)) {
+            if (this.subtypeFromMatchers('username', input)) {
                 return 'credentials.username'
             }
         }
 
-        const idMatchers = this.matcherList('id')
-        const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl)
-        if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
-            return `identities.${idSubtype}`
+        if (matcherLists.includes('id')) {
+            const idSubtype = this.subtypeFromMatchers('id', input)
+
+            if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
+                return `identities.${idSubtype}`
+            }
         }
 
         return 'unknown'
@@ -204,36 +228,75 @@ class Matching {
 
     /**
      * Sets the input type as a data attribute to the element and returns it
-     * @param {HTMLInputElement} input
-     * @param {HTMLFormElement} formEl
+     * @param {(keyof MatcherLists)[]} matcherLists
+     * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {HTMLElement} formEl
      * @param {{isLogin?: boolean}} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType (input, formEl, opts = {}) {
-        const type = this.inferInputType(input, formEl, opts)
+    setInputType (matcherLists, input, formEl, opts = {}) {
+        const type = this.inferInputType(matcherLists, input, formEl, opts)
         input.setAttribute(ATTR_INPUT_TYPE, type)
         return type
     }
 
     /**
      * Tries to infer input subtype, with checks in decreasing order of reliability
-     * @param {Matcher[]} matchers
+     * @param {keyof MatcherLists} listName
      * @param {HTMLInputElement|HTMLSelectElement} el
-     * @param {HTMLFormElement} form
      * @return {MatcherTypeNames|undefined}
      */
-    subtypeFromMatchers (matchers, el, form) {
+    subtypeFromMatchers (listName, el) {
+        const matchers = this.matcherList(listName)
+
+        /**
+         * Loop through each strategy in order
+         */
         for (let strategyName of this.#defaultStrategyOrder) {
+            /**
+             * Now loop through each matcher in the list.
+             */
             for (let matcher of matchers) {
+                /**
+                 * for each `strategyName` (such as cssSelector), check
+                 * if the current matcher implements it.
+                 */
                 const lookup = matcher.strategies[strategyName]
-                if (!lookup) {
-                    continue
+                /**
+                 * Sometimes a matcher may not implement the current strategy,
+                 * so we skip it
+                 */
+                if (!lookup) continue
+
+                /**
+                 * Now perform the matching
+                 */
+                let result
+                if (strategyName === 'cssSelector') {
+                    result = this.execCssSelector(lookup, el)
                 }
-                const result = this.executeMatchingStrategy(strategyName, lookup, el, form)
-                if (result.matched) {
+                if (strategyName === 'ddgMatcher') {
+                    result = this.execDDGMatcher(lookup)
+                }
+                if (strategyName === 'vendorRegex') {
+                    result = this.execVendorRegex(lookup)
+                }
+
+                /**
+                 * If there's a match, return the matcher type.
+                 *
+                 * So, for example if 'username' had a `cssSelector` implemented, and
+                 * it matched the current element, then we'd return 'username'
+                 */
+                if (result?.matched) {
+                    // console.log(`~✅ ${strategyName} ${lookup}`)
                     return matcher.type
                 }
-                if (!result.matched && result.proceed === false) {
+                /**
+                 * If a matcher wants to prevent all future matching on this element,
+                 * it would return { matched: false, proceed: false }
+                 */
+                if (!result?.matched && result?.proceed === false) {
                     // If we get here, do not allow subsequent strategies to continue
                     return undefined
                 }
@@ -241,49 +304,17 @@ class Matching {
         }
         return undefined
     }
-    /**
-     * Takes a given strategy name, like 'cssSelector' along with a lookup key
-     * and tries to execute that strategy safely on the input provided
-     *
-     * @param {StrategyNames} strategy
-     * @param {string} lookup
-     * @param {HTMLInputElement|HTMLSelectElement} el
-     * @param {HTMLFormElement} form
-     * @returns {MatchingResult}
-     */
-    executeMatchingStrategy (strategy, lookup, el, form) {
-        switch (strategy) {
-        case 'cssSelector': {
-            const selector = this.cssSelector(lookup)
-            return this.execCssSelector(selector, el)
-        }
-        case 'ddgMatcher': {
-            const ddgMatcher = this.ddgMatcher(lookup)
-            if (!ddgMatcher || !ddgMatcher.match) {
-                return { matched: false }
-            }
-            return this.execDDGMatcher(ddgMatcher, el, form)
-        }
-        case 'vendorRegex': {
-            const rule = this.vendorRegex(lookup)
-            if (!rule) {
-                return { matched: false }
-            }
-            return this.execVendorRegex(rule, el, form)
-        }
-        default: return { matched: false }
-        }
-    }
 
     /**
-     * CSS selector matching just levearages the `.matches` method on elements
+     * CSS selector matching just leverages the `.matches` method on elements
      *
-     * @param {string} cssSelector
+     * @param {string} lookup
      * @param {HTMLInputElement|HTMLSelectElement} el
      * @returns {MatchingResult}
      */
-    execCssSelector (cssSelector, el) {
-        return { matched: el.matches(cssSelector) }
+    execCssSelector (lookup, el) {
+        const selector = this.cssSelector(lookup)
+        return { matched: el.matches(selector) }
     }
 
     /**
@@ -293,12 +324,14 @@ class Matching {
      * todo: maxDigits was added as an edge-case when converting this over to be declarative, but I'm
      * unsure if it's actually needed. It's not urgent, but we should consider removing it if that's the case
      *
-     * @param {DDGMatcher} ddgMatcher
-     * @param {HTMLInputElement|HTMLSelectElement} el
-     * @param {HTMLFormElement} form
+     * @param {string} lookup
      * @returns {MatchingResult}
      */
-    execDDGMatcher (ddgMatcher, el, form) {
+    execDDGMatcher (lookup) {
+        const ddgMatcher = this.ddgMatcher(lookup)
+        if (!ddgMatcher || !ddgMatcher.match) {
+            return { matched: false }
+        }
         let matchRexExp = safeRegex(ddgMatcher.match || '')
         if (!matchRexExp) {
             return {matched: false}
@@ -309,7 +342,8 @@ class Matching {
         /** @type {MatchableStrings[]} */
         const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText']
 
-        for (let elementString of this.getElementStrings(el, form, {matchableStrings})) {
+        for (let stringName of matchableStrings) {
+            let elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
             elementString = elementString.toLowerCase()
 
@@ -369,13 +403,18 @@ class Matching {
     /**
      * If we get here, a firefox/vendor regex was given and we can execute it on the element
      * strings
-     * @param {RegExp} regex
-     * @param {HTMLInputElement|HTMLSelectElement} el
-     * @param {HTMLFormElement} form
+     * @param {string} lookup
      * @return {MatchingResult}
      */
-    execVendorRegex (regex, el, form) {
-        for (let elementString of this.getElementStrings(el, form)) {
+    execVendorRegex (lookup) {
+        const regex = this.vendorRegex(lookup)
+        if (!regex) {
+            return { matched: false }
+        }
+        /** @type {MatchableStrings[]} */
+        const stringsToMatch = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText']
+        for (let stringName of stringsToMatch) {
+            let elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
             elementString = elementString.toLowerCase()
             if (regex.test(elementString)) {
@@ -400,80 +439,31 @@ class Matching {
      * to look at the output from `relatedText`, then the cost of computing it will be avoided.
      *
      * @param {HTMLInputElement|HTMLSelectElement} el
-     * @param {HTMLFormElement} form
-     * @param {{matchableStrings?: MatchableStrings[]}} [opts]
-     * @returns {Generator<string, void, *>}
+     * @param {HTMLElement} form
+     * @returns {Record<MatchableStrings, string>}
      */
-    * getElementStrings (el, form, opts = {}) {
-        let {
-            matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText']
-        } = opts
-        for (let matchableString of matchableStrings) {
-            switch (matchableString) {
-            case 'nameAttr': {
-                yield el.name
-                break
-            }
-            case 'labelText': {
-                yield getExplicitLabelsText(el)
-                break
-            }
-            case 'placeholderAttr': {
-                if (el instanceof HTMLInputElement) {
-                    yield el.placeholder || ''
-                }
-                break
-            }
-            case 'id': {
-                yield el.id
-                break
-            }
-            case 'relatedText': {
-                yield getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
-                break
-            }
-            default: {
-                // a matchable string that wasn't handled
-            }
-            }
+    _elementStringCache = new WeakMap();
+    getElementStrings (el, form) {
+        if (this._elementStringCache.has(el)) {
+            return this._elementStringCache.get(el)
         }
+        /** @type {Record<MatchableStrings, string>} */
+        const next = {
+            nameAttr: el.name,
+            labelText: getExplicitLabelsText(el),
+            placeholderAttr: el.placeholder || '',
+            id: el.id,
+            relatedText: getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
+        }
+        this._elementStringCache.set(el, next)
+        return next
     }
-
-    /**
-     * Tries to infer if input is for password
-     * @param {HTMLInputElement} el
-     * @param {HTMLFormElement} form
-     */
-    isPassword (el, form) {
-        const pwMatchers = this.matcherList('password')
-        return !!this.subtypeFromMatchers(pwMatchers, el, form)
+    clear () {
+        this._elementStringCache = new WeakMap()
     }
-
-    /**
-     * Tries to infer if input is for email
-     * @param {HTMLInputElement} el
-     * @param {HTMLFormElement} form
-     * @return {boolean}
-     */
-    isEmail (el, form) {
-        const emailMatchers = this.matcherList('email')
-        return !!this.subtypeFromMatchers(emailMatchers, el, form)
-    }
-
-    /**
-     * Tries to infer if input is for username
-     * @param {HTMLInputElement} el
-     * @param {HTMLFormElement} form
-     * @return {boolean}
-     */
-    isUserName (el, form) {
-        const usernameMatchers = this.matcherList('username')
-        return !!this.subtypeFromMatchers(usernameMatchers, el, form)
-    }
-
     /**
      * Tries to infer if it's a credit card form
-     * @param {HTMLFormElement} formEl
+     * @param {HTMLElement} formEl
      * @returns {boolean}
      */
     isCCForm (formEl) {
@@ -515,7 +505,9 @@ class Matching {
                 matchers: {}
             },
             'cssSelector': {
-                selectors: {}
+                selectors: {
+                    FORM_INPUTS_SELECTOR
+                }
             }
         }
     }
@@ -682,7 +674,7 @@ const removeExcessWhitespace = (string = '') => {
 const getExplicitLabelsText = (el) => {
     const labelTextCandidates = []
     for (let label of el.labels || []) {
-        labelTextCandidates.push(...extractLabelStrings(label))
+        labelTextCandidates.push(...extractElementStrings(label))
     }
     if (el.hasAttribute('aria-label')) {
         labelTextCandidates.push(el.getAttribute('aria-label'))
@@ -693,7 +685,7 @@ const getExplicitLabelsText = (el) => {
     const labelledByElement = document.getElementById(ariaLabelAttr)
 
     if (labelledByElement) {
-        labelTextCandidates.push(...extractLabelStrings(labelledByElement))
+        labelTextCandidates.push(...extractElementStrings(labelledByElement))
     }
 
     if (labelTextCandidates.length > 0) {
@@ -706,7 +698,7 @@ const getExplicitLabelsText = (el) => {
 /**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement|HTMLSelectElement} el
- * @param {HTMLFormElement} form
+ * @param {HTMLElement} form
  * @param {string} cssSelector
  * @return {string}
  */
@@ -717,17 +709,16 @@ const getRelatedText = (el, form, cssSelector) => {
     if (container === el || container.nodeName === 'SELECT') return ''
 
     // If the container has a select element, remove its contents to avoid noise
-    const noisyText = container.querySelector('select')?.textContent || ''
-    const sanitizedText = removeExcessWhitespace(container.textContent?.replace(noisyText, ''))
+    const text = removeExcessWhitespace(extractElementStrings(container).join(' '))
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
-    if (sanitizedText.length < TEXT_LENGTH_CUTOFF) return sanitizedText
+    if (text.length < TEXT_LENGTH_CUTOFF) return text
     return ''
 }
 
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
  * @param {HTMLElement} el
- * @param {HTMLFormElement} form
+ * @param {HTMLElement} form
  * @param {string} cssSelector
  * @return {HTMLElement}
  */
@@ -749,7 +740,7 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
  * Find a regex match for a given input
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
- * @param {HTMLFormElement} form
+ * @param {HTMLElement} form
  * @param {string} cssSelector
  * @returns {RegExpMatchArray|null}
  */
@@ -763,7 +754,7 @@ const matchInPlaceholderAndLabels = (input, regex, form, cssSelector) => {
  * Check if a given input matches a regex
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
- * @param {HTMLFormElement} form
+ * @param {HTMLElement} form
  * @param {string} cssSelector
  * @returns {boolean}
  */

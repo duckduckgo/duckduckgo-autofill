@@ -13,8 +13,8 @@ const {IdentityTooltipItem} = require('../InputTypes/Identity')
  */
 const getIdentitiesIcon = (input, {device}) => {
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
-    const { isDDGApp, isFirefox } = device.globalConfig
-    const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
+    const { hasExtensionApi } = device.globalConfig
+    const getDaxImg = hasExtensionApi ? chrome.runtime.getURL('img/logo-small.svg') : daxBase64
     const subtype = getInputSubtype(input)
     if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg
 
@@ -78,7 +78,7 @@ const inputTypeConfig = {
 
             const subtype = getInputSubtype(_input)
 
-            if (device.globalConfig.isApp) {
+            if (device.supportsFeature('inputType.identities')) {
                 return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))
             }
 

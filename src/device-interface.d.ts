@@ -74,6 +74,7 @@ interface InternalDataStorageObject {
 }
 
 type APIResponse<Type> = Promise<{ success: Type[], error?: string }>
+type APIResponseSingle<Type> = Promise<{ success: Type, error?: string }>
 
 interface EmailAddresses {
      privateAddress?: string,
@@ -82,6 +83,7 @@ interface EmailAddresses {
 
 type FeatureToggleNames =
   | "password.generation"
+  | "inputType.identities"
 
 interface FeatureToggles {
      supportsFeature(name: FeatureToggleNames): boolean;
@@ -93,6 +95,7 @@ interface Transport {
 
 interface GlobalConfig {
      isApp: boolean;
+     isBrowser: boolean;
      isDDGApp: boolean;
      isAndroid: boolean;
      isFirefox: boolean;
@@ -106,6 +109,8 @@ interface GlobalConfig {
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
+     hasExtensionApi: boolean;
+     tooltipKind: 'modern' | 'legacy'
 }
 
 interface GlobalConfigImpl {

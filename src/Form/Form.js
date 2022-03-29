@@ -3,7 +3,7 @@ const {
     addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
     getDaxBoundingBox, isLikelyASubmitButton, isVisible
 } = require('../autofill-utils')
-const {getInputSubtype, getInputMainType} = require('./matching')
+const {getInputSubtype, getInputMainType, getSubtypeFromType} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const {getInputConfig} = require('./inputTypeConfig.js')
@@ -15,14 +15,15 @@ const {matchingConfiguration} = require('./matching-configuration')
 class Form {
     /** @type {import("./matching").Matching} */
     matching;
-    /** @type {HTMLFormElement} */
+    /** @type {HTMLElement} */
     form;
     /** @type {HTMLInputElement | null} */
     activeInput;
+    initialScanComplete = false
     /** @type {boolean | null} */
     isSignup;
     /**
-     * @param {HTMLFormElement} form
+     * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
      * @param {Matching} [matching]
@@ -55,11 +56,11 @@ class Form {
         /**
          * @type {IntersectionObserver | null}
          */
-        this.intObs = new IntersectionObserver((entries) => {
-            for (const entry of entries) {
-                if (!entry.isIntersecting) this.removeTooltip()
-            }
-        })
+        // this.intObs = new IntersectionObserver((entries) => {
+        //     for (const entry of entries) {
+        //         if (!entry.isIntersecting) this.removeTooltip()
+        //     }
+        // })
 
         // This ensures we fire the handler again if the form is changed
         this.addListener(form, 'input', () => {
@@ -70,6 +71,48 @@ class Form {
         })
 
         this.categorizeInputs()
+        this.initialScanComplete = true
+
+        const onActive = (e) => {
+            this.activeInput = e.target
+            this.addInput(this.activeInput)
+            const config = getInputConfig(e.target)
+            if (config.shouldDecorate(e.target, this)) {
+                this.inputHandler(e)
+            }
+        }
+        const onInactive = () => {
+            this.activeInput = null
+        }
+        console.log('register...')
+        window.addEventListener('click', (e) => {
+            console.log('click')
+            // @ts-ignore
+            if (e.target?.tagName === 'INPUT') {
+                if (this.activeInput) {
+                    this.removeTooltip()
+                }
+                console.time('onActive')
+                onActive(e)
+                console.timeEnd('onActive')
+                return
+            }
+
+            // @ts-ignore
+            if (e.target?.nodeName === 'DDG-AUTOFILL') {
+                console.log('🐣', e.target)
+                e.preventDefault()
+                e.stopImmediatePropagation()
+
+                const activeTooltip = this.device.getActiveTooltip()
+                activeTooltip?.dispatchClick()
+                return
+            } else {
+                onInactive()
+            }
+
+            this.removeTooltip()
+        })
     }
 
     /**
@@ -209,6 +252,7 @@ class Form {
     destroy () {
         this.removeAllDecorations()
         this.removeTooltip()
+        this.matching.clear()
         this.intObs = null
     }
 
@@ -252,17 +296,24 @@ class Form {
         }
     }
 
-    addInput (input) {
-        if (this.inputs.all.has(input)) return this
+    addInput (input, form) {
+        // if (this.inputs.all.has(input)) return this
+        //
+        // this.inputs.all.add(input)
 
-        this.inputs.all.add(input)
+        /** @type {(keyof MatcherLists)[]} */
+        const matcherListsToConsider = this.initialScanComplete
+            ? ['cc', 'id', 'email', 'password', 'username']
+            : ['email', 'username', 'password']
 
-        this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
+        this.matching.setInputType(matcherListsToConsider, input, form || this.form, { isLogin: this.isLogin })
 
-        const mainInputType = getInputMainType(input)
-        this.inputs[mainInputType].add(input)
+        // const mainInputType = getInputMainType(input)
+        // this.inputs[mainInputType].add(input)
 
-        this.decorateInput(input)
+        if (!this.initialScanComplete) {
+            this.decorateInput(input)
+        }
 
         return this
     }
@@ -285,24 +336,8 @@ class Form {
         addInlineStyles(input, styles)
     }
 
-    decorateInput (input) {
-        const config = getInputConfig(input)
-
-        if (!config.shouldDecorate(input, this)) return this
-
-        input.setAttribute(ATTR_AUTOFILL, 'true')
-
-        const hasIcon = !!config.getIconBase(input, this)
-        if (hasIcon) {
-            this.addAutofillStyles(input)
-            this.addListener(input, 'mousemove', (e) => {
-                if (isEventWithinDax(e, e.target)) {
-                    e.target.style.setProperty('cursor', 'pointer', 'important')
-                } else {
-                    e.target.style.removeProperty('cursor')
-                }
-            })
-        }
+    inputHandler (e) {
+        if (this.device.getActiveTooltip() || this.isAutofilling) return
 
         function getMainClickCoords (e) {
             if (!e.isTrusted) return
@@ -314,68 +349,77 @@ class Form {
             }
         }
 
+        const input = this.activeInput
+        if (!input) throw new Error('unreachable')
+        let click = null
+        const getPosition = () => {
+            // In extensions, the tooltip is centered on the Dax icon
+            if (this.device.globalConfig.isApp) return input.getBoundingClientRect()
+            if (this.device.globalConfig.isBrowser) return input.getBoundingClientRect()
+            return getDaxBoundingBox(input)
+        }
+
+        // Checks for mousedown event
+        if (e.type === 'click') {
+            click = getMainClickCoords(e)
+        }
+
+        if (!click) {
+            console.warn('bail!')
+            return
+        }
+
+        if (this.shouldOpenTooltip(e, input)) {
+            this.touched.add(input)
+            this.device.attachTooltip(this, input, getPosition, click)
+        }
+    }
+
+    decorateInput (input) {
+        const config = getInputConfig(input)
+
+        if (!config.shouldDecorate(input, this)) return this
+
+        input.setAttribute(ATTR_AUTOFILL, 'true')
+        this.addAutofillStyles(input)
+
         // Store the click to a label so we can use the click when the field is focused
-        let storedClick = new WeakMap()
-        let timeout = null
-        const handlerLabel = (e) => {
-            // Look for e.target OR it's closest parent to be a HTMLLabelElement
-            const control = e.target.closest('label').control
-            if (!control) return
-            storedClick.set(control, getMainClickCoords(e))
-            clearTimeout(timeout)
-            // Remove the stored click if the timer expires
-            timeout = setTimeout(() => {
-                storedClick = new WeakMap()
-            }, 1000)
-        }
-
-        const handler = (e) => {
-            if (this.device.getActiveTooltip() || this.isAutofilling) return
-
-            const input = e.target
-            let click = null
-            const getPosition = () => {
-                // In extensions, the tooltip is centered on the Dax icon
-                return this.device.globalConfig.isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
-            }
-
-            // Checks for mousedown event
-            if (e.type === 'pointerdown') {
-                click = getMainClickCoords(e)
-                if (!click) return
-            } else if (storedClick) {
-                // Reuse a previous click if one exists for this element
-                click = storedClick.get(input)
-                storedClick.delete(input)
-            }
-
-            if (this.shouldOpenTooltip(e, input)) {
-                if (isEventWithinDax(e, input) || this.device.globalConfig.isMobileApp) {
-                    e.preventDefault()
-                    e.stopImmediatePropagation()
-                }
-
-                this.touched.add(input)
-                this.device.attachTooltip(this, input, getPosition, click)
-            }
-        }
+        // let storedClick = new WeakMap()
+        // let timeout = null
+        // const handlerLabel = (e) => {
+        //     // Look for e.target OR it's closest parent to be a HTMLLabelElement
+        //     const control = e.target.closest('label').control
+        //     if (!control) return
+        //     storedClick.set(control, getMainClickCoords(e))
+        //     clearTimeout(timeout)
+        //     // Remove the stored click if the timer expires
+        //     timeout = setTimeout(() => {
+        //         storedClick = new WeakMap()
+        //     }, 1000)
+        // }
 
         if (input.nodeName !== 'SELECT') {
-            const events = ['pointerdown']
-            if (!this.device.globalConfig.isMobileApp) events.push('focus')
-            input.labels.forEach((label) => {
-                this.addListener(label, 'pointerdown', handlerLabel)
-            })
-            events.forEach((ev) => this.addListener(input, ev, handler))
+            // const events = ['pointerdown']
+            // if (!this.device.globalConfig.isMobileApp) events.push('focus')
+            // input.labels.forEach((label) => {
+            //     this.addListener(label, 'pointerdown', handlerLabel)
+            // })
+            // events.forEach((ev) => this.addListener(input, ev, handler))
         }
         return this
     }
 
     shouldOpenTooltip (e, input) {
         if (this.device.globalConfig.isApp) return true
+        if (this.device.globalConfig.isBrowser) return true
 
+        // this is an ios/android/extension specific thing?
+        if (this.touched.has(input)) return false
         const inputType = getInputMainType(input)
-        return (!this.touched.has(input) && this.areAllInputsEmpty(inputType)) || isEventWithinDax(e, input)
+        if (this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input)) {
+            return true
+        }
+        return false
     }
 
     autofillInput (input, string, dataType) {
@@ -424,9 +468,35 @@ class Form {
     autofillData (data, dataType) {
         this.shouldPromptToStoreData = false
         this.isAutofilling = true
+        const parentForm = this.form
 
-        this.execOnInputs((input) => {
-            const inputSubtype = getInputSubtype(input)
+        if (!parentForm) {
+            console.warn('bailing because a form was not found')
+            console.warn({activeInput: this.activeInput })
+            return
+        }
+
+        for (let element of parentForm.querySelectorAll('input,select')) {
+            if (!(element instanceof HTMLInputElement) && !(element instanceof HTMLSelectElement)) {
+                continue
+            }
+
+            const input = element
+            /** @type {(keyof MatcherLists)[]} */
+            let matchingLists = ['id', 'email', 'cc', 'username', 'password']
+            if (dataType === 'credentials') {
+                matchingLists = ['username', 'password', 'email']
+            } else if (dataType === 'creditCards') {
+                matchingLists = ['cc']
+            } else if (dataType === 'identities') {
+                matchingLists = ['id', 'email']
+            }
+
+            // JIT
+            const inputtype = this.matching.setInputType(matchingLists, element, parentForm)
+
+            const inputSubtype = getSubtypeFromType(inputtype)
+
             let autofillData = data[inputSubtype]
 
             if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
@@ -441,8 +511,13 @@ class Form {
                 autofillData = getCountryName(input, data)
             }
 
-            if (autofillData) this.autofillInput(input, autofillData, dataType)
-        }, dataType)
+            if (autofillData) {
+                // console.log("✅", input.name, inputSubtype, data);
+                this.autofillInput(input, autofillData, dataType)
+            } else {
+                // console.log("❌", input.name, inputSubtype, data);
+            }
+        }
 
         this.isAutofilling = false
 

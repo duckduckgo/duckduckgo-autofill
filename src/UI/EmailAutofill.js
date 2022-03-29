@@ -16,9 +16,7 @@ class EmailAutofill extends Tooltip {
 
         this.addresses = this.interface.getLocalAddresses()
 
-        const includeStyles = deviceInterface.globalConfig.isApp
-            ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
-            : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
+        const includeStyles = deviceInterface.tooltipStyles()
 
         this.shadow.innerHTML = `
 ${includeStyles}

@@ -34,7 +34,11 @@ export function setupServer (port) {
         const url = new URL(req.url, `http://${req.headers.host}`)
         const importUrl = new URL(import.meta.url)
         const dirname = importUrl.pathname.replace(/\/[^/]*$/, '')
-        const pathname = path.join(dirname, '../pages', url.pathname)
+        let pathname = path.join(dirname, '../pages', url.pathname)
+
+        if (url.pathname.startsWith('/src')) {
+            pathname = path.join(dirname, '../../', url.pathname)
+        }
 
         fs.readFile(pathname, (err, data) => {
             if (err) {

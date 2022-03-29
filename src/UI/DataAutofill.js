@@ -10,10 +10,8 @@ class DataAutofill extends Tooltip {
      * @param {{onSelect(id:string): void}} callbacks
      */
     render (config, items, callbacks) {
-        const {isApp, isTopFrame} = this.interface.globalConfig
-        const includeStyles = isApp
-            ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
-            : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
+        const {isTopFrame} = this.interface.globalConfig
+        const includeStyles = this.interface.tooltipStyles()
 
         let hasAddedSeparator = false
         // Only show an hr above the first duck address button, but it can be either personal or private

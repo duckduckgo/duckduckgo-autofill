@@ -1,7 +1,9 @@
-const {forms} = require('../scanForInputs')
 const isApp = require('../autofill-utils')
 
-const listenForGlobalFormSubmission = () => {
+/**
+ * @param {Map<HTMLElement, import("./Form").Form>} forms
+ */
+const listenForGlobalFormSubmission = (forms) => {
     if (!isApp) return
 
     try {
