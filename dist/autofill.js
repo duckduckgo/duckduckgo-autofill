@@ -2415,7 +2415,11 @@ class AndroidInterface extends InterfacePrototype {
 
     try {
       userData = JSON.parse(window.EmailInterface.getUserData());
-    } catch (e) {}
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.error(e);
+      }
+    }
 
     return Promise.resolve(userData);
   }
@@ -8325,7 +8329,8 @@ const setValueForInput = (el, val, config) => {
   // Avoid keyboard flashing on Android
   if (!(config !== null && config !== void 0 && config.isAndroid)) {
     el.focus();
-  }
+  } // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
+
 
   el.dispatchEvent(new Event('keydown', {
     bubbles: true
@@ -8333,7 +8338,8 @@ const setValueForInput = (el, val, config) => {
   originalSet === null || originalSet === void 0 ? void 0 : originalSet.call(el, val);
   const events = [new Event('input', {
     bubbles: true
-  }), new Event('keyup', {
+  }), // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
+  new Event('keyup', {
     bubbles: true
   }), new Event('change', {
     bubbles: true
@@ -8626,7 +8632,8 @@ function createGlobalConfig() {
   // INJECT supportsTopFrame HERE
   // INJECT hasModernWebkitAPI HERE
 
-  let isDDGTestMode = false;
+  let isDDGTestMode = false; // INJECT isDDGTestMode HERE
+
   let contentScope = null;
   let userUnprotectedDomains = null;
   let userPreferences = null; // INJECT contentScope HERE

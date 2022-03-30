@@ -6,7 +6,7 @@
       "ESNext",
       "DOM.Iterable"
     ],
-    "module": "commonjs",
+    "module": "es2022",
     "moduleResolution": "node",
     "allowJs": true,
     "checkJs": true,
@@ -30,6 +30,8 @@
     "scripts",
     "packages/password",
     "*.js",
-    "types.d.ts"
+    "types.d.ts",
+    "integration-test/helpers",
+    "integration-test/tests"
   ]
 }

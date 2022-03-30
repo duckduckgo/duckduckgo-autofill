@@ -9,6 +9,8 @@
 </head>
 
 <body>
+<main>
+
 <p><a href="../index.html">[Home]</a></p>
 
 <p id="demo"></p>
@@ -29,11 +31,27 @@
         </fieldset>
     </form>
 </div>
+</main>
+<p>
+    <button type="button" onclick="addNewForm()">Add new form</button>
+</p>
 <script type="module">
     const form = document.forms.signup;
     form.addEventListener("submit", (e) => {
         e.preventDefault();
     })
+</script>
+<script>
+    const main = document.querySelector("main");
+    function addNewForm() {
+        const fr = document.createElement("div");
+        fr.innerHTML = `
+            <form action="">
+                <label for="email2">Email<input id="email2" type="email"></label>
+            </form>
+        `;
+        main.appendChild(fr);
+    }
 </script>
 </body>
 
