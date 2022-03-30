@@ -155,4 +155,10 @@ module.exports = [
     { html: 'wired_newsletter.html' },
     { html: 'tinypass_login.html' },
     { html: 'tinypass_signup.html' },
+    { html: 'apartments_login.html' },
+    { html: 'apartments_signup.html' },
+    { html: 'opticsplanet_login.html' },
+    { html: 'opticsplanet_signup.html' },
+    { html: 'opticsplanet_checkout.html', expectedFailures: ['unknown'] },
+    { html: 'opticsplanet_newsletter.html' },
 ]
