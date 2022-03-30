@@ -2576,8 +2576,10 @@ class AppleDeviceInterface extends InterfacePrototype {
         break;
 
       case 'scroll':
-        this.removeTooltip();
-        break;
+        {
+          this.removeTooltip();
+          break;
+        }
 
       default:
         super.handleEvent(event);

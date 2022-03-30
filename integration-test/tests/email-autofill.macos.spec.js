@@ -22,7 +22,7 @@ test.describe('macos', () => {
     })
     test('should autofill the selected email', async ({page}) => {
         // enable in-terminal exceptions
-        forwardConsoleMessages(page)
+        await forwardConsoleMessages(page)
 
         await createWebkitMocks()
             .withPrivateEmail('0')
@@ -60,14 +60,14 @@ test.describe('macos', () => {
         await expect(personalAddressBtn).toBeVisible()
 
         // now select the second address this time...
-        await privateAddressBtn.click()
+        await privateAddressBtn.click({ force: true })
 
         // ...and ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
     })
     test('auto filling a signup form', async ({page}) => {
         // enable in-terminal exceptions
-        forwardConsoleMessages(page)
+        await forwardConsoleMessages(page)
 
         const {personalAddress} = constants.fields.email
 

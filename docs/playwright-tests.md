@@ -82,7 +82,11 @@ npm run test:integration
 - Either add a new file in `integration-test/tests`, or just copy/paste an existing one for the
 platform that you are targeting.
 - Decide on what you need to mock: what data does this test require? (use existing examples as a guide)
-- Write your script: use the page helpers if they exist, or create your own. Always aim for the test scripts to read as a user would interact with the application. When you have logic that makes that difficult, abstract it away! This is what separates integration tests from unit tests. 
+- Write your script: use the page helpers if they exist, or create your own. Always aim for the test scripts to read as a user would interact with the application. When you have logic that makes that difficult, abstract it away! This is what separates integration tests from unit tests.
+
+## Debug a failing CI test run
+
+When a test has failed in Github Actions, you can download the artifact produced and use the [Trace Viewer](https://playwright.dev/docs/trace-viewer) to debug any problems.
 
 ## Debug a failing test
 

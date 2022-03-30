@@ -1,6 +1,6 @@
 name: Test
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   test:
@@ -19,18 +19,24 @@ jobs:
             ${{ runner.os }}-node-
       - name: npm install
         run: "npm install"
-      - name: "Clean tree"
-        run: "npm run test:clean-tree"
-      - name: "ESLint"
-        run: "npm run lint"
-      - name: "Typescript"
-        run: "npm run tsc"
-      - name: "Unit Tests"
-        run: "npm run test:unit"
-      - name: "Password unit tests"
-        run: "npm run test:passwords"
+#      - name: "Clean tree"
+#        run: "npm run test:clean-tree"
+#      - name: "ESLint"
+#        run: "npm run lint"
+#      - name: "Typescript"
+#        run: "npm run tsc"
+#      - name: "Unit Tests"
+#        run: "npm run test:unit"
+#      - name: "Password unit tests"
+#        run: "npm run test:passwords"
       - name: Install Playwright + DEPS
         run: npx playwright install --with-deps
       - name: "Install dependencies for CI integration tests"
         run: sudo apt-get install xvfb
       - run: npm run test:integration:ci
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright-results
+          path: test-results

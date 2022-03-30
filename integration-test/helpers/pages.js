@@ -16,12 +16,16 @@ export function signupPage (page, server) {
             const input = page.locator('#password')
             await input.click()
 
-            const passwordBtn = page.locator('button:has-text("Generated Password")')
+            const passwordBtn = page.locator('button:has-text("Generated password")')
 
             const passwordButtonText = await passwordBtn.innerText()
             const [, generatedPassword] = passwordButtonText.split('\n')
 
-            await passwordBtn.click()
+            if (!generatedPassword.trim()) {
+                throw new Error('unreachable - password must not be empty')
+            }
+
+            await passwordBtn.click({ force: true })
             return expect(input).toHaveValue(generatedPassword)
         },
         /**
@@ -32,7 +36,7 @@ export function signupPage (page, server) {
             const input = page.locator('#firstname')
             await input.click()
             const button = await page.waitForSelector(`button:has-text("${name}")`)
-            await button.click()
+            await button.click({ force: true })
         },
         async assertEmailValue (emailAddress) {
             const {selectors} = constants.fields.email
@@ -47,7 +51,7 @@ export function signupPage (page, server) {
             const input = page.locator('#email2')
             await input.click()
             const button = page.locator(`button:has-text("${selector}")`)
-            await button.click()
+            await button.click({ force: true })
         },
         async assertSecondEmailValue (emailAddress) {
             const input = page.locator('#email2')
@@ -79,7 +83,7 @@ export function loginPage (page, server) {
             const email = page.locator('#email')
             await email.click()
             const button = await page.waitForSelector(`button:has-text("${username}")`)
-            await button.click()
+            await button.click({ force: true })
         },
         /**
          * @param {string} username

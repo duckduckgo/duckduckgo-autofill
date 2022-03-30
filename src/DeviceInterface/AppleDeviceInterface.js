@@ -98,9 +98,10 @@ class AppleDeviceInterface extends InterfacePrototype {
         case 'mouseMove':
             this.processMouseMove(event)
             break
-        case 'scroll':
+        case 'scroll': {
             this.removeTooltip()
             break
+        }
         default:
             super.handleEvent(event)
         }
