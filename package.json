@@ -50,7 +50,7 @@
     "grunt-eslint": "^23.0.0",
     "grunt-exec": "^3.0.0",
     "jest": "^27.4.7",
-    "jest-chrome": "^0.7.1",
+    "jest-chrome": "^0.7.2",
     "jest-html-reporter": "^3.4.2",
     "load-grunt-tasks": "^5.1.0",
     "markdown-it": "^12.2.0",
