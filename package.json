@@ -47,7 +47,7 @@
     "grunt-babel": "^8.0.0",
     "grunt-browserify": "^6.0.0",
     "grunt-contrib-watch": "^1.1.0",
-    "grunt-eslint": "^23.0.0",
+    "grunt-eslint": "^24.0.0",
     "grunt-exec": "^3.0.0",
     "jest": "^27.4.7",
     "jest-chrome": "^0.7.1",
