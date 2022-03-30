@@ -52,6 +52,8 @@ const formatFullName = ({firstName = '', middleName = '', lastName = ''}) =>
 const getCountryDisplayName = (locale, addressCountryCode) => {
     try {
         const regionNames = new Intl.DisplayNames([locale], { type: 'region' })
+        // Adding this ts-ignore to prevent having to change this implementation.
+        // @ts-ignore
         return regionNames.of(addressCountryCode)
     } catch (e) {
         return COUNTRY_CODES_TO_NAMES[addressCountryCode] || addressCountryCode
