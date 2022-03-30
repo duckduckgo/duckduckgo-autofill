@@ -58,6 +58,6 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts"
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#1.1.2"
   }
 }
