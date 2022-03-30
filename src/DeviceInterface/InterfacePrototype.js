@@ -14,9 +14,9 @@ const EmailAutofill = require('../UI/EmailAutofill')
 const DataAutofill = require('../UI/DataAutofill')
 const {getInputConfigFromType} = require('../Form/inputTypeConfig')
 const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
-const {forms} = require('../scanForInputs')
 const {fromPassword, GENERATED_ID} = require('../InputTypes/Credentials')
 const {PasswordGenerator} = require('../PasswordGenerator')
+const {createScanner} = require('../Scanner')
 
 /**
  * @implements {FeatureToggles}
@@ -29,6 +29,8 @@ class InterfacePrototype {
     /** @type {import("../UI/Tooltip") | null} */
     currentTooltip = null
     stripCredentials = true
+    /** @type {number} */
+    initialSetupDelayMs = 0
 
     /** @type {PasswordGenerator} */
     passwordGenerator = new PasswordGenerator();
@@ -42,9 +44,15 @@ class InterfacePrototype {
     /** @type {GlobalConfig} */
     globalConfig;
 
+    /** @type {import('../Scanner').Scanner} */
+    scanner;
+
     /** @param {GlobalConfig} config */
     constructor (config) {
         this.globalConfig = config
+        this.scanner = createScanner(this, {
+            initialDelay: this.initialSetupDelayMs
+        })
     }
 
     get hasLocalAddresses () {
@@ -173,8 +181,7 @@ class InterfacePrototype {
 
     async startInit () {
         window.addEventListener('pointerdown', this, true)
-        listenForGlobalFormSubmission()
-
+        listenForGlobalFormSubmission(this.scanner.forms)
         this.addDeviceListeners()
         await this.setupAutofill()
         await this.setupSettingsPage()
@@ -217,7 +224,7 @@ class InterfacePrototype {
         if (!this.globalConfig.isApp) return
 
         // Check for clicks on submit buttons
-        const matchingForm = [...forms.values()].find(
+        const matchingForm = [...this.scanner.forms.values()].find(
             (form) => {
                 const btns = [...form.submitButtons]
                 // @ts-ignore
@@ -253,6 +260,7 @@ class InterfacePrototype {
         if (type === 'email' && 'email' in data) {
             form.autofillEmail(data.email)
         } else {
+            // console.log(`form.autofillData(data, ${JSON.stringify(type)})`);
             form.autofillData(data, type)
         }
         this.removeTooltip()
@@ -371,7 +379,7 @@ class InterfacePrototype {
      * previously did so for the form in question, then offer to
      * save the credentials
      *
-     * @param {{ formElement?: HTMLFormElement; }} options
+     * @param {{ formElement?: HTMLElement; }} options
      */
     shouldPromptToStoreCredentials (options) {
         if (!options.formElement) return false
@@ -398,6 +406,8 @@ class InterfacePrototype {
         const matchingData = items.find(item => String(item.id) === id)
         if (!matchingData) throw new Error('unreachable (fatal)')
 
+        // console.log(id, JSON.stringify(matchingData), JSON.stringify(config));
+
         const dataPromise = (() => {
             switch (config.type) {
             case 'creditCards': return this.getAutofillCreditCard(id)
@@ -414,6 +424,7 @@ class InterfacePrototype {
 
         // wait for the data back from the device
         dataPromise.then(response => {
+            // console.log("📲", JSON.stringify(response));
             if (response.success) {
                 return this.selectedDetail(response.success, config.type)
             } else {
@@ -548,6 +559,11 @@ class InterfacePrototype {
     /** @param {FeatureToggleNames} _name */
     supportsFeature (_name) {
         return false
+    }
+
+    /** @returns {string} */
+    tooltipStyles () {
+        return `<style>${require('../UI/styles/autofill-tooltip-styles.js')}</style>`
     }
 }
 

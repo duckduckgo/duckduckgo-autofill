@@ -81,6 +81,7 @@ type MatchableStrings =
     | "labelText"
     | "placeholderAttr"
     | "relatedText"
+    | "id"
 
 type MatchingResult = {
     matched: boolean

@@ -3,33 +3,31 @@ const {
     addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
     getDaxBoundingBox, isLikelyASubmitButton, isVisible
 } = require('../autofill-utils')
-const {getInputSubtype, getInputMainType} = require('./matching')
+const {getInputSubtype, getInputMainType, createMatching} = require('./matching')
 const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
 const {ATTR_AUTOFILL} = require('../constants')
 const {getInputConfig} = require('./inputTypeConfig.js')
 const {getUnifiedExpiryDate, formatCCYear, getCountryName,
     prepareFormValuesForStorage, inferCountryCodeFromElement} = require('./formatters')
-const {Matching} = require('./matching')
-const {matchingConfiguration} = require('./matching-configuration')
 
 class Form {
-    /** @type {import("./matching").Matching} */
+    /** @type {import("../Form/matching").Matching} */
     matching;
-    /** @type {HTMLFormElement} */
+    /** @type {HTMLElement} */
     form;
     /** @type {HTMLInputElement | null} */
     activeInput;
     /** @type {boolean | null} */
     isSignup;
     /**
-     * @param {HTMLFormElement} form
+     * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
-     * @param {Matching} [matching]
+     * @param {import("../Form/matching").Matching} [matching]
      */
     constructor (form, input, deviceInterface, matching) {
         this.form = form
-        this.matching = matching || new Matching(matchingConfiguration)
+        this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
@@ -201,6 +199,7 @@ class Form {
             this.removeInputHighlight(input)
         })
         if (this.activeInput) this.activeInput.focus()
+        this.matching.clear()
     }
     dismissTooltip () {
         this.removeTooltip()
@@ -209,6 +208,7 @@ class Form {
     destroy () {
         this.removeAllDecorations()
         this.removeTooltip()
+        this.matching.clear()
         this.intObs = null
     }
 

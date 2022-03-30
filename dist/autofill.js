@@ -2373,7 +2373,7 @@ const deviceInterface = (() => {
 
 module.exports = deviceInterface;
 
-},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./config":38}],8:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./config":39}],8:[function(require,module,exports){
 "use strict";
 
 const InterfacePrototype = require('./InterfacePrototype.js');
@@ -2381,10 +2381,6 @@ const InterfacePrototype = require('./InterfacePrototype.js');
 const {
   sendAndWaitForAnswer
 } = require('../autofill-utils');
-
-const {
-  scanForInputs
-} = require('../scanForInputs.js');
 
 class AndroidInterface extends InterfacePrototype {
   async getAlias() {
@@ -2405,7 +2401,7 @@ class AndroidInterface extends InterfacePrototype {
 
   async setupAutofill() {
     if (this.isDeviceSignedIn()) {
-      const cleanup = scanForInputs(this).init();
+      const cleanup = this.scanner.init();
       this.addLogoutListener(cleanup);
     }
   }
@@ -2439,7 +2435,7 @@ class AndroidInterface extends InterfacePrototype {
 
 module.exports = AndroidInterface;
 
-},{"../autofill-utils":36,"../scanForInputs.js":41,"./InterfacePrototype.js":11}],9:[function(require,module,exports){
+},{"../autofill-utils":37,"./InterfacePrototype.js":11}],9:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -2466,11 +2462,6 @@ const {
 } = require('../autofill-utils');
 
 const {
-  scanForInputs,
-  forms
-} = require('../scanForInputs.js');
-
-const {
   processConfig
 } = require('@duckduckgo/content-scope-scripts/src/apple-utils');
 /**
@@ -2486,6 +2477,8 @@ class AppleDeviceInterface extends InterfacePrototype {
   /* @type {Timeout | undefined} */
 
   /** @type {Transport} */
+
+  /** @override */
   async isEnabled() {
     return autofillEnabled(this.globalConfig, processConfig);
   }
@@ -2501,6 +2494,8 @@ class AppleDeviceInterface extends InterfacePrototype {
     _defineProperty(this, "pollingTimeout", void 0);
 
     _defineProperty(this, "transport", createTransport(this.globalConfig));
+
+    _defineProperty(this, "initialSetupDelayMs", 300);
 
     if (this.globalConfig.isApp) {
       _classPrivateFieldGet(this, _supportedFeatures).push('password.generation');
@@ -2604,10 +2599,10 @@ class AppleDeviceInterface extends InterfacePrototype {
         await this.getAddresses();
       }
 
-      forms.forEach(form => form.redecorateAllInputs());
+      this.scanner.forms.forEach(form => form.redecorateAllInputs());
     }
 
-    const cleanup = scanForInputs(this).init();
+    const cleanup = this.scanner.init();
     this.addLogoutListener(cleanup);
   }
 
@@ -2857,7 +2852,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
 module.exports = AppleDeviceInterface;
 
-},{"../appleDeviceUtils/appleDeviceUtils":34,"../autofill-utils":36,"../scanForInputs.js":41,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
+},{"../appleDeviceUtils/appleDeviceUtils":35,"../autofill-utils":37,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
 "use strict";
 
 const InterfacePrototype = require('./InterfacePrototype.js');
@@ -2869,10 +2864,6 @@ const {
   formatDuckAddress,
   isAutofillEnabledFromProcessedConfig
 } = require('../autofill-utils');
-
-const {
-  scanForInputs
-} = require('../scanForInputs.js');
 
 class ExtensionInterface extends InterfacePrototype {
   async isEnabled() {
@@ -2893,7 +2884,7 @@ class ExtensionInterface extends InterfacePrototype {
   setupAutofill() {
     return this.getAddresses().then(_addresses => {
       if (this.hasLocalAddresses) {
-        const cleanup = scanForInputs(this).init();
+        const cleanup = this.scanner.init();
         this.addLogoutListener(cleanup);
       }
     });
@@ -2973,12 +2964,18 @@ class ExtensionInterface extends InterfacePrototype {
       }
     });
   }
+  /** @override */
+
+
+  tooltipStyles() {
+    return "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
+  }
 
 }
 
 module.exports = ExtensionInterface;
 
-},{"../autofill-utils":36,"../scanForInputs.js":41,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../autofill-utils":37,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
 "use strict";
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
@@ -3026,10 +3023,6 @@ const {
 const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission');
 
 const {
-  forms
-} = require('../scanForInputs');
-
-const {
   fromPassword,
   GENERATED_ID
 } = require('../InputTypes/Credentials');
@@ -3037,6 +3030,10 @@ const {
 const {
   PasswordGenerator
 } = require('../PasswordGenerator');
+
+const {
+  createScanner
+} = require('../Scanner');
 /**
  * @implements {FeatureToggles}
  * @implements {GlobalConfigImpl}
@@ -3052,11 +3049,15 @@ class InterfacePrototype {
 
   /** @type {import("../UI/Tooltip") | null} */
 
+  /** @type {number} */
+
   /** @type {PasswordGenerator} */
 
   /** @type {{privateAddress: string, personalAddress: string}} */
 
   /** @type {GlobalConfig} */
+
+  /** @type {import('../Scanner').Scanner} */
 
   /** @param {GlobalConfig} config */
   constructor(config) {
@@ -3067,6 +3068,8 @@ class InterfacePrototype {
     _defineProperty(this, "currentTooltip", null);
 
     _defineProperty(this, "stripCredentials", true);
+
+    _defineProperty(this, "initialSetupDelayMs", 0);
 
     _defineProperty(this, "passwordGenerator", new PasswordGenerator());
 
@@ -3080,6 +3083,8 @@ class InterfacePrototype {
 
     _defineProperty(this, "globalConfig", void 0);
 
+    _defineProperty(this, "scanner", void 0);
+
     _classPrivateFieldInitSpec(this, _data2, {
       writable: true,
       value: {
@@ -3091,6 +3096,9 @@ class InterfacePrototype {
     });
 
     this.globalConfig = config;
+    this.scanner = createScanner(this, {
+      initialDelay: this.initialSetupDelayMs
+    });
   }
 
   get hasLocalAddresses() {
@@ -3234,7 +3242,7 @@ class InterfacePrototype {
 
   async startInit() {
     window.addEventListener('pointerdown', this, true);
-    listenForGlobalFormSubmission();
+    listenForGlobalFormSubmission(this.scanner.forms);
     this.addDeviceListeners();
     await this.setupAutofill();
     await this.setupSettingsPage();
@@ -3275,7 +3283,7 @@ class InterfacePrototype {
 
     if (!this.globalConfig.isApp) return; // Check for clicks on submit buttons
 
-    const matchingForm = [...forms.values()].find(form => {
+    const matchingForm = [...this.scanner.forms.values()].find(form => {
       const btns = [...form.submitButtons]; // @ts-ignore
 
       if (btns.includes(e.target)) return true; // @ts-ignore
@@ -3313,6 +3321,7 @@ class InterfacePrototype {
     if (type === 'email' && 'email' in data) {
       form.autofillEmail(data.email);
     } else {
+      // console.log(`form.autofillData(data, ${JSON.stringify(type)})`);
       form.autofillData(data, type);
     }
 
@@ -3429,7 +3438,7 @@ class InterfacePrototype {
    * previously did so for the form in question, then offer to
    * save the credentials
    *
-   * @param {{ formElement?: HTMLFormElement; }} options
+   * @param {{ formElement?: HTMLElement; }} options
    */
 
 
@@ -3456,7 +3465,7 @@ class InterfacePrototype {
   onSelect(config, items, id) {
     id = String(id);
     const matchingData = items.find(item => String(item.id) === id);
-    if (!matchingData) throw new Error('unreachable (fatal)');
+    if (!matchingData) throw new Error('unreachable (fatal)'); // console.log(id, JSON.stringify(matchingData), JSON.stringify(config));
 
     const dataPromise = (() => {
       switch (config.type) {
@@ -3484,6 +3493,7 @@ class InterfacePrototype {
 
 
     dataPromise.then(response => {
+      // console.log("📲", JSON.stringify(response));
       if (response.success) {
         return this.selectedDetail(response.success, config.type);
       } else {
@@ -3667,12 +3677,18 @@ class InterfacePrototype {
   supportsFeature(_name) {
     return false;
   }
+  /** @returns {string} */
+
+
+  tooltipStyles() {
+    return "<style>".concat(require('../UI/styles/autofill-tooltip-styles.js'), "</style>");
+  }
 
 }
 
 module.exports = InterfacePrototype;
 
-},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../InputTypes/Credentials":25,"../PasswordGenerator":28,"../UI/DataAutofill":29,"../UI/EmailAutofill":30,"../autofill-utils":36,"../scanForInputs":41}],12:[function(require,module,exports){
+},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../InputTypes/Credentials":25,"../PasswordGenerator":28,"../Scanner":29,"../UI/DataAutofill":30,"../UI/EmailAutofill":31,"../UI/styles/autofill-tooltip-styles.js":34,"../autofill-utils":37}],12:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -3691,7 +3707,8 @@ const {
 
 const {
   getInputSubtype,
-  getInputMainType
+  getInputMainType,
+  createMatching
 } = require('./matching');
 
 const {
@@ -3715,28 +3732,20 @@ const {
   inferCountryCodeFromElement
 } = require('./formatters');
 
-const {
-  Matching
-} = require('./matching');
-
-const {
-  matchingConfiguration
-} = require('./matching-configuration');
-
 class Form {
-  /** @type {import("./matching").Matching} */
+  /** @type {import("../Form/matching").Matching} */
 
-  /** @type {HTMLFormElement} */
+  /** @type {HTMLElement} */
 
   /** @type {HTMLInputElement | null} */
 
   /** @type {boolean | null} */
 
   /**
-   * @param {HTMLFormElement} form
+   * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
    * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
-   * @param {Matching} [matching]
+   * @param {import("../Form/matching").Matching} [matching]
    */
   constructor(form, input, deviceInterface, matching) {
     _defineProperty(this, "matching", void 0);
@@ -3748,7 +3757,7 @@ class Form {
     _defineProperty(this, "isSignup", void 0);
 
     this.form = form;
-    this.matching = matching || new Matching(matchingConfiguration);
+    this.matching = matching || createMatching();
     this.formAnalyzer = new FormAnalyzer(form, input, matching);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
@@ -3935,6 +3944,7 @@ class Form {
       this.removeInputHighlight(input);
     });
     if (this.activeInput) this.activeInput.focus();
+    this.matching.clear();
   }
 
   dismissTooltip() {
@@ -3945,6 +3955,7 @@ class Form {
   destroy() {
     this.removeAllDecorations();
     this.removeTooltip();
+    this.matching.clear();
     this.intObs = null;
   }
 
@@ -4188,7 +4199,7 @@ class Form {
 
 module.exports.Form = Form;
 
-},{"../autofill-utils":36,"../constants":39,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22,"./matching-configuration":21}],13:[function(require,module,exports){
+},{"../autofill-utils":37,"../constants":40,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22}],13:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -4211,12 +4222,12 @@ const {
 } = require('../autofill-utils');
 
 class FormAnalyzer {
-  /** @type HTMLFormElement */
+  /** @type HTMLElement */
 
   /** @type Matching */
 
   /**
-   * @param {HTMLFormElement} form
+   * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
    * @param {Matching} [matching]
    */
@@ -4443,7 +4454,7 @@ class FormAnalyzer {
 
 module.exports = FormAnalyzer;
 
-},{"../autofill-utils":36,"../constants":39,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
+},{"../autofill-utils":37,"../constants":40,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -5604,7 +5615,7 @@ module.exports = {
   getInputConfigFromType
 };
 
-},{"../InputTypes/Credentials":25,"../InputTypes/CreditCard":26,"../InputTypes/Identity":27,"../UI/img/ddgPasswordIcon":32,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
+},{"../InputTypes/Credentials":25,"../InputTypes/CreditCard":26,"../InputTypes/Identity":27,"../UI/img/ddgPasswordIcon":33,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -5619,10 +5630,10 @@ const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
  *          All strings in an element.
  */
 
-const extractLabelStrings = element => {
+const extractElementStrings = element => {
   const strings = [];
 
-  const _extractLabelStrings = el => {
+  const _extractElementStrings = el => {
     if (EXCLUDED_TAGS.includes(el.tagName)) {
       return;
     } // only take the string when it's an explicit text node
@@ -5645,27 +5656,27 @@ const extractLabelStrings = element => {
         continue;
       }
 
-      _extractLabelStrings(node);
+      _extractElementStrings(node);
     }
   };
 
-  _extractLabelStrings(element);
+  _extractElementStrings(element);
 
   return strings;
 };
 
-module.exports.extractLabelStrings = extractLabelStrings;
+module.exports.extractElementStrings = extractElementStrings;
 
 },{}],19:[function(require,module,exports){
 "use strict";
 
-const {
-  forms
-} = require('../scanForInputs');
-
 const isApp = require('../autofill-utils');
+/**
+ * @param {Map<HTMLElement, import("./Form").Form>} forms
+ */
 
-const listenForGlobalFormSubmission = () => {
+
+const listenForGlobalFormSubmission = forms => {
   if (!isApp) return;
 
   try {
@@ -5698,7 +5709,7 @@ const listenForGlobalFormSubmission = () => {
 
 module.exports = listenForGlobalFormSubmission;
 
-},{"../autofill-utils":36,"../scanForInputs":41}],20:[function(require,module,exports){
+},{"../autofill-utils":37}],20:[function(require,module,exports){
 "use strict";
 
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
@@ -6352,8 +6363,16 @@ const {
 } = require('../constants');
 
 const {
-  extractLabelStrings
+  extractElementStrings
 } = require('./label-util');
+
+const {
+  FORM_INPUTS_SELECTOR
+} = require('./selectors-css');
+
+const {
+  matchingConfiguration
+} = require('./matching-configuration');
 /**
  * An abstraction around the concept of classifying input fields.
  *
@@ -6389,6 +6408,8 @@ class Matching {
 
   /** @type {Array<StrategyNames>} */
 
+  /** @type {Record<MatchableStrings, string>} */
+
   /**
    * @param {MatchingConfiguration} config
    */
@@ -6422,6 +6443,16 @@ class Matching {
       writable: true,
       value: ['cssSelector', 'ddgMatcher', 'vendorRegex']
     });
+
+    _defineProperty(this, "activeElementStrings", {
+      nameAttr: '',
+      labelText: '',
+      placeholderAttr: '',
+      relatedText: '',
+      id: ''
+    });
+
+    _defineProperty(this, "_elementStringCache", new WeakMap());
 
     _classPrivateFieldSet(this, _config, config);
 
@@ -6461,6 +6492,15 @@ class Matching {
         _classPrivateFieldGet(this, _matcherLists)[listName].push(_classPrivateFieldGet(this, _config).matchers.fields[fieldName]);
       }
     }
+  }
+  /**
+   * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {HTMLElement} formEl
+   */
+
+
+  setActiveElementStrings(input, formEl) {
+    this.activeElementStrings = this.getElementStrings(input, formEl);
   }
   /**
    * Try to access a 'vendor regex' by name
@@ -6575,7 +6615,7 @@ class Matching {
    * Tries to infer the input type for an input
    *
    * @param {HTMLInputElement|HTMLSelectElement} input
-   * @param {HTMLFormElement} formEl
+   * @param {HTMLElement} formEl
    * @param {{isLogin?: boolean}} [opts]
    * @returns {SupportedTypes}
    */
@@ -6584,12 +6624,16 @@ class Matching {
   inferInputType(input, formEl) {
     let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const presetType = getInputType(input);
-    if (presetType !== 'unknown') return presetType; // For CC forms we run aggressive matches, so we want to make sure we only
-    // run them on actual CC forms to avoid false positives and expensive loops
+
+    if (presetType !== 'unknown') {
+      return presetType;
+    }
+
+    this.setActiveElementStrings(input, formEl); // // For CC forms we run aggressive matches, so we want to make sure we only
+    // // run them on actual CC forms to avoid false positives and expensive loops
 
     if (this.isCCForm(formEl)) {
-      const ccMatchers = this.matcherList('cc');
-      const subtype = this.subtypeFromMatchers(ccMatchers, input, formEl);
+      const subtype = this.subtypeFromMatchers('cc', input);
 
       if (subtype && isValidCreditCardSubtype(subtype)) {
         return "creditCards.".concat(subtype);
@@ -6597,21 +6641,20 @@ class Matching {
     }
 
     if (input instanceof HTMLInputElement) {
-      if (this.isPassword(input, formEl)) {
+      if (this.subtypeFromMatchers('password', input)) {
         return 'credentials.password';
       }
 
-      if (this.isEmail(input, formEl)) {
+      if (this.subtypeFromMatchers('email', input)) {
         return opts.isLogin ? 'credentials.username' : 'identities.emailAddress';
       }
 
-      if (this.isUserName(input, formEl)) {
+      if (this.subtypeFromMatchers('username', input)) {
         return 'credentials.username';
       }
     }
 
-    const idMatchers = this.matcherList('id');
-    const idSubtype = this.subtypeFromMatchers(idMatchers, input, formEl);
+    const idSubtype = this.subtypeFromMatchers('id', input);
 
     if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
       return "identities.".concat(idSubtype);
@@ -6622,7 +6665,7 @@ class Matching {
   /**
    * Sets the input type as a data attribute to the element and returns it
    * @param {HTMLInputElement} input
-   * @param {HTMLFormElement} formEl
+   * @param {HTMLElement} formEl
    * @param {{isLogin?: boolean}} [opts]
    * @returns {SupportedSubTypes | string}
    */
@@ -6636,29 +6679,72 @@ class Matching {
   }
   /**
    * Tries to infer input subtype, with checks in decreasing order of reliability
-   * @param {Matcher[]} matchers
+   * @param {keyof MatcherLists} listName
    * @param {HTMLInputElement|HTMLSelectElement} el
-   * @param {HTMLFormElement} form
    * @return {MatcherTypeNames|undefined}
    */
 
 
-  subtypeFromMatchers(matchers, el, form) {
-    for (let strategyName of _classPrivateFieldGet(this, _defaultStrategyOrder)) {
-      for (let matcher of matchers) {
-        const lookup = matcher.strategies[strategyName];
+  subtypeFromMatchers(listName, el) {
+    const matchers = this.matcherList(listName);
+    /**
+     * Loop through each strategy in order
+     */
 
-        if (!lookup) {
-          continue;
+    for (let strategyName of _classPrivateFieldGet(this, _defaultStrategyOrder)) {
+      /**
+       * Now loop through each matcher in the list.
+       */
+      for (let matcher of matchers) {
+        var _result, _result2, _result3;
+
+        /**
+         * for each `strategyName` (such as cssSelector), check
+         * if the current matcher implements it.
+         */
+        const lookup = matcher.strategies[strategyName];
+        /**
+         * Sometimes a matcher may not implement the current strategy,
+         * so we skip it
+         */
+
+        if (!lookup) continue;
+        /**
+         * Now perform the matching
+         */
+
+        let result;
+
+        if (strategyName === 'cssSelector') {
+          result = this.execCssSelector(lookup, el);
         }
 
-        const result = this.executeMatchingStrategy(strategyName, lookup, el, form);
+        if (strategyName === 'ddgMatcher') {
+          result = this.execDDGMatcher(lookup);
+        }
 
-        if (result.matched) {
+        if (strategyName === 'vendorRegex') {
+          result = this.execVendorRegex(lookup);
+        }
+        /**
+         * If there's a match, return the matcher type.
+         *
+         * So, for example if 'username' had a `cssSelector` implemented, and
+         * it matched the current element, then we'd return 'username'
+         */
+
+
+        if ((_result = result) !== null && _result !== void 0 && _result.matched) {
+          // console.log(`~✅ ${strategyName} ${lookup}`)
           return matcher.type;
         }
+        /**
+         * If a matcher wants to prevent all future matching on this element,
+         * it would return { matched: false, proceed: false }
+         */
 
-        if (!result.matched && result.proceed === false) {
+
+        if (!((_result2 = result) !== null && _result2 !== void 0 && _result2.matched) && ((_result3 = result) === null || _result3 === void 0 ? void 0 : _result3.proceed) === false) {
           // If we get here, do not allow subsequent strategies to continue
           return undefined;
         }
@@ -6668,69 +6754,18 @@ class Matching {
     return undefined;
   }
   /**
-   * Takes a given strategy name, like 'cssSelector' along with a lookup key
-   * and tries to execute that strategy safely on the input provided
+   * CSS selector matching just leverages the `.matches` method on elements
    *
-   * @param {StrategyNames} strategy
    * @param {string} lookup
    * @param {HTMLInputElement|HTMLSelectElement} el
-   * @param {HTMLFormElement} form
    * @returns {MatchingResult}
    */
 
 
-  executeMatchingStrategy(strategy, lookup, el, form) {
-    switch (strategy) {
-      case 'cssSelector':
-        {
-          const selector = this.cssSelector(lookup);
-          return this.execCssSelector(selector, el);
-        }
-
-      case 'ddgMatcher':
-        {
-          const ddgMatcher = this.ddgMatcher(lookup);
-
-          if (!ddgMatcher || !ddgMatcher.match) {
-            return {
-              matched: false
-            };
-          }
-
-          return this.execDDGMatcher(ddgMatcher, el, form);
-        }
-
-      case 'vendorRegex':
-        {
-          const rule = this.vendorRegex(lookup);
-
-          if (!rule) {
-            return {
-              matched: false
-            };
-          }
-
-          return this.execVendorRegex(rule, el, form);
-        }
-
-      default:
-        return {
-          matched: false
-        };
-    }
-  }
-  /**
-   * CSS selector matching just levearages the `.matches` method on elements
-   *
-   * @param {string} cssSelector
-   * @param {HTMLInputElement|HTMLSelectElement} el
-   * @returns {MatchingResult}
-   */
-
-
-  execCssSelector(cssSelector, el) {
+  execCssSelector(lookup, el) {
+    const selector = this.cssSelector(lookup);
     return {
-      matched: el.matches(cssSelector)
+      matched: el.matches(selector)
     };
   }
   /**
@@ -6740,14 +6775,20 @@ class Matching {
    * todo: maxDigits was added as an edge-case when converting this over to be declarative, but I'm
    * unsure if it's actually needed. It's not urgent, but we should consider removing it if that's the case
    *
-   * @param {DDGMatcher} ddgMatcher
-   * @param {HTMLInputElement|HTMLSelectElement} el
-   * @param {HTMLFormElement} form
+   * @param {string} lookup
    * @returns {MatchingResult}
    */
 
 
-  execDDGMatcher(ddgMatcher, el, form) {
+  execDDGMatcher(lookup) {
+    const ddgMatcher = this.ddgMatcher(lookup);
+
+    if (!ddgMatcher || !ddgMatcher.match) {
+      return {
+        matched: false
+      };
+    }
+
     let matchRexExp = safeRegex(ddgMatcher.match || '');
 
     if (!matchRexExp) {
@@ -6761,9 +6802,8 @@ class Matching {
 
     const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText'];
 
-    for (let elementString of this.getElementStrings(el, form, {
-      matchableStrings
-    })) {
+    for (let stringName of matchableStrings) {
+      let elementString = this.activeElementStrings[stringName];
       if (!elementString) continue;
       elementString = elementString.toLowerCase(); // Scoring to ensure all DDG tests are valid
 
@@ -6838,15 +6878,26 @@ class Matching {
   /**
    * If we get here, a firefox/vendor regex was given and we can execute it on the element
    * strings
-   * @param {RegExp} regex
-   * @param {HTMLInputElement|HTMLSelectElement} el
-   * @param {HTMLFormElement} form
+   * @param {string} lookup
    * @return {MatchingResult}
    */
 
 
-  execVendorRegex(regex, el, form) {
-    for (let elementString of this.getElementStrings(el, form)) {
+  execVendorRegex(lookup) {
+    const regex = this.vendorRegex(lookup);
+
+    if (!regex) {
+      return {
+        matched: false
+      };
+    }
+    /** @type {MatchableStrings[]} */
+
+
+    const stringsToMatch = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText'];
+
+    for (let stringName of stringsToMatch) {
+      let elementString = this.activeElementStrings[stringName];
       if (!elementString) continue;
       elementString = elementString.toLowerCase();
 
@@ -6876,97 +6927,48 @@ class Matching {
    * to look at the output from `relatedText`, then the cost of computing it will be avoided.
    *
    * @param {HTMLInputElement|HTMLSelectElement} el
-   * @param {HTMLFormElement} form
-   * @param {{matchableStrings?: MatchableStrings[]}} [opts]
-   * @returns {Generator<string, void, *>}
+   * @param {HTMLElement} form
+   * @returns {Record<MatchableStrings, string>}
    */
 
 
-  *getElementStrings(el, form) {
-    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    let {
-      matchableStrings = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText']
-    } = opts;
-
-    for (let matchableString of matchableStrings) {
-      switch (matchableString) {
-        case 'nameAttr':
-          {
-            yield el.name;
-            break;
-          }
-
-        case 'labelText':
-          {
-            yield getExplicitLabelsText(el);
-            break;
-          }
-
-        case 'placeholderAttr':
-          {
-            if (el instanceof HTMLInputElement) {
-              yield el.placeholder || '';
-            }
-
-            break;
-          }
-
-        case 'id':
-          {
-            yield el.id;
-            break;
-          }
-
-        case 'relatedText':
-          {
-            yield getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'));
-            break;
-          }
-
-        default:
-          {// a matchable string that wasn't handled
-          }
-      }
+  getElementStrings(el, form) {
+    if (this._elementStringCache.has(el)) {
+      return this._elementStringCache.get(el);
     }
+    /** @type {Record<MatchableStrings, string>} */
+
+
+    const next = {
+      nameAttr: el.name,
+      labelText: getExplicitLabelsText(el),
+      placeholderAttr: el.placeholder || '',
+      id: el.id,
+      relatedText: getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
+    };
+
+    this._elementStringCache.set(el, next);
+
+    return next;
+  }
+
+  clear() {
+    this._elementStringCache = new WeakMap();
   }
   /**
-   * Tries to infer if input is for password
-   * @param {HTMLInputElement} el
-   * @param {HTMLFormElement} form
+   * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {HTMLElement} form
+   * @returns {Matching}
    */
 
 
-  isPassword(el, form) {
-    const pwMatchers = this.matcherList('password');
-    return !!this.subtypeFromMatchers(pwMatchers, el, form);
-  }
-  /**
-   * Tries to infer if input is for email
-   * @param {HTMLInputElement} el
-   * @param {HTMLFormElement} form
-   * @return {boolean}
-   */
-
-
-  isEmail(el, form) {
-    const emailMatchers = this.matcherList('email');
-    return !!this.subtypeFromMatchers(emailMatchers, el, form);
-  }
-  /**
-   * Tries to infer if input is for username
-   * @param {HTMLInputElement} el
-   * @param {HTMLFormElement} form
-   * @return {boolean}
-   */
-
-
-  isUserName(el, form) {
-    const usernameMatchers = this.matcherList('username');
-    return !!this.subtypeFromMatchers(usernameMatchers, el, form);
+  forInput(input, form) {
+    this.setActiveElementStrings(input, form);
+    return this;
   }
   /**
    * Tries to infer if it's a credit card form
-   * @param {HTMLFormElement} formEl
+   * @param {HTMLElement} formEl
    * @returns {boolean}
    */
 
@@ -7022,7 +7024,9 @@ _defineProperty(Matching, "emptyConfig", {
       matchers: {}
     },
     'cssSelector': {
-      selectors: {}
+      selectors: {
+        FORM_INPUTS_SELECTOR
+      }
     }
   }
 });
@@ -7173,7 +7177,7 @@ const getExplicitLabelsText = el => {
   const labelTextCandidates = [];
 
   for (let label of el.labels || []) {
-    labelTextCandidates.push(...extractLabelStrings(label));
+    labelTextCandidates.push(...extractElementStrings(label));
   }
 
   if (el.hasAttribute('aria-label')) {
@@ -7185,7 +7189,7 @@ const getExplicitLabelsText = el => {
   const labelledByElement = document.getElementById(ariaLabelAttr);
 
   if (labelledByElement) {
-    labelTextCandidates.push(...extractLabelStrings(labelledByElement));
+    labelTextCandidates.push(...extractElementStrings(labelledByElement));
   }
 
   if (labelTextCandidates.length > 0) {
@@ -7197,29 +7201,26 @@ const getExplicitLabelsText = el => {
 /**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement|HTMLSelectElement} el
- * @param {HTMLFormElement} form
+ * @param {HTMLElement} form
  * @param {string} cssSelector
  * @return {string}
  */
 
 
 const getRelatedText = (el, form, cssSelector) => {
-  var _container$querySelec, _container$textConten;
-
   const container = getLargestMeaningfulContainer(el, form, cssSelector); // If there is no meaningful container return empty string
 
   if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
-  const noisyText = ((_container$querySelec = container.querySelector('select')) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.textContent) || '';
-  const sanitizedText = removeExcessWhitespace((_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.replace(noisyText, '')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
+  const text = removeExcessWhitespace(extractElementStrings(container).join(' ')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
 
-  if (sanitizedText.length < TEXT_LENGTH_CUTOFF) return sanitizedText;
+  if (text.length < TEXT_LENGTH_CUTOFF) return text;
   return '';
 };
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
  * @param {HTMLElement} el
- * @param {HTMLFormElement} form
+ * @param {HTMLElement} form
  * @param {string} cssSelector
  * @return {HTMLElement}
  */
@@ -7242,7 +7243,7 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
  * Find a regex match for a given input
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
- * @param {HTMLFormElement} form
+ * @param {HTMLElement} form
  * @param {string} cssSelector
  * @returns {RegExpMatchArray|null}
  */
@@ -7257,7 +7258,7 @@ const matchInPlaceholderAndLabels = (input, regex, form, cssSelector) => {
  * Check if a given input matches a regex
  * @param {HTMLInputElement} input
  * @param {RegExp} regex
- * @param {HTMLFormElement} form
+ * @param {HTMLElement} form
  * @param {string} cssSelector
  * @returns {boolean}
  */
@@ -7283,6 +7284,16 @@ const safeRegex = string => {
     return undefined;
   }
 };
+/**
+ * Factory for instances of Matching
+ *
+ * @return {Matching}
+ */
+
+
+function createMatching() {
+  return new Matching(matchingConfiguration);
+}
 
 module.exports = {
   getInputType,
@@ -7296,10 +7307,11 @@ module.exports = {
   matchInPlaceholderAndLabels,
   checkPlaceholderAndLabels,
   safeRegex,
-  Matching
+  Matching,
+  createMatching
 };
 
-},{"../constants":39,"./label-util":18,"./vendor-regex":24}],23:[function(require,module,exports){
+},{"../constants":40,"./label-util":18,"./matching-configuration":21,"./selectors-css":23,"./vendor-regex":24}],23:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -7686,6 +7698,313 @@ module.exports.PasswordGenerator = PasswordGenerator;
 },{"../packages/password":2,"../packages/password/rules.json":6}],29:[function(require,module,exports){
 "use strict";
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+const {
+  Form
+} = require('./Form/Form');
+
+const {
+  notifyWebApp
+} = require('./autofill-utils');
+
+const {
+  SUBMIT_BUTTON_SELECTOR,
+  FORM_INPUTS_SELECTOR
+} = require('./Form/selectors-css');
+
+const {
+  createMatching
+} = require('./Form/matching');
+/**
+ * @typedef {{
+ *     forms: Map<HTMLElement, import("./Form/Form").Form>;
+ *     init(): ()=> void;
+ *     enqueue(elements: (HTMLElement|Document)[]): void;
+ *     findEligibleInputs(context): Scanner;
+ * }} Scanner
+ *
+ * @typedef {{
+ *     initialDelay: number,
+ *     bufferSize: number,
+ *     debounceTimePeriod: number,
+ * }} ScannerOptions
+ */
+
+/** @type {ScannerOptions} */
+
+
+const defaultScannerOptions = {
+  // This buffer size is very large because it's an unexpected edge-case that
+  // a DOM will be continually modified over and over without ever stopping. If we do see 1000 unique
+  // new elements in the buffer however then this will prevent the algorithm from never ending.
+  bufferSize: 50,
+  // wait for a 500ms window of event silence before performing the scan
+  debounceTimePeriod: 500,
+  // how long to wait when performing the initial scan
+  initialDelay: 0
+};
+/**
+ * This allows:
+ *   1) synchronous DOM scanning + mutations - via `createScanner(device).findEligibleInputs(document)`
+ *   2) or, as above + a debounced mutation observer to re-run the scan after the given time
+ */
+
+class DefaultScanner {
+  /** @type Map<HTMLElement, Form> */
+
+  /** @type {any|undefined} the timer to reset */
+
+  /** @type {Set<HTMLElement|Document>} stored changed elements until they can be processed */
+
+  /** @type {ScannerOptions} */
+
+  /** @type {HTMLInputElement | null} */
+
+  /** @type {boolean} A flag to indicate the whole page will be re-scanned */
+
+  /**
+   * @param {import("./DeviceInterface/InterfacePrototype")} device
+   * @param {ScannerOptions} options
+   */
+  constructor(device, options) {
+    _defineProperty(this, "forms", new Map());
+
+    _defineProperty(this, "debounceTimer", void 0);
+
+    _defineProperty(this, "changedElements", new Set());
+
+    _defineProperty(this, "options", void 0);
+
+    _defineProperty(this, "activeInput", null);
+
+    _defineProperty(this, "rescanAll", false);
+
+    _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
+      /** @type {HTMLElement[]} */
+      if (this.rescanAll) {
+        // quick version if buffer full
+        this.enqueue([]);
+        return;
+      }
+
+      const outgoing = [];
+
+      for (const mutationRecord of mutationList) {
+        if (mutationRecord.type === 'childList') {
+          for (let addedNode of mutationRecord.addedNodes) {
+            if (!(addedNode instanceof HTMLElement)) continue;
+            if (addedNode.nodeName === 'DDG-AUTOFILL') continue;
+            outgoing.push(addedNode);
+          }
+        }
+      }
+
+      this.enqueue(outgoing);
+    }));
+
+    this.device = device;
+    this.matching = createMatching();
+    this.options = options;
+  }
+  /**
+   * Call this to scan once and then watch for changes.
+   *
+   * Call the returned function to remove listeners.
+   * @returns {() => void}
+   */
+
+
+  init() {
+    const delay = this.options.initialDelay; // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
+
+    if (delay === 0) {
+      window.requestIdleCallback(() => this.scanAndObserve());
+    } else {
+      // otherwise, use the delay time to defer the initial scan
+      setTimeout(() => this.scanAndObserve(), delay);
+    }
+
+    return () => {
+      // remove Dax, listeners, timers, and observers
+      clearTimeout(this.debounceTimer);
+      this.mutObs.disconnect();
+      this.forms.forEach(form => {
+        form.resetAllInputs();
+        form.removeAllDecorations();
+      });
+      this.forms.clear();
+
+      if (this.device.globalConfig.isDDGDomain) {
+        notifyWebApp({
+          deviceSignedIn: {
+            value: false
+          }
+        });
+      }
+    };
+  }
+  /**
+   * Scan the page and begin observing changes
+   */
+
+
+  scanAndObserve() {
+    var _window$performance, _window$performance$m, _window$performance2, _window$performance2$;
+
+    (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'scanner:init:start');
+    this.findEligibleInputs(document);
+    (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'scanner:init:end');
+    this.mutObs.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+  /**
+   * @param context
+   */
+
+
+  findEligibleInputs(context) {
+    var _context$matches;
+
+    if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, FORM_INPUTS_SELECTOR)) {
+      this.addInput(context);
+    } else {
+      context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach(input => this.addInput(input));
+    }
+
+    return this;
+  }
+  /**
+   * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
+   * @returns {HTMLFormElement|HTMLElement}
+   */
+
+
+  getParentForm(input) {
+    if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
+      if (input.form) return input.form;
+    }
+
+    let element = input; // traverse the DOM to search for related inputs
+
+    while (element.parentElement && element.parentElement !== document.body) {
+      element = element.parentElement; // todo: These selectors should be configurable
+
+      const inputs = element.querySelectorAll(FORM_INPUTS_SELECTOR);
+      const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
+
+      if (inputs.length > 1 || buttons.length) {
+        // found related input, return common ancestor
+        return element;
+      }
+    }
+
+    return input;
+  }
+  /**
+   * @param {HTMLInputElement|HTMLSelectElement} input
+   */
+
+
+  addInput(input) {
+    const parentForm = this.getParentForm(input); // Note that el.contains returns true for el itself
+
+    const previouslyFoundParent = [...this.forms.keys()].find(form => form.contains(parentForm));
+
+    if (previouslyFoundParent) {
+      var _this$forms$get;
+
+      // If we've already met the form or a descendant, add the input
+      // console.log('🍎 previouslyFoundParent', input)
+      (_this$forms$get = this.forms.get(previouslyFoundParent)) === null || _this$forms$get === void 0 ? void 0 : _this$forms$get.addInput(input);
+    } else {
+      // if this form is an ancestor of an existing form, remove that before adding this
+      const childForm = [...this.forms.keys()].find(form => parentForm.contains(form));
+
+      if (childForm) {
+        var _this$forms$get2;
+
+        (_this$forms$get2 = this.forms.get(childForm)) === null || _this$forms$get2 === void 0 ? void 0 : _this$forms$get2.destroy();
+        this.forms.delete(childForm);
+      }
+
+      this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching));
+    }
+  }
+  /**
+   * enqueue elements to be re-scanned after the given
+   * amount of time has elapsed.
+   *
+   * @param {(HTMLElement|Document)[]} htmlElements
+   */
+
+
+  enqueue(htmlElements) {
+    // if the buffer limit is reached, stop trying to track elements and process body instead.
+    if (this.changedElements.size >= this.options.bufferSize) {
+      this.rescanAll = true;
+      this.changedElements.clear();
+    } else if (!this.rescanAll) {
+      // otherwise keep adding each element to the queue
+      for (let element of htmlElements) {
+        this.changedElements.add(element);
+      }
+    }
+
+    clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => {
+      this.processChangedElements();
+      this.changedElements.clear();
+      this.rescanAll = false;
+    }, this.options.debounceTimePeriod);
+  }
+  /**
+   * re-scan the changed elements, but only if they
+   * are still present in the DOM
+   */
+
+
+  processChangedElements() {
+    if (this.rescanAll) {
+      this.findEligibleInputs(document);
+      return;
+    }
+
+    for (let element of this.changedElements) {
+      if (element.isConnected) {
+        this.findEligibleInputs(element);
+      }
+    }
+  }
+  /**
+   * Watch for changes in the DOM, and enqueue elements to be scanned
+   * @type {MutationObserver}
+   */
+
+
+}
+/**
+ * @param {import("./DeviceInterface/InterfacePrototype")} device
+ * @param {Partial<ScannerOptions>} [scannerOptions]
+ * @returns {Scanner}
+ */
+
+
+function createScanner(device, scannerOptions) {
+  return new DefaultScanner(device, { ...defaultScannerOptions,
+    ...scannerOptions
+  });
+}
+
+module.exports = {
+  createScanner
+};
+
+},{"./Form/Form":12,"./Form/matching":22,"./Form/selectors-css":23,"./autofill-utils":37}],30:[function(require,module,exports){
+"use strict";
+
 const {
   escapeXML
 } = require('../autofill-utils');
@@ -7737,7 +8056,7 @@ class DataAutofill extends Tooltip {
 
 module.exports = DataAutofill;
 
-},{"../autofill-utils":36,"./Tooltip":31,"./styles/autofill-tooltip-styles.js":33}],30:[function(require,module,exports){
+},{"../autofill-utils":37,"./Tooltip":32,"./styles/autofill-tooltip-styles.js":34}],31:[function(require,module,exports){
 "use strict";
 
 const {
@@ -7800,7 +8119,7 @@ class EmailAutofill extends Tooltip {
 
 module.exports = EmailAutofill;
 
-},{"../autofill-utils":36,"./Tooltip":31,"./styles/autofill-tooltip-styles.js":33}],31:[function(require,module,exports){
+},{"../autofill-utils":37,"./Tooltip":32,"./styles/autofill-tooltip-styles.js":34}],32:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -8045,7 +8364,7 @@ class Tooltip {
 
 module.exports = Tooltip;
 
-},{"../Form/matching":22,"../autofill-utils":36}],32:[function(require,module,exports){
+},{"../Form/matching":22,"../autofill-utils":37}],33:[function(require,module,exports){
 "use strict";
 
 const ddgPasswordIconBase = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tYmFzZTwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tYmFzZSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IlVuaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjMzMzMsMi42NjY2NyBDMTAuMjI4OCwyLjY2NjY3IDkuMzMzMzMsMy41NjIxIDkuMzMzMzMsNC42NjY2NyBDOS4zMzMzMyw1Ljc3MTI0IDEwLjIyODgsNi42NjY2NyAxMS4zMzMzLDYuNjY2NjcgQzEyLjQzNzksNi42NjY2NyAxMy4zMzMzLDUuNzcxMjQgMTMuMzMzMyw0LjY2NjY3IEMxMy4zMzMzLDMuNTYyMSAxMi40Mzc5LDIuNjY2NjcgMTEuMzMzMywyLjY2NjY3IFogTTEwLjY2NjcsNC42NjY2NyBDMTAuNjY2Nyw0LjI5ODQ4IDEwLjk2NTEsNCAxMS4zMzMzLDQgQzExLjcwMTUsNCAxMiw0LjI5ODQ4IDEyLDQuNjY2NjcgQzEyLDUuMDM0ODYgMTEuNzAxNSw1LjMzMzMzIDExLjMzMzMsNS4zMzMzMyBDMTAuOTY1MSw1LjMzMzMzIDEwLjY2NjcsNS4wMzQ4NiAxMC42NjY3LDQuNjY2NjcgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC42NjY3LDAgQzcuNzIxMTUsMCA1LjMzMzMzLDIuMzg3ODEgNS4zMzMzMyw1LjMzMzMzIEM1LjMzMzMzLDUuNzYxMTkgNS4zODM4NSw2LjE3Nzk4IDUuNDc5NDUsNi41Nzc3NSBMMC4xOTUyNjIsMTEuODYxOSBDMC4wNzAyMzc5LDExLjk4NyAwLDEyLjE1NjUgMCwxMi4zMzMzIEwwLDE1LjMzMzMgQzAsMTUuNzAxNSAwLjI5ODQ3NywxNiAwLjY2NjY2NywxNiBMMy4zMzMzMywxNiBDNC4wNjk3MSwxNiA0LjY2NjY3LDE1LjQwMyA0LjY2NjY3LDE0LjY2NjcgTDQuNjY2NjcsMTQgTDUuMzMzMzMsMTQgQzYuMDY5NzEsMTQgNi42NjY2NywxMy40MDMgNi42NjY2NywxMi42NjY3IEw2LjY2NjY3LDExLjMzMzMgTDgsMTEuMzMzMyBDOC4xNzY4MSwxMS4zMzMzIDguMzQ2MzgsMTEuMjYzMSA4LjQ3MTQxLDExLjEzODEgTDkuMTU5MDYsMTAuNDUwNCBDOS42Mzc3MiwxMC41OTEyIDEwLjE0MzksMTAuNjY2NyAxMC42NjY3LDEwLjY2NjcgQzEzLjYxMjIsMTAuNjY2NyAxNiw4LjI3ODg1IDE2LDUuMzMzMzMgQzE2LDIuMzg3ODEgMTMuNjEyMiwwIDEwLjY2NjcsMCBaIE02LjY2NjY3LDUuMzMzMzMgQzYuNjY2NjcsMy4xMjQxOSA4LjQ1NzUzLDEuMzMzMzMgMTAuNjY2NywxLjMzMzMzIEMxMi44NzU4LDEuMzMzMzMgMTQuNjY2NywzLjEyNDE5IDE0LjY2NjcsNS4zMzMzMyBDMTQuNjY2Nyw3LjU0MjQ3IDEyLjg3NTgsOS4zMzMzMyAxMC42NjY3LDkuMzMzMzMgQzEwLjE1NTgsOS4zMzMzMyA5LjY2ODg2LDkuMjM3OSA5LjIyMTUyLDkuMDY0NSBDOC45NzUyOCw4Ljk2OTA1IDguNjk1OTEsOS4wMjc5NSA4LjUwOTE2LDkuMjE0NjkgTDcuNzIzODYsMTAgTDYsMTAgQzUuNjMxODEsMTAgNS4zMzMzMywxMC4yOTg1IDUuMzMzMzMsMTAuNjY2NyBMNS4zMzMzMywxMi42NjY3IEw0LDEyLjY2NjcgQzMuNjMxODEsMTIuNjY2NyAzLjMzMzMzLDEyLjk2NTEgMy4zMzMzMywxMy4zMzMzIEwzLjMzMzMzLDE0LjY2NjcgTDEuMzMzMzMsMTQuNjY2NyBMMS4zMzMzMywxMi42MDk1IEw2LjY5Nzg3LDcuMjQ0OTQgQzYuODc1MDIsNy4wNjc3OSA2LjkzNzksNi44MDYyOSA2Ljg2MDY1LDYuNTY3OTggQzYuNzM0ODksNi4xNzk5NyA2LjY2NjY3LDUuNzY1MjcgNi42NjY2Nyw1LjMzMzMzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
@@ -8065,12 +8384,12 @@ module.exports = {
   ddgIdentityIconBase
 };
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px; \n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 const ddgGlobals = require('./captureDdgGlobals');
@@ -8217,7 +8536,7 @@ module.exports = {
   createTransport
 };
 
-},{"./captureDdgGlobals":35}],35:[function(require,module,exports){
+},{"./captureDdgGlobals":36}],36:[function(require,module,exports){
 "use strict";
 
 // Capture the globals we need on page start
@@ -8243,7 +8562,7 @@ const secretGlobals = {
 };
 module.exports = secretGlobals;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 const {
@@ -8596,7 +8915,7 @@ module.exports = {
   isLikelyASubmitButton
 };
 
-},{"./Form/matching":22}],37:[function(require,module,exports){
+},{"./Form/matching":22}],38:[function(require,module,exports){
 "use strict";
 
 // Polyfills/shims
@@ -8614,7 +8933,7 @@ require('./requestIdleCallback');
   }
 })();
 
-},{"./DeviceInterface":7,"./requestIdleCallback":40}],38:[function(require,module,exports){
+},{"./DeviceInterface":7,"./requestIdleCallback":41}],39:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -8670,7 +8989,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -8679,7 +8998,7 @@ module.exports = {
   TEXT_LENGTH_CUTOFF: 50
 };
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 /*!
@@ -8721,162 +9040,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 
 module.exports = {};
 
-},{}],41:[function(require,module,exports){
-"use strict";
-
-const {
-  Form
-} = require('./Form/Form');
-
-const {
-  notifyWebApp
-} = require('./autofill-utils');
-
-const {
-  SUBMIT_BUTTON_SELECTOR,
-  FORM_INPUTS_SELECTOR
-} = require('./Form/selectors-css');
-/** @type Map<HTMLElement, Form> */
-
-
-const _forms = new Map();
-/**
- * This will return `init` and `findEligibleInputs` which allows consumers
- * to either `init` if in the context of a webpage, or alternatively just perform
- * the synchronous mutations via findEligibleInputs
- *
- * @param {import("./DeviceInterface/InterfacePrototype")} device
- * @param {Map<HTMLElement, Form>} [forms]
- * @returns {{
- *   init: () => () => void,
- *   findEligibleInputs: (element: Element|Document) => void
- * }}
- */
-
-
-const scanForInputs = function (device) {
-  let forms = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _forms;
-
-  const getParentForm = input => {
-    if (input.form) return input.form;
-    let element = input; // traverse the DOM to search for related inputs
-
-    while (element.parentElement && element.parentElement !== document.body) {
-      element = element.parentElement; // todo: These selectors should be configurable
-
-      const inputs = element.querySelectorAll(FORM_INPUTS_SELECTOR);
-      const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
-
-      if (inputs.length > 1 || buttons.length) {
-        // found related input, return common ancestor
-        return element;
-      }
-    }
-
-    return input;
-  };
-
-  const addInput = input => {
-    const parentForm = getParentForm(input); // Note that el.contains returns true for el itself
-
-    const previouslyFoundParent = [...forms.keys()].find(form => form.contains(parentForm));
-
-    if (previouslyFoundParent) {
-      var _forms$get;
-
-      // If we've already met the form or a descendant, add the input
-      (_forms$get = forms.get(previouslyFoundParent)) === null || _forms$get === void 0 ? void 0 : _forms$get.addInput(input);
-    } else {
-      // if this form is an ancestor of an existing form, remove that before adding this
-      const childForm = [...forms.keys()].find(form => parentForm.contains(form));
-
-      if (childForm) {
-        var _forms$get2;
-
-        (_forms$get2 = forms.get(childForm)) === null || _forms$get2 === void 0 ? void 0 : _forms$get2.destroy();
-        forms.delete(childForm);
-      }
-
-      forms.set(parentForm, new Form(parentForm, input, device));
-    }
-  };
-
-  const findEligibleInputs = context => {
-    var _context$matches;
-
-    if ((_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, FORM_INPUTS_SELECTOR)) {
-      addInput(context);
-    } else {
-      context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach(addInput);
-    }
-  }; // For all DOM mutations, search for new eligible inputs and update existing inputs positions
-
-
-  const mutObs = new MutationObserver(mutationList => {
-    for (const mutationRecord of mutationList) {
-      if (mutationRecord.type === 'childList') {
-        // We query only within the context of added/removed nodes
-        mutationRecord.addedNodes.forEach(el => {
-          if (el.nodeName === 'DDG-AUTOFILL') return;
-
-          if (el instanceof HTMLElement) {
-            window.requestIdleCallback(() => {
-              findEligibleInputs(el);
-            });
-          }
-        });
-      }
-    }
-  });
-
-  const logoutHandler = () => {
-    // remove Dax, listeners, and observers
-    mutObs.disconnect();
-    forms.forEach(form => {
-      form.resetAllInputs();
-      form.removeAllDecorations();
-    });
-    forms.clear();
-
-    if (device.globalConfig.isDDGDomain) {
-      notifyWebApp({
-        deviceSignedIn: {
-          value: false
-        }
-      });
-    }
-  };
-  /**
-   * Requiring consumers to explicitly call this `init` method allows
-   * us to view this as stateless, which helps with tests and general hygiene
-   *
-   * We return the logoutHandler to allow consumers to do with it as they please,
-   * rather than this module needing to know to register it.
-   *
-   * @returns {logoutHandler}
-   */
-
-
-  const init = () => {
-    window.requestIdleCallback(() => {
-      findEligibleInputs(document);
-      mutObs.observe(document.body, {
-        childList: true,
-        subtree: true
-      });
-    });
-    return logoutHandler;
-  };
-
-  return {
-    init,
-    findEligibleInputs
-  };
-};
-
-module.exports = {
-  scanForInputs,
-  forms: _forms
-};
-
-},{"./Form/Form":12,"./Form/selectors-css":23,"./autofill-utils":36}]},{},[37]);
+},{}]},{},[38]);

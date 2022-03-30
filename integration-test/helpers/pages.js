@@ -8,6 +8,8 @@ import { expect } from '@playwright/test'
  * @param {ServerWrapper} server
  */
 export function signupPage (page, server) {
+    const decoratedFirstInputSelector = '#email' + constants.fields.email.selectors.identity
+    const decoratedSecondInputSelector = '#email-2' + constants.fields.email.selectors.identity
     return {
         async navigate () {
             await page.goto(server.urlForPath(constants.pages['signup']))
@@ -48,17 +50,17 @@ export function signupPage (page, server) {
             await btn.click()
         },
         async selectSecondEmailField (selector) {
-            const input = page.locator('#email2')
+            const input = page.locator(decoratedSecondInputSelector)
             await input.click()
             const button = page.locator(`button:has-text("${selector}")`)
             await button.click({ force: true })
         },
         async assertSecondEmailValue (emailAddress) {
-            const input = page.locator('#email2')
+            const input = page.locator(decoratedSecondInputSelector)
             await expect(input).toHaveValue(emailAddress)
         },
         async assertFirstEmailEmpty () {
-            const input = page.locator('#email')
+            const input = page.locator(decoratedFirstInputSelector)
             await expect(input).toHaveValue('')
         }
     }

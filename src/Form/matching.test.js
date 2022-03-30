@@ -1,5 +1,4 @@
-const { Matching } = require('./matching')
-const {matchingConfiguration} = require('./matching-configuration')
+const { Matching, createMatching } = require('./matching')
 
 const setFormHtml = (html) => {
     document.body.innerHTML = `
@@ -20,32 +19,32 @@ beforeEach(() => {
 })
 
 describe('css-selector matching', () => {
-    const selectors = matchingConfiguration.strategies.cssSelector.selectors
     it.each([
-        { html: `<input name=mail />`, selector: selectors['email'], matched: true },
-        { html: `<input name=oops! />`, selector: selectors['email'], matched: false }
+        { html: `<input name=mail />`, selector: 'email', matched: true },
+        { html: `<input name=oops! />`, selector: 'email', matched: false }
     ])(`$html: '$matched'`, (args) => {
         const { html, matched, selector } = args
         const { inputs } = setFormHtml(html)
 
-        const matching = new Matching(matchingConfiguration)
+        const matching = createMatching()
         const result = matching.execCssSelector(selector, inputs[0])
         expect(result.matched).toBe(matched)
     })
 })
 
 describe('ddg-matchers matching', () => {
-    const matchers = matchingConfiguration.strategies.ddgMatcher.matchers
     it.each([
-        { html: `<input placeholder=email />`, matcher: matchers.email, matched: true },
-        { html: `<input placeholder=mail />`, matcher: matchers.email, matched: false },
-        { html: `<input placeholder=email-search />`, matcher: matchers.email, matched: false }
+        { html: `<input placeholder=email />`, matcher: 'email', matched: true },
+        { html: `<input placeholder=mail />`, matcher: 'email', matched: false },
+        { html: `<input placeholder=email-search />`, matcher: 'email', matched: false }
     ])(`$html: '$matcher': $matched`, (args) => {
         const { html, matched, matcher } = args
         const { inputs, formElement } = setFormHtml(html)
 
-        const matching = new Matching(matchingConfiguration)
-        const result = matching.execDDGMatcher(matcher, inputs[0], formElement)
+        const matching = createMatching()
+        const result = matching
+            .forInput(inputs[0], formElement)
+            .execDDGMatcher(matcher)
         expect(result.matched).toBe(matched)
     })
 })
@@ -60,10 +59,10 @@ describe('vendor-regexes matching', () => {
         const { html, matched, regexName } = args
         const { inputs, formElement } = setFormHtml(html)
 
-        const matching = new Matching(matchingConfiguration)
-        const regex = matching.vendorRegex(regexName)
-        if (!regex) throw new Error('unreachable, vendor regex missing')
-        const result = matching.execVendorRegex(regex, inputs[0], formElement)
+        const matching = createMatching()
+        const result = matching
+            .forInput(inputs[0], formElement)
+            .execVendorRegex(regexName)
         expect(result.matched).toBe(matched)
     })
 })
@@ -121,7 +120,7 @@ describe('matching', () => {
         const { html, subtype } = args
         const { formElement, inputs } = setFormHtml(html)
 
-        const matching = new Matching(matchingConfiguration)
+        const matching = createMatching()
         const inferred = matching.inferInputType(inputs[0], formElement)
         expect(inferred).toBe(subtype)
     })

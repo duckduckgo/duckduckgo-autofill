@@ -4,7 +4,6 @@ const {
     formatDuckAddress,
     autofillEnabled
 } = require('../autofill-utils')
-const {scanForInputs, forms} = require('../scanForInputs.js')
 const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
 
 /**
@@ -19,6 +18,9 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /** @type {Transport} */
     transport = createTransport(this.globalConfig)
+
+    /** @override */
+    initialSetupDelayMs = 300
 
     async isEnabled () {
         return autofillEnabled(this.globalConfig, processConfig)
@@ -121,10 +123,10 @@ class AppleDeviceInterface extends InterfacePrototype {
             if (this.globalConfig.isApp) {
                 await this.getAddresses()
             }
-            forms.forEach(form => form.redecorateAllInputs())
+            this.scanner.forms.forEach(form => form.redecorateAllInputs())
         }
 
-        const cleanup = scanForInputs(this).init()
+        const cleanup = this.scanner.init()
         this.addLogoutListener(cleanup)
     }
 
