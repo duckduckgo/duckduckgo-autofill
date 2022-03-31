@@ -50,7 +50,8 @@ test.describe('macos', () => {
         const privateAddressBtn = await page.locator(`button:has-text("Generated Private Duck Address 0@duck.com")`)
 
         // select the first option
-        await personalAddressBtn.click()
+        await expect(personalAddressBtn).toBeVisible();
+        await personalAddressBtn.click({ force: true })
 
         // ensure autofill populates the field
         await emailPage.assertEmailValue(personalAddress)
