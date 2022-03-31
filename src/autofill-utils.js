@@ -75,12 +75,14 @@ const setValueForInput = (el, val, config) => {
         el.focus()
     }
 
+    // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
     el.dispatchEvent(new Event('keydown', {bubbles: true}))
 
     originalSet?.call(el, val)
 
     const events = [
         new Event('input', {bubbles: true}),
+        // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
         new Event('keyup', {bubbles: true}),
         new Event('change', {bubbles: true})
     ]

@@ -1,36 +1,23 @@
 import * as fs from 'fs'
-import * as path from 'path'
-import * as http from 'http'
-import {join} from 'path'
-import {tmpdir} from 'os'
 import {mkdtempSync, readFileSync} from 'fs'
+import * as path from 'path'
+import {join} from 'path'
+import * as http from 'http'
+import {tmpdir} from 'os'
+import {devices} from 'playwright'
 import {chromium, firefox} from '@playwright/test'
 
 const DATA_DIR_PREFIX = 'ddg-temp-'
-
-export const constants = {
-    pages: {
-        'email-autofill': 'email-autofill.html'
-    },
-    fields: {
-        email: {
-            personalAddress: `shane-123@duck.com`,
-            privateAddress0: '0@duck.com',
-            selectors: {
-                identity: '[data-ddg-inputtype="identities.emailAddress"]'
-            }
-        }
-    }
-}
 
 /**
  * A simple file server, this is done manually here to enable us
  * to manipulate some requests if needed.
  * @param {string|number} [port]
- * @return {{address: AddressInfo, urlForPath(path: string): string, close(): void, url: module:url.URL}}
+ * @return {ServerWrapper}
  */
 export function setupServer (port) {
     const server = http.createServer(function (req, res) {
+        if (!req.url) throw new Error('unreachable')
         const url = new URL(req.url, `http://${req.headers.host}`)
         const importUrl = new URL(import.meta.url)
         const dirname = importUrl.pathname.replace(/\/[^/]*$/, '')
@@ -48,6 +35,7 @@ export function setupServer (port) {
     }).listen(port)
 
     const address = server.address()
+    if (address === null || typeof address === 'string') throw new Error('unreachable')
     const url = new URL('http://localhost:' + address.port)
 
     return {
@@ -64,13 +52,15 @@ export function setupServer (port) {
 }
 
 /**
- * @param {import("@playwright/test").test} test
+ * Launch a chromium browser with the test extension pre-loaded.
+ *
+ * @param {typeof import("@playwright/test").test} test
  */
 export function withChromeExtensionContext (test) {
     return test.extend({
         context: async ({ browserName }, use, testInfo) => {
             // ensure this test setup cannot be used by anything other than chrome
-            testInfo.skip(testInfo.project.name !== 'chromium')
+            testInfo.skip(testInfo.project.name !== 'extension')
 
             const tmpDirPrefix = join(tmpdir(), DATA_DIR_PREFIX)
             const dataDir = mkdtempSync(tmpDirPrefix)
@@ -100,33 +90,114 @@ export function withChromeExtensionContext (test) {
 /**
  * @param {import("playwright").Page} page
  * @param {Record<string, string | boolean>} replacements
+ * @param {Platform} [platform]
  * @return {Promise<void>}
  */
-export async function withStringReplacements (page, replacements) {
+function withStringReplacements (page, replacements, platform = 'macos') {
     const content = readFileSync('./dist/autofill.js', 'utf8')
     let output = content
     for (let [keyName, value] of Object.entries(replacements)) {
         output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${value};`)
     }
-    await page.addInitScript(output)
+    if (['macos', 'ios'].includes(platform)) {
+        return page.addInitScript(output)
+    } else {
+        return page.evaluate(output)
+    }
 }
 
 /**
- * @param {import("playwright").Page} page
- * @param {Record<string, any>} mocks
+ * @return {ScriptBuilder}
  */
-export async function withMockedWebkit (page, mocks) {
-    await page.addInitScript((mocks) => {
-        window.webkit = {
-            messageHandlers: {}
-        }
+export function createAutofillScript () {
+    /** @type {Partial<Replacements>} */
+    const replacements = {
+        isDDGTestMode: true,
+        supportsTopFrame: false,
+        hasModernWebkitAPI: true
+    }
 
-        for (let [msgName, response] of Object.entries(mocks)) {
-            window.webkit.messageHandlers[msgName] = {
-                postMessage: async () => {
-                    return JSON.stringify(response)
-                }
-            }
+    /** @type {Platform} */
+    let platform = 'macos'
+
+    /** @type {ScriptBuilder} */
+    const builder = {
+        replace (key, value) {
+            replacements[key] = value
+            return this
+        },
+        tap (fn) {
+            fn(replacements, platform)
+            return this
+        },
+        replaceAll: function (incoming) {
+            Object.assign(replacements, incoming)
+            return this
+        },
+        platform (p) {
+            platform = p
+            return this
+        },
+        async applyTo (page) {
+            return withStringReplacements(page, replacements, platform)
         }
-    }, mocks)
+    }
+
+    return builder
+}
+
+/**
+ * Relay browser exceptions to the terminal to aid debugging.
+ *
+ * @param {import("playwright").Page} page
+ */
+export function forwardConsoleMessages (page) {
+    page.on('pageerror', (msg) => {
+        console.log('🌍 ❌ [in-page error]', msg)
+    })
+    page.on('console', (msg) => {
+        console.log(`🌍 [in-page console.${msg.type()}]`, msg.text())
+    })
+}
+
+/**
+ * Launch a webkit browser with a user-agent that simulates our iOS application
+ * @param {typeof import("@playwright/test").test} test
+ */
+export function withIOSContext (test) {
+    return test.extend({
+        context: async ({ browser }, use, testInfo) => {
+            // ensure this test setup cannot be used by anything other than webkit browsers
+            testInfo.skip(testInfo.project.name !== 'webkit')
+
+            const context = await browser.newContext({
+                ...devices.iPhone,
+                userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 DuckDuckGo/7 Safari/605.1.15'
+            })
+
+            await use(context)
+            await context.close()
+        }
+    })
+}
+
+/**
+ * Launch a webkit browser with a user-agent that simulates our iOS application
+ * @param {typeof import("@playwright/test").test} test
+ */
+export function withAndroidContext (test) {
+    return test.extend({
+        context: async ({ browser }, use, testInfo) => {
+            // ensure this test setup cannot be used by anything other than webkit browsers
+            testInfo.skip(testInfo.project.name !== 'android')
+
+            const context = await browser.newContext({
+                ...devices.iPhone,
+                userAgent: 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.88 DuckDuckGo/7 Mobile Safari/537.36'
+            })
+
+            await use(context)
+            await context.close()
+        }
+    })
 }

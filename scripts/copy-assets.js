@@ -26,8 +26,8 @@ function copyFirefoxCSSFile (pathIn, pathOut) {
 }
 
 function copyAutofillScriptToExtension () {
-    const source = 'let isDDGTestMode = false'
-    const replacement = 'let isDDGTestMode = true'
+    const source = '// INJECT isDDGTestMode HERE'
+    const replacement = 'isDDGTestMode = true;'
     const autofill = readFileSync(filepath('dist/autofill.js'), 'utf8')
     if (!autofill.includes(source)) {
         throw new Error('cannot find source for replacement, expected: ' + source)

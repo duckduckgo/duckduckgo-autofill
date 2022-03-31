@@ -32,7 +32,11 @@ class AndroidInterface extends InterfacePrototype {
 
         try {
             userData = JSON.parse(window.EmailInterface.getUserData())
-        } catch (e) {}
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.error(e)
+            }
+        }
 
         return Promise.resolve(userData)
     }

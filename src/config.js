@@ -17,6 +17,7 @@ function createGlobalConfig () {
     // INJECT hasModernWebkitAPI HERE
 
     let isDDGTestMode = false
+    // INJECT isDDGTestMode HERE
 
     let contentScope = null
     let userUnprotectedDomains = null
