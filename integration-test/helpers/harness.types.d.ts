@@ -16,18 +16,18 @@ type Replacements = Record<keyof GlobalConfig, string | boolean>;
  * ```
  */
 interface MockBuilder<State> {
-  // Set the private email address
-  withPrivateEmail(email: string): MockBuilder
-  // Set the personal email address
-  withPersonalEmail(email: string): MockBuilder
-  // Add an identity
-  withIdentity(identity: IdentityObject): MockBuilder
-  // Add a credential
-  withCredentials(credentials: CredentialsObject): MockBuilder
-  // observe the current state
-  tap(fn: (currentState: State)=>void): MockBuilder
-  // apply to the page, this is the final step
-  applyTo(page: import("playwright").Page): Promise<void>
+    // Set the private email address
+    withPrivateEmail(email: string): MockBuilder
+    // Set the personal email address
+    withPersonalEmail(email: string): MockBuilder
+    // Add an identity
+    withIdentity(identity: IdentityObject): MockBuilder
+    // Add a credential
+    withCredentials(credentials: CredentialsObject): MockBuilder
+    // observe the current state
+    tap(fn: (currentState: State) => void): MockBuilder
+    // apply to the page, this is the final step
+    applyTo(page: import("playwright").Page): Promise<void>
 }
 
 /**
@@ -41,16 +41,16 @@ interface MockBuilder<State> {
  * ```
  */
 interface ScriptBuilder {
-  // replace a single config key
-  replace(key: keyof GlobalConfig, value: string | boolean): Omit<ScriptBuilder, "applyTo">
-  // replace multiple config keys
-  replaceAll(replacements: Partial<Replacements>): Omit<ScriptBuilder, "applyTo">
-  // observe the current state
-  tap(fn: (replacements: Partial<Replacements>, platform: string)=>void): Omit<ScriptBuilder, "applyTo">
-  // set the platform - this is required
-  platform(platform: Platform): Omit<ScriptBuilder, "platform">
-  // apply to the page, this is the final step
-  applyTo(page: import("playwright").Page): Promise<void>
+    // replace a single config key
+    replace(key: keyof GlobalConfig, value: string | boolean): Omit<ScriptBuilder, "applyTo">
+    // replace multiple config keys
+    replaceAll(replacements: Partial<Replacements>): Omit<ScriptBuilder, "applyTo">
+    // observe the current state
+    tap(fn: (replacements: Partial<Replacements>, platform: string) => void): Omit<ScriptBuilder, "applyTo">
+    // set the platform - this is required
+    platform(platform: Platform): Omit<ScriptBuilder, "platform">
+    // apply to the page, this is the final step
+    applyTo(page: import("playwright").Page): Promise<void>
 }
 
 /**
