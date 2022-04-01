@@ -1,7 +1,7 @@
 import { daxBase64 } from './logo-svg'
 import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon'
 import { getInputType, getMainTypeFromType, getInputSubtype } from './matching'
-import { CredentialsTooltipItem } from '../InputTypes/Credentials'
+import { createCredentialsTooltipItem } from '../InputTypes/Credentials'
 import { CreditCardTooltipItem } from '../InputTypes/CreditCard'
 import { IdentityTooltipItem } from '../InputTypes/Identity'
 
@@ -56,7 +56,7 @@ const inputTypeConfig = {
             return false
         },
         dataType: 'Credentials',
-        tooltipItem: (data) => new CredentialsTooltipItem(data)
+        tooltipItem: (data) => createCredentialsTooltipItem(data)
     },
     /** @type {CreditCardsInputTypeConfig} */
     creditCards: {

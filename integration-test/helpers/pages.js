@@ -1,4 +1,4 @@
-import {constants} from './mocks.js'
+import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
 
 /**
@@ -19,6 +19,7 @@ export function signupPage (page, server) {
             await input.click()
 
             const passwordBtn = page.locator('button:has-text("Generated password")')
+            await expect(passwordBtn).toContainText('Login information will be saved for this website')
 
             const passwordButtonText = await passwordBtn.innerText()
             const [, generatedPassword] = passwordButtonText.split('\n')
