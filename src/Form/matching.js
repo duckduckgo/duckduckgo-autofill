@@ -286,7 +286,6 @@ class Matching {
                  * it matched the current element, then we'd return 'username'
                  */
                 if (result?.matched) {
-                    // console.log(`~✅ ${strategyName} ${lookup}`)
                     return matcher.type
                 }
                 /**

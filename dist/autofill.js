@@ -3321,7 +3321,6 @@ class InterfacePrototype {
     if (type === 'email' && 'email' in data) {
       form.autofillEmail(data.email);
     } else {
-      // console.log(`form.autofillData(data, ${JSON.stringify(type)})`);
       form.autofillData(data, type);
     }
 
@@ -3465,7 +3464,7 @@ class InterfacePrototype {
   onSelect(config, items, id) {
     id = String(id);
     const matchingData = items.find(item => String(item.id) === id);
-    if (!matchingData) throw new Error('unreachable (fatal)'); // console.log(id, JSON.stringify(matchingData), JSON.stringify(config));
+    if (!matchingData) throw new Error('unreachable (fatal)');
 
     const dataPromise = (() => {
       switch (config.type) {
@@ -3493,7 +3492,6 @@ class InterfacePrototype {
 
 
     dataPromise.then(response => {
-      // console.log("📲", JSON.stringify(response));
       if (response.success) {
         return this.selectedDetail(response.success, config.type);
       } else {
@@ -6735,7 +6733,6 @@ class Matching {
 
 
         if ((_result = result) !== null && _result !== void 0 && _result.matched) {
-          // console.log(`~✅ ${strategyName} ${lookup}`)
           return matcher.type;
         }
         /**
@@ -7917,7 +7914,6 @@ class DefaultScanner {
       var _this$forms$get;
 
       // If we've already met the form or a descendant, add the input
-      // console.log('🍎 previouslyFoundParent', input)
       (_this$forms$get = this.forms.get(previouslyFoundParent)) === null || _this$forms$get === void 0 ? void 0 : _this$forms$get.addInput(input);
     } else {
       // if this form is an ancestor of an existing form, remove that before adding this

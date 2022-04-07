@@ -147,7 +147,6 @@ class DefaultScanner {
 
         if (previouslyFoundParent) {
             // If we've already met the form or a descendant, add the input
-            // console.log('🍎 previouslyFoundParent', input)
             this.forms.get(previouslyFoundParent)?.addInput(input)
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this

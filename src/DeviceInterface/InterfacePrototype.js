@@ -260,7 +260,6 @@ class InterfacePrototype {
         if (type === 'email' && 'email' in data) {
             form.autofillEmail(data.email)
         } else {
-            // console.log(`form.autofillData(data, ${JSON.stringify(type)})`);
             form.autofillData(data, type)
         }
         this.removeTooltip()
@@ -406,8 +405,6 @@ class InterfacePrototype {
         const matchingData = items.find(item => String(item.id) === id)
         if (!matchingData) throw new Error('unreachable (fatal)')
 
-        // console.log(id, JSON.stringify(matchingData), JSON.stringify(config));
-
         const dataPromise = (() => {
             switch (config.type) {
             case 'creditCards': return this.getAutofillCreditCard(id)
@@ -424,7 +421,6 @@ class InterfacePrototype {
 
         // wait for the data back from the device
         dataPromise.then(response => {
-            // console.log("📲", JSON.stringify(response));
             if (response.success) {
                 return this.selectedDetail(response.success, config.type)
             } else {
