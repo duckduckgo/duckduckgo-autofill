@@ -408,7 +408,7 @@ class Matching {
             return { matched: false }
         }
         /** @type {MatchableStrings[]} */
-        const stringsToMatch = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText']
+        const stringsToMatch = ['placeholderAttr', 'nameAttr', 'labelText', 'id', 'relatedText']
         for (let stringName of stringsToMatch) {
             let elementString = this.activeElementStrings[stringName]
             if (!elementString) continue

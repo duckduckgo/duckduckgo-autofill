@@ -125,7 +125,7 @@ const fullName = `
 [name*=your-name i], [autocomplete*=your-name i]`
 
 const phone = `
-[name*=phone i], [name*=mobile i], [autocomplete=tel]`
+[name*=phone i], [name*=mobile i], [autocomplete=tel], [placeholder*="phone number" i]`
 
 const addressStreet1 = `
 [name=address], [autocomplete=street-address], [autocomplete=address-line1],
