@@ -116,5 +116,12 @@ module.exports = [
     { html: 'samash_checkout_international.html' },
     { html: 'samash_login.html' },
     { html: 'samash_signup.html' },
-    { html: 'financialtimes_login.html', title: 'Login' }
+    { html: 'financialtimes_login.html', title: 'Login' },
+    { html: 'iqgunder_guest.html', expectedFailures: ['fullName', 'fullName', 'phone', 'fullName', 'fullName', 'phone', 'fullName', 'fullName', 'fullName', 'fullName', 'fullName', 'fullName'] },
+    { html: 'iqgunder_guest_entry.html', title: 'Fund Formation Portal Login', expectedFailures: ['emailAddress'] },
+    { html: 'iqgunder_login.html' },
+    { html: 'iqgunder_signup.html' },
+    { html: 'gunderassociates_contacts.html', expectedFailures: ['phone'] },
+    { html: 'websitecarbon.html' },
+    { html: 'schwab.html' }
 ]
