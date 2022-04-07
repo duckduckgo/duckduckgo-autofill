@@ -2,15 +2,10 @@ const fs = require('fs')
 const path = require('path')
 
 const {getUnifiedExpiryDate} = require('./formatters')
-const {scanForInputs} = require('../scanForInputs')
-const {Matching, getInputSubtype} = require('./matching')
-const {matchingConfiguration} = require('./matching-configuration')
+const {createScanner} = require('../Scanner')
+const {getInputSubtype, createMatching} = require('./matching')
 const {Form} = require('./Form')
 const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
-
-const CSS_MATCHERS_LIST = matchingConfiguration.matchers.lists['cc'].map(matcherName => {
-    return matchingConfiguration.matchers.fields[matcherName]
-})
 
 /**
  * @param {HTMLInputElement} el
@@ -18,8 +13,11 @@ const CSS_MATCHERS_LIST = matchingConfiguration.matchers.lists['cc'].map(matcher
  * @returns {string|undefined}
  */
 const getCCFieldSubtype = (el, form) => {
-    const matching = new Matching(matchingConfiguration)
-    return matching.subtypeFromMatchers(CSS_MATCHERS_LIST, el, form)
+    const matching = createMatching()
+
+    return matching
+        .forInput(el, form)
+        .subtypeFromMatchers('cc', el)
 }
 
 const renderInputWithLabel = () => {
@@ -149,7 +147,8 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         document.body.innerHTML = testContent
         document.title = title
 
-        scanForInputs(new InterfacePrototype(createGlobalConfig()), new Map()).findEligibleInputs(document)
+        const scanner = createScanner(new InterfacePrototype(createGlobalConfig()))
+        scanner.findEligibleInputs(document)
 
         /**
          * @type {NodeListOf<HTMLInputElement>}

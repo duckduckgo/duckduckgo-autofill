@@ -5,7 +5,6 @@ const {
     formatDuckAddress,
     isAutofillEnabledFromProcessedConfig
 } = require('../autofill-utils')
-const {scanForInputs} = require('../scanForInputs.js')
 
 class ExtensionInterface extends InterfacePrototype {
     async isEnabled () {
@@ -29,7 +28,7 @@ class ExtensionInterface extends InterfacePrototype {
     setupAutofill () {
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
-                const cleanup = scanForInputs(this).init()
+                const cleanup = this.scanner.init()
                 this.addLogoutListener(cleanup)
             }
         })
@@ -111,6 +110,11 @@ class ExtensionInterface extends InterfacePrototype {
                 handler()
             }
         })
+    }
+
+    /** @override */
+    tooltipStyles () {
+        return `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
     }
 }
 

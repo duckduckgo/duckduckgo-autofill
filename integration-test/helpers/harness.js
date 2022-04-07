@@ -21,7 +21,11 @@ export function setupServer (port) {
         const url = new URL(req.url, `http://${req.headers.host}`)
         const importUrl = new URL(import.meta.url)
         const dirname = importUrl.pathname.replace(/\/[^/]*$/, '')
-        const pathname = path.join(dirname, '../pages', url.pathname)
+        let pathname = path.join(dirname, '../pages', url.pathname)
+
+        if (url.pathname.startsWith('/src')) {
+            pathname = path.join(dirname, '../../', url.pathname)
+        }
 
         fs.readFile(pathname, (err, data) => {
             if (err) {
@@ -200,4 +204,25 @@ export function withAndroidContext (test) {
             await context.close()
         }
     })
+}
+
+/**
+ * @param {import("playwright").Page} page
+ * @param {string} measureName
+ * @return {Promise<PerformanceEntryList>}
+ */
+export async function performanceEntries (page, measureName) {
+    const result = await page.evaluate((measureName) => {
+        window.performance?.measure?.(measureName, `${measureName}:start`, `${measureName}:end`)
+        const entries = window.performance?.getEntriesByName(measureName)
+        return JSON.stringify(entries)
+    }, measureName)
+    return JSON.parse(result)
+}
+
+export async function printPerformanceSummary (name, times) {
+    const sum = times.reduce((acc, item) => acc + Number(item), 0)
+    const average = sum / times.length
+    console.log(name, times)
+    console.log('➡️ %s average: ', name, average)
 }

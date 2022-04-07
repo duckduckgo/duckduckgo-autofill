@@ -2,7 +2,6 @@ const InterfacePrototype = require('./InterfacePrototype.js')
 const {
     sendAndWaitForAnswer
 } = require('../autofill-utils')
-const {scanForInputs} = require('../scanForInputs.js')
 
 class AndroidInterface extends InterfacePrototype {
     async getAlias () {
@@ -22,7 +21,7 @@ class AndroidInterface extends InterfacePrototype {
 
     async setupAutofill () {
         if (this.isDeviceSignedIn()) {
-            const cleanup = scanForInputs(this).init()
+            const cleanup = this.scanner.init()
             this.addLogoutListener(cleanup)
         }
     }

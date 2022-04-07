@@ -1,6 +1,6 @@
 import {
     createAutofillScript,
-    forwardConsoleMessages,
+    forwardConsoleMessages, performanceEntries,
     setupServer
 } from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
@@ -150,5 +150,21 @@ test.describe('macos', () => {
         await login.navigate()
         await login.selectFirstCredential(personalAddress)
         await login.assertFirstCredential(personalAddress, password)
+    })
+    test.describe('matching performance', () => {
+        test('matching performance v1', async ({page}) => {
+            await forwardConsoleMessages(page)
+            await createWebkitMocks().applyTo(page)
+            await createAutofillScript()
+                .replace('isApp', true)
+                .platform('macos')
+                .applyTo(page)
+
+            await page.goto(server.urlForPath('src/Form/test-cases/usps_signup.html'))
+            const r = await performanceEntries(page, 'scanner:init')
+            for (let performanceEntry of r) {
+                console.log(performanceEntry.duration)
+            }
+        })
     })
 })
