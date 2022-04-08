@@ -184,4 +184,6 @@ module.exports = [
     { html: 'babycenter_signup.html' },
     { html: 'yourtango_login.html' },
     { html: 'yourtango_signup.html' },
+    { html: 'newgrounds_login.html' },
+    { html: 'newgrounds_signup.html', expectedFailures: ['birthday']},
 ]
