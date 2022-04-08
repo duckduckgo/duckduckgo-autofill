@@ -1,10 +1,12 @@
-const InterfacePrototype = require('./InterfacePrototype.js')
-const {
+import InterfacePrototype from './InterfacePrototype.js'
+
+import {
     SIGN_IN_MSG,
-    sendAndWaitForAnswer, setValue,
+    sendAndWaitForAnswer,
+    setValue,
     formatDuckAddress,
     isAutofillEnabledFromProcessedConfig
-} = require('../autofill-utils')
+} from '../autofill-utils'
 
 class ExtensionInterface extends InterfacePrototype {
     async isEnabled () {
@@ -118,4 +120,4 @@ class ExtensionInterface extends InterfacePrototype {
     }
 }
 
-module.exports = ExtensionInterface
+export default ExtensionInterface

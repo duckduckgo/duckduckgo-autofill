@@ -1,4 +1,4 @@
-const { Matching, createMatching } = require('./matching')
+import { Matching, createMatching } from './matching'
 
 const setFormHtml = (html) => {
     document.body.innerHTML = `

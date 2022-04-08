@@ -1,10 +1,9 @@
-const isApp = require('../autofill-utils')
-
 /**
+ * @param {GlobalConfig} config
  * @param {Map<HTMLElement, import("./Form").Form>} forms
  */
-const listenForGlobalFormSubmission = (forms) => {
-    if (!isApp) return
+const listenForGlobalFormSubmission = (config, forms) => {
+    if (!config.isApp) return
 
     try {
         window.addEventListener('submit', (e) =>
@@ -37,4 +36,4 @@ const listenForGlobalFormSubmission = (forms) => {
     }
 }
 
-module.exports = listenForGlobalFormSubmission
+export default listenForGlobalFormSubmission

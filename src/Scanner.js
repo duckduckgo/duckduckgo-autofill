@@ -1,7 +1,7 @@
-const {Form} = require('./Form/Form')
-const {notifyWebApp} = require('./autofill-utils')
-const {SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR} = require('./Form/selectors-css')
-const {createMatching} = require('./Form/matching')
+import { Form } from './Form/Form'
+import { notifyWebApp } from './autofill-utils'
+import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css'
+import { createMatching } from './Form/matching'
 
 /**
  * @typedef {{
@@ -50,7 +50,7 @@ class DefaultScanner {
     rescanAll = false;
 
     /**
-     * @param {import("./DeviceInterface/InterfacePrototype")} device
+     * @param {import("./DeviceInterface/InterfacePrototype").default} device
      * @param {ScannerOptions} options
      */
     constructor (device, options) {
@@ -228,7 +228,7 @@ class DefaultScanner {
 }
 
 /**
- * @param {import("./DeviceInterface/InterfacePrototype")} device
+ * @param {import("./DeviceInterface/InterfacePrototype").default} device
  * @param {Partial<ScannerOptions>} [scannerOptions]
  * @returns {Scanner}
  */
@@ -239,6 +239,6 @@ function createScanner (device, scannerOptions) {
     })
 }
 
-module.exports = {
+export {
     createScanner
 }

@@ -1,10 +1,7 @@
-const InterfacePrototype = require('./InterfacePrototype.js')
-const {createTransport} = require('../appleDeviceUtils/appleDeviceUtils')
-const {
-    formatDuckAddress,
-    autofillEnabled
-} = require('../autofill-utils')
-const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
+import InterfacePrototype from './InterfacePrototype.js'
+import { createTransport } from '../appleDeviceUtils/appleDeviceUtils'
+import { formatDuckAddress, autofillEnabled } from '../autofill-utils'
+import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
 /**
  * @implements {FeatureToggles}
@@ -326,4 +323,4 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 }
 
-module.exports = AppleDeviceInterface
+export default AppleDeviceInterface

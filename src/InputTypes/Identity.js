@@ -1,9 +1,9 @@
-const {getCountryDisplayName} = require('../Form/formatters')
+import { getCountryDisplayName } from '../Form/formatters'
 
 /**
  * @implements {TooltipItemRenderer}
  */
-class IdentityTooltipItem {
+export class IdentityTooltipItem {
     /** @type {IdentityObject} */
     #data;
     /** @param {IdentityObject} data */
@@ -30,5 +30,3 @@ class IdentityTooltipItem {
         return this.#data.title
     };
 }
-
-module.exports.IdentityTooltipItem = IdentityTooltipItem

@@ -1,6 +1,6 @@
-const {createScanner} = require('./Scanner')
-const InterfacePrototype = require('./DeviceInterface/InterfacePrototype')
-const {createGlobalConfig} = require('./config')
+import { createScanner } from './Scanner'
+import InterfacePrototype from './DeviceInterface/InterfacePrototype'
+import { createGlobalConfig } from './config'
 
 describe('performance', () => {
     beforeEach(() => {

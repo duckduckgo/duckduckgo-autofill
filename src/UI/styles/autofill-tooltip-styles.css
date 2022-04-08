@@ -1,4 +1,3 @@
-module.exports = `
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
 }
@@ -139,7 +138,7 @@ module.exports = `
     line-height: 13px;
 }
 .label + .label {
-    margin-top: 5px; 
+    margin-top: 5px;
 }
 .label.label--medium {
     letter-spacing: -0.08px;
@@ -208,4 +207,3 @@ hr:first-child {
 .tooltip__button--email__secondary-text {
     font-size: 12px;
 }
-`

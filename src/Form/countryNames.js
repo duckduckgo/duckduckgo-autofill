@@ -556,7 +556,7 @@ const COUNTRY_NAMES_TO_CODES = {
     'Unknown Region': 'ZZ'
 }
 
-module.exports = {
+export {
     COUNTRY_CODES_TO_NAMES,
     COUNTRY_NAMES_TO_CODES
 }
