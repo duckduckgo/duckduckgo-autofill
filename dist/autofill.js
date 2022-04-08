@@ -2133,6 +2133,9 @@ module.exports={
   "premier.ticketek.com.au": {
     "password-rules": "minlength: 6; maxlength: 16;"
   },
+  "premierinn.com": {
+    "password-rules": "minlength: 8; required: upper; required: digit; allowed: lower;"
+  },
   "prepaid.bankofamerica.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!@#$%^&*()+~{}'\";:<>?];"
   },
@@ -2337,11 +2340,11 @@ module.exports={
   "yatra.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&'()+,.:?@[_`~]];"
   },
-  "zdf.de": {
-    "password-rules": "minlength: 8; required: upper; required: digit; allowed: lower, special;"
-  },
   "zara.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
+  },
+  "zdf.de": {
+    "password-rules": "minlength: 8; required: upper; required: digit; allowed: lower, special;"
   },
   "zoom.us": {
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
