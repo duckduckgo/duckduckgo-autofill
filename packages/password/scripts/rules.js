@@ -71,7 +71,7 @@ function intoMarkdown (lines) {
     const mainBody = '```\n' + lines.join('\n') + '\n```'
     const updateTitle = '**You can update the rules with the following command**'
     const updateCommand = '```sh\ncd packages/password && npm run rules:update\n```'
-    const footer = `Once you've updated the rules, commit the changes.`
+    const footer = 'Once you\'ve updated the rules, re-run the build from the root with `npm run build` and then commit all changes.'
     return [header, mainBody, updateTitle, updateCommand, footer].join('\n')
 }
 
