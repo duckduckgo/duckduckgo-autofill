@@ -186,4 +186,12 @@ module.exports = [
     { html: 'yourtango_signup.html' },
     { html: 'newgrounds_login.html' },
     { html: 'newgrounds_signup.html', expectedFailures: ['birthday']},
+    { html: 'itemfix_login.html' },
+    { html: 'itemfix_signup.html', expectedFailures: ['birthday'] },
+    { html: 'cookpad_login.html' },
+    { html: 'cookpad_signup.html' },
+    { html: 'mein_schoener_garten_newsletter.html' },
+    { html: 'tripsavvy_newsletter.html' },
+    { html: 'fanfiction_login.html' },
+    { html: 'fanfiction_signup.html', expectedFailures: ['unknown']},
 ]
