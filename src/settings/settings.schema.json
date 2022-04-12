@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/AutofillSettings",
+  "definitions": {
+    "AutofillSettings": {
+      "type": "object",
+      "properties": {
+        "featureToggles": {
+          "$ref": "#/definitions/FeatureToggles"
+        }
+      },
+      "required": [
+        "featureToggles"
+      ],
+      "title": "AutofillSettings"
+    },
+    "FeatureToggles": {
+      "type": "object",
+      "properties": {
+        "inputType_credentials": {
+          "type": "boolean"
+        },
+        "inputType_identities": {
+          "type": "boolean"
+        },
+        "inputType_creditCards": {
+          "type": "boolean"
+        },
+        "emailProtection": {
+          "type": "boolean"
+        },
+        "password_generation": {
+          "type": "boolean"
+        },
+        "credentials_saving": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "inputType_credentials",
+        "inputType_identities",
+        "inputType_creditCards",
+        "emailProtection",
+        "password_generation",
+        "credentials_saving"
+      ],
+      "title": "FeatureToggles"
+    }
+  }
+}

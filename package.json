@@ -24,10 +24,13 @@
     "test:watch": "jest --watch --verbose=false",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
-    "verify:local": "npm run lint:fix && npm run tsc && npm run test:unit && npm run test:integration"
+    "verify:local": "npm run lint:fix && npm run tsc && npm run test:unit && npm run test:integration",
+    "schema:compile": "node scripts/schema.js"
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "ajv": "^8.11.0",
+    "ajv-cli": "^5.0.0",
     "@babel/core": "^7.17.8",
     "@babel/eslint-parser": "^7.17.0",
     "@babel/preset-env": "^7.16.11",

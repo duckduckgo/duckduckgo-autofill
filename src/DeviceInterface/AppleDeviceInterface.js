@@ -2,6 +2,8 @@ import InterfacePrototype from './InterfacePrototype.js'
 import { createTransport } from '../appleDeviceUtils/appleDeviceUtils'
 import { formatDuckAddress, autofillEnabled } from '../autofill-utils'
 import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
+import {createConfig} from '@duckduckgo/content-scope-scripts'
+import {fromPlatformConfig} from '../settings/settings'
 
 /**
  * @implements {FeatureToggles}
@@ -25,6 +27,33 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     constructor (config) {
         super(config)
+
+        const platformConfig = createConfig({
+            contentScope: config.contentScope,
+            userPreferences: {
+                ...config.userPreferences,
+                ...{
+                    features: {
+                        autofill: {
+                            settings: {
+                                featureToggles: {
+                                    'inputType_credentials': true,
+                                    'inputType_identities': true,
+                                    'inputType_creditCards': true,
+                                    'emailProtection': true,
+                                    'password_generation': true,
+                                    'credentials_saving': true,
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            userUnprotectedDomains: config.userUnprotectedDomains,
+        })
+
+        const autofillSettings = fromPlatformConfig(platformConfig);
+        console.log(autofillSettings.featureToggles);
 
         // Only enable 'password.generation' if we're on the macOS app (for now);
         if (this.globalConfig.isApp) {

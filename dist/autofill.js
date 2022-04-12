@@ -4,60 +4,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.processConfig = processConfig;
-
-function getTopLevelURL() {
-  try {
-    // FROM: https://stackoverflow.com/a/7739035/73479
-    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
-    if (window.location !== window.parent.location) {
-      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
-    } else {
-      return new URL(window.location.href);
-    }
-  } catch (error) {
-    return new URL(location.href);
-  }
-}
-
-function isUnprotectedDomain(topLevelUrl, featureList) {
-  let unprotectedDomain = false;
-  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : []; // walk up the domain to see if it's unprotected
-
-  while (domainParts.length > 1 && !unprotectedDomain) {
-    const partialDomain = domainParts.join('.');
-    unprotectedDomain = featureList.filter(domain => domain.domain === partialDomain).length > 0;
-    domainParts.shift();
-  }
-
-  return unprotectedDomain;
-}
-
-function processConfig(data, userList, preferences) {
-  const topLevelUrl = getTopLevelURL();
-  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
-  const enabledFeatures = Object.keys(data.features).filter(featureName => {
-    const feature = data.features[featureName];
-    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
-  });
-  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
-  preferences.site = {
-    domain: topLevelUrl.hostname,
-    isBroken,
-    allowlisted,
-    enabledFeatures
-  }; // TODO
-
-  preferences.cookie = {};
-  return preferences;
-}
-
-},{}],2:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.HostnameInputError = void 0;
 Object.defineProperty(exports, "ParserError", {
   enumerable: true,
@@ -201,7 +147,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":3,"./lib/constants.js":4,"./lib/rules-parser.js":5}],3:[function(require,module,exports){
+},{"./lib/apple.password.js":2,"./lib/constants.js":3,"./lib/rules-parser.js":4}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -825,7 +771,7 @@ exports.Password = Password;
 
 _defineProperty(Password, "defaults", defaults);
 
-},{"./constants.js":4,"./rules-parser.js":5}],4:[function(require,module,exports){
+},{"./constants.js":3,"./rules-parser.js":4}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -846,7 +792,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1579,7 +1525,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -2350,7 +2296,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2378,7 +2324,7 @@ function createDevice() {
   return new _ExtensionInterface.default(globalConfig);
 }
 
-},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./config":39}],8:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":7,"./DeviceInterface/AppleDeviceInterface":8,"./DeviceInterface/ExtensionInterface":9,"./config":38}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2446,7 +2392,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 var _default = AndroidInterface;
 exports.default = _default;
 
-},{"../autofill-utils":37,"./InterfacePrototype.js":11}],9:[function(require,module,exports){
+},{"../autofill-utils":36,"./InterfacePrototype.js":10}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2461,6 +2407,10 @@ var _appleDeviceUtils = require("../appleDeviceUtils/appleDeviceUtils");
 var _autofillUtils = require("../autofill-utils");
 
 var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
+
+var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
+
+var _settings = require("../settings/settings");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2494,7 +2444,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
 
   constructor(config) {
-    super(config); // Only enable 'password.generation' if we're on the macOS app (for now);
+    super(config);
 
     _classPrivateFieldInitSpec(this, _supportedFeatures, {
       writable: true,
@@ -2506,6 +2456,31 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     _defineProperty(this, "transport", (0, _appleDeviceUtils.createTransport)(this.globalConfig));
 
     _defineProperty(this, "initialSetupDelayMs", 300);
+
+    const platformConfig = (0, _contentScopeScripts.createConfig)({
+      contentScope: config.contentScope,
+      userPreferences: { ...config.userPreferences,
+        ...{
+          features: {
+            autofill: {
+              settings: {
+                featureToggles: {
+                  'inputType_credentials': true,
+                  'inputType_identities': true,
+                  'inputType_creditCards': true,
+                  'emailProtection': true,
+                  'password_generation': true,
+                  'credentials_saving': true
+                }
+              }
+            }
+          }
+        }
+      },
+      userUnprotectedDomains: config.userUnprotectedDomains
+    });
+    const autofillSettings = (0, _settings.fromPlatformConfig)(platformConfig);
+    console.log(autofillSettings.featureToggles); // Only enable 'password.generation' if we're on the macOS app (for now);
 
     if (this.globalConfig.isApp) {
       _classPrivateFieldGet(this, _supportedFeatures).push('password.generation');
@@ -2863,7 +2838,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 var _default = AppleDeviceInterface;
 exports.default = _default;
 
-},{"../appleDeviceUtils/appleDeviceUtils":35,"../autofill-utils":37,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
+},{"../appleDeviceUtils/appleDeviceUtils":34,"../autofill-utils":36,"../settings/settings":41,"./InterfacePrototype.js":10,"@duckduckgo/content-scope-scripts":43,"@duckduckgo/content-scope-scripts/src/apple-utils":44}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2988,7 +2963,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 var _default = ExtensionInterface;
 exports.default = _default;
 
-},{"../autofill-utils":37,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../autofill-utils":36,"./InterfacePrototype.js":10}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3685,7 +3660,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../InputTypes/Credentials":25,"../PasswordGenerator":28,"../Scanner":29,"../UI/DataAutofill":30,"../UI/EmailAutofill":31,"../autofill-utils":37}],12:[function(require,module,exports){
+},{"../Form/formatters":14,"../Form/inputTypeConfig":16,"../Form/listenForFormSubmission":18,"../Form/matching":21,"../InputTypes/Credentials":24,"../PasswordGenerator":27,"../Scanner":28,"../UI/DataAutofill":29,"../UI/EmailAutofill":30,"../autofill-utils":36}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4182,7 +4157,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":37,"../constants":40,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22}],13:[function(require,module,exports){
+},{"../autofill-utils":36,"../constants":39,"./FormAnalyzer":12,"./formatters":14,"./inputStyles":15,"./inputTypeConfig.js":16,"./matching":21}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4434,7 +4409,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":37,"../constants":40,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
+},{"../autofill-utils":36,"../constants":39,"./matching":21,"./matching-configuration":20}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5002,7 +4977,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5344,7 +5319,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames":14,"./matching":22}],16:[function(require,module,exports){
+},{"./countryNames":13,"./matching":21}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5426,7 +5401,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":17}],17:[function(require,module,exports){
+},{"./inputTypeConfig.js":16}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5598,7 +5573,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials":25,"../InputTypes/CreditCard":26,"../InputTypes/Identity":27,"../UI/img/ddgPasswordIcon":33,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
+},{"../InputTypes/Credentials":24,"../InputTypes/CreditCard":25,"../InputTypes/Identity":26,"../UI/img/ddgPasswordIcon":32,"./logo-svg":19,"./matching":21}],17:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -5650,7 +5625,7 @@ const extractElementStrings = element => {
 
 module.exports.extractElementStrings = extractElementStrings;
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5696,7 +5671,7 @@ const listenForGlobalFormSubmission = (config, forms) => {
 var _default = listenForGlobalFormSubmission;
 exports.default = _default;
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5706,7 +5681,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6329,7 +6304,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":23}],22:[function(require,module,exports){
+},{"./selectors-css":22}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7313,7 +7288,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":40,"./label-util":18,"./matching-configuration":21,"./selectors-css":23,"./vendor-regex":24}],23:[function(require,module,exports){
+},{"../constants":39,"./label-util":17,"./matching-configuration":20,"./selectors-css":22,"./vendor-regex":23}],22:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -7380,7 +7355,7 @@ module.exports.__secret_do_not_use = {
   birthdayYear
 };
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -7437,7 +7412,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 
 module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -7516,7 +7491,7 @@ module.exports.CredentialsTooltipItem = CredentialsTooltipItem;
 module.exports.fromPassword = fromPassword;
 module.exports.GENERATED_ID = GENERATED_ID;
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7568,7 +7543,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7642,7 +7617,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":15}],28:[function(require,module,exports){
+},{"../Form/formatters":14}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7708,7 +7683,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":2,"../packages/password/rules.json":6}],29:[function(require,module,exports){
+},{"../packages/password":1,"../packages/password/rules.json":5}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8005,7 +7980,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":12,"./Form/matching":22,"./Form/selectors-css":23,"./autofill-utils":37}],30:[function(require,module,exports){
+},{"./Form/Form":11,"./Form/matching":21,"./Form/selectors-css":22,"./autofill-utils":36}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8067,7 +8042,7 @@ class DataAutofill extends _Tooltip.default {
 var _default = DataAutofill;
 exports.default = _default;
 
-},{"../autofill-utils":37,"./Tooltip":32,"./styles/styles.js":34}],31:[function(require,module,exports){
+},{"../autofill-utils":36,"./Tooltip":31,"./styles/styles.js":33}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8137,7 +8112,7 @@ class EmailAutofill extends _Tooltip.default {
 var _default = EmailAutofill;
 exports.default = _default;
 
-},{"../autofill-utils":37,"./Tooltip":32,"./styles/styles":34}],32:[function(require,module,exports){
+},{"../autofill-utils":36,"./Tooltip":31,"./styles/styles":33}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8384,7 +8359,7 @@ exports.Tooltip = Tooltip;
 var _default = Tooltip;
 exports.default = _default;
 
-},{"../Form/matching":22,"../autofill-utils":37}],33:[function(require,module,exports){
+},{"../Form/matching":21,"../autofill-utils":36}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8406,7 +8381,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8416,7 +8391,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8565,7 +8540,7 @@ function createTransport(config) {
   return transport;
 }
 
-},{"./captureDdgGlobals":36}],36:[function(require,module,exports){
+},{"./captureDdgGlobals":35}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8596,7 +8571,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8963,7 +8938,7 @@ el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":22}],38:[function(require,module,exports){
+},{"./Form/matching":21}],37:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -8982,7 +8957,7 @@ var _DeviceInterface = require("./DeviceInterface");
   }
 })();
 
-},{"./DeviceInterface":7,"./requestIdleCallback":41}],39:[function(require,module,exports){
+},{"./DeviceInterface":6,"./requestIdleCallback":40}],38:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -9038,7 +9013,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9052,7 +9027,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9100,4 +9075,1514 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}]},{},[38]);
+},{}],41:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AutofillSettings = void 0;
+exports.fromPlatformConfig = fromPlatformConfig;
+
+var _settingsValidate = _interopRequireDefault(require("./settings.validate.cjs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * A wrapper for Autofill settings
+ */
+class AutofillSettings {
+  constructor() {
+    _defineProperty(this, "validate", _settingsValidate.default);
+
+    _defineProperty(this, "settings", null);
+  }
+
+  /**
+   * @throws
+   */
+  from(input) {
+    if (this.validate(input)) {
+      this.settings = input;
+    } else {
+      // @ts-ignore
+      for (const error of this.validate.errors) {
+        console.error(error.message);
+        console.error(error);
+      }
+
+      throw new Error('Could not create settings from global configuration');
+    }
+
+    return this;
+  }
+  /**
+   * @returns {FeatureTogglesSettings}
+   */
+
+
+  get featureToggles() {
+    if (!this.settings) throw new Error('unreachable');
+    return this.settings.featureToggles;
+  }
+
+}
+/**
+ * @param {import("@duckduckgo/content-scope-scripts").Config} config
+ * @returns {AutofillSettings}
+ */
+
+
+exports.AutofillSettings = AutofillSettings;
+
+function fromPlatformConfig(config) {
+  const globalSettings = config.getSettings("autofill");
+  const settings = new AutofillSettings().from(globalSettings);
+  return settings;
+}
+
+},{"./settings.validate.cjs":42}],42:[function(require,module,exports){
+// @ts-nocheck
+"use strict";
+
+module.exports = validate10;
+module.exports.default = validate10;
+const schema11 = {
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/AutofillSettings",
+  "definitions": {
+    "AutofillSettings": {
+      "type": "object",
+      "properties": {
+        "featureToggles": {
+          "$ref": "#/definitions/FeatureToggles"
+        }
+      },
+      "required": ["featureToggles"],
+      "title": "AutofillSettings"
+    },
+    "FeatureToggles": {
+      "type": "object",
+      "properties": {
+        "inputType_credentials": {
+          "type": "boolean"
+        },
+        "inputType_identities": {
+          "type": "boolean"
+        },
+        "inputType_creditCards": {
+          "type": "boolean"
+        },
+        "emailProtection": {
+          "type": "boolean"
+        },
+        "password_generation": {
+          "type": "boolean"
+        },
+        "credentials_saving": {
+          "type": "boolean"
+        }
+      },
+      "required": ["inputType_credentials", "inputType_identities", "inputType_creditCards", "emailProtection", "password_generation", "credentials_saving"],
+      "title": "FeatureToggles"
+    }
+  }
+};
+const schema12 = {
+  "type": "object",
+  "properties": {
+    "featureToggles": {
+      "$ref": "#/definitions/FeatureToggles"
+    }
+  },
+  "required": ["featureToggles"],
+  "title": "AutofillSettings"
+};
+const schema13 = {
+  "type": "object",
+  "properties": {
+    "inputType_credentials": {
+      "type": "boolean"
+    },
+    "inputType_identities": {
+      "type": "boolean"
+    },
+    "inputType_creditCards": {
+      "type": "boolean"
+    },
+    "emailProtection": {
+      "type": "boolean"
+    },
+    "password_generation": {
+      "type": "boolean"
+    },
+    "credentials_saving": {
+      "type": "boolean"
+    }
+  },
+  "required": ["inputType_credentials", "inputType_identities", "inputType_creditCards", "emailProtection", "password_generation", "credentials_saving"],
+  "title": "FeatureToggles"
+};
+
+function validate11(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.featureToggles === undefined && (missing0 = "featureToggles")) {
+        validate11.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.featureToggles !== undefined) {
+          let data0 = data.featureToggles;
+          const _errs2 = errors;
+
+          if (errors === _errs2) {
+            if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
+              let missing1;
+
+              if (data0.inputType_credentials === undefined && (missing1 = "inputType_credentials") || data0.inputType_identities === undefined && (missing1 = "inputType_identities") || data0.inputType_creditCards === undefined && (missing1 = "inputType_creditCards") || data0.emailProtection === undefined && (missing1 = "emailProtection") || data0.password_generation === undefined && (missing1 = "password_generation") || data0.credentials_saving === undefined && (missing1 = "credentials_saving")) {
+                validate11.errors = [{
+                  instancePath: instancePath + "/featureToggles",
+                  schemaPath: "#/definitions/FeatureToggles/required",
+                  keyword: "required",
+                  params: {
+                    missingProperty: missing1
+                  },
+                  message: "must have required property '" + missing1 + "'"
+                }];
+                return false;
+              } else {
+                if (data0.inputType_credentials !== undefined) {
+                  const _errs4 = errors;
+
+                  if (typeof data0.inputType_credentials !== "boolean") {
+                    validate11.errors = [{
+                      instancePath: instancePath + "/featureToggles/inputType_credentials",
+                      schemaPath: "#/definitions/FeatureToggles/properties/inputType_credentials/type",
+                      keyword: "type",
+                      params: {
+                        type: "boolean"
+                      },
+                      message: "must be boolean"
+                    }];
+                    return false;
+                  }
+
+                  var valid2 = _errs4 === errors;
+                } else {
+                  var valid2 = true;
+                }
+
+                if (valid2) {
+                  if (data0.inputType_identities !== undefined) {
+                    const _errs6 = errors;
+
+                    if (typeof data0.inputType_identities !== "boolean") {
+                      validate11.errors = [{
+                        instancePath: instancePath + "/featureToggles/inputType_identities",
+                        schemaPath: "#/definitions/FeatureToggles/properties/inputType_identities/type",
+                        keyword: "type",
+                        params: {
+                          type: "boolean"
+                        },
+                        message: "must be boolean"
+                      }];
+                      return false;
+                    }
+
+                    var valid2 = _errs6 === errors;
+                  } else {
+                    var valid2 = true;
+                  }
+
+                  if (valid2) {
+                    if (data0.inputType_creditCards !== undefined) {
+                      const _errs8 = errors;
+
+                      if (typeof data0.inputType_creditCards !== "boolean") {
+                        validate11.errors = [{
+                          instancePath: instancePath + "/featureToggles/inputType_creditCards",
+                          schemaPath: "#/definitions/FeatureToggles/properties/inputType_creditCards/type",
+                          keyword: "type",
+                          params: {
+                            type: "boolean"
+                          },
+                          message: "must be boolean"
+                        }];
+                        return false;
+                      }
+
+                      var valid2 = _errs8 === errors;
+                    } else {
+                      var valid2 = true;
+                    }
+
+                    if (valid2) {
+                      if (data0.emailProtection !== undefined) {
+                        const _errs10 = errors;
+
+                        if (typeof data0.emailProtection !== "boolean") {
+                          validate11.errors = [{
+                            instancePath: instancePath + "/featureToggles/emailProtection",
+                            schemaPath: "#/definitions/FeatureToggles/properties/emailProtection/type",
+                            keyword: "type",
+                            params: {
+                              type: "boolean"
+                            },
+                            message: "must be boolean"
+                          }];
+                          return false;
+                        }
+
+                        var valid2 = _errs10 === errors;
+                      } else {
+                        var valid2 = true;
+                      }
+
+                      if (valid2) {
+                        if (data0.password_generation !== undefined) {
+                          const _errs12 = errors;
+
+                          if (typeof data0.password_generation !== "boolean") {
+                            validate11.errors = [{
+                              instancePath: instancePath + "/featureToggles/password_generation",
+                              schemaPath: "#/definitions/FeatureToggles/properties/password_generation/type",
+                              keyword: "type",
+                              params: {
+                                type: "boolean"
+                              },
+                              message: "must be boolean"
+                            }];
+                            return false;
+                          }
+
+                          var valid2 = _errs12 === errors;
+                        } else {
+                          var valid2 = true;
+                        }
+
+                        if (valid2) {
+                          if (data0.credentials_saving !== undefined) {
+                            const _errs14 = errors;
+
+                            if (typeof data0.credentials_saving !== "boolean") {
+                              validate11.errors = [{
+                                instancePath: instancePath + "/featureToggles/credentials_saving",
+                                schemaPath: "#/definitions/FeatureToggles/properties/credentials_saving/type",
+                                keyword: "type",
+                                params: {
+                                  type: "boolean"
+                                },
+                                message: "must be boolean"
+                              }];
+                              return false;
+                            }
+
+                            var valid2 = _errs14 === errors;
+                          } else {
+                            var valid2 = true;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            } else {
+              validate11.errors = [{
+                instancePath: instancePath + "/featureToggles",
+                schemaPath: "#/definitions/FeatureToggles/type",
+                keyword: "type",
+                params: {
+                  type: "object"
+                },
+                message: "must be object"
+              }];
+              return false;
+            }
+          }
+        }
+      }
+    } else {
+      validate11.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate11.errors = vErrors;
+  return errors === 0;
+}
+
+function validate10(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (!validate11(data, {
+    instancePath,
+    parentData,
+    parentDataProperty,
+    rootData
+  })) {
+    vErrors = vErrors === null ? validate11.errors : vErrors.concat(validate11.errors);
+    errors = vErrors.length;
+  }
+
+  validate10.errors = vErrors;
+  return errors === 0;
+}
+
+},{}],43:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "Config", {
+  enumerable: true,
+  get: function () {
+    return _Config.Config;
+  }
+});
+Object.defineProperty(exports, "createConfig", {
+  enumerable: true,
+  get: function () {
+    return _Config.createConfig;
+  }
+});
+Object.defineProperty(exports, "tryCreateConfig", {
+  enumerable: true,
+  get: function () {
+    return _Config.tryCreateConfig;
+  }
+});
+
+var _Config = require("./src/config/Config.js");
+
+},{"./src/config/Config.js":45}],44:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.processConfig = processConfig;
+
+function getTopLevelURL() {
+  try {
+    // FROM: https://stackoverflow.com/a/7739035/73479
+    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
+    if (window.location !== window.parent.location) {
+      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
+    } else {
+      return new URL(window.location.href);
+    }
+  } catch (error) {
+    return new URL(location.href);
+  }
+}
+/**
+ * @param {URL} topLevelUrl
+ * @param {*} featureList
+ */
+
+
+function isUnprotectedDomain(topLevelUrl, featureList) {
+  let unprotectedDomain = false;
+  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : []; // walk up the domain to see if it's unprotected
+
+  while (domainParts.length > 1 && !unprotectedDomain) {
+    const partialDomain = domainParts.join('.');
+    unprotectedDomain = featureList.filter(domain => domain.domain === partialDomain).length > 0;
+    domainParts.shift();
+  }
+
+  return unprotectedDomain;
+}
+/**
+ * @param {*} data
+ * @param {string[]} userList
+ * @param {*} preferences
+ * @param {string|URL} [maybeTopLevelUrl]
+ */
+
+
+function processConfig(data, userList, preferences, maybeTopLevelUrl) {
+  const topLevelUrl = maybeTopLevelUrl || getTopLevelURL();
+  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
+  const enabledFeatures = Object.keys(data.features).filter(featureName => {
+    const feature = data.features[featureName];
+    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
+  });
+  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
+  const prefs = { ...preferences,
+    site: {
+      domain: topLevelUrl.hostname,
+      isBroken,
+      allowlisted,
+      enabledFeatures
+    },
+    cookie: {}
+  };
+  return prefs;
+}
+
+},{}],45:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Config = void 0;
+exports.createConfig = createConfig;
+exports.tryCreateConfig = tryCreateConfig;
+
+var _appleUtils = require("../apple-utils.js");
+
+var _validate = _interopRequireDefault(require("./validate.cjs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @typedef {{
+ *     "globalPrivacyControlValue": boolean,
+ *     "sessionKey": string,
+ *     "debug": boolean,
+ *     "platform": {
+ *       "name": "macos" | "ios" | "extension"
+ *     }
+ * }} UserPreferences
+ */
+
+/**
+ * @typedef {{
+ *   contentScope: any,
+ *   userUnprotectedDomains: string[],
+ *   userPreferences: UserPreferences
+ * }} InputConfig
+ */
+class Config {
+  constructor() {
+    _defineProperty(this, "validate", _validate.default);
+
+    _defineProperty(this, "config", null);
+  }
+
+  /**
+   * @throws
+   * @param {InputConfig} config
+   * @returns {Config}
+   */
+  assign(config) {
+    if (this.validate(config)) {
+      this.config = config;
+    } else {
+      for (const error of this.validate.errors) {
+        // todo: Give an error summary
+        console.error(error);
+      }
+
+      throw new Error('invalid inputs');
+    }
+
+    return this;
+  }
+  /**
+   * @param {any} config
+   * @returns {{errors: import("ajv").ErrorObject[], config: Config | null}}
+   */
+
+
+  tryAssign(config) {
+    if (this.validate(config)) {
+      this.config = config;
+      return {
+        errors: [],
+        config: this
+      };
+    }
+
+    return {
+      errors: this.validate.errors.slice(),
+      config: null
+    };
+  }
+  /**
+   * This will only return settings for a feature if that feature is remotely enabled.
+   *
+   * @param {string} featureName
+   * @param {URL} [url]
+   * @returns {null|Record<string, any>}
+   */
+
+
+  getSettings(featureName, url) {
+    var _this$config$userPref, _this$config$userPref2, _this$config$contentS, _this$config$contentS2;
+
+    const isEnabled = this.isFeatureRemoteEnabled(featureName, url);
+    if (!isEnabled) return null;
+    const settings = { ...((_this$config$userPref = this.config.userPreferences.features) === null || _this$config$userPref === void 0 ? void 0 : (_this$config$userPref2 = _this$config$userPref[featureName]) === null || _this$config$userPref2 === void 0 ? void 0 : _this$config$userPref2.settings),
+      ...((_this$config$contentS = this.config.contentScope.features) === null || _this$config$contentS === void 0 ? void 0 : (_this$config$contentS2 = _this$config$contentS[featureName]) === null || _this$config$contentS2 === void 0 ? void 0 : _this$config$contentS2.settings)
+    };
+    return settings;
+  }
+
+  get platform() {
+    return this.config.userPreferences.platform.name;
+  }
+  /**
+   * @param {string} featureName
+   * @param {URL} [url]
+   * @returns {boolean}
+   */
+
+
+  isFeatureRemoteEnabled(featureName, url) {
+    const privacyConfig = (0, _appleUtils.processConfig)(this.config.contentScope, this.config.userUnprotectedDomains, this.config.userPreferences, url);
+    const site = privacyConfig.site;
+
+    if (site.isBroken || !site.enabledFeatures.includes(featureName)) {
+      return false;
+    }
+
+    return true;
+  }
+
+}
+/**
+ * Factory for creating config instance
+ * @param {InputConfig} incoming
+ * @returns {Config}
+ */
+
+
+exports.Config = Config;
+
+function createConfig(incoming) {
+  return new Config().assign(incoming);
+}
+/**
+ * Factory for creating config instance
+ * @param {InputConfig} incoming
+ * @returns {{errors: import("ajv").ErrorObject[], config: Config | null}}
+ */
+
+
+function tryCreateConfig(incoming) {
+  return new Config().tryAssign(incoming);
+}
+
+},{"../apple-utils.js":44,"./validate.cjs":46}],46:[function(require,module,exports){
+"use strict";
+
+module.exports = validate10;
+module.exports.default = validate10;
+const schema11 = {
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/PlatformConfiguration",
+  "definitions": {
+    "PlatformConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contentScope": {
+          "$ref": "#/definitions/ContentScope"
+        },
+        "userUnprotectedDomains": {
+          "type": "array",
+          "items": {}
+        },
+        "userPreferences": {
+          "$ref": "#/definitions/UserPreferences"
+        }
+      },
+      "required": ["contentScope", "userPreferences", "userUnprotectedDomains"],
+      "title": "PlatformConfiguration"
+    },
+    "ContentScope": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "features": {
+          "$ref": "#/definitions/ContentScopeFeatures"
+        },
+        "unprotectedTemporary": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": ["features", "unprotectedTemporary"],
+      "title": "ContentScope"
+    },
+    "ContentScopeFeatures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/ContentScopeFeatureItem"
+      },
+      "title": "ContentScopeFeatures"
+    },
+    "ContentScopeFeatureItem": {
+      "type": "object",
+      "properties": {
+        "exceptions": {
+          "type": "array",
+          "items": {}
+        },
+        "state": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "object"
+        }
+      },
+      "required": ["exceptions", "state"],
+      "title": "ContentScopeFeatureItem"
+    },
+    "UserPreferences": {
+      "type": "object",
+      "properties": {
+        "debug": {
+          "type": "boolean"
+        },
+        "platform": {
+          "$ref": "#/definitions/Platform"
+        },
+        "features": {
+          "$ref": "#/definitions/UserPreferencesFeatures"
+        }
+      },
+      "required": ["debug", "features", "platform"],
+      "title": "UserPreferences"
+    },
+    "UserPreferencesFeatures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/UserPreferencesFeatureItem"
+      },
+      "title": "UserPreferencesFeatures"
+    },
+    "UserPreferencesFeatureItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/Settings"
+        }
+      },
+      "required": ["settings"],
+      "title": "UserPreferencesFeatureItem"
+    },
+    "Settings": {
+      "type": "object",
+      "additionalProperties": true,
+      "title": "Settings"
+    },
+    "Platform": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": ["name"],
+      "title": "Platform"
+    }
+  }
+};
+const schema12 = {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "contentScope": {
+      "$ref": "#/definitions/ContentScope"
+    },
+    "userUnprotectedDomains": {
+      "type": "array",
+      "items": {}
+    },
+    "userPreferences": {
+      "$ref": "#/definitions/UserPreferences"
+    }
+  },
+  "required": ["contentScope", "userPreferences", "userUnprotectedDomains"],
+  "title": "PlatformConfiguration"
+};
+const schema13 = {
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "features": {
+      "$ref": "#/definitions/ContentScopeFeatures"
+    },
+    "unprotectedTemporary": {
+      "type": "array",
+      "items": {}
+    }
+  },
+  "required": ["features", "unprotectedTemporary"],
+  "title": "ContentScope"
+};
+const schema14 = {
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/ContentScopeFeatureItem"
+  },
+  "title": "ContentScopeFeatures"
+};
+const schema15 = {
+  "type": "object",
+  "properties": {
+    "exceptions": {
+      "type": "array",
+      "items": {}
+    },
+    "state": {
+      "type": "string"
+    },
+    "settings": {
+      "type": "object"
+    }
+  },
+  "required": ["exceptions", "state"],
+  "title": "ContentScopeFeatureItem"
+};
+
+function validate13(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        let data0 = data[key0];
+        const _errs2 = errors;
+        const _errs3 = errors;
+
+        if (errors === _errs3) {
+          if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
+            let missing0;
+
+            if (data0.exceptions === undefined && (missing0 = "exceptions") || data0.state === undefined && (missing0 = "state")) {
+              validate13.errors = [{
+                instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+                schemaPath: "#/definitions/ContentScopeFeatureItem/required",
+                keyword: "required",
+                params: {
+                  missingProperty: missing0
+                },
+                message: "must have required property '" + missing0 + "'"
+              }];
+              return false;
+            } else {
+              if (data0.exceptions !== undefined) {
+                const _errs5 = errors;
+
+                if (errors === _errs5) {
+                  if (!Array.isArray(data0.exceptions)) {
+                    validate13.errors = [{
+                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/exceptions",
+                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/exceptions/type",
+                      keyword: "type",
+                      params: {
+                        type: "array"
+                      },
+                      message: "must be array"
+                    }];
+                    return false;
+                  }
+                }
+
+                var valid2 = _errs5 === errors;
+              } else {
+                var valid2 = true;
+              }
+
+              if (valid2) {
+                if (data0.state !== undefined) {
+                  const _errs7 = errors;
+
+                  if (typeof data0.state !== "string") {
+                    validate13.errors = [{
+                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/state",
+                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/state/type",
+                      keyword: "type",
+                      params: {
+                        type: "string"
+                      },
+                      message: "must be string"
+                    }];
+                    return false;
+                  }
+
+                  var valid2 = _errs7 === errors;
+                } else {
+                  var valid2 = true;
+                }
+
+                if (valid2) {
+                  if (data0.settings !== undefined) {
+                    let data3 = data0.settings;
+                    const _errs9 = errors;
+
+                    if (!(data3 && typeof data3 == "object" && !Array.isArray(data3))) {
+                      validate13.errors = [{
+                        instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/settings",
+                        schemaPath: "#/definitions/ContentScopeFeatureItem/properties/settings/type",
+                        keyword: "type",
+                        params: {
+                          type: "object"
+                        },
+                        message: "must be object"
+                      }];
+                      return false;
+                    }
+
+                    var valid2 = _errs9 === errors;
+                  } else {
+                    var valid2 = true;
+                  }
+                }
+              }
+            }
+          } else {
+            validate13.errors = [{
+              instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+              schemaPath: "#/definitions/ContentScopeFeatureItem/type",
+              keyword: "type",
+              params: {
+                type: "object"
+              },
+              message: "must be object"
+            }];
+            return false;
+          }
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
+        }
+      }
+    } else {
+      validate13.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate13.errors = vErrors;
+  return errors === 0;
+}
+
+function validate12(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
+        validate12.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.features !== undefined) {
+          const _errs2 = errors;
+
+          if (!validate13(data.features, {
+            instancePath: instancePath + "/features",
+            parentData: data,
+            parentDataProperty: "features",
+            rootData
+          })) {
+            vErrors = vErrors === null ? validate13.errors : vErrors.concat(validate13.errors);
+            errors = vErrors.length;
+          }
+
+          var valid0 = _errs2 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.unprotectedTemporary !== undefined) {
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (!Array.isArray(data.unprotectedTemporary)) {
+                validate12.errors = [{
+                  instancePath: instancePath + "/unprotectedTemporary",
+                  schemaPath: "#/properties/unprotectedTemporary/type",
+                  keyword: "type",
+                  params: {
+                    type: "array"
+                  },
+                  message: "must be array"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+        }
+      }
+    } else {
+      validate12.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate12.errors = vErrors;
+  return errors === 0;
+}
+
+const schema16 = {
+  "type": "object",
+  "properties": {
+    "debug": {
+      "type": "boolean"
+    },
+    "platform": {
+      "$ref": "#/definitions/Platform"
+    },
+    "features": {
+      "$ref": "#/definitions/UserPreferencesFeatures"
+    }
+  },
+  "required": ["debug", "features", "platform"],
+  "title": "UserPreferences"
+};
+const schema17 = {
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "required": ["name"],
+  "title": "Platform"
+};
+const schema18 = {
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/UserPreferencesFeatureItem"
+  },
+  "title": "UserPreferencesFeatures"
+};
+const schema19 = {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "settings": {
+      "$ref": "#/definitions/Settings"
+    }
+  },
+  "required": ["settings"],
+  "title": "UserPreferencesFeatureItem"
+};
+const schema20 = {
+  "type": "object",
+  "additionalProperties": true,
+  "title": "Settings"
+};
+
+function validate18(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.settings === undefined && (missing0 = "settings")) {
+        validate18.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        const _errs1 = errors;
+
+        for (const key0 in data) {
+          if (!(key0 === "settings")) {
+            validate18.errors = [{
+              instancePath,
+              schemaPath: "#/additionalProperties",
+              keyword: "additionalProperties",
+              params: {
+                additionalProperty: key0
+              },
+              message: "must NOT have additional properties"
+            }];
+            return false;
+            break;
+          }
+        }
+
+        if (_errs1 === errors) {
+          if (data.settings !== undefined) {
+            let data0 = data.settings;
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {} else {
+                validate18.errors = [{
+                  instancePath: instancePath + "/settings",
+                  schemaPath: "#/definitions/Settings/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate18.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate18.errors = vErrors;
+  return errors === 0;
+}
+
+function validate17(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        const _errs2 = errors;
+
+        if (!validate18(data[key0], {
+          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+          parentData: data,
+          parentDataProperty: key0,
+          rootData
+        })) {
+          vErrors = vErrors === null ? validate18.errors : vErrors.concat(validate18.errors);
+          errors = vErrors.length;
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
+        }
+      }
+    } else {
+      validate17.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate17.errors = vErrors;
+  return errors === 0;
+}
+
+function validate16(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.debug === undefined && (missing0 = "debug") || data.features === undefined && (missing0 = "features") || data.platform === undefined && (missing0 = "platform")) {
+        validate16.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.debug !== undefined) {
+          const _errs1 = errors;
+
+          if (typeof data.debug !== "boolean") {
+            validate16.errors = [{
+              instancePath: instancePath + "/debug",
+              schemaPath: "#/properties/debug/type",
+              keyword: "type",
+              params: {
+                type: "boolean"
+              },
+              message: "must be boolean"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.platform !== undefined) {
+            let data1 = data.platform;
+            const _errs3 = errors;
+            const _errs4 = errors;
+
+            if (errors === _errs4) {
+              if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
+                let missing1;
+
+                if (data1.name === undefined && (missing1 = "name")) {
+                  validate16.errors = [{
+                    instancePath: instancePath + "/platform",
+                    schemaPath: "#/definitions/Platform/required",
+                    keyword: "required",
+                    params: {
+                      missingProperty: missing1
+                    },
+                    message: "must have required property '" + missing1 + "'"
+                  }];
+                  return false;
+                } else {
+                  if (data1.name !== undefined) {
+                    if (typeof data1.name !== "string") {
+                      validate16.errors = [{
+                        instancePath: instancePath + "/platform/name",
+                        schemaPath: "#/definitions/Platform/properties/name/type",
+                        keyword: "type",
+                        params: {
+                          type: "string"
+                        },
+                        message: "must be string"
+                      }];
+                      return false;
+                    }
+                  }
+                }
+              } else {
+                validate16.errors = [{
+                  instancePath: instancePath + "/platform",
+                  schemaPath: "#/definitions/Platform/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.features !== undefined) {
+              const _errs8 = errors;
+
+              if (!validate17(data.features, {
+                instancePath: instancePath + "/features",
+                parentData: data,
+                parentDataProperty: "features",
+                rootData
+              })) {
+                vErrors = vErrors === null ? validate17.errors : vErrors.concat(validate17.errors);
+                errors = vErrors.length;
+              }
+
+              var valid0 = _errs8 === errors;
+            } else {
+              var valid0 = true;
+            }
+          }
+        }
+      }
+    } else {
+      validate16.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate16.errors = vErrors;
+  return errors === 0;
+}
+
+function validate11(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.contentScope === undefined && (missing0 = "contentScope") || data.userPreferences === undefined && (missing0 = "userPreferences") || data.userUnprotectedDomains === undefined && (missing0 = "userUnprotectedDomains")) {
+        validate11.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        const _errs1 = errors;
+
+        for (const key0 in data) {
+          if (!(key0 === "contentScope" || key0 === "userUnprotectedDomains" || key0 === "userPreferences")) {
+            validate11.errors = [{
+              instancePath,
+              schemaPath: "#/additionalProperties",
+              keyword: "additionalProperties",
+              params: {
+                additionalProperty: key0
+              },
+              message: "must NOT have additional properties"
+            }];
+            return false;
+            break;
+          }
+        }
+
+        if (_errs1 === errors) {
+          if (data.contentScope !== undefined) {
+            const _errs2 = errors;
+
+            if (!validate12(data.contentScope, {
+              instancePath: instancePath + "/contentScope",
+              parentData: data,
+              parentDataProperty: "contentScope",
+              rootData
+            })) {
+              vErrors = vErrors === null ? validate12.errors : vErrors.concat(validate12.errors);
+              errors = vErrors.length;
+            }
+
+            var valid0 = _errs2 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.userUnprotectedDomains !== undefined) {
+              const _errs3 = errors;
+
+              if (errors === _errs3) {
+                if (!Array.isArray(data.userUnprotectedDomains)) {
+                  validate11.errors = [{
+                    instancePath: instancePath + "/userUnprotectedDomains",
+                    schemaPath: "#/properties/userUnprotectedDomains/type",
+                    keyword: "type",
+                    params: {
+                      type: "array"
+                    },
+                    message: "must be array"
+                  }];
+                  return false;
+                }
+              }
+
+              var valid0 = _errs3 === errors;
+            } else {
+              var valid0 = true;
+            }
+
+            if (valid0) {
+              if (data.userPreferences !== undefined) {
+                const _errs5 = errors;
+
+                if (!validate16(data.userPreferences, {
+                  instancePath: instancePath + "/userPreferences",
+                  parentData: data,
+                  parentDataProperty: "userPreferences",
+                  rootData
+                })) {
+                  vErrors = vErrors === null ? validate16.errors : vErrors.concat(validate16.errors);
+                  errors = vErrors.length;
+                }
+
+                var valid0 = _errs5 === errors;
+              } else {
+                var valid0 = true;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate11.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate11.errors = vErrors;
+  return errors === 0;
+}
+
+function validate10(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (!validate11(data, {
+    instancePath,
+    parentData,
+    parentDataProperty,
+    rootData
+  })) {
+    vErrors = vErrors === null ? validate11.errors : vErrors.concat(validate11.errors);
+    errors = vErrors.length;
+  }
+
+  validate10.errors = vErrors;
+  return errors === 0;
+}
+
+},{}]},{},[37]);
