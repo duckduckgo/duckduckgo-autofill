@@ -116,5 +116,9 @@ module.exports = [
     { html: 'samash_checkout_international.html' },
     { html: 'samash_login.html' },
     { html: 'samash_signup.html' },
-    { html: 'financialtimes_login.html', title: 'Login' }
+    { html: 'financialtimes_login.html', title: 'Login' },
+    { html: 'containerstore_login_signup.html' },
+    { html: 'containerstore_forgot_password.html', expectedFailures: ['username'] },
+    { html: 'containerstore_newsletter.html' },
+    { html: 'containerstore_checkout.html' }
 ]
