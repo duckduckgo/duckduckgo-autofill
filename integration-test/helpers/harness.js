@@ -101,7 +101,10 @@ function withStringReplacements (page, replacements, platform = 'macos') {
     const content = readFileSync('./dist/autofill.js', 'utf8')
     let output = content
     for (let [keyName, value] of Object.entries(replacements)) {
-        output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${value};`)
+        let replacement = typeof value === "boolean" || typeof value === "string"
+            ? value
+            : JSON.stringify(value)
+        output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${replacement};`)
     }
     if (['macos', 'ios'].includes(platform)) {
         return page.addInitScript(output)

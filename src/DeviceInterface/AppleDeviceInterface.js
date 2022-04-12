@@ -1,7 +1,7 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import { createTransport } from '../appleDeviceUtils/appleDeviceUtils'
-import { formatDuckAddress, autofillEnabled } from '../autofill-utils'
-import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
+import {createTransport} from '../appleDeviceUtils/appleDeviceUtils'
+import {formatDuckAddress, autofillEnabled} from '../autofill-utils'
+import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 import {tryCreateConfig} from '@duckduckgo/content-scope-scripts'
 import {fromPlatformConfig} from '../settings/settings'
 
@@ -12,7 +12,7 @@ import {fromPlatformConfig} from '../settings/settings'
  */
 class AppleDeviceInterface extends InterfacePrototype {
     /** @type {FeatureToggleNames[]} */
-    #supportedFeatures = [];
+    #supportedFeatures = []
 
     /* @type {Timeout | undefined} */
     pollingTimeout
@@ -23,11 +23,11 @@ class AppleDeviceInterface extends InterfacePrototype {
     /** @override */
     initialSetupDelayMs = 300
 
-    /** @type {import("@duckduckgo/content-scope-scripts").Config} */
-    platformConfiguration;
+    /** @type {import('@duckduckgo/content-scope-scripts').Config} */
+    platformConfiguration
 
-    /** @type {import("../settings/settings").AutofillSettings} */
-    autofillSettings;
+    /** @type {import('../settings/settings').AutofillSettings} */
+    autofillSettings
 
     async isEnabled () {
         return autofillEnabled(this.globalConfig, processConfig)
@@ -37,8 +37,10 @@ class AppleDeviceInterface extends InterfacePrototype {
         super(config)
 
         // Platform config + Autofill Settings
-        this.platformConfig = this.getPlatformConfiguration();
-        this.autofillSettings = this.getAutofillSettings();
+        this.platformConfig = this.getPlatformConfiguration()
+        this.autofillSettings = this.getAutofillSettings()
+
+        // console.log(JSON.stringify(this.autofillSettings.featureToggles, null, 2))
 
         // Only enable 'password.generation' if we're on the macOS app (for now);
         if (this.autofillSettings.featureToggles.password_generation) {
@@ -170,7 +172,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * @param {import("../Form/Form").Form} form
+     * @param {import('../Form/Form').Form} form
      * @param {HTMLInputElement} input
      * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
      * @param {{ x: number; y: number; }} click
@@ -219,7 +221,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.transport.send('emailHandlerStoreToken', { token, username: userName, cohort })
+        return this.transport.send('emailHandlerStoreToken', {token, username: userName, cohort})
     }
 
     /**
@@ -259,7 +261,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return this.transport.send('pmHandlerGetAutofillCredentials', { id })
+        return this.transport.send('pmHandlerGetAutofillCredentials', {id})
     }
 
     /**
@@ -299,7 +301,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.transport.send('pmHandlerGetCreditCard', { id })
+        return this.transport.send('pmHandlerGetCreditCard', {id})
     }
 
     // Used to encode data to send back to the child autofill
@@ -309,7 +311,7 @@ class AppleDeviceInterface extends InterfacePrototype {
                 return [key, String(value)]
             })
             const data = Object.fromEntries(detailsEntries)
-            this.transport.send('selectedDetail', { data, configType })
+            this.transport.send('selectedDetail', {data, configType})
         } else {
             this.activeFormSelectedDetail(detailIn, configType)
         }
@@ -337,7 +339,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * @returns {import("@duckduckgo/content-scope-scripts").Config}
+     * @returns {import('@duckduckgo/content-scope-scripts').Config}
      */
     getPlatformConfiguration () {
         /**
@@ -387,10 +389,10 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * @returns {import("../settings/settings").AutofillSettings}
+     * @returns {import('../settings/settings').AutofillSettings}
      */
     getAutofillSettings () {
-        return fromPlatformConfig(this.platformConfig);
+        return fromPlatformConfig(this.platformConfig)
     }
 }
 

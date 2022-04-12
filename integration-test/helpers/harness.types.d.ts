@@ -1,5 +1,5 @@
 type Platform = "ios" | "macos" | "android" | "extension";
-type Replacements = Record<keyof GlobalConfig, string | boolean>;
+type Replacements = Record<keyof GlobalConfig, any>;
 
 /**
  * This is an API Abstraction for mock user data.

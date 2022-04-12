@@ -2442,9 +2442,9 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
   /** @override */
 
-  /** @type {import("@duckduckgo/content-scope-scripts").Config} */
+  /** @type {import('@duckduckgo/content-scope-scripts').Config} */
 
-  /** @type {import("../settings/settings").AutofillSettings} */
+  /** @type {import('../settings/settings').AutofillSettings} */
   async isEnabled() {
     return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
   }
@@ -2468,7 +2468,8 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     _defineProperty(this, "autofillSettings", void 0);
 
     this.platformConfig = this.getPlatformConfiguration();
-    this.autofillSettings = this.getAutofillSettings(); // Only enable 'password.generation' if we're on the macOS app (for now);
+    this.autofillSettings = this.getAutofillSettings(); // console.log(JSON.stringify(this.autofillSettings.featureToggles, null, 2))
+    // Only enable 'password.generation' if we're on the macOS app (for now);
 
     if (this.autofillSettings.featureToggles.password_generation) {
       _classPrivateFieldGet(this, _supportedFeatures).push('password.generation');
@@ -2612,7 +2613,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     await this.transport.send('setSize', details);
   }
   /**
-   * @param {import("../Form/Form").Form} form
+   * @param {import('../Form/Form').Form} form
    * @param {HTMLInputElement} input
    * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
    * @param {{ x: number; y: number; }} click
@@ -2821,7 +2822,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return _classPrivateFieldGet(this, _supportedFeatures).includes(name);
   }
   /**
-   * @returns {import("@duckduckgo/content-scope-scripts").Config}
+   * @returns {import('@duckduckgo/content-scope-scripts').Config}
    */
 
 
@@ -2874,7 +2875,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return config;
   }
   /**
-   * @returns {import("../settings/settings").AutofillSettings}
+   * @returns {import('../settings/settings').AutofillSettings}
    */
 
 
