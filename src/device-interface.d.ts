@@ -111,3 +111,11 @@ interface GlobalConfig {
 interface GlobalConfigImpl {
      globalConfig: GlobalConfig
 }
+
+interface PlatformConfigurationImpl {
+     platformConfiguration: import("@duckduckgo/content-scope-scripts").Config
+}
+
+interface AutofillSettingsImpl {
+     autofillSettings: import("./settings/settings").AutofillSettings
+}

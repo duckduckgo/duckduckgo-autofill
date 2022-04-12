@@ -7,5 +7,5 @@ type props = json['definitions']['FeatureToggles']['properties'];
 
 // This is a list of known feature toggles, derived from the schema file
 type FeatureTogglesSettings = {
-    [K in keyof props]: props[K] extends { type: "boolean" } ? boolean : never
+    [K in keyof props]: boolean
 }

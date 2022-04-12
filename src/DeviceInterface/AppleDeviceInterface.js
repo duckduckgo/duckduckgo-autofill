@@ -2,11 +2,13 @@ import InterfacePrototype from './InterfacePrototype.js'
 import { createTransport } from '../appleDeviceUtils/appleDeviceUtils'
 import { formatDuckAddress, autofillEnabled } from '../autofill-utils'
 import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
-import {createConfig} from '@duckduckgo/content-scope-scripts'
+import {tryCreateConfig} from '@duckduckgo/content-scope-scripts'
 import {fromPlatformConfig} from '../settings/settings'
 
 /**
  * @implements {FeatureToggles}
+ * @implements {PlatformConfigurationImpl}
+ * @implements {AutofillSettingsImpl}
  */
 class AppleDeviceInterface extends InterfacePrototype {
     /** @type {FeatureToggleNames[]} */
@@ -21,6 +23,12 @@ class AppleDeviceInterface extends InterfacePrototype {
     /** @override */
     initialSetupDelayMs = 300
 
+    /** @type {import("@duckduckgo/content-scope-scripts").Config} */
+    platformConfiguration;
+
+    /** @type {import("../settings/settings").AutofillSettings} */
+    autofillSettings;
+
     async isEnabled () {
         return autofillEnabled(this.globalConfig, processConfig)
     }
@@ -28,35 +36,12 @@ class AppleDeviceInterface extends InterfacePrototype {
     constructor (config) {
         super(config)
 
-        const platformConfig = createConfig({
-            contentScope: config.contentScope,
-            userPreferences: {
-                ...config.userPreferences,
-                ...{
-                    features: {
-                        autofill: {
-                            settings: {
-                                featureToggles: {
-                                    'inputType_credentials': true,
-                                    'inputType_identities': true,
-                                    'inputType_creditCards': true,
-                                    'emailProtection': true,
-                                    'password_generation': true,
-                                    'credentials_saving': true,
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            userUnprotectedDomains: config.userUnprotectedDomains,
-        })
-
-        const autofillSettings = fromPlatformConfig(platformConfig);
-        console.log(autofillSettings.featureToggles);
+        // Platform config + Autofill Settings
+        this.platformConfig = this.getPlatformConfiguration();
+        this.autofillSettings = this.getAutofillSettings();
 
         // Only enable 'password.generation' if we're on the macOS app (for now);
-        if (this.globalConfig.isApp) {
+        if (this.autofillSettings.featureToggles.password_generation) {
             this.#supportedFeatures.push('password.generation')
         }
 
@@ -349,6 +334,63 @@ class AppleDeviceInterface extends InterfacePrototype {
     /** @param {FeatureToggleNames} name */
     supportsFeature (name) {
         return this.#supportedFeatures.includes(name)
+    }
+
+    /**
+     * @returns {import("@duckduckgo/content-scope-scripts").Config}
+     */
+    getPlatformConfiguration () {
+        /**
+         * @type {FeatureTogglesSettings}
+         */
+        const featureToggles = {
+            'inputType_credentials': true,
+            'inputType_identities': true,
+            'inputType_creditCards': true,
+            'emailProtection': true,
+            'password_generation': true,
+            'credentials_saving': true,
+        }
+
+        // on iOS, disable unsupported things. This will eventually come from the platform config
+        if (this.globalConfig.isMobileApp) {
+            featureToggles.inputType_identities = false;
+            featureToggles.inputType_creditCards = false;
+            featureToggles.password_generation = false;
+        }
+
+        const {config, errors} = tryCreateConfig({
+            contentScope: this.globalConfig.contentScope,
+            userPreferences: {
+                ...this.globalConfig.userPreferences,
+                ...{
+                    features: {
+                        autofill: {
+                            settings: {
+                                featureToggles: featureToggles
+                            }
+                        }
+                    }
+                }
+            },
+            userUnprotectedDomains: this.globalConfig.userUnprotectedDomains,
+        })
+
+        if (errors.length) {
+            for (let error of errors) {
+                console.log(error.message, error);
+            }
+            throw new Error(`${errors.length} errors prevented global configuration from being created.`)
+        }
+
+        return config
+    }
+
+    /**
+     * @returns {import("../settings/settings").AutofillSettings}
+     */
+    getAutofillSettings () {
+        return fromPlatformConfig(this.platformConfig);
     }
 }
 

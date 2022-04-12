@@ -11,6 +11,7 @@ class AutofillSettings {
 
     /**
      * @throws
+     * @returns {AutofillSettings}
      */
     from(input) {
         if (this.validate(input)) {
