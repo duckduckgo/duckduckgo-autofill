@@ -2304,8 +2304,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createDevice = createDevice;
 
-var _config = require("./config");
-
 var _AndroidInterface = _interopRequireDefault(require("./DeviceInterface/AndroidInterface"));
 
 var _ExtensionInterface = _interopRequireDefault(require("./DeviceInterface/ExtensionInterface"));
@@ -2314,17 +2312,35 @@ var _AppleDeviceInterface = _interopRequireDefault(require("./DeviceInterface/Ap
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function createDevice() {
-  const globalConfig = (0, _config.createGlobalConfig)();
+/**
+ * @param {GlobalConfig} globalConfig
+ * @param {import("@duckduckgo/content-scope-scripts").Config} platformConfig
+ * @param {import("./settings/settings").AutofillSettings} autofillSettings
+ * @returns {AndroidInterface|AppleDeviceInterface|ExtensionInterface}
+ */
+function createDevice(globalConfig, platformConfig, autofillSettings) {
+  switch (platformConfig.platform) {
+    case 'macos':
+    case 'ios':
+      return new _AppleDeviceInterface.default(globalConfig, platformConfig, autofillSettings);
 
-  if (globalConfig.isDDGApp) {
-    return globalConfig.isAndroid ? new _AndroidInterface.default(globalConfig) : new _AppleDeviceInterface.default(globalConfig);
+    case 'extension':
+      return new _ExtensionInterface.default(globalConfig, platformConfig, autofillSettings);
+
+    case 'windows':
+      throw new Error('todo: implement windows');
+
+    case 'android':
+      return new _AndroidInterface.default(globalConfig, platformConfig, autofillSettings);
+
+    case 'unknown':
+      throw new Error('unreachable. device platform was "unknown"');
   }
 
-  return new _ExtensionInterface.default(globalConfig);
+  throw new Error('undefined');
 }
 
-},{"./DeviceInterface/AndroidInterface":7,"./DeviceInterface/AppleDeviceInterface":8,"./DeviceInterface/ExtensionInterface":9,"./config":38}],7:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":7,"./DeviceInterface/AppleDeviceInterface":8,"./DeviceInterface/ExtensionInterface":9}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2408,8 +2424,6 @@ var _autofillUtils = require("../autofill-utils");
 
 var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 
-var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
-
 var _settings = require("../settings/settings");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -2430,8 +2444,6 @@ var _supportedFeatures = /*#__PURE__*/new WeakMap();
 
 /**
  * @implements {FeatureToggles}
- * @implements {PlatformConfigurationImpl}
- * @implements {AutofillSettingsImpl}
  */
 class AppleDeviceInterface extends _InterfacePrototype.default {
   /** @type {FeatureToggleNames[]} */
@@ -2441,16 +2453,23 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   /** @type {Transport} */
 
   /** @override */
-
-  /** @type {import('@duckduckgo/content-scope-scripts').Config} */
-
-  /** @type {import('../settings/settings').AutofillSettings} */
   async isEnabled() {
     return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
   }
 
-  constructor(config) {
-    super(config); // Platform config + Autofill Settings
+  constructor(config, platformConfig, settings) {
+    super(config, platformConfig, settings); // console.log(JSON.stringify(this.autofillSettings.featureToggles, null, 2), window.location.href);
+    // Only enable 'password.generation' if we're on the macOS app (for now);
+    // if (this.autofillSettings.featureToggles.password_generation) {
+    //     this.#supportedFeatures.push('password.generation')
+    // }
+    // if (this.globalConfig.isTopFrame) {
+    //     this.stripCredentials = false
+    //     window.addEventListener('mouseMove', this)
+    // } else if (this.globalConfig.supportsTopFrame) {
+    //     // This is always added as a child frame needs to be informed of a parent frame scroll
+    //     window.addEventListener('scroll', this)
+    // }
 
     _classPrivateFieldInitSpec(this, _supportedFeatures, {
       writable: true,
@@ -2462,26 +2481,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     _defineProperty(this, "transport", (0, _appleDeviceUtils.createTransport)(this.globalConfig));
 
     _defineProperty(this, "initialSetupDelayMs", 300);
-
-    _defineProperty(this, "platformConfiguration", void 0);
-
-    _defineProperty(this, "autofillSettings", void 0);
-
-    this.platformConfig = this.getPlatformConfiguration();
-    this.autofillSettings = this.getAutofillSettings(); // console.log(JSON.stringify(this.autofillSettings.featureToggles, null, 2))
-    // Only enable 'password.generation' if we're on the macOS app (for now);
-
-    if (this.autofillSettings.featureToggles.password_generation) {
-      _classPrivateFieldGet(this, _supportedFeatures).push('password.generation');
-    }
-
-    if (this.globalConfig.isTopFrame) {
-      this.stripCredentials = false;
-      window.addEventListener('mouseMove', this);
-    } else if (this.globalConfig.supportsTopFrame) {
-      // This is always added as a child frame needs to be informed of a parent frame scroll
-      window.addEventListener('scroll', this);
-    }
   }
 
   postInit() {
@@ -2822,65 +2821,13 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return _classPrivateFieldGet(this, _supportedFeatures).includes(name);
   }
   /**
-   * @returns {import('@duckduckgo/content-scope-scripts').Config}
+   * @param {PlatformConfig} platformConfig
+   * @returns {Promise<import('../settings/settings').AutofillSettings>}
    */
 
 
-  getPlatformConfiguration() {
-    /**
-     * @type {FeatureTogglesSettings}
-     */
-    const featureToggles = {
-      'inputType_credentials': true,
-      'inputType_identities': true,
-      'inputType_creditCards': true,
-      'emailProtection': true,
-      'password_generation': true,
-      'credentials_saving': true
-    }; // on iOS, disable unsupported things. This will eventually come from the platform config
-
-    if (this.globalConfig.isMobileApp) {
-      featureToggles.inputType_identities = false;
-      featureToggles.inputType_creditCards = false;
-      featureToggles.password_generation = false;
-    }
-
-    const {
-      config,
-      errors
-    } = (0, _contentScopeScripts.tryCreateConfig)({
-      contentScope: this.globalConfig.contentScope,
-      userPreferences: { ...this.globalConfig.userPreferences,
-        ...{
-          features: {
-            autofill: {
-              settings: {
-                featureToggles: featureToggles
-              }
-            }
-          }
-        }
-      },
-      userUnprotectedDomains: this.globalConfig.userUnprotectedDomains
-    });
-
-    if (errors.length) {
-      for (let error of errors) {
-        console.log(error.message, error);
-      }
-
-      throw new Error("".concat(errors.length, " errors prevented global configuration from being created."));
-    }
-
-    return config;
-  }
-  /**
-   * @returns {import('../settings/settings').AutofillSettings}
-   */
-
-
-  getAutofillSettings() {
-    return (0, _settings.fromPlatformConfig)(this.platformConfig);
+  async getAutofillSettings(platformConfig) {
+    return (0, _settings.fromPlatformConfig)(platformConfig);
   }
 
 }
@@ -2888,7 +2835,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 var _default = AppleDeviceInterface;
 exports.default = _default;
 
-},{"../appleDeviceUtils/appleDeviceUtils":34,"../autofill-utils":36,"../settings/settings":41,"./InterfacePrototype.js":10,"@duckduckgo/content-scope-scripts":43,"@duckduckgo/content-scope-scripts/src/apple-utils":44}],9:[function(require,module,exports){
+},{"../appleDeviceUtils/appleDeviceUtils":34,"../autofill-utils":36,"../settings/settings":42,"./InterfacePrototype.js":10,"@duckduckgo/content-scope-scripts/src/apple-utils":47}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3041,6 +2988,12 @@ var _PasswordGenerator = require("../PasswordGenerator");
 
 var _Scanner = require("../Scanner");
 
+var _config = require("../config");
+
+var _settings = require("../settings/settings");
+
+var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
@@ -3080,10 +3033,18 @@ class InterfacePrototype {
 
   /** @type {GlobalConfig} */
 
+  /** @type {import("@duckduckgo/content-scope-scripts").Config} */
+
+  /** @type {import("../settings/settings").AutofillSettings} */
+
   /** @type {import('../Scanner').Scanner} */
 
-  /** @param {GlobalConfig} config */
-  constructor(config) {
+  /**
+   * @param {GlobalConfig} globalConfig
+   * @param {import("@duckduckgo/content-scope-scripts").Config} platformConfig
+   * @param {import("../settings/settings").AutofillSettings} autofillSettings
+   */
+  constructor(globalConfig, platformConfig, autofillSettings) {
     _defineProperty(this, "attempts", 0);
 
     _defineProperty(this, "currentAttached", null);
@@ -3106,6 +3067,10 @@ class InterfacePrototype {
 
     _defineProperty(this, "globalConfig", void 0);
 
+    _defineProperty(this, "platformConfig", void 0);
+
+    _defineProperty(this, "autofillSettings", void 0);
+
     _defineProperty(this, "scanner", void 0);
 
     _classPrivateFieldInitSpec(this, _data2, {
@@ -3118,7 +3083,9 @@ class InterfacePrototype {
       }
     });
 
-    this.globalConfig = config;
+    this.globalConfig = globalConfig;
+    this.platformConfig = platformConfig;
+    this.autofillSettings = autofillSettings;
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
@@ -3705,12 +3672,17 @@ class InterfacePrototype {
     return "";
   }
 
+  static default() {
+    const config = new _contentScopeScripts.Config();
+    return new InterfacePrototype((0, _config.createGlobalConfig)(), config, _settings.AutofillSettings.default());
+  }
+
 }
 
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":14,"../Form/inputTypeConfig":16,"../Form/listenForFormSubmission":18,"../Form/matching":21,"../InputTypes/Credentials":24,"../PasswordGenerator":27,"../Scanner":28,"../UI/DataAutofill":29,"../UI/EmailAutofill":30,"../autofill-utils":36}],11:[function(require,module,exports){
+},{"../Form/formatters":14,"../Form/inputTypeConfig":16,"../Form/listenForFormSubmission":18,"../Form/matching":21,"../InputTypes/Credentials":24,"../PasswordGenerator":27,"../Scanner":28,"../UI/DataAutofill":29,"../UI/EmailAutofill":30,"../autofill-utils":36,"../config":38,"../settings/settings":42,"@duckduckgo/content-scope-scripts":44}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5524,6 +5496,10 @@ const inputTypeConfig = {
       // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
       // saved password
       if (isLogin) {
+        console.log({
+          isLogin,
+          hasLocalCredentials: device.hasLocalCredentials
+        });
         return device.hasLocalCredentials;
       } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
 
@@ -8451,6 +8427,8 @@ exports.createTransport = createTransport;
 
 var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
 
+var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -8566,6 +8544,61 @@ const decrypt = async (ciphertext, key, iv) => {
   let dec = new _captureDdgGlobals.default.TextDecoder();
   return dec.decode(decrypted);
 };
+
+const interceptions = {
+  /**
+   * @param {GlobalConfig} globalConfig
+   * @returns {import("@duckduckgo/content-scope-scripts").Config}
+   */
+  "getPlatformConfiguration": globalConfig => {
+    /**
+     * @type {FeatureTogglesSettings}
+     */
+    const featureToggles = {
+      'inputType_credentials': true,
+      'inputType_identities': true,
+      'inputType_creditCards': true,
+      'emailProtection': true,
+      'password_generation': true,
+      'credentials_saving': true
+    }; // on iOS, disable unsupported things. This will eventually come from the platform config
+
+    if (globalConfig.isMobileApp) {
+      featureToggles.inputType_identities = false;
+      featureToggles.inputType_creditCards = false;
+      featureToggles.password_generation = false;
+    }
+
+    const {
+      config,
+      errors
+    } = (0, _contentScopeScripts.tryCreateConfig)({
+      contentScope: globalConfig.contentScope,
+      userPreferences: { ...globalConfig.userPreferences,
+        ...{
+          features: {
+            autofill: {
+              settings: {
+                featureToggles: featureToggles
+              }
+            }
+          }
+        }
+      },
+      userUnprotectedDomains: globalConfig.userUnprotectedDomains
+    });
+
+    if (errors.length) {
+      for (let error of errors) {
+        console.log(error.message, error);
+      }
+
+      throw new Error("".concat(errors.length, " errors prevented global configuration from being created."));
+    }
+
+    return config;
+  }
+};
 /**
  * Create a wrapper around the webkit messaging that conforms
  * to the Transport interface
@@ -8574,12 +8607,18 @@ const decrypt = async (ciphertext, key, iv) => {
  * @returns {Transport}
  */
 
-
 function createTransport(config) {
   /** @type {Transport} */
   const transport = {
     // this is a separate variable to ensure type-safety is not lost when returning directly
     send(name, data) {
+      console.log('🍏', name, data);
+
+      if (interceptions[name]) {
+        console.log('--> intercepted', name, data);
+        return interceptions[name](config);
+      }
+
       return wkSendAndWait(name, data, {
         secret: config.secret,
         hasModernWebkitAPI: config.hasModernWebkitAPI
@@ -8590,7 +8629,7 @@ function createTransport(config) {
   return transport;
 }
 
-},{"./captureDdgGlobals":35}],35:[function(require,module,exports){
+},{"./captureDdgGlobals":35,"@duckduckgo/content-scope-scripts":44}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8995,19 +9034,40 @@ require("./requestIdleCallback");
 
 var _DeviceInterface = require("./DeviceInterface");
 
+var _config = require("./config");
+
+var _runtime = require("./runtime/runtime");
+
 // Polyfills/shims
-(() => {
+(async () => {
   if (!window.isSecureContext) return false;
 
   try {
-    const deviceInterface = (0, _DeviceInterface.createDevice)();
-    deviceInterface.init();
+    // // this is config already present in the script, or derived from the page etc.
+    const globalConfig = (0, _config.createGlobalConfig)();
+    const runtime = (0, _runtime.createRuntime)(globalConfig);
+    const platformConfiguration = await runtime.getPlatformConfiguration();
+    const autofillSettings = await runtime.getAutofillSettings(platformConfiguration);
+    console.log("->", JSON.stringify(platformConfiguration.getSettings("autofill"), null, 2));
+    console.log("->", JSON.stringify(autofillSettings.featureToggles, null, 2)); // // Determine the device type
+
+    const device = (0, _DeviceInterface.createDevice)(globalConfig, platformConfiguration, autofillSettings);
+    console.log('devices', device);
+    console.log('platform', platformConfiguration.platform); //
+    // // access the platform configuration
+    // const platformConfig = await device.getPlatformConfiguration(globalConfig);
+    //
+    // // now create autofill settings
+    // const settings = await device.getAutofillSettings(platformConfig);
+    //
+    // // now the device has platform config + settings ready, true?
+    // await device.init()
   } catch (e) {
     console.error(e); // Noop, we errored
   }
 })();
 
-},{"./DeviceInterface":6,"./requestIdleCallback":40}],38:[function(require,module,exports){
+},{"./DeviceInterface":6,"./config":38,"./requestIdleCallback":40,"./runtime/runtime":41}],38:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -9131,6 +9191,85 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Runtime = void 0;
+exports.createRuntime = createRuntime;
+
+var _appleDeviceUtils = require("../appleDeviceUtils/appleDeviceUtils");
+
+var _settings = require("../settings/settings");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+class Runtime {
+  /** @type {Transport} */
+
+  /**
+   * @param {GlobalConfig} globalConfig
+   * @param {Transport} transport
+   */
+  constructor(globalConfig, transport) {
+    _defineProperty(this, "transport", void 0);
+
+    this.globalConfig = globalConfig;
+    this.transport = transport;
+  }
+  /**
+   * @returns {import("@duckduckgo/content-scope-scripts").Config}
+   */
+
+
+  async getPlatformConfiguration() {
+    return this.transport.send('getPlatformConfiguration');
+  }
+  /**
+   * @returns {Promise<import("../settings/settings").AutofillSettings>}
+   */
+
+
+  async getAutofillSettings(platformConfig) {
+    return (0, _settings.fromPlatformConfig)(platformConfig);
+  }
+
+}
+
+exports.Runtime = Runtime;
+
+function createRuntime(config) {
+  const transport = selectTransport(config);
+  return new Runtime(config, transport);
+}
+/**
+ * The runtime has to decide on a transport, *before* we have a 'device'.
+ *
+ * This is because an initial message to retrieve the platform configuration might be needed
+ *
+ * @param {GlobalConfig} config
+ * @returns {Transport}
+ */
+
+
+function selectTransport(config) {
+  var _config$userPreferenc, _config$userPreferenc2, _config$userPreferenc3, _config$userPreferenc4;
+
+  if (typeof ((_config$userPreferenc = config.userPreferences) === null || _config$userPreferenc === void 0 ? void 0 : (_config$userPreferenc2 = _config$userPreferenc.platform) === null || _config$userPreferenc2 === void 0 ? void 0 : _config$userPreferenc2.name) === "string") {
+    switch ((_config$userPreferenc3 = config.userPreferences) === null || _config$userPreferenc3 === void 0 ? void 0 : (_config$userPreferenc4 = _config$userPreferenc3.platform) === null || _config$userPreferenc4 === void 0 ? void 0 : _config$userPreferenc4.name) {
+      case "ios":
+        return (0, _appleDeviceUtils.createTransport)(config);
+
+      default:
+        throw new Error('selectTransport unimplemented!');
+    }
+  }
+
+  throw new Error('todo: other decisions here where config.userPreferences is not present immediately!');
+}
+
+},{"../appleDeviceUtils/appleDeviceUtils":34,"../settings/settings":42}],42:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.AutofillSettings = void 0;
 exports.fromPlatformConfig = fromPlatformConfig;
 
@@ -9178,6 +9317,14 @@ class AutofillSettings {
     if (!this.settings) throw new Error('unreachable');
     return this.settings.featureToggles;
   }
+  /** @returns {AutofillSettings} */
+
+
+  static default() {
+    return new AutofillSettings().from({
+      featureToggles: {}
+    });
+  }
 
 }
 /**
@@ -9189,12 +9336,12 @@ class AutofillSettings {
 exports.AutofillSettings = AutofillSettings;
 
 function fromPlatformConfig(config) {
-  const globalSettings = config.getSettings("autofill");
-  const settings = new AutofillSettings().from(globalSettings);
+  const autofillSettings = config.getSettings("autofill");
+  const settings = new AutofillSettings().from(autofillSettings);
   return settings;
 }
 
-},{"./settings.validate.cjs":42}],42:[function(require,module,exports){
+},{"./settings.validate.cjs":43}],43:[function(require,module,exports){
 // @ts-nocheck
 "use strict";
 
@@ -9516,7 +9663,7 @@ function validate10(data) {
   return errors === 0;
 }
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9543,7 +9690,59 @@ Object.defineProperty(exports, "tryCreateConfig", {
 
 var _Config = require("./src/config/Config.js");
 
-},{"./src/config/Config.js":45}],44:[function(require,module,exports){
+},{"./src/config/Config.js":48}],45:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+}); // https://github.com/ajv-validator/ajv/issues/889
+
+const equal = require("fast-deep-equal");
+
+equal.code = 'require("ajv/dist/runtime/equal").default';
+exports.default = equal;
+
+},{"fast-deep-equal":46}],46:[function(require,module,exports){
+'use strict'; // do not edit .js files directly - edit src/index.jst
+
+module.exports = function equal(a, b) {
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+    var length, i, keys;
+
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length != b.length) return false;
+
+      for (i = length; i-- !== 0;) if (!equal(a[i], b[i])) return false;
+
+      return true;
+    }
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;) if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+
+    for (i = length; i-- !== 0;) {
+      var key = keys[i];
+      if (!equal(a[key], b[key])) return false;
+    }
+
+    return true;
+  } // true if both NaN, false otherwise
+
+
+  return a !== a && b !== b;
+};
+
+},{}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9610,7 +9809,7 @@ function processConfig(data, userList, preferences, maybeTopLevelUrl) {
   return prefs;
 }
 
-},{}],45:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9711,6 +9910,10 @@ class Config {
     };
     return settings;
   }
+  /**
+   * @returns {"macos"|"ios"|"extension"|"windows"|"android"|"unknown"}
+   */
+
 
   get platform() {
     return this.config.userPreferences.platform.name;
@@ -9757,7 +9960,7 @@ function tryCreateConfig(incoming) {
   return new Config().tryAssign(incoming);
 }
 
-},{"../apple-utils.js":44,"./validate.cjs":46}],46:[function(require,module,exports){
+},{"../apple-utils.js":47,"./validate.cjs":49}],49:[function(require,module,exports){
 "use strict";
 
 module.exports = validate10;
@@ -9866,7 +10069,8 @@ const schema11 = {
       "type": "object",
       "properties": {
         "name": {
-          "type": "string"
+          "type": "string",
+          "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
         }
       },
       "required": ["name"],
@@ -10180,12 +10384,16 @@ const schema17 = {
   "type": "object",
   "properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
     }
   },
   "required": ["name"],
   "title": "Platform"
 };
+
+const func0 = require("ajv/dist/runtime/equal").default;
+
 const schema18 = {
   "type": "object",
   "additionalProperties": {
@@ -10413,7 +10621,9 @@ function validate16(data) {
                   return false;
                 } else {
                   if (data1.name !== undefined) {
-                    if (typeof data1.name !== "string") {
+                    let data2 = data1.name;
+
+                    if (typeof data2 !== "string") {
                       validate16.errors = [{
                         instancePath: instancePath + "/platform/name",
                         schemaPath: "#/definitions/Platform/properties/name/type",
@@ -10422,6 +10632,19 @@ function validate16(data) {
                           type: "string"
                         },
                         message: "must be string"
+                      }];
+                      return false;
+                    }
+
+                    if (!(data2 === "ios" || data2 === "macos" || data2 === "windows" || data2 === "extension" || data2 === "android" || data2 === "unknown")) {
+                      validate16.errors = [{
+                        instancePath: instancePath + "/platform/name",
+                        schemaPath: "#/definitions/Platform/properties/name/enum",
+                        keyword: "enum",
+                        params: {
+                          allowedValues: schema17.properties.name.enum
+                        },
+                        message: "must be equal to one of the allowed values"
                       }];
                       return false;
                     }
@@ -10636,4 +10859,4 @@ function validate10(data) {
   return errors === 0;
 }
 
-},{}]},{},[37]);
+},{"ajv/dist/runtime/equal":45}]},{},[37]);

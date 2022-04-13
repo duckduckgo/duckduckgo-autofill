@@ -16,6 +16,9 @@ import listenForGlobalFormSubmission from '../Form/listenForFormSubmission'
 import { fromPassword, GENERATED_ID } from '../InputTypes/Credentials'
 import { PasswordGenerator } from '../PasswordGenerator'
 import { createScanner } from '../Scanner'
+import {createGlobalConfig} from '../config'
+import {AutofillSettings} from '../settings/settings'
+import {Config} from '@duckduckgo/content-scope-scripts'
 
 /**
  * @implements {FeatureToggles}
@@ -43,12 +46,24 @@ class InterfacePrototype {
     /** @type {GlobalConfig} */
     globalConfig;
 
+    /** @type {import("@duckduckgo/content-scope-scripts").Config} */
+    platformConfig;
+
+    /** @type {import("../settings/settings").AutofillSettings} */
+    autofillSettings;
+
     /** @type {import('../Scanner').Scanner} */
     scanner;
 
-    /** @param {GlobalConfig} config */
-    constructor (config) {
-        this.globalConfig = config
+    /**
+     * @param {GlobalConfig} globalConfig
+     * @param {import("@duckduckgo/content-scope-scripts").Config} platformConfig
+     * @param {import("../settings/settings").AutofillSettings} autofillSettings
+     */
+    constructor (globalConfig, platformConfig, autofillSettings) {
+        this.globalConfig = globalConfig;
+        this.platformConfig = platformConfig;
+        this.autofillSettings = autofillSettings;
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
@@ -194,6 +209,7 @@ class InterfacePrototype {
     }
 
     async init () {
+
         const isEnabled = await this.isEnabled()
         if (!isEnabled) return
         if (document.readyState === 'complete') {
@@ -559,6 +575,11 @@ class InterfacePrototype {
     /** @returns {string} */
     tooltipStyles () {
         return ``
+    }
+
+    static default() {
+        const config = new Config();
+        return new InterfacePrototype(createGlobalConfig(), config, AutofillSettings.default())
     }
 }
 

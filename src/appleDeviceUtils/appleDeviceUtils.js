@@ -1,4 +1,5 @@
 import ddgGlobals from './captureDdgGlobals'
+import {tryCreateConfig} from '@duckduckgo/content-scope-scripts'
 
 /**
  * Sends message to the webkit layer (fire and forget)
@@ -94,6 +95,59 @@ const decrypt = async (ciphertext, key, iv) => {
     return dec.decode(decrypted)
 }
 
+const interceptions = {
+    /**
+     * @param {GlobalConfig} globalConfig
+     * @returns {import("@duckduckgo/content-scope-scripts").Config}
+     */
+    "getPlatformConfiguration": (globalConfig) => {
+        /**
+         * @type {FeatureTogglesSettings}
+         */
+        const featureToggles = {
+            'inputType_credentials': true,
+            'inputType_identities': true,
+            'inputType_creditCards': true,
+            'emailProtection': true,
+            'password_generation': true,
+            'credentials_saving': true,
+        }
+
+        // on iOS, disable unsupported things. This will eventually come from the platform config
+        if (globalConfig.isMobileApp) {
+            featureToggles.inputType_identities = false;
+            featureToggles.inputType_creditCards = false;
+            featureToggles.password_generation = false;
+        }
+
+        const {config, errors} = tryCreateConfig({
+            contentScope: globalConfig.contentScope,
+            userPreferences: {
+                ...globalConfig.userPreferences,
+                ...{
+                    features: {
+                        autofill: {
+                            settings: {
+                                featureToggles: featureToggles
+                            }
+                        }
+                    }
+                }
+            },
+            userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+        })
+
+        if (errors.length) {
+            for (let error of errors) {
+                console.log(error.message, error);
+            }
+            throw new Error(`${errors.length} errors prevented global configuration from being created.`)
+        }
+
+        return config
+    }
+}
+
 /**
  * Create a wrapper around the webkit messaging that conforms
  * to the Transport interface
@@ -105,6 +159,11 @@ function createTransport (config) {
     /** @type {Transport} */
     const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
         send (name, data) {
+            console.log('🍏', name, data);
+            if (interceptions[name]) {
+                console.log('--> intercepted', name, data);
+                return interceptions[name](config);
+            }
             return wkSendAndWait(name, data, {
                 secret: config.secret,
                 hasModernWebkitAPI: config.hasModernWebkitAPI

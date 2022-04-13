@@ -108,14 +108,8 @@ interface GlobalConfig {
      isDDGDomain: boolean;
 }
 
+type PlatformConfig = import("@duckduckgo/content-scope-scripts").Config;
+
 interface GlobalConfigImpl {
      globalConfig: GlobalConfig
-}
-
-interface PlatformConfigurationImpl {
-     platformConfiguration: import("@duckduckgo/content-scope-scripts").Config
-}
-
-interface AutofillSettingsImpl {
-     autofillSettings: import("./settings/settings").AutofillSettings
 }

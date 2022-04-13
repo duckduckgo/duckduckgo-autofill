@@ -42,6 +42,7 @@ const inputTypeConfig = {
             // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
             // saved password
             if (isLogin) {
+                console.log({isLogin, hasLocalCredentials: device.hasLocalCredentials});
                 return device.hasLocalCredentials
             }
 

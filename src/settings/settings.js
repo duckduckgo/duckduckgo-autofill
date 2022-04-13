@@ -35,6 +35,15 @@ class AutofillSettings {
         if (!this.settings) throw new Error('unreachable');
         return this.settings.featureToggles;
     }
+
+    /** @returns {AutofillSettings} */
+    static default() {
+        return new AutofillSettings().from({
+            featureToggles: {
+
+            }
+        })
+    }
 }
 
 /**
@@ -42,8 +51,8 @@ class AutofillSettings {
  * @returns {AutofillSettings}
  */
 export function fromPlatformConfig(config) {
-    const globalSettings = config.getSettings("autofill");
-    const settings = (new AutofillSettings()).from(globalSettings);
+    const autofillSettings = config.getSettings("autofill");
+    const settings = (new AutofillSettings()).from(autofillSettings);
     return settings;
 }
 

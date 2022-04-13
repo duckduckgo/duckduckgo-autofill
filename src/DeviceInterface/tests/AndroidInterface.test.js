@@ -1,7 +1,7 @@
 import AndroidInterface from '../AndroidInterface'
 import { createGlobalConfig } from '../../config'
 import { tryCreateConfig } from '@duckduckgo/content-scope-scripts'
-import { fromPlatformConfig } from '../../settings/settings'
+import {AutofillSettings, fromPlatformConfig} from '../../settings/settings'
 
 describe('AndroidInterface', function () {
     beforeEach(() => {
@@ -9,7 +9,7 @@ describe('AndroidInterface', function () {
     })
     it('can be instantiated without throwing', () => {
         const config = createGlobalConfig()
-        const device = new AndroidInterface(config)
+        const device = new AndroidInterface(config, AutofillSettings.default())
         device.init()
     })
     it('can create platform configuration', () => {

@@ -5,8 +5,8 @@ import {
     withIOSContext
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
-import {constants, createWebkitMocks} from '../helpers/mocks.js'
-import {emailAutofillPage} from '../helpers/pages.js'
+import {createWebkitMocks} from '../helpers/mocks.js'
+import {loginPage} from '../helpers/pages.js'
 
 /**
  *  Tests for email autofill on ios device
@@ -28,6 +28,11 @@ test.describe('ios feature toggles', () => {
         await createWebkitMocks('ios')
             .withPersonalEmail('0')
             .withPrivateEmail('0')
+            .withCredentials({
+                id: "02",
+                password: "123456",
+                username: "shane@duck.com"
+            })
             .applyTo(page)
 
         // Load the autofill.js script with replacements
@@ -46,23 +51,14 @@ test.describe('ios feature toggles', () => {
                 userUnprotectedDomains: [],
                 userPreferences: {
                     debug: true,
-                    platform: { name: "ios" },
-                    features: {
-                        autofill: {
-                            settings: {
-                                featureToggles: {
-
-                                }
-                            }
-                        }
-                    }
+                    platform: { name: "ios" }
                 }
             })
             .platform('ios')
             .applyTo(page)
 
         // page abstraction
-        const emailPage = emailAutofillPage(page, server)
+        const emailPage = loginPage(page, server)
         await emailPage.navigate()
 
         await page.pause();
