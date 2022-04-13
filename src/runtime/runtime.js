@@ -1,4 +1,8 @@
-import { createTransport as createAppleTransport } from '../appleDeviceUtils/appleDeviceUtils'
+import { createTransport as createAppleTransport } from '../appleDeviceUtils/transport.apple'
+import { createTransport as createAndroidTransport } from '../appleDeviceUtils/transport.android'
+import { createTransport as createExtensionTransport } from '../appleDeviceUtils/transport.extension'
+import { createTransport as createWindowsTransport } from '../appleDeviceUtils/transport.windows'
+
 import {fromPlatformConfig} from '../settings/settings'
 
 class Runtime {
@@ -39,17 +43,31 @@ function createRuntime(config) {
  *
  * This is because an initial message to retrieve the platform configuration might be needed
  *
- * @param {GlobalConfig} config
+ * @param {GlobalConfig} globalConfig
  * @returns {Transport}
  */
-function selectTransport(config) {
-    if (typeof config.userPreferences?.platform?.name === "string") {
-        switch (config.userPreferences?.platform?.name) {
-        case "ios": return createAppleTransport(config);
+function selectTransport(globalConfig) {
+    if (typeof globalConfig.userPreferences?.platform?.name === "string") {
+        switch (globalConfig.userPreferences?.platform?.name) {
+        case "ios": return createAppleTransport(globalConfig);
         default: throw new Error('selectTransport unimplemented!')
         }
     }
-    throw new Error('todo: other decisions here where config.userPreferences is not present immediately!')
+
+    if (globalConfig.isDDGApp) {
+        if (globalConfig.isAndroid) {
+            return createAndroidTransport(globalConfig);
+        }
+        console.warn('should never get here...');
+        return createAppleTransport(globalConfig);
+    }
+
+    if (globalConfig.isWindows) {
+        return createWindowsTransport(globalConfig);
+    }
+
+    // falls back to extension... is this still the best way to determine this?
+    return createExtensionTransport(globalConfig);
 }
 
 export { Runtime, createRuntime }

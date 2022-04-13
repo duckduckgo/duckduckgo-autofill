@@ -2,6 +2,87 @@ import ddgGlobals from './captureDdgGlobals'
 import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
 /**
+ * Create a wrapper around the webkit messaging that conforms
+ * to the Transport interface
+ *
+ * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
+ * @returns {Transport}
+ */
+export function createTransport (config) {
+    /** @type {Transport} */
+    const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
+        send (name, data) {
+            console.log('🍏', name, data);
+            if (interceptions[name]) {
+                console.log('--> intercepted', name, data);
+                return interceptions[name](config);
+            }
+            return wkSendAndWait(name, data, {
+                secret: config.secret,
+                hasModernWebkitAPI: config.hasModernWebkitAPI
+            })
+        }
+    }
+    return transport
+}
+
+const interceptions = {
+    /**
+     * @param {GlobalConfig} globalConfig
+     * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
+     */
+    "getRuntimeConfiguration": (globalConfig) => {
+        /**
+         * @type {FeatureTogglesSettings}
+         */
+        const featureToggles = {
+            'inputType_credentials': true,
+            'inputType_identities': true,
+            'inputType_creditCards': true,
+            'emailProtection': true,
+            'password_generation': true,
+            'credentials_saving': true,
+        }
+
+        // on iOS, disable unsupported things. This will eventually come from the platform config
+        if (typeof globalConfig.userPreferences?.platform?.name !== "string") {
+            throw new Error('unreachable - platform.name should be set on apple platforms')
+        }
+        if (globalConfig.userPreferences?.platform?.name) {
+            featureToggles.inputType_identities = false;
+            featureToggles.inputType_creditCards = false;
+            featureToggles.password_generation = false;
+        }
+
+        const {config, errors} = tryCreateRuntimeConfiguration({
+            contentScope: globalConfig.contentScope,
+            userPreferences: {
+                ...globalConfig.userPreferences,
+                ...{
+                    features: {
+                        autofill: {
+                            settings: {
+                                featureToggles: featureToggles
+                            }
+                        }
+                    }
+                }
+            },
+            userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+        })
+
+        if (errors.length) {
+            for (let error of errors) {
+                console.log(error.message, error);
+            }
+            throw new Error(`${errors.length} errors prevented global configuration from being created.`)
+        }
+
+        return config
+    }
+}
+
+/**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
@@ -94,83 +175,3 @@ const decrypt = async (ciphertext, key, iv) => {
     let dec = new ddgGlobals.TextDecoder()
     return dec.decode(decrypted)
 }
-
-const interceptions = {
-    /**
-     * @param {GlobalConfig} globalConfig
-     * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
-     */
-    "getRuntimeConfiguration": (globalConfig) => {
-        /**
-         * @type {FeatureTogglesSettings}
-         */
-        const featureToggles = {
-            'inputType_credentials': true,
-            'inputType_identities': true,
-            'inputType_creditCards': true,
-            'emailProtection': true,
-            'password_generation': true,
-            'credentials_saving': true,
-        }
-
-        // on iOS, disable unsupported things. This will eventually come from the platform config
-        if (globalConfig.isMobileApp) {
-            featureToggles.inputType_identities = false;
-            featureToggles.inputType_creditCards = false;
-            featureToggles.password_generation = false;
-        }
-
-        const {config, errors} = tryCreateRuntimeConfiguration({
-            contentScope: globalConfig.contentScope,
-            userPreferences: {
-                ...globalConfig.userPreferences,
-                ...{
-                    features: {
-                        autofill: {
-                            settings: {
-                                featureToggles: featureToggles
-                            }
-                        }
-                    }
-                }
-            },
-            userUnprotectedDomains: globalConfig.userUnprotectedDomains,
-        })
-
-        if (errors.length) {
-            for (let error of errors) {
-                console.log(error.message, error);
-            }
-            throw new Error(`${errors.length} errors prevented global configuration from being created.`)
-        }
-
-        return config
-    }
-}
-
-/**
- * Create a wrapper around the webkit messaging that conforms
- * to the Transport interface
- *
- * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {Transport}
- */
-function createTransport (config) {
-    /** @type {Transport} */
-    const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
-        send (name, data) {
-            console.log('🍏', name, data);
-            if (interceptions[name]) {
-                console.log('--> intercepted', name, data);
-                return interceptions[name](config);
-            }
-            return wkSendAndWait(name, data, {
-                secret: config.secret,
-                hasModernWebkitAPI: config.hasModernWebkitAPI
-            })
-        }
-    }
-    return transport
-}
-
-export { createTransport }

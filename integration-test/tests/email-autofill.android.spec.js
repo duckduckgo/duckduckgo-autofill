@@ -21,7 +21,7 @@ test.describe('android', () => {
     test.afterAll(async () => {
         server.close()
     })
-    test('should autofill the selected email', async ({page}) => {
+    test.only('should autofill the selected email', async ({page}) => {
         // enable in-terminal exceptions
         forwardConsoleMessages(page)
 

@@ -209,9 +209,9 @@ class InterfacePrototype {
     }
 
     async init () {
-
         const isEnabled = await this.isEnabled()
         if (!isEnabled) return
+
         if (document.readyState === 'complete') {
             this.startInit()
         } else {

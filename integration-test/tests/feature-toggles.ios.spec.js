@@ -21,7 +21,7 @@ test.describe('ios feature toggles', () => {
     test.afterAll(async () => {
         server.close()
     })
-    test.only('should autofill the selected email', async ({page}) => {
+    test('should autofill the selected email', async ({page}) => {
         // enable in-terminal exceptions
         forwardConsoleMessages(page)
 

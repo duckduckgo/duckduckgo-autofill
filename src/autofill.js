@@ -11,6 +11,7 @@ import {createRuntime} from './runtime/runtime'
         // // this is config already present in the script, or derived from the page etc.
         const globalConfig = createGlobalConfig();
 
+        // Create the runtime, this does a best-guesses job of determining where we're running.
         const runtime = createRuntime(globalConfig);
 
         // Get runtime configuration - this may include messaging
@@ -19,20 +20,11 @@ import {createRuntime} from './runtime/runtime'
         // Autofill settings need to be derived from runtime config
         const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration);
 
-        // // Determine the device type
+        // Determine the device type
         const device = createDevice(globalConfig, runtimeConfiguration, autofillSettings)
 
-        console.log('devices', device);
-        console.log('platform', runtimeConfiguration.platform);
-        //
-        // // access the platform configuration
-        // const platformConfig = await device.getPlatformConfiguration(globalConfig);
-        //
-        // // now create autofill settings
-        // const settings = await device.getAutofillSettings(platformConfig);
-        //
-        // // now the device has platform config + settings ready, true?
-        // await device.init()
+        // Init services
+        await device.init()
     } catch (e) {
         console.error(e)
         // Noop, we errored

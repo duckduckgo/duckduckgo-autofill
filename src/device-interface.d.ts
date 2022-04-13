@@ -97,6 +97,7 @@ interface GlobalConfig {
      isAndroid: boolean;
      isFirefox: boolean;
      isMobileApp: boolean;
+     isWindows: boolean;
      isTopFrame: boolean;
      secret: string;
      supportsTopFrame: boolean;

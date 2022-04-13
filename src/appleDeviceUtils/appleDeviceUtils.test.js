@@ -1,5 +1,5 @@
 import { createGlobalConfig } from '../config'
-import { createTransport } from './appleDeviceUtils'
+import { createTransport } from './transport.apple'
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data
