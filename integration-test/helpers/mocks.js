@@ -21,9 +21,9 @@ export const constants = {
 export const defaultIOSReplacements = {
     contentScope: {
         features: {
-            "autofill": {
+            'autofill': {
                 exceptions: [],
-                state: "enabled",
+                state: 'enabled',
             }
         },
         unprotectedTemporary: []
@@ -31,15 +31,15 @@ export const defaultIOSReplacements = {
     userUnprotectedDomains: [],
     userPreferences: {
         debug: true,
-        platform: { name: "ios" }
+        platform: {name: 'ios'}
     }
 }
 export const defaultMacosReplacements = {
     contentScope: {
         features: {
-            "autofill": {
+            'autofill': {
                 exceptions: [],
-                state: "enabled",
+                state: 'enabled',
             }
         },
         unprotectedTemporary: []
@@ -47,7 +47,7 @@ export const defaultMacosReplacements = {
     userUnprotectedDomains: [],
     userPreferences: {
         debug: true,
-        platform: { name: "macos" }
+        platform: {name: 'macos'}
     }
 }
 
@@ -101,6 +101,10 @@ export function createWebkitMocks (platform = 'macos') {
         pmHandlerGetAutofillCredentials: {
             /** @type {CredentialsObject|null} */
             success: null
+        },
+        getAvailableInputTypes: {
+            /** @type {AvailableInputTypes|null} */
+            success: {}
         }
     }
 
@@ -129,6 +133,10 @@ export function createWebkitMocks (platform = 'macos') {
         withCredentials: function (credentials) {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
+            return this
+        },
+        withAvailableInputTypes: function (inputTypes) {
+            webkitBase.getAvailableInputTypes.success = inputTypes
             return this
         },
         tap (fn) {
@@ -184,6 +192,9 @@ async function withMockedWebkit (page, mocks) {
 export function createAndroidMocks () {
     /** @type {string|null} */
     let address = null
+    /** @type {AvailableInputTypes|null} */
+        // @ts-ignore
+    let inputTypes = null
     /** @type {MockBuilder} */
     const builder = {
         withPrivateEmail (email) {
@@ -192,6 +203,10 @@ export function createAndroidMocks () {
         },
         withPersonalEmail (email) {
             address = email
+            return this
+        },
+        withAvailableInputTypes (_inputTypes) {
+            inputTypes = _inputTypes
             return this
         },
         tap () {
@@ -211,6 +226,55 @@ export function createAndroidMocks () {
                     },
                     storeCredentials () {
                         return {}
+                    }
+                }
+                window.BrowserAutofill = {
+                    getRuntimeConfiguration () {
+                        window.postMessage({
+                            type: 'getRuntimeConfigurationResponse',
+                            runtimeConfiguration: {
+                                'contentScope': {
+                                    'features': {
+                                        'autofill': {
+                                            'state': 'enabled',
+                                            'exceptions': []
+                                        }
+                                    },
+                                    'unprotectedTemporary': []
+                                },
+                                'userUnprotectedDomains': [],
+                                'userPreferences': {
+                                    'debug': false,
+                                    'platform': {
+                                        'name': 'android'
+                                    },
+                                    'features': {
+                                        'autofill': {
+                                            'settings': {
+                                                'featureToggles': {
+                                                    'inputType_credentials': true,
+                                                    'inputType_identities': false,
+                                                    'inputType_creditCards': false,
+                                                    'emailProtection': true,
+                                                    'password_generation': false,
+                                                    'credentials_saving': true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }, window.origin)
+                    },
+                    getAvailableInputTypes() {
+                        window.postMessage({
+                            type: 'getAvailableInputTypesResponse',
+                            availableInputTypes: {
+                                credentials: true,
+                                email: true,
+                            }
+                        }, window.origin)
+
                     }
                 }
             }, address)

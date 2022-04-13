@@ -28,6 +28,10 @@ test.describe('ios feature toggles', () => {
         await createWebkitMocks('ios')
             .withPersonalEmail('0')
             .withPrivateEmail('0')
+            .withAvailableInputTypes({
+                credentials: true,
+                email: true
+            })
             .withCredentials({
                 id: "02",
                 password: "123456",

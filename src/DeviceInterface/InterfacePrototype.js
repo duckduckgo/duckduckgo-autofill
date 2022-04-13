@@ -3,7 +3,6 @@ import {
     SIGN_IN_MSG,
     sendAndWaitForAnswer,
     formatDuckAddress,
-    autofillEnabled,
     notifyWebApp
 } from '../autofill-utils'
 
@@ -203,12 +202,8 @@ class InterfacePrototype {
 
     postInit () {}
 
-    async isEnabled () {
-        return autofillEnabled(this.globalConfig)
-    }
-
     async init () {
-        const isEnabled = await this.isEnabled()
+        const isEnabled = this.platformConfig.isFeatureRemoteEnabled("autofill");
         if (!isEnabled) return
 
         if (document.readyState === 'complete') {

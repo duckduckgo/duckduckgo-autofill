@@ -1,5 +1,5 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import {createTransport} from '../appleDeviceUtils/transport.apple'
+import {createTransport} from '../transports/transport.apple'
 import {formatDuckAddress, autofillEnabled} from '../autofill-utils'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 import {fromPlatformConfig} from '../settings/settings'

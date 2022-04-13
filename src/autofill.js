@@ -1,5 +1,6 @@
 // Polyfills/shims
 import './requestIdleCallback'
+import './transports/captureDdgGlobals'
 import {createDevice} from './DeviceInterface'
 import {createGlobalConfig} from './config'
 import {createRuntime} from './runtime/runtime'
@@ -22,6 +23,12 @@ import {createRuntime} from './runtime/runtime'
 
         // Determine the device type
         const device = createDevice(globalConfig, runtimeConfiguration, autofillSettings)
+
+        // If it was enabled, try to ask for available input types
+        if (runtimeConfiguration.isFeatureRemoteEnabled("autofill")) {
+            const availableInputTypes = await runtime.getAvailableInputTypes();
+            console.log("availableInputTypes", availableInputTypes);
+        }
 
         // Init services
         await device.init()

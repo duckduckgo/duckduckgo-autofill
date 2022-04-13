@@ -24,6 +24,8 @@ interface MockBuilder<State> {
     withIdentity(identity: IdentityObject): MockBuilder
     // Add a credential
     withCredentials(credentials: CredentialsObject): MockBuilder
+    // Add available input types
+    withAvailableInputTypes(inputTypes: AvailableInputTypes): MockBuilder
     // observe the current state
     tap(fn: (currentState: State) => void): MockBuilder
     // apply to the page, this is the final step

@@ -1,7 +1,8 @@
-import { createTransport as createAppleTransport } from '../appleDeviceUtils/transport.apple'
-import { createTransport as createAndroidTransport } from '../appleDeviceUtils/transport.android'
-import { createTransport as createExtensionTransport } from '../appleDeviceUtils/transport.extension'
-import { createTransport as createWindowsTransport } from '../appleDeviceUtils/transport.windows'
+import { createTransport as createAppleTransport } from '../transports/transport.apple'
+import { createTransport as createAndroidTransport } from '../transports/transport.android'
+import { createTransport as createExtensionTransport } from '../transports/transport.extension'
+import { createTransport as createWindowsTransport } from '../transports/transport.windows'
+import { tryCreateRuntimeConfiguration } from '@duckduckgo/content-scope-scripts'
 
 import {fromPlatformConfig} from '../settings/settings'
 
@@ -22,7 +23,24 @@ class Runtime {
      * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
     async getRuntimeConfiguration() {
-        return this.transport.send('getRuntimeConfiguration')
+        const runtimeConfig = await this.transport.send('getRuntimeConfiguration')
+        const {config, errors} = tryCreateRuntimeConfiguration(runtimeConfig);
+
+        if (errors.length) {
+            for (let error of errors) {
+                console.log(error.message, error)
+            }
+            throw new Error(`${errors.length} errors prevented global configuration from being created.`)
+        }
+
+        return config
+    }
+
+    /**
+     * @returns {Promise<AvailableInputTypes>}
+     */
+    async getAvailableInputTypes() {
+        return this.transport.send('getAvailableInputTypes')
     }
 
     /**

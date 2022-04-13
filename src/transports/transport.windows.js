@@ -1,5 +1,3 @@
-import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
-
 /**
  * @param {GlobalConfig} globalConfig
  * @returns {Transport}
@@ -30,21 +28,9 @@ export function createTransport (globalConfig) {
 const interceptions = {
     /**
      * @param {GlobalConfig} globalConfig
-     * @returns {import('@duckduckgo/content-scope-scripts').RuntimeConfiguration}
      */
     'getRuntimeConfiguration': (globalConfig) => {
-        /**
-         * @type {FeatureTogglesSettings}
-         */
-        const featureToggles = {
-            'inputType_credentials': true,
-            'inputType_identities': false,
-            'inputType_creditCards': false,
-            'emailProtection': false,
-            'password_generation': false,
-            'credentials_saving': true,
-        }
-        const {config, errors} = tryCreateRuntimeConfiguration({
+        return {
             contentScope: globalConfig.contentScope,
             userPreferences: {
                 ...globalConfig.userPreferences,
@@ -56,22 +42,20 @@ const interceptions = {
                     features: {
                         autofill: {
                             settings: {
-                                featureToggles: featureToggles
+                                featureToggles: {
+                                    'inputType_credentials': true,
+                                    'inputType_identities': false,
+                                    'inputType_creditCards': false,
+                                    'emailProtection': false,
+                                    'password_generation': false,
+                                    'credentials_saving': true,
+                                }
                             }
                         }
                     }
                 }
             },
             userUnprotectedDomains: globalConfig.userUnprotectedDomains || [],
-        })
-
-        if (errors.length) {
-            for (let error of errors) {
-                console.log(error.message, error)
-            }
-            throw new Error(`${errors.length} errors prevented global configuration from being created.`)
         }
-
-        return config
     }
 }

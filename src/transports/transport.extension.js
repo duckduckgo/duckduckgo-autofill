@@ -1,5 +1,3 @@
-import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
-
 /**
  * @param {GlobalConfig} globalConfig
  * @returns {Transport}
@@ -14,13 +12,7 @@ export function createTransport (globalConfig) {
                 console.log('--> intercepted', name, data);
                 return interceptions[name](globalConfig);
             }
-
-            switch (name) {
-            case "getAvailableInputTypes": {
-                throw new Error('extension: not implemented' + name)
-            }
-            default: throw new Error('extension: not implemented' + name)
-            }
+            throw new Error('not implemented for extension: ' + name)
         }
     }
 
@@ -28,9 +20,16 @@ export function createTransport (globalConfig) {
 }
 
 const interceptions = {
+    "getAvailableInputTypes": () => {
+        return {
+            credentials: false,
+            identities: false,
+            creditCards: false,
+            email: true,
+        }
+    },
     /**
      * @param {GlobalConfig} globalConfig
-     * @returns {import('@duckduckgo/content-scope-scripts').RuntimeConfiguration}
      */
     'getRuntimeConfiguration': (globalConfig) => {
         /**
@@ -44,43 +43,32 @@ const interceptions = {
             'password_generation': false,
             'credentials_saving': false,
         }
-        const {config, errors} = tryCreateRuntimeConfiguration({
+        return {
             contentScope: {
-                ...globalConfig.contentScope,
                 features: {
                     autofill: {
                         state: "enabled",
                         exceptions: [],
                     },
                 },
-                unprotectedTemporary: []
+                unprotectedTemporary: [],
+                ...globalConfig.contentScope,
             },
             userPreferences: {
-                ...globalConfig.userPreferences,
                 sessionKey: '',
                 debug: false,
                 globalPrivacyControlValue: false,
                 platform: {name: 'extension'},
-                ...{
-                    features: {
-                        autofill: {
-                            settings: {
-                                featureToggles: featureToggles
-                            }
+                features: {
+                    autofill: {
+                        settings: {
+                            featureToggles: featureToggles
                         }
                     }
-                }
+                },
+                ...globalConfig.userPreferences,
             },
             userUnprotectedDomains: globalConfig.userUnprotectedDomains || [],
-        })
-
-        if (errors.length) {
-            for (let error of errors) {
-                console.log(error.message, error)
-            }
-            throw new Error(`${errors.length} errors prevented global configuration from being created.`)
         }
-
-        return config
     }
 }

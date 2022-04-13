@@ -12,6 +12,9 @@ interface Window {
   // Used in the Android app
   EmailInterface: any
 
+  // Used in the Android app
+  BrowserAutofill: any
+
   // Used in Apple apps
   webkit: any
 }

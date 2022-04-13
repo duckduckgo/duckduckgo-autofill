@@ -32,15 +32,15 @@ test.describe('android', () => {
         const emailPage = emailAutofillPage(page, server)
         await emailPage.navigate()
 
-        // create + inject the script
-        await createAutofillScript()
-            .platform('android')
-            .applyTo(page)
-
         // android specific mocks
         await createAndroidMocks()
             .withPersonalEmail(personalAddress)
             .withPrivateEmail(personalAddress)
+            .applyTo(page)
+
+        // create + inject the script
+        await createAutofillScript()
+            .platform('android')
             .applyTo(page)
 
         // if this works, the interface must have loaded and added the field decorations

@@ -1,5 +1,4 @@
 import ddgGlobals from './captureDdgGlobals'
-import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
 /**
  * Create a wrapper around the webkit messaging that conforms
@@ -29,7 +28,6 @@ export function createTransport (config) {
 const interceptions = {
     /**
      * @param {GlobalConfig} globalConfig
-     * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
     "getRuntimeConfiguration": (globalConfig) => {
         /**
@@ -54,7 +52,7 @@ const interceptions = {
             featureToggles.password_generation = false;
         }
 
-        const {config, errors} = tryCreateRuntimeConfiguration({
+        return {
             contentScope: globalConfig.contentScope,
             userPreferences: {
                 ...globalConfig.userPreferences,
@@ -69,16 +67,7 @@ const interceptions = {
                 }
             },
             userUnprotectedDomains: globalConfig.userUnprotectedDomains,
-        })
-
-        if (errors.length) {
-            for (let error of errors) {
-                console.log(error.message, error);
-            }
-            throw new Error(`${errors.length} errors prevented global configuration from being created.`)
         }
-
-        return config
     }
 }
 
