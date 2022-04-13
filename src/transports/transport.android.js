@@ -12,16 +12,14 @@ export function createTransport (_globalConfig) {
             console.log('📲 android:', name, data);
             switch (name) {
             case "getRuntimeConfiguration": {
-                const response = await sendAndWaitForAnswer(() => {
+                return sendAndWaitForAnswer(() => {
                     return window.BrowserAutofill.getRuntimeConfiguration()
                 }, 'getRuntimeConfigurationResponse')
-                return response.runtimeConfiguration;
             }
             case "getAvailableInputTypes": {
-                const response = await sendAndWaitForAnswer(() => {
+                return sendAndWaitForAnswer(() => {
                     return window.BrowserAutofill.getAvailableInputTypes()
                 }, 'getAvailableInputTypesResponse')
-                return response.availableInputTypes;
             }
             default: throw new Error('android: not implemented' + name)
             }

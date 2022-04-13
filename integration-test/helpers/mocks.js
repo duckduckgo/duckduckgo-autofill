@@ -232,7 +232,7 @@ export function createAndroidMocks () {
                     getRuntimeConfiguration () {
                         window.postMessage({
                             type: 'getRuntimeConfigurationResponse',
-                            runtimeConfiguration: {
+                            success: {
                                 'contentScope': {
                                     'features': {
                                         'autofill': {
@@ -269,7 +269,7 @@ export function createAndroidMocks () {
                     getAvailableInputTypes() {
                         window.postMessage({
                             type: 'getAvailableInputTypesResponse',
-                            availableInputTypes: {
+                            success: {
                                 credentials: true,
                                 email: true,
                             }

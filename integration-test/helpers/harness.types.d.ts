@@ -1,4 +1,4 @@
-type Platform = "ios" | "macos" | "android" | "extension";
+type Platform = "ios" | "macos" | "android" | "extension" | "windows";
 type Replacements = Record<keyof GlobalConfig, any>;
 
 /**

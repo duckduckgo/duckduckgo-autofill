@@ -10,7 +10,7 @@ export function createTransport (globalConfig) {
             console.log('extension:', name, data);
             if (interceptions[name]) {
                 console.log('--> intercepted', name, data);
-                return interceptions[name](globalConfig);
+                return { success: interceptions[name](globalConfig) }
             }
             throw new Error('not implemented for extension: ' + name)
         }
@@ -20,6 +20,7 @@ export function createTransport (globalConfig) {
 }
 
 const interceptions = {
+    // todo(Shane): Get available extension types
     "getAvailableInputTypes": () => {
         return {
             credentials: false,

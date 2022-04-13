@@ -2310,13 +2310,15 @@ var _ExtensionInterface = _interopRequireDefault(require("./DeviceInterface/Exte
 
 var _AppleDeviceInterface = _interopRequireDefault(require("./DeviceInterface/AppleDeviceInterface"));
 
+var _InterfacePrototype = _interopRequireDefault(require("./DeviceInterface/InterfacePrototype"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
  * @param {import("./settings/settings").AutofillSettings} autofillSettings
- * @returns {AndroidInterface|AppleDeviceInterface|ExtensionInterface}
+ * @returns {AndroidInterface|AppleDeviceInterface|ExtensionInterface|WindowsInterface}
  */
 function createDevice(globalConfig, platformConfig, autofillSettings) {
   switch (platformConfig.platform) {
@@ -2328,7 +2330,7 @@ function createDevice(globalConfig, platformConfig, autofillSettings) {
       return new _ExtensionInterface.default(globalConfig, platformConfig, autofillSettings);
 
     case 'windows':
-      throw new Error('todo: implement windows');
+      return new WindowsInterface(globalConfig, platformConfig, autofillSettings);
 
     case 'android':
       return new _AndroidInterface.default(globalConfig, platformConfig, autofillSettings);
@@ -2340,7 +2342,9 @@ function createDevice(globalConfig, platformConfig, autofillSettings) {
   throw new Error('undefined');
 }
 
-},{"./DeviceInterface/AndroidInterface":7,"./DeviceInterface/AppleDeviceInterface":8,"./DeviceInterface/ExtensionInterface":9}],7:[function(require,module,exports){
+class WindowsInterface extends _InterfacePrototype.default {}
+
+},{"./DeviceInterface/AndroidInterface":7,"./DeviceInterface/AppleDeviceInterface":8,"./DeviceInterface/ExtensionInterface":9,"./DeviceInterface/InterfacePrototype":10}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5418,9 +5422,10 @@ const getIdentitiesIcon = (input, _ref) => {
   // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
   const {
     isDDGApp,
-    isFirefox
+    isFirefox,
+    isWindows
   } = device.globalConfig;
-  const getDaxImg = isDDGApp || isFirefox ? _logoSvg.daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
+  const getDaxImg = isDDGApp || isFirefox || isWindows ? _logoSvg.daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
   const subtype = (0, _matching.getInputSubtype)(input);
   if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg;
   return '';
@@ -8817,7 +8822,7 @@ function createGlobalConfig() {
   const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
   const isMobileApp = isDDGApp && !isApp;
   const isFirefox = navigator.userAgent.includes('Firefox');
-  const isWindows = navigator.userAgent.includes('ddg_win');
+  const isWindows = navigator.userAgent.includes('Windows 11');
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
   return {
     isApp,
@@ -9802,25 +9807,37 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createTransport = createTransport;
 
+var _autofillUtils = require("../autofill-utils");
+
 /**
- * @param {GlobalConfig} globalConfig
+ * @param {GlobalConfig} _globalConfig
  * @returns {Transport}
  */
-function createTransport(globalConfig) {
+function createTransport(_globalConfig) {
   /** @type {Transport} */
   const transport = {
     async send(name, data) {
-      console.log('windows:', name, data);
-
-      if (interceptions[name]) {
-        console.log('--> intercepted', name, data);
-        return interceptions[name](globalConfig);
-      }
+      console.log('📲 windows:', name, data);
 
       switch (name) {
+        case "getRuntimeConfiguration":
+          {
+            const response = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+              return window.chrome.webview.postMessage({
+                commandName: 'GetRuntimeConfiguration'
+              });
+            }, 'GetRuntimeConfigurationResponse');
+            return response.success;
+          }
+
         case "getAvailableInputTypes":
           {
-            throw new Error('windows: not implemented' + name);
+            const response = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+              return window.chrome.webview.postMessage({
+                commandName: 'GetAvailableInputTypes'
+              });
+            }, 'GetAvailableInputTypesResponse');
+            return response.success;
           }
 
         default:
@@ -9832,43 +9849,7 @@ function createTransport(globalConfig) {
   return transport;
 }
 
-const interceptions = {
-  /**
-   * @param {GlobalConfig} globalConfig
-   */
-  'getRuntimeConfiguration': globalConfig => {
-    return {
-      contentScope: globalConfig.contentScope,
-      userPreferences: { ...globalConfig.userPreferences,
-        sessionKey: '',
-        debug: false,
-        globalPrivacyControlValue: false,
-        platform: {
-          name: 'windows'
-        },
-        ...{
-          features: {
-            autofill: {
-              settings: {
-                featureToggles: {
-                  'inputType_credentials': true,
-                  'inputType_identities': false,
-                  'inputType_creditCards': false,
-                  'emailProtection': false,
-                  'password_generation': false,
-                  'credentials_saving': true
-                }
-              }
-            }
-          }
-        }
-      },
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains || []
-    };
-  }
-};
-
-},{}],47:[function(require,module,exports){
+},{"../autofill-utils":34}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

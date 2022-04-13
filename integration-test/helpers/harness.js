@@ -210,6 +210,27 @@ export function withAndroidContext (test) {
 }
 
 /**
+ * Launch a webkit browser with a user-agent that simulates our iOS application
+ * @param {typeof import("@playwright/test").test} test
+ */
+export function withWindowsContext (test) {
+    return test.extend({
+        context: async ({ browser }, use, testInfo) => {
+            // ensure this test setup cannot be used by anything other than webkit browsers
+            testInfo.skip(testInfo.project.name !== 'windows')
+
+            const context = await browser.newContext({
+                ...devices.iPhone,
+                userAgent: 'Mozilla/5.0 (Linux; Windows 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.88 DuckDuckGo/7 Mobile Safari/537.36'
+            })
+
+            await use(context)
+            await context.close()
+        }
+    })
+}
+
+/**
  * @param {import("playwright").Page} page
  * @param {string} measureName
  * @return {Promise<PerformanceEntryList>}

@@ -15,6 +15,8 @@ interface Window {
   // Used in the Android app
   BrowserAutofill: any
 
+  chrome: { webview: { postMessage: Window['postMessage'] } }
+
   // Used in Apple apps
   webkit: any
 }

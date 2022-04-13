@@ -23,8 +23,11 @@ class Runtime {
      * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
     async getRuntimeConfiguration() {
-        const runtimeConfig = await this.transport.send('getRuntimeConfiguration')
-        const {config, errors} = tryCreateRuntimeConfiguration(runtimeConfig);
+        // todo(Shane): Schema validation here
+        const { success } = await this.transport.send('getRuntimeConfiguration')
+        if (!success) throw new Error('unreachable');
+
+        const {config, errors} = tryCreateRuntimeConfiguration(success);
 
         if (errors.length) {
             for (let error of errors) {
@@ -40,7 +43,9 @@ class Runtime {
      * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes() {
-        return this.transport.send('getAvailableInputTypes')
+        const { success } = await this.transport.send('getAvailableInputTypes')
+        if (!success) throw new Error('unreachable');
+        return success;
     }
 
     /**

@@ -14,7 +14,7 @@ export function createTransport (config) {
             console.log('🍏', name, data);
             if (interceptions[name]) {
                 console.log('--> intercepted', name, data);
-                return interceptions[name](config);
+                return { success: interceptions[name](config) }
             }
             return wkSendAndWait(name, data, {
                 secret: config.secret,
