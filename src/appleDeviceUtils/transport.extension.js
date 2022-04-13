@@ -45,7 +45,16 @@ const interceptions = {
             'credentials_saving': false,
         }
         const {config, errors} = tryCreateRuntimeConfiguration({
-            contentScope: globalConfig.contentScope,
+            contentScope: {
+                ...globalConfig.contentScope,
+                features: {
+                    autofill: {
+                        state: "enabled",
+                        exceptions: [],
+                    },
+                },
+                unprotectedTemporary: []
+            },
             userPreferences: {
                 ...globalConfig.userPreferences,
                 sessionKey: '',

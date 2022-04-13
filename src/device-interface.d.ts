@@ -80,13 +80,6 @@ interface EmailAddresses {
      personalAddress?: string
 }
 
-type FeatureToggleNames =
-  | "password.generation"
-
-interface FeatureToggles {
-     supportsFeature(name: FeatureToggleNames): boolean;
-}
-
 interface Transport {
      send(name: string, data?: any): Promise<any>
 }

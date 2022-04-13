@@ -15,6 +15,39 @@ export const constants = {
                 identity: '[data-ddg-inputtype="identities.emailAddress"]'
             }
         }
+    },
+}
+
+export const defaultIOSReplacements = {
+    contentScope: {
+        features: {
+            "autofill": {
+                exceptions: [],
+                state: "enabled",
+            }
+        },
+        unprotectedTemporary: []
+    },
+    userUnprotectedDomains: [],
+    userPreferences: {
+        debug: true,
+        platform: { name: "ios" }
+    }
+}
+export const defaultMacosReplacements = {
+    contentScope: {
+        features: {
+            "autofill": {
+                exceptions: [],
+                state: "enabled",
+            }
+        },
+        unprotectedTemporary: []
+    },
+    userUnprotectedDomains: [],
+    userPreferences: {
+        debug: true,
+        platform: { name: "macos" }
     }
 }
 

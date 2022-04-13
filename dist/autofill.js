@@ -2430,24 +2430,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-var _supportedFeatures = /*#__PURE__*/new WeakMap();
-
-/**
- * @implements {FeatureToggles}
- */
 class AppleDeviceInterface extends _InterfacePrototype.default {
-  /** @type {FeatureToggleNames[]} */
-
   /* @type {Timeout | undefined} */
 
   /** @type {Transport} */
@@ -2458,29 +2441,21 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
 
   constructor(config, platformConfig, settings) {
-    super(config, platformConfig, settings); // console.log(JSON.stringify(this.autofillSettings.featureToggles, null, 2), window.location.href);
-    // Only enable 'password.generation' if we're on the macOS app (for now);
-    // if (this.autofillSettings.featureToggles.password_generation) {
-    //     this.#supportedFeatures.push('password.generation')
-    // }
-    // if (this.globalConfig.isTopFrame) {
-    //     this.stripCredentials = false
-    //     window.addEventListener('mouseMove', this)
-    // } else if (this.globalConfig.supportsTopFrame) {
-    //     // This is always added as a child frame needs to be informed of a parent frame scroll
-    //     window.addEventListener('scroll', this)
-    // }
-
-    _classPrivateFieldInitSpec(this, _supportedFeatures, {
-      writable: true,
-      value: []
-    });
+    super(config, platformConfig, settings);
 
     _defineProperty(this, "pollingTimeout", void 0);
 
     _defineProperty(this, "transport", (0, _transport.createTransport)(this.globalConfig));
 
     _defineProperty(this, "initialSetupDelayMs", 300);
+
+    if (this.globalConfig.isTopFrame) {
+      this.stripCredentials = false;
+      window.addEventListener('mouseMove', this);
+    } else if (this.globalConfig.supportsTopFrame) {
+      // This is always added as a child frame needs to be informed of a parent frame scroll
+      window.addEventListener('scroll', this);
+    }
   }
 
   postInit() {
@@ -2814,12 +2789,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     });
     return (0, _autofillUtils.formatDuckAddress)(alias);
   }
-  /** @param {FeatureToggleNames} name */
-
-
-  supportsFeature(name) {
-    return _classPrivateFieldGet(this, _supportedFeatures).includes(name);
-  }
   /**
    * @param {PlatformConfig} platformConfig
    * @returns {Promise<import('../settings/settings').AutofillSettings>}
@@ -3017,7 +2986,6 @@ var _addresses = /*#__PURE__*/new WeakMap();
 var _data2 = /*#__PURE__*/new WeakMap();
 
 /**
- * @implements {FeatureToggles}
  * @implements {GlobalConfigImpl}
  */
 class InterfacePrototype {
@@ -3398,7 +3366,7 @@ class InterfacePrototype {
       inputType
     }; // A list of checks to determine if we need to generate a password
 
-    const checks = [inputType === 'credentials.password', this.supportsFeature('password.generation'), form.isSignup]; // if all checks pass, generate and save a password
+    const checks = [inputType === 'credentials.password', this.autofillSettings.featureToggles.password_generation, form.isSignup]; // if all checks pass, generate and save a password
 
     if (checks.every(Boolean)) {
       const password = this.passwordGenerator.generate({
@@ -3433,7 +3401,7 @@ class InterfacePrototype {
 
   shouldPromptToStoreCredentials(options) {
     if (!options.formElement) return false;
-    if (!this.supportsFeature('password.generation')) return false; // if we previously generated a password, allow it to be saved
+    if (!this.autofillSettings.featureToggles.password_generation) return false; // if we previously generated a password, allow it to be saved
 
     if (this.passwordGenerator.generated) {
       return true;
@@ -3659,12 +3627,6 @@ class InterfacePrototype {
 
 
   setSize(_args) {}
-  /** @param {FeatureToggleNames} _name */
-
-
-  supportsFeature(_name) {
-    return false;
-  }
   /** @returns {string} */
 
 
@@ -5504,7 +5466,7 @@ const inputTypeConfig = {
       } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
 
 
-      if (device.supportsFeature('password.generation')) {
+      if (device.autofillSettings.featureToggles.password_generation) {
         const subtype = (0, _matching.getInputSubtype)(input);
 
         if (subtype === 'password') {
@@ -8579,7 +8541,7 @@ function createTransport(config) {
   /** @type {Transport} */
   const transport = {
     // this is a separate variable to ensure type-safety is not lost when returning directly
-    send(name, data) {
+    async send(name, data) {
       console.log('🍏', name, data);
 
       if (interceptions[name]) {
@@ -8833,7 +8795,15 @@ const interceptions = {
       config,
       errors
     } = (0, _contentScopeScripts.tryCreateRuntimeConfiguration)({
-      contentScope: globalConfig.contentScope,
+      contentScope: { ...globalConfig.contentScope,
+        features: {
+          autofill: {
+            state: "enabled",
+            exceptions: []
+          }
+        },
+        unprotectedTemporary: []
+      },
       userPreferences: { ...globalConfig.userPreferences,
         sessionKey: '',
         debug: false,
@@ -9555,6 +9525,9 @@ function selectTransport(globalConfig) {
   if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) === "string") {
     switch ((_globalConfig$userPre3 = globalConfig.userPreferences) === null || _globalConfig$userPre3 === void 0 ? void 0 : (_globalConfig$userPre4 = _globalConfig$userPre3.platform) === null || _globalConfig$userPre4 === void 0 ? void 0 : _globalConfig$userPre4.name) {
       case "ios":
+        return (0, _transport.createTransport)(globalConfig);
+
+      case "macos":
         return (0, _transport.createTransport)(globalConfig);
 
       default:

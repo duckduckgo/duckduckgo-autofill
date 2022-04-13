@@ -5,7 +5,7 @@ import {
     withIOSContext
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
-import {createWebkitMocks} from '../helpers/mocks.js'
+import {createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.js'
 import {loginPage} from '../helpers/pages.js'
 
 /**
@@ -38,29 +38,12 @@ test.describe('ios feature toggles', () => {
         // Load the autofill.js script with replacements
         // on iOS it's the user-agent that's used as the platform check
         await createAutofillScript()
-            .replaceAll({
-                contentScope: {
-                    features: {
-                        "autofill": {
-                            exceptions: [],
-                            state: "enabled",
-                        }
-                    },
-                    unprotectedTemporary: []
-                },
-                userUnprotectedDomains: [],
-                userPreferences: {
-                    debug: true,
-                    platform: { name: "ios" }
-                }
-            })
+            .replaceAll(defaultIOSReplacements)
             .platform('ios')
             .applyTo(page)
 
         // page abstraction
         const emailPage = loginPage(page, server)
         await emailPage.navigate()
-
-        await page.pause();
     })
 })

@@ -5,7 +5,7 @@ import {
     withIOSContext
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
-import {constants, createWebkitMocks} from '../helpers/mocks.js'
+import {constants, createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.js'
 import {emailAutofillPage} from '../helpers/pages.js'
 
 /**
@@ -33,6 +33,7 @@ test.describe('ios', () => {
         // Load the autofill.js script with replacements
         // on iOS it's the user-agent that's used as the platform check
         await createAutofillScript()
+            .replaceAll(defaultIOSReplacements)
             .platform('ios')
             .applyTo(page)
 

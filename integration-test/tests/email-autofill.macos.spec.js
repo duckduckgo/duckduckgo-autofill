@@ -4,7 +4,7 @@ import {
     setupServer
 } from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
-import {constants, createWebkitMocks} from '../helpers/mocks.js'
+import {constants, createWebkitMocks, defaultMacosReplacements} from '../helpers/mocks.js'
 import {emailAutofillPage, loginPage, signupPage} from '../helpers/pages.js'
 
 /**
@@ -33,6 +33,7 @@ test.describe('macos', () => {
         await createAutofillScript()
             .replace('isApp', true)
             .replace('hasModernWebkitAPI', true)
+            .replaceAll(defaultMacosReplacements)
             .platform('macos')
             .applyTo(page)
 
@@ -66,7 +67,7 @@ test.describe('macos', () => {
         // ...and ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
     })
-    test('auto filling a signup form', async ({page}) => {
+    test.skip('auto filling a signup form', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
@@ -86,6 +87,7 @@ test.describe('macos', () => {
         // Load the autofill.js script with replacements
         await createAutofillScript()
             .replace('isApp', true)
+            .replaceAll(defaultMacosReplacements)
             .platform('macos')
             .applyTo(page)
 
@@ -115,6 +117,7 @@ test.describe('macos', () => {
         // Load the autofill.js script with replacements
         await createAutofillScript()
             .replace('isApp', true)
+            .replaceAll(defaultMacosReplacements)
             .platform('macos')
             .applyTo(page)
 
@@ -143,6 +146,7 @@ test.describe('macos', () => {
         // Load the autofill.js script with replacements
         await createAutofillScript()
             .replace('isApp', true)
+            .replaceAll(defaultMacosReplacements)
             .platform('macos')
             .applyTo(page)
 
@@ -157,6 +161,7 @@ test.describe('macos', () => {
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
                 .replace('isApp', true)
+                .replaceAll(defaultMacosReplacements)
                 .platform('macos')
                 .applyTo(page)
 

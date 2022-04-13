@@ -11,7 +11,7 @@ import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 export function createTransport (config) {
     /** @type {Transport} */
     const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
-        send (name, data) {
+        async send (name, data) {
             console.log('🍏', name, data);
             if (interceptions[name]) {
                 console.log('--> intercepted', name, data);

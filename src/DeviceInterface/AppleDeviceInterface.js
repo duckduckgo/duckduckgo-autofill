@@ -4,13 +4,7 @@ import {formatDuckAddress, autofillEnabled} from '../autofill-utils'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 import {fromPlatformConfig} from '../settings/settings'
 
-/**
- * @implements {FeatureToggles}
- */
 class AppleDeviceInterface extends InterfacePrototype {
-    /** @type {FeatureToggleNames[]} */
-    #supportedFeatures = []
-
     /* @type {Timeout | undefined} */
     pollingTimeout
 
@@ -27,20 +21,13 @@ class AppleDeviceInterface extends InterfacePrototype {
     constructor (config, platformConfig, settings) {
         super(config, platformConfig, settings)
 
-        // console.log(JSON.stringify(this.autofillSettings.featureToggles, null, 2), window.location.href);
-
-        // Only enable 'password.generation' if we're on the macOS app (for now);
-        // if (this.autofillSettings.featureToggles.password_generation) {
-        //     this.#supportedFeatures.push('password.generation')
-        // }
-
-        // if (this.globalConfig.isTopFrame) {
-        //     this.stripCredentials = false
-        //     window.addEventListener('mouseMove', this)
-        // } else if (this.globalConfig.supportsTopFrame) {
-        //     // This is always added as a child frame needs to be informed of a parent frame scroll
-        //     window.addEventListener('scroll', this)
-        // }
+        if (this.globalConfig.isTopFrame) {
+            this.stripCredentials = false
+            window.addEventListener('mouseMove', this)
+        } else if (this.globalConfig.supportsTopFrame) {
+            // This is always added as a child frame needs to be informed of a parent frame scroll
+            window.addEventListener('scroll', this)
+        }
     }
 
     postInit () {
@@ -318,11 +305,6 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
         )
         return formatDuckAddress(alias)
-    }
-
-    /** @param {FeatureToggleNames} name */
-    supportsFeature (name) {
-        return this.#supportedFeatures.includes(name)
     }
 
     /**

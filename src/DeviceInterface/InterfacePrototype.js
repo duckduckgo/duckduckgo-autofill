@@ -21,7 +21,6 @@ import {AutofillSettings} from '../settings/settings'
 import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
 /**
- * @implements {FeatureToggles}
  * @implements {GlobalConfigImpl}
  */
 class InterfacePrototype {
@@ -358,7 +357,7 @@ class InterfacePrototype {
         // A list of checks to determine if we need to generate a password
         const checks = [
             inputType === 'credentials.password',
-            this.supportsFeature('password.generation'),
+            this.autofillSettings.featureToggles.password_generation,
             form.isSignup
         ]
 
@@ -397,7 +396,7 @@ class InterfacePrototype {
      */
     shouldPromptToStoreCredentials (options) {
         if (!options.formElement) return false
-        if (!this.supportsFeature('password.generation')) return false
+        if (!this.autofillSettings.featureToggles.password_generation) return false
 
         // if we previously generated a password, allow it to be saved
         if (this.passwordGenerator.generated) {
@@ -566,11 +565,6 @@ class InterfacePrototype {
 
     /** @param {{height: number, width: number}} _args */
     setSize (_args) {}
-
-    /** @param {FeatureToggleNames} _name */
-    supportsFeature (_name) {
-        return false
-    }
 
     /** @returns {string} */
     tooltipStyles () {

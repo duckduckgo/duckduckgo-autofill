@@ -47,7 +47,7 @@ const inputTypeConfig = {
             }
 
             // at this point, it's not a 'login' attempt, so we could offer to provide a password?
-            if (device.supportsFeature('password.generation')) {
+            if (device.autofillSettings.featureToggles.password_generation) {
                 const subtype = getInputSubtype(input)
                 if (subtype === 'password') {
                     return true

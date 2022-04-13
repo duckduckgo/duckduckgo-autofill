@@ -50,6 +50,7 @@ function selectTransport(globalConfig) {
     if (typeof globalConfig.userPreferences?.platform?.name === "string") {
         switch (globalConfig.userPreferences?.platform?.name) {
         case "ios": return createAppleTransport(globalConfig);
+        case "macos": return createAppleTransport(globalConfig);
         default: throw new Error('selectTransport unimplemented!')
         }
     }
