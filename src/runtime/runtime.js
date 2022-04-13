@@ -15,10 +15,10 @@ class Runtime {
     }
 
     /**
-     * @returns {import("@duckduckgo/content-scope-scripts").Config}
+     * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
-    async getPlatformConfiguration() {
-        return this.transport.send('getPlatformConfiguration')
+    async getRuntimeConfiguration() {
+        return this.transport.send('getRuntimeConfiguration')
     }
 
     /**

@@ -47,7 +47,7 @@ class AutofillSettings {
 }
 
 /**
- * @param {import("@duckduckgo/content-scope-scripts").Config} config
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} config
  * @returns {AutofillSettings}
  */
 export function fromPlatformConfig(config) {

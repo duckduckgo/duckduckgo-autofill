@@ -1,5 +1,5 @@
 import ddgGlobals from './captureDdgGlobals'
-import {tryCreateConfig} from '@duckduckgo/content-scope-scripts'
+import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
 /**
  * Sends message to the webkit layer (fire and forget)
@@ -98,9 +98,9 @@ const decrypt = async (ciphertext, key, iv) => {
 const interceptions = {
     /**
      * @param {GlobalConfig} globalConfig
-     * @returns {import("@duckduckgo/content-scope-scripts").Config}
+     * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
-    "getPlatformConfiguration": (globalConfig) => {
+    "getRuntimeConfiguration": (globalConfig) => {
         /**
          * @type {FeatureTogglesSettings}
          */
@@ -120,7 +120,7 @@ const interceptions = {
             featureToggles.password_generation = false;
         }
 
-        const {config, errors} = tryCreateConfig({
+        const {config, errors} = tryCreateRuntimeConfiguration({
             contentScope: globalConfig.contentScope,
             userPreferences: {
                 ...globalConfig.userPreferences,

@@ -2314,7 +2314,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * @param {GlobalConfig} globalConfig
- * @param {import("@duckduckgo/content-scope-scripts").Config} platformConfig
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
  * @param {import("./settings/settings").AutofillSettings} autofillSettings
  * @returns {AndroidInterface|AppleDeviceInterface|ExtensionInterface}
  */
@@ -3033,7 +3033,7 @@ class InterfacePrototype {
 
   /** @type {GlobalConfig} */
 
-  /** @type {import("@duckduckgo/content-scope-scripts").Config} */
+  /** @type {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} */
 
   /** @type {import("../settings/settings").AutofillSettings} */
 
@@ -3041,7 +3041,7 @@ class InterfacePrototype {
 
   /**
    * @param {GlobalConfig} globalConfig
-   * @param {import("@duckduckgo/content-scope-scripts").Config} platformConfig
+   * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
    * @param {import("../settings/settings").AutofillSettings} autofillSettings
    */
   constructor(globalConfig, platformConfig, autofillSettings) {
@@ -3673,7 +3673,7 @@ class InterfacePrototype {
   }
 
   static default() {
-    const config = new _contentScopeScripts.Config();
+    const config = new _contentScopeScripts.RuntimeConfiguration();
     return new InterfacePrototype((0, _config.createGlobalConfig)(), config, _settings.AutofillSettings.default());
   }
 
@@ -8548,9 +8548,9 @@ const decrypt = async (ciphertext, key, iv) => {
 const interceptions = {
   /**
    * @param {GlobalConfig} globalConfig
-   * @returns {import("@duckduckgo/content-scope-scripts").Config}
+   * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
    */
-  "getPlatformConfiguration": globalConfig => {
+  "getRuntimeConfiguration": globalConfig => {
     /**
      * @type {FeatureTogglesSettings}
      */
@@ -8572,7 +8572,7 @@ const interceptions = {
     const {
       config,
       errors
-    } = (0, _contentScopeScripts.tryCreateConfig)({
+    } = (0, _contentScopeScripts.tryCreateRuntimeConfiguration)({
       contentScope: globalConfig.contentScope,
       userPreferences: { ...globalConfig.userPreferences,
         ...{
@@ -9045,15 +9045,15 @@ var _runtime = require("./runtime/runtime");
   try {
     // // this is config already present in the script, or derived from the page etc.
     const globalConfig = (0, _config.createGlobalConfig)();
-    const runtime = (0, _runtime.createRuntime)(globalConfig);
-    const platformConfiguration = await runtime.getPlatformConfiguration();
-    const autofillSettings = await runtime.getAutofillSettings(platformConfiguration);
-    console.log("->", JSON.stringify(platformConfiguration.getSettings("autofill"), null, 2));
-    console.log("->", JSON.stringify(autofillSettings.featureToggles, null, 2)); // // Determine the device type
+    const runtime = (0, _runtime.createRuntime)(globalConfig); // Get runtime configuration - this may include messaging
 
-    const device = (0, _DeviceInterface.createDevice)(globalConfig, platformConfiguration, autofillSettings);
+    const runtimeConfiguration = await runtime.getRuntimeConfiguration(); // Autofill settings need to be derived from runtime config
+
+    const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration); // // Determine the device type
+
+    const device = (0, _DeviceInterface.createDevice)(globalConfig, runtimeConfiguration, autofillSettings);
     console.log('devices', device);
-    console.log('platform', platformConfiguration.platform); //
+    console.log('platform', runtimeConfiguration.platform); //
     // // access the platform configuration
     // const platformConfig = await device.getPlatformConfiguration(globalConfig);
     //
@@ -9214,12 +9214,12 @@ class Runtime {
     this.transport = transport;
   }
   /**
-   * @returns {import("@duckduckgo/content-scope-scripts").Config}
+   * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
    */
 
 
-  async getPlatformConfiguration() {
-    return this.transport.send('getPlatformConfiguration');
+  async getRuntimeConfiguration() {
+    return this.transport.send('getRuntimeConfiguration');
   }
   /**
    * @returns {Promise<import("../settings/settings").AutofillSettings>}
@@ -9328,7 +9328,7 @@ class AutofillSettings {
 
 }
 /**
- * @param {import("@duckduckgo/content-scope-scripts").Config} config
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} config
  * @returns {AutofillSettings}
  */
 
@@ -9669,28 +9669,28 @@ function validate10(data) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "Config", {
+Object.defineProperty(exports, "RuntimeConfiguration", {
   enumerable: true,
   get: function () {
-    return _Config.Config;
+    return _RuntimeConfiguration.RuntimeConfiguration;
   }
 });
-Object.defineProperty(exports, "createConfig", {
+Object.defineProperty(exports, "createRuntimeConfiguration", {
   enumerable: true,
   get: function () {
-    return _Config.createConfig;
+    return _RuntimeConfiguration.createRuntimeConfiguration;
   }
 });
-Object.defineProperty(exports, "tryCreateConfig", {
+Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
   enumerable: true,
   get: function () {
-    return _Config.tryCreateConfig;
+    return _RuntimeConfiguration.tryCreateRuntimeConfiguration;
   }
 });
 
-var _Config = require("./src/config/Config.js");
+var _RuntimeConfiguration = require("./src/config/RuntimeConfiguration.js");
 
-},{"./src/config/Config.js":48}],45:[function(require,module,exports){
+},{"./src/config/RuntimeConfiguration.js":48}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9815,9 +9815,9 @@ function processConfig(data, userList, preferences, maybeTopLevelUrl) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Config = void 0;
-exports.createConfig = createConfig;
-exports.tryCreateConfig = tryCreateConfig;
+exports.RuntimeConfiguration = void 0;
+exports.createRuntimeConfiguration = createRuntimeConfiguration;
+exports.tryCreateRuntimeConfiguration = tryCreateRuntimeConfiguration;
 
 var _appleUtils = require("../apple-utils.js");
 
@@ -9845,7 +9845,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *   userPreferences: UserPreferences
  * }} InputConfig
  */
-class Config {
+class RuntimeConfiguration {
   constructor() {
     _defineProperty(this, "validate", _validate.default);
 
@@ -9855,7 +9855,7 @@ class Config {
   /**
    * @throws
    * @param {InputConfig} config
-   * @returns {Config}
+   * @returns {RuntimeConfiguration}
    */
   assign(config) {
     if (this.validate(config)) {
@@ -9873,7 +9873,7 @@ class Config {
   }
   /**
    * @param {any} config
-   * @returns {{errors: import("ajv").ErrorObject[], config: Config | null}}
+   * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
    */
 
 
@@ -9940,24 +9940,24 @@ class Config {
 /**
  * Factory for creating config instance
  * @param {InputConfig} incoming
- * @returns {Config}
+ * @returns {RuntimeConfiguration}
  */
 
 
-exports.Config = Config;
+exports.RuntimeConfiguration = RuntimeConfiguration;
 
-function createConfig(incoming) {
-  return new Config().assign(incoming);
+function createRuntimeConfiguration(incoming) {
+  return new RuntimeConfiguration().assign(incoming);
 }
 /**
  * Factory for creating config instance
  * @param {InputConfig} incoming
- * @returns {{errors: import("ajv").ErrorObject[], config: Config | null}}
+ * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
  */
 
 
-function tryCreateConfig(incoming) {
-  return new Config().tryAssign(incoming);
+function tryCreateRuntimeConfiguration(incoming) {
+  return new RuntimeConfiguration().tryAssign(incoming);
 }
 
 },{"../apple-utils.js":47,"./validate.cjs":49}],49:[function(require,module,exports){

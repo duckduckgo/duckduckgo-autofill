@@ -1,6 +1,6 @@
 import AndroidInterface from '../AndroidInterface'
 import { createGlobalConfig } from '../../config'
-import { tryCreateConfig } from '@duckduckgo/content-scope-scripts'
+import {RuntimeConfiguration, tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 import {AutofillSettings, fromPlatformConfig} from '../../settings/settings'
 
 describe('AndroidInterface', function () {
@@ -9,11 +9,12 @@ describe('AndroidInterface', function () {
     })
     it('can be instantiated without throwing', () => {
         const config = createGlobalConfig()
-        const device = new AndroidInterface(config, AutofillSettings.default())
+        const runtimeConfig = new RuntimeConfiguration();
+        const device = new AndroidInterface(config, runtimeConfig, AutofillSettings.default())
         device.init()
     })
     it('can create platform configuration', () => {
-        const {config} = tryCreateConfig({
+        const {config} = tryCreateRuntimeConfiguration({
             contentScope: {
                 features: {
                     autofill: {

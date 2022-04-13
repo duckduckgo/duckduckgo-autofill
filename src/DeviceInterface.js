@@ -4,7 +4,7 @@ import AppleDeviceInterface from './DeviceInterface/AppleDeviceInterface'
 
 /**
  * @param {GlobalConfig} globalConfig
- * @param {import("@duckduckgo/content-scope-scripts").Config} platformConfig
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
  * @param {import("./settings/settings").AutofillSettings} autofillSettings
  * @returns {AndroidInterface|AppleDeviceInterface|ExtensionInterface}
  */

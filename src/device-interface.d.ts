@@ -108,7 +108,7 @@ interface GlobalConfig {
      isDDGDomain: boolean;
 }
 
-type PlatformConfig = import("@duckduckgo/content-scope-scripts").Config;
+type PlatformConfig = import("@duckduckgo/content-scope-scripts").RuntimeConfiguration;
 
 interface GlobalConfigImpl {
      globalConfig: GlobalConfig

@@ -18,7 +18,7 @@ import { PasswordGenerator } from '../PasswordGenerator'
 import { createScanner } from '../Scanner'
 import {createGlobalConfig} from '../config'
 import {AutofillSettings} from '../settings/settings'
-import {Config} from '@duckduckgo/content-scope-scripts'
+import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
 /**
  * @implements {FeatureToggles}
@@ -46,7 +46,7 @@ class InterfacePrototype {
     /** @type {GlobalConfig} */
     globalConfig;
 
-    /** @type {import("@duckduckgo/content-scope-scripts").Config} */
+    /** @type {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} */
     platformConfig;
 
     /** @type {import("../settings/settings").AutofillSettings} */
@@ -57,7 +57,7 @@ class InterfacePrototype {
 
     /**
      * @param {GlobalConfig} globalConfig
-     * @param {import("@duckduckgo/content-scope-scripts").Config} platformConfig
+     * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
      * @param {import("../settings/settings").AutofillSettings} autofillSettings
      */
     constructor (globalConfig, platformConfig, autofillSettings) {
@@ -578,7 +578,7 @@ class InterfacePrototype {
     }
 
     static default() {
-        const config = new Config();
+        const config = new RuntimeConfiguration();
         return new InterfacePrototype(createGlobalConfig(), config, AutofillSettings.default())
     }
 }

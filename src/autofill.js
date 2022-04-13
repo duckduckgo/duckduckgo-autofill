@@ -13,16 +13,17 @@ import {createRuntime} from './runtime/runtime'
 
         const runtime = createRuntime(globalConfig);
 
-        const platformConfiguration = await runtime.getPlatformConfiguration();
-        const autofillSettings = await runtime.getAutofillSettings(platformConfiguration);
+        // Get runtime configuration - this may include messaging
+        const runtimeConfiguration = await runtime.getRuntimeConfiguration();
 
-        console.log("->", JSON.stringify(platformConfiguration.getSettings("autofill"), null, 2));
-        console.log("->", JSON.stringify(autofillSettings.featureToggles, null, 2));
+        // Autofill settings need to be derived from runtime config
+        const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration);
 
         // // Determine the device type
-        const device = createDevice(globalConfig, platformConfiguration, autofillSettings)
+        const device = createDevice(globalConfig, runtimeConfiguration, autofillSettings)
+
         console.log('devices', device);
-        console.log('platform', platformConfiguration.platform);
+        console.log('platform', runtimeConfiguration.platform);
         //
         // // access the platform configuration
         // const platformConfig = await device.getPlatformConfiguration(globalConfig);
