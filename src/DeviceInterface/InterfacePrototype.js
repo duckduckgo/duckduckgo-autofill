@@ -12,7 +12,7 @@ import EmailAutofill from '../UI/EmailAutofill'
 import DataAutofill from '../UI/DataAutofill'
 import { getInputConfigFromType } from '../Form/inputTypeConfig'
 import listenForGlobalFormSubmission from '../Form/listenForFormSubmission'
-import { fromPassword, GENERATED_ID } from '../InputTypes/Credentials'
+import { fromPassword, GENERATED_ID } from '../input-types/Credentials'
 import { PasswordGenerator } from '../PasswordGenerator'
 import { createScanner } from '../Scanner'
 import {createGlobalConfig} from '../config'
@@ -55,18 +55,20 @@ class InterfacePrototype {
     scanner;
 
     /**
+     * @param {AvailableInputTypes} availableInputTypes
      * @param {import("../runtime/runtime").Runtime} runtime
      * @param {GlobalConfig} globalConfig
      * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
      * @param {import("../settings/settings").AutofillSettings} autofillSettings
      */
-    constructor (runtime, globalConfig, platformConfig, autofillSettings) {
+    constructor (availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
         this.globalConfig = globalConfig;
         this.platformConfig = platformConfig;
         this.autofillSettings = autofillSettings;
         this.runtime = runtime;
         this.scanner = createScanner(this, {
-            initialDelay: this.initialSetupDelayMs
+            initialDelay: this.initialSetupDelayMs,
+            availableInputTypes: availableInputTypes
         })
     }
 
@@ -572,7 +574,7 @@ class InterfacePrototype {
         const config = new RuntimeConfiguration();
         const globalConfig = createGlobalConfig();
         const runtime = createRuntime(globalConfig);
-        return new InterfacePrototype(runtime, globalConfig, config, AutofillSettings.default())
+        return new InterfacePrototype({}, runtime, globalConfig, config, AutofillSettings.default())
     }
 }
 

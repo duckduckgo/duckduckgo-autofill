@@ -43,7 +43,7 @@ test.describe('windows', () => {
         const style = await page.locator(constants.fields.email.selectors.identity).getAttribute('style');
         expect(style).toBeNull()
     })
-    test('should decorate a login, but not identities', async ({page}) => {
+    test.only('should decorate a login, but not identities', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 

@@ -4,6 +4,7 @@ import './transports/captureDdgGlobals'
 import {createDevice} from './DeviceInterface'
 import {createGlobalConfig} from './config'
 import {createRuntime} from './runtime/runtime'
+import {featureToggleAwareInputTypes} from './input-types/input-types'
 
 (async () => {
     if (!window.isSecureContext) return false
@@ -28,8 +29,11 @@ import {createRuntime} from './runtime/runtime'
         // If it was enabled, try to ask for available input types
         if (runtimeConfiguration.isFeatureRemoteEnabled("autofill")) {
 
+            const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
+            const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles);
+
             // Determine the device type
-            const device = createDevice(runtime, globalConfig, runtimeConfiguration, autofillSettings)
+            const device = createDevice(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings)
 
             // Init services
             await device.init()

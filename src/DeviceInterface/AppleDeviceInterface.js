@@ -18,8 +18,8 @@ class AppleDeviceInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
-    constructor (runtime, config, platformConfig, settings) {
-        super(runtime, config, platformConfig, settings)
+    constructor (inputTypes, runtime, config, platformConfig, settings) {
+        super(inputTypes, runtime, config, platformConfig, settings)
 
         if (this.globalConfig.isTopFrame) {
             this.stripCredentials = false

@@ -12,7 +12,7 @@ describe('AndroidInterface', function () {
         const config = createGlobalConfig()
         const runtimeConfig = new RuntimeConfiguration();
         const runtime = createRuntime(config);
-        const device = new AndroidInterface(runtime, config, runtimeConfig, AutofillSettings.default())
+        const device = new AndroidInterface({}, runtime, config, runtimeConfig, AutofillSettings.default())
         device.init()
     })
     it('can create platform configuration', () => {

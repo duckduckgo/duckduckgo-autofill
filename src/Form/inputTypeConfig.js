@@ -1,9 +1,9 @@
 import { daxBase64 } from './logo-svg'
 import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon'
 import { getInputType, getMainTypeFromType, getInputSubtype } from './matching'
-import { CredentialsTooltipItem } from '../InputTypes/Credentials'
-import { CreditCardTooltipItem } from '../InputTypes/CreditCard'
-import { IdentityTooltipItem } from '../InputTypes/Identity'
+import { CredentialsTooltipItem } from '../input-types/Credentials'
+import { CreditCardTooltipItem } from '../input-types/CreditCard'
+import { IdentityTooltipItem } from '../input-types/Identity'
 
 /**
  * Get the icon for the identities (currently only Dax for emails)
@@ -46,6 +46,7 @@ const inputTypeConfig = {
             }
 
             // at this point, it's not a 'login' attempt, so we could offer to provide a password?
+            // todo(Shane): move this
             if (device.autofillSettings.featureToggles.password_generation) {
                 const subtype = getInputSubtype(input)
                 if (subtype === 'password') {
@@ -64,6 +65,7 @@ const inputTypeConfig = {
         getIconBase: () => '',
         getIconFilled: () => '',
         shouldDecorate: (_input, {device}) =>
+            // todo(Shane): shouldn't need this hasLocalCreditCards check with toggles
             canBeDecorated(_input) && device.hasLocalCreditCards,
         dataType: 'CreditCards',
         tooltipItem: (data) => new CreditCardTooltipItem(data)
@@ -81,14 +83,15 @@ const inputTypeConfig = {
 
             const subtype = getInputSubtype(_input)
 
+            // todo(Shane): Handle the mac specfici logic also with feature toggles
             if (device.globalConfig.isApp) {
                 return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))
             }
 
+            // if it's email then we can always decorate
             if (subtype === 'emailAddress') {
                 return Boolean(device.isDeviceSignedIn())
             }
-
 
             return false
         },

@@ -8,7 +8,6 @@ import { createMatching } from './Form/matching'
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
  *     init(): ()=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
- *     setAvailableInputTypes(types: AvailableInputTypes): Scanner;
  *     findEligibleInputs(context): Scanner;
  * }} Scanner
  *
@@ -16,6 +15,7 @@ import { createMatching } from './Form/matching'
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
+ *     availableInputTypes: AvailableInputTypes,
  * }} ScannerOptions
  */
 
@@ -28,7 +28,9 @@ const defaultScannerOptions = {
     // wait for a 500ms window of event silence before performing the scan
     debounceTimePeriod: 500,
     // how long to wait when performing the initial scan
-    initialDelay: 0
+    initialDelay: 0,
+    // default has no available input types
+    availableInputTypes: {}
 }
 
 /**
@@ -49,8 +51,6 @@ class DefaultScanner {
     activeInput = null;
     /** @type {boolean} A flag to indicate the whole page will be re-scanned */
     rescanAll = false;
-    /** @type {AvailableInputTypes|null} */
-    availableInputTypes = null;
 
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -60,14 +60,6 @@ class DefaultScanner {
         this.device = device
         this.matching = createMatching()
         this.options = options
-    }
-
-    /**
-     * @param {AvailableInputTypes} value
-     */
-    setAvailableInputTypes (value) {
-        this.availableInputTypes = value
-        return this;
     }
 
     /**
@@ -168,10 +160,10 @@ class DefaultScanner {
                 this.forms.delete(childForm)
             }
 
-            if (this.availableInputTypes === null) {
+            if (!this.options.availableInputTypes) {
                 throw new Error('unreachble. availableInputTypes must be set');
             }
-            this.forms.set(parentForm, new Form(parentForm, input, this.availableInputTypes, this.device, this.matching))
+            this.forms.set(parentForm, new Form(parentForm, input, this.options.availableInputTypes, this.device, this.matching))
         }
     }
 
