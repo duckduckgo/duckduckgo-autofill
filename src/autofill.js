@@ -21,6 +21,10 @@ import {createRuntime} from './runtime/runtime'
         // Autofill settings need to be derived from runtime config
         const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration);
 
+        if (globalConfig.isDDGTestMode) {
+            console.log(JSON.stringify(autofillSettings.featureToggles, null, 2))
+        }
+
         // Determine the device type
         const device = createDevice(globalConfig, runtimeConfiguration, autofillSettings)
 

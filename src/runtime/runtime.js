@@ -24,10 +24,10 @@ class Runtime {
      */
     async getRuntimeConfiguration() {
         // todo(Shane): Schema validation here
-        const { success } = await this.transport.send('getRuntimeConfiguration')
-        if (!success) throw new Error('unreachable');
+        const { data } = await this.transport.send('getRuntimeConfiguration')
+        if (!data) throw new Error(`getRuntimeConfiguration didn't return 'data'`);
 
-        const {config, errors} = tryCreateRuntimeConfiguration(success);
+        const {config, errors} = tryCreateRuntimeConfiguration(data);
 
         if (errors.length) {
             for (let error of errors) {
@@ -43,9 +43,9 @@ class Runtime {
      * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes() {
-        const { success } = await this.transport.send('getAvailableInputTypes')
-        if (!success) throw new Error('unreachable');
-        return success;
+        const { data } = await this.transport.send('getAvailableInputTypes')
+        if (!data) throw new Error(`getAvailableInputTypes didn't return 'data'`);
+        return data;
     }
 
     /**

@@ -8772,7 +8772,12 @@ var _runtime = require("./runtime/runtime");
 
     const runtimeConfiguration = await runtime.getRuntimeConfiguration(); // Autofill settings need to be derived from runtime config
 
-    const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration); // Determine the device type
+    const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration);
+
+    if (globalConfig.isDDGTestMode) {
+      console.log(JSON.stringify(autofillSettings.featureToggles, null, 2));
+    } // Determine the device type
+
 
     const device = (0, _DeviceInterface.createDevice)(globalConfig, runtimeConfiguration, autofillSettings); // If it was enabled, try to ask for available input types
 
@@ -8950,11 +8955,15 @@ class Runtime {
 
 
   async getRuntimeConfiguration() {
-    const runtimeConfig = await this.transport.send('getRuntimeConfiguration');
+    // todo(Shane): Schema validation here
+    const {
+      data
+    } = await this.transport.send('getRuntimeConfiguration');
+    if (!data) throw new Error("getRuntimeConfiguration didn't return 'data'");
     const {
       config,
       errors
-    } = (0, _contentScopeScripts.tryCreateRuntimeConfiguration)(runtimeConfig);
+    } = (0, _contentScopeScripts.tryCreateRuntimeConfiguration)(data);
 
     if (errors.length) {
       for (let error of errors) {
@@ -8972,7 +8981,11 @@ class Runtime {
 
 
   async getAvailableInputTypes() {
-    return this.transport.send('getAvailableInputTypes');
+    const {
+      data
+    } = await this.transport.send('getAvailableInputTypes');
+    if (!data) throw new Error("getAvailableInputTypes didn't return 'data'");
+    return data;
   }
   /**
    * @returns {Promise<import("../settings/settings").AutofillSettings>}
@@ -9487,18 +9500,16 @@ function createTransport(_globalConfig) {
       switch (name) {
         case "getRuntimeConfiguration":
           {
-            const response = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+            return (0, _autofillUtils.sendAndWaitForAnswer)(() => {
               return window.BrowserAutofill.getRuntimeConfiguration();
             }, 'getRuntimeConfigurationResponse');
-            return response.runtimeConfiguration;
           }
 
         case "getAvailableInputTypes":
           {
-            const response = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+            return (0, _autofillUtils.sendAndWaitForAnswer)(() => {
               return window.BrowserAutofill.getAvailableInputTypes();
             }, 'getAvailableInputTypesResponse');
-            return response.availableInputTypes;
           }
 
         default:
@@ -9538,7 +9549,9 @@ function createTransport(config) {
 
       if (interceptions[name]) {
         console.log('--> intercepted', name, data);
-        return interceptions[name](config);
+        return {
+          success: interceptions[name](config)
+        };
       }
 
       return wkSendAndWait(name, data, {
@@ -9732,7 +9745,9 @@ function createTransport(globalConfig) {
 
       if (interceptions[name]) {
         console.log('--> intercepted', name, data);
-        return interceptions[name](globalConfig);
+        return {
+          success: interceptions[name](globalConfig)
+        };
       }
 
       throw new Error('not implemented for extension: ' + name);
@@ -9743,6 +9758,7 @@ function createTransport(globalConfig) {
 }
 
 const interceptions = {
+  // todo(Shane): Get available extension types
   "getAvailableInputTypes": () => {
     return {
       credentials: false,
@@ -9807,8 +9823,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createTransport = createTransport;
 
-var _autofillUtils = require("../autofill-utils");
-
 /**
  * @param {GlobalConfig} _globalConfig
  * @returns {Transport}
@@ -9822,22 +9836,22 @@ function createTransport(_globalConfig) {
       switch (name) {
         case "getRuntimeConfiguration":
           {
-            const response = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+            const r = await sendAndWait(() => {
               return window.chrome.webview.postMessage({
                 commandName: 'GetRuntimeConfiguration'
               });
             }, 'GetRuntimeConfigurationResponse');
-            return response.success;
+            console.log(r);
+            return r;
           }
 
         case "getAvailableInputTypes":
           {
-            const response = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+            return await sendAndWait(() => {
               return window.chrome.webview.postMessage({
                 commandName: 'GetAvailableInputTypes'
               });
             }, 'GetAvailableInputTypesResponse');
-            return response.success;
           }
 
         default:
@@ -9848,8 +9862,45 @@ function createTransport(_globalConfig) {
   };
   return transport;
 }
+/**
+ * Sends a message and returns a Promise that resolves with the response
+ * @param {()=>void} msgOrFn - a fn to call or an object to send via postMessage
+ * @param {String} expectedResponse - the name of the response
+ * @returns {Promise<*>}
+ */
 
-},{"../autofill-utils":34}],47:[function(require,module,exports){
+
+function sendAndWait(msgOrFn, expectedResponse) {
+  msgOrFn();
+  return new Promise(resolve => {
+    const handler = event => {
+      if (event.origin !== window.origin) {
+        console.warn("origin mis-match. window.origin: ".concat(window.origin, ", event.origin: ").concat(event.origin));
+        return;
+      }
+
+      if (!event.data) {
+        console.warn('data absent from message');
+        return;
+      }
+
+      if (event.data.type !== expectedResponse) {
+        console.warn("data.type mis-match. Expected: ".concat(expectedResponse, ", received: ").concat(event.data.type));
+        return;
+      } // at this point we're confident we have the correct message type
+
+
+      resolve(event.data);
+      window.chrome.webview.removeEventListener('message', handler);
+    };
+
+    window.chrome.webview.addEventListener('message', handler, {
+      once: true
+    });
+  });
+}
+
+},{}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

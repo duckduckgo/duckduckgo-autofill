@@ -162,9 +162,26 @@ export function forwardConsoleMessages (page) {
     page.on('pageerror', (msg) => {
         console.log('🌍 ❌ [in-page error]', msg)
     })
-    page.on('console', (msg) => {
-        console.log(`🌍 [in-page console.${msg.type()}]`, msg.text())
-    })
+page.on('console', (msg) => {
+    const type = msg.type();
+    const icon = (() => {
+        switch (type) {
+            case "warning": return '☢️'
+            case "error": return '❌️'
+            default: return '🌍'
+        }
+    })()
+
+    console.log(`${icon} [console.${type}]`, msg.text())
+    const { lineNumber, columnNumber } = msg.location();
+    let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js';
+    if (!(lineNumber===0 && columnNumber===0)) {
+        link+=':'+(lineNumber+1)
+        link+=':'+columnNumber
+        console.log(link)
+        console.log()
+    }
+})
 }
 
 /**

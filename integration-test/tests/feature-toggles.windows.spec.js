@@ -4,9 +4,10 @@ import {
     setupServer,
     withWindowsContext
 } from '../helpers/harness.js'
-import { test as base } from '@playwright/test'
-import { signupPage} from '../helpers/pages.js'
+import { test as base, expect } from '@playwright/test'
+import {emailAutofillPage} from '../helpers/pages.js'
 import { createWindowsMocks } from '../helpers/windows.mocks.js'
+import { constants } from '../helpers/mocks.js'
 
 /**
  *  Tests for email autofill on windows device
@@ -21,13 +22,13 @@ test.describe('windows', () => {
     test.afterAll(async () => {
         server.close()
     })
-    test.only('should use feature toggles', async ({page}) => {
+    test.only('should not decorate email', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
         // page abstraction
-        const signup = signupPage(page, server)
-        await signup.navigate()
+        const email = emailAutofillPage(page, server)
+        await email.navigate()
 
         // windows specific mocks
         await createWindowsMocks().applyTo(page)
@@ -37,9 +38,9 @@ test.describe('windows', () => {
             .platform('windows')
             .applyTo(page)
 
-        await page.pause();
+        // This should not match any elements because windows does not support email
+        const matches = await page.$$(constants.fields.email.selectors.identity);
+        expect(matches.length).toBe(0);
 
-        // if this works, the interface must have loaded and added the field decorations
-        // await signup.clickIntoInput()
     })
 })

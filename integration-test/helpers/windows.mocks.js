@@ -38,7 +38,7 @@ export function createWindowsMocks () {
                                 'inputType_credentials': true,
                                 'inputType_identities': false,
                                 'inputType_creditCards': false,
-                                'emailProtection': true,
+                                'emailProtection': false,
                                 'password_generation': false,
                                 'credentials_saving': true
                             }
@@ -54,10 +54,10 @@ export function createWindowsMocks () {
     }
     /** @type {MockBuilder} */
     const builder = {
-        withPrivateEmail (email) {
+        withPrivateEmail (_email) {
             return this
         },
-        withPersonalEmail (email) {
+        withPersonalEmail (_email) {
             return this
         },
         withAvailableInputTypes (inputTypes) {
@@ -69,26 +69,43 @@ export function createWindowsMocks () {
         },
         async applyTo (page) {
             return page.evaluate(mocks => {
+                const listeners = []
+                const emit = (data) => {
+                    setTimeout(() => {
+                        for (let listener of listeners) {
+                            listener({
+                                origin: window.origin,
+                                data: data
+                            })
+                        }
+                    }, 0)
+                }
                 // @ts-ignore
                 window.chrome = {
                     webview: {
                         postMessage (input) {
                             switch (input.commandName) {
                             case 'GetRuntimeConfiguration': {
-                                return window.postMessage({
+                                return emit({
                                     type: 'GetRuntimeConfigurationResponse',
-                                    success: mocks.getRuntimeConfiguration
-                                }, window.origin)
+                                    data: mocks.getRuntimeConfiguration
+                                })
                             }
                             case 'GetAvailableInputTypes': {
-                                return window.postMessage({
+                                return emit({
                                     type: 'GetAvailableInputTypesResponse',
-                                    success: mocks.getAvailableInputTypes
-                                }, window.origin)
+                                    data: mocks.getAvailableInputTypes
+                                })
                             }
                             }
+                        },
+                        removeEventListener (_name, _listener) {
+
+                        },
+                        addEventListener (_name, listener) {
+                            listeners.push(listener)
                         }
-                    }
+                    },
                 }
             }, mocks)
         },

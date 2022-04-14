@@ -99,7 +99,7 @@ test.describe('macos', () => {
     })
     test('autofill a newly added email form (mutation observer test)', async ({page}) => {
         // enable in-terminal exceptions
-        forwardConsoleMessages(page)
+        await forwardConsoleMessages(page)
 
         const {personalAddress} = constants.fields.email
 
