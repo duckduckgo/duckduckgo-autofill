@@ -64,6 +64,13 @@ export function createWindowsMocks () {
             mocks.getAvailableInputTypes = inputTypes
             return this
         },
+        /**
+          * @param {FeatureTogglesSettings} featureToggles
+         */
+        withFeatureToggles (featureToggles) {
+            Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles)
+            return this;
+        },
         tap () {
             return this
         },

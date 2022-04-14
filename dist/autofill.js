@@ -9042,8 +9042,7 @@ class Runtime {
     const {
       data
     } = await this.transport.send('getAvailableInputTypes');
-    if (!data) throw new Error("getAvailableInputTypes didn't return 'data'"); // double check against feature flags now
-
+    if (!data) throw new Error("getAvailableInputTypes didn't return 'data'");
     return data;
   }
   /**

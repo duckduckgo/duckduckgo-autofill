@@ -139,21 +139,29 @@ export function emailAutofillPage (page, server) {
  * @param {ServerWrapper} server
  */
 export function loginAndSignup(page, server) {
+
+    // style lookup helpers
+    const usernameStyleAttr = () => page.locator(constants.fields.username.selectors.credential).getAttribute('style')
+    const emailStyleAttr = () => page.locator(constants.fields.email.selectors.identity).getAttribute('style')
+    const firstPasswordStyleAttr = () => page.locator('#login-password' + constants.fields.password.selectors.credential).getAttribute('style')
+
     return {
         async navigate () {
             await page.goto(server.urlForPath(constants.pages['login+setup']))
         },
         async assertIdentitiesWereNotDecorated() {
-            const style = await page.locator(constants.fields.email.selectors.identity).getAttribute('style');
+            const style = await emailStyleAttr();
             expect(style).toBeNull()
         },
         async assertUsernameAndPasswordWereDecoratedWithIcon() {
-            const usernameAttr = await page.locator(constants.fields.username.selectors.credential).getAttribute('style');
-            expect(usernameAttr).toContain('data:image/svg+xml;base64,')
+            expect(await usernameStyleAttr()).toContain('data:image/svg+xml;base64,')
+            expect(await firstPasswordStyleAttr()).toContain('data:image/svg+xml;base64,')
+        },
+        async assertNoDecorations() {
+            const usernameAttr = await usernameStyleAttr();
+            expect(usernameAttr).toBeNull();
 
-            const firstPasswordField = '#login-password' + constants.fields.password.selectors.credential;
-            const passwordAttr = await page.locator(firstPasswordField).getAttribute('style');
-            expect(passwordAttr).toContain('data:image/svg+xml;base64,')
+            expect(await firstPasswordStyleAttr()).toBeNull();
         }
     }
 }

@@ -150,6 +150,11 @@ export function createWebkitMocks (platform = 'macos') {
             webkitBase.getAvailableInputTypes.success = inputTypes
             return this
         },
+        withFeatureToggles: function (_featureToggles) {
+            // webkitBase.getAvailableInputTypes.success = inputTypes
+            throw new Error('unimplemented: withFeatureToggles on apple')
+            return this
+        },
         tap (fn) {
             fn(webkitBase)
             return this
@@ -292,6 +297,9 @@ export function createAndroidMocks () {
         },
         withIdentity: function () {
             throw new Error('Function not implemented.')
+        },
+        withFeatureToggles (_featureToggles) {
+            throw new Error('withFeatureToggles not implemented for android yet')
         },
         withCredentials: function () {
             throw new Error('Function not implemented.')
