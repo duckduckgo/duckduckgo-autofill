@@ -4,9 +4,10 @@ import {
     setupServer,
     withAndroidContext
 } from '../helpers/harness.js'
-import { test as base } from '@playwright/test'
-import {constants, createAndroidMocks} from '../helpers/mocks.js'
+import {test as base} from '@playwright/test'
+import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage} from '../helpers/pages.js'
+import {createAndroidMocks} from '../helpers/mocks.android.js'
 
 /**
  *  Tests for email autofill on android device
@@ -36,6 +37,10 @@ test.describe('android', () => {
         await createAndroidMocks()
             .withPersonalEmail(personalAddress)
             .withPrivateEmail(personalAddress)
+            .withAvailableInputTypes({
+                credentials: true,
+                email: true
+            })
             .applyTo(page)
 
         // create + inject the script

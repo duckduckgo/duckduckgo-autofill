@@ -22,12 +22,12 @@ class Runtime {
     /**
      * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
-    async getRuntimeConfiguration() {
+    async getRuntimeConfiguration () {
         // todo(Shane): Schema validation here
         const { data } = await this.transport.send('getRuntimeConfiguration')
-        if (!data) throw new Error(`getRuntimeConfiguration didn't return 'data'`);
+        if (!data) throw new Error(`getRuntimeConfiguration didn't return 'data'`)
 
-        const {config, errors} = tryCreateRuntimeConfiguration(data);
+        const {config, errors} = tryCreateRuntimeConfiguration(data)
 
         if (errors.length) {
             for (let error of errors) {
@@ -42,23 +42,25 @@ class Runtime {
     /**
      * @returns {Promise<AvailableInputTypes>}
      */
-    async getAvailableInputTypes() {
-        const { data } = await this.transport.send('getAvailableInputTypes')
-        if (!data) throw new Error(`getAvailableInputTypes didn't return 'data'`);
-        return data;
+    async getAvailableInputTypes () {
+        const r = await this.transport.send('getAvailableInputTypes')
+        console.log('r', r)
+        const { data } = r
+        if (!data) throw new Error(`getAvailableInputTypes didn't return 'data'`)
+        return data
     }
 
     /**
      * @returns {Promise<import("../settings/settings").AutofillSettings>}
      */
-    async getAutofillSettings(platformConfig) {
+    async getAutofillSettings (platformConfig) {
         return fromPlatformConfig(platformConfig)
     }
 }
 
-function createRuntime(config) {
+function createRuntime (config) {
     const transport = selectTransport(config)
-    return new Runtime(config, transport);
+    return new Runtime(config, transport)
 }
 
 /**
@@ -69,29 +71,29 @@ function createRuntime(config) {
  * @param {GlobalConfig} globalConfig
  * @returns {Transport}
  */
-function selectTransport(globalConfig) {
-    if (typeof globalConfig.userPreferences?.platform?.name === "string") {
+function selectTransport (globalConfig) {
+    if (typeof globalConfig.userPreferences?.platform?.name === 'string') {
         switch (globalConfig.userPreferences?.platform?.name) {
-        case "ios": return createAppleTransport(globalConfig);
-        case "macos": return createAppleTransport(globalConfig);
+        case 'ios': return createAppleTransport(globalConfig)
+        case 'macos': return createAppleTransport(globalConfig)
         default: throw new Error('selectTransport unimplemented!')
         }
     }
 
     if (globalConfig.isDDGApp) {
         if (globalConfig.isAndroid) {
-            return createAndroidTransport(globalConfig);
+            return createAndroidTransport(globalConfig)
         }
-        console.warn('should never get here...');
-        return createAppleTransport(globalConfig);
+        console.warn('should never get here...')
+        return createAppleTransport(globalConfig)
     }
 
     if (globalConfig.isWindows) {
-        return createWindowsTransport(globalConfig);
+        return createWindowsTransport(globalConfig)
     }
 
     // falls back to extension... is this still the best way to determine this?
-    return createExtensionTransport(globalConfig);
+    return createExtensionTransport(globalConfig)
 }
 
 export { Runtime, createRuntime }

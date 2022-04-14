@@ -5,8 +5,9 @@ import {
     withIOSContext
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
-import {constants, createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.js'
+import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage} from '../helpers/pages.js'
+import {createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.webkit.js'
 
 /**
  *  Tests for email autofill on ios device
@@ -28,6 +29,9 @@ test.describe('ios', () => {
         await createWebkitMocks('ios')
             .withPersonalEmail('0')
             .withPrivateEmail('0')
+            .withAvailableInputTypes({
+                email: true
+            })
             .applyTo(page)
 
         // Load the autofill.js script with replacements

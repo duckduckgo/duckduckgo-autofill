@@ -112,7 +112,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         const cleanup = this.scanner.init()
         this.addLogoutListener(cleanup)
 
-
         // todo(top-frame): Move this
         if (this.globalConfig.isTopFrame) {
             await this._setupTopFrame()

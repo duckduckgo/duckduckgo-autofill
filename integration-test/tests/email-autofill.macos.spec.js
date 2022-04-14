@@ -4,8 +4,9 @@ import {
     setupServer
 } from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
-import {constants, createWebkitMocks, defaultMacosReplacements} from '../helpers/mocks.js'
+import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage, loginPage, signupPage} from '../helpers/pages.js'
+import {createWebkitMocks, defaultMacosReplacements} from '../helpers/mocks.webkit.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -27,6 +28,9 @@ test.describe('macos', () => {
         await createWebkitMocks()
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
+            .withAvailableInputTypes({
+                email: true
+            })
             .applyTo(page)
 
         // Load the autofill.js script with replacements
@@ -106,6 +110,10 @@ test.describe('macos', () => {
         await createWebkitMocks()
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
+            .withAvailableInputTypes({
+                email: true,
+                credentials: true
+            })
             .withIdentity({
                 id: '01',
                 title: 'Main identity',
@@ -140,6 +148,9 @@ test.describe('macos', () => {
                 id: '01',
                 username: personalAddress,
                 password
+            })
+            .withAvailableInputTypes({
+                credentials: true
             })
             .applyTo(page)
 

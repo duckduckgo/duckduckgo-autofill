@@ -28,7 +28,7 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     async setupAutofill () {
-        await this._addDeviceListeners();
+        await this._addDeviceListeners()
 
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {

@@ -62,10 +62,10 @@ class InterfacePrototype {
      * @param {import("../settings/settings").AutofillSettings} autofillSettings
      */
     constructor (availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
-        this.globalConfig = globalConfig;
-        this.platformConfig = platformConfig;
-        this.autofillSettings = autofillSettings;
-        this.runtime = runtime;
+        this.globalConfig = globalConfig
+        this.platformConfig = platformConfig
+        this.autofillSettings = autofillSettings
+        this.runtime = runtime
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs,
             availableInputTypes: availableInputTypes
@@ -570,10 +570,10 @@ class InterfacePrototype {
         return ``
     }
 
-    static default() {
-        const config = new RuntimeConfiguration();
-        const globalConfig = createGlobalConfig();
-        const runtime = createRuntime(globalConfig);
+    static default () {
+        const config = new RuntimeConfiguration()
+        const globalConfig = createGlobalConfig()
+        const runtime = createRuntime(globalConfig)
         return new InterfacePrototype({}, runtime, globalConfig, config, AutofillSettings.default())
     }
 }

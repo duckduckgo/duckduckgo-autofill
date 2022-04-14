@@ -13,7 +13,7 @@ import { IdentityTooltipItem } from '../input-types/Identity'
  */
 const getIdentitiesIcon = (input, {device}) => {
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
-    const { isDDGApp, isFirefox , isWindows } = device.globalConfig
+    const { isDDGApp, isFirefox, isWindows } = device.globalConfig
     const getDaxImg = isDDGApp || isFirefox || isWindows ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
     const subtype = getInputSubtype(input)
     if (subtype === 'emailAddress') return getDaxImg
@@ -77,7 +77,7 @@ const inputTypeConfig = {
         getIconFilled: getIdentitiesIcon,
         shouldDecorate: (_input, {device}) => {
             if (!canBeDecorated(_input)) {
-                console.warn('cannot be decorated');
+                console.warn('cannot be decorated')
                 return false
             }
 

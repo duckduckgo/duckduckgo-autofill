@@ -6,20 +6,21 @@
  * @param {FeatureTogglesSettings} featureToggles
  * @return {AvailableInputTypes}
  */
-export function featureToggleAwareInputTypes(inputTypes, featureToggles) {
-    const local = {...inputTypes};
+export function featureToggleAwareInputTypes (inputTypes, featureToggles) {
+    console.log('incoming', inputTypes)
+    const local = {...inputTypes}
 
     if (!featureToggles.inputType_credentials) {
-        local.credentials = false;
+        local.credentials = false
     }
 
     if (!featureToggles.inputType_creditCards) {
-        local.creditCards = false;
+        local.creditCards = false
     }
 
     if (!featureToggles.inputType_identities) {
-        local.identities = false;
+        local.identities = false
     }
 
-    return local;
+    return local
 }

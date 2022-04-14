@@ -3,14 +3,13 @@
  * @returns {Transport}
  */
 export function createTransport (globalConfig) {
-
     /** @type {Transport} */
     const transport = {
         async send (name, data) {
-            console.log('extension:', name, data);
+            console.log('extension:', name, data)
             if (interceptions[name]) {
-                console.log('--> intercepted', name, data);
-                return { success: interceptions[name](globalConfig) }
+                console.log('--> intercepted', name, data)
+                return { data: interceptions[name](globalConfig) }
             }
             throw new Error('not implemented for extension: ' + name)
         }
@@ -21,12 +20,12 @@ export function createTransport (globalConfig) {
 
 const interceptions = {
     // todo(Shane): Get available extension types
-    "getAvailableInputTypes": () => {
+    'getAvailableInputTypes': () => {
         return {
             credentials: false,
             identities: false,
             creditCards: false,
-            email: true,
+            email: true
         }
     },
     /**
@@ -42,18 +41,18 @@ const interceptions = {
             'inputType_creditCards': false,
             'emailProtection': true,
             'password_generation': false,
-            'credentials_saving': false,
+            'credentials_saving': false
         }
         return {
             contentScope: {
                 features: {
                     autofill: {
-                        state: "enabled",
-                        exceptions: [],
-                    },
+                        state: 'enabled',
+                        exceptions: []
+                    }
                 },
                 unprotectedTemporary: [],
-                ...globalConfig.contentScope,
+                ...globalConfig.contentScope
             },
             userPreferences: {
                 sessionKey: '',
@@ -67,9 +66,9 @@ const interceptions = {
                         }
                     }
                 },
-                ...globalConfig.userPreferences,
+                ...globalConfig.userPreferences
             },
-            userUnprotectedDomains: globalConfig.userUnprotectedDomains || [],
+            userUnprotectedDomains: globalConfig.userUnprotectedDomains || []
         }
     }
 }

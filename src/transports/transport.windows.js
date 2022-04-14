@@ -3,20 +3,18 @@
  * @returns {Transport}
  */
 export function createTransport (_globalConfig) {
-
     /** @type {Transport} */
     const transport = {
         async send (name, data) {
-            console.log('📲 windows:', name, data);
+            console.log('📲 windows:', name, data)
             switch (name) {
-            case "getRuntimeConfiguration": {
-                const r = await sendAndWait(() => {
+            case 'getRuntimeConfiguration': {
+                return sendAndWait(() => {
                     return window.chrome.webview.postMessage({ commandName: 'GetRuntimeConfiguration' })
                 }, 'GetRuntimeConfigurationResponse')
-                return r;
             }
-            case "getAvailableInputTypes": {
-                return await sendAndWait(() => {
+            case 'getAvailableInputTypes': {
+                return sendAndWait(() => {
                     return window.chrome.webview.postMessage({ commandName: 'GetAvailableInputTypes' })
                 }, 'GetAvailableInputTypesResponse')
             }
@@ -42,17 +40,17 @@ function sendAndWait (msgOrFn, expectedResponse) {
                 return
             }
             if (!event.data) {
-                console.warn('data absent from message');
+                console.warn('data absent from message')
                 return
             }
             if (event.data.type !== expectedResponse) {
-                console.warn(`data.type mis-match. Expected: ${expectedResponse}, received: ${event.data.type}`);
-                return;
+                console.warn(`data.type mis-match. Expected: ${expectedResponse}, received: ${event.data.type}`)
+                return
             }
             // at this point we're confident we have the correct message type
             resolve(event.data)
-            window.chrome.webview.removeEventListener('message', handler);
+            window.chrome.webview.removeEventListener('message', handler)
         }
-        window.chrome.webview.addEventListener('message', handler, {once: true});
+        window.chrome.webview.addEventListener('message', handler, {once: true})
     })
 }

@@ -49,7 +49,7 @@ export function createWindowsMocks () {
         },
         /** @type {AvailableInputTypes} */
         getAvailableInputTypes: {
-            credentials: true,
+            credentials: true
         }
     }
     /** @type {MockBuilder} */
@@ -69,7 +69,7 @@ export function createWindowsMocks () {
          */
         withFeatureToggles (featureToggles) {
             Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles)
-            return this;
+            return this
         },
         tap () {
             return this
@@ -112,7 +112,7 @@ export function createWindowsMocks () {
                         addEventListener (_name, listener) {
                             listeners.push(listener)
                         }
-                    },
+                    }
                 }
             }, mocks)
         },

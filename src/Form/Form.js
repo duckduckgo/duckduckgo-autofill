@@ -50,7 +50,7 @@ class Form {
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
         this.device = deviceInterface
-        this.availableInputTypes = inputTypes;
+        this.availableInputTypes = inputTypes
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {
@@ -276,12 +276,12 @@ class Form {
 
         this.inputs.all.add(input)
 
-        this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
+        const type = this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
 
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)
 
-        this.decorateInput(input)
+        this.decorateInput(input, type)
 
         return this
     }
@@ -304,16 +304,31 @@ class Form {
         addInlineStyles(input, styles)
     }
 
-    decorateInput (input) {
+    decorateInput (input, type) {
         const config = getInputConfig(input)
 
-        // bail if we cannot
-        if (this.availableInputTypes[config.type] !== true) {
-            console.warn('not decorating type', config.type);
-            return;
+        // todo(Shane): Where should this logic live?
+        const inputTypeSupported = (() => {
+            if (type === 'identities.emailAddress') {
+                if (this.availableInputTypes.email) {
+                    return true
+                }
+            }
+            if (this.availableInputTypes[config.type] !== true) {
+                console.warn('not decorating type', config.type)
+                return false
+            }
+            return true
+        })()
+
+        // bail if we cannot decorate
+        if (!inputTypeSupported) {
+            return this
         }
 
-        if (!config.shouldDecorate(input, this)) return this
+        if (!config.shouldDecorate(input, this)) {
+            return this
+        }
 
         input.setAttribute(ATTR_AUTOFILL, 'true')
 

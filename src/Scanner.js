@@ -161,7 +161,7 @@ class DefaultScanner {
             }
 
             if (!this.options.availableInputTypes) {
-                throw new Error('unreachble. availableInputTypes must be set');
+                throw new Error('unreachble. availableInputTypes must be set')
             }
             this.forms.set(parentForm, new Form(parentForm, input, this.options.availableInputTypes, this.device, this.matching))
         }

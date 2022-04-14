@@ -17,14 +17,13 @@ export function createDevice (availableInputTypes, runtime, globalConfig, platfo
     case 'ios':
         return new AppleDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
     case 'extension':
-        return new ExtensionInterface(availableInputTypes,runtime, globalConfig, platformConfig, autofillSettings)
+        return new ExtensionInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
     case 'windows':
-        return new WindowsInterface(availableInputTypes,runtime, globalConfig, platformConfig, autofillSettings)
+        return new WindowsInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
     case 'android':
-        return new AndroidInterface(availableInputTypes,runtime, globalConfig, platformConfig, autofillSettings)
+        return new AndroidInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
     case 'unknown':
         throw new Error('unreachable. device platform was "unknown"')
     }
     throw new Error('undefined')
 }
-

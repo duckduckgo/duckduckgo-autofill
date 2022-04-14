@@ -11,10 +11,10 @@ export function createTransport (config) {
     /** @type {Transport} */
     const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
         async send (name, data) {
-            console.log('🍏', name, data);
+            console.log('🍏', name, data)
             if (interceptions[name]) {
-                console.log('--> intercepted', name, data);
-                return { success: interceptions[name](config) }
+                console.log('--> intercepted', name, data)
+                return { data: interceptions[name](config) }
             }
             return wkSendAndWait(name, data, {
                 secret: config.secret,
@@ -29,8 +29,9 @@ const interceptions = {
     /**
      * @param {GlobalConfig} globalConfig
      */
-    "getRuntimeConfiguration": (globalConfig) => {
+    'getRuntimeConfiguration': (globalConfig) => {
         /**
+         * These are the defaults for macOS
          * @type {FeatureTogglesSettings}
          */
         const featureToggles = {
@@ -39,17 +40,19 @@ const interceptions = {
             'inputType_creditCards': true,
             'emailProtection': true,
             'password_generation': true,
-            'credentials_saving': true,
+            'credentials_saving': true
         }
 
         // on iOS, disable unsupported things. This will eventually come from the platform config
-        if (typeof globalConfig.userPreferences?.platform?.name !== "string") {
+        if (typeof globalConfig.userPreferences?.platform?.name !== 'string') {
             throw new Error('unreachable - platform.name should be set on apple platforms')
         }
-        if (globalConfig.userPreferences?.platform?.name) {
-            featureToggles.inputType_identities = false;
-            featureToggles.inputType_creditCards = false;
-            featureToggles.password_generation = false;
+
+        // If we're on iOS, disable some stuff
+        if (globalConfig.userPreferences.platform.name === 'ios') {
+            featureToggles.inputType_identities = false
+            featureToggles.inputType_creditCards = false
+            featureToggles.password_generation = false
         }
 
         return {
@@ -66,7 +69,7 @@ const interceptions = {
                     }
                 }
             },
-            userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+            userUnprotectedDomains: globalConfig.userUnprotectedDomains
         }
     }
 }
@@ -113,6 +116,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
 const wkSendAndWait = async (handler, data = {}, opts = {}) => {
     if (opts.hasModernWebkitAPI) {
         const response = await wkSend(handler, data, opts)
+        console.log(response)
         return ddgGlobals.JSONparse(response || '{}')
     }
 

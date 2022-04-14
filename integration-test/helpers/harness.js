@@ -101,7 +101,7 @@ function withStringReplacements (page, replacements, platform = 'macos') {
     const content = readFileSync('./dist/autofill.js', 'utf8')
     let output = content
     for (let [keyName, value] of Object.entries(replacements)) {
-        let replacement = typeof value === "boolean" || typeof value === "string"
+        let replacement = typeof value === 'boolean' || typeof value === 'string'
             ? value
             : JSON.stringify(value)
         output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${replacement};`)
@@ -160,32 +160,32 @@ export function createAutofillScript () {
  * @param {{verbose?: boolean}} [opts]
  */
 export function forwardConsoleMessages (page, opts = {}) {
-    const { verbose = false } = opts;
+    const { verbose = false } = opts
     page.on('pageerror', (msg) => {
         console.log('🌍 ❌ [in-page error]', msg)
     })
-page.on('console', (msg) => {
-    const type = msg.type();
-    const icon = (() => {
-        switch (type) {
-            case "warning": return '☢️'
-            case "error": return '❌️'
+    page.on('console', (msg) => {
+        const type = msg.type()
+        const icon = (() => {
+            switch (type) {
+            case 'warning': return '☢️'
+            case 'error': return '❌️'
             default: return '🌍'
-        }
-    })()
+            }
+        })()
 
-    console.log(`${icon} [console.${type}]`, msg.text())
-    if (verbose) {
-        const { lineNumber, columnNumber } = msg.location();
-        let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js';
-        if (!(lineNumber===0 && columnNumber===0)) {
-            link+=':'+(lineNumber+1)
-            link+=':'+columnNumber
-            console.log(link)
-            console.log()
+        console.log(`${icon} [console.${type}]`, msg.text())
+        if (verbose) {
+            const { lineNumber, columnNumber } = msg.location()
+            let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js'
+            if (!(lineNumber === 0 && columnNumber === 0)) {
+                link += ':' + (lineNumber + 1)
+                link += ':' + columnNumber
+                console.log(link)
+                console.log()
+            }
         }
-    }
-})
+    })
 }
 
 /**

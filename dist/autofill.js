@@ -3976,12 +3976,12 @@ class Form {
   addInput(input) {
     if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
-    this.matching.setInputType(input, this.form, {
+    const type = this.matching.setInputType(input, this.form, {
       isLogin: this.isLogin
     });
     const mainInputType = (0, _matching.getInputMainType)(input);
     this.inputs[mainInputType].add(input);
-    this.decorateInput(input);
+    this.decorateInput(input, type);
     return this;
   }
 
@@ -4007,15 +4007,33 @@ class Form {
     (0, _autofillUtils.addInlineStyles)(input, styles);
   }
 
-  decorateInput(input) {
-    const config = (0, _inputTypeConfig.getInputConfig)(input); // bail if we cannot
+  decorateInput(input, type) {
+    const config = (0, _inputTypeConfig.getInputConfig)(input); // todo(Shane): Where should this logic live?
 
-    if (this.availableInputTypes[config.type] !== true) {
-      console.warn('not decorating type', config.type);
-      return;
+    const inputTypeSupported = (() => {
+      if (type === 'identities.emailAddress') {
+        if (this.availableInputTypes.email) {
+          return true;
+        }
+      }
+
+      if (this.availableInputTypes[config.type] !== true) {
+        console.warn('not decorating type', config.type);
+        return false;
+      }
+
+      return true;
+    })(); // bail if we cannot decorate
+
+
+    if (!inputTypeSupported) {
+      return this;
     }
 
-    if (!config.shouldDecorate(input, this)) return this;
+    if (!config.shouldDecorate(input, this)) {
+      return this;
+    }
+
     input.setAttribute(ATTR_AUTOFILL, 'true');
     const hasIcon = !!config.getIconBase(input, this);
 
@@ -5492,6 +5510,7 @@ const inputTypeConfig = {
       if (isLogin) {
         return true;
       } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
+      // todo(Shane): move this
 
 
       if (device.autofillSettings.featureToggles.password_generation) {
@@ -5517,7 +5536,9 @@ const inputTypeConfig = {
       let {
         device
       } = _ref3;
-      return canBeDecorated(_input) && device.hasLocalCreditCards;
+      return (// todo(Shane): shouldn't need this hasLocalCreditCards check with toggles
+        canBeDecorated(_input) && device.hasLocalCreditCards
+      );
     },
     dataType: 'CreditCards',
     tooltipItem: data => new _CreditCard.CreditCardTooltipItem(data)
@@ -5538,13 +5559,14 @@ const inputTypeConfig = {
         return false;
       }
 
-      const subtype = (0, _matching.getInputSubtype)(_input);
+      const subtype = (0, _matching.getInputSubtype)(_input); // todo(Shane): Handle the mac specfici logic also with feature toggles
 
       if (device.globalConfig.isApp) {
         var _device$getLocalIdent;
 
         return Boolean((_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]));
-      }
+      } // if it's email then we can always decorate
+
 
       if (subtype === 'emailAddress') {
         return Boolean(device.isDeviceSignedIn());
@@ -8612,13 +8634,12 @@ var _inputTypes = require("./input-types/input-types");
     } // If it was enabled, try to ask for available input types
 
 
-    if (runtimeConfiguration.isFeatureRemoteEnabled("autofill")) {
+    if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
       const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
-      const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles);
-      console.log("PLATFORM", runtimeConfiguration.platform);
       console.log({
-        inputTypes: JSON.stringify(inputTypes)
-      }); // Determine the device type
+        runtimeAvailableInputTypes
+      });
+      const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles); // Determine the device type
 
       const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings); // Init services
 
@@ -8925,6 +8946,7 @@ exports.featureToggleAwareInputTypes = featureToggleAwareInputTypes;
  * @return {AvailableInputTypes}
  */
 function featureToggleAwareInputTypes(inputTypes, featureToggles) {
+  console.log('incoming', inputTypes);
   const local = { ...inputTypes
   };
 
@@ -9059,9 +9081,11 @@ class Runtime {
 
 
   async getAvailableInputTypes() {
+    const r = await this.transport.send('getAvailableInputTypes');
+    console.log('r', r);
     const {
       data
-    } = await this.transport.send('getAvailableInputTypes');
+    } = r;
     if (!data) throw new Error("getAvailableInputTypes didn't return 'data'");
     return data;
   }
@@ -9095,12 +9119,12 @@ function createRuntime(config) {
 function selectTransport(globalConfig) {
   var _globalConfig$userPre, _globalConfig$userPre2, _globalConfig$userPre3, _globalConfig$userPre4;
 
-  if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) === "string") {
+  if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) === 'string') {
     switch ((_globalConfig$userPre3 = globalConfig.userPreferences) === null || _globalConfig$userPre3 === void 0 ? void 0 : (_globalConfig$userPre4 = _globalConfig$userPre3.platform) === null || _globalConfig$userPre4 === void 0 ? void 0 : _globalConfig$userPre4.name) {
-      case "ios":
+      case 'ios':
         return (0, _transport.createTransport)(globalConfig);
 
-      case "macos":
+      case 'macos':
         return (0, _transport.createTransport)(globalConfig);
 
       default:
@@ -9197,7 +9221,7 @@ class AutofillSettings {
 exports.AutofillSettings = AutofillSettings;
 
 function fromPlatformConfig(config) {
-  const autofillSettings = config.getSettings("autofill");
+  const autofillSettings = config.getSettings('autofill');
   const settings = new AutofillSettings().from(autofillSettings);
   return settings;
 }
@@ -9576,14 +9600,14 @@ function createTransport(_globalConfig) {
       console.log('📲 android:', name, data);
 
       switch (name) {
-        case "getRuntimeConfiguration":
+        case 'getRuntimeConfiguration':
           {
             return (0, _autofillUtils.sendAndWaitForAnswer)(() => {
               return window.BrowserAutofill.getRuntimeConfiguration();
             }, 'getRuntimeConfigurationResponse');
           }
 
-        case "getAvailableInputTypes":
+        case 'getAvailableInputTypes':
           {
             return (0, _autofillUtils.sendAndWaitForAnswer)(() => {
               return window.BrowserAutofill.getAvailableInputTypes();
@@ -9628,7 +9652,7 @@ function createTransport(config) {
       if (interceptions[name]) {
         console.log('--> intercepted', name, data);
         return {
-          success: interceptions[name](config)
+          data: interceptions[name](config)
         };
       }
 
@@ -9646,10 +9670,11 @@ const interceptions = {
   /**
    * @param {GlobalConfig} globalConfig
    */
-  "getRuntimeConfiguration": globalConfig => {
-    var _globalConfig$userPre, _globalConfig$userPre2, _globalConfig$userPre3, _globalConfig$userPre4;
+  'getRuntimeConfiguration': globalConfig => {
+    var _globalConfig$userPre, _globalConfig$userPre2;
 
     /**
+     * These are the defaults for macOS
      * @type {FeatureTogglesSettings}
      */
     const featureToggles = {
@@ -9661,11 +9686,12 @@ const interceptions = {
       'credentials_saving': true
     }; // on iOS, disable unsupported things. This will eventually come from the platform config
 
-    if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) !== "string") {
+    if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) !== 'string') {
       throw new Error('unreachable - platform.name should be set on apple platforms');
-    }
+    } // If we're on iOS, disable some stuff
 
-    if ((_globalConfig$userPre3 = globalConfig.userPreferences) !== null && _globalConfig$userPre3 !== void 0 && (_globalConfig$userPre4 = _globalConfig$userPre3.platform) !== null && _globalConfig$userPre4 !== void 0 && _globalConfig$userPre4.name) {
+
+    if (globalConfig.userPreferences.platform.name === 'ios') {
       featureToggles.inputType_identities = false;
       featureToggles.inputType_creditCards = false;
       featureToggles.password_generation = false;
@@ -9744,6 +9770,7 @@ const wkSendAndWait = async function (handler) {
 
   if (opts.hasModernWebkitAPI) {
     const response = await wkSend(handler, data, opts);
+    console.log(response);
     return _captureDdgGlobals.default.JSONparse(response || '{}');
   }
 
@@ -9824,7 +9851,7 @@ function createTransport(globalConfig) {
       if (interceptions[name]) {
         console.log('--> intercepted', name, data);
         return {
-          success: interceptions[name](globalConfig)
+          data: interceptions[name](globalConfig)
         };
       }
 
@@ -9837,7 +9864,7 @@ function createTransport(globalConfig) {
 
 const interceptions = {
   // todo(Shane): Get available extension types
-  "getAvailableInputTypes": () => {
+  'getAvailableInputTypes': () => {
     return {
       credentials: false,
       identities: false,
@@ -9865,7 +9892,7 @@ const interceptions = {
       contentScope: {
         features: {
           autofill: {
-            state: "enabled",
+            state: 'enabled',
             exceptions: []
           }
         },
@@ -9912,17 +9939,16 @@ function createTransport(_globalConfig) {
       console.log('📲 windows:', name, data);
 
       switch (name) {
-        case "getRuntimeConfiguration":
+        case 'getRuntimeConfiguration':
           {
-            const r = await sendAndWait(() => {
+            return await sendAndWait(() => {
               return window.chrome.webview.postMessage({
                 commandName: 'GetRuntimeConfiguration'
               });
             }, 'GetRuntimeConfigurationResponse');
-            return r;
           }
 
-        case "getAvailableInputTypes":
+        case 'getAvailableInputTypes':
           {
             return await sendAndWait(() => {
               return window.chrome.webview.postMessage({

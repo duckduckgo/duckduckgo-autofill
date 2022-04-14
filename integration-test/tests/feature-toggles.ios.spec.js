@@ -5,8 +5,8 @@ import {
     withIOSContext
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
-import {createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.js'
 import {loginPage} from '../helpers/pages.js'
+import {createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.webkit.js'
 
 /**
  *  Tests for email autofill on ios device
@@ -33,9 +33,9 @@ test.describe('ios feature toggles', () => {
                 email: true
             })
             .withCredentials({
-                id: "02",
-                password: "123456",
-                username: "shane@duck.com"
+                id: '02',
+                password: '123456',
+                username: 'shane@duck.com'
             })
             .applyTo(page)
 
@@ -49,5 +49,8 @@ test.describe('ios feature toggles', () => {
         // page abstraction
         const emailPage = loginPage(page, server)
         await emailPage.navigate()
+
+        // todo(Shane): iOS: implement messaging now here
+        // await page.pause();
     })
 })

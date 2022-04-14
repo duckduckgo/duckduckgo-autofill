@@ -6,7 +6,7 @@ import {
 } from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 import {emailAutofillPage, loginAndSignup} from '../helpers/pages.js'
-import { createWindowsMocks } from '../helpers/windows.mocks.js'
+import { createWindowsMocks } from '../helpers/mocks.windows.js'
 import { constants } from '../helpers/mocks.js'
 
 /**
@@ -40,10 +40,10 @@ test.describe('windows', () => {
 
         // This should receive the attr, but not the dax icon because windows does not support email
         // if it matches, it means the email input was decorated, which is incorrect
-        const style = await page.locator(constants.fields.email.selectors.identity).getAttribute('style');
+        const style = await page.locator(constants.fields.email.selectors.identity).getAttribute('style')
         expect(style).toBeNull()
     })
-    test.only('should decorate a login, but not identities', async ({page}) => {
+    test('should decorate a login, but not identities', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
@@ -54,7 +54,7 @@ test.describe('windows', () => {
         // windows specific mocks
         await createWindowsMocks()
             .withAvailableInputTypes({
-                credentials: true,
+                credentials: true
             })
             .applyTo(page)
 
@@ -65,11 +65,11 @@ test.describe('windows', () => {
 
         // Ensure that DAX was not added to the email field in the signup form
         // because that's not supported on this platform
-        await pageWrapper.assertIdentitiesWereNotDecorated();
+        await pageWrapper.assertIdentitiesWereNotDecorated()
 
         // Ensure that the login form has the key icon since we mocked (above)
         // that this page has available credentials (and it's enabled in the feature flags)
-        await pageWrapper.assertUsernameAndPasswordWereDecoratedWithIcon();
+        await pageWrapper.assertUsernameAndPasswordWereDecoratedWithIcon()
     })
     test('should not decorate a login if disabled via feature toggle', async ({page}) => {
         // enable in-terminal exceptions
@@ -81,13 +81,13 @@ test.describe('windows', () => {
 
         /** @type {Partial<FeatureTogglesSettings>} */
         const featureToggles = {
-            'inputType_credentials': false,
+            'inputType_credentials': false
         }
 
         // windows specific mocks
         await createWindowsMocks()
             .withAvailableInputTypes({
-                credentials: true,
+                credentials: true
             })
             .withFeatureToggles(featureToggles)
             .applyTo(page)
@@ -99,6 +99,6 @@ test.describe('windows', () => {
 
         // There shouldn't be ANY decorations here since the only available input type was actually disabled
         // via feature toggle
-        await pageWrapper.assertNoDecorations();
+        await pageWrapper.assertNoDecorations()
     })
 })

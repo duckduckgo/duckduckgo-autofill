@@ -138,8 +138,7 @@ export function emailAutofillPage (page, server) {
  * @param {import("playwright").Page} page
  * @param {ServerWrapper} server
  */
-export function loginAndSignup(page, server) {
-
+export function loginAndSignup (page, server) {
     // style lookup helpers
     const usernameStyleAttr = () => page.locator(constants.fields.username.selectors.credential).getAttribute('style')
     const emailStyleAttr = () => page.locator(constants.fields.email.selectors.identity).getAttribute('style')
@@ -149,19 +148,19 @@ export function loginAndSignup(page, server) {
         async navigate () {
             await page.goto(server.urlForPath(constants.pages['login+setup']))
         },
-        async assertIdentitiesWereNotDecorated() {
-            const style = await emailStyleAttr();
+        async assertIdentitiesWereNotDecorated () {
+            const style = await emailStyleAttr()
             expect(style).toBeNull()
         },
-        async assertUsernameAndPasswordWereDecoratedWithIcon() {
+        async assertUsernameAndPasswordWereDecoratedWithIcon () {
             expect(await usernameStyleAttr()).toContain('data:image/svg+xml;base64,')
             expect(await firstPasswordStyleAttr()).toContain('data:image/svg+xml;base64,')
         },
-        async assertNoDecorations() {
-            const usernameAttr = await usernameStyleAttr();
-            expect(usernameAttr).toBeNull();
+        async assertNoDecorations () {
+            const usernameAttr = await usernameStyleAttr()
+            expect(usernameAttr).toBeNull()
 
-            expect(await firstPasswordStyleAttr()).toBeNull();
+            expect(await firstPasswordStyleAttr()).toBeNull()
         }
     }
 }

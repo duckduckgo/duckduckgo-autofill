@@ -10,8 +10,8 @@ describe('AndroidInterface', function () {
     })
     it('can be instantiated without throwing', () => {
         const config = createGlobalConfig()
-        const runtimeConfig = new RuntimeConfiguration();
-        const runtime = createRuntime(config);
+        const runtimeConfig = new RuntimeConfiguration()
+        const runtime = createRuntime(config)
         const device = new AndroidInterface({}, runtime, config, runtimeConfig, AutofillSettings.default())
         device.init()
     })
@@ -20,8 +20,8 @@ describe('AndroidInterface', function () {
             contentScope: {
                 features: {
                     autofill: {
-                        state: "enabled",
-                        exceptions: [],
+                        state: 'enabled',
+                        exceptions: []
                     }
                 },
                 unprotectedTemporary: []
@@ -37,16 +37,16 @@ describe('AndroidInterface', function () {
                                 'inputType_creditCards': true,
                                 'emailProtection': true,
                                 'password_generation': true,
-                                'credentials_saving': true,
+                                'credentials_saving': true
                             }
                         }
                     }
                 },
-                platform: {name: "windows"}
+                platform: {name: 'windows'}
             },
             userUnprotectedDomains: []
-        });
-        const settings = fromPlatformConfig(config);
+        })
+        const settings = fromPlatformConfig(config)
         expect(settings.featureToggles.inputType_credentials).toBe(true)
     })
 })
