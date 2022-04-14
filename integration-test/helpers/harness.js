@@ -157,8 +157,10 @@ export function createAutofillScript () {
  * Relay browser exceptions to the terminal to aid debugging.
  *
  * @param {import("playwright").Page} page
+ * @param {{verbose?: boolean}} [opts]
  */
-export function forwardConsoleMessages (page) {
+export function forwardConsoleMessages (page, opts = {}) {
+    const { verbose = false } = opts;
     page.on('pageerror', (msg) => {
         console.log('🌍 ❌ [in-page error]', msg)
     })
@@ -173,13 +175,15 @@ page.on('console', (msg) => {
     })()
 
     console.log(`${icon} [console.${type}]`, msg.text())
-    const { lineNumber, columnNumber } = msg.location();
-    let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js';
-    if (!(lineNumber===0 && columnNumber===0)) {
-        link+=':'+(lineNumber+1)
-        link+=':'+columnNumber
-        console.log(link)
-        console.log()
+    if (verbose) {
+        const { lineNumber, columnNumber } = msg.location();
+        let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js';
+        if (!(lineNumber===0 && columnNumber===0)) {
+            link+=':'+(lineNumber+1)
+            link+=':'+columnNumber
+            console.log(link)
+            console.log()
+        }
     }
 })
 }

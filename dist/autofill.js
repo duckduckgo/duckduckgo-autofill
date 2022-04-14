@@ -3653,9 +3653,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 class WindowsInterface extends _InterfacePrototype.default {
   async setupAutofill() {
-    // super.setupAutofill();
-    const availableTypes = await this.runtime.getAvailableInputTypes();
-    this.scanner.init(); // console.log({availableTypes: JSON.stringify(availableTypes, null, 2)});
+    // which data types can this platform actually support?
+    const availableTypes = await this.runtime.getAvailableInputTypes(); // todo(Shane): Rework this bit
+
+    if (!this.autofillSettings.featureToggles.inputType_credentials) {
+      availableTypes.credentials = false;
+    }
+
+    if (!this.autofillSettings.featureToggles.inputType_creditCards) {
+      availableTypes.creditCards = false;
+    }
+
+    if (!this.autofillSettings.featureToggles.inputType_identities) {
+      availableTypes.identities = false;
+    }
+
+    this.scanner.setAvailableInputTypes(availableTypes).init();
   }
 
 }
@@ -3701,13 +3714,16 @@ class Form {
 
   /** @type {boolean | null} */
 
+  /** @type {AvailableInputTypes} */
+
   /**
    * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {AvailableInputTypes} inputTypes
    * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
    * @param {import("../Form/matching").Matching} [matching]
    */
-  constructor(form, input, deviceInterface, matching) {
+  constructor(form, input, inputTypes, deviceInterface, matching) {
     _defineProperty(this, "matching", void 0);
 
     _defineProperty(this, "form", void 0);
@@ -3716,12 +3732,15 @@ class Form {
 
     _defineProperty(this, "isSignup", void 0);
 
+    _defineProperty(this, "availableInputTypes", void 0);
+
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
     this.device = deviceInterface;
+    this.availableInputTypes = inputTypes;
     /** @type Record<'all' | SupportedMainTypes, Set> */
 
     this.inputs = {
@@ -4001,7 +4020,13 @@ class Form {
   }
 
   decorateInput(input) {
-    const config = (0, _inputTypeConfig.getInputConfig)(input);
+    const config = (0, _inputTypeConfig.getInputConfig)(input); // bail if we cannot
+
+    if (this.availableInputTypes[config.type] !== true) {
+      console.warn('not decorating type', config.type);
+      return;
+    }
+
     if (!config.shouldDecorate(input, this)) return this;
     input.setAttribute(ATTR_AUTOFILL, 'true');
     const hasIcon = !!config.getIconBase(input, this);
@@ -5445,7 +5470,7 @@ const getIdentitiesIcon = (input, _ref) => {
   } = device.globalConfig;
   const getDaxImg = isDDGApp || isFirefox || isWindows ? _logoSvg.daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
   const subtype = (0, _matching.getInputSubtype)(input);
-  if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg;
+  if (subtype === 'emailAddress') return getDaxImg;
   return '';
 };
 /**
@@ -5477,11 +5502,7 @@ const inputTypeConfig = {
       // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
       // saved password
       if (isLogin) {
-        console.log({
-          isLogin,
-          hasLocalCredentials: device.hasLocalCredentials
-        });
-        return device.hasLocalCredentials;
+        return true;
       } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
 
 
@@ -5523,7 +5544,12 @@ const inputTypeConfig = {
       let {
         device
       } = _ref4;
-      if (!canBeDecorated(_input)) return false;
+
+      if (!canBeDecorated(_input)) {
+        console.warn('cannot be decorated');
+        return false;
+      }
+
       const subtype = (0, _matching.getInputSubtype)(_input);
 
       if (device.globalConfig.isApp) {
@@ -7710,6 +7736,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
  *     init(): ()=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
+ *     setAvailableInputTypes(types: AvailableInputTypes): Scanner;
  *     findEligibleInputs(context): Scanner;
  * }} Scanner
  *
@@ -7750,6 +7777,8 @@ class DefaultScanner {
 
   /** @type {boolean} A flag to indicate the whole page will be re-scanned */
 
+  /** @type {AvailableInputTypes|null} */
+
   /**
    * @param {import("./DeviceInterface/InterfacePrototype").default} device
    * @param {ScannerOptions} options
@@ -7766,6 +7795,8 @@ class DefaultScanner {
     _defineProperty(this, "activeInput", null);
 
     _defineProperty(this, "rescanAll", false);
+
+    _defineProperty(this, "availableInputTypes", null);
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
       /** @type {HTMLElement[]} */
@@ -7793,6 +7824,15 @@ class DefaultScanner {
     this.device = device;
     this.matching = (0, _matching.createMatching)();
     this.options = options;
+  }
+  /**
+   * @param {AvailableInputTypes} value
+   */
+
+
+  setAvailableInputTypes(value) {
+    this.availableInputTypes = value;
+    return this;
   }
   /**
    * Call this to scan once and then watch for changes.
@@ -7916,7 +7956,11 @@ class DefaultScanner {
         this.forms.delete(childForm);
       }
 
-      this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching));
+      if (this.availableInputTypes === null) {
+        throw new Error('unreachble. availableInputTypes must be set');
+      }
+
+      this.forms.set(parentForm, new _Form.Form(parentForm, input, this.availableInputTypes, this.device, this.matching));
     }
   }
   /**
@@ -8998,7 +9042,8 @@ class Runtime {
     const {
       data
     } = await this.transport.send('getAvailableInputTypes');
-    if (!data) throw new Error("getAvailableInputTypes didn't return 'data'");
+    if (!data) throw new Error("getAvailableInputTypes didn't return 'data'"); // double check against feature flags now
+
     return data;
   }
   /**

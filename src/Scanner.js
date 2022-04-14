@@ -8,6 +8,7 @@ import { createMatching } from './Form/matching'
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
  *     init(): ()=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
+ *     setAvailableInputTypes(types: AvailableInputTypes): Scanner;
  *     findEligibleInputs(context): Scanner;
  * }} Scanner
  *
@@ -48,6 +49,8 @@ class DefaultScanner {
     activeInput = null;
     /** @type {boolean} A flag to indicate the whole page will be re-scanned */
     rescanAll = false;
+    /** @type {AvailableInputTypes|null} */
+    availableInputTypes = null;
 
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -58,6 +61,15 @@ class DefaultScanner {
         this.matching = createMatching()
         this.options = options
     }
+
+    /**
+     * @param {AvailableInputTypes} value
+     */
+    setAvailableInputTypes (value) {
+        this.availableInputTypes = value
+        return this;
+    }
+
     /**
      * Call this to scan once and then watch for changes.
      *
@@ -156,7 +168,10 @@ class DefaultScanner {
                 this.forms.delete(childForm)
             }
 
-            this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching))
+            if (this.availableInputTypes === null) {
+                throw new Error('unreachble. availableInputTypes must be set');
+            }
+            this.forms.set(parentForm, new Form(parentForm, input, this.availableInputTypes, this.device, this.matching))
         }
     }
 

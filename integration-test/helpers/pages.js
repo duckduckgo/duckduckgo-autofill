@@ -143,9 +143,17 @@ export function loginAndSignup(page, server) {
         async navigate () {
             await page.goto(server.urlForPath(constants.pages['login+setup']))
         },
-        async assertNoIdentities() {
-            const matches = await page.$$(constants.fields.email.selectors.identity);
-            expect(matches.length).toBe(0);
+        async assertIdentitiesWereNotDecorated() {
+            const style = await page.locator(constants.fields.email.selectors.identity).getAttribute('style');
+            expect(style).toBeNull()
+        },
+        async assertUsernameAndPasswordWereDecoratedWithIcon() {
+            const usernameAttr = await page.locator(constants.fields.username.selectors.credential).getAttribute('style');
+            expect(usernameAttr).toContain('data:image/svg+xml;base64,')
+
+            const firstPasswordField = '#login-password' + constants.fields.password.selectors.credential;
+            const passwordAttr = await page.locator(firstPasswordField).getAttribute('style');
+            expect(passwordAttr).toContain('data:image/svg+xml;base64,')
         }
     }
 }

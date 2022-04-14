@@ -13,9 +13,19 @@ export const constants = {
             personalAddress: `shane-123@duck.com`,
             privateAddress0: '0@duck.com',
             selectors: {
-                identity: '[data-ddg-inputtype="identities.emailAddress"]'
+                identity: '[data-ddg-inputtype="identities.emailAddress"]',
             }
-        }
+        },
+        username: {
+            selectors: {
+                credential: '[data-ddg-inputtype="credentials.username"]'
+            }
+        },
+        password: {
+            selectors: {
+                credential: '[data-ddg-inputtype="credentials.password"]'
+            }
+        },
     },
 }
 

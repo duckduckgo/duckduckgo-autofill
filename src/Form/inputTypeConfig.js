@@ -16,7 +16,7 @@ const getIdentitiesIcon = (input, {device}) => {
     const { isDDGApp, isFirefox , isWindows } = device.globalConfig
     const getDaxImg = isDDGApp || isFirefox || isWindows ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
     const subtype = getInputSubtype(input)
-    if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg
+    if (subtype === 'emailAddress') return getDaxImg
 
     return ''
 }
@@ -42,8 +42,7 @@ const inputTypeConfig = {
             // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
             // saved password
             if (isLogin) {
-                console.log({isLogin, hasLocalCredentials: device.hasLocalCredentials});
-                return device.hasLocalCredentials
+                return true
             }
 
             // at this point, it's not a 'login' attempt, so we could offer to provide a password?
@@ -75,7 +74,10 @@ const inputTypeConfig = {
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
         shouldDecorate: (_input, {device}) => {
-            if (!canBeDecorated(_input)) return false
+            if (!canBeDecorated(_input)) {
+                console.warn('cannot be decorated');
+                return false
+            }
 
             const subtype = getInputSubtype(_input)
 
@@ -86,6 +88,7 @@ const inputTypeConfig = {
             if (subtype === 'emailAddress') {
                 return Boolean(device.isDeviceSignedIn())
             }
+
 
             return false
         },

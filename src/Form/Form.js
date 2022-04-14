@@ -34,19 +34,23 @@ class Form {
     activeInput;
     /** @type {boolean | null} */
     isSignup;
+    /** @type {AvailableInputTypes} */
+    availableInputTypes;
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {AvailableInputTypes} inputTypes
      * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
      */
-    constructor (form, input, deviceInterface, matching) {
+    constructor (form, input, inputTypes, deviceInterface, matching) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
         this.device = deviceInterface
+        this.availableInputTypes = inputTypes;
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {
@@ -302,6 +306,12 @@ class Form {
 
     decorateInput (input) {
         const config = getInputConfig(input)
+
+        // bail if we cannot
+        if (this.availableInputTypes[config.type] !== true) {
+            console.warn('not decorating type', config.type);
+            return;
+        }
 
         if (!config.shouldDecorate(input, this)) return this
 
