@@ -1,7 +1,8 @@
-import AndroidInterface from '../AndroidInterface'
-import { createGlobalConfig } from '../../config'
+import {AndroidInterface} from '../AndroidInterface'
+import {createGlobalConfig} from '../../config'
 import {RuntimeConfiguration, tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 import {AutofillSettings, fromPlatformConfig} from '../../settings/settings'
+import {createRuntime} from '../../runtime/runtime'
 
 describe('AndroidInterface', function () {
     beforeEach(() => {
@@ -10,7 +11,8 @@ describe('AndroidInterface', function () {
     it('can be instantiated without throwing', () => {
         const config = createGlobalConfig()
         const runtimeConfig = new RuntimeConfiguration();
-        const device = new AndroidInterface(config, runtimeConfig, AutofillSettings.default())
+        const runtime = createRuntime(config);
+        const device = new AndroidInterface(runtime, config, runtimeConfig, AutofillSettings.default())
         device.init()
     })
     it('can create platform configuration', () => {

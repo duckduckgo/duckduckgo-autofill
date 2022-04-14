@@ -10,10 +10,9 @@ export function createTransport (_globalConfig) {
             console.log('📲 windows:', name, data);
             switch (name) {
             case "getRuntimeConfiguration": {
-                const r =  await sendAndWait(() => {
+                const r = await sendAndWait(() => {
                     return window.chrome.webview.postMessage({ commandName: 'GetRuntimeConfiguration' })
                 }, 'GetRuntimeConfigurationResponse')
-                console.log(r);
                 return r;
             }
             case "getAvailableInputTypes": {

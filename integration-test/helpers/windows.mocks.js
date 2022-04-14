@@ -29,7 +29,7 @@ export function createWindowsMocks () {
             'userPreferences': {
                 'debug': false,
                 'platform': {
-                    'name': 'android'
+                    'name': 'windows'
                 },
                 'features': {
                     'autofill': {

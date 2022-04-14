@@ -1,10 +1,7 @@
 /**
- * @param {GlobalConfig} config
  * @param {Map<HTMLElement, import("./Form").Form>} forms
  */
-const listenForGlobalFormSubmission = (config, forms) => {
-    if (!config.isApp) return
-
+const listenForGlobalFormSubmission = (forms) => {
     try {
         window.addEventListener('submit', (e) =>
             // @ts-ignore

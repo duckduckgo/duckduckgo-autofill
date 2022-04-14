@@ -27,7 +27,9 @@ class ExtensionInterface extends InterfacePrototype {
         return this.hasLocalAddresses
     }
 
-    setupAutofill () {
+    async setupAutofill () {
+        await this._addDeviceListeners();
+
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
                 const cleanup = this.scanner.init()
@@ -71,7 +73,7 @@ class ExtensionInterface extends InterfacePrototype {
         return chrome.runtime.sendMessage(data)
     }
 
-    addDeviceListeners () {
+    _addDeviceListeners () {
         // Add contextual menu listeners
         let activeEl = null
         document.addEventListener('contextmenu', e => {
@@ -120,4 +122,4 @@ class ExtensionInterface extends InterfacePrototype {
     }
 }
 
-export default ExtensionInterface
+export { ExtensionInterface }

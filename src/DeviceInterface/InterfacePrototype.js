@@ -18,6 +18,7 @@ import { createScanner } from '../Scanner'
 import {createGlobalConfig} from '../config'
 import {AutofillSettings} from '../settings/settings'
 import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
+import {createRuntime} from '../runtime/runtime'
 
 /**
  * @implements {GlobalConfigImpl}
@@ -54,14 +55,16 @@ class InterfacePrototype {
     scanner;
 
     /**
+     * @param {import("../runtime/runtime").Runtime} runtime
      * @param {GlobalConfig} globalConfig
      * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
      * @param {import("../settings/settings").AutofillSettings} autofillSettings
      */
-    constructor (globalConfig, platformConfig, autofillSettings) {
+    constructor (runtime, globalConfig, platformConfig, autofillSettings) {
         this.globalConfig = globalConfig;
         this.platformConfig = platformConfig;
         this.autofillSettings = autofillSettings;
+        this.runtime = runtime;
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
@@ -193,24 +196,24 @@ class InterfacePrototype {
 
     async startInit () {
         window.addEventListener('pointerdown', this, true)
-        listenForGlobalFormSubmission(this.globalConfig, this.scanner.forms)
-        this.addDeviceListeners()
+
+        // todo(toggles): move to runtime polymorphism
+        if (this.autofillSettings.featureToggles.credentials_saving) {
+            listenForGlobalFormSubmission(this.scanner.forms)
+        }
+
         await this.setupAutofill()
         await this.setupSettingsPage()
-        this.postInit()
     }
 
-    postInit () {}
-
     async init () {
-        const isEnabled = this.platformConfig.isFeatureRemoteEnabled("autofill");
-        if (!isEnabled) return
-
         if (document.readyState === 'complete') {
             this.startInit()
+                .catch(e => console.error('init error', e))
         } else {
             window.addEventListener('load', () => {
                 this.startInit()
+                    .catch(e => console.error('init error', e))
             })
         }
     }
@@ -535,7 +538,6 @@ class InterfacePrototype {
     }
     storeUserData (_data) {}
 
-    addDeviceListeners () {}
     /** @param {() => void} _fn */
     addLogoutListener (_fn) {}
     isDeviceSignedIn () { return false }
@@ -568,7 +570,9 @@ class InterfacePrototype {
 
     static default() {
         const config = new RuntimeConfiguration();
-        return new InterfacePrototype(createGlobalConfig(), config, AutofillSettings.default())
+        const globalConfig = createGlobalConfig();
+        const runtime = createRuntime(globalConfig);
+        return new InterfacePrototype(runtime, globalConfig, config, AutofillSettings.default())
     }
 }
 

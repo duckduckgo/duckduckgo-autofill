@@ -18,8 +18,8 @@ class AppleDeviceInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
-    constructor (config, platformConfig, settings) {
-        super(config, platformConfig, settings)
+    constructor (runtime, config, platformConfig, settings) {
+        super(runtime, config, platformConfig, settings)
 
         if (this.globalConfig.isTopFrame) {
             this.stripCredentials = false
@@ -30,12 +30,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
     }
 
-    postInit () {
-        if (!this.globalConfig.isTopFrame) return
-        this.setupTopFrame()
-    }
-
-    async setupTopFrame () {
+    async _setupTopFrame () {
         const topContextData = this.getTopContextData()
         if (!topContextData) throw new Error('unreachable, topContextData should be available')
         // Provide dummy values, they're not used
@@ -106,6 +101,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
 
         const signedIn = await this._checkDeviceSignedIn()
+
         if (signedIn) {
             if (this.globalConfig.isApp) {
                 await this.getAddresses()
@@ -115,6 +111,12 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         const cleanup = this.scanner.init()
         this.addLogoutListener(cleanup)
+
+
+        // todo(top-frame): Move this
+        if (this.globalConfig.isTopFrame) {
+            await this._setupTopFrame()
+        }
     }
 
     getUserData () {
@@ -316,4 +318,4 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 }
 
-export default AppleDeviceInterface
+export { AppleDeviceInterface }

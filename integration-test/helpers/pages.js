@@ -131,3 +131,21 @@ export function emailAutofillPage (page, server) {
 
     }
 }
+
+/**
+ * A wrapper around interactions for `integration-test/pages/signup.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ */
+export function loginAndSignup(page, server) {
+    return {
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['login+setup']))
+        },
+        async assertNoIdentities() {
+            const matches = await page.$$(constants.fields.email.selectors.identity);
+            expect(matches.length).toBe(0);
+        }
+    }
+}

@@ -3,6 +3,7 @@
  */
 export const constants = {
     pages: {
+        'login+setup': 'login+signup.html',
         'email-autofill': 'email-autofill.html',
         'signup': 'signup.html',
         'login': 'login.html'
