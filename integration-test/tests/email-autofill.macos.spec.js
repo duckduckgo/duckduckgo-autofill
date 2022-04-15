@@ -37,7 +37,7 @@ test.describe('macos', () => {
         await createAutofillScript()
             .replace('isApp', true)
             .replace('hasModernWebkitAPI', true)
-            .replaceAll(defaultMacosReplacements)
+            .replaceAll(defaultMacosReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -71,35 +71,66 @@ test.describe('macos', () => {
         // ...and ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
     })
-    test.skip('auto filling a signup form', async ({page}) => {
-        // enable in-terminal exceptions
-        await forwardConsoleMessages(page)
-
+    test.describe('auto filling a signup form', () => {
+        async function applyScript(page) {
+            await createAutofillScript()
+                .replace('isApp', true)
+                .replaceAll(defaultMacosReplacements({}))
+                .platform('macos')
+                .applyTo(page)
+        }
         const {personalAddress} = constants.fields.email
+        let identity = {
+            id: '01',
+            title: 'Main identity',
+            firstName: 'shane',
+            emailAddress: personalAddress
+        };
+        test('with an identity only', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
 
-        await createWebkitMocks()
-            .withPrivateEmail('0')
-            .withPersonalEmail('shane-123')
-            .withIdentity({
-                id: '01',
-                title: 'Main identity',
-                firstName: 'shane',
-                emailAddress: personalAddress
-            })
-            .applyTo(page)
+            await createWebkitMocks()
+                .withIdentity(identity)
+                .withAvailableInputTypes({
+                    identities: true
+                })
+                .applyTo(page)
 
-        // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replace('isApp', true)
-            .replaceAll(defaultMacosReplacements)
-            .platform('macos')
-            .applyTo(page)
+            await applyScript(page);
 
-        const signup = signupPage(page, server)
-        await signup.navigate()
-        await signup.selectGeneratedPassword()
-        await signup.selectFirstName('shane Main identity')
-        await signup.assertEmailValue(personalAddress)
+            await signup.navigate()
+            await signup.assertEmailHasNoDaxIcon()
+            await signup.selectGeneratedPassword()
+            await signup.selectFirstName('shane Main identity')
+            await signup.assertEmailValue(identity.emailAddress)
+        })
+        test('with no input types', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+            await createWebkitMocks().applyTo(page)
+            await applyScript(page);
+            await signup.navigate()
+
+            // should still allow password generation
+            await signup.selectGeneratedPassword()
+        })
+        test('password generation is disabled via feature flags', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+            await createWebkitMocks().applyTo(page)
+            await createAutofillScript()
+                .replace('isApp', true)
+                .replaceAll(defaultMacosReplacements({
+                    featureToggles: {
+                        password_generation: false
+                    }
+                }))
+                .platform('macos')
+                .applyTo(page)
+            await signup.navigate()
+            await signup.assertPasswordHasNoIcon();
+        })
     })
     test('autofill a newly added email form (mutation observer test)', async ({page}) => {
         // enable in-terminal exceptions
@@ -125,7 +156,7 @@ test.describe('macos', () => {
         // Load the autofill.js script with replacements
         await createAutofillScript()
             .replace('isApp', true)
-            .replaceAll(defaultMacosReplacements)
+            .replaceAll(defaultMacosReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -157,7 +188,7 @@ test.describe('macos', () => {
         // Load the autofill.js script with replacements
         await createAutofillScript()
             .replace('isApp', true)
-            .replaceAll(defaultMacosReplacements)
+            .replaceAll(defaultMacosReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -172,7 +203,7 @@ test.describe('macos', () => {
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
                 .replace('isApp', true)
-                .replaceAll(defaultMacosReplacements)
+                .replaceAll(defaultMacosReplacements({}))
                 .platform('macos')
                 .applyTo(page)
 

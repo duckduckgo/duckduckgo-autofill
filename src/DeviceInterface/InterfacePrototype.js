@@ -51,6 +51,9 @@ class InterfacePrototype {
     /** @type {import("../settings/settings").AutofillSettings} */
     autofillSettings;
 
+    /** @type {AvailableInputTypes} */
+    availableInputTypes;
+
     /** @type {import('../Scanner').Scanner} */
     scanner;
 
@@ -62,6 +65,7 @@ class InterfacePrototype {
      * @param {import("../settings/settings").AutofillSettings} autofillSettings
      */
     constructor (availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
+        this.availableInputTypes = availableInputTypes
         this.globalConfig = globalConfig
         this.runtimeConfiguration = platformConfig
         this.autofillSettings = autofillSettings

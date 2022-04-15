@@ -3006,6 +3006,8 @@ class InterfacePrototype {
 
   /** @type {import("../settings/settings").AutofillSettings} */
 
+  /** @type {AvailableInputTypes} */
+
   /** @type {import('../Scanner').Scanner} */
 
   /**
@@ -3042,6 +3044,8 @@ class InterfacePrototype {
 
     _defineProperty(this, "autofillSettings", void 0);
 
+    _defineProperty(this, "availableInputTypes", void 0);
+
     _defineProperty(this, "scanner", void 0);
 
     _classPrivateFieldInitSpec(this, _data2, {
@@ -3054,6 +3058,7 @@ class InterfacePrototype {
       }
     });
 
+    this.availableInputTypes = availableInputTypes;
     this.globalConfig = globalConfig;
     this.runtimeConfiguration = platformConfig;
     this.autofillSettings = autofillSettings;
@@ -4036,6 +4041,13 @@ class Form {
     const inputTypeSupported = (() => {
       if (type === 'identities.emailAddress') {
         if (this.availableInputTypes.email) {
+          return true;
+        }
+      }
+
+      if (this.isSignup && type === 'credentials.password') {
+        // todo(Shane): Needs runtime polymorphism here
+        if (this.device.autofillSettings.featureToggles.password_generation) {
           return true;
         }
       }
@@ -5499,7 +5511,14 @@ const getIdentitiesIcon = (input, _ref) => {
   } = device.globalConfig;
   const getDaxImg = isDDGApp || isFirefox || isWindows ? _logoSvg.daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
   const subtype = (0, _matching.getInputSubtype)(input);
-  if (subtype === 'emailAddress') return getDaxImg;
+
+  if (subtype === 'emailAddress') {
+    // todo(Shane): Needs runtime polymorphism again here
+    if (device.availableInputTypes.email) {
+      return getDaxImg;
+    }
+  }
+
   return '';
 };
 /**
@@ -8658,9 +8677,7 @@ var _inputTypes = require("./input-types/input-types");
 
 
     if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
-      console.log('ENABLED', runtimeConfiguration.platform);
       const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
-      console.log('AFTER', runtimeConfiguration.platform);
       const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles); // Determine the device type
 
       const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings); // Init services
@@ -8970,7 +8987,6 @@ exports.featureToggleAwareInputTypes = featureToggleAwareInputTypes;
  * @return {AvailableInputTypes}
  */
 function featureToggleAwareInputTypes(inputTypes, featureToggles) {
-  console.log('incoming', inputTypes);
   const local = { ...inputTypes
   };
 
@@ -9724,7 +9740,7 @@ function createTransport(config) {
         secret: config.secret,
         hasModernWebkitAPI: config.hasModernWebkitAPI
       });
-      console.log('\t🍏📲', response);
+      console.log('\t🍏📲', JSON.stringify(response));
       return response;
     }
 
@@ -9733,49 +9749,19 @@ function createTransport(config) {
 }
 
 const interceptions = {
+  // 'getAvailableInputTypes': () => {
+  //     return {
+  //         email: true,
+  //     }
+  // },
+
   /**
    * @param {GlobalConfig} globalConfig
    */
   'getRuntimeConfiguration': globalConfig => {
-    var _globalConfig$userPre, _globalConfig$userPre2;
-
-    /**
-     * These are the defaults for macOS
-     * @type {FeatureTogglesSettings}
-     */
-    const featureToggles = {
-      'inputType_credentials': true,
-      'inputType_identities': true,
-      'inputType_creditCards': true,
-      'emailProtection': true,
-      'password_generation': true,
-      'credentials_saving': true
-    }; // on iOS, disable unsupported things. This will eventually come from the platform config
-
-    if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) !== 'string') {
-      throw new Error('unreachable - platform.name should be set on apple platforms');
-    } // If we're on iOS, disable some stuff
-
-
-    if (globalConfig.userPreferences.platform.name === 'ios') {
-      featureToggles.inputType_identities = false;
-      featureToggles.inputType_creditCards = false;
-      featureToggles.password_generation = false;
-    }
-
     return {
       contentScope: globalConfig.contentScope,
-      userPreferences: { ...globalConfig.userPreferences,
-        ...{
-          features: {
-            autofill: {
-              settings: {
-                featureToggles: featureToggles
-              }
-            }
-          }
-        }
-      },
+      userPreferences: globalConfig.userPreferences,
       userUnprotectedDomains: globalConfig.userUnprotectedDomains
     };
   }

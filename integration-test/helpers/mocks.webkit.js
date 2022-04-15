@@ -11,26 +11,61 @@ export const defaultIOSReplacements = {
     userUnprotectedDomains: [],
     userPreferences: {
         debug: true,
-        platform: {name: 'ios'}
-    }
-}
-export const defaultMacosReplacements = {
-    contentScope: {
+        platform: {name: 'ios'},
         features: {
-            'autofill': {
-                exceptions: [],
-                state: 'enabled'
+            autofill: {
+                settings: {
+                    featureToggles: {
+                        'inputType_credentials': true,
+                        'inputType_identities': false,
+                        'inputType_creditCards': false,
+                        'emailProtection': true,
+                        'password_generation': false,
+                        'credentials_saving': true
+                    }
+                }
             }
-        },
-        unprotectedTemporary: []
-    },
-    userUnprotectedDomains: [],
-    userPreferences: {
-        debug: true,
-        platform: {name: 'macos'}
+        }
     }
 }
 
+/**
+ * @param {object} [overrides]
+ * @param {Partial<FeatureTogglesSettings>} [overrides.featureToggles]
+ */
+export const defaultMacosReplacements = (overrides = {}) => {
+    return {
+        contentScope: {
+            features: {
+                'autofill': {
+                    exceptions: [],
+                    state: 'enabled'
+                }
+            },
+            unprotectedTemporary: []
+        },
+        userUnprotectedDomains: [],
+        userPreferences: {
+            debug: true,
+            platform: {name: 'macos'},
+            features: {
+                autofill: {
+                    settings: {
+                        featureToggles: {
+                            'inputType_credentials': true,
+                            'inputType_identities': true,
+                            'inputType_creditCards': true,
+                            'emailProtection': true,
+                            'password_generation': true,
+                            'credentials_saving': true,
+                            ...overrides.featureToggles
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 /**
  * Use this to mock webkit message handlers.
  *

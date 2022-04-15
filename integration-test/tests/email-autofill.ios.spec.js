@@ -6,7 +6,7 @@ import {
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage, loginPage} from '../helpers/pages.js'
+import {emailAutofillPage, loginPage, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.webkit.js'
 
 /**
@@ -83,5 +83,27 @@ test.describe('ios', () => {
         await login.navigate()
         await login.clickIntoUsernameInput()
         await login.assertFirstCredential(personalAddress, password)
+    })
+    test.skip('Prompting to save from a signup form', async ({page}) => {
+        // enable in-terminal exceptions
+        // await forwardConsoleMessages(page)
+        //
+        // const {personalAddress} = constants.fields.email
+        // const password = '123456'
+        //
+        // await createWebkitMocks()
+        //     .applyTo(page)
+        //
+        // // Load the autofill.js script with replacements
+        // await createAutofillScript()
+        //     .replaceAll(defaultIOSReplacements)
+        //     .platform('ios')
+        //     .applyTo(page)
+        //
+        // const signup = signupPage(page, server)
+        // await signup.navigate()
+        // await page.pause();
+        // await signup.clickIntoUsernameInput()
+        // await signup.assertFirstCredential(personalAddress, password)
     })
 })

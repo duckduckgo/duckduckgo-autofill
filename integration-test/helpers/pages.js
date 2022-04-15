@@ -10,6 +10,8 @@ import { expect } from '@playwright/test'
 export function signupPage (page, server) {
     const decoratedFirstInputSelector = '#email' + constants.fields.email.selectors.identity
     const decoratedSecondInputSelector = '#email-2' + constants.fields.email.selectors.identity
+    const emailStyleAttr = () => page.locator(constants.fields.email.selectors.identity).getAttribute('style')
+    const passwordStyleAttr = () => page.locator('#password' + constants.fields.password.selectors.credential).getAttribute('style')
     return {
         async navigate () {
             await page.goto(server.urlForPath(constants.pages['signup']))
@@ -62,6 +64,12 @@ export function signupPage (page, server) {
         async assertFirstEmailEmpty () {
             const input = page.locator(decoratedFirstInputSelector)
             await expect(input).toHaveValue('')
+        },
+        async assertEmailHasNoDaxIcon() {
+            expect(await emailStyleAttr()).toBeNull();
+        },
+        async assertPasswordHasNoIcon() {
+            expect(await passwordStyleAttr()).toBeNull();
         }
     }
 }

@@ -20,7 +20,7 @@ export function createTransport (config) {
                 secret: config.secret,
                 hasModernWebkitAPI: config.hasModernWebkitAPI
             })
-            console.log('\t🍏📲', response)
+            console.log('\t🍏📲', JSON.stringify(response))
             return response;
         }
     }
@@ -28,49 +28,18 @@ export function createTransport (config) {
 }
 
 const interceptions = {
+    // 'getAvailableInputTypes': () => {
+    //     return {
+    //         email: true,
+    //     }
+    // },
     /**
      * @param {GlobalConfig} globalConfig
      */
     'getRuntimeConfiguration': (globalConfig) => {
-        /**
-         * These are the defaults for macOS
-         * @type {FeatureTogglesSettings}
-         */
-        const featureToggles = {
-            'inputType_credentials': true,
-            'inputType_identities': true,
-            'inputType_creditCards': true,
-            'emailProtection': true,
-            'password_generation': true,
-            'credentials_saving': true
-        }
-
-        // on iOS, disable unsupported things. This will eventually come from the platform config
-        if (typeof globalConfig.userPreferences?.platform?.name !== 'string') {
-            throw new Error('unreachable - platform.name should be set on apple platforms')
-        }
-
-        // If we're on iOS, disable some stuff
-        if (globalConfig.userPreferences.platform.name === 'ios') {
-            featureToggles.inputType_identities = false
-            featureToggles.inputType_creditCards = false
-            featureToggles.password_generation = false
-        }
-
         return {
             contentScope: globalConfig.contentScope,
-            userPreferences: {
-                ...globalConfig.userPreferences,
-                ...{
-                    features: {
-                        autofill: {
-                            settings: {
-                                featureToggles: featureToggles
-                            }
-                        }
-                    }
-                }
-            },
+            userPreferences: globalConfig.userPreferences,
             userUnprotectedDomains: globalConfig.userUnprotectedDomains
         }
     }

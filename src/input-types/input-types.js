@@ -7,7 +7,6 @@
  * @return {AvailableInputTypes}
  */
 export function featureToggleAwareInputTypes (inputTypes, featureToggles) {
-    console.log('incoming', inputTypes)
     const local = {...inputTypes}
 
     if (!featureToggles.inputType_credentials) {

@@ -16,7 +16,13 @@ const getIdentitiesIcon = (input, {device}) => {
     const { isDDGApp, isFirefox, isWindows } = device.globalConfig
     const getDaxImg = isDDGApp || isFirefox || isWindows ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
     const subtype = getInputSubtype(input)
-    if (subtype === 'emailAddress') return getDaxImg
+
+    if (subtype === 'emailAddress') {
+        // todo(Shane): Needs runtime polymorphism again here
+        if (device.availableInputTypes.email) {
+            return getDaxImg
+        }
+    }
 
     return ''
 }
