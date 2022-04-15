@@ -41,7 +41,7 @@ describe('wkSendAndWait', () => {
         const config = createGlobalConfig()
         const transport = createTransport(config)
         const response = await transport.send('testMock', {})
-        const data = runtimeResponse(response);
+        const data = runtimeResponse(response)
         expect(data).toBe('test')
     })
 })

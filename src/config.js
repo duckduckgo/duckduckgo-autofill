@@ -36,6 +36,7 @@ function createGlobalConfig () {
     const isMobileApp = isDDGApp && !isApp
     const isFirefox = navigator.userAgent.includes('Firefox')
     const isWindows = navigator.userAgent.includes('Windows 11')
+    const hasNativeTooltip = isMobileApp
 
     const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX))
 
@@ -54,7 +55,8 @@ function createGlobalConfig () {
         userUnprotectedDomains,
         userPreferences,
         isDDGTestMode,
-        isDDGDomain
+        isDDGDomain,
+        hasNativeTooltip
     }
 }
 

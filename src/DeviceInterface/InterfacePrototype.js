@@ -6,7 +6,7 @@ import {
     notifyWebApp
 } from '../autofill-utils'
 
-import { getInputType, getSubtypeFromType } from '../Form/matching'
+import {getInputType, getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
 import { formatFullName } from '../Form/formatters'
 import EmailAutofill from '../UI/EmailAutofill'
 import DataAutofill from '../UI/DataAutofill'
@@ -46,7 +46,7 @@ class InterfacePrototype {
     globalConfig;
 
     /** @type {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} */
-    platformConfig;
+    runtimeConfiguration;
 
     /** @type {import("../settings/settings").AutofillSettings} */
     autofillSettings;
@@ -63,7 +63,7 @@ class InterfacePrototype {
      */
     constructor (availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
         this.globalConfig = globalConfig
-        this.platformConfig = platformConfig
+        this.runtimeConfiguration = platformConfig
         this.autofillSettings = autofillSettings
         this.runtime = runtime
         this.scanner = createScanner(this, {
@@ -332,6 +332,17 @@ class InterfacePrototype {
 
     /**
      * @param {import("../Form/Form").Form} form
+     * @deprecated
+     */
+    getEmailAlias (form) {
+        this.getAlias().then((alias) => {
+            if (alias) form.autofillEmail(alias)
+            else form.activeInput?.focus()
+        })
+    }
+
+    /**
+     * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
      * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
      * @param {{ x: number; y: number; }} click
@@ -340,13 +351,13 @@ class InterfacePrototype {
         form.activeInput = input
         this.currentAttached = form
         const inputType = getInputType(input)
+        const mainType = getMainTypeFromType(inputType)
 
-        if (this.globalConfig.isMobileApp) {
-            this.getAlias().then((alias) => {
-                if (alias) form.autofillEmail(alias)
-                else form.activeInput?.focus()
-            })
-            return
+        console.log('-->inputType', inputType)
+        console.log('-->mainType', mainType)
+
+        if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
+            return this.getEmailAlias(form)
         }
 
         /** @type {TopContextData} */
@@ -372,9 +383,20 @@ class InterfacePrototype {
             topContextData.credentials = [fromPassword(password)]
         }
 
-        this.attachCloseListeners()
-
-        this.attachTooltipInner(form, input, getPosition, click, topContextData)
+        if (this.globalConfig.hasNativeTooltip) {
+            this.runtime.getAutofillData({inputType})
+                .then(resp => {
+                    console.log('Autofilling...', resp, mainType)
+                    form.autofillData(resp, mainType)
+                })
+                .catch(e => {
+                    console.error('this.runtime.getAutofillData')
+                    console.error(e)
+                })
+        } else {
+            this.attachCloseListeners()
+            this.attachTooltipInner(form, input, getPosition, click, topContextData)
+        }
     }
 
     attachCloseListeners () {

@@ -85,6 +85,10 @@ export function createWebkitMocks (platform = 'macos') {
         getAvailableInputTypes: {
             /** @type {AvailableInputTypes|null} */
             success: {}
+        },
+        getAutofillData: {
+            /** @type {(IdentityObject|CredentialsObject|CredentialsObject) | null} */
+            success: null
         }
     }
 
@@ -113,6 +117,7 @@ export function createWebkitMocks (platform = 'macos') {
         withCredentials: function (credentials) {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
+            webkitBase.getAutofillData.success = credentials
             return this
         },
         withAvailableInputTypes: function (inputTypes) {

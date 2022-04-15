@@ -5,6 +5,7 @@ import { createTransport as createWindowsTransport } from '../transports/transpo
 import { tryCreateRuntimeConfiguration } from '@duckduckgo/content-scope-scripts'
 
 import {fromPlatformConfig} from '../settings/settings'
+import {getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
 
 class Runtime {
     /** @type {Transport} */
@@ -20,12 +21,13 @@ class Runtime {
     }
 
     /**
+     * @public
      * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
     async getRuntimeConfiguration () {
         // todo(Shane): Schema validation here
         const response = await this.transport.send('getRuntimeConfiguration')
-        const data = runtimeResponse(response);
+        const data = runtimeResponse(response)
 
         const {config, errors} = tryCreateRuntimeConfiguration(data)
 
@@ -40,11 +42,29 @@ class Runtime {
     }
 
     /**
+     * @public
      * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes () {
         const response = await this.transport.send('getAvailableInputTypes')
-        return runtimeResponse(response);
+        return runtimeResponse(response)
+    }
+
+    /**
+     * @param {GetAutofillDataArgs} input
+     * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
+     */
+    async getAutofillData (input) {
+        const mainType = getMainTypeFromType(input.inputType)
+        const subType = getSubtypeFromType(input.inputType)
+        const payload = {
+            inputType: input.inputType,
+            mainType,
+            subType
+        }
+        const response = await this.transport.send('getAutofillData', payload)
+        const data = runtimeResponse(response)
+        return data
     }
 
     /**
@@ -93,17 +113,16 @@ function selectTransport (globalConfig) {
     return createExtensionTransport(globalConfig)
 }
 
-
 /**
  * @param {APIResponseSingle<any>} object
  */
-function runtimeResponse(object) {
+function runtimeResponse (object) {
     if ('data' in object) {
         console.warn('response had `data` property. Please migrate to `success`')
-        return object.data;
+        return object.data
     }
     if ('success' in object) {
-        return object.success;
+        return object.success
     }
     throw new Error('unreachable. Response did not contain `success` or `data`')
 }

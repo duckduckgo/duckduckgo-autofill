@@ -6,7 +6,7 @@ import {
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage} from '../helpers/pages.js'
+import {emailAutofillPage, loginPage} from '../helpers/pages.js'
 import {createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.webkit.js'
 
 /**
@@ -54,5 +54,34 @@ test.describe('ios', () => {
 
         // Because of the mock above, assume an email was selected and ensure it's auto-filled
         await emailPage.assertEmailValue(privateAddress0)
+    })
+    test('autofill a login form', async ({page}) => {
+        // enable in-terminal exceptions
+        await forwardConsoleMessages(page)
+
+        const {personalAddress} = constants.fields.email
+        const password = '123456'
+
+        await createWebkitMocks()
+            .withCredentials({
+                id: '01',
+                username: personalAddress,
+                password
+            })
+            .withAvailableInputTypes({
+                credentials: true
+            })
+            .applyTo(page)
+
+        // Load the autofill.js script with replacements
+        await createAutofillScript()
+            .replaceAll(defaultIOSReplacements)
+            .platform('ios')
+            .applyTo(page)
+
+        const login = loginPage(page, server)
+        await login.navigate()
+        await login.clickIntoUsernameInput()
+        await login.assertFirstCredential(personalAddress, password)
     })
 })

@@ -3038,7 +3038,7 @@ class InterfacePrototype {
 
     _defineProperty(this, "globalConfig", void 0);
 
-    _defineProperty(this, "platformConfig", void 0);
+    _defineProperty(this, "runtimeConfiguration", void 0);
 
     _defineProperty(this, "autofillSettings", void 0);
 
@@ -3055,7 +3055,7 @@ class InterfacePrototype {
     });
 
     this.globalConfig = globalConfig;
-    this.platformConfig = platformConfig;
+    this.runtimeConfiguration = platformConfig;
     this.autofillSettings = autofillSettings;
     this.runtime = runtime;
     this.scanner = (0, _Scanner.createScanner)(this, {
@@ -3338,6 +3338,19 @@ class InterfacePrototype {
   }
   /**
    * @param {import("../Form/Form").Form} form
+   * @deprecated
+   */
+
+
+  getEmailAlias(form) {
+    this.getAlias().then(alias => {
+      var _form$activeInput;
+
+      if (alias) form.autofillEmail(alias);else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
+    });
+  }
+  /**
+   * @param {import("../Form/Form").Form} form
    * @param {HTMLInputElement} input
    * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
    * @param {{ x: number; y: number; }} click
@@ -3348,14 +3361,12 @@ class InterfacePrototype {
     form.activeInput = input;
     this.currentAttached = form;
     const inputType = (0, _matching.getInputType)(input);
+    const mainType = (0, _matching.getMainTypeFromType)(inputType);
+    console.log('-->inputType', inputType);
+    console.log('-->mainType', mainType);
 
-    if (this.globalConfig.isMobileApp) {
-      this.getAlias().then(alias => {
-        var _form$activeInput;
-
-        if (alias) form.autofillEmail(alias);else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
-      });
-      return;
+    if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
+      return this.getEmailAlias(form);
     }
     /** @type {TopContextData} */
 
@@ -3375,8 +3386,20 @@ class InterfacePrototype {
       topContextData.credentials = [(0, _Credentials.fromPassword)(password)];
     }
 
-    this.attachCloseListeners();
-    this.attachTooltipInner(form, input, getPosition, click, topContextData);
+    if (this.globalConfig.hasNativeTooltip) {
+      this.runtime.getAutofillData({
+        inputType
+      }).then(resp => {
+        console.log('Autofilling...', resp, mainType);
+        form.autofillData(resp, mainType);
+      }).catch(e => {
+        console.error('this.runtime.getAutofillData');
+        console.error(e);
+      });
+    } else {
+      this.attachCloseListeners();
+      this.attachTooltipInner(form, input, getPosition, click, topContextData);
+    }
   }
 
   attachCloseListeners() {
@@ -8687,6 +8710,7 @@ function createGlobalConfig() {
   const isMobileApp = isDDGApp && !isApp;
   const isFirefox = navigator.userAgent.includes('Firefox');
   const isWindows = navigator.userAgent.includes('Windows 11');
+  const hasNativeTooltip = isMobileApp;
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
   return {
     isApp,
@@ -8703,7 +8727,8 @@ function createGlobalConfig() {
     userUnprotectedDomains,
     userPreferences,
     isDDGTestMode,
-    isDDGDomain
+    isDDGDomain,
+    hasNativeTooltip
   };
 }
 
@@ -9035,6 +9060,8 @@ var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
 
 var _settings = require("../settings/settings");
 
+var _matching = require("../Form/matching");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class Runtime {
@@ -9051,6 +9078,7 @@ class Runtime {
     this.transport = transport;
   }
   /**
+   * @public
    * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
    */
 
@@ -9075,6 +9103,7 @@ class Runtime {
     return config;
   }
   /**
+   * @public
    * @returns {Promise<AvailableInputTypes>}
    */
 
@@ -9082,6 +9111,24 @@ class Runtime {
   async getAvailableInputTypes() {
     const response = await this.transport.send('getAvailableInputTypes');
     return runtimeResponse(response);
+  }
+  /**
+   * @param {GetAutofillDataArgs} input
+   * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
+   */
+
+
+  async getAutofillData(input) {
+    const mainType = (0, _matching.getMainTypeFromType)(input.inputType);
+    const subType = (0, _matching.getSubtypeFromType)(input.inputType);
+    const payload = {
+      inputType: input.inputType,
+      mainType,
+      subType
+    };
+    const response = await this.transport.send('getAutofillData', payload);
+    const data = runtimeResponse(response);
+    return data;
   }
   /**
    * @returns {Promise<import("../settings/settings").AutofillSettings>}
@@ -9160,7 +9207,7 @@ function runtimeResponse(object) {
   throw new Error('unreachable. Response did not contain `success` or `data`');
 }
 
-},{"../settings/settings":42,"../transports/transport.android":45,"../transports/transport.apple":46,"../transports/transport.extension":47,"../transports/transport.windows":48,"@duckduckgo/content-scope-scripts":49}],42:[function(require,module,exports){
+},{"../Form/matching":22,"../settings/settings":42,"../transports/transport.android":45,"../transports/transport.apple":46,"../transports/transport.extension":47,"../transports/transport.windows":48,"@duckduckgo/content-scope-scripts":49}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9625,8 +9672,15 @@ function createTransport(_globalConfig) {
             }, 'getAvailableInputTypesResponse');
           }
 
+        case 'getAutofillData':
+          {
+            return (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+              return window.BrowserAutofill.getAutofillData(data);
+            }, 'getAutofillDataResponse');
+          }
+
         default:
-          throw new Error('android: not implemented' + name);
+          throw new Error('android: not implemented: ' + name);
       }
     }
 

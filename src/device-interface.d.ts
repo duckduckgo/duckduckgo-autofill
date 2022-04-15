@@ -93,6 +93,9 @@ interface GlobalConfig {
      isDDGApp: boolean;
      isAndroid: boolean;
      isFirefox: boolean;
+     /**
+      * @deprecated use platformConfiguration.platform instead
+      */
      isMobileApp: boolean;
      isWindows: boolean;
      isTopFrame: boolean;
@@ -104,6 +107,7 @@ interface GlobalConfig {
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
+     hasNativeTooltip: boolean;
 }
 
 type PlatformConfig = import("@duckduckgo/content-scope-scripts").RuntimeConfiguration;

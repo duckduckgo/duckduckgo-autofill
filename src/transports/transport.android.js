@@ -20,7 +20,12 @@ export function createTransport (_globalConfig) {
                     return window.BrowserAutofill.getAvailableInputTypes()
                 }, 'getAvailableInputTypesResponse')
             }
-            default: throw new Error('android: not implemented' + name)
+            case 'getAutofillData': {
+                return sendAndWaitForAnswer(() => {
+                    return window.BrowserAutofill.getAutofillData(data)
+                }, 'getAutofillDataResponse')
+            }
+            default: throw new Error('android: not implemented: ' + name)
             }
         }
     }

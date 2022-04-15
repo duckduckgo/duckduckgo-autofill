@@ -51,6 +51,8 @@ export function createAndroidMocks () {
             credentials: true,
             email: true
         },
+        /** @type {IdentityObject|CredentialsObject|CreditCardObject|null} */
+        getAutofillData: null,
         /** @type {string|null} */
         address: null
     }
@@ -66,6 +68,20 @@ export function createAndroidMocks () {
         },
         withAvailableInputTypes (inputTypes) {
             mocks.inputTypes = inputTypes
+            return this
+        },
+        withIdentity: function () {
+            throw new Error('Function not implemented.')
+        },
+        withFeatureToggles (_featureToggles) {
+            throw new Error('withFeatureToggles not implemented for android yet')
+        },
+        /**
+         * @param credentials
+         * @returns {MockBuilder}
+         */
+        withCredentials: function (credentials) {
+            mocks.getAutofillData = credentials
             return this
         },
         tap () {
@@ -100,18 +116,15 @@ export function createAndroidMocks () {
                             type: 'getAvailableInputTypesResponse',
                             success: mocks.getAvailableInputTypesResponse
                         }, window.origin)
+                    },
+                    getAutofillData (_data) {
+                        window.postMessage({
+                            type: 'getAutofillDataResponse',
+                            success: mocks.getAutofillData
+                        }, window.origin)
                     }
                 }
             }, mocks)
-        },
-        withIdentity: function () {
-            throw new Error('Function not implemented.')
-        },
-        withFeatureToggles (_featureToggles) {
-            throw new Error('withFeatureToggles not implemented for android yet')
-        },
-        withCredentials: function () {
-            throw new Error('Function not implemented.')
         }
     }
     return builder

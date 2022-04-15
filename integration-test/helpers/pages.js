@@ -77,6 +77,12 @@ export function loginPage (page, server) {
         async navigate () {
             await page.goto(server.urlForPath(constants.pages['login']))
         },
+        async clickIntoUsernameInput () {
+            const usernameField = page.locator('#email' + `[data-ddg-inputtype="credentials.username"]`)
+            // const input = page.locator(selectors.identity)
+            // click the input field (not within Dax icon)
+            await usernameField.click()
+        },
         /**
          * @param {string} username
          * @return {Promise<void>}
