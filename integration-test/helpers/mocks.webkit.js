@@ -124,7 +124,8 @@ export function createWebkitMocks (platform = 'macos') {
         getAutofillData: {
             /** @type {(IdentityObject|CredentialsObject|CredentialsObject) | null} */
             success: null
-        }
+        },
+        storeFormData: {}
     }
 
     /** @type {MockBuilder} */
@@ -184,12 +185,15 @@ export function createWebkitMocks (platform = 'macos') {
 async function withMockedWebkit (page, mocks) {
     await page.addInitScript((mocks) => {
         window.webkit = {
+            calls: [],
             messageHandlers: {}
         }
 
         for (let [msgName, response] of Object.entries(mocks)) {
             window.webkit.messageHandlers[msgName] = {
-                postMessage: async () => {
+                postMessage: async (data) => {
+                    const cloned = JSON.parse(JSON.stringify([msgName, data, response]));
+                    window.webkit.calls.push(cloned);
                     return JSON.stringify(response)
                 }
             }

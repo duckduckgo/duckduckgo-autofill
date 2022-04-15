@@ -57,6 +57,28 @@ export function signupPage (page, server) {
             const button = page.locator(`button:has-text("${selector}")`)
             await button.click({ force: true })
         },
+        /**
+         * @param {Omit<CredentialsObject, "id">} credentials
+         * @returns {Promise<void>}
+         */
+        async enterCredentials(credentials) {
+            const {identity} = constants.fields.email.selectors
+            const {credential} = constants.fields.password.selectors
+            await page.fill(identity, credentials.username);
+            await page.fill("#password" + credential, credentials.password || "");
+            await page.fill("#password-2" + credential, credentials.password || "");
+            await page.locator(`button:has-text("Sign up")`).click();
+        },
+        /**
+         * @param {Omit<CredentialsObject, "id">} credentials
+         * @returns {Promise<void>}
+         */
+        async assertWasPromptedToSave(credentials) {
+            const calls = await page.evaluate('window.webkit.calls');
+            const storeCalls = calls.find(([name]) => name === "storeFormData");
+            const [_name, sent, _response] = storeCalls;
+            expect(sent.credentials).toEqual(credentials)
+        },
         async assertSecondEmailValue (emailAddress) {
             const input = page.locator(decoratedSecondInputSelector)
             await expect(input).toHaveValue(emailAddress)

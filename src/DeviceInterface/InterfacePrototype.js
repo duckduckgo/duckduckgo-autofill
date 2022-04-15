@@ -241,6 +241,10 @@ class InterfacePrototype {
 
         if (!this.globalConfig.isApp) return
 
+        // exit now if form saving was not enabled
+        // todo(Shane): more runtime polymorphism here
+        if (!this.autofillSettings.featureToggles.credentials_saving) return
+
         // Check for clicks on submit buttons
         const matchingForm = [...this.scanner.forms.values()].find(
             (form) => {
@@ -252,6 +256,7 @@ class InterfacePrototype {
                 if (btns.find((btn) => btn.contains(e.target))) return true
             }
         )
+
         matchingForm?.submitHandler()
     }
 

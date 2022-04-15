@@ -11,7 +11,7 @@ export function createTransport (config) {
     /** @type {Transport} */
     const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
         async send (name, data) {
-            console.log('🍏', name, data)
+            console.log('🍏', name, JSON.stringify(data))
             if (interceptions[name]) {
                 console.log('--> intercepted', name, data)
                 return { success: interceptions[name](config) }

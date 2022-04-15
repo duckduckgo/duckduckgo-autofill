@@ -2676,7 +2676,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeFormData(data) {
-    return this.transport.send('pmHandlerStoreData', data);
+    return this.runtime.storeFormData(data);
   }
   /**
    * Gets the init data from the device
@@ -3242,7 +3242,10 @@ class InterfacePrototype {
       this.removeTooltip();
     }
 
-    if (!this.globalConfig.isApp) return; // Check for clicks on submit buttons
+    if (!this.globalConfig.isApp) return; // exit now if form saving was not enabled
+    // todo(Shane): more runtime polymorphism here
+
+    if (!this.autofillSettings.featureToggles.credentials_saving) return; // Check for clicks on submit buttons
 
     const matchingForm = [...this.scanner.forms.values()].find(form => {
       const btns = [...form.submitButtons]; // @ts-ignore
@@ -9146,6 +9149,15 @@ class Runtime {
     return data;
   }
   /**
+   * @param {DataStorageObject} data
+   * @returns {Promise<void>}
+   */
+
+
+  async storeFormData(data) {
+    return this.transport.send('storeFormData', data);
+  }
+  /**
    * @returns {Promise<import("../settings/settings").AutofillSettings>}
    */
 
@@ -9727,7 +9739,7 @@ function createTransport(config) {
   const transport = {
     // this is a separate variable to ensure type-safety is not lost when returning directly
     async send(name, data) {
-      console.log('🍏', name, data);
+      console.log('🍏', name, JSON.stringify(data));
 
       if (interceptions[name]) {
         console.log('--> intercepted', name, data);

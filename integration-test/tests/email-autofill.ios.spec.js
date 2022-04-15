@@ -84,26 +84,29 @@ test.describe('ios', () => {
         await login.clickIntoUsernameInput()
         await login.assertFirstCredential(personalAddress, password)
     })
-    test.skip('Prompting to save from a signup form', async ({page}) => {
+    test('Prompting to save from a signup form', async ({page}) => {
         // enable in-terminal exceptions
-        // await forwardConsoleMessages(page)
-        //
-        // const {personalAddress} = constants.fields.email
-        // const password = '123456'
-        //
-        // await createWebkitMocks()
-        //     .applyTo(page)
-        //
-        // // Load the autofill.js script with replacements
-        // await createAutofillScript()
-        //     .replaceAll(defaultIOSReplacements)
-        //     .platform('ios')
-        //     .applyTo(page)
-        //
-        // const signup = signupPage(page, server)
-        // await signup.navigate()
-        // await page.pause();
-        // await signup.clickIntoUsernameInput()
-        // await signup.assertFirstCredential(personalAddress, password)
+        await forwardConsoleMessages(page)
+
+        const {personalAddress} = constants.fields.email
+
+        const credentials = {
+            username: personalAddress,
+            password: '123456',
+        }
+
+        await createWebkitMocks()
+            .applyTo(page)
+
+        // Load the autofill.js script with replacements
+        await createAutofillScript()
+            .replaceAll(defaultIOSReplacements)
+            .platform('ios')
+            .applyTo(page)
+
+        const signup = signupPage(page, server)
+        await signup.navigate()
+        await signup.enterCredentials(credentials)
+        await signup.assertWasPromptedToSave(credentials)
     })
 })

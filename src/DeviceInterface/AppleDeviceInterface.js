@@ -217,7 +217,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        return this.transport.send('pmHandlerStoreData', data)
+        return this.runtime.storeFormData(data)
     }
 
     /**

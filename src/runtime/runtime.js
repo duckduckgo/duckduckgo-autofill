@@ -68,6 +68,14 @@ class Runtime {
     }
 
     /**
+     * @param {DataStorageObject} data
+     * @returns {Promise<void>}
+     */
+    async storeFormData(data) {
+        return this.transport.send('storeFormData', data);
+    }
+
+    /**
      * @returns {Promise<import("../settings/settings").AutofillSettings>}
      */
     async getAutofillSettings (platformConfig) {
