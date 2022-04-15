@@ -105,7 +105,8 @@ export function createAndroidMocks () {
                     }
                 }
                 // todo(Shane): This is the proposed android API.
-                window.BrowserAutofill = {
+                /** @type {MocksObjectAndroid} */
+                const mocksObject = {
                     getRuntimeConfiguration () {
                         window.postMessage({
                             type: 'getRuntimeConfigurationResponse',
@@ -134,6 +135,7 @@ export function createAndroidMocks () {
                         }, window.origin)
                     }
                 }
+                window.BrowserAutofill = mocksObject
             }, mocks)
         }
     }

@@ -1,15 +1,19 @@
 /**
  * @param {GlobalConfig} globalConfig
- * @returns {Transport}
+ * @returns {RuntimeTransport}
  */
 export function createTransport (globalConfig) {
-    /** @type {Transport} */
+    /** @type {RuntimeTransport} */
     const transport = {
+        /**
+         * @param {Names} name
+         * @param data
+         */
         async send (name, data) {
             console.log('extension:', name, data)
             if (interceptions[name]) {
                 console.log('--> intercepted', name, data)
-                return { success: interceptions[name](globalConfig) }
+                return interceptions[name]?.(globalConfig)
             }
             throw new Error('not implemented for extension: ' + name)
         }
@@ -18,14 +22,19 @@ export function createTransport (globalConfig) {
     return transport
 }
 
+/**
+ * @type {Interceptions}
+ */
 const interceptions = {
     // todo(Shane): Get available extension types
     'getAvailableInputTypes': () => {
         return {
-            credentials: false,
-            identities: false,
-            creditCards: false,
-            email: true
+            success: {
+                credentials: false,
+                identities: false,
+                creditCards: false,
+                email: true
+            }
         }
     },
     /**
@@ -44,31 +53,33 @@ const interceptions = {
             'credentials_saving': false
         }
         return {
-            contentScope: {
-                features: {
-                    autofill: {
-                        state: 'enabled',
-                        exceptions: []
-                    }
-                },
-                unprotectedTemporary: [],
-                ...globalConfig.contentScope
-            },
-            userPreferences: {
-                sessionKey: '',
-                debug: false,
-                globalPrivacyControlValue: false,
-                platform: {name: 'extension'},
-                features: {
-                    autofill: {
-                        settings: {
-                            featureToggles: featureToggles
+            success: {
+                contentScope: {
+                    features: {
+                        autofill: {
+                            state: 'enabled',
+                            exceptions: []
                         }
-                    }
+                    },
+                    unprotectedTemporary: [],
+                    ...globalConfig.contentScope
                 },
-                ...globalConfig.userPreferences
-            },
-            userUnprotectedDomains: globalConfig.userUnprotectedDomains || []
+                userPreferences: {
+                    sessionKey: '',
+                    debug: false,
+                    globalPrivacyControlValue: false,
+                    platform: {name: 'extension'},
+                    features: {
+                        autofill: {
+                            settings: {
+                                featureToggles: featureToggles
+                            }
+                        }
+                    },
+                    ...globalConfig.userPreferences
+                },
+                userUnprotectedDomains: globalConfig.userUnprotectedDomains || []
+            }
         }
     }
 }

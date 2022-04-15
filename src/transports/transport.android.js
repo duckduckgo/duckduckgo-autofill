@@ -2,10 +2,10 @@ import {sendAndWaitForAnswer} from '../autofill-utils'
 
 /**
  * @param {GlobalConfig} _globalConfig
- * @returns {Transport}
+ * @returns {RuntimeTransport}
  */
 export function createTransport (_globalConfig) {
-    /** @type {Transport} */
+    /** @type {RuntimeTransport} */
     const transport = {
         async send (name, data) {
             console.log('📲 android:', name, data)

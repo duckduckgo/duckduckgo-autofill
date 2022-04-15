@@ -9081,11 +9081,11 @@ var _matching = require("../Form/matching");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class Runtime {
-  /** @type {Transport} */
+  /** @type {RuntimeTransport} */
 
   /**
    * @param {GlobalConfig} globalConfig
-   * @param {Transport} transport
+   * @param {RuntimeTransport} transport
    */
   constructor(globalConfig, transport) {
     _defineProperty(this, "transport", void 0);
@@ -9120,14 +9120,26 @@ class Runtime {
   }
   /**
    * @public
-   * @returns {Promise<AvailableInputTypes>}
+   * @returns {Promise<RuntimeMessages['getAvailableInputTypes']['response']['success']>}
    */
 
 
   async getAvailableInputTypes() {
     const response = await this.transport.send('getAvailableInputTypes');
     return runtimeResponse(response);
-  }
+  } // /**
+  //  * @template {Names} T
+  //  * @param {T} name
+  //  * @param {RuntimeMessages[T]['request']} data
+  //  */
+  // sender(name, data) {
+  //     switch (name) {
+  //     case 'getAvailableInputTypes': {
+  //         const is = (data === null)
+  //     }
+  //     }
+  // }
+
   /**
    * @param {GetAutofillDataArgs} input
    * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
@@ -9148,7 +9160,6 @@ class Runtime {
   }
   /**
    * @param {DataStorageObject} data
-   * @returns {Promise<void>}
    */
 
 
@@ -9178,7 +9189,7 @@ function createRuntime(config) {
  * This is because an initial message to retrieve the platform configuration might be needed
  *
  * @param {GlobalConfig} globalConfig
- * @returns {Transport}
+ * @returns {RuntimeTransport}
  */
 
 
@@ -9674,10 +9685,10 @@ var _autofillUtils = require("../autofill-utils");
 
 /**
  * @param {GlobalConfig} _globalConfig
- * @returns {Transport}
+ * @returns {RuntimeTransport}
  */
 function createTransport(_globalConfig) {
-  /** @type {Transport} */
+  /** @type {RuntimeTransport} */
   const transport = {
     async send(name, data) {
       console.log('📲 android:', name, data);
@@ -9736,21 +9747,26 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Create a wrapper around the webkit messaging that conforms
  * to the Transport interface
  *
- * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {Transport}
+ * @param {GlobalConfig} config
+ * @returns {RuntimeTransport}
  */
 function createTransport(config) {
-  /** @type {Transport} */
+  /** @type {RuntimeTransport} */
   const transport = {
     // this is a separate variable to ensure type-safety is not lost when returning directly
+
+    /**
+     * @param {Names} name
+     * @param data
+     */
     async send(name, data) {
       console.log('🍏', name, JSON.stringify(data));
 
-      if (interceptions[name]) {
+      if (name in interceptions) {
+        var _interceptions$name;
+
         console.log('--> intercepted', name, data);
-        return {
-          success: interceptions[name](config)
-        };
+        return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, config);
       }
 
       const response = await wkSendAndWait(name, data, {
@@ -9764,6 +9780,10 @@ function createTransport(config) {
   };
   return transport;
 }
+/**
+ * @type {Interceptions}
+ */
+
 
 const interceptions = {
   // 'getAvailableInputTypes': () => {
@@ -9777,9 +9797,11 @@ const interceptions = {
    */
   'getRuntimeConfiguration': globalConfig => {
     return {
-      contentScope: globalConfig.contentScope,
-      userPreferences: globalConfig.userPreferences,
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains
+      success: {
+        contentScope: globalConfig.contentScope,
+        userPreferences: globalConfig.userPreferences,
+        userUnprotectedDomains: globalConfig.userUnprotectedDomains
+      }
     };
   }
 };
@@ -9908,19 +9930,23 @@ exports.createTransport = createTransport;
 
 /**
  * @param {GlobalConfig} globalConfig
- * @returns {Transport}
+ * @returns {RuntimeTransport}
  */
 function createTransport(globalConfig) {
-  /** @type {Transport} */
+  /** @type {RuntimeTransport} */
   const transport = {
+    /**
+     * @param {Names} name
+     * @param data
+     */
     async send(name, data) {
       console.log('extension:', name, data);
 
       if (interceptions[name]) {
+        var _interceptions$name;
+
         console.log('--> intercepted', name, data);
-        return {
-          success: interceptions[name](globalConfig)
-        };
+        return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, globalConfig);
       }
 
       throw new Error('not implemented for extension: ' + name);
@@ -9929,15 +9955,21 @@ function createTransport(globalConfig) {
   };
   return transport;
 }
+/**
+ * @type {Interceptions}
+ */
+
 
 const interceptions = {
   // todo(Shane): Get available extension types
   'getAvailableInputTypes': () => {
     return {
-      credentials: false,
-      identities: false,
-      creditCards: false,
-      email: true
+      success: {
+        credentials: false,
+        identities: false,
+        creditCards: false,
+        email: true
+      }
     };
   },
 
@@ -9957,33 +9989,35 @@ const interceptions = {
       'credentials_saving': false
     };
     return {
-      contentScope: {
-        features: {
-          autofill: {
-            state: 'enabled',
-            exceptions: []
-          }
-        },
-        unprotectedTemporary: [],
-        ...globalConfig.contentScope
-      },
-      userPreferences: {
-        sessionKey: '',
-        debug: false,
-        globalPrivacyControlValue: false,
-        platform: {
-          name: 'extension'
-        },
-        features: {
-          autofill: {
-            settings: {
-              featureToggles: featureToggles
+      success: {
+        contentScope: {
+          features: {
+            autofill: {
+              state: 'enabled',
+              exceptions: []
             }
-          }
+          },
+          unprotectedTemporary: [],
+          ...globalConfig.contentScope
         },
-        ...globalConfig.userPreferences
-      },
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains || []
+        userPreferences: {
+          sessionKey: '',
+          debug: false,
+          globalPrivacyControlValue: false,
+          platform: {
+            name: 'extension'
+          },
+          features: {
+            autofill: {
+              settings: {
+                featureToggles: featureToggles
+              }
+            }
+          },
+          ...globalConfig.userPreferences
+        },
+        userUnprotectedDomains: globalConfig.userUnprotectedDomains || []
+      }
     };
   }
 };
@@ -9998,10 +10032,10 @@ exports.createTransport = createTransport;
 
 /**
  * @param {GlobalConfig} _globalConfig
- * @returns {Transport}
+ * @returns {RuntimeTransport}
  */
 function createTransport(_globalConfig) {
-  /** @type {Transport} */
+  /** @type {RuntimeTransport} */
   const transport = {
     async send(name, data) {
       console.log('📲 windows:', name, data);

@@ -112,20 +112,17 @@ export function createWebkitMocks (platform = 'macos') {
         },
         closeAutofillParent: {},
         getSelectedCredentials: {type: 'none'},
-
         pmHandlerGetAutofillCredentials: {
             /** @type {CredentialsObject|null} */
             success: null
         },
-        getAvailableInputTypes: {
-            /** @type {AvailableInputTypes|null} */
-            success: {}
-        },
-        getAutofillData: {
-            /** @type {(IdentityObject|CredentialsObject|CredentialsObject) | null} */
-            success: null
-        },
-        storeFormData: {}
+    }
+
+    /** @type {MocksObjectWebkit} */
+    const mocksObject = {
+        getAutofillData: null,
+        getAvailableInputTypes: null,
+        storeFormData: null
     }
 
     /** @type {MockBuilder} */
@@ -153,11 +150,11 @@ export function createWebkitMocks (platform = 'macos') {
         withCredentials: function (credentials) {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
-            webkitBase.getAutofillData.success = credentials
+            mocksObject.getAutofillData = { success: credentials }
             return this
         },
         withAvailableInputTypes: function (inputTypes) {
-            webkitBase.getAvailableInputTypes.success = inputTypes
+            mocksObject.getAvailableInputTypes = { success: inputTypes }
             return this
         },
         withFeatureToggles: function (_featureToggles) {
@@ -168,7 +165,10 @@ export function createWebkitMocks (platform = 'macos') {
             return this
         },
         async applyTo (page) {
-            return withMockedWebkit(page, webkitBase)
+            if (mocksObject.getAvailableInputTypes === null) {
+                mocksObject.getAvailableInputTypes = {success: {}};
+            }
+            return withMockedWebkit(page, { ...webkitBase, ...mocksObject })
         }
     }
 

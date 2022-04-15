@@ -40,6 +40,7 @@ describe('wkSendAndWait', () => {
     it('returns the expected unencrypted data', async () => {
         const config = createGlobalConfig()
         const transport = createTransport(config)
+        // @ts-ignore
         const response = await transport.send('testMock', {})
         const data = runtimeResponse(response)
         expect(data).toBe('test')

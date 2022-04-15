@@ -4,17 +4,21 @@ import ddgGlobals from './captureDdgGlobals'
  * Create a wrapper around the webkit messaging that conforms
  * to the Transport interface
  *
- * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {Transport}
+ * @param {GlobalConfig} config
+ * @returns {RuntimeTransport}
  */
 export function createTransport (config) {
-    /** @type {Transport} */
+    /** @type {RuntimeTransport} */
     const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
+        /**
+         * @param {Names} name
+         * @param data
+         */
         async send (name, data) {
             console.log('🍏', name, JSON.stringify(data))
-            if (interceptions[name]) {
+            if (name in interceptions) {
                 console.log('--> intercepted', name, data)
-                return { success: interceptions[name](config) }
+                return interceptions[name]?.(config)
             }
             const response = await wkSendAndWait(name, data, {
                 secret: config.secret,
@@ -27,6 +31,9 @@ export function createTransport (config) {
     return transport
 }
 
+/**
+ * @type {Interceptions}
+ */
 const interceptions = {
     // 'getAvailableInputTypes': () => {
     //     return {
@@ -38,9 +45,11 @@ const interceptions = {
      */
     'getRuntimeConfiguration': (globalConfig) => {
         return {
-            contentScope: globalConfig.contentScope,
-            userPreferences: globalConfig.userPreferences,
-            userUnprotectedDomains: globalConfig.userUnprotectedDomains
+            success: {
+                contentScope: globalConfig.contentScope,
+                userPreferences: globalConfig.userPreferences,
+                userUnprotectedDomains: globalConfig.userUnprotectedDomains
+            }
         }
     }
 }

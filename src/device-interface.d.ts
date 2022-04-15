@@ -88,6 +88,11 @@ interface Transport {
      send(name: string, data?: any): Promise<any>
 }
 
+interface RuntimeTransport<T extends Record<Names, RuntimeMessage>> {
+     send<N extends Names>(name: N, data?: T[N]['request']): Promise<T[N]['response']>
+}
+
+
 interface GlobalConfig {
      isApp: boolean;
      isDDGApp: boolean;

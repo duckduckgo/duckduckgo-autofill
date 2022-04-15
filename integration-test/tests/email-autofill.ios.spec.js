@@ -95,8 +95,7 @@ test.describe('ios', () => {
             password: '123456'
         }
 
-        await createWebkitMocks()
-            .applyTo(page)
+        await createWebkitMocks().applyTo(page)
 
         // Load the autofill.js script with replacements
         await createAutofillScript()

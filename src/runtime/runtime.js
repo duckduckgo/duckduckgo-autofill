@@ -8,12 +8,12 @@ import {fromPlatformConfig} from '../settings/settings'
 import {getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
 
 class Runtime {
-    /** @type {Transport} */
+    /** @type {RuntimeTransport} */
     transport;
 
     /**
      * @param {GlobalConfig} globalConfig
-     * @param {Transport} transport
+     * @param {RuntimeTransport} transport
      */
     constructor (globalConfig, transport) {
         this.globalConfig = globalConfig
@@ -43,12 +43,25 @@ class Runtime {
 
     /**
      * @public
-     * @returns {Promise<AvailableInputTypes>}
+     * @returns {Promise<RuntimeMessages['getAvailableInputTypes']['response']['success']>}
      */
     async getAvailableInputTypes () {
         const response = await this.transport.send('getAvailableInputTypes')
         return runtimeResponse(response)
     }
+
+    // /**
+    //  * @template {Names} T
+    //  * @param {T} name
+    //  * @param {RuntimeMessages[T]['request']} data
+    //  */
+    // sender(name, data) {
+    //     switch (name) {
+    //     case 'getAvailableInputTypes': {
+    //         const is = (data === null)
+    //     }
+    //     }
+    // }
 
     /**
      * @param {GetAutofillDataArgs} input
@@ -69,7 +82,6 @@ class Runtime {
 
     /**
      * @param {DataStorageObject} data
-     * @returns {Promise<void>}
      */
     async storeFormData (data) {
         return this.transport.send('storeFormData', data)
@@ -94,7 +106,7 @@ function createRuntime (config) {
  * This is because an initial message to retrieve the platform configuration might be needed
  *
  * @param {GlobalConfig} globalConfig
- * @returns {Transport}
+ * @returns {RuntimeTransport}
  */
 function selectTransport (globalConfig) {
     if (typeof globalConfig.userPreferences?.platform?.name === 'string') {
