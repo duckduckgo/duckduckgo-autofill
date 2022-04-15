@@ -24,7 +24,7 @@ test.describe('ios', () => {
     })
     test('should autofill the selected email', async ({page}) => {
         // enable in-terminal exceptions
-        forwardConsoleMessages(page)
+        await forwardConsoleMessages(page)
 
         await createWebkitMocks('ios')
             .withPersonalEmail('0')

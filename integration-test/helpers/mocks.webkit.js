@@ -84,7 +84,7 @@ export function createWebkitMocks (platform = 'macos') {
         },
         getAvailableInputTypes: {
             /** @type {AvailableInputTypes|null} */
-            data: {}
+            success: {}
         }
     }
 
@@ -116,11 +116,10 @@ export function createWebkitMocks (platform = 'macos') {
             return this
         },
         withAvailableInputTypes: function (inputTypes) {
-            webkitBase.getAvailableInputTypes.data = inputTypes
+            webkitBase.getAvailableInputTypes.success = inputTypes
             return this
         },
         withFeatureToggles: function (_featureToggles) {
-            // webkitBase.getAvailableInputTypes.success = inputTypes
             return this
         },
         tap (fn) {

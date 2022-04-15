@@ -95,13 +95,13 @@ export function createWindowsMocks () {
                             case 'GetRuntimeConfiguration': {
                                 return emit({
                                     type: 'GetRuntimeConfigurationResponse',
-                                    data: mocks.getRuntimeConfiguration
+                                    success: mocks.getRuntimeConfiguration
                                 })
                             }
                             case 'GetAvailableInputTypes': {
                                 return emit({
                                     type: 'GetAvailableInputTypesResponse',
-                                    data: mocks.getAvailableInputTypes
+                                    success: mocks.getAvailableInputTypes
                                 })
                             }
                             }

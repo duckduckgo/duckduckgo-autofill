@@ -92,13 +92,13 @@ export function createAndroidMocks () {
                     getRuntimeConfiguration () {
                         window.postMessage({
                             type: 'getRuntimeConfigurationResponse',
-                            data: mocks.getRuntimeConfigurationResponse
+                            success: mocks.getRuntimeConfigurationResponse
                         }, window.origin)
                     },
                     getAvailableInputTypes () {
                         window.postMessage({
                             type: 'getAvailableInputTypesResponse',
-                            data: mocks.getAvailableInputTypesResponse
+                            success: mocks.getAvailableInputTypesResponse
                         }, window.origin)
                     }
                 }

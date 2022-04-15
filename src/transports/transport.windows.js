@@ -18,7 +18,7 @@ export function createTransport (_globalConfig) {
                     return window.chrome.webview.postMessage({ commandName: 'GetAvailableInputTypes' })
                 }, 'GetAvailableInputTypesResponse')
             }
-            default: throw new Error('windows: not implemented' + name)
+            default: throw new Error('windows: not implemented: ' + name)
             }
         }
     }

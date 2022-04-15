@@ -14,7 +14,7 @@ export function createTransport (config) {
             console.log('🍏', name, data)
             if (interceptions[name]) {
                 console.log('--> intercepted', name, data)
-                return { data: interceptions[name](config) }
+                return { success: interceptions[name](config) }
             }
             return wkSendAndWait(name, data, {
                 secret: config.secret,
@@ -116,7 +116,6 @@ const generateRandomMethod = (randomMethodName, callback) => {
 const wkSendAndWait = async (handler, data = {}, opts = {}) => {
     if (opts.hasModernWebkitAPI) {
         const response = await wkSend(handler, data, opts)
-        console.log(response)
         return ddgGlobals.JSONparse(response || '{}')
     }
 

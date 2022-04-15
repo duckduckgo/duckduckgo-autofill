@@ -24,8 +24,8 @@ class Runtime {
      */
     async getRuntimeConfiguration () {
         // todo(Shane): Schema validation here
-        const { data } = await this.transport.send('getRuntimeConfiguration')
-        if (!data) throw new Error(`getRuntimeConfiguration didn't return 'data'`)
+        const response = await this.transport.send('getRuntimeConfiguration')
+        const data = runtimeResponse(response);
 
         const {config, errors} = tryCreateRuntimeConfiguration(data)
 
@@ -43,11 +43,8 @@ class Runtime {
      * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes () {
-        const r = await this.transport.send('getAvailableInputTypes')
-        console.log('r', r)
-        const { data } = r
-        if (!data) throw new Error(`getAvailableInputTypes didn't return 'data'`)
-        return data
+        const response = await this.transport.send('getAvailableInputTypes')
+        return runtimeResponse(response);
     }
 
     /**
@@ -96,4 +93,19 @@ function selectTransport (globalConfig) {
     return createExtensionTransport(globalConfig)
 }
 
-export { Runtime, createRuntime }
+
+/**
+ * @param {APIResponseSingle<any>} object
+ */
+function runtimeResponse(object) {
+    if ('data' in object) {
+        console.warn('response had `data` property. Please migrate to `success`')
+        return object.data;
+    }
+    if ('success' in object) {
+        return object.success;
+    }
+    throw new Error('unreachable. Response did not contain `success` or `data`')
+}
+
+export { Runtime, createRuntime, runtimeResponse }

@@ -9021,6 +9021,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Runtime = void 0;
 exports.createRuntime = createRuntime;
+exports.runtimeResponse = runtimeResponse;
 
 var _transport = require("../transports/transport.apple");
 
@@ -9056,10 +9057,8 @@ class Runtime {
 
   async getRuntimeConfiguration() {
     // todo(Shane): Schema validation here
-    const {
-      data
-    } = await this.transport.send('getRuntimeConfiguration');
-    if (!data) throw new Error("getRuntimeConfiguration didn't return 'data'");
+    const response = await this.transport.send('getRuntimeConfiguration');
+    const data = runtimeResponse(response);
     const {
       config,
       errors
@@ -9081,13 +9080,8 @@ class Runtime {
 
 
   async getAvailableInputTypes() {
-    const r = await this.transport.send('getAvailableInputTypes');
-    console.log('r', r);
-    const {
-      data
-    } = r;
-    if (!data) throw new Error("getAvailableInputTypes didn't return 'data'");
-    return data;
+    const response = await this.transport.send('getAvailableInputTypes');
+    return runtimeResponse(response);
   }
   /**
    * @returns {Promise<import("../settings/settings").AutofillSettings>}
@@ -9147,6 +9141,23 @@ function selectTransport(globalConfig) {
 
 
   return (0, _transport3.createTransport)(globalConfig);
+}
+/**
+ * @param {APIResponseSingle<any>} object
+ */
+
+
+function runtimeResponse(object) {
+  if ('data' in object) {
+    console.warn('response had `data` property. Please migrate to `success`');
+    return object.data;
+  }
+
+  if ('success' in object) {
+    return object.success;
+  }
+
+  throw new Error('unreachable. Response did not contain `success` or `data`');
 }
 
 },{"../settings/settings":42,"../transports/transport.android":45,"../transports/transport.apple":46,"../transports/transport.extension":47,"../transports/transport.windows":48,"@duckduckgo/content-scope-scripts":49}],42:[function(require,module,exports){
@@ -9652,7 +9663,7 @@ function createTransport(config) {
       if (interceptions[name]) {
         console.log('--> intercepted', name, data);
         return {
-          data: interceptions[name](config)
+          success: interceptions[name](config)
         };
       }
 
@@ -9770,7 +9781,6 @@ const wkSendAndWait = async function (handler) {
 
   if (opts.hasModernWebkitAPI) {
     const response = await wkSend(handler, data, opts);
-    console.log(response);
     return _captureDdgGlobals.default.JSONparse(response || '{}');
   }
 
@@ -9851,7 +9861,7 @@ function createTransport(globalConfig) {
       if (interceptions[name]) {
         console.log('--> intercepted', name, data);
         return {
-          data: interceptions[name](globalConfig)
+          success: interceptions[name](globalConfig)
         };
       }
 
@@ -9941,7 +9951,7 @@ function createTransport(_globalConfig) {
       switch (name) {
         case 'getRuntimeConfiguration':
           {
-            return await sendAndWait(() => {
+            return sendAndWait(() => {
               return window.chrome.webview.postMessage({
                 commandName: 'GetRuntimeConfiguration'
               });
@@ -9950,7 +9960,7 @@ function createTransport(_globalConfig) {
 
         case 'getAvailableInputTypes':
           {
-            return await sendAndWait(() => {
+            return sendAndWait(() => {
               return window.chrome.webview.postMessage({
                 commandName: 'GetAvailableInputTypes'
               });
@@ -9958,7 +9968,7 @@ function createTransport(_globalConfig) {
           }
 
         default:
-          throw new Error('windows: not implemented' + name);
+          throw new Error('windows: not implemented: ' + name);
       }
     }
 
