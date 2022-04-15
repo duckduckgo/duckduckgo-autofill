@@ -20,7 +20,7 @@ export function createTransport (config) {
                 secret: config.secret,
                 hasModernWebkitAPI: config.hasModernWebkitAPI
             })
-            console.log('\t🍏📲', JSON.stringify(response))
+            console.log('\t🍏📲', response)
             return response;
         }
     }
