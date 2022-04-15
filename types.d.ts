@@ -12,6 +12,7 @@ interface Window {
     // Used in the Android app
     EmailInterface: any
 
+
     // Used in the Android app
     BrowserAutofill: any
 
@@ -25,4 +26,10 @@ interface Window {
 
     // Used in Apple apps
     webkit: any
+
+    __playwright: {
+        mocks: {
+            calls: MockCall[]
+        }
+    }
 }

@@ -25,7 +25,13 @@ export function createTransport (_globalConfig) {
                     return window.BrowserAutofill.getAutofillData(data)
                 }, 'getAutofillDataResponse')
             }
-            default: throw new Error('android: not implemented: ' + name)
+            case 'storeFormData': {
+                return sendAndWaitForAnswer(() => {
+                    return window.BrowserAutofill.storeFormData(data)
+                }, 'storeFormDataResponse')
+            }
+            default:
+                throw new Error('android: not implemented: ' + name)
             }
         }
     }

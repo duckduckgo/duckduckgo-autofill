@@ -72,7 +72,7 @@ test.describe('macos', () => {
         await emailPage.assertEmailValue(privateAddress0)
     })
     test.describe('auto filling a signup form', () => {
-        async function applyScript(page) {
+        async function applyScript (page) {
             await createAutofillScript()
                 .replace('isApp', true)
                 .replaceAll(defaultMacosReplacements({}))
@@ -85,7 +85,7 @@ test.describe('macos', () => {
             title: 'Main identity',
             firstName: 'shane',
             emailAddress: personalAddress
-        };
+        }
         test('with an identity only', async ({page}) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page, server)
@@ -97,7 +97,7 @@ test.describe('macos', () => {
                 })
                 .applyTo(page)
 
-            await applyScript(page);
+            await applyScript(page)
 
             await signup.navigate()
             await signup.assertEmailHasNoDaxIcon()
@@ -109,7 +109,7 @@ test.describe('macos', () => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page, server)
             await createWebkitMocks().applyTo(page)
-            await applyScript(page);
+            await applyScript(page)
             await signup.navigate()
 
             // should still allow password generation
@@ -129,7 +129,7 @@ test.describe('macos', () => {
                 .platform('macos')
                 .applyTo(page)
             await signup.navigate()
-            await signup.assertPasswordHasNoIcon();
+            await signup.assertPasswordHasNoIcon()
         })
     })
     test('autofill a newly added email form (mutation observer test)', async ({page}) => {
@@ -196,6 +196,32 @@ test.describe('macos', () => {
         await login.navigate()
         await login.selectFirstCredential(personalAddress)
         await login.assertFirstCredential(personalAddress, password)
+    })
+    test('Prompting to save from a signup form', async ({page}) => {
+        // enable in-terminal exceptions
+        await forwardConsoleMessages(page)
+
+        const {personalAddress} = constants.fields.email
+
+        const credentials = {
+            username: personalAddress,
+            password: '123456'
+        }
+
+        await createWebkitMocks()
+            .applyTo(page)
+
+        // Load the autofill.js script with replacements
+        await createAutofillScript()
+            .replace('isApp', true)
+            .replaceAll(defaultMacosReplacements())
+            .platform('macos')
+            .applyTo(page)
+
+        const signup = signupPage(page, server)
+        await signup.navigate()
+        await signup.enterCredentials(credentials)
+        await signup.assertWasPromptedToSave(credentials)
     })
     test.describe('matching performance', () => {
         test('matching performance v1', async ({page}) => {

@@ -2670,15 +2670,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return this.transport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
-   * Sends form data to the native layer
-   * @param {DataStorageObject} data
-   */
-
-
-  storeFormData(data) {
-    return this.runtime.storeFormData(data);
-  }
-  /**
    * Gets the init data from the device
    * @returns {APIResponse<PMData>}
    */
@@ -3648,8 +3639,15 @@ class InterfacePrototype {
   }
 
   openManagePasswords() {}
+  /**
+   * Sends form data to the native layer
+   * @param {DataStorageObject} data
+   */
 
-  storeFormData(_values) {}
+
+  storeFormData(data) {
+    return this.runtime.storeFormData(data);
+  }
   /** @param {{height: number, width: number}} _args */
 
 
@@ -4056,7 +4054,7 @@ class Form {
       }
 
       if (this.availableInputTypes[config.type] !== true) {
-        console.warn('not decorating type', config.type);
+        // console.warn('not decorating type', config.type)
         return false;
       }
 
@@ -9704,6 +9702,13 @@ function createTransport(_globalConfig) {
             return (0, _autofillUtils.sendAndWaitForAnswer)(() => {
               return window.BrowserAutofill.getAutofillData(data);
             }, 'getAutofillDataResponse');
+          }
+
+        case 'storeFormData':
+          {
+            return (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+              return window.BrowserAutofill.storeFormData(data);
+            }, 'storeFormDataResponse');
           }
 
         default:

@@ -89,6 +89,7 @@ export function createAndroidMocks () {
         },
         async applyTo (page) {
             return page.evaluate(mocks => {
+                window.__playwright = { mocks: { calls: [] } }
                 window.EmailInterface = {
                     showTooltip () {
                         window.postMessage({
@@ -121,6 +122,15 @@ export function createAndroidMocks () {
                         window.postMessage({
                             type: 'getAutofillDataResponse',
                             success: mocks.getAutofillData
+                        }, window.origin)
+                    },
+                    storeFormData (data) {
+                        /** @type {MockCall} */
+                        const call = ['storeFormData', data, mocks.getAutofillData];
+                        window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)));
+                        window.postMessage({
+                            type: 'storeFormDataResponse',
+                            success: {}
                         }, window.origin)
                     }
                 }

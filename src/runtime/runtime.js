@@ -71,8 +71,8 @@ class Runtime {
      * @param {DataStorageObject} data
      * @returns {Promise<void>}
      */
-    async storeFormData(data) {
-        return this.transport.send('storeFormData', data);
+    async storeFormData (data) {
+        return this.transport.send('storeFormData', data)
     }
 
     /**

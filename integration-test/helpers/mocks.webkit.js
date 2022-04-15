@@ -184,16 +184,17 @@ export function createWebkitMocks (platform = 'macos') {
  */
 async function withMockedWebkit (page, mocks) {
     await page.addInitScript((mocks) => {
+        window.__playwright = { mocks: { calls: [] } }
         window.webkit = {
-            calls: [],
             messageHandlers: {}
         }
 
         for (let [msgName, response] of Object.entries(mocks)) {
             window.webkit.messageHandlers[msgName] = {
                 postMessage: async (data) => {
-                    const cloned = JSON.parse(JSON.stringify([msgName, data, response]));
-                    window.webkit.calls.push(cloned);
+                    /** @type {MockCall} */
+                    const call = [msgName, data, response];
+                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)));
                     return JSON.stringify(response)
                 }
             }

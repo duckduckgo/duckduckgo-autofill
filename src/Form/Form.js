@@ -317,11 +317,11 @@ class Form {
             if (this.isSignup && type === 'credentials.password') {
                 // todo(Shane): Needs runtime polymorphism here
                 if (this.device.autofillSettings.featureToggles.password_generation) {
-                    return true;
+                    return true
                 }
             }
             if (this.availableInputTypes[config.type] !== true) {
-                console.warn('not decorating type', config.type)
+                // console.warn('not decorating type', config.type)
                 return false
             }
             return true

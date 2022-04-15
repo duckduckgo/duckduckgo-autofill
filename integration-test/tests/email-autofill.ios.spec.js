@@ -92,7 +92,7 @@ test.describe('ios', () => {
 
         const credentials = {
             username: personalAddress,
-            password: '123456',
+            password: '123456'
         }
 
         await createWebkitMocks()

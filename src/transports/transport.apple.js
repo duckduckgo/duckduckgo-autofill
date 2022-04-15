@@ -21,7 +21,7 @@ export function createTransport (config) {
                 hasModernWebkitAPI: config.hasModernWebkitAPI
             })
             console.log('\t🍏📲', response)
-            return response;
+            return response
         }
     }
     return transport

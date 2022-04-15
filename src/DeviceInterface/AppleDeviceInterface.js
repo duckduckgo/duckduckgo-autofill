@@ -213,14 +213,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * Sends form data to the native layer
-     * @param {DataStorageObject} data
-     */
-    storeFormData (data) {
-        return this.runtime.storeFormData(data)
-    }
-
-    /**
      * Gets the init data from the device
      * @returns {APIResponse<PMData>}
      */

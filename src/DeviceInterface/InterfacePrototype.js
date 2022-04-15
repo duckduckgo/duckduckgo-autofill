@@ -591,7 +591,14 @@ class InterfacePrototype {
     async getAutofillIdentity (_id) { throw new Error('unimplemented') }
 
     openManagePasswords () {}
-    storeFormData (_values) {}
+
+    /**
+     * Sends form data to the native layer
+     * @param {DataStorageObject} data
+     */
+    storeFormData (data) {
+        return this.runtime.storeFormData(data)
+    }
 
     /** @param {{height: number, width: number}} _args */
     setSize (_args) {}
