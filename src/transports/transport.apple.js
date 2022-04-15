@@ -16,10 +16,12 @@ export function createTransport (config) {
                 console.log('--> intercepted', name, data)
                 return { success: interceptions[name](config) }
             }
-            return wkSendAndWait(name, data, {
+            const response = await wkSendAndWait(name, data, {
                 secret: config.secret,
                 hasModernWebkitAPI: config.hasModernWebkitAPI
             })
+            console.log('\t🍏📲', response)
+            return response;
         }
     }
     return transport

@@ -8658,10 +8658,9 @@ var _inputTypes = require("./input-types/input-types");
 
 
     if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
+      console.log('ENABLED', runtimeConfiguration.platform);
       const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
-      console.log({
-        runtimeAvailableInputTypes
-      });
+      console.log('AFTER', runtimeConfiguration.platform);
       const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles); // Determine the device type
 
       const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings); // Init services
@@ -9721,10 +9720,12 @@ function createTransport(config) {
         };
       }
 
-      return wkSendAndWait(name, data, {
+      const response = await wkSendAndWait(name, data, {
         secret: config.secret,
         hasModernWebkitAPI: config.hasModernWebkitAPI
       });
+      console.log('\t🍏📲', response);
+      return response;
     }
 
   };

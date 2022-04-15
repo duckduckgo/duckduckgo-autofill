@@ -28,8 +28,9 @@ import {featureToggleAwareInputTypes} from './input-types/input-types'
 
         // If it was enabled, try to ask for available input types
         if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
+            console.log('ENABLED', runtimeConfiguration.platform);
             const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes()
-            console.log({runtimeAvailableInputTypes})
+            console.log('AFTER', runtimeConfiguration.platform);
             const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles)
 
             // Determine the device type
