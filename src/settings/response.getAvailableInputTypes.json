@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAvailableInputTypesResponse",
+  "title": "GetAvailableInputTypesResponse",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "success": {
+          "$ref": "#/definitions/AvailableInputTypes"
+        }
+      },
+      "required": [
+        "success"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "error"
+      ]
+    }
+  ]
+}

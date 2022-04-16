@@ -1,35 +1,36 @@
-const {spawnSync} = require('child_process')
-const {readFileSync, writeFileSync} = require('fs')
+const fs = require("fs")
+const Ajv = require("ajv").default
+const {writeFileSync} = require('fs')
+const {join} = require('path')
+const standaloneCode = require("ajv/dist/standalone").default
 
-const schemas = {
-    settings: {
-        src: 'src/settings/settings.schema.json',
-        dest: 'src/settings/settings.validate.cjs'
-    }
-}
+const schemas = [
+    // this first batch are all standalone types
+    '../src/settings/schema.settings.json',
+    '../src/settings/schema.featureToggles.json',
+    // todo(Shane): Bring this JSON in dynamically
+    '../src/settings/schema.contentScope.json',
+    '../src/settings/schema.availableInputTypes.json',
+
+    // these represent message responses
+    '../src/settings/response.getRuntimeConfiguration.json',
+    '../src/settings/response.getAvailableInputTypes.json',
+    '../src/settings/response.getAutofillData.json',
+]
 
 function generateSchemas () {
-    const avjArgs = ['compile']
-    for (let [name, value] of Object.entries(schemas)) {
-        console.log('compiling schema for %s', name)
-
-        const h = spawnSync('ajv', avjArgs.concat('-s', value.src, '-o', value.dest))
-        console.log(h.stdout.toString())
-
-        if (h.status !== 0) {
-            throw new Error(h.stderr.toString())
-        }
-
-        console.log('✅ written to %s', value.dest)
-
-        // the following part adds `ts-nocheck` to the generated files.
-        // todo(Shane): Find out if there's a better way to do this.
-        const result = readFileSync(value.dest, 'utf8')
-        if (result.startsWith('// @ts-nocheck')) {
-            break
-        }
-        writeFileSync(value.dest, '// @ts-nocheck\n' + result)
+    const inputs = [];
+    for (let filepath of schemas) {
+        const text = fs.readFileSync(join(__dirname, filepath), 'utf8');
+        const json = JSON.parse(text);
+        console.log("✅ %s", filepath)
+        inputs.push(json);
     }
+    const ajv = new Ajv({schemas: inputs, code: {source: true}})
+    let moduleCode = standaloneCode(ajv)
+
+    // todo(Shane): Ensure this file name is updated
+    writeFileSync(join(__dirname, "../src/settings/settings.validate.cjs"), "// @ts-nocheck\n" + moduleCode);
 }
 
 generateSchemas()

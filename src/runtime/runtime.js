@@ -6,6 +6,7 @@ import { tryCreateRuntimeConfiguration } from '@duckduckgo/content-scope-scripts
 
 import {fromPlatformConfig} from '../settings/settings'
 import {getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
+import validators from '../settings/settings.validate.cjs';
 
 class Runtime {
     /** @type {RuntimeTransport} */
@@ -25,10 +26,15 @@ class Runtime {
      * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
     async getRuntimeConfiguration () {
-        // todo(Shane): Schema validation here
         const response = await this.transport.send('getRuntimeConfiguration')
-        const data = runtimeResponse(response)
+        const validator = validators['#/definitions/GetRuntimeConfigurationResponse'];
 
+        const data = runtimeResponse(
+            response,
+            'getRuntimeConfiguration',
+            // @ts-ignore
+            validator
+        )
         const {config, errors} = tryCreateRuntimeConfiguration(data)
 
         if (errors.length) {
@@ -47,21 +53,14 @@ class Runtime {
      */
     async getAvailableInputTypes () {
         const response = await this.transport.send('getAvailableInputTypes')
-        return runtimeResponse(response)
+        const validator = validators['#/definitions/GetAvailableInputTypesResponse'];
+        return runtimeResponse(
+            response,
+            'getAvailableInputTypes',
+            // @ts-ignore
+            validator
+        )
     }
-
-    // /**
-    //  * @template {Names} T
-    //  * @param {T} name
-    //  * @param {RuntimeMessages[T]['request']} data
-    //  */
-    // sender(name, data) {
-    //     switch (name) {
-    //     case 'getAvailableInputTypes': {
-    //         const is = (data === null)
-    //     }
-    //     }
-    // }
 
     /**
      * @param {GetAutofillDataArgs} input
@@ -76,7 +75,10 @@ class Runtime {
             subType
         }
         const response = await this.transport.send('getAutofillData', payload)
-        const data = runtimeResponse(response)
+        const data = runtimeResponse(response, 'getAutofillData',
+            // @ts-ignore
+            validators['#/definitions/GetAutofillDataResponse']
+        )
         return data
     }
 
@@ -135,8 +137,13 @@ function selectTransport (globalConfig) {
 
 /**
  * @param {APIResponseSingle<any>} object
+ * @param {string} [name]
+ * @param {import("ajv").ValidateFunction} [validator]
  */
-function runtimeResponse (object) {
+function runtimeResponse (object, name, validator) {
+    if (!validator?.(object)) {
+        return throwError(validator?.errors, name || "unknown");
+    }
     if ('data' in object) {
         console.warn('response had `data` property. Please migrate to `success`')
         return object.data
@@ -145,6 +152,20 @@ function runtimeResponse (object) {
         return object.success
     }
     throw new Error('unreachable. Response did not contain `success` or `data`')
+}
+
+/**
+ * @param {import("ajv").ValidateFunction['errors']} errors
+ * @param {string} name
+ */
+function throwError(errors, name) {
+    if (errors) {
+        for (let error of errors) {
+            console.error(error.message);
+            console.error(error);
+        }
+    }
+    throw new Error('Schema validation errors for ' + name)
 }
 
 export { Runtime, createRuntime, runtimeResponse }

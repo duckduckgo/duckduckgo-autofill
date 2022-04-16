@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/AutofillSettings",
+  "title": "AutofillSettings",
+  "type": "object",
+  "properties": {
+    "featureToggles": {
+      "$ref": "#/definitions/FeatureToggles"
+    }
+  },
+  "required": [
+    "featureToggles"
+  ]
+}

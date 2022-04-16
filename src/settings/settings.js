@@ -1,10 +1,10 @@
-import validateSchema from './settings.validate.cjs'
+import validators from './settings.validate.cjs'
 
 /**
  * A wrapper for Autofill settings
  */
 class AutofillSettings {
-    validate = validateSchema
+    validate = validators['#/definitions/AutofillSettings']
 
     /** @type {Settings | null} */
     settings = null

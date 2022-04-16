@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAutofillDataResponse",
+  "title": "GetAutofillDataResponse",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "success": {
+          "$ref": "#/definitions/AutofillDataResponseTypes"
+        }
+      },
+      "required": [
+        "success"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "error"
+      ]
+    }
+  ],
+  "definitions": {
+    "AutofillDataResponseTypes": {
+      "type": "object",
+      "oneOf": [
+        { "$ref": "#/definitions/Credentials" }
+      ]
+    },
+    "Credentials": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type":"string"
+        },
+        "password": {
+          "type":"string"
+        }
+      },
+      "required": ["username", "password"]
+    }
+  }
+}

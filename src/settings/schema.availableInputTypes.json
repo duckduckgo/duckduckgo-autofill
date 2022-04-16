@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/AvailableInputTypes",
+  "type": "object",
+  "properties": {
+    "credentials": {
+      "type": "boolean"
+    },
+    "identities": {
+      "type": "boolean"
+    },
+    "creditCards": {
+      "type": "boolean"
+    },
+    "email": {
+      "type": "boolean"
+    }
+  }
+}
