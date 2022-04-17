@@ -5,8 +5,13 @@
   "type": "object",
   "oneOf": [
     {
+      "title": "GetAutofillDataResponse Success Response",
       "type": "object",
       "properties": {
+        "type": {
+          "description": "Required on Android + Windows devices",
+          "const": "GetAutofillDataResponse"
+        },
         "success": {
           "$ref": "#/definitions/AutofillDataResponseTypes"
         }
@@ -16,15 +21,7 @@
       ]
     },
     {
-      "type": "object",
-      "properties": {
-        "error": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "error"
-      ]
+      "$ref": "#/definitions/GenericError"
     }
   ],
   "definitions": {

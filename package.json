@@ -25,7 +25,9 @@
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
     "verify:local": "npm run lint:fix && npm run tsc && npm run test:unit && npm run test:integration",
-    "schema:compile": "node scripts/schema.js"
+    "schema:all": "npm run schema:compile && npm run schema:docs",
+    "schema:compile": "node scripts/schema.js",
+    "schema:docs": "rm -rf examples/docs && jsonschema2md -d src/settings -o examples/docs"
   },
   "license": "Apache-2.0",
   "devDependencies": {
