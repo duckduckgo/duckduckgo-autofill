@@ -3268,18 +3268,19 @@ class InterfacePrototype {
     }
 
     if (!this.globalConfig.isApp) return; // exit now if form saving was not enabled
-    // todo(Shane): more runtime polymorphism here
+    // todo(Shane): more runtime polymorphism here, + where does this live?
 
-    if (!this.autofillSettings.featureToggles.credentials_saving) return; // Check for clicks on submit buttons
+    if (this.autofillSettings.featureToggles.credentials_saving) {
+      // Check for clicks on submit buttons
+      const matchingForm = [...this.scanner.forms.values()].find(form => {
+        const btns = [...form.submitButtons]; // @ts-ignore
 
-    const matchingForm = [...this.scanner.forms.values()].find(form => {
-      const btns = [...form.submitButtons]; // @ts-ignore
+        if (btns.includes(e.target)) return true; // @ts-ignore
 
-      if (btns.includes(e.target)) return true; // @ts-ignore
-
-      if (btns.find(btn => btn.contains(e.target))) return true;
-    });
-    matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
+        if (btns.find(btn => btn.contains(e.target))) return true;
+      });
+      matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
+    }
   }
   /**
    * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data

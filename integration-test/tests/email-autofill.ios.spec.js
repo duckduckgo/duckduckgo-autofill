@@ -1,5 +1,6 @@
 import {
     createAutofillScript,
+    defaultIOSScript,
     forwardConsoleMessages,
     setupServer,
     withIOSContext
@@ -54,6 +55,52 @@ test.describe('ios', () => {
 
         // Because of the mock above, assume an email was selected and ensure it's auto-filled
         await emailPage.assertEmailValue(privateAddress0)
+    })
+    test.describe('Prompting to save from a login form', () => {
+        test('username+password (should prompt)', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+
+            const credentials = {
+                username: 'dax@wearejh.com',
+                password: '123456'
+            }
+
+            await createWebkitMocks().applyTo(page)
+            await defaultIOSScript(page)
+
+            const login = loginPage(page, server)
+            await login.navigate()
+            await login.submitLoginForm(credentials)
+            await login.assertWasPromptedToSave(credentials)
+        })
+        test('password only (should prompt)', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+            await createWebkitMocks().applyTo(page)
+            await defaultIOSScript(page)
+
+            const login = loginPage(page, server)
+
+            const credentials = { password: '123456' }
+            await login.navigate()
+            await login.submitPasswordOnlyForm(credentials)
+            await login.assertWasPromptedToSave(credentials)
+        })
+        test('username only (should NOT prompt)', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+
+            const credentials = { username: '123456' }
+
+            await createWebkitMocks().applyTo(page)
+            await defaultIOSScript(page)
+
+            const login = loginPage(page, server)
+            await login.navigate()
+            await login.submitUsernameOnlyForm(credentials.username)
+            await login.assertWasNotPromptedToSave()
+        })
     })
     test('autofill a login form', async ({page}) => {
         // enable in-terminal exceptions
