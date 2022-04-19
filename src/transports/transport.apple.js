@@ -93,7 +93,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  * @returns {Promise<*>}
  */
-const wkSendAndWait = async (handler, data = {}, opts = {}) => {
+export const wkSendAndWait = async (handler, data = {}, opts = {}) => {
     if (opts.hasModernWebkitAPI) {
         const response = await wkSend(handler, data, opts)
         return ddgGlobals.JSONparse(response || '{}')

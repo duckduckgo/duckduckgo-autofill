@@ -12677,7 +12677,14 @@ class AutofillSettings {
 
   static default() {
     return new AutofillSettings().from({
-      featureToggles: {}
+      featureToggles: {
+        inputType_credentials: true,
+        inputType_identities: true,
+        inputType_creditCards: true,
+        emailProtection: true,
+        password_generation: true,
+        credentials_saving: true
+      }
     });
   }
 
@@ -12792,6 +12799,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createTransport = createTransport;
+exports.wkSendAndWait = void 0;
 
 var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
 
@@ -12945,6 +12953,8 @@ const wkSendAndWait = async function (handler) {
     };
   }
 };
+
+exports.wkSendAndWait = wkSendAndWait;
 
 const randomString = () => '' + _captureDdgGlobals.default.getRandomValues(new _captureDdgGlobals.default.Uint32Array(1))[0];
 

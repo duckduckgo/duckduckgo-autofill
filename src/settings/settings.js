@@ -40,7 +40,12 @@ class AutofillSettings {
     static default () {
         return new AutofillSettings().from({
             featureToggles: {
-
+                inputType_credentials: true,
+                inputType_identities: true,
+                inputType_creditCards: true,
+                emailProtection: true,
+                password_generation: true,
+                credentials_saving: true
             }
         })
     }

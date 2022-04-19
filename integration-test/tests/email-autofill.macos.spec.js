@@ -218,18 +218,18 @@ test.describe('macos', () => {
             await signup.enterCredentials(credentials)
             await signup.assertWasPromptedToSave(credentials)
         })
-        test.describe('Prompting to save from a login form',  () => {
+        test.describe('Prompting to save from a login form', () => {
             test('username+password (should prompt)', async ({page}) => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page)
 
                 const credentials = {
                     username: 'dax@wearejh.com',
-                    password: '123456',
+                    password: '123456'
                 }
 
                 await createWebkitMocks().applyTo(page)
-                await defaultMacosScript(page);
+                await defaultMacosScript(page)
 
                 const login = loginPage(page, server)
                 await login.navigate()
@@ -240,11 +240,11 @@ test.describe('macos', () => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page)
                 await createWebkitMocks().applyTo(page)
-                await defaultMacosScript(page);
+                await defaultMacosScript(page)
 
                 const login = loginPage(page, server)
 
-                const credentials = { password: '123456'}
+                const credentials = { password: '123456' }
                 await login.navigate()
                 await login.submitPasswordOnlyForm(credentials)
                 await login.assertWasPromptedToSave(credentials)
@@ -253,10 +253,10 @@ test.describe('macos', () => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page)
 
-                const credentials = { username: '123456'}
+                const credentials = { username: '123456' }
 
                 await createWebkitMocks().applyTo(page)
-                await defaultMacosScript(page);
+                await defaultMacosScript(page)
 
                 const login = loginPage(page, server)
                 await login.navigate()

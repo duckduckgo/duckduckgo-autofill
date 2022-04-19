@@ -157,7 +157,7 @@ export function createAutofillScript () {
 /**
  * @param {import("playwright-core").Page} page
  */
-export async function defaultMacosScript(page) {
+export async function defaultMacosScript (page) {
     return createAutofillScript()
         .replaceAll(macosContentScopeReplacements())
         .platform('macos')
