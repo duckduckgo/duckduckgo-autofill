@@ -251,7 +251,14 @@ describe('Test the form class reading values correctly', () => {
         document.body.innerHTML = form
         // When we require autofill, the script scores the fields in the DOM
 
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+        const scanner = createScanner(InterfacePrototype.default(), {
+            availableInputTypes: {
+                email: true,
+                creditCards: true,
+                credentials: true,
+                identities: true
+            }
+        }).findEligibleInputs(document)
         const formEl = document.querySelector('form')
         if (!formEl) throw new Error('unreachable')
         const formClass = scanner.forms.get(formEl)

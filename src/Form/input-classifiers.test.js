@@ -145,7 +145,12 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         document.body.innerHTML = testContent
         document.title = title
 
-        const scanner = createScanner(InterfacePrototype.default())
+        const scanner = createScanner(InterfacePrototype.default(), {availableInputTypes: {
+            email: true,
+            creditCards: true,
+            credentials: true,
+            identities: true
+        }})
         scanner.findEligibleInputs(document)
 
         /**

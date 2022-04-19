@@ -4038,7 +4038,8 @@ class Form {
     if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
     const type = this.matching.setInputType(input, this.form, {
-      isLogin: this.isLogin
+      isLogin: this.isLogin,
+      availableInputTypes: this.availableInputTypes
     });
     const mainInputType = (0, _matching.getInputMainType)(input);
     this.inputs[mainInputType].add(input);
@@ -6710,13 +6711,12 @@ class Matching {
    *
    * @param {HTMLInputElement|HTMLSelectElement} input
    * @param {HTMLElement} formEl
-   * @param {{isLogin?: boolean}} [opts]
+   * @param {MatchingOpts} opts
    * @returns {SupportedTypes}
    */
 
 
-  inferInputType(input, formEl) {
-    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  inferInputType(input, formEl, opts) {
     const presetType = getInputType(input);
 
     if (presetType !== 'unknown') {
@@ -6727,6 +6727,10 @@ class Matching {
     // // run them on actual CC forms to avoid false positives and expensive loops
 
     if (this.isCCForm(formEl)) {
+      if (!opts.availableInputTypes.creditCards) {
+        return 'unknown';
+      }
+
       const subtype = this.subtypeFromMatchers('cc', input);
 
       if (subtype && isValidCreditCardSubtype(subtype)) {
@@ -6746,27 +6750,35 @@ class Matching {
       if (this.subtypeFromMatchers('username', input)) {
         return 'credentials.username';
       }
-    }
+    } // only consider identities if they are available
 
-    const idSubtype = this.subtypeFromMatchers('id', input);
 
-    if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
-      return "identities.".concat(idSubtype);
+    if (opts.availableInputTypes.identities) {
+      const idSubtype = this.subtypeFromMatchers('id', input);
+
+      if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
+        return "identities.".concat(idSubtype);
+      }
     }
 
     return 'unknown';
   }
   /**
+   * @typedef {object} MatchingOpts
+   * @property {boolean} MatchingOpts.isLogin
+   * @property {AvailableInputTypes} MatchingOpts.availableInputTypes
+   */
+
+  /**
    * Sets the input type as a data attribute to the element and returns it
    * @param {HTMLInputElement} input
    * @param {HTMLElement} formEl
-   * @param {{isLogin?: boolean}} [opts]
+   * @param {MatchingOpts} opts
    * @returns {SupportedSubTypes | string}
    */
 
 
-  setInputType(input, formEl) {
-    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  setInputType(input, formEl, opts) {
     const type = this.inferInputType(input, formEl, opts);
     input.setAttribute(ATTR_INPUT_TYPE, type);
     return type;
