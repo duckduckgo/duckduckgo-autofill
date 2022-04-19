@@ -9184,7 +9184,7 @@ class Runtime {
     const validator = _validators.default['#/definitions/GetAutofillDataRequest'];
 
     if (!(validator !== null && validator !== void 0 && validator(payload))) {
-      throwError(validator === null || validator === void 0 ? void 0 : validator['errors'], "getAutofillDataRequest");
+      throwError(validator === null || validator === void 0 ? void 0 : validator['errors'], 'getAutofillDataRequest');
     }
 
     const response = await this.transport.send('getAutofillData', payload);
@@ -9268,7 +9268,7 @@ function selectTransport(globalConfig) {
 
 function runtimeResponse(object, name, validator) {
   if (!(validator !== null && validator !== void 0 && validator(object))) {
-    return throwError(validator === null || validator === void 0 ? void 0 : validator.errors, name || "unknown");
+    return throwError(validator === null || validator === void 0 ? void 0 : validator.errors, name || 'unknown');
   }
 
   if ('data' in object) {
