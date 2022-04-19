@@ -7,7 +7,7 @@ import {
 import { test as base } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage, loginPage, signupPage} from '../helpers/pages.js'
-import {createWebkitMocks, defaultIOSReplacements} from '../helpers/mocks.webkit.js'
+import {createWebkitMocks, iosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 
 /**
  *  Tests for email autofill on ios device
@@ -37,7 +37,7 @@ test.describe('ios', () => {
         // Load the autofill.js script with replacements
         // on iOS it's the user-agent that's used as the platform check
         await createAutofillScript()
-            .replaceAll(defaultIOSReplacements)
+            .replaceAll(iosContentScopeReplacements)
             .platform('ios')
             .applyTo(page)
 
@@ -75,7 +75,7 @@ test.describe('ios', () => {
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replaceAll(defaultIOSReplacements)
+            .replaceAll(iosContentScopeReplacements)
             .platform('ios')
             .applyTo(page)
 
@@ -99,7 +99,7 @@ test.describe('ios', () => {
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replaceAll(defaultIOSReplacements)
+            .replaceAll(iosContentScopeReplacements)
             .platform('ios')
             .applyTo(page)
 

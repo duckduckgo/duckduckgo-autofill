@@ -1,4 +1,4 @@
-export const defaultIOSReplacements = {
+export const iosContentScopeReplacements = {
     contentScope: {
         features: {
             'autofill': {
@@ -33,8 +33,10 @@ export const defaultIOSReplacements = {
  * @param {object} [overrides]
  * @param {Partial<FeatureTogglesSettings>} [overrides.featureToggles]
  */
-export const defaultMacosReplacements = (overrides = {}) => {
+export const macosContentScopeReplacements = (overrides = {}) => {
     return {
+        isApp: true,
+        hasModernWebkitAPI: true,
         contentScope: {
             features: {
                 'autofill': {

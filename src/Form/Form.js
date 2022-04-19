@@ -10,9 +10,9 @@ import {
     isVisible
 } from '../autofill-utils'
 
-import { getInputSubtype, getInputMainType, createMatching } from './matching'
-import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles'
-import { getInputConfig } from './inputTypeConfig.js'
+import {getInputSubtype, getInputMainType, createMatching} from './matching'
+import {getIconStylesAutofilled, getIconStylesBase} from './inputStyles'
+import {getInputConfig} from './inputTypeConfig.js'
 
 import {
     getUnifiedExpiryDate,
@@ -23,25 +23,27 @@ import {
 } from './formatters'
 
 import {constants} from '../constants'
+
 const {ATTR_AUTOFILL} = constants
 
 class Form {
-    /** @type {import("../Form/matching").Matching} */
-    matching;
+    /** @type {import('../Form/matching').Matching} */
+    matching
     /** @type {HTMLElement} */
-    form;
+    form
     /** @type {HTMLInputElement | null} */
-    activeInput;
+    activeInput
     /** @type {boolean | null} */
-    isSignup;
+    isSignup
     /** @type {AvailableInputTypes} */
-    availableInputTypes;
+    availableInputTypes
+
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {AvailableInputTypes} inputTypes
-     * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
-     * @param {import("../Form/matching").Matching} [matching]
+     * @param {import('../DeviceInterface/InterfacePrototype').default} deviceInterface
+     * @param {import('../Form/matching').Matching} [matching]
      */
     constructor (form, input, inputTypes, deviceInterface, matching) {
         this.form = form
@@ -204,14 +206,17 @@ class Form {
         removeInlineStyles(input, getIconStylesBase(input, this))
         input.removeAttribute(ATTR_AUTOFILL)
     }
+
     removeAllDecorations () {
         this.execOnInputs((input) => this.removeInputDecoration(input))
         this.listeners.forEach(({el, type, fn}) => el.removeEventListener(type, fn))
     }
+
     redecorateAllInputs () {
         this.removeAllDecorations()
         this.execOnInputs((input) => this.decorateInput(input))
     }
+
     resetAllInputs () {
         this.execOnInputs((input) => {
             setValue(input, '', this.device.globalConfig)
@@ -220,9 +225,11 @@ class Form {
         if (this.activeInput) this.activeInput.focus()
         this.matching.clear()
     }
+
     dismissTooltip () {
         this.removeTooltip()
     }
+
     // This removes all listeners to avoid memory leaks and weird behaviours
     destroy () {
         this.removeAllDecorations()
@@ -276,7 +283,7 @@ class Form {
 
         this.inputs.all.add(input)
 
-        const type = this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
+        const type = this.matching.setInputType(input, this.form, {isLogin: this.isLogin})
 
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)
@@ -439,7 +446,9 @@ class Form {
             input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
             this.activeInput !== input && // and this is not the active input
             !isEmailAutofill // and we're not auto-filling email
-        ) return // do not overwrite the value
+        ) {
+            return
+        } // do not overwrite the value
 
         const successful = setValue(input, string, this.device.globalConfig)
 
@@ -496,4 +505,4 @@ class Form {
     }
 }
 
-export { Form }
+export {Form}

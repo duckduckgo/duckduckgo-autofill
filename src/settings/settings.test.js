@@ -10,4 +10,4 @@ const r = validator({
 })
 
 console.log(r)
-console.log(validator.errors)
+// console.log(validator.errors)

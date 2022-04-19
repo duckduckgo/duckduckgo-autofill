@@ -1,12 +1,12 @@
 import {
-    createAutofillScript,
+    createAutofillScript, defaultMacosScript,
     forwardConsoleMessages, performanceEntries,
     setupServer
 } from '../helpers/harness.js'
-import { test as base, expect } from '@playwright/test'
+import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage, loginPage, signupPage} from '../helpers/pages.js'
-import {createWebkitMocks, defaultMacosReplacements} from '../helpers/mocks.webkit.js'
+import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -35,9 +35,7 @@ test.describe('macos', () => {
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replace('isApp', true)
-            .replace('hasModernWebkitAPI', true)
-            .replaceAll(defaultMacosReplacements({}))
+            .replaceAll(macosContentScopeReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -56,7 +54,7 @@ test.describe('macos', () => {
 
         // select the first option
         await expect(personalAddressBtn).toBeVisible()
-        await personalAddressBtn.click({ force: true })
+        await personalAddressBtn.click({force: true})
 
         // ensure autofill populates the field
         await emailPage.assertEmailValue(personalAddress)
@@ -66,7 +64,7 @@ test.describe('macos', () => {
         await expect(personalAddressBtn).toBeVisible()
 
         // now select the second address this time...
-        await privateAddressBtn.click({ force: true })
+        await privateAddressBtn.click({force: true})
 
         // ...and ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
@@ -74,11 +72,11 @@ test.describe('macos', () => {
     test.describe('auto filling a signup form', () => {
         async function applyScript (page) {
             await createAutofillScript()
-                .replace('isApp', true)
-                .replaceAll(defaultMacosReplacements({}))
+                .replaceAll(macosContentScopeReplacements({}))
                 .platform('macos')
                 .applyTo(page)
         }
+
         const {personalAddress} = constants.fields.email
         let identity = {
             id: '01',
@@ -120,8 +118,7 @@ test.describe('macos', () => {
             const signup = signupPage(page, server)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
-                .replace('isApp', true)
-                .replaceAll(defaultMacosReplacements({
+                .replaceAll(macosContentScopeReplacements({
                     featureToggles: {
                         password_generation: false
                     }
@@ -155,8 +152,7 @@ test.describe('macos', () => {
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replace('isApp', true)
-            .replaceAll(defaultMacosReplacements({}))
+            .replaceAll(macosContentScopeReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -169,7 +165,7 @@ test.describe('macos', () => {
     })
     test('autofill a login form', async ({page}) => {
         // enable in-terminal exceptions
-        forwardConsoleMessages(page)
+        await forwardConsoleMessages(page)
 
         const {personalAddress} = constants.fields.email
         const password = '123456'
@@ -187,8 +183,7 @@ test.describe('macos', () => {
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replace('isApp', true)
-            .replaceAll(defaultMacosReplacements({}))
+            .replaceAll(macosContentScopeReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -197,39 +192,85 @@ test.describe('macos', () => {
         await login.selectFirstCredential(personalAddress)
         await login.assertFirstCredential(personalAddress, password)
     })
-    test('Prompting to save from a signup form', async ({page}) => {
-        // enable in-terminal exceptions
-        await forwardConsoleMessages(page)
+    test.describe('prompting to save data', () => {
+        test('Prompting to save from a signup form', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
 
-        const {personalAddress} = constants.fields.email
+            const {personalAddress} = constants.fields.email
 
-        const credentials = {
-            username: personalAddress,
-            password: '123456'
-        }
+            const credentials = {
+                username: personalAddress,
+                password: '123456'
+            }
 
-        await createWebkitMocks()
-            .applyTo(page)
+            await createWebkitMocks()
+                .applyTo(page)
 
-        // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replace('isApp', true)
-            .replaceAll(defaultMacosReplacements())
-            .platform('macos')
-            .applyTo(page)
+            // Load the autofill.js script with replacements
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements())
+                .platform('macos')
+                .applyTo(page)
 
-        const signup = signupPage(page, server)
-        await signup.navigate()
-        await signup.enterCredentials(credentials)
-        await signup.assertWasPromptedToSave(credentials)
+            const signup = signupPage(page, server)
+            await signup.navigate()
+            await signup.enterCredentials(credentials)
+            await signup.assertWasPromptedToSave(credentials)
+        })
+        test.describe('Prompting to save from a login form',  () => {
+            test('username+password (should prompt)', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                const credentials = {
+                    username: 'dax@wearejh.com',
+                    password: '123456',
+                }
+
+                await createWebkitMocks().applyTo(page)
+                await defaultMacosScript(page);
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.submitLoginForm(credentials)
+                await login.assertWasPromptedToSave(credentials)
+            })
+            test('password only (should prompt)', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+                await createWebkitMocks().applyTo(page)
+                await defaultMacosScript(page);
+
+                const login = loginPage(page, server)
+
+                const credentials = { password: '123456'}
+                await login.navigate()
+                await login.submitPasswordOnlyForm(credentials)
+                await login.assertWasPromptedToSave(credentials)
+            })
+            test('username only (should NOT prompt)', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                const credentials = { username: '123456'}
+
+                await createWebkitMocks().applyTo(page)
+                await defaultMacosScript(page);
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.submitUsernameOnlyForm(credentials.username)
+                await login.assertWasNotPromptedToSave()
+            })
+        })
     })
     test.describe('matching performance', () => {
         test('matching performance v1', async ({page}) => {
             await forwardConsoleMessages(page)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
-                .replace('isApp', true)
-                .replaceAll(defaultMacosReplacements({}))
+                .replaceAll(macosContentScopeReplacements({}))
                 .platform('macos')
                 .applyTo(page)
 

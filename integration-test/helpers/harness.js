@@ -6,6 +6,7 @@ import * as http from 'http'
 import {tmpdir} from 'os'
 import {devices} from 'playwright'
 import {chromium, firefox} from '@playwright/test'
+import {macosContentScopeReplacements} from './mocks.webkit.js'
 
 const DATA_DIR_PREFIX = 'ddg-temp-'
 
@@ -151,6 +152,16 @@ export function createAutofillScript () {
     }
 
     return builder
+}
+
+/**
+ * @param {import("playwright-core").Page} page
+ */
+export async function defaultMacosScript(page) {
+    return createAutofillScript()
+        .replaceAll(macosContentScopeReplacements())
+        .platform('macos')
+        .applyTo(page)
 }
 
 /**

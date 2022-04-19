@@ -150,6 +150,38 @@ export function loginPage (page, server) {
             const mockCalls = calls.find(([name]) => name === 'getAutofillData')
             const [, sent] = mockCalls
             expect(typeof sent).toBe('string')
+        },
+        /** @param {{password: string}} data */
+        async submitPasswordOnlyForm(data) {
+            await page.type('#password-3', data.password);
+            await page.click('#login-3 button[type="submit"]')
+        },
+        /** @param {string} username */
+        async submitUsernameOnlyForm(username) {
+            await page.type('#email-2', username);
+            await page.click('#login-2 button[type="submit"]')
+        },
+        /** @param {{password: string, username: string}} data */
+        async submitLoginForm(data) {
+            await page.type('#password', data.password);
+            await page.type('#email', data.username);
+            await page.click('#login button[type="submit"]')
+        },
+        async assertWasNotPromptedToSave() {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const mockCalls = calls.filter(([name]) => name === 'storeFormData')
+            expect(mockCalls.length).toBe(0);
+        },
+        /** @param {Record<string, any>} data */
+        async assertWasPromptedToSave(data) {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const mockCalls = calls.filter(([name]) => name === 'storeFormData')
+            expect(mockCalls).toHaveLength(1);
+            const [, sent] = mockCalls[0]
+            expect(sent).toEqual({
+                credentials: data,
+                messageHandling: {secret: "PLACEHOLDER_SECRET"}
+            });
         }
     }
 }
