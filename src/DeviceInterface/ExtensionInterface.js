@@ -1,10 +1,12 @@
-const InterfacePrototype = require('./InterfacePrototype.js')
-const {
+import InterfacePrototype from './InterfacePrototype.js'
+
+import {
     SIGN_IN_MSG,
-    sendAndWaitForAnswer, setValue,
+    sendAndWaitForAnswer,
+    setValue,
     formatDuckAddress,
     isAutofillEnabledFromProcessedConfig
-} = require('../autofill-utils')
+} from '../autofill-utils'
 
 class ExtensionInterface extends InterfacePrototype {
     async isEnabled () {
@@ -25,7 +27,9 @@ class ExtensionInterface extends InterfacePrototype {
         return this.hasLocalAddresses
     }
 
-    setupAutofill () {
+    async setupAutofill () {
+        await this._addDeviceListeners()
+
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
                 const cleanup = this.scanner.init()
@@ -69,7 +73,7 @@ class ExtensionInterface extends InterfacePrototype {
         return chrome.runtime.sendMessage(data)
     }
 
-    addDeviceListeners () {
+    _addDeviceListeners () {
         // Add contextual menu listeners
         let activeEl = null
         document.addEventListener('contextmenu', e => {
@@ -118,4 +122,4 @@ class ExtensionInterface extends InterfacePrototype {
     }
 }
 
-module.exports = ExtensionInterface
+export { ExtensionInterface }

@@ -1,5 +1,5 @@
-const {matchInPlaceholderAndLabels, checkPlaceholderAndLabels} = require('./matching')
-const {COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES} = require('./countryNames')
+import { matchInPlaceholderAndLabels, checkPlaceholderAndLabels } from './matching'
+import { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES } from './countryNames'
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
@@ -265,7 +265,7 @@ const prepareFormValuesForStorage = (formValues) => {
     return {credentials, identities, creditCards}
 }
 
-module.exports = {
+export {
     formatCCYear,
     getUnifiedExpiryDate,
     formatFullName,

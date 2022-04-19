@@ -1,15 +1,29 @@
-const {createGlobalConfig} = require('./config')
-const AndroidInterface = require('./DeviceInterface/AndroidInterface')
-const ExtensionInterface = require('./DeviceInterface/ExtensionInterface')
-const AppleDeviceInterface = require('./DeviceInterface/AppleDeviceInterface')
+import {AndroidInterface} from './DeviceInterface/AndroidInterface'
+import {ExtensionInterface} from './DeviceInterface/ExtensionInterface'
+import {AppleDeviceInterface} from './DeviceInterface/AppleDeviceInterface'
+import {WindowsInterface} from './DeviceInterface/WindowsInterface'
 
-// Exports a device interface instance
-const deviceInterface = (() => {
-    const globalConfig = createGlobalConfig()
-    if (globalConfig.isDDGApp) {
-        return globalConfig.isAndroid ? new AndroidInterface(globalConfig) : new AppleDeviceInterface(globalConfig)
+/**
+ * @param {AvailableInputTypes} availableInputTypes
+ * @param {import("./runtime/runtime").Runtime} runtime
+ * @param {GlobalConfig} globalConfig
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
+ * @param {import("./settings/settings").AutofillSettings} autofillSettings
+ * @returns {AndroidInterface|AppleDeviceInterface|ExtensionInterface|WindowsInterface}
+ */
+export function createDevice (availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
+    switch (platformConfig.platform) {
+    case 'macos':
+    case 'ios':
+        return new AppleDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+    case 'extension':
+        return new ExtensionInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+    case 'windows':
+        return new WindowsInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+    case 'android':
+        return new AndroidInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+    case 'unknown':
+        throw new Error('unreachable. device platform was "unknown"')
     }
-    return new ExtensionInterface(globalConfig)
-})()
-
-module.exports = deviceInterface
+    throw new Error('undefined')
+}

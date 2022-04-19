@@ -1,4 +1,4 @@
-const css = require('./selectors-css')
+import css from './selectors-css'
 
 /**
  * This is here to mimic what Remote Configuration might look like
@@ -844,4 +844,4 @@ const matchingConfiguration = {
     }
 }
 
-module.exports.matchingConfiguration = matchingConfiguration
+export { matchingConfiguration }

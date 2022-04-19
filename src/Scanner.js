@@ -1,7 +1,7 @@
-const {Form} = require('./Form/Form')
-const {notifyWebApp} = require('./autofill-utils')
-const {SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR} = require('./Form/selectors-css')
-const {createMatching} = require('./Form/matching')
+import { Form } from './Form/Form'
+import { notifyWebApp } from './autofill-utils'
+import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css'
+import { createMatching } from './Form/matching'
 
 /**
  * @typedef {{
@@ -15,6 +15,7 @@ const {createMatching} = require('./Form/matching')
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
+ *     availableInputTypes: AvailableInputTypes,
  * }} ScannerOptions
  */
 
@@ -27,7 +28,9 @@ const defaultScannerOptions = {
     // wait for a 500ms window of event silence before performing the scan
     debounceTimePeriod: 500,
     // how long to wait when performing the initial scan
-    initialDelay: 0
+    initialDelay: 0,
+    // default has no available input types
+    availableInputTypes: {}
 }
 
 /**
@@ -50,7 +53,7 @@ class DefaultScanner {
     rescanAll = false;
 
     /**
-     * @param {import("./DeviceInterface/InterfacePrototype")} device
+     * @param {import("./DeviceInterface/InterfacePrototype").default} device
      * @param {ScannerOptions} options
      */
     constructor (device, options) {
@@ -58,6 +61,7 @@ class DefaultScanner {
         this.matching = createMatching()
         this.options = options
     }
+
     /**
      * Call this to scan once and then watch for changes.
      *
@@ -156,7 +160,10 @@ class DefaultScanner {
                 this.forms.delete(childForm)
             }
 
-            this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching))
+            if (!this.options.availableInputTypes) {
+                throw new Error('unreachble. availableInputTypes must be set')
+            }
+            this.forms.set(parentForm, new Form(parentForm, input, this.options.availableInputTypes, this.device, this.matching))
         }
     }
 
@@ -228,7 +235,7 @@ class DefaultScanner {
 }
 
 /**
- * @param {import("./DeviceInterface/InterfacePrototype")} device
+ * @param {import("./DeviceInterface/InterfacePrototype").default} device
  * @param {Partial<ScannerOptions>} [scannerOptions]
  * @returns {Scanner}
  */
@@ -239,6 +246,6 @@ function createScanner (device, scannerOptions) {
     })
 }
 
-module.exports = {
+export {
     createScanner
 }

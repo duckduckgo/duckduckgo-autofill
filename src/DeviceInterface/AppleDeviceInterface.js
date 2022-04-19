@@ -1,18 +1,10 @@
-const InterfacePrototype = require('./InterfacePrototype.js')
-const {createTransport} = require('../appleDeviceUtils/appleDeviceUtils')
-const {
-    formatDuckAddress,
-    autofillEnabled
-} = require('../autofill-utils')
-const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
+import InterfacePrototype from './InterfacePrototype.js'
+import {createTransport} from '../transports/transport.apple'
+import {formatDuckAddress, autofillEnabled} from '../autofill-utils'
+import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
+import {fromPlatformConfig} from '../settings/settings'
 
-/**
- * @implements {FeatureToggles}
- */
 class AppleDeviceInterface extends InterfacePrototype {
-    /** @type {FeatureToggleNames[]} */
-    #supportedFeatures = [];
-
     /* @type {Timeout | undefined} */
     pollingTimeout
 
@@ -26,13 +18,8 @@ class AppleDeviceInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
-    constructor (config) {
-        super(config)
-
-        // Only enable 'password.generation' if we're on the macOS app (for now);
-        if (this.globalConfig.isApp) {
-            this.#supportedFeatures.push('password.generation')
-        }
+    constructor (inputTypes, runtime, config, platformConfig, settings) {
+        super(inputTypes, runtime, config, platformConfig, settings)
 
         if (this.globalConfig.isTopFrame) {
             this.stripCredentials = false
@@ -43,12 +30,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
     }
 
-    postInit () {
-        if (!this.globalConfig.isTopFrame) return
-        this.setupTopFrame()
-    }
-
-    async setupTopFrame () {
+    async _setupTopFrame () {
         const topContextData = this.getTopContextData()
         if (!topContextData) throw new Error('unreachable, topContextData should be available')
         // Provide dummy values, they're not used
@@ -119,6 +101,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
 
         const signedIn = await this._checkDeviceSignedIn()
+
         if (signedIn) {
             if (this.globalConfig.isApp) {
                 await this.getAddresses()
@@ -128,6 +111,11 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         const cleanup = this.scanner.init()
         this.addLogoutListener(cleanup)
+
+        // todo(top-frame): Move this
+        if (this.globalConfig.isTopFrame) {
+            await this._setupTopFrame()
+        }
     }
 
     getUserData () {
@@ -159,7 +147,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * @param {import("../Form/Form").Form} form
+     * @param {import('../Form/Form').Form} form
      * @param {HTMLInputElement} input
      * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
      * @param {{ x: number; y: number; } | null} click
@@ -240,7 +228,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.transport.send('emailHandlerStoreToken', { token, username: userName, cohort })
+        return this.transport.send('emailHandlerStoreToken', {token, username: userName, cohort})
     }
 
     /**
@@ -254,14 +242,6 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     storeCredentials (credentials) {
         return this.transport.send('pmHandlerStoreCredentials', credentials)
-    }
-
-    /**
-     * Sends form data to the native layer
-     * @param {DataStorageObject} data
-     */
-    storeFormData (data) {
-        return this.transport.send('pmHandlerStoreData', data)
     }
 
     /**
@@ -280,7 +260,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return this.transport.send('pmHandlerGetAutofillCredentials', { id })
+        return this.transport.send('pmHandlerGetAutofillCredentials', {id})
     }
 
     /**
@@ -320,7 +300,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.transport.send('pmHandlerGetCreditCard', { id })
+        return this.transport.send('pmHandlerGetCreditCard', {id})
     }
 
     // Used to encode data to send back to the child autofill
@@ -330,7 +310,7 @@ class AppleDeviceInterface extends InterfacePrototype {
                 return [key, String(value)]
             })
             const data = Object.fromEntries(detailsEntries)
-            this.transport.send('selectedDetail', { data, configType })
+            this.transport.send('selectedDetail', {data, configType})
         } else {
             this.activeFormSelectedDetail(detailIn, configType)
         }
@@ -352,10 +332,13 @@ class AppleDeviceInterface extends InterfacePrototype {
         return formatDuckAddress(alias)
     }
 
-    /** @param {FeatureToggleNames} name */
-    supportsFeature (name) {
-        return this.#supportedFeatures.includes(name)
+    /**
+     * @param {PlatformConfig} platformConfig
+     * @returns {Promise<import('../settings/settings').AutofillSettings>}
+     */
+    async getAutofillSettings (platformConfig) {
+        return fromPlatformConfig(platformConfig)
     }
 }
 
-module.exports = AppleDeviceInterface
+export { AppleDeviceInterface }

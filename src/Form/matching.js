@@ -1,8 +1,10 @@
-const {createCacheableVendorRegexes} = require('./vendor-regex')
-const {TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE} = require('../constants')
-const {extractElementStrings} = require('./label-util')
-const {FORM_INPUTS_SELECTOR} = require('./selectors-css')
-const {matchingConfiguration} = require('./matching-configuration')
+import { createCacheableVendorRegexes } from './vendor-regex'
+import {constants} from '../constants'
+import { extractElementStrings } from './label-util'
+import { FORM_INPUTS_SELECTOR } from './selectors-css'
+import { matchingConfiguration } from './matching-configuration'
+
+const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
 /**
  * An abstraction around the concept of classifying input fields.
@@ -795,7 +797,7 @@ function createMatching () {
     return new Matching(matchingConfiguration)
 }
 
-module.exports = {
+export {
     getInputType,
     getInputSubtype,
     getSubtypeFromType,

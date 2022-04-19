@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAutofillDataResponse",
+  "title": "GetAutofillDataResponse",
+  "type": "object",
+  "oneOf": [
+    {
+      "title": "GetAutofillDataResponse Success Response",
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Response name",
+          "description": "Required on Android + Windows devices, optional on iOS",
+          "type": "string",
+          "const": "getAutofillDataResponse"
+        },
+        "success": {
+          "type": "object",
+          "oneOf": [
+            { "$ref": "#/definitions/Credentials" }
+          ]
+        }
+      },
+      "required": [
+        "success"
+      ]
+    },
+    {
+      "$ref": "#/definitions/GenericError"
+    }
+  ],
+  "definitions": {
+    "Credentials": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type":"string"
+        },
+        "password": {
+          "type":"string"
+        }
+      },
+      "required": ["username", "password"]
+    }
+  }
+}

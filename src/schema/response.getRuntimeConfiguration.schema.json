@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetRuntimeConfigurationResponse",
+  "title": "GetRuntimeConfigurationResponse",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "GetRuntimeConfigurationResponse Success Response",
+      "properties": {
+        "success": {
+          "description": "This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json",
+          "$ref": "#/definitions/RuntimeConfiguration"
+        }
+      },
+      "required": [
+        "success"
+      ]
+    },
+    {
+      "$ref": "#/definitions/GenericError"
+    }
+  ]
+}

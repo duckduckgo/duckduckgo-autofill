@@ -1,7 +1,7 @@
 /**
  * @implements {TooltipItemRenderer}
  */
-class CreditCardTooltipItem {
+export class CreditCardTooltipItem {
     /** @type {CreditCardObject} */
     #data;
     /** @param {CreditCardObject} data */
@@ -12,5 +12,3 @@ class CreditCardTooltipItem {
     labelMedium = (_) => this.#data.title;
     labelSmall = (_) => this.#data.displayNumber
 }
-
-module.exports.CreditCardTooltipItem = CreditCardTooltipItem

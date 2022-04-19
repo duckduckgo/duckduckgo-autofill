@@ -1,12 +1,12 @@
-const {safeExecute, addInlineStyles} = require('../autofill-utils')
-const {getSubtypeFromType} = require('../Form/matching')
+import { safeExecute, addInlineStyles } from '../autofill-utils'
+import { getSubtypeFromType } from '../Form/matching'
 
-class Tooltip {
+export class Tooltip {
     /**
      * @param config
      * @param inputType
      * @param getPosition
-     * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+     * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      */
     constructor (config, inputType, getPosition, deviceInterface) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({
@@ -186,4 +186,4 @@ class Tooltip {
     }
 }
 
-module.exports = Tooltip
+export default Tooltip

@@ -1,7 +1,6 @@
-const {
-    escapeXML
-} = require('../autofill-utils')
-const Tooltip = require('./Tooltip')
+import { escapeXML } from '../autofill-utils'
+import Tooltip from './Tooltip'
+import {CSS_STYLES} from './styles/styles.js'
 
 class DataAutofill extends Tooltip {
     /**
@@ -12,7 +11,7 @@ class DataAutofill extends Tooltip {
     render (config, items, callbacks) {
         const {isApp, isTopFrame} = this.interface.globalConfig
         const includeStyles = isApp
-            ? `<style>${require('./styles/autofill-tooltip-styles.js')}</style>`
+            ? `<style>${CSS_STYLES}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
 
         let hasAddedSeparator = false
@@ -62,4 +61,4 @@ ${includeStyles}
     }
 }
 
-module.exports = DataAutofill
+export default DataAutofill

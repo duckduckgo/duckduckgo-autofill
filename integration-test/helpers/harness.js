@@ -101,7 +101,10 @@ function withStringReplacements (page, replacements, platform = 'macos') {
     const content = readFileSync('./dist/autofill.js', 'utf8')
     let output = content
     for (let [keyName, value] of Object.entries(replacements)) {
-        output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${value};`)
+        let replacement = typeof value === 'boolean' || typeof value === 'string'
+            ? value
+            : JSON.stringify(value)
+        output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${replacement};`)
     }
     if (['macos', 'ios'].includes(platform)) {
         return page.addInitScript(output)
@@ -154,13 +157,34 @@ export function createAutofillScript () {
  * Relay browser exceptions to the terminal to aid debugging.
  *
  * @param {import("playwright").Page} page
+ * @param {{verbose?: boolean}} [opts]
  */
-export function forwardConsoleMessages (page) {
+export function forwardConsoleMessages (page, opts = {}) {
+    const { verbose = false } = opts
     page.on('pageerror', (msg) => {
         console.log('🌍 ❌ [in-page error]', msg)
     })
     page.on('console', (msg) => {
-        console.log(`🌍 [in-page console.${msg.type()}]`, msg.text())
+        const type = msg.type()
+        const icon = (() => {
+            switch (type) {
+            case 'warning': return '☢️'
+            case 'error': return '❌️'
+            default: return '🌍'
+            }
+        })()
+
+        console.log(`${icon} [console.${type}]`, msg.text())
+        if (verbose) {
+            const { lineNumber, columnNumber } = msg.location()
+            let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js'
+            if (!(lineNumber === 0 && columnNumber === 0)) {
+                link += ':' + (lineNumber + 1)
+                link += ':' + columnNumber
+                console.log(link)
+                console.log()
+            }
+        }
     })
 }
 
@@ -198,6 +222,27 @@ export function withAndroidContext (test) {
             const context = await browser.newContext({
                 ...devices.iPhone,
                 userAgent: 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.88 DuckDuckGo/7 Mobile Safari/537.36'
+            })
+
+            await use(context)
+            await context.close()
+        }
+    })
+}
+
+/**
+ * Launch a webkit browser with a user-agent that simulates our iOS application
+ * @param {typeof import("@playwright/test").test} test
+ */
+export function withWindowsContext (test) {
+    return test.extend({
+        context: async ({ browser }, use, testInfo) => {
+            // ensure this test setup cannot be used by anything other than webkit browsers
+            testInfo.skip(testInfo.project.name !== 'windows')
+
+            const context = await browser.newContext({
+                ...devices.iPhone,
+                userAgent: 'Mozilla/5.0 (Linux; Windows 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.88 DuckDuckGo/7 Mobile Safari/537.36'
             })
 
             await use(context)

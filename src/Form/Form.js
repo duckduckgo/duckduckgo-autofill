@@ -1,14 +1,29 @@
-const FormAnalyzer = require('./FormAnalyzer')
-const {
-    addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
-    getDaxBoundingBox, isLikelyASubmitButton, isVisible
-} = require('../autofill-utils')
-const {getInputSubtype, getInputMainType, createMatching} = require('./matching')
-const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
-const {ATTR_AUTOFILL} = require('../constants')
-const {getInputConfig} = require('./inputTypeConfig.js')
-const {getUnifiedExpiryDate, formatCCYear, getCountryName,
-    prepareFormValuesForStorage, inferCountryCodeFromElement} = require('./formatters')
+import FormAnalyzer from './FormAnalyzer'
+
+import {
+    addInlineStyles,
+    removeInlineStyles,
+    setValue,
+    isEventWithinDax,
+    getDaxBoundingBox,
+    isLikelyASubmitButton,
+    isVisible
+} from '../autofill-utils'
+
+import { getInputSubtype, getInputMainType, createMatching } from './matching'
+import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles'
+import { getInputConfig } from './inputTypeConfig.js'
+
+import {
+    getUnifiedExpiryDate,
+    formatCCYear,
+    getCountryName,
+    prepareFormValuesForStorage,
+    inferCountryCodeFromElement
+} from './formatters'
+
+import {constants} from '../constants'
+const {ATTR_AUTOFILL} = constants
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
@@ -19,19 +34,23 @@ class Form {
     activeInput;
     /** @type {boolean | null} */
     isSignup;
+    /** @type {AvailableInputTypes} */
+    availableInputTypes;
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+     * @param {AvailableInputTypes} inputTypes
+     * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
      */
-    constructor (form, input, deviceInterface, matching) {
+    constructor (form, input, inputTypes, deviceInterface, matching) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
         this.device = deviceInterface
+        this.availableInputTypes = inputTypes
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {
@@ -257,12 +276,12 @@ class Form {
 
         this.inputs.all.add(input)
 
-        this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
+        const type = this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
 
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)
 
-        this.decorateInput(input)
+        this.decorateInput(input, type)
 
         return this
     }
@@ -285,10 +304,37 @@ class Form {
         addInlineStyles(input, styles)
     }
 
-    decorateInput (input) {
+    decorateInput (input, type) {
         const config = getInputConfig(input)
 
-        if (!config.shouldDecorate(input, this)) return this
+        // todo(Shane): Where should this logic live?
+        const inputTypeSupported = (() => {
+            if (type === 'identities.emailAddress') {
+                if (this.availableInputTypes.email) {
+                    return true
+                }
+            }
+            if (this.isSignup && type === 'credentials.password') {
+                // todo(Shane): Needs runtime polymorphism here
+                if (this.device.autofillSettings.featureToggles.password_generation) {
+                    return true
+                }
+            }
+            if (this.availableInputTypes[config.type] !== true) {
+                // console.warn('not decorating type', config.type)
+                return false
+            }
+            return true
+        })()
+
+        // bail if we cannot decorate
+        if (!inputTypeSupported) {
+            return this
+        }
+
+        if (!config.shouldDecorate(input, this)) {
+            return this
+        }
 
         input.setAttribute(ATTR_AUTOFILL, 'true')
 
@@ -450,4 +496,4 @@ class Form {
     }
 }
 
-module.exports.Form = Form
+export { Form }

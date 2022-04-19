@@ -1,32 +1,33 @@
-const {
+import {
     ADDRESS_DOMAIN,
     SIGN_IN_MSG,
     sendAndWaitForAnswer,
     formatDuckAddress,
-    autofillEnabled,
     notifyWebApp
-} = require('../autofill-utils')
-const {getInputType, getSubtypeFromType} = require('../Form/matching')
-const {
-    formatFullName
-} = require('../Form/formatters')
-const EmailAutofill = require('../UI/EmailAutofill')
-const DataAutofill = require('../UI/DataAutofill')
-const {getInputConfigFromType} = require('../Form/inputTypeConfig')
-const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
-const {fromPassword, GENERATED_ID} = require('../InputTypes/Credentials')
-const {PasswordGenerator} = require('../PasswordGenerator')
-const {createScanner} = require('../Scanner')
+} from '../autofill-utils'
+
+import {getInputType, getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
+import { formatFullName } from '../Form/formatters'
+import EmailAutofill from '../UI/EmailAutofill'
+import DataAutofill from '../UI/DataAutofill'
+import { getInputConfigFromType } from '../Form/inputTypeConfig'
+import listenForGlobalFormSubmission from '../Form/listenForFormSubmission'
+import { fromPassword, GENERATED_ID } from '../input-types/Credentials'
+import { PasswordGenerator } from '../PasswordGenerator'
+import { createScanner } from '../Scanner'
+import {createGlobalConfig} from '../config'
+import {AutofillSettings} from '../settings/settings'
+import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
+import {createRuntime} from '../runtime/runtime'
 
 /**
- * @implements {FeatureToggles}
  * @implements {GlobalConfigImpl}
  */
 class InterfacePrototype {
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     currentAttached = null
-    /** @type {import("../UI/Tooltip") | null} */
+    /** @type {import("../UI/Tooltip").Tooltip | null} */
     currentTooltip = null
     stripCredentials = true
     /** @type {number} */
@@ -44,14 +45,34 @@ class InterfacePrototype {
     /** @type {GlobalConfig} */
     globalConfig;
 
+    /** @type {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} */
+    runtimeConfiguration;
+
+    /** @type {import("../settings/settings").AutofillSettings} */
+    autofillSettings;
+
+    /** @type {AvailableInputTypes} */
+    availableInputTypes;
+
     /** @type {import('../Scanner').Scanner} */
     scanner;
 
-    /** @param {GlobalConfig} config */
-    constructor (config) {
-        this.globalConfig = config
+    /**
+     * @param {AvailableInputTypes} availableInputTypes
+     * @param {import("../runtime/runtime").Runtime} runtime
+     * @param {GlobalConfig} globalConfig
+     * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
+     * @param {import("../settings/settings").AutofillSettings} autofillSettings
+     */
+    constructor (availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
+        this.availableInputTypes = availableInputTypes
+        this.globalConfig = globalConfig
+        this.runtimeConfiguration = platformConfig
+        this.autofillSettings = autofillSettings
+        this.runtime = runtime
         this.scanner = createScanner(this, {
-            initialDelay: this.initialSetupDelayMs
+            initialDelay: this.initialSetupDelayMs,
+            availableInputTypes: availableInputTypes
         })
     }
 
@@ -181,27 +202,24 @@ class InterfacePrototype {
 
     async startInit () {
         window.addEventListener('pointerdown', this, true)
-        listenForGlobalFormSubmission(this.scanner.forms)
-        this.addDeviceListeners()
+
+        // todo(toggles): move to runtime polymorphism
+        if (this.autofillSettings.featureToggles.credentials_saving) {
+            listenForGlobalFormSubmission(this.scanner.forms)
+        }
+
         await this.setupAutofill()
         await this.setupSettingsPage()
-        this.postInit()
-    }
-
-    postInit () {}
-
-    async isEnabled () {
-        return autofillEnabled(this.globalConfig)
     }
 
     async init () {
-        const isEnabled = await this.isEnabled()
-        if (!isEnabled) return
         if (document.readyState === 'complete') {
             this.startInit()
+                .catch(e => console.error('init error', e))
         } else {
             window.addEventListener('load', () => {
                 this.startInit()
+                    .catch(e => console.error('init error', e))
             })
         }
     }
@@ -223,6 +241,10 @@ class InterfacePrototype {
 
         if (!this.globalConfig.isApp) return
 
+        // exit now if form saving was not enabled
+        // todo(Shane): more runtime polymorphism here
+        if (!this.autofillSettings.featureToggles.credentials_saving) return
+
         // Check for clicks on submit buttons
         const matchingForm = [...this.scanner.forms.values()].find(
             (form) => {
@@ -234,6 +256,7 @@ class InterfacePrototype {
                 if (btns.find((btn) => btn.contains(e.target))) return true
             }
         )
+
         matchingForm?.submitHandler()
     }
 
@@ -318,6 +341,17 @@ class InterfacePrototype {
 
     /**
      * @param {import("../Form/Form").Form} form
+     * @deprecated
+     */
+    getEmailAlias (form) {
+        this.getAlias().then((alias) => {
+            if (alias) form.autofillEmail(alias)
+            else form.activeInput?.focus()
+        })
+    }
+
+    /**
+     * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
      * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
      * @param {{ x: number; y: number; } | null} click
@@ -326,13 +360,10 @@ class InterfacePrototype {
         form.activeInput = input
         this.currentAttached = form
         const inputType = getInputType(input)
+        const mainType = getMainTypeFromType(inputType)
 
-        if (this.globalConfig.isMobileApp) {
-            this.getAlias().then((alias) => {
-                if (alias) form.autofillEmail(alias)
-                else form.activeInput?.focus()
-            })
-            return
+        if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
+            return this.getEmailAlias(form)
         }
 
         /** @type {TopContextData} */
@@ -343,7 +374,7 @@ class InterfacePrototype {
         // A list of checks to determine if we need to generate a password
         const checks = [
             inputType === 'credentials.password',
-            this.supportsFeature('password.generation'),
+            this.autofillSettings.featureToggles.password_generation,
             form.isSignup
         ]
 
@@ -358,9 +389,20 @@ class InterfacePrototype {
             topContextData.credentials = [fromPassword(password)]
         }
 
-        this.attachCloseListeners()
-
-        this.attachTooltipInner(form, input, getPosition, click, topContextData)
+        if (this.globalConfig.hasNativeTooltip) {
+            this.runtime.getAutofillData({inputType})
+                .then(resp => {
+                    console.log('Autofilling...', resp, mainType)
+                    form.autofillData(resp, mainType)
+                })
+                .catch(e => {
+                    console.error('this.runtime.getAutofillData')
+                    console.error(e)
+                })
+        } else {
+            this.attachCloseListeners()
+            this.attachTooltipInner(form, input, getPosition, click, topContextData)
+        }
     }
 
     attachCloseListeners () {
@@ -382,7 +424,7 @@ class InterfacePrototype {
      */
     shouldPromptToStoreCredentials (options) {
         if (!options.formElement) return false
-        if (!this.supportsFeature('password.generation')) return false
+        if (!this.autofillSettings.featureToggles.password_generation) return false
 
         // if we previously generated a password, allow it to be saved
         if (this.passwordGenerator.generated) {
@@ -526,7 +568,6 @@ class InterfacePrototype {
     }
     storeUserData (_data) {}
 
-    addDeviceListeners () {}
     /** @param {() => void} _fn */
     addLogoutListener (_fn) {}
     isDeviceSignedIn () { return false }
@@ -547,20 +588,29 @@ class InterfacePrototype {
     async getAutofillIdentity (_id) { throw new Error('unimplemented') }
 
     openManagePasswords () {}
-    storeFormData (_values) {}
+
+    /**
+     * Sends form data to the native layer
+     * @param {DataStorageObject} data
+     */
+    storeFormData (data) {
+        return this.runtime.storeFormData(data)
+    }
 
     /** @param {{height: number, width: number}} _args */
     setSize (_args) {}
 
-    /** @param {FeatureToggleNames} _name */
-    supportsFeature (_name) {
-        return false
-    }
-
     /** @returns {string} */
     tooltipStyles () {
-        return `<style>${require('../UI/styles/autofill-tooltip-styles.js')}</style>`
+        return ``
+    }
+
+    static default () {
+        const config = new RuntimeConfiguration()
+        const globalConfig = createGlobalConfig()
+        const runtime = createRuntime(globalConfig)
+        return new InterfacePrototype({}, runtime, globalConfig, config, AutofillSettings.default())
     }
 }
 
-module.exports = InterfacePrototype
+export default InterfacePrototype

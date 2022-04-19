@@ -138,7 +138,7 @@
     line-height: 13px;
 }
 .label + .label {
-    margin-top: 5px; 
+    margin-top: 5px;
 }
 .label.label--medium {
     letter-spacing: -0.08px;

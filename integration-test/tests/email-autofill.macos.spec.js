@@ -4,8 +4,9 @@ import {
     setupServer
 } from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
-import {constants, createWebkitMocks} from '../helpers/mocks.js'
+import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage, loginPage, signupPage} from '../helpers/pages.js'
+import {createWebkitMocks, defaultMacosReplacements} from '../helpers/mocks.webkit.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -27,12 +28,16 @@ test.describe('macos', () => {
         await createWebkitMocks()
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
+            .withAvailableInputTypes({
+                email: true
+            })
             .applyTo(page)
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
             .replace('isApp', true)
             .replace('hasModernWebkitAPI', true)
+            .replaceAll(defaultMacosReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -66,7 +71,68 @@ test.describe('macos', () => {
         // ...and ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
     })
-    test('auto filling a signup form', async ({page}) => {
+    test.describe('auto filling a signup form', () => {
+        async function applyScript (page) {
+            await createAutofillScript()
+                .replace('isApp', true)
+                .replaceAll(defaultMacosReplacements({}))
+                .platform('macos')
+                .applyTo(page)
+        }
+        const {personalAddress} = constants.fields.email
+        let identity = {
+            id: '01',
+            title: 'Main identity',
+            firstName: 'shane',
+            emailAddress: personalAddress
+        }
+        test('with an identity only', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+
+            await createWebkitMocks()
+                .withIdentity(identity)
+                .withAvailableInputTypes({
+                    identities: true
+                })
+                .applyTo(page)
+
+            await applyScript(page)
+
+            await signup.navigate()
+            await signup.assertEmailHasNoDaxIcon()
+            await signup.selectGeneratedPassword()
+            await signup.selectFirstName('shane Main identity')
+            await signup.assertEmailValue(identity.emailAddress)
+        })
+        test('with no input types', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+            await createWebkitMocks().applyTo(page)
+            await applyScript(page)
+            await signup.navigate()
+
+            // should still allow password generation
+            await signup.selectGeneratedPassword()
+        })
+        test('password generation is disabled via feature flags', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+            await createWebkitMocks().applyTo(page)
+            await createAutofillScript()
+                .replace('isApp', true)
+                .replaceAll(defaultMacosReplacements({
+                    featureToggles: {
+                        password_generation: false
+                    }
+                }))
+                .platform('macos')
+                .applyTo(page)
+            await signup.navigate()
+            await signup.assertPasswordHasNoIcon()
+        })
+    })
+    test('autofill a newly added email form (mutation observer test)', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
@@ -75,6 +141,10 @@ test.describe('macos', () => {
         await createWebkitMocks()
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
+            .withAvailableInputTypes({
+                email: true,
+                credentials: true
+            })
             .withIdentity({
                 id: '01',
                 title: 'Main identity',
@@ -86,35 +156,7 @@ test.describe('macos', () => {
         // Load the autofill.js script with replacements
         await createAutofillScript()
             .replace('isApp', true)
-            .platform('macos')
-            .applyTo(page)
-
-        const signup = signupPage(page, server)
-        await signup.navigate()
-        await signup.selectGeneratedPassword()
-        await signup.selectFirstName('shane Main identity')
-        await signup.assertEmailValue(personalAddress)
-    })
-    test('autofill a newly added email form (mutation observer test)', async ({page}) => {
-        // enable in-terminal exceptions
-        forwardConsoleMessages(page)
-
-        const {personalAddress} = constants.fields.email
-
-        await createWebkitMocks()
-            .withPrivateEmail('0')
-            .withPersonalEmail('shane-123')
-            .withIdentity({
-                id: '01',
-                title: 'Main identity',
-                firstName: 'shane',
-                emailAddress: personalAddress
-            })
-            .applyTo(page)
-
-        // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replace('isApp', true)
+            .replaceAll(defaultMacosReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -138,11 +180,15 @@ test.describe('macos', () => {
                 username: personalAddress,
                 password
             })
+            .withAvailableInputTypes({
+                credentials: true
+            })
             .applyTo(page)
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
             .replace('isApp', true)
+            .replaceAll(defaultMacosReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -151,12 +197,39 @@ test.describe('macos', () => {
         await login.selectFirstCredential(personalAddress)
         await login.assertFirstCredential(personalAddress, password)
     })
+    test('Prompting to save from a signup form', async ({page}) => {
+        // enable in-terminal exceptions
+        await forwardConsoleMessages(page)
+
+        const {personalAddress} = constants.fields.email
+
+        const credentials = {
+            username: personalAddress,
+            password: '123456'
+        }
+
+        await createWebkitMocks()
+            .applyTo(page)
+
+        // Load the autofill.js script with replacements
+        await createAutofillScript()
+            .replace('isApp', true)
+            .replaceAll(defaultMacosReplacements())
+            .platform('macos')
+            .applyTo(page)
+
+        const signup = signupPage(page, server)
+        await signup.navigate()
+        await signup.enterCredentials(credentials)
+        await signup.assertWasPromptedToSave(credentials)
+    })
     test.describe('matching performance', () => {
         test('matching performance v1', async ({page}) => {
             await forwardConsoleMessages(page)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
                 .replace('isApp', true)
+                .replaceAll(defaultMacosReplacements({}))
                 .platform('macos')
                 .applyTo(page)
 

@@ -4,60 +4,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.processConfig = processConfig;
-
-function getTopLevelURL() {
-  try {
-    // FROM: https://stackoverflow.com/a/7739035/73479
-    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
-    if (window.location !== window.parent.location) {
-      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
-    } else {
-      return new URL(window.location.href);
-    }
-  } catch (error) {
-    return new URL(location.href);
-  }
-}
-
-function isUnprotectedDomain(topLevelUrl, featureList) {
-  let unprotectedDomain = false;
-  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : []; // walk up the domain to see if it's unprotected
-
-  while (domainParts.length > 1 && !unprotectedDomain) {
-    const partialDomain = domainParts.join('.');
-    unprotectedDomain = featureList.filter(domain => domain.domain === partialDomain).length > 0;
-    domainParts.shift();
-  }
-
-  return unprotectedDomain;
-}
-
-function processConfig(data, userList, preferences) {
-  const topLevelUrl = getTopLevelURL();
-  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
-  const enabledFeatures = Object.keys(data.features).filter(featureName => {
-    const feature = data.features[featureName];
-    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
-  });
-  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
-  preferences.site = {
-    domain: topLevelUrl.hostname,
-    isBroken,
-    allowlisted,
-    enabledFeatures
-  }; // TODO
-
-  preferences.cookie = {};
-  return preferences;
-}
-
-},{}],2:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.HostnameInputError = void 0;
 Object.defineProperty(exports, "ParserError", {
   enumerable: true,
@@ -201,7 +147,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":3,"./lib/constants.js":4,"./lib/rules-parser.js":5}],3:[function(require,module,exports){
+},{"./lib/apple.password.js":2,"./lib/constants.js":3,"./lib/rules-parser.js":4}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -825,7 +771,7 @@ exports.Password = Password;
 
 _defineProperty(Password, "defaults", defaults);
 
-},{"./constants.js":4,"./rules-parser.js":5}],4:[function(require,module,exports){
+},{"./constants.js":3,"./rules-parser.js":4}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -846,7 +792,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1579,7 +1525,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -2350,46 +2296,71 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
-const {
-  createGlobalConfig
-} = require('./config');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createDevice = createDevice;
 
-const AndroidInterface = require('./DeviceInterface/AndroidInterface');
+var _AndroidInterface = require("./DeviceInterface/AndroidInterface");
 
-const ExtensionInterface = require('./DeviceInterface/ExtensionInterface');
+var _ExtensionInterface = require("./DeviceInterface/ExtensionInterface");
 
-const AppleDeviceInterface = require('./DeviceInterface/AppleDeviceInterface'); // Exports a device interface instance
+var _AppleDeviceInterface = require("./DeviceInterface/AppleDeviceInterface");
 
+var _WindowsInterface = require("./DeviceInterface/WindowsInterface");
 
-const deviceInterface = (() => {
-  const globalConfig = createGlobalConfig();
+/**
+ * @param {AvailableInputTypes} availableInputTypes
+ * @param {import("./runtime/runtime").Runtime} runtime
+ * @param {GlobalConfig} globalConfig
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
+ * @param {import("./settings/settings").AutofillSettings} autofillSettings
+ * @returns {AndroidInterface|AppleDeviceInterface|ExtensionInterface|WindowsInterface}
+ */
+function createDevice(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
+  switch (platformConfig.platform) {
+    case 'macos':
+    case 'ios':
+      return new _AppleDeviceInterface.AppleDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
 
-  if (globalConfig.isDDGApp) {
-    return globalConfig.isAndroid ? new AndroidInterface(globalConfig) : new AppleDeviceInterface(globalConfig);
+    case 'extension':
+      return new _ExtensionInterface.ExtensionInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+
+    case 'windows':
+      return new _WindowsInterface.WindowsInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+
+    case 'android':
+      return new _AndroidInterface.AndroidInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+
+    case 'unknown':
+      throw new Error('unreachable. device platform was "unknown"');
   }
 
-  return new ExtensionInterface(globalConfig);
-})();
+  throw new Error('undefined');
+}
 
-module.exports = deviceInterface;
-
-},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./config":39}],8:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":7,"./DeviceInterface/AppleDeviceInterface":8,"./DeviceInterface/ExtensionInterface":9,"./DeviceInterface/WindowsInterface":11}],7:[function(require,module,exports){
 "use strict";
 
-const InterfacePrototype = require('./InterfacePrototype.js');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AndroidInterface = void 0;
 
-const {
-  sendAndWaitForAnswer
-} = require('../autofill-utils');
+var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
-class AndroidInterface extends InterfacePrototype {
+var _autofillUtils = require("../autofill-utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class AndroidInterface extends _InterfacePrototype.default {
   async getAlias() {
     const {
       alias
-    } = await sendAndWaitForAnswer(() => {
+    } = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
       return window.EmailInterface.showTooltip();
     }, 'getAliasResponse');
     return alias;
@@ -2436,73 +2407,48 @@ class AndroidInterface extends InterfacePrototype {
 
 }
 
-module.exports = AndroidInterface;
+exports.AndroidInterface = AndroidInterface;
 
-},{"../autofill-utils":37,"./InterfacePrototype.js":11}],9:[function(require,module,exports){
+},{"../autofill-utils":32,"./InterfacePrototype.js":10}],8:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AppleDeviceInterface = void 0;
+
+var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
+
+var _transport = require("../transports/transport.apple");
+
+var _autofillUtils = require("../autofill-utils");
+
+var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
+
+var _settings = require("../settings/settings");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-const InterfacePrototype = require('./InterfacePrototype.js');
-
-const {
-  createTransport
-} = require('../appleDeviceUtils/appleDeviceUtils');
-
-const {
-  formatDuckAddress,
-  autofillEnabled
-} = require('../autofill-utils');
-
-const {
-  processConfig
-} = require('@duckduckgo/content-scope-scripts/src/apple-utils');
-/**
- * @implements {FeatureToggles}
- */
-
-
-var _supportedFeatures = /*#__PURE__*/new WeakMap();
-
-class AppleDeviceInterface extends InterfacePrototype {
-  /** @type {FeatureToggleNames[]} */
-
+class AppleDeviceInterface extends _InterfacePrototype.default {
   /* @type {Timeout | undefined} */
 
   /** @type {Transport} */
 
   /** @override */
   async isEnabled() {
-    return autofillEnabled(this.globalConfig, processConfig);
+    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
   }
 
-  constructor(config) {
-    super(config); // Only enable 'password.generation' if we're on the macOS app (for now);
-
-    _classPrivateFieldInitSpec(this, _supportedFeatures, {
-      writable: true,
-      value: []
-    });
+  constructor(inputTypes, runtime, config, platformConfig, settings) {
+    super(inputTypes, runtime, config, platformConfig, settings);
 
     _defineProperty(this, "pollingTimeout", void 0);
 
-    _defineProperty(this, "transport", createTransport(this.globalConfig));
+    _defineProperty(this, "transport", (0, _transport.createTransport)(this.globalConfig));
 
     _defineProperty(this, "initialSetupDelayMs", 300);
-
-    if (this.globalConfig.isApp) {
-      _classPrivateFieldGet(this, _supportedFeatures).push('password.generation');
-    }
 
     if (this.globalConfig.isTopFrame) {
       this.stripCredentials = false;
@@ -2513,12 +2459,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
   }
 
-  postInit() {
-    if (!this.globalConfig.isTopFrame) return;
-    this.setupTopFrame();
-  }
-
-  async setupTopFrame() {
+  async _setupTopFrame() {
     const topContextData = this.getTopContextData();
     if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
 
@@ -2606,7 +2547,11 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     const cleanup = this.scanner.init();
-    this.addLogoutListener(cleanup);
+    this.addLogoutListener(cleanup); // todo(top-frame): Move this
+
+    if (this.globalConfig.isTopFrame) {
+      await this._setupTopFrame();
+    }
   }
 
   getUserData() {
@@ -2642,7 +2587,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     await this.transport.send('setSize', details);
   }
   /**
-   * @param {import("../Form/Form").Form} form
+   * @param {import('../Form/Form').Form} form
    * @param {HTMLInputElement} input
    * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
    * @param {{ x: number; y: number; } | null} click
@@ -2759,15 +2704,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     return this.transport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
-   * Sends form data to the native layer
-   * @param {DataStorageObject} data
-   */
-
-
-  storeFormData(data) {
-    return this.transport.send('pmHandlerStoreData', data);
-  }
-  /**
    * Gets the init data from the device
    * @returns {APIResponse<PMData>}
    */
@@ -2876,40 +2812,44 @@ class AppleDeviceInterface extends InterfacePrototype {
       requiresUserPermission: !this.globalConfig.isApp,
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
     });
-    return formatDuckAddress(alias);
+    return (0, _autofillUtils.formatDuckAddress)(alias);
   }
-  /** @param {FeatureToggleNames} name */
+  /**
+   * @param {PlatformConfig} platformConfig
+   * @returns {Promise<import('../settings/settings').AutofillSettings>}
+   */
 
 
-  supportsFeature(name) {
-    return _classPrivateFieldGet(this, _supportedFeatures).includes(name);
+  async getAutofillSettings(platformConfig) {
+    return (0, _settings.fromPlatformConfig)(platformConfig);
   }
 
 }
 
-module.exports = AppleDeviceInterface;
+exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../appleDeviceUtils/appleDeviceUtils":35,"../autofill-utils":37,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
+},{"../autofill-utils":32,"../settings/settings":43,"../transports/transport.apple":46,"./InterfacePrototype.js":10,"@duckduckgo/content-scope-scripts/src/apple-utils":52}],9:[function(require,module,exports){
 "use strict";
 
-const InterfacePrototype = require('./InterfacePrototype.js');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ExtensionInterface = void 0;
 
-const {
-  SIGN_IN_MSG,
-  sendAndWaitForAnswer,
-  setValue,
-  formatDuckAddress,
-  isAutofillEnabledFromProcessedConfig
-} = require('../autofill-utils');
+var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
-class ExtensionInterface extends InterfacePrototype {
+var _autofillUtils = require("../autofill-utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class ExtensionInterface extends _InterfacePrototype.default {
   async isEnabled() {
     return new Promise(resolve => {
       chrome.runtime.sendMessage({
         registeredTempAutofillContentScript: true,
         documentUrl: window.location.href
       }, response => {
-        resolve(isAutofillEnabledFromProcessedConfig(response));
+        resolve((0, _autofillUtils.isAutofillEnabledFromProcessedConfig)(response));
       });
     });
   }
@@ -2918,7 +2858,8 @@ class ExtensionInterface extends InterfacePrototype {
     return this.hasLocalAddresses;
   }
 
-  setupAutofill() {
+  async setupAutofill() {
+    await this._addDeviceListeners();
     return this.getAddresses().then(_addresses => {
       if (this.hasLocalAddresses) {
         const cleanup = this.scanner.init();
@@ -2950,7 +2891,7 @@ class ExtensionInterface extends InterfacePrototype {
 
   async trySigningIn() {
     if (this.globalConfig.isDDGDomain) {
-      const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData');
+      const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData');
       this.storeUserData(data);
     }
   }
@@ -2959,7 +2900,7 @@ class ExtensionInterface extends InterfacePrototype {
     return chrome.runtime.sendMessage(data);
   }
 
-  addDeviceListeners() {
+  _addDeviceListeners() {
     // Add contextual menu listeners
     let activeEl = null;
     document.addEventListener('contextmenu', e => {
@@ -2978,7 +2919,7 @@ class ExtensionInterface extends InterfacePrototype {
           break;
 
         case 'contextualAutofill':
-          setValue(activeEl, formatDuckAddress(message.alias), this.globalConfig);
+          (0, _autofillUtils.setValue)(activeEl, (0, _autofillUtils.formatDuckAddress)(message.alias), this.globalConfig);
           activeEl.classList.add('ddg-autofilled');
           this.refreshAlias(); // If the user changes the alias, remove the decoration
 
@@ -3010,10 +2951,45 @@ class ExtensionInterface extends InterfacePrototype {
 
 }
 
-module.exports = ExtensionInterface;
+exports.ExtensionInterface = ExtensionInterface;
 
-},{"../autofill-utils":37,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../autofill-utils":32,"./InterfacePrototype.js":10}],10:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _autofillUtils = require("../autofill-utils");
+
+var _matching = require("../Form/matching");
+
+var _formatters = require("../Form/formatters");
+
+var _EmailAutofill = _interopRequireDefault(require("../UI/EmailAutofill"));
+
+var _DataAutofill = _interopRequireDefault(require("../UI/DataAutofill"));
+
+var _inputTypeConfig = require("../Form/inputTypeConfig");
+
+var _listenForFormSubmission = _interopRequireDefault(require("../Form/listenForFormSubmission"));
+
+var _Credentials = require("../input-types/Credentials");
+
+var _PasswordGenerator = require("../PasswordGenerator");
+
+var _Scanner = require("../Scanner");
+
+var _config = require("../config");
+
+var _settings = require("../settings/settings");
+
+var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
+
+var _runtime = require("../runtime/runtime");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
 
@@ -3031,60 +3007,17 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 
 function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
-const {
-  ADDRESS_DOMAIN,
-  SIGN_IN_MSG,
-  sendAndWaitForAnswer,
-  formatDuckAddress,
-  autofillEnabled,
-  notifyWebApp
-} = require('../autofill-utils');
-
-const {
-  getInputType,
-  getSubtypeFromType
-} = require('../Form/matching');
-
-const {
-  formatFullName
-} = require('../Form/formatters');
-
-const EmailAutofill = require('../UI/EmailAutofill');
-
-const DataAutofill = require('../UI/DataAutofill');
-
-const {
-  getInputConfigFromType
-} = require('../Form/inputTypeConfig');
-
-const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission');
-
-const {
-  fromPassword,
-  GENERATED_ID
-} = require('../InputTypes/Credentials');
-
-const {
-  PasswordGenerator
-} = require('../PasswordGenerator');
-
-const {
-  createScanner
-} = require('../Scanner');
-/**
- * @implements {FeatureToggles}
- * @implements {GlobalConfigImpl}
- */
-
-
 var _addresses = /*#__PURE__*/new WeakMap();
 
 var _data2 = /*#__PURE__*/new WeakMap();
 
+/**
+ * @implements {GlobalConfigImpl}
+ */
 class InterfacePrototype {
   /** @type {import("../Form/Form").Form | null} */
 
-  /** @type {import("../UI/Tooltip") | null} */
+  /** @type {import("../UI/Tooltip").Tooltip | null} */
 
   /** @type {number} */
 
@@ -3094,10 +3027,22 @@ class InterfacePrototype {
 
   /** @type {GlobalConfig} */
 
+  /** @type {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} */
+
+  /** @type {import("../settings/settings").AutofillSettings} */
+
+  /** @type {AvailableInputTypes} */
+
   /** @type {import('../Scanner').Scanner} */
 
-  /** @param {GlobalConfig} config */
-  constructor(config) {
+  /**
+   * @param {AvailableInputTypes} availableInputTypes
+   * @param {import("../runtime/runtime").Runtime} runtime
+   * @param {GlobalConfig} globalConfig
+   * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
+   * @param {import("../settings/settings").AutofillSettings} autofillSettings
+   */
+  constructor(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
     _defineProperty(this, "attempts", 0);
 
     _defineProperty(this, "currentAttached", null);
@@ -3108,7 +3053,7 @@ class InterfacePrototype {
 
     _defineProperty(this, "initialSetupDelayMs", 0);
 
-    _defineProperty(this, "passwordGenerator", new PasswordGenerator());
+    _defineProperty(this, "passwordGenerator", new _PasswordGenerator.PasswordGenerator());
 
     _classPrivateFieldInitSpec(this, _addresses, {
       writable: true,
@@ -3119,6 +3064,12 @@ class InterfacePrototype {
     });
 
     _defineProperty(this, "globalConfig", void 0);
+
+    _defineProperty(this, "runtimeConfiguration", void 0);
+
+    _defineProperty(this, "autofillSettings", void 0);
+
+    _defineProperty(this, "availableInputTypes", void 0);
 
     _defineProperty(this, "scanner", void 0);
 
@@ -3132,9 +3083,14 @@ class InterfacePrototype {
       }
     });
 
-    this.globalConfig = config;
-    this.scanner = createScanner(this, {
-      initialDelay: this.initialSetupDelayMs
+    this.availableInputTypes = availableInputTypes;
+    this.globalConfig = globalConfig;
+    this.runtimeConfiguration = platformConfig;
+    this.autofillSettings = autofillSettings;
+    this.runtime = runtime;
+    this.scanner = (0, _Scanner.createScanner)(this, {
+      initialDelay: this.initialSetupDelayMs,
+      availableInputTypes: availableInputTypes
     });
   }
 
@@ -3161,7 +3117,7 @@ class InterfacePrototype {
     }); // If we had previously stored them, just update the private address
 
     if (privateAddressIdentity) {
-      privateAddressIdentity.emailAddress = formatDuckAddress(addresses.privateAddress);
+      privateAddressIdentity.emailAddress = (0, _autofillUtils.formatDuckAddress)(addresses.privateAddress);
     } else {
       // Otherwise, add both addresses
       _classPrivateFieldGet(this, _data2).identities = this.addDuckAddressesToIdentities(identities);
@@ -3184,14 +3140,14 @@ class InterfacePrototype {
       privateAddress,
       personalAddress
     } = this.getLocalAddresses();
-    privateAddress = formatDuckAddress(privateAddress);
-    personalAddress = formatDuckAddress(personalAddress); // Get the duck addresses in identities
+    privateAddress = (0, _autofillUtils.formatDuckAddress)(privateAddress);
+    personalAddress = (0, _autofillUtils.formatDuckAddress)(personalAddress); // Get the duck addresses in identities
 
     const duckEmailsInIdentities = identities.reduce((duckEmails, _ref2) => {
       let {
         emailAddress: email
       } = _ref2;
-      return email !== null && email !== void 0 && email.includes(ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
+      return email !== null && email !== void 0 && email.includes(_autofillUtils.ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
     }, []); // Only add the personal duck address to identities if the user hasn't
     // already manually added it
 
@@ -3224,7 +3180,7 @@ class InterfacePrototype {
 
 
     const updatedIdentities = data.identities.map(identity => ({ ...identity,
-      fullName: formatFullName(identity)
+      fullName: (0, _formatters.formatFullName)(identity)
     })); // Add addresses
 
     _classPrivateFieldGet(this, _data2).identities = this.addDuckAddressesToIdentities(updatedIdentities);
@@ -3278,29 +3234,22 @@ class InterfacePrototype {
   }
 
   async startInit() {
-    window.addEventListener('pointerdown', this, true);
-    listenForGlobalFormSubmission(this.scanner.forms);
-    this.addDeviceListeners();
+    window.addEventListener('pointerdown', this, true); // todo(toggles): move to runtime polymorphism
+
+    if (this.autofillSettings.featureToggles.credentials_saving) {
+      (0, _listenForFormSubmission.default)(this.scanner.forms);
+    }
+
     await this.setupAutofill();
     await this.setupSettingsPage();
-    this.postInit();
-  }
-
-  postInit() {}
-
-  async isEnabled() {
-    return autofillEnabled(this.globalConfig);
   }
 
   async init() {
-    const isEnabled = await this.isEnabled();
-    if (!isEnabled) return;
-
     if (document.readyState === 'complete') {
-      this.startInit();
+      this.startInit().catch(e => console.error('init error', e));
     } else {
       window.addEventListener('load', () => {
-        this.startInit();
+        this.startInit().catch(e => console.error('init error', e));
       });
     }
   } // Global listener for event delegation
@@ -3318,7 +3267,10 @@ class InterfacePrototype {
       this.removeTooltip();
     }
 
-    if (!this.globalConfig.isApp) return; // Check for clicks on submit buttons
+    if (!this.globalConfig.isApp) return; // exit now if form saving was not enabled
+    // todo(Shane): more runtime polymorphism here
+
+    if (!this.autofillSettings.featureToggles.credentials_saving) return; // Check for clicks on submit buttons
 
     const matchingForm = [...this.scanner.forms.values()].find(form => {
       const btns = [...form.submitButtons]; // @ts-ignore
@@ -3370,7 +3322,7 @@ class InterfacePrototype {
 
 
   createTooltip(getPosition, topContextData) {
-    const config = getInputConfigFromType(topContextData.inputType);
+    const config = (0, _inputTypeConfig.getInputConfigFromType)(topContextData.inputType);
 
     if (this.globalConfig.isApp) {
       // collect the data for each item to display
@@ -3378,11 +3330,11 @@ class InterfacePrototype {
 
       const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
 
-      return new DataAutofill(config, topContextData.inputType, getPosition, this).render(config, asRenderers, {
+      return new _DataAutofill.default(config, topContextData.inputType, getPosition, this).render(config, asRenderers, {
         onSelect: id => this.onSelect(config, data, id)
       });
     } else {
-      return new EmailAutofill(config, topContextData.inputType, getPosition, this);
+      return new _EmailAutofill.default(config, topContextData.inputType, getPosition, this);
     }
   }
   /**
@@ -3395,7 +3347,7 @@ class InterfacePrototype {
 
 
   dataForAutofill(config, inputType, data) {
-    const subtype = getSubtypeFromType(inputType);
+    const subtype = (0, _matching.getSubtypeFromType)(inputType);
 
     if (config.type === 'identities') {
       return this.getLocalIdentities().filter(identity => !!identity[subtype]);
@@ -3419,6 +3371,19 @@ class InterfacePrototype {
   }
   /**
    * @param {import("../Form/Form").Form} form
+   * @deprecated
+   */
+
+
+  getEmailAlias(form) {
+    this.getAlias().then(alias => {
+      var _form$activeInput;
+
+      if (alias) form.autofillEmail(alias);else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
+    });
+  }
+  /**
+   * @param {import("../Form/Form").Form} form
    * @param {HTMLInputElement} input
    * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
    * @param {{ x: number; y: number; } | null} click
@@ -3428,15 +3393,11 @@ class InterfacePrototype {
   attachTooltip(form, input, getPosition, click) {
     form.activeInput = input;
     this.currentAttached = form;
-    const inputType = getInputType(input);
+    const inputType = (0, _matching.getInputType)(input);
+    const mainType = (0, _matching.getMainTypeFromType)(inputType);
 
-    if (this.globalConfig.isMobileApp) {
-      this.getAlias().then(alias => {
-        var _form$activeInput;
-
-        if (alias) form.autofillEmail(alias);else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
-      });
-      return;
+    if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
+      return this.getEmailAlias(form);
     }
     /** @type {TopContextData} */
 
@@ -3445,7 +3406,7 @@ class InterfacePrototype {
       inputType
     }; // A list of checks to determine if we need to generate a password
 
-    const checks = [inputType === 'credentials.password', this.supportsFeature('password.generation'), form.isSignup]; // if all checks pass, generate and save a password
+    const checks = [inputType === 'credentials.password', this.autofillSettings.featureToggles.password_generation, form.isSignup]; // if all checks pass, generate and save a password
 
     if (checks.every(Boolean)) {
       const password = this.passwordGenerator.generate({
@@ -3453,11 +3414,23 @@ class InterfacePrototype {
         domain: window.location.hostname
       }); // append the new credential to the topContextData so that the top autofill can display it
 
-      topContextData.credentials = [fromPassword(password)];
+      topContextData.credentials = [(0, _Credentials.fromPassword)(password)];
     }
 
-    this.attachCloseListeners();
-    this.attachTooltipInner(form, input, getPosition, click, topContextData);
+    if (this.globalConfig.hasNativeTooltip) {
+      this.runtime.getAutofillData({
+        inputType
+      }).then(resp => {
+        console.log('Autofilling...', resp, mainType);
+        form.autofillData(resp, mainType);
+      }).catch(e => {
+        console.error('this.runtime.getAutofillData');
+        console.error(e);
+      });
+    } else {
+      this.attachCloseListeners();
+      this.attachTooltipInner(form, input, getPosition, click, topContextData);
+    }
   }
 
   attachCloseListeners() {
@@ -3480,7 +3453,7 @@ class InterfacePrototype {
 
   shouldPromptToStoreCredentials(options) {
     if (!options.formElement) return false;
-    if (!this.supportsFeature('password.generation')) return false; // if we previously generated a password, allow it to be saved
+    if (!this.autofillSettings.featureToggles.password_generation) return false; // if we previously generated a password, allow it to be saved
 
     if (this.passwordGenerator.generated) {
       return true;
@@ -3513,7 +3486,7 @@ class InterfacePrototype {
 
         case 'credentials':
           {
-            if (id === GENERATED_ID) {
+            if (id === _Credentials.GENERATED_ID) {
               return Promise.resolve({
                 success: matchingData
               });
@@ -3598,7 +3571,7 @@ class InterfacePrototype {
     };
 
     if (this.globalConfig.isDDGDomain) {
-      notifyWebApp({
+      (0, _autofillUtils.notifyWebApp)({
         isApp: this.globalConfig.isApp
       });
 
@@ -3610,7 +3583,7 @@ class InterfacePrototype {
         } catch (e) {}
 
         const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
-        notifyWebApp({
+        (0, _autofillUtils.notifyWebApp)({
           deviceSignedIn: {
             value: true,
             shouldLog,
@@ -3643,7 +3616,7 @@ class InterfacePrototype {
     if (this.globalConfig.isDDGDomain) {
       if (this.attempts < 10) {
         this.attempts++;
-        const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
+        const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
 
         this.storeUserData(data);
         await this.setupAutofill();
@@ -3657,8 +3630,6 @@ class InterfacePrototype {
   }
 
   storeUserData(_data) {}
-
-  addDeviceListeners() {}
   /** @param {() => void} _fn */
 
 
@@ -3700,72 +3671,88 @@ class InterfacePrototype {
   }
 
   openManagePasswords() {}
+  /**
+   * Sends form data to the native layer
+   * @param {DataStorageObject} data
+   */
 
-  storeFormData(_values) {}
+
+  storeFormData(data) {
+    return this.runtime.storeFormData(data);
+  }
   /** @param {{height: number, width: number}} _args */
 
 
   setSize(_args) {}
-  /** @param {FeatureToggleNames} _name */
-
-
-  supportsFeature(_name) {
-    return false;
-  }
   /** @returns {string} */
 
 
   tooltipStyles() {
-    return "<style>".concat(require('../UI/styles/autofill-tooltip-styles.js'), "</style>");
+    return "";
+  }
+
+  static default() {
+    const config = new _contentScopeScripts.RuntimeConfiguration();
+    const globalConfig = (0, _config.createGlobalConfig)();
+    const runtime = (0, _runtime.createRuntime)(globalConfig);
+    return new InterfacePrototype({}, runtime, globalConfig, config, _settings.AutofillSettings.default());
   }
 
 }
 
-module.exports = InterfacePrototype;
+var _default = InterfacePrototype;
+exports.default = _default;
 
-},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../InputTypes/Credentials":25,"../PasswordGenerator":28,"../Scanner":29,"../UI/DataAutofill":30,"../UI/EmailAutofill":31,"../UI/styles/autofill-tooltip-styles.js":34,"../autofill-utils":37}],12:[function(require,module,exports){
+},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../PasswordGenerator":25,"../Scanner":26,"../UI/DataAutofill":27,"../UI/EmailAutofill":28,"../autofill-utils":32,"../config":34,"../input-types/Credentials":36,"../runtime/runtime":41,"../settings/settings":43,"@duckduckgo/content-scope-scripts":49}],11:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WindowsInterface = void 0;
+
+var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class WindowsInterface extends _InterfacePrototype.default {
+  async setupAutofill() {
+    this.scanner.init();
+  }
+
+}
+
+exports.WindowsInterface = WindowsInterface;
+
+},{"./InterfacePrototype":10}],12:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Form = void 0;
+
+var _FormAnalyzer = _interopRequireDefault(require("./FormAnalyzer"));
+
+var _autofillUtils = require("../autofill-utils");
+
+var _matching = require("./matching");
+
+var _inputStyles = require("./inputStyles");
+
+var _inputTypeConfig = require("./inputTypeConfig.js");
+
+var _formatters = require("./formatters");
+
+var _constants = require("../constants");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-const FormAnalyzer = require('./FormAnalyzer');
-
-const {
-  addInlineStyles,
-  removeInlineStyles,
-  setValue,
-  isEventWithinDax,
-  getDaxBoundingBox,
-  isLikelyASubmitButton,
-  isVisible
-} = require('../autofill-utils');
-
-const {
-  getInputSubtype,
-  getInputMainType,
-  createMatching
-} = require('./matching');
-
-const {
-  getIconStylesAutofilled,
-  getIconStylesBase
-} = require('./inputStyles');
-
 const {
   ATTR_AUTOFILL
-} = require('../constants');
-
-const {
-  getInputConfig
-} = require('./inputTypeConfig.js');
-
-const {
-  getUnifiedExpiryDate,
-  formatCCYear,
-  getCountryName,
-  prepareFormValuesForStorage,
-  inferCountryCodeFromElement
-} = require('./formatters');
+} = _constants.constants;
 
 class Form {
   /** @type {import("../Form/matching").Matching} */
@@ -3776,13 +3763,16 @@ class Form {
 
   /** @type {boolean | null} */
 
+  /** @type {AvailableInputTypes} */
+
   /**
    * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
-   * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+   * @param {AvailableInputTypes} inputTypes
+   * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
    * @param {import("../Form/matching").Matching} [matching]
    */
-  constructor(form, input, deviceInterface, matching) {
+  constructor(form, input, inputTypes, deviceInterface, matching) {
     _defineProperty(this, "matching", void 0);
 
     _defineProperty(this, "form", void 0);
@@ -3791,12 +3781,15 @@ class Form {
 
     _defineProperty(this, "isSignup", void 0);
 
+    _defineProperty(this, "availableInputTypes", void 0);
+
     this.form = form;
-    this.matching = matching || createMatching();
-    this.formAnalyzer = new FormAnalyzer(form, input, matching);
+    this.matching = matching || (0, _matching.createMatching)();
+    this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
     this.device = deviceInterface;
+    this.availableInputTypes = inputTypes;
     /** @type Record<'all' | SupportedMainTypes, Set> */
 
     this.inputs = {
@@ -3882,12 +3875,12 @@ class Form {
     const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards].reduce((output, inputEl) => {
       var _output$mainType;
 
-      const mainType = getInputMainType(inputEl);
-      const subtype = getInputSubtype(inputEl);
+      const mainType = (0, _matching.getInputMainType)(inputEl);
+      const subtype = (0, _matching.getInputSubtype)(inputEl);
       let value = inputEl.value || ((_output$mainType = output[mainType]) === null || _output$mainType === void 0 ? void 0 : _output$mainType[subtype]);
 
       if (subtype === 'addressCountryCode') {
-        value = inferCountryCodeFromElement(inputEl);
+        value = (0, _formatters.inferCountryCodeFromElement)(inputEl);
       }
 
       if (value) {
@@ -3900,7 +3893,7 @@ class Form {
       creditCards: {},
       identities: {}
     });
-    return prepareFormValuesForStorage(formValues);
+    return (0, _formatters.prepareFormValuesForStorage)(formValues);
   }
   /**
    * Determine if the form has values we want to store in the device
@@ -3938,7 +3931,7 @@ class Form {
   }
 
   removeInputHighlight(input) {
-    removeInlineStyles(input, getIconStylesAutofilled(input, this));
+    (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesAutofilled)(input, this));
     input.classList.remove('ddg-autofilled');
     this.addAutofillStyles(input);
   }
@@ -3952,7 +3945,7 @@ class Form {
   }
 
   removeInputDecoration(input) {
-    removeInlineStyles(input, getIconStylesBase(input, this));
+    (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesBase)(input, this));
     input.removeAttribute(ATTR_AUTOFILL);
   }
 
@@ -3975,7 +3968,7 @@ class Form {
 
   resetAllInputs() {
     this.execOnInputs(input => {
-      setValue(input, '', this.device.globalConfig);
+      (0, _autofillUtils.setValue)(input, '', this.device.globalConfig);
       this.removeInputHighlight(input);
     });
     if (this.activeInput) this.activeInput.focus();
@@ -4004,7 +3997,7 @@ class Form {
     const allButtons =
     /** @type {HTMLElement[]} */
     [...this.form.querySelectorAll(selector)];
-    const likelySubmitButton = allButtons.find(isLikelyASubmitButton);
+    const likelySubmitButton = allButtons.find(_autofillUtils.isLikelyASubmitButton);
     if (likelySubmitButton) return [likelySubmitButton];
     return allButtons.filter(button => {
       const content = button.textContent || '';
@@ -4033,7 +4026,7 @@ class Form {
       if (shouldCheckForDecorate) {
         const {
           shouldDecorate
-        } = getInputConfig(input);
+        } = (0, _inputTypeConfig.getInputConfig)(input);
         canExecute = shouldDecorate(input, this);
       }
 
@@ -4044,12 +4037,12 @@ class Form {
   addInput(input) {
     if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
-    this.matching.setInputType(input, this.form, {
+    const type = this.matching.setInputType(input, this.form, {
       isLogin: this.isLogin
     });
-    const mainInputType = getInputMainType(input);
+    const mainInputType = (0, _matching.getInputMainType)(input);
     this.inputs[mainInputType].add(input);
-    this.decorateInput(input);
+    this.decorateInput(input, type);
     return this;
   }
 
@@ -4071,20 +4064,51 @@ class Form {
   }
 
   addAutofillStyles(input) {
-    const styles = getIconStylesBase(input, this);
-    addInlineStyles(input, styles);
+    const styles = (0, _inputStyles.getIconStylesBase)(input, this);
+    (0, _autofillUtils.addInlineStyles)(input, styles);
   }
 
-  decorateInput(input) {
-    const config = getInputConfig(input);
-    if (!config.shouldDecorate(input, this)) return this;
+  decorateInput(input, type) {
+    const config = (0, _inputTypeConfig.getInputConfig)(input); // todo(Shane): Where should this logic live?
+
+    const inputTypeSupported = (() => {
+      if (type === 'identities.emailAddress') {
+        if (this.availableInputTypes.email) {
+          return true;
+        }
+      }
+
+      if (this.isSignup && type === 'credentials.password') {
+        // todo(Shane): Needs runtime polymorphism here
+        if (this.device.autofillSettings.featureToggles.password_generation) {
+          return true;
+        }
+      }
+
+      if (this.availableInputTypes[config.type] !== true) {
+        // console.warn('not decorating type', config.type)
+        return false;
+      }
+
+      return true;
+    })(); // bail if we cannot decorate
+
+
+    if (!inputTypeSupported) {
+      return this;
+    }
+
+    if (!config.shouldDecorate(input, this)) {
+      return this;
+    }
+
     input.setAttribute(ATTR_AUTOFILL, 'true');
     const hasIcon = !!config.getIconBase(input, this);
 
     if (hasIcon) {
       this.addAutofillStyles(input);
       this.addListener(input, 'mousemove', e => {
-        if (isEventWithinDax(e, e.target)) {
+        if ((0, _autofillUtils.isEventWithinDax)(e, e.target)) {
           e.target.style.setProperty('cursor', 'pointer', 'important');
         } else {
           e.target.style.removeProperty('cursor');
@@ -4125,7 +4149,7 @@ class Form {
 
       const getPosition = () => {
         // In extensions, the tooltip is centered on the Dax icon
-        return this.device.globalConfig.isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input);
+        return this.device.globalConfig.isApp ? input.getBoundingClientRect() : (0, _autofillUtils.getDaxBoundingBox)(input);
       }; // Checks for mousedown event
 
 
@@ -4139,7 +4163,7 @@ class Form {
       }
 
       if (this.shouldOpenTooltip(e, input)) {
-        if (isEventWithinDax(e, input) || this.device.globalConfig.isMobileApp) {
+        if ((0, _autofillUtils.isEventWithinDax)(e, input) || this.device.globalConfig.isMobileApp) {
           e.preventDefault();
           e.stopImmediatePropagation();
         }
@@ -4163,16 +4187,16 @@ class Form {
 
   shouldOpenTooltip(e, input) {
     if (this.device.globalConfig.isApp) return true;
-    const inputType = getInputMainType(input);
-    return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || isEventWithinDax(e, input);
+    const inputType = (0, _matching.getInputMainType)(input);
+    return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || (0, _autofillUtils.isEventWithinDax)(e, input);
   }
 
   autofillInput(input, string, dataType) {
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
-    if (input instanceof HTMLInputElement && !isVisible(input)) return; // @ts-ignore
+    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isVisible)(input)) return; // @ts-ignore
 
-    const activeInputSubtype = getInputSubtype(this.activeInput);
-    const inputSubtype = getInputSubtype(input);
+    const activeInputSubtype = (0, _matching.getInputSubtype)(this.activeInput);
+    const inputSubtype = (0, _matching.getInputSubtype)(input);
     const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'; // Don't override values for identities, unless it's the current input or we're autofilling email
 
     if (dataType === 'identities' && // only for identities
@@ -4181,10 +4205,10 @@ class Form {
     !isEmailAutofill // and we're not auto-filling email
     ) return; // do not overwrite the value
 
-    const successful = setValue(input, string, this.device.globalConfig);
+    const successful = (0, _autofillUtils.setValue)(input, string, this.device.globalConfig);
     if (!successful) return;
     input.classList.add('ddg-autofilled');
-    addInlineStyles(input, getIconStylesAutofilled(input, this)); // If the user changes the value, remove the decoration
+    (0, _autofillUtils.addInlineStyles)(input, (0, _inputStyles.getIconStylesAutofilled)(input, this)); // If the user changes the value, remove the decoration
 
     input.addEventListener('input', e => this.removeAllHighlights(e, dataType), {
       once: true
@@ -4209,19 +4233,19 @@ class Form {
     this.shouldPromptToStoreData = false;
     this.isAutofilling = true;
     this.execOnInputs(input => {
-      const inputSubtype = getInputSubtype(input);
+      const inputSubtype = (0, _matching.getInputSubtype)(input);
       let autofillData = data[inputSubtype];
 
       if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
-        autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this);
+        autofillData = (0, _formatters.getUnifiedExpiryDate)(input, data.expirationMonth, data.expirationYear, this);
       }
 
       if (inputSubtype === 'expirationYear' && input instanceof HTMLInputElement) {
-        autofillData = formatCCYear(input, autofillData, this);
+        autofillData = (0, _formatters.formatCCYear)(input, autofillData, this);
       }
 
       if (inputSubtype === 'addressCountryCode') {
-        autofillData = getCountryName(input, data);
+        autofillData = (0, _formatters.getCountryName)(input, data);
       }
 
       if (autofillData) this.autofillInput(input, autofillData, dataType);
@@ -4232,29 +4256,25 @@ class Form {
 
 }
 
-module.exports.Form = Form;
+exports.Form = Form;
 
-},{"../autofill-utils":37,"../constants":40,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22}],13:[function(require,module,exports){
+},{"../autofill-utils":32,"../constants":35,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22}],13:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _matching = require("./matching");
+
+var _constants = require("../constants");
+
+var _matchingConfiguration = require("./matching-configuration");
+
+var _autofillUtils = require("../autofill-utils");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-const {
-  removeExcessWhitespace,
-  Matching
-} = require('./matching');
-
-const {
-  TEXT_LENGTH_CUTOFF
-} = require('../constants');
-
-const {
-  matchingConfiguration
-} = require('./matching-configuration');
-
-const {
-  isLikelyASubmitButton
-} = require('../autofill-utils');
 
 class FormAnalyzer {
   /** @type HTMLElement */
@@ -4272,7 +4292,7 @@ class FormAnalyzer {
     _defineProperty(this, "matching", void 0);
 
     this.form = form;
-    this.matching = matching || new Matching(matchingConfiguration);
+    this.matching = matching || new _matching.Matching(_matchingConfiguration.matchingConfiguration);
     this.autofillSignal = 0;
     this.signals = []; // Avoid autofill on our signup page
 
@@ -4376,7 +4396,7 @@ class FormAnalyzer {
         let {
           textContent
         } = _ref2;
-        textContent = removeExcessWhitespace(textContent || '');
+        textContent = (0, _matching.removeExcessWhitespace)(textContent || '');
         this.updateSignal({
           string: textContent,
           strength: 0.5,
@@ -4411,9 +4431,9 @@ class FormAnalyzer {
   getText(el) {
     // for buttons, we don't care about descendants, just get the whole text as is
     // this is important in order to give proper attribution of the text to the button
-    if (this.elementIs(el, 'BUTTON')) return removeExcessWhitespace(el.textContent);
+    if (this.elementIs(el, 'BUTTON')) return (0, _matching.removeExcessWhitespace)(el.textContent);
     if (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) return el.value;
-    return removeExcessWhitespace(Array.from(el.childNodes).reduce((text, child) => this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, ''));
+    return (0, _matching.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, ''));
   }
 
   evaluateElement(el) {
@@ -4431,7 +4451,7 @@ class FormAnalyzer {
 
     if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
       // If we're sure this is a submit button, it's a stronger signal
-      const strength = isLikelyASubmitButton(el) ? 20 : 2;
+      const strength = (0, _autofillUtils.isLikelyASubmitButton)(el) ? 20 : 2;
       this.updateSignal({
         string,
         strength,
@@ -4453,7 +4473,7 @@ class FormAnalyzer {
 
       // any other case
       // only consider the el if it's a small text to avoid noisy disclaimers
-      if (((_removeExcessWhitespa = removeExcessWhitespace(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < TEXT_LENGTH_CUTOFF) {
+      if (((_removeExcessWhitespa = (0, _matching.removeExcessWhitespace)(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < _constants.constants.TEXT_LENGTH_CUTOFF) {
         this.updateSignal({
           string,
           strength: 1,
@@ -4487,10 +4507,16 @@ class FormAnalyzer {
 
 }
 
-module.exports = FormAnalyzer;
+var _default = FormAnalyzer;
+exports.default = _default;
 
-},{"../autofill-utils":37,"../constants":40,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
+},{"../autofill-utils":32,"../constants":35,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.COUNTRY_NAMES_TO_CODES = exports.COUNTRY_CODES_TO_NAMES = void 0;
 
 /**
  * Country names object using 2-letter country codes to reference country name
@@ -4784,6 +4810,7 @@ const COUNTRY_CODES_TO_NAMES = {
  * Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(entry => [entry[1], entry[0]]))
  */
 
+exports.COUNTRY_CODES_TO_NAMES = COUNTRY_CODES_TO_NAMES;
 const COUNTRY_NAMES_TO_CODES = {
   'Ascension Island': 'AC',
   Andorra: 'AD',
@@ -5049,29 +5076,25 @@ const COUNTRY_NAMES_TO_CODES = {
   Zambia: 'ZM',
   'Unknown Region': 'ZZ'
 };
-module.exports = {
-  COUNTRY_CODES_TO_NAMES,
-  COUNTRY_NAMES_TO_CODES
-};
+exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
 },{}],15:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.prepareFormValuesForStorage = exports.inferCountryCodeFromElement = exports.getUnifiedExpiryDate = exports.getMMAndYYYYFromString = exports.getCountryName = exports.getCountryDisplayName = exports.formatFullName = exports.formatCCYear = void 0;
+
+var _matching = require("./matching");
+
+var _countryNames = require("./countryNames");
 
 var _templateObject, _templateObject2;
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-const {
-  matchInPlaceholderAndLabels,
-  checkPlaceholderAndLabels
-} = require('./matching');
-
-const {
-  COUNTRY_CODES_TO_NAMES,
-  COUNTRY_NAMES_TO_CODES
-} = require('./countryNames'); // Matches strings like mm/yy, mm-yyyy, mm-aa
-
-
+// Matches strings like mm/yy, mm-yyyy, mm-aa
 const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
 
 const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
@@ -5085,7 +5108,7 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
 
 const formatCCYear = (input, year, form) => {
   const selector = form.matching.cssSelector('FORM_INPUTS_SELECTOR');
-  if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year;
+  if (input.maxLength === 4 || (0, _matching.checkPlaceholderAndLabels)(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year;
   return "".concat(Number(year) - 2000);
 };
 /**
@@ -5098,15 +5121,19 @@ const formatCCYear = (input, year, form) => {
  */
 
 
+exports.formatCCYear = formatCCYear;
+
 const getUnifiedExpiryDate = (input, month, year, form) => {
   var _matchInPlaceholderAn, _matchInPlaceholderAn2;
 
   const formattedYear = formatCCYear(input, year, form);
   const paddedMonth = "".concat(month).padStart(2, '0');
   const cssSelector = form.matching.cssSelector('FORM_INPUTS_SELECTOR');
-  const separator = ((_matchInPlaceholderAn = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form.form, cssSelector)) === null || _matchInPlaceholderAn === void 0 ? void 0 : (_matchInPlaceholderAn2 = _matchInPlaceholderAn.groups) === null || _matchInPlaceholderAn2 === void 0 ? void 0 : _matchInPlaceholderAn2.separator) || '/';
+  const separator = ((_matchInPlaceholderAn = (0, _matching.matchInPlaceholderAndLabels)(input, DATE_SEPARATOR_REGEX, form.form, cssSelector)) === null || _matchInPlaceholderAn === void 0 ? void 0 : (_matchInPlaceholderAn2 = _matchInPlaceholderAn.groups) === null || _matchInPlaceholderAn2 === void 0 ? void 0 : _matchInPlaceholderAn2.separator) || '/';
   return "".concat(paddedMonth).concat(separator).concat(formattedYear);
 };
+
+exports.getUnifiedExpiryDate = getUnifiedExpiryDate;
 
 const formatFullName = _ref => {
   let {
@@ -5124,6 +5151,8 @@ const formatFullName = _ref => {
  */
 
 
+exports.formatFullName = formatFullName;
+
 const getCountryDisplayName = (locale, addressCountryCode) => {
   try {
     const regionNames = new Intl.DisplayNames([locale], {
@@ -5133,7 +5162,7 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
 
     return regionNames.of(addressCountryCode);
   } catch (e) {
-    return COUNTRY_CODES_TO_NAMES[addressCountryCode] || addressCountryCode;
+    return _countryNames.COUNTRY_CODES_TO_NAMES[addressCountryCode] || addressCountryCode;
   }
 };
 /**
@@ -5142,6 +5171,8 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
  * @return {string | 'en'}
  */
 
+
+exports.getCountryDisplayName = getCountryDisplayName;
 
 const inferElementLocale = el => {
   var _el$form;
@@ -5192,11 +5223,13 @@ const getCountryName = function (el) {
  */
 
 
+exports.getCountryName = getCountryName;
+
 const getLocalisedCountryNamesToCodes = el => {
-  if (typeof Intl.DisplayNames !== 'function') return COUNTRY_NAMES_TO_CODES; // Try to infer the field language or fallback to en
+  if (typeof Intl.DisplayNames !== 'function') return _countryNames.COUNTRY_NAMES_TO_CODES; // Try to infer the field language or fallback to en
 
   const elLocale = inferElementLocale(el);
-  return Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(_ref2 => {
+  return Object.fromEntries(Object.entries(_countryNames.COUNTRY_CODES_TO_NAMES).map(_ref2 => {
     let [code] = _ref2;
     return [getCountryDisplayName(elLocale, code), code];
   }));
@@ -5209,8 +5242,8 @@ const getLocalisedCountryNamesToCodes = el => {
 
 
 const inferCountryCodeFromElement = el => {
-  if (COUNTRY_CODES_TO_NAMES[el.value]) return el.value;
-  if (COUNTRY_NAMES_TO_CODES[el.value]) return COUNTRY_NAMES_TO_CODES[el.value];
+  if (_countryNames.COUNTRY_CODES_TO_NAMES[el.value]) return el.value;
+  if (_countryNames.COUNTRY_NAMES_TO_CODES[el.value]) return _countryNames.COUNTRY_NAMES_TO_CODES[el.value];
   const localisedCountryNamesToCodes = getLocalisedCountryNamesToCodes(el);
   if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value];
 
@@ -5218,8 +5251,8 @@ const inferCountryCodeFromElement = el => {
     var _el$selectedOptions$;
 
     const selectedText = (_el$selectedOptions$ = el.selectedOptions[0]) === null || _el$selectedOptions$ === void 0 ? void 0 : _el$selectedOptions$.text;
-    if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText;
-    if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText];
+    if (_countryNames.COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText;
+    if (_countryNames.COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText];
     if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText];
   }
 
@@ -5231,6 +5264,8 @@ const inferCountryCodeFromElement = el => {
  * @return {{expirationYear: string, expirationMonth: string}}
  */
 
+
+exports.inferCountryCodeFromElement = inferCountryCodeFromElement;
 
 const getMMAndYYYYFromString = expiration => {
   const values = expiration.match(/(\d+)/g) || [];
@@ -5252,6 +5287,8 @@ const getMMAndYYYYFromString = expiration => {
  * @return {boolean}
  */
 
+
+exports.getMMAndYYYYFromString = getMMAndYYYYFromString;
 
 const shouldStoreCredentials = _ref3 => {
   let {
@@ -5381,23 +5418,18 @@ const prepareFormValuesForStorage = formValues => {
   };
 };
 
-module.exports = {
-  formatCCYear,
-  getUnifiedExpiryDate,
-  formatFullName,
-  getCountryDisplayName,
-  getCountryName,
-  inferCountryCodeFromElement,
-  getMMAndYYYYFromString,
-  prepareFormValuesForStorage
-};
+exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
 },{"./countryNames":14,"./matching":22}],16:[function(require,module,exports){
 "use strict";
 
-const {
-  getInputConfig
-} = require('./inputTypeConfig.js');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getIconStylesBase = exports.getIconStylesAutofilled = void 0;
+
+var _inputTypeConfig = require("./inputTypeConfig.js");
+
 /**
  * Returns the css-ready base64 encoding of the icon for the given input
  * @param {HTMLInputElement} input
@@ -5405,11 +5437,9 @@ const {
  * @param {'base' | 'filled'} type
  * @return {string}
  */
-
-
 const getIcon = function (input, form) {
   let type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'base';
-  const config = getInputConfig(input);
+  const config = (0, _inputTypeConfig.getInputConfig)(input);
 
   if (type === 'base') {
     return config.getIconBase(input, form);
@@ -5459,6 +5489,8 @@ const getIconStylesBase = (input, form) => {
  */
 
 
+exports.getIconStylesBase = getIconStylesBase;
+
 const getIconStylesAutofilled = (input, form) => {
   const icon = getIcon(input, form, 'filled');
   const iconStyle = icon ? getBasicStyles(input, icon) : {};
@@ -5468,45 +5500,38 @@ const getIconStylesAutofilled = (input, form) => {
   };
 };
 
-module.exports = {
-  getIconStylesBase,
-  getIconStylesAutofilled
-};
+exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
 },{"./inputTypeConfig.js":17}],17:[function(require,module,exports){
 "use strict";
 
-const {
-  daxBase64
-} = require('./logo-svg');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getInputConfigFromType = exports.getInputConfig = void 0;
 
-const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon');
+var _logoSvg = require("./logo-svg");
 
-const {
-  getInputType,
-  getMainTypeFromType,
-  getInputSubtype
-} = require('./matching');
+var ddgPasswordIcons = _interopRequireWildcard(require("../UI/img/ddgPasswordIcon"));
 
-const {
-  CredentialsTooltipItem
-} = require('../InputTypes/Credentials');
+var _matching = require("./matching");
 
-const {
-  CreditCardTooltipItem
-} = require('../InputTypes/CreditCard');
+var _Credentials = require("../input-types/Credentials");
 
-const {
-  IdentityTooltipItem
-} = require('../InputTypes/Identity');
+var _CreditCard = require("../input-types/CreditCard");
+
+var _Identity = require("../input-types/Identity");
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
  * @param {import("./Form").Form} form
  * @return {string}
  */
-
-
 const getIdentitiesIcon = (input, _ref) => {
   let {
     device
@@ -5514,11 +5539,19 @@ const getIdentitiesIcon = (input, _ref) => {
   // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
   const {
     isDDGApp,
-    isFirefox
+    isFirefox,
+    isWindows
   } = device.globalConfig;
-  const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
-  const subtype = getInputSubtype(input);
-  if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg;
+  const getDaxImg = isDDGApp || isFirefox || isWindows ? _logoSvg.daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
+  const subtype = (0, _matching.getInputSubtype)(input);
+
+  if (subtype === 'emailAddress') {
+    // todo(Shane): Needs runtime polymorphism again here
+    if (device.availableInputTypes.email) {
+      return getDaxImg;
+    }
+  }
+
   return '';
 };
 /**
@@ -5550,12 +5583,13 @@ const inputTypeConfig = {
       // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
       // saved password
       if (isLogin) {
-        return device.hasLocalCredentials;
+        return true;
       } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
+      // todo(Shane): move this
 
 
-      if (device.supportsFeature('password.generation')) {
-        const subtype = getInputSubtype(input);
+      if (device.autofillSettings.featureToggles.password_generation) {
+        const subtype = (0, _matching.getInputSubtype)(input);
 
         if (subtype === 'password') {
           return true;
@@ -5565,7 +5599,7 @@ const inputTypeConfig = {
       return false;
     },
     dataType: 'Credentials',
-    tooltipItem: data => new CredentialsTooltipItem(data)
+    tooltipItem: data => new _Credentials.CredentialsTooltipItem(data)
   },
 
   /** @type {CreditCardsInputTypeConfig} */
@@ -5577,10 +5611,12 @@ const inputTypeConfig = {
       let {
         device
       } = _ref3;
-      return canBeDecorated(_input) && device.hasLocalCreditCards;
+      return (// todo(Shane): shouldn't need this hasLocalCreditCards check with toggles
+        canBeDecorated(_input) && device.hasLocalCreditCards
+      );
     },
     dataType: 'CreditCards',
-    tooltipItem: data => new CreditCardTooltipItem(data)
+    tooltipItem: data => new _CreditCard.CreditCardTooltipItem(data)
   },
 
   /** @type {IdentitiesInputTypeConfig} */
@@ -5592,14 +5628,20 @@ const inputTypeConfig = {
       let {
         device
       } = _ref4;
-      if (!canBeDecorated(_input)) return false;
-      const subtype = getInputSubtype(_input);
+
+      if (!canBeDecorated(_input)) {
+        console.warn('cannot be decorated');
+        return false;
+      }
+
+      const subtype = (0, _matching.getInputSubtype)(_input); // todo(Shane): Handle the mac specfici logic also with feature toggles
 
       if (device.globalConfig.isApp) {
         var _device$getLocalIdent;
 
         return Boolean((_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]));
-      }
+      } // if it's email then we can always decorate
+
 
       if (subtype === 'emailAddress') {
         return Boolean(device.isDeviceSignedIn());
@@ -5608,7 +5650,7 @@ const inputTypeConfig = {
       return false;
     },
     dataType: 'Identities',
-    tooltipItem: data => new IdentityTooltipItem(data)
+    tooltipItem: data => new _Identity.IdentityTooltipItem(data)
   },
 
   /** @type {UnknownInputTypeConfig} */
@@ -5630,7 +5672,7 @@ const inputTypeConfig = {
  */
 
 const getInputConfig = input => {
-  const inputType = getInputType(input);
+  const inputType = (0, _matching.getInputType)(input);
   return getInputConfigFromType(inputType);
 };
 /**
@@ -5640,17 +5682,16 @@ const getInputConfig = input => {
  */
 
 
+exports.getInputConfig = getInputConfig;
+
 const getInputConfigFromType = inputType => {
-  const inputMainType = getMainTypeFromType(inputType);
+  const inputMainType = (0, _matching.getMainTypeFromType)(inputType);
   return inputTypeConfig[inputMainType];
 };
 
-module.exports = {
-  getInputConfig,
-  getInputConfigFromType
-};
+exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials":25,"../InputTypes/CreditCard":26,"../InputTypes/Identity":27,"../UI/img/ddgPasswordIcon":33,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
+},{"../UI/img/ddgPasswordIcon":30,"../input-types/Credentials":36,"../input-types/CreditCard":37,"../input-types/Identity":38,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -5705,15 +5746,15 @@ module.exports.extractElementStrings = extractElementStrings;
 },{}],19:[function(require,module,exports){
 "use strict";
 
-const isApp = require('../autofill-utils');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
 /**
  * @param {Map<HTMLElement, import("./Form").Form>} forms
  */
-
-
 const listenForGlobalFormSubmission = forms => {
-  if (!isApp) return;
-
   try {
     window.addEventListener('submit', e => {
       var _forms$get;
@@ -5742,28 +5783,37 @@ const listenForGlobalFormSubmission = forms => {
   }
 };
 
-module.exports = listenForGlobalFormSubmission;
+var _default = listenForGlobalFormSubmission;
+exports.default = _default;
 
-},{"../autofill-utils":37}],20:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
-module.exports = {
-  daxBase64
-};
+exports.daxBase64 = daxBase64;
 
 },{}],21:[function(require,module,exports){
 "use strict";
 
-const css = require('./selectors-css');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.matchingConfiguration = void 0;
+
+var _selectorsCss = _interopRequireDefault(require("./selectors-css"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /**
  * This is here to mimic what Remote Configuration might look like
  * later on.
  *
  * @type {MatchingConfiguration}
  */
-
-
 const matchingConfiguration = {
   /** @type {MatcherConfiguration} */
   matchers: {
@@ -5957,35 +6007,35 @@ const matchingConfiguration = {
     cssSelector: {
       selectors: {
         // Generic
-        FORM_INPUTS_SELECTOR: css.__secret_do_not_use.FORM_INPUTS_SELECTOR,
-        SUBMIT_BUTTON_SELECTOR: css.__secret_do_not_use.SUBMIT_BUTTON_SELECTOR,
-        GENERIC_TEXT_FIELD: css.__secret_do_not_use.GENERIC_TEXT_FIELD,
+        FORM_INPUTS_SELECTOR: _selectorsCss.default.__secret_do_not_use.FORM_INPUTS_SELECTOR,
+        SUBMIT_BUTTON_SELECTOR: _selectorsCss.default.__secret_do_not_use.SUBMIT_BUTTON_SELECTOR,
+        GENERIC_TEXT_FIELD: _selectorsCss.default.__secret_do_not_use.GENERIC_TEXT_FIELD,
         // user
-        email: css.__secret_do_not_use.email,
-        password: css.__secret_do_not_use.password,
-        username: css.__secret_do_not_use.username,
+        email: _selectorsCss.default.__secret_do_not_use.email,
+        password: _selectorsCss.default.__secret_do_not_use.password,
+        username: _selectorsCss.default.__secret_do_not_use.username,
         // CC
-        cardName: css.__secret_do_not_use.cardName,
-        cardNumber: css.__secret_do_not_use.cardNumber,
-        cardSecurityCode: css.__secret_do_not_use.cardSecurityCode,
-        expirationMonth: css.__secret_do_not_use.expirationMonth,
-        expirationYear: css.__secret_do_not_use.expirationYear,
-        expiration: css.__secret_do_not_use.expiration,
+        cardName: _selectorsCss.default.__secret_do_not_use.cardName,
+        cardNumber: _selectorsCss.default.__secret_do_not_use.cardNumber,
+        cardSecurityCode: _selectorsCss.default.__secret_do_not_use.cardSecurityCode,
+        expirationMonth: _selectorsCss.default.__secret_do_not_use.expirationMonth,
+        expirationYear: _selectorsCss.default.__secret_do_not_use.expirationYear,
+        expiration: _selectorsCss.default.__secret_do_not_use.expiration,
         // Identities
-        firstName: css.__secret_do_not_use.firstName,
-        middleName: css.__secret_do_not_use.middleName,
-        lastName: css.__secret_do_not_use.lastName,
-        fullName: css.__secret_do_not_use.fullName,
-        phone: css.__secret_do_not_use.phone,
-        addressStreet: css.__secret_do_not_use.addressStreet1,
-        addressStreet2: css.__secret_do_not_use.addressStreet2,
-        addressCity: css.__secret_do_not_use.addressCity,
-        addressProvince: css.__secret_do_not_use.addressProvince,
-        addressPostalCode: css.__secret_do_not_use.addressPostalCode,
-        addressCountryCode: css.__secret_do_not_use.addressCountryCode,
-        birthdayDay: css.__secret_do_not_use.birthdayDay,
-        birthdayMonth: css.__secret_do_not_use.birthdayMonth,
-        birthdayYear: css.__secret_do_not_use.birthdayYear
+        firstName: _selectorsCss.default.__secret_do_not_use.firstName,
+        middleName: _selectorsCss.default.__secret_do_not_use.middleName,
+        lastName: _selectorsCss.default.__secret_do_not_use.lastName,
+        fullName: _selectorsCss.default.__secret_do_not_use.fullName,
+        phone: _selectorsCss.default.__secret_do_not_use.phone,
+        addressStreet: _selectorsCss.default.__secret_do_not_use.addressStreet1,
+        addressStreet2: _selectorsCss.default.__secret_do_not_use.addressStreet2,
+        addressCity: _selectorsCss.default.__secret_do_not_use.addressCity,
+        addressProvince: _selectorsCss.default.__secret_do_not_use.addressProvince,
+        addressPostalCode: _selectorsCss.default.__secret_do_not_use.addressPostalCode,
+        addressCountryCode: _selectorsCss.default.__secret_do_not_use.addressCountryCode,
+        birthdayDay: _selectorsCss.default.__secret_do_not_use.birthdayDay,
+        birthdayMonth: _selectorsCss.default.__secret_do_not_use.birthdayMonth,
+        birthdayYear: _selectorsCss.default.__secret_do_not_use.birthdayYear
       }
     },
 
@@ -6367,10 +6417,33 @@ const matchingConfiguration = {
     }
   }
 };
-module.exports.matchingConfiguration = matchingConfiguration;
+exports.matchingConfiguration = matchingConfiguration;
 
 },{"./selectors-css":23}],22:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.checkPlaceholderAndLabels = exports.Matching = void 0;
+exports.createMatching = createMatching;
+exports.getInputMainType = exports.getExplicitLabelsText = void 0;
+exports.getInputSubtype = getInputSubtype;
+exports.getInputType = getInputType;
+exports.getMainTypeFromType = getMainTypeFromType;
+exports.getRelatedText = void 0;
+exports.getSubtypeFromType = getSubtypeFromType;
+exports.safeRegex = exports.removeExcessWhitespace = exports.matchInPlaceholderAndLabels = void 0;
+
+var _vendorRegex = require("./vendor-regex");
+
+var _constants = require("../constants");
+
+var _labelUtil = require("./label-util");
+
+var _selectorsCss = require("./selectors-css");
+
+var _matchingConfiguration = require("./matching-configuration");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -6389,31 +6462,14 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
 
 const {
-  createCacheableVendorRegexes
-} = require('./vendor-regex');
-
-const {
   TEXT_LENGTH_CUTOFF,
   ATTR_INPUT_TYPE
-} = require('../constants');
-
-const {
-  extractElementStrings
-} = require('./label-util');
-
-const {
-  FORM_INPUTS_SELECTOR
-} = require('./selectors-css');
-
-const {
-  matchingConfiguration
-} = require('./matching-configuration');
+} = _constants.constants;
 /**
  * An abstraction around the concept of classifying input fields.
  *
  * The only state this class keeps is derived from the passed-in MatchingConfiguration.
  */
-
 
 var _config = /*#__PURE__*/new WeakMap();
 
@@ -6496,7 +6552,7 @@ class Matching {
       ruleSets
     } = _classPrivateFieldGet(this, _config).strategies.vendorRegex;
 
-    _classPrivateFieldSet(this, _vendorRegExpCache, createCacheableVendorRegexes(rules, ruleSets));
+    _classPrivateFieldSet(this, _vendorRegExpCache, (0, _vendorRegex.createCacheableVendorRegexes)(rules, ruleSets));
 
     _classPrivateFieldSet(this, _cssSelectors, _classPrivateFieldGet(this, _config).strategies.cssSelector.selectors);
 
@@ -7044,6 +7100,8 @@ class Matching {
  */
 
 
+exports.Matching = Matching;
+
 _defineProperty(Matching, "emptyConfig", {
   matchers: {
     lists: {},
@@ -7059,7 +7117,7 @@ _defineProperty(Matching, "emptyConfig", {
     },
     'cssSelector': {
       selectors: {
-        FORM_INPUTS_SELECTOR
+        FORM_INPUTS_SELECTOR: _selectorsCss.FORM_INPUTS_SELECTOR
       }
     }
   }
@@ -7104,6 +7162,7 @@ const getInputMainType = input => getMainTypeFromType(getInputType(input));
 /** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
 
 
+exports.getInputMainType = getInputMainType;
 const supportedIdentitiesSubtypes =
 /** @type {const} */
 ['emailAddress', 'firstName', 'middleName', 'lastName', 'fullName', 'phone', 'addressStreet', 'addressStreet2', 'addressCity', 'addressProvince', 'addressPostalCode', 'addressCountryCode', 'birthdayDay', 'birthdayMonth', 'birthdayYear'];
@@ -7207,11 +7266,13 @@ const removeExcessWhitespace = function () {
  */
 
 
+exports.removeExcessWhitespace = removeExcessWhitespace;
+
 const getExplicitLabelsText = el => {
   const labelTextCandidates = [];
 
   for (let label of el.labels || []) {
-    labelTextCandidates.push(...extractElementStrings(label));
+    labelTextCandidates.push(...(0, _labelUtil.extractElementStrings)(label));
   }
 
   if (el.hasAttribute('aria-label')) {
@@ -7225,7 +7286,7 @@ const getExplicitLabelsText = el => {
     const labelledByElement = document.getElementById(ariaLabelAttr);
 
     if (labelledByElement) {
-      labelTextCandidates.push(...extractElementStrings(labelledByElement));
+      labelTextCandidates.push(...(0, _labelUtil.extractElementStrings)(labelledByElement));
     }
   }
 
@@ -7244,12 +7305,14 @@ const getExplicitLabelsText = el => {
  */
 
 
+exports.getExplicitLabelsText = getExplicitLabelsText;
+
 const getRelatedText = (el, form, cssSelector) => {
   const container = getLargestMeaningfulContainer(el, form, cssSelector); // If there is no meaningful container return empty string
 
   if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
-  const text = removeExcessWhitespace(extractElementStrings(container).join(' ')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
+  const text = removeExcessWhitespace((0, _labelUtil.extractElementStrings)(container).join(' ')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
 
   if (text.length < TEXT_LENGTH_CUTOFF) return text;
   return '';
@@ -7262,6 +7325,8 @@ const getRelatedText = (el, form, cssSelector) => {
  * @return {HTMLElement}
  */
 
+
+exports.getRelatedText = getRelatedText;
 
 const getLargestMeaningfulContainer = (el, form, cssSelector) => {
   /* TODO: there could be more than one select el for the same label, in that case we should
@@ -7301,6 +7366,8 @@ const matchInPlaceholderAndLabels = (input, regex, form, cssSelector) => {
  */
 
 
+exports.matchInPlaceholderAndLabels = matchInPlaceholderAndLabels;
+
 const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
   return !!matchInPlaceholderAndLabels(input, regex, form, cssSelector);
 };
@@ -7310,6 +7377,8 @@ const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
  * @returns {RegExp | undefined} string
  */
 
+
+exports.checkPlaceholderAndLabels = checkPlaceholderAndLabels;
 
 const safeRegex = string => {
   try {
@@ -7328,27 +7397,13 @@ const safeRegex = string => {
  */
 
 
+exports.safeRegex = safeRegex;
+
 function createMatching() {
-  return new Matching(matchingConfiguration);
+  return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-module.exports = {
-  getInputType,
-  getInputSubtype,
-  getSubtypeFromType,
-  removeExcessWhitespace,
-  getInputMainType,
-  getMainTypeFromType,
-  getExplicitLabelsText,
-  getRelatedText,
-  matchInPlaceholderAndLabels,
-  checkPlaceholderAndLabels,
-  safeRegex,
-  Matching,
-  createMatching
-};
-
-},{"../constants":40,"./label-util":18,"./matching-configuration":21,"./selectors-css":23,"./vendor-regex":24}],23:[function(require,module,exports){
+},{"../constants":35,"./label-util":18,"./matching-configuration":21,"./selectors-css":23,"./vendor-regex":24}],23:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -7475,203 +7530,16 @@ module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 },{}],25:[function(require,module,exports){
 "use strict";
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PasswordGenerator = void 0;
 
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+var _password = require("../packages/password");
 
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+var _rules = _interopRequireDefault(require("../packages/password/rules.json"));
 
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
-
-const GENERATED_ID = '__generated__';
-/**
- * @implements {TooltipItemRenderer}
- */
-
-var _data = /*#__PURE__*/new WeakMap();
-
-class CredentialsTooltipItem {
-  /** @type {CredentialsObject} */
-
-  /** @param {CredentialsObject} data */
-  constructor(data) {
-    _classPrivateFieldInitSpec(this, _data, {
-      writable: true,
-      value: void 0
-    });
-
-    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
-
-    _classPrivateFieldSet(this, _data, data);
-  }
-
-  labelMedium(_subtype) {
-    if (_classPrivateFieldGet(this, _data).id === GENERATED_ID) {
-      return 'Generated password';
-    }
-
-    return _classPrivateFieldGet(this, _data).username;
-  }
-
-  labelSmall(_subtype) {
-    if (_classPrivateFieldGet(this, _data).id === GENERATED_ID && _classPrivateFieldGet(this, _data).password) {
-      return _classPrivateFieldGet(this, _data).password;
-    }
-
-    return '•••••••••••••••';
-  }
-
-}
-/**
- * Generate a stand-in 'CredentialsObject' from a
- * given (generated) password.
- *
- * @param {string} password
- * @returns {CredentialsObject}
- */
-
-
-function fromPassword(password) {
-  return {
-    id: GENERATED_ID,
-    password: password,
-    username: ''
-  };
-}
-
-module.exports.CredentialsTooltipItem = CredentialsTooltipItem;
-module.exports.fromPassword = fromPassword;
-module.exports.GENERATED_ID = GENERATED_ID;
-
-},{}],26:[function(require,module,exports){
-"use strict";
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
-
-var _data = /*#__PURE__*/new WeakMap();
-
-/**
- * @implements {TooltipItemRenderer}
- */
-class CreditCardTooltipItem {
-  /** @type {CreditCardObject} */
-
-  /** @param {CreditCardObject} data */
-  constructor(data) {
-    _classPrivateFieldInitSpec(this, _data, {
-      writable: true,
-      value: void 0
-    });
-
-    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
-
-    _defineProperty(this, "labelMedium", _ => _classPrivateFieldGet(this, _data).title);
-
-    _defineProperty(this, "labelSmall", _ => _classPrivateFieldGet(this, _data).displayNumber);
-
-    _classPrivateFieldSet(this, _data, data);
-  }
-
-}
-
-module.exports.CreditCardTooltipItem = CreditCardTooltipItem;
-
-},{}],27:[function(require,module,exports){
-"use strict";
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
-
-const {
-  getCountryDisplayName
-} = require('../Form/formatters');
-/**
- * @implements {TooltipItemRenderer}
- */
-
-
-var _data = /*#__PURE__*/new WeakMap();
-
-class IdentityTooltipItem {
-  /** @type {IdentityObject} */
-
-  /** @param {IdentityObject} data */
-  constructor(data) {
-    _classPrivateFieldInitSpec(this, _data, {
-      writable: true,
-      value: void 0
-    });
-
-    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
-
-    _defineProperty(this, "labelMedium", subtype => {
-      if (subtype === 'addressCountryCode') {
-        return getCountryDisplayName('en', _classPrivateFieldGet(this, _data).addressCountryCode || '');
-      }
-
-      if (_classPrivateFieldGet(this, _data).id === 'privateAddress') {
-        return 'Generated Private Duck Address';
-      }
-
-      return _classPrivateFieldGet(this, _data)[subtype];
-    });
-
-    _defineProperty(this, "labelSmall", _ => {
-      return _classPrivateFieldGet(this, _data).title;
-    });
-
-    _classPrivateFieldSet(this, _data, data);
-  }
-
-  label(subtype) {
-    if (_classPrivateFieldGet(this, _data).id === 'privateAddress') {
-      return _classPrivateFieldGet(this, _data)[subtype];
-    }
-
-    return null;
-  }
-
-}
-
-module.exports.IdentityTooltipItem = IdentityTooltipItem;
-
-},{"../Form/formatters":15}],28:[function(require,module,exports){
-"use strict";
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
 
@@ -7686,19 +7554,12 @@ function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classEx
 function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
 
 function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-const {
-  generate
-} = require('../packages/password');
-
-const rules = require('../packages/password/rules.json');
-/**
- * Create a password once and reuse it.
- */
-
 
 var _previous = /*#__PURE__*/new WeakMap();
 
+/**
+ * Create a password once and reuse it.
+ */
 class PasswordGenerator {
   constructor() {
     _classPrivateFieldInitSpec(this, _previous, {
@@ -7721,8 +7582,8 @@ class PasswordGenerator {
       return _classPrivateFieldGet(this, _previous);
     }
 
-    _classPrivateFieldSet(this, _previous, generate({ ...params,
-      rules
+    _classPrivateFieldSet(this, _previous, (0, _password.generate)({ ...params,
+      rules: _rules.default
     }));
 
     return _classPrivateFieldGet(this, _previous);
@@ -7730,29 +7591,26 @@ class PasswordGenerator {
 
 }
 
-module.exports.PasswordGenerator = PasswordGenerator;
+exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":2,"../packages/password/rules.json":6}],29:[function(require,module,exports){
+},{"../packages/password":1,"../packages/password/rules.json":5}],26:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createScanner = createScanner;
+
+var _Form = require("./Form/Form");
+
+var _autofillUtils = require("./autofill-utils");
+
+var _selectorsCss = require("./Form/selectors-css");
+
+var _matching = require("./Form/matching");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-const {
-  Form
-} = require('./Form/Form');
-
-const {
-  notifyWebApp
-} = require('./autofill-utils');
-
-const {
-  SUBMIT_BUTTON_SELECTOR,
-  FORM_INPUTS_SELECTOR
-} = require('./Form/selectors-css');
-
-const {
-  createMatching
-} = require('./Form/matching');
 /**
  * @typedef {{
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
@@ -7765,12 +7623,11 @@ const {
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
+ *     availableInputTypes: AvailableInputTypes,
  * }} ScannerOptions
  */
 
 /** @type {ScannerOptions} */
-
-
 const defaultScannerOptions = {
   // This buffer size is very large because it's an unexpected edge-case that
   // a DOM will be continually modified over and over without ever stopping. If we do see 1000 unique
@@ -7779,7 +7636,9 @@ const defaultScannerOptions = {
   // wait for a 500ms window of event silence before performing the scan
   debounceTimePeriod: 500,
   // how long to wait when performing the initial scan
-  initialDelay: 0
+  initialDelay: 0,
+  // default has no available input types
+  availableInputTypes: {}
 };
 /**
  * This allows:
@@ -7801,7 +7660,7 @@ class DefaultScanner {
   /** @type {boolean} A flag to indicate the whole page will be re-scanned */
 
   /**
-   * @param {import("./DeviceInterface/InterfacePrototype")} device
+   * @param {import("./DeviceInterface/InterfacePrototype").default} device
    * @param {ScannerOptions} options
    */
   constructor(device, options) {
@@ -7841,7 +7700,7 @@ class DefaultScanner {
     }));
 
     this.device = device;
-    this.matching = createMatching();
+    this.matching = (0, _matching.createMatching)();
     this.options = options;
   }
   /**
@@ -7873,7 +7732,7 @@ class DefaultScanner {
       this.forms.clear();
 
       if (this.device.globalConfig.isDDGDomain) {
-        notifyWebApp({
+        (0, _autofillUtils.notifyWebApp)({
           deviceSignedIn: {
             value: false
           }
@@ -7905,10 +7764,10 @@ class DefaultScanner {
   findEligibleInputs(context) {
     var _context$matches;
 
-    if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, FORM_INPUTS_SELECTOR)) {
+    if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, _selectorsCss.FORM_INPUTS_SELECTOR)) {
       this.addInput(context);
     } else {
-      context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach(input => this.addInput(input));
+      context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR).forEach(input => this.addInput(input));
     }
 
     return this;
@@ -7929,8 +7788,8 @@ class DefaultScanner {
     while (element.parentElement && element.parentElement !== document.body) {
       element = element.parentElement; // todo: These selectors should be configurable
 
-      const inputs = element.querySelectorAll(FORM_INPUTS_SELECTOR);
-      const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
+      const inputs = element.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
+      const buttons = element.querySelectorAll(_selectorsCss.SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
 
       if (inputs.length > 1 || buttons.length) {
         // found related input, return common ancestor
@@ -7966,7 +7825,11 @@ class DefaultScanner {
         this.forms.delete(childForm);
       }
 
-      this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching));
+      if (!this.options.availableInputTypes) {
+        throw new Error('unreachble. availableInputTypes must be set');
+      }
+
+      this.forms.set(parentForm, new _Form.Form(parentForm, input, this.options.availableInputTypes, this.device, this.matching));
     }
   }
   /**
@@ -8022,7 +7885,7 @@ class DefaultScanner {
 
 }
 /**
- * @param {import("./DeviceInterface/InterfacePrototype")} device
+ * @param {import("./DeviceInterface/InterfacePrototype").default} device
  * @param {Partial<ScannerOptions>} [scannerOptions]
  * @returns {Scanner}
  */
@@ -8034,20 +7897,23 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-module.exports = {
-  createScanner
-};
-
-},{"./Form/Form":12,"./Form/matching":22,"./Form/selectors-css":23,"./autofill-utils":37}],30:[function(require,module,exports){
+},{"./Form/Form":12,"./Form/matching":22,"./Form/selectors-css":23,"./autofill-utils":32}],27:[function(require,module,exports){
 "use strict";
 
-const {
-  escapeXML
-} = require('../autofill-utils');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
-const Tooltip = require('./Tooltip');
+var _autofillUtils = require("../autofill-utils");
 
-class DataAutofill extends Tooltip {
+var _Tooltip = _interopRequireDefault(require("./Tooltip"));
+
+var _styles = require("./styles/styles.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class DataAutofill extends _Tooltip.default {
   /**
    * @param {InputTypeConfigs} config
    * @param {TooltipItemRenderer[]} items
@@ -8058,7 +7924,7 @@ class DataAutofill extends Tooltip {
       isApp,
       isTopFrame
     } = this.interface.globalConfig;
-    const includeStyles = isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
+    const includeStyles = isApp ? "<style>".concat(_styles.CSS_STYLES, "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
 
     const shouldShowSeparator = dataId => {
@@ -8074,7 +7940,7 @@ class DataAutofill extends Tooltip {
       // these 2 are optional
       const labelSmall = (_item$labelSmall = item.labelSmall) === null || _item$labelSmall === void 0 ? void 0 : _item$labelSmall.call(item, this.subtype);
       const label = (_item$label = item.label) === null || _item$label === void 0 ? void 0 : _item$label.call(item, this.subtype);
-      return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data tooltip__button--data--").concat(config.type, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat(escapeXML(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat(escapeXML(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat(escapeXML(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
+      return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data tooltip__button--data--").concat(config.type, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat((0, _autofillUtils.escapeXML)(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat((0, _autofillUtils.escapeXML)(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat((0, _autofillUtils.escapeXML)(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
     }).join(''), "\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
@@ -8090,30 +7956,37 @@ class DataAutofill extends Tooltip {
 
 }
 
-module.exports = DataAutofill;
+var _default = DataAutofill;
+exports.default = _default;
 
-},{"../autofill-utils":37,"./Tooltip":32,"./styles/autofill-tooltip-styles.js":34}],31:[function(require,module,exports){
+},{"../autofill-utils":32,"./Tooltip":29,"./styles/styles.js":31}],28:[function(require,module,exports){
 "use strict";
 
-const {
-  formatDuckAddress,
-  escapeXML
-} = require('../autofill-utils');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
-const Tooltip = require('./Tooltip');
+var _autofillUtils = require("../autofill-utils");
 
-class EmailAutofill extends Tooltip {
+var _Tooltip = _interopRequireDefault(require("./Tooltip"));
+
+var _styles = require("./styles/styles");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class EmailAutofill extends _Tooltip.default {
   /**
    * @param config
    * @param inputType
    * @param position
-   * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+   * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
    */
   constructor(config, inputType, position, deviceInterface) {
     super(config, inputType, position, deviceInterface);
     this.addresses = this.interface.getLocalAddresses();
-    const includeStyles = deviceInterface.globalConfig.isApp ? "<style>".concat(require('./styles/autofill-tooltip-styles.js'), "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
-    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat(formatDuckAddress(escapeXML(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
+    const includeStyles = deviceInterface.globalConfig.isApp ? "<style>".concat(_styles.CSS_STYLES, "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
+    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
@@ -8123,7 +7996,7 @@ class EmailAutofill extends Tooltip {
     this.updateAddresses = addresses => {
       if (addresses && this.addressEl) {
         this.addresses = addresses;
-        this.addressEl.textContent = formatDuckAddress(addresses.personalAddress);
+        this.addressEl.textContent = (0, _autofillUtils.formatDuckAddress)(addresses.personalAddress);
       }
     };
 
@@ -8144,7 +8017,7 @@ class EmailAutofill extends Tooltip {
 
   async fillForm(id) {
     const address = this.addresses[id];
-    const formattedAddress = formatDuckAddress(address);
+    const formattedAddress = (0, _autofillUtils.formatDuckAddress)(address);
     this.interface.selectedDetail({
       email: formattedAddress,
       id
@@ -8153,28 +8026,29 @@ class EmailAutofill extends Tooltip {
 
 }
 
-module.exports = EmailAutofill;
+var _default = EmailAutofill;
+exports.default = _default;
 
-},{"../autofill-utils":37,"./Tooltip":32,"./styles/autofill-tooltip-styles.js":34}],32:[function(require,module,exports){
+},{"../autofill-utils":32,"./Tooltip":29,"./styles/styles":31}],29:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.Tooltip = void 0;
+
+var _autofillUtils = require("../autofill-utils");
+
+var _matching = require("../Form/matching");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-const {
-  safeExecute,
-  addInlineStyles
-} = require('../autofill-utils');
-
-const {
-  getSubtypeFromType
-} = require('../Form/matching');
 
 class Tooltip {
   /**
    * @param config
    * @param inputType
    * @param getPosition
-   * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+   * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
    */
   constructor(config, inputType, getPosition, deviceInterface) {
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
@@ -8200,7 +8074,7 @@ class Tooltip {
     });
     this.host = this.shadow.host;
     this.config = config;
-    this.subtype = getSubtypeFromType(inputType);
+    this.subtype = (0, _matching.getSubtypeFromType)(inputType);
     this.tooltip = null;
     this.getPosition = getPosition;
     const forcedVisibilityStyles = {
@@ -8209,7 +8083,7 @@ class Tooltip {
       'opacity': '1'
     }; // @ts-ignore how to narrow this.host to HTMLElement?
 
-    addInlineStyles(this.host, forcedVisibilityStyles);
+    (0, _autofillUtils.addInlineStyles)(this.host, forcedVisibilityStyles);
     this.interface = deviceInterface;
     this.count = 0;
   }
@@ -8346,7 +8220,7 @@ class Tooltip {
     const handler = this.clickableButtons.get(this.activeButton);
 
     if (handler) {
-      safeExecute(this.activeButton, handler);
+      (0, _autofillUtils.safeExecute)(this.activeButton, handler);
     }
   }
 
@@ -8398,216 +8272,59 @@ class Tooltip {
 
 }
 
-module.exports = Tooltip;
+exports.Tooltip = Tooltip;
+var _default = Tooltip;
+exports.default = _default;
 
-},{"../Form/matching":22,"../autofill-utils":37}],33:[function(require,module,exports){
+},{"../Form/matching":22,"../autofill-utils":32}],30:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ddgPasswordIconFocused = exports.ddgPasswordIconFilled = exports.ddgPasswordIconBaseWhite = exports.ddgPasswordIconBase = exports.ddgIdentityIconBase = exports.ddgCcIconFilled = exports.ddgCcIconBase = void 0;
 const ddgPasswordIconBase = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tYmFzZTwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tYmFzZSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IlVuaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjMzMzMsMi42NjY2NyBDMTAuMjI4OCwyLjY2NjY3IDkuMzMzMzMsMy41NjIxIDkuMzMzMzMsNC42NjY2NyBDOS4zMzMzMyw1Ljc3MTI0IDEwLjIyODgsNi42NjY2NyAxMS4zMzMzLDYuNjY2NjcgQzEyLjQzNzksNi42NjY2NyAxMy4zMzMzLDUuNzcxMjQgMTMuMzMzMyw0LjY2NjY3IEMxMy4zMzMzLDMuNTYyMSAxMi40Mzc5LDIuNjY2NjcgMTEuMzMzMywyLjY2NjY3IFogTTEwLjY2NjcsNC42NjY2NyBDMTAuNjY2Nyw0LjI5ODQ4IDEwLjk2NTEsNCAxMS4zMzMzLDQgQzExLjcwMTUsNCAxMiw0LjI5ODQ4IDEyLDQuNjY2NjcgQzEyLDUuMDM0ODYgMTEuNzAxNSw1LjMzMzMzIDExLjMzMzMsNS4zMzMzMyBDMTAuOTY1MSw1LjMzMzMzIDEwLjY2NjcsNS4wMzQ4NiAxMC42NjY3LDQuNjY2NjcgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC42NjY3LDAgQzcuNzIxMTUsMCA1LjMzMzMzLDIuMzg3ODEgNS4zMzMzMyw1LjMzMzMzIEM1LjMzMzMzLDUuNzYxMTkgNS4zODM4NSw2LjE3Nzk4IDUuNDc5NDUsNi41Nzc3NSBMMC4xOTUyNjIsMTEuODYxOSBDMC4wNzAyMzc5LDExLjk4NyAwLDEyLjE1NjUgMCwxMi4zMzMzIEwwLDE1LjMzMzMgQzAsMTUuNzAxNSAwLjI5ODQ3NywxNiAwLjY2NjY2NywxNiBMMy4zMzMzMywxNiBDNC4wNjk3MSwxNiA0LjY2NjY3LDE1LjQwMyA0LjY2NjY3LDE0LjY2NjcgTDQuNjY2NjcsMTQgTDUuMzMzMzMsMTQgQzYuMDY5NzEsMTQgNi42NjY2NywxMy40MDMgNi42NjY2NywxMi42NjY3IEw2LjY2NjY3LDExLjMzMzMgTDgsMTEuMzMzMyBDOC4xNzY4MSwxMS4zMzMzIDguMzQ2MzgsMTEuMjYzMSA4LjQ3MTQxLDExLjEzODEgTDkuMTU5MDYsMTAuNDUwNCBDOS42Mzc3MiwxMC41OTEyIDEwLjE0MzksMTAuNjY2NyAxMC42NjY3LDEwLjY2NjcgQzEzLjYxMjIsMTAuNjY2NyAxNiw4LjI3ODg1IDE2LDUuMzMzMzMgQzE2LDIuMzg3ODEgMTMuNjEyMiwwIDEwLjY2NjcsMCBaIE02LjY2NjY3LDUuMzMzMzMgQzYuNjY2NjcsMy4xMjQxOSA4LjQ1NzUzLDEuMzMzMzMgMTAuNjY2NywxLjMzMzMzIEMxMi44NzU4LDEuMzMzMzMgMTQuNjY2NywzLjEyNDE5IDE0LjY2NjcsNS4zMzMzMyBDMTQuNjY2Nyw3LjU0MjQ3IDEyLjg3NTgsOS4zMzMzMyAxMC42NjY3LDkuMzMzMzMgQzEwLjE1NTgsOS4zMzMzMyA5LjY2ODg2LDkuMjM3OSA5LjIyMTUyLDkuMDY0NSBDOC45NzUyOCw4Ljk2OTA1IDguNjk1OTEsOS4wMjc5NSA4LjUwOTE2LDkuMjE0NjkgTDcuNzIzODYsMTAgTDYsMTAgQzUuNjMxODEsMTAgNS4zMzMzMywxMC4yOTg1IDUuMzMzMzMsMTAuNjY2NyBMNS4zMzMzMywxMi42NjY3IEw0LDEyLjY2NjcgQzMuNjMxODEsMTIuNjY2NyAzLjMzMzMzLDEyLjk2NTEgMy4zMzMzMywxMy4zMzMzIEwzLjMzMzMzLDE0LjY2NjcgTDEuMzMzMzMsMTQuNjY2NyBMMS4zMzMzMywxMi42MDk1IEw2LjY5Nzg3LDcuMjQ0OTQgQzYuODc1MDIsNy4wNjc3OSA2LjkzNzksNi44MDYyOSA2Ljg2MDY1LDYuNTY3OTggQzYuNzM0ODksNi4xNzk5NyA2LjY2NjY3LDUuNzY1MjcgNi42NjY2Nyw1LjMzMzMzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
+exports.ddgPasswordIconBase = ddgPasswordIconBase;
 const ddgPasswordIconBaseWhite = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tYmFzZS13aGl0ZTwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tYmFzZS13aGl0ZSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IlVuaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsPSIjRkZGRkZGIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjMzMzMsMi42NjY2NyBDMTAuMjI4OCwyLjY2NjY3IDkuMzMzMzMsMy41NjIxIDkuMzMzMzMsNC42NjY2NyBDOS4zMzMzMyw1Ljc3MTI0IDEwLjIyODgsNi42NjY2NyAxMS4zMzMzLDYuNjY2NjcgQzEyLjQzNzksNi42NjY2NyAxMy4zMzMzLDUuNzcxMjQgMTMuMzMzMyw0LjY2NjY3IEMxMy4zMzMzLDMuNTYyMSAxMi40Mzc5LDIuNjY2NjcgMTEuMzMzMywyLjY2NjY3IFogTTEwLjY2NjcsNC42NjY2NyBDMTAuNjY2Nyw0LjI5ODQ4IDEwLjk2NTEsNCAxMS4zMzMzLDQgQzExLjcwMTUsNCAxMiw0LjI5ODQ4IDEyLDQuNjY2NjcgQzEyLDUuMDM0ODYgMTEuNzAxNSw1LjMzMzMzIDExLjMzMzMsNS4zMzMzMyBDMTAuOTY1MSw1LjMzMzMzIDEwLjY2NjcsNS4wMzQ4NiAxMC42NjY3LDQuNjY2NjcgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC42NjY3LDAgQzcuNzIxMTUsMCA1LjMzMzMzLDIuMzg3ODEgNS4zMzMzMyw1LjMzMzMzIEM1LjMzMzMzLDUuNzYxMTkgNS4zODM4NSw2LjE3Nzk4IDUuNDc5NDUsNi41Nzc3NSBMMC4xOTUyNjIsMTEuODYxOSBDMC4wNzAyMzc5LDExLjk4NyAwLDEyLjE1NjUgMCwxMi4zMzMzIEwwLDE1LjMzMzMgQzAsMTUuNzAxNSAwLjI5ODQ3NywxNiAwLjY2NjY2NywxNiBMMy4zMzMzMywxNiBDNC4wNjk3MSwxNiA0LjY2NjY3LDE1LjQwMyA0LjY2NjY3LDE0LjY2NjcgTDQuNjY2NjcsMTQgTDUuMzMzMzMsMTQgQzYuMDY5NzEsMTQgNi42NjY2NywxMy40MDMgNi42NjY2NywxMi42NjY3IEw2LjY2NjY3LDExLjMzMzMgTDgsMTEuMzMzMyBDOC4xNzY4MSwxMS4zMzMzIDguMzQ2MzgsMTEuMjYzMSA4LjQ3MTQxLDExLjEzODEgTDkuMTU5MDYsMTAuNDUwNCBDOS42Mzc3MiwxMC41OTEyIDEwLjE0MzksMTAuNjY2NyAxMC42NjY3LDEwLjY2NjcgQzEzLjYxMjIsMTAuNjY2NyAxNiw4LjI3ODg1IDE2LDUuMzMzMzMgQzE2LDIuMzg3ODEgMTMuNjEyMiwwIDEwLjY2NjcsMCBaIE02LjY2NjY3LDUuMzMzMzMgQzYuNjY2NjcsMy4xMjQxOSA4LjQ1NzUzLDEuMzMzMzMgMTAuNjY2NywxLjMzMzMzIEMxMi44NzU4LDEuMzMzMzMgMTQuNjY2NywzLjEyNDE5IDE0LjY2NjcsNS4zMzMzMyBDMTQuNjY2Nyw3LjU0MjQ3IDEyLjg3NTgsOS4zMzMzMyAxMC42NjY3LDkuMzMzMzMgQzEwLjE1NTgsOS4zMzMzMyA5LjY2ODg2LDkuMjM3OSA5LjIyMTUyLDkuMDY0NSBDOC45NzUyOCw4Ljk2OTA1IDguNjk1OTEsOS4wMjc5NSA4LjUwOTE2LDkuMjE0NjkgTDcuNzIzODYsMTAgTDYsMTAgQzUuNjMxODEsMTAgNS4zMzMzMywxMC4yOTg1IDUuMzMzMzMsMTAuNjY2NyBMNS4zMzMzMywxMi42NjY3IEw0LDEyLjY2NjcgQzMuNjMxODEsMTIuNjY2NyAzLjMzMzMzLDEyLjk2NTEgMy4zMzMzMywxMy4zMzMzIEwzLjMzMzMzLDE0LjY2NjcgTDEuMzMzMzMsMTQuNjY2NyBMMS4zMzMzMywxMi42MDk1IEw2LjY5Nzg3LDcuMjQ0OTQgQzYuODc1MDIsNy4wNjc3OSA2LjkzNzksNi44MDYyOSA2Ljg2MDY1LDYuNTY3OTggQzYuNzM0ODksNi4xNzk5NyA2LjY2NjY3LDUuNzY1MjcgNi42NjY2Nyw1LjMzMzMzIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
+exports.ddgPasswordIconBaseWhite = ddgPasswordIconBaseWhite;
 const ddgPasswordIconFilled = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tZmlsbGVkPC90aXRsZT4KICAgIDxnIGlkPSJkZGctcGFzc3dvcmQtaWNvbi1maWxsZWQiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSJTaGFwZSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNC4wMDAwMDAsIDQuMDAwMDAwKSIgZmlsbD0iIzc2NDMxMCI+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMS4yNSwyLjc1IEMxMC4xNDU0LDIuNzUgOS4yNSwzLjY0NTQzIDkuMjUsNC43NSBDOS4yNSw1Ljg1NDU3IDEwLjE0NTQsNi43NSAxMS4yNSw2Ljc1IEMxMi4zNTQ2LDYuNzUgMTMuMjUsNS44NTQ1NyAxMy4yNSw0Ljc1IEMxMy4yNSwzLjY0NTQzIDEyLjM1NDYsMi43NSAxMS4yNSwyLjc1IFogTTEwLjc1LDQuNzUgQzEwLjc1LDQuNDczODYgMTAuOTczOSw0LjI1IDExLjI1LDQuMjUgQzExLjUyNjEsNC4yNSAxMS43NSw0LjQ3Mzg2IDExLjc1LDQuNzUgQzExLjc1LDUuMDI2MTQgMTEuNTI2MSw1LjI1IDExLjI1LDUuMjUgQzEwLjk3MzksNS4yNSAxMC43NSw1LjAyNjE0IDEwLjc1LDQuNzUgWiI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMTAuNjI1LDAgQzcuNjU2NDcsMCA1LjI1LDIuNDA2NDcgNS4yNSw1LjM3NSBDNS4yNSw1Ljc4MDk4IDUuMjk1MTQsNi4xNzcxNCA1LjM4MDg4LDYuNTU4NDYgTDAuMjE5NjcsMTEuNzE5NyBDMC4wNzkwMTc2LDExLjg2MDMgMCwxMi4wNTExIDAsMTIuMjUgTDAsMTUuMjUgQzAsMTUuNjY0MiAwLjMzNTc4NiwxNiAwLjc1LDE2IEwzLjc0NjYxLDE2IEM0LjMwMDc2LDE2IDQuNzUsMTUuNTUwOCA0Ljc1LDE0Ljk5NjYgTDQuNzUsMTQgTDUuNzQ2NjEsMTQgQzYuMzAwNzYsMTQgNi43NSwxMy41NTA4IDYuNzUsMTIuOTk2NiBMNi43NSwxMS41IEw4LDExLjUgQzguMTk4OTEsMTEuNSA4LjM4OTY4LDExLjQyMSA4LjUzMDMzLDExLjI4MDMgTDkuMjQwNzgsMTAuNTY5OSBDOS42ODMwNCwxMC42ODc1IDEwLjE0NzIsMTAuNzUgMTAuNjI1LDEwLjc1IEMxMy41OTM1LDEwLjc1IDE2LDguMzQzNTMgMTYsNS4zNzUgQzE2LDIuNDA2NDcgMTMuNTkzNSwwIDEwLjYyNSwwIFogTTYuNzUsNS4zNzUgQzYuNzUsMy4yMzQ5IDguNDg0OSwxLjUgMTAuNjI1LDEuNSBDMTIuNzY1MSwxLjUgMTQuNSwzLjIzNDkgMTQuNSw1LjM3NSBDMTQuNSw3LjUxNTEgMTIuNzY1MSw5LjI1IDEwLjYyNSw5LjI1IEMxMC4xNTQ1LDkuMjUgOS43MDUyOCw5LjE2NjUgOS4yOTAxMSw5LjAxNDE2IEM5LjAxNTgxLDguOTEzNSA4LjcwODAzLDguOTgxMzEgOC41MDE0Miw5LjE4NzkyIEw3LjY4OTM0LDEwIEw2LDEwIEM1LjU4NTc5LDEwIDUuMjUsMTAuMzM1OCA1LjI1LDEwLjc1IEw1LjI1LDEyLjUgTDQsMTIuNSBDMy41ODU3OSwxMi41IDMuMjUsMTIuODM1OCAzLjI1LDEzLjI1IEwzLjI1LDE0LjUgTDEuNSwxNC41IEwxLjUsMTIuNTYwNyBMNi43NDgyNiw3LjMxMjQgQzYuOTQ2NjYsNy4xMTQgNy4wMTc3Myw2LjgyMTQ1IDYuOTMyNDUsNi41NTQxMyBDNi44MTQxNSw2LjE4MzI3IDYuNzUsNS43ODczNSA2Ljc1LDUuMzc1IFoiPjwvcGF0aD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg==';
+exports.ddgPasswordIconFilled = ddgPasswordIconFilled;
 const ddgPasswordIconFocused = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+ZGRnLXBhc3N3b3JkLWljb24tZm9jdXNlZDwvdGl0bGU+CiAgICA8ZyBpZD0iZGRnLXBhc3N3b3JkLWljb24tZm9jdXNlZCIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Ikljb24tQ29udGFpbmVyIiBmaWxsPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHJlY3QgaWQ9IlJlY3RhbmdsZSIgZmlsbC1vcGFjaXR5PSIwLjEiIGZpbGwtcnVsZT0ibm9uemVybyIgeD0iMCIgeT0iMCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iMTIiPjwvcmVjdD4KICAgICAgICAgICAgPGcgaWQ9Ikdyb3VwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0LjAwMDAwMCwgNC4wMDAwMDApIiBmaWxsLW9wYWNpdHk9IjAuOSI+CiAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTEuMjUsMi43NSBDMTAuMTQ1NCwyLjc1IDkuMjUsMy42NDU0MyA5LjI1LDQuNzUgQzkuMjUsNS44NTQ1NyAxMC4xNDU0LDYuNzUgMTEuMjUsNi43NSBDMTIuMzU0Niw2Ljc1IDEzLjI1LDUuODU0NTcgMTMuMjUsNC43NSBDMTMuMjUsMy42NDU0MyAxMi4zNTQ2LDIuNzUgMTEuMjUsMi43NSBaIE0xMC43NSw0Ljc1IEMxMC43NSw0LjQ3Mzg2IDEwLjk3MzksNC4yNSAxMS4yNSw0LjI1IEMxMS41MjYxLDQuMjUgMTEuNzUsNC40NzM4NiAxMS43NSw0Ljc1IEMxMS43NSw1LjAyNjE0IDExLjUyNjEsNS4yNSAxMS4yNSw1LjI1IEMxMC45NzM5LDUuMjUgMTAuNzUsNS4wMjYxNCAxMC43NSw0Ljc1IFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgICAgICAgICAgPHBhdGggZD0iTTEwLjYyNSwwIEM3LjY1NjUsMCA1LjI1LDIuNDA2NDcgNS4yNSw1LjM3NSBDNS4yNSw1Ljc4MDk4IDUuMjk1MTQsNi4xNzcxIDUuMzgwODgsNi41NTg1IEwwLjIxOTY3LDExLjcxOTcgQzAuMDc5MDIsMTEuODYwMyAwLDEyLjA1MTEgMCwxMi4yNSBMMCwxNS4yNSBDMCwxNS42NjQyIDAuMzM1NzksMTYgMC43NSwxNiBMMy43NDY2MSwxNiBDNC4zMDA3NiwxNiA0Ljc1LDE1LjU1MDggNC43NSwxNC45OTY2IEw0Ljc1LDE0IEw1Ljc0NjYxLDE0IEM2LjMwMDgsMTQgNi43NSwxMy41NTA4IDYuNzUsMTIuOTk2NiBMNi43NSwxMS41IEw4LDExLjUgQzguMTk4OSwxMS41IDguMzg5NywxMS40MjEgOC41MzAzLDExLjI4MDMgTDkuMjQwOCwxMC41Njk5IEM5LjY4MywxMC42ODc1IDEwLjE0NzIsMTAuNzUgMTAuNjI1LDEwLjc1IEMxMy41OTM1LDEwLjc1IDE2LDguMzQzNSAxNiw1LjM3NSBDMTYsMi40MDY0NyAxMy41OTM1LDAgMTAuNjI1LDAgWiBNNi43NSw1LjM3NSBDNi43NSwzLjIzNDkgOC40ODQ5LDEuNSAxMC42MjUsMS41IEMxMi43NjUxLDEuNSAxNC41LDMuMjM0OSAxNC41LDUuMzc1IEMxNC41LDcuNTE1MSAxMi43NjUxLDkuMjUgMTAuNjI1LDkuMjUgQzEwLjE1NDUsOS4yNSA5LjcwNTMsOS4xNjY1IDkuMjkwMSw5LjAxNDIgQzkuMDE1OCw4LjkxMzUgOC43MDgsOC45ODEzIDguNTAxNCw5LjE4NzkgTDcuNjg5MywxMCBMNiwxMCBDNS41ODU3OSwxMCA1LjI1LDEwLjMzNTggNS4yNSwxMC43NSBMNS4yNSwxMi41IEw0LDEyLjUgQzMuNTg1NzksMTIuNSAzLjI1LDEyLjgzNTggMy4yNSwxMy4yNSBMMy4yNSwxNC41IEwxLjUsMTQuNSBMMS41LDEyLjU2MDcgTDYuNzQ4Myw3LjMxMjQgQzYuOTQ2Nyw3LjExNCA3LjAxNzcsNi44MjE0IDYuOTMyNSw2LjU1NDEgQzYuODE0MSw2LjE4MzMgNi43NSw1Ljc4NzM1IDYuNzUsNS4zNzUgWiIgaWQ9IlNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgIDwvZz4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg==';
+exports.ddgPasswordIconFocused = ddgPasswordIconFocused;
 const ddgCcIconBase = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=';
+exports.ddgCcIconBase = ddgCcIconBase;
 const ddgCcIconFilled = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzc2NDMxMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjNzY0MzEwIi8+Cjwvc3ZnPgo=';
+exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
-module.exports = {
-  ddgPasswordIconBase,
-  ddgPasswordIconBaseWhite,
-  ddgPasswordIconFilled,
-  ddgPasswordIconFocused,
-  ddgCcIconBase,
-  ddgCcIconFilled,
-  ddgIdentityIconBase
-};
+exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],34:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
-module.exports = "\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px; \n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CSS_STYLES = void 0;
+const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
+exports.CSS_STYLES = CSS_STYLES;
 
-},{}],35:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
-const ddgGlobals = require('./captureDdgGlobals');
-/**
- * Sends message to the webkit layer (fire and forget)
- * @param {String} handler
- * @param {*} data
- * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
- */
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
+exports.escapeXML = escapeXML;
+exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = exports.isLikelyASubmitButton = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 
-
-const wkSend = function (handler) {
-  let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let opts = arguments.length > 2 ? arguments[2] : undefined;
-
-  if (!(handler in window.webkit.messageHandlers)) {
-    throw new Error("Missing webkit handler: '".concat(handler, "'"));
-  }
-
-  return window.webkit.messageHandlers[handler].postMessage({ ...data,
-    messageHandling: { ...data.messageHandling,
-      secret: opts.secret
-    }
-  });
-};
-/**
- * Generate a random method name and adds it to the global scope
- * The native layer will use this method to send the response
- * @param {String} randomMethodName
- * @param {Function} callback
- */
-
-
-const generateRandomMethod = (randomMethodName, callback) => {
-  ddgGlobals.ObjectDefineProperty(ddgGlobals.window, randomMethodName, {
-    enumerable: false,
-    // configurable, To allow for deletion later
-    configurable: true,
-    writable: false,
-    value: function () {
-      callback(...arguments);
-      delete ddgGlobals.window[randomMethodName];
-    }
-  });
-};
-/**
- * Sends message to the webkit layer and waits for the specified response
- * @param {String} handler
- * @param {*} data
- * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
- * @returns {Promise<*>}
- */
-
-
-const wkSendAndWait = async function (handler) {
-  let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-  if (opts.hasModernWebkitAPI) {
-    const response = await wkSend(handler, data, opts);
-    return ddgGlobals.JSONparse(response || '{}');
-  }
-
-  try {
-    const randMethodName = createRandMethodName();
-    const key = await createRandKey();
-    const iv = createRandIv();
-    const {
-      ciphertext,
-      tag
-    } = await new ddgGlobals.Promise(resolve => {
-      generateRandomMethod(randMethodName, resolve);
-      data.messageHandling = {
-        methodName: randMethodName,
-        secret: opts.secret,
-        key: ddgGlobals.Arrayfrom(key),
-        iv: ddgGlobals.Arrayfrom(iv)
-      };
-      wkSend(handler, data, opts);
-    });
-    const cipher = new ddgGlobals.Uint8Array([...ciphertext, ...tag]);
-    const decrypted = await decrypt(cipher, key, iv);
-    return ddgGlobals.JSONparse(decrypted || '{}');
-  } catch (e) {
-    console.error('decryption failed', e);
-    return {
-      error: e
-    };
-  }
-};
-
-const randomString = () => '' + ddgGlobals.getRandomValues(new ddgGlobals.Uint32Array(1))[0];
-
-const createRandMethodName = () => '_' + randomString();
-
-const algoObj = {
-  name: 'AES-GCM',
-  length: 256
-};
-
-const createRandKey = async () => {
-  const key = await ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt']);
-  const exportedKey = await ddgGlobals.exportKey('raw', key);
-  return new ddgGlobals.Uint8Array(exportedKey);
-};
-
-const createRandIv = () => ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(12));
-
-const decrypt = async (ciphertext, key, iv) => {
-  const cryptoKey = await ddgGlobals.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
-  const algo = {
-    name: 'AES-GCM',
-    iv
-  };
-  let decrypted = await ddgGlobals.decrypt(algo, cryptoKey, ciphertext);
-  let dec = new ddgGlobals.TextDecoder();
-  return dec.decode(decrypted);
-};
-/**
- * Create a wrapper around the webkit messaging that conforms
- * to the Transport interface
- *
- * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {Transport}
- */
-
-
-function createTransport(config) {
-  /** @type {Transport} */
-  const transport = {
-    // this is a separate variable to ensure type-safety is not lost when returning directly
-    send(name, data) {
-      return wkSendAndWait(name, data, {
-        secret: config.secret,
-        hasModernWebkitAPI: config.hasModernWebkitAPI
-      });
-    }
-
-  };
-  return transport;
-}
-
-module.exports = {
-  createTransport
-};
-
-},{"./captureDdgGlobals":36}],36:[function(require,module,exports){
-"use strict";
-
-// Capture the globals we need on page start
-const secretGlobals = {
-  window,
-  // Methods must be bound to their interface, otherwise they throw Illegal invocation
-  encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
-  decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
-  generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
-  exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
-  importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
-  getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
-  TextEncoder,
-  TextDecoder,
-  Uint8Array,
-  Uint16Array,
-  Uint32Array,
-  JSONstringify: window.JSON.stringify,
-  JSONparse: window.JSON.parse,
-  Arrayfrom: window.Array.from,
-  Promise: window.Promise,
-  ObjectDefineProperty: window.Object.defineProperty
-};
-module.exports = secretGlobals;
-
-},{}],37:[function(require,module,exports){
-"use strict";
-
-const {
-  getInputSubtype
-} = require('./Form/matching');
+var _matching = require("./Form/matching");
 
 const SIGN_IN_MSG = {
   signMeIn: true
 }; // Send a message to the web app (only on DDG domains)
+
+exports.SIGN_IN_MSG = SIGN_IN_MSG;
 
 const notifyWebApp = message => {
   window.postMessage(message, window.origin);
@@ -8619,6 +8336,8 @@ const notifyWebApp = message => {
  * @returns {Promise<*>}
  */
 
+
+exports.notifyWebApp = notifyWebApp;
 
 const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
   if (typeof msgOrFn === 'function') {
@@ -8645,6 +8364,8 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
  */
 
 
+exports.sendAndWaitForAnswer = sendAndWaitForAnswer;
+
 const autofillEnabled = (globalConfig, processConfig) => {
   if (!globalConfig.contentScope) {
     // Return enabled for platforms that haven't implemented the config yet
@@ -8661,6 +8382,8 @@ const autofillEnabled = (globalConfig, processConfig) => {
   return isAutofillEnabledFromProcessedConfig(processedConfig);
 };
 
+exports.autofillEnabled = autofillEnabled;
+
 const isAutofillEnabledFromProcessedConfig = processedConfig => {
   const site = processedConfig.site;
 
@@ -8673,6 +8396,7 @@ const isAutofillEnabledFromProcessedConfig = processedConfig => {
 // @ts-ignore
 
 
+exports.isAutofillEnabledFromProcessedConfig = isAutofillEnabledFromProcessedConfig;
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
 /**
  * Ensures the value is set properly and dispatches events to simulate real user action
@@ -8740,7 +8464,7 @@ const fireEventsOnSelect = el => {
 
 
 const setValueForSelect = (el, val) => {
-  const subtype = getInputSubtype(el);
+  const subtype = (0, _matching.getInputSubtype)(el);
   const isMonth = subtype.includes('Month');
   const isZeroBasedNumber = isMonth && el.options[0].value === '0' && el.options.length === 12; // Loop first through all values because they tend to be more precise
 
@@ -8793,6 +8517,8 @@ const setValue = (el, val, config) => {
  */
 
 
+exports.setValue = setValue;
+
 const safeExecute = (el, fn) => {
   const intObs = new IntersectionObserver(changes => {
     for (const change of changes) {
@@ -8821,6 +8547,8 @@ const safeExecute = (el, fn) => {
  */
 
 
+exports.safeExecute = safeExecute;
+
 const isVisible = el => el.clientWidth !== 0 && el.clientHeight !== 0 && (el.style.opacity !== '' ? parseFloat(el.style.opacity) > 0 : true);
 /**
  * Gets the bounding box of the icon
@@ -8828,6 +8556,8 @@ const isVisible = el => el.clientWidth !== 0 && el.clientHeight !== 0 && (el.sty
  * @returns {{top: number, left: number, bottom: number, width: number, x: number, y: number, right: number, height: number}}
  */
 
+
+exports.isVisible = isVisible;
 
 const getDaxBoundingBox = input => {
   const {
@@ -8861,6 +8591,8 @@ const getDaxBoundingBox = input => {
  */
 
 
+exports.getDaxBoundingBox = getDaxBoundingBox;
+
 const isEventWithinDax = (e, input) => {
   const {
     left,
@@ -8879,6 +8611,8 @@ const isEventWithinDax = (e, input) => {
  */
 
 
+exports.isEventWithinDax = isEventWithinDax;
+
 const addInlineStyles = (el, styles) => Object.entries(styles).forEach(_ref => {
   let [property, val] = _ref;
   return el.style.setProperty(property, val, 'important');
@@ -8890,14 +8624,19 @@ const addInlineStyles = (el, styles) => Object.entries(styles).forEach(_ref => {
  */
 
 
+exports.addInlineStyles = addInlineStyles;
+
 const removeInlineStyles = (el, styles) => Object.keys(styles).forEach(property => el.style.removeProperty(property));
 
+exports.removeInlineStyles = removeInlineStyles;
 const ADDRESS_DOMAIN = '@duck.com';
 /**
  * Given a username, returns the full email address
  * @param {string} address
  * @returns {string}
  */
+
+exports.ADDRESS_DOMAIN = ADDRESS_DOMAIN;
 
 const formatDuckAddress = address => address + ADDRESS_DOMAIN;
 /**
@@ -8906,6 +8645,8 @@ const formatDuckAddress = address => address + ADDRESS_DOMAIN;
  * @return {string} The escaped string.
  */
 
+
+exports.formatDuckAddress = formatDuckAddress;
 
 function escapeXML(str) {
   const replacements = {
@@ -8932,44 +8673,58 @@ SUBMIT_BUTTON_REGEX.test(el.textContent || el.title) || // has high-signal text
 el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250x40px
 
 
-module.exports = {
-  notifyWebApp,
-  sendAndWaitForAnswer,
-  isAutofillEnabledFromProcessedConfig,
-  autofillEnabled,
-  setValue,
-  safeExecute,
-  isVisible,
-  getDaxBoundingBox,
-  isEventWithinDax,
-  addInlineStyles,
-  removeInlineStyles,
-  SIGN_IN_MSG,
-  ADDRESS_DOMAIN,
-  formatDuckAddress,
-  escapeXML,
-  isLikelyASubmitButton
-};
+exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":22}],38:[function(require,module,exports){
+},{"./Form/matching":22}],33:[function(require,module,exports){
 "use strict";
 
-// Polyfills/shims
-require('./requestIdleCallback');
+require("./requestIdleCallback");
 
-(() => {
+require("./transports/captureDdgGlobals");
+
+var _DeviceInterface = require("./DeviceInterface");
+
+var _config = require("./config");
+
+var _runtime = require("./runtime/runtime");
+
+var _inputTypes = require("./input-types/input-types");
+
+// Polyfills/shims
+(async () => {
   if (!window.isSecureContext) return false;
 
   try {
-    const deviceInterface = require('./DeviceInterface');
+    // this is config already present in the script, or derived from the page etc.
+    const globalConfig = (0, _config.createGlobalConfig)(); // Create the runtime, this does a best-guesses job of determining where we're running.
 
-    deviceInterface.init();
+    const runtime = (0, _runtime.createRuntime)(globalConfig); // Get runtime configuration - this may include messaging
+
+    const runtimeConfiguration = await runtime.getRuntimeConfiguration(); // Autofill settings need to be derived from runtime config
+
+    const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration); // log feature toggles for clarity when testing
+
+    if (globalConfig.isDDGTestMode) {
+      console.log(JSON.stringify(autofillSettings.featureToggles, null, 2));
+    } // If it was enabled, try to ask for available input types
+
+
+    if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
+      const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
+      const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles); // Determine the device type
+
+      const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings); // Init services
+
+      await device.init();
+    } else {
+      console.log('feature was remotely disabled');
+    }
   } catch (e) {
     console.error(e); // Noop, we errored
   }
 })();
 
-},{"./DeviceInterface":7,"./requestIdleCallback":41}],39:[function(require,module,exports){
+},{"./DeviceInterface":6,"./config":34,"./input-types/input-types":39,"./requestIdleCallback":40,"./runtime/runtime":41,"./transports/captureDdgGlobals":44}],34:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -9003,6 +8758,8 @@ function createGlobalConfig() {
   const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
   const isMobileApp = isDDGApp && !isApp;
   const isFirefox = navigator.userAgent.includes('Firefox');
+  const isWindows = navigator.userAgent.includes('Windows 11');
+  const hasNativeTooltip = isMobileApp;
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
   return {
     isApp,
@@ -9011,6 +8768,7 @@ function createGlobalConfig() {
     isFirefox,
     isMobileApp,
     isTopFrame,
+    isWindows,
     secret,
     supportsTopFrame,
     hasModernWebkitAPI,
@@ -9018,24 +8776,275 @@ function createGlobalConfig() {
     userUnprotectedDomains,
     userPreferences,
     isDDGTestMode,
-    isDDGDomain
+    isDDGDomain,
+    hasNativeTooltip
   };
 }
 
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],40:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
-module.exports = {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.constants = void 0;
+const constants = {
   ATTR_INPUT_TYPE: 'data-ddg-inputType',
   ATTR_AUTOFILL: 'data-ddg-autofill',
   TEXT_LENGTH_CUTOFF: 50
 };
+exports.constants = constants;
 
-},{}],41:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
+
+const GENERATED_ID = '__generated__';
+/**
+ * @implements {TooltipItemRenderer}
+ */
+
+var _data = /*#__PURE__*/new WeakMap();
+
+class CredentialsTooltipItem {
+  /** @type {CredentialsObject} */
+
+  /** @param {CredentialsObject} data */
+  constructor(data) {
+    _classPrivateFieldInitSpec(this, _data, {
+      writable: true,
+      value: void 0
+    });
+
+    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
+
+    _classPrivateFieldSet(this, _data, data);
+  }
+
+  labelMedium(_subtype) {
+    if (_classPrivateFieldGet(this, _data).id === GENERATED_ID) {
+      return 'Generated password';
+    }
+
+    return _classPrivateFieldGet(this, _data).username;
+  }
+
+  labelSmall(_subtype) {
+    if (_classPrivateFieldGet(this, _data).id === GENERATED_ID && _classPrivateFieldGet(this, _data).password) {
+      return _classPrivateFieldGet(this, _data).password;
+    }
+
+    return '•••••••••••••••';
+  }
+
+}
+/**
+ * Generate a stand-in 'CredentialsObject' from a
+ * given (generated) password.
+ *
+ * @param {string} password
+ * @returns {CredentialsObject}
+ */
+
+
+function fromPassword(password) {
+  return {
+    id: GENERATED_ID,
+    password: password,
+    username: ''
+  };
+}
+
+module.exports.CredentialsTooltipItem = CredentialsTooltipItem;
+module.exports.fromPassword = fromPassword;
+module.exports.GENERATED_ID = GENERATED_ID;
+
+},{}],37:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CreditCardTooltipItem = void 0;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
+
+var _data = /*#__PURE__*/new WeakMap();
+
+/**
+ * @implements {TooltipItemRenderer}
+ */
+class CreditCardTooltipItem {
+  /** @type {CreditCardObject} */
+
+  /** @param {CreditCardObject} data */
+  constructor(data) {
+    _classPrivateFieldInitSpec(this, _data, {
+      writable: true,
+      value: void 0
+    });
+
+    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
+
+    _defineProperty(this, "labelMedium", _ => _classPrivateFieldGet(this, _data).title);
+
+    _defineProperty(this, "labelSmall", _ => _classPrivateFieldGet(this, _data).displayNumber);
+
+    _classPrivateFieldSet(this, _data, data);
+  }
+
+}
+
+exports.CreditCardTooltipItem = CreditCardTooltipItem;
+
+},{}],38:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IdentityTooltipItem = void 0;
+
+var _formatters = require("../Form/formatters");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
+
+var _data = /*#__PURE__*/new WeakMap();
+
+/**
+ * @implements {TooltipItemRenderer}
+ */
+class IdentityTooltipItem {
+  /** @type {IdentityObject} */
+
+  /** @param {IdentityObject} data */
+  constructor(data) {
+    _classPrivateFieldInitSpec(this, _data, {
+      writable: true,
+      value: void 0
+    });
+
+    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
+
+    _defineProperty(this, "labelMedium", subtype => {
+      if (subtype === 'addressCountryCode') {
+        return (0, _formatters.getCountryDisplayName)('en', _classPrivateFieldGet(this, _data).addressCountryCode || '');
+      }
+
+      if (_classPrivateFieldGet(this, _data).id === 'privateAddress') {
+        return 'Generated Private Duck Address';
+      }
+
+      return _classPrivateFieldGet(this, _data)[subtype];
+    });
+
+    _defineProperty(this, "labelSmall", _ => {
+      return _classPrivateFieldGet(this, _data).title;
+    });
+
+    _classPrivateFieldSet(this, _data, data);
+  }
+
+  label(subtype) {
+    if (_classPrivateFieldGet(this, _data).id === 'privateAddress') {
+      return _classPrivateFieldGet(this, _data)[subtype];
+    }
+
+    return null;
+  }
+
+}
+
+exports.IdentityTooltipItem = IdentityTooltipItem;
+
+},{"../Form/formatters":15}],39:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.featureToggleAwareInputTypes = featureToggleAwareInputTypes;
+
+/**
+ * Take the available input types and augment to suit the enabled
+ * features.
+ *
+ * @param {AvailableInputTypes} inputTypes
+ * @param {FeatureTogglesSettings} featureToggles
+ * @return {AvailableInputTypes}
+ */
+function featureToggleAwareInputTypes(inputTypes, featureToggles) {
+  const local = { ...inputTypes
+  };
+
+  if (!featureToggles.inputType_credentials) {
+    local.credentials = false;
+  }
+
+  if (!featureToggles.inputType_creditCards) {
+    local.creditCards = false;
+  }
+
+  if (!featureToggles.inputType_identities) {
+    local.identities = false;
+  }
+
+  return local;
+}
+
+},{}],40:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 /*!
  * Copyright 2015 Google Inc. All rights reserved.
@@ -9074,6 +9083,4345 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
   clearTimeout(id);
 };
 
-module.exports = {};
+var _default = {};
+exports.default = _default;
 
-},{}]},{},[38]);
+},{}],41:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Runtime = void 0;
+exports.createRuntime = createRuntime;
+exports.runtimeResponse = runtimeResponse;
+
+var _transport = require("../transports/transport.apple");
+
+var _transport2 = require("../transports/transport.android");
+
+var _transport3 = require("../transports/transport.extension");
+
+var _transport4 = require("../transports/transport.windows");
+
+var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
+
+var _settings = require("../settings/settings");
+
+var _matching = require("../Form/matching");
+
+var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+class Runtime {
+  /** @type {RuntimeTransport} */
+
+  /**
+   * @param {GlobalConfig} globalConfig
+   * @param {RuntimeTransport} transport
+   */
+  constructor(globalConfig, transport) {
+    _defineProperty(this, "transport", void 0);
+
+    this.globalConfig = globalConfig;
+    this.transport = transport;
+  }
+  /**
+   * @public
+   * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
+   */
+
+
+  async getRuntimeConfiguration() {
+    const response = await this.transport.send('getRuntimeConfiguration');
+    const validator = _validators.default['#/definitions/GetRuntimeConfigurationResponse'];
+    const data = runtimeResponse(response, 'getRuntimeConfiguration', // @ts-ignore
+    validator);
+    const {
+      config,
+      errors
+    } = (0, _contentScopeScripts.tryCreateRuntimeConfiguration)(data);
+
+    if (errors.length) {
+      for (let error of errors) {
+        console.log(error.message, error);
+      }
+
+      throw new Error("".concat(errors.length, " errors prevented global configuration from being created."));
+    }
+
+    return config;
+  }
+  /**
+   * @public
+   * @returns {Promise<RuntimeMessages['getAvailableInputTypes']['response']['success']>}
+   */
+
+
+  async getAvailableInputTypes() {
+    const response = await this.transport.send('getAvailableInputTypes');
+    const validator = _validators.default['#/definitions/GetAvailableInputTypesResponse'];
+    return runtimeResponse(response, 'getAvailableInputTypes', // @ts-ignore
+    validator);
+  }
+  /**
+   * @param {GetAutofillDataArgs} input
+   * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
+   */
+
+
+  async getAutofillData(input) {
+    const mainType = (0, _matching.getMainTypeFromType)(input.inputType);
+    const subType = (0, _matching.getSubtypeFromType)(input.inputType);
+    const payload = {
+      inputType: input.inputType,
+      mainType,
+      subType
+    };
+    const validator = _validators.default['#/definitions/GetAutofillDataRequest'];
+
+    if (!(validator !== null && validator !== void 0 && validator(payload))) {
+      throwError(validator === null || validator === void 0 ? void 0 : validator['errors'], "getAutofillDataRequest");
+    }
+
+    const response = await this.transport.send('getAutofillData', payload);
+    const data = runtimeResponse(response, 'getAutofillData', // @ts-ignore
+    _validators.default['#/definitions/GetAutofillDataResponse']);
+    return data;
+  }
+  /**
+   * @param {DataStorageObject} data
+   */
+
+
+  async storeFormData(data) {
+    return this.transport.send('storeFormData', data);
+  }
+  /**
+   * @returns {Promise<import("../settings/settings").AutofillSettings>}
+   */
+
+
+  async getAutofillSettings(platformConfig) {
+    return (0, _settings.fromPlatformConfig)(platformConfig);
+  }
+
+}
+
+exports.Runtime = Runtime;
+
+function createRuntime(config) {
+  const transport = selectTransport(config);
+  return new Runtime(config, transport);
+}
+/**
+ * The runtime has to decide on a transport, *before* we have a 'device'.
+ *
+ * This is because an initial message to retrieve the platform configuration might be needed
+ *
+ * @param {GlobalConfig} globalConfig
+ * @returns {RuntimeTransport}
+ */
+
+
+function selectTransport(globalConfig) {
+  var _globalConfig$userPre, _globalConfig$userPre2, _globalConfig$userPre3, _globalConfig$userPre4;
+
+  if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) === 'string') {
+    switch ((_globalConfig$userPre3 = globalConfig.userPreferences) === null || _globalConfig$userPre3 === void 0 ? void 0 : (_globalConfig$userPre4 = _globalConfig$userPre3.platform) === null || _globalConfig$userPre4 === void 0 ? void 0 : _globalConfig$userPre4.name) {
+      case 'ios':
+        return (0, _transport.createTransport)(globalConfig);
+
+      case 'macos':
+        return (0, _transport.createTransport)(globalConfig);
+
+      default:
+        throw new Error('selectTransport unimplemented!');
+    }
+  }
+
+  if (globalConfig.isDDGApp) {
+    if (globalConfig.isAndroid) {
+      return (0, _transport2.createTransport)(globalConfig);
+    }
+
+    console.warn('should never get here...');
+    return (0, _transport.createTransport)(globalConfig);
+  }
+
+  if (globalConfig.isWindows) {
+    return (0, _transport4.createTransport)(globalConfig);
+  } // falls back to extension... is this still the best way to determine this?
+
+
+  return (0, _transport3.createTransport)(globalConfig);
+}
+/**
+ * @param {APIResponseSingle<any>} object
+ * @param {string} [name]
+ * @param {import("ajv").ValidateFunction} [validator]
+ */
+
+
+function runtimeResponse(object, name, validator) {
+  if (!(validator !== null && validator !== void 0 && validator(object))) {
+    return throwError(validator === null || validator === void 0 ? void 0 : validator.errors, name || "unknown");
+  }
+
+  if ('data' in object) {
+    console.warn('response had `data` property. Please migrate to `success`');
+    return object.data;
+  }
+
+  if ('success' in object) {
+    return object.success;
+  }
+
+  throw new Error('unreachable. Response did not contain `success` or `data`');
+}
+/**
+ * @param {import("ajv").ValidateFunction['errors']} errors
+ * @param {string} name
+ */
+
+
+function throwError(errors, name) {
+  if (errors) {
+    for (let error of errors) {
+      console.error(error.message);
+      console.error(error);
+    }
+  }
+
+  throw new Error('Schema validation errors for ' + name);
+}
+
+},{"../Form/matching":22,"../schema/validators.cjs":42,"../settings/settings":43,"../transports/transport.android":45,"../transports/transport.apple":46,"../transports/transport.extension":47,"../transports/transport.windows":48,"@duckduckgo/content-scope-scripts":49}],42:[function(require,module,exports){
+// @ts-nocheck
+"use strict";
+
+exports["#/definitions/GenericError"] = validate10;
+const schema11 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GenericError",
+  "title": "GenericError",
+  "type": "object",
+  "properties": {
+    "error": {
+      "type": "string"
+    }
+  },
+  "required": ["error"]
+};
+
+function validate10(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GenericError" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.error === undefined && (missing0 = "error")) {
+        validate10.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.error !== undefined) {
+          if (typeof data.error !== "string") {
+            validate10.errors = [{
+              instancePath: instancePath + "/error",
+              schemaPath: "#/properties/error/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            }];
+            return false;
+          }
+        }
+      }
+    } else {
+      validate10.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate10.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/GetAutofillDataRequest"] = validate11;
+const schema12 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAutofillDataRequest",
+  "title": "GetAutofillDataRequest Request Object",
+  "type": "object",
+  "description": "This describes the argument given to getAutofillData(data)",
+  "properties": {
+    "inputType": {
+      "title": "The input type that triggered the call",
+      "description": "This is the combined input type, such as `credentials.username`",
+      "type": "string"
+    },
+    "mainType": {
+      "title": "The main input type, such as `credentials`",
+      "type": "string",
+      "enum": ["credentials", "identities", "creditCards"]
+    },
+    "subType": {
+      "title": "Just the subtype, such as `password` or `username`",
+      "type": "string"
+    }
+  },
+  "required": ["inputType", "mainType", "subType"]
+};
+
+function validate11(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetAutofillDataRequest" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.inputType === undefined && (missing0 = "inputType") || data.mainType === undefined && (missing0 = "mainType") || data.subType === undefined && (missing0 = "subType")) {
+        validate11.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.inputType !== undefined) {
+          const _errs1 = errors;
+
+          if (typeof data.inputType !== "string") {
+            validate11.errors = [{
+              instancePath: instancePath + "/inputType",
+              schemaPath: "#/properties/inputType/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.mainType !== undefined) {
+            let data1 = data.mainType;
+            const _errs3 = errors;
+
+            if (typeof data1 !== "string") {
+              validate11.errors = [{
+                instancePath: instancePath + "/mainType",
+                schemaPath: "#/properties/mainType/type",
+                keyword: "type",
+                params: {
+                  type: "string"
+                },
+                message: "must be string"
+              }];
+              return false;
+            }
+
+            if (!(data1 === "credentials" || data1 === "identities" || data1 === "creditCards")) {
+              validate11.errors = [{
+                instancePath: instancePath + "/mainType",
+                schemaPath: "#/properties/mainType/enum",
+                keyword: "enum",
+                params: {
+                  allowedValues: schema12.properties.mainType.enum
+                },
+                message: "must be equal to one of the allowed values"
+              }];
+              return false;
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.subType !== undefined) {
+              const _errs5 = errors;
+
+              if (typeof data.subType !== "string") {
+                validate11.errors = [{
+                  instancePath: instancePath + "/subType",
+                  schemaPath: "#/properties/subType/type",
+                  keyword: "type",
+                  params: {
+                    type: "string"
+                  },
+                  message: "must be string"
+                }];
+                return false;
+              }
+
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
+          }
+        }
+      }
+    } else {
+      validate11.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate11.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/GetAutofillDataResponse"] = validate12;
+const schema13 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAutofillDataResponse",
+  "title": "GetAutofillDataResponse",
+  "type": "object",
+  "oneOf": [{
+    "title": "GetAutofillDataResponse Success Response",
+    "type": "object",
+    "properties": {
+      "type": {
+        "title": "Response name",
+        "description": "Required on Android + Windows devices, optional on iOS",
+        "type": "string",
+        "const": "getAutofillDataResponse"
+      },
+      "success": {
+        "type": "object",
+        "oneOf": [{
+          "$ref": "#/definitions/Credentials"
+        }]
+      }
+    },
+    "required": ["success"]
+  }, {
+    "$ref": "#/definitions/GenericError"
+  }],
+  "definitions": {
+    "Credentials": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": ["username", "password"]
+    }
+  }
+};
+const schema14 = {
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    }
+  },
+  "required": ["username", "password"]
+};
+
+function validate12(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetAutofillDataResponse" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (!(data && typeof data == "object" && !Array.isArray(data))) {
+    validate12.errors = [{
+      instancePath,
+      schemaPath: "#/type",
+      keyword: "type",
+      params: {
+        type: "object"
+      },
+      message: "must be object"
+    }];
+    return false;
+  }
+
+  const _errs1 = errors;
+  let valid0 = false;
+  let passing0 = null;
+  const _errs2 = errors;
+
+  if (errors === _errs2) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.success === undefined && (missing0 = "success")) {
+        const err0 = {
+          instancePath,
+          schemaPath: "#/oneOf/0/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        };
+
+        if (vErrors === null) {
+          vErrors = [err0];
+        } else {
+          vErrors.push(err0);
+        }
+
+        errors++;
+      } else {
+        if (data.type !== undefined) {
+          let data0 = data.type;
+          const _errs4 = errors;
+
+          if (typeof data0 !== "string") {
+            const err1 = {
+              instancePath: instancePath + "/type",
+              schemaPath: "#/oneOf/0/properties/type/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            };
+
+            if (vErrors === null) {
+              vErrors = [err1];
+            } else {
+              vErrors.push(err1);
+            }
+
+            errors++;
+          }
+
+          if ("getAutofillDataResponse" !== data0) {
+            const err2 = {
+              instancePath: instancePath + "/type",
+              schemaPath: "#/oneOf/0/properties/type/const",
+              keyword: "const",
+              params: {
+                allowedValue: "getAutofillDataResponse"
+              },
+              message: "must be equal to constant"
+            };
+
+            if (vErrors === null) {
+              vErrors = [err2];
+            } else {
+              vErrors.push(err2);
+            }
+
+            errors++;
+          }
+
+          var valid1 = _errs4 === errors;
+        } else {
+          var valid1 = true;
+        }
+
+        if (valid1) {
+          if (data.success !== undefined) {
+            let data1 = data.success;
+            const _errs6 = errors;
+
+            if (!(data1 && typeof data1 == "object" && !Array.isArray(data1))) {
+              const err3 = {
+                instancePath: instancePath + "/success",
+                schemaPath: "#/oneOf/0/properties/success/type",
+                keyword: "type",
+                params: {
+                  type: "object"
+                },
+                message: "must be object"
+              };
+
+              if (vErrors === null) {
+                vErrors = [err3];
+              } else {
+                vErrors.push(err3);
+              }
+
+              errors++;
+            }
+
+            const _errs8 = errors;
+            let valid2 = false;
+            let passing1 = null;
+            const _errs9 = errors;
+            const _errs10 = errors;
+
+            if (errors === _errs10) {
+              if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
+                let missing1;
+
+                if (data1.username === undefined && (missing1 = "username") || data1.password === undefined && (missing1 = "password")) {
+                  const err4 = {
+                    instancePath: instancePath + "/success",
+                    schemaPath: "#/definitions/Credentials/required",
+                    keyword: "required",
+                    params: {
+                      missingProperty: missing1
+                    },
+                    message: "must have required property '" + missing1 + "'"
+                  };
+
+                  if (vErrors === null) {
+                    vErrors = [err4];
+                  } else {
+                    vErrors.push(err4);
+                  }
+
+                  errors++;
+                } else {
+                  if (data1.username !== undefined) {
+                    const _errs12 = errors;
+
+                    if (typeof data1.username !== "string") {
+                      const err5 = {
+                        instancePath: instancePath + "/success/username",
+                        schemaPath: "#/definitions/Credentials/properties/username/type",
+                        keyword: "type",
+                        params: {
+                          type: "string"
+                        },
+                        message: "must be string"
+                      };
+
+                      if (vErrors === null) {
+                        vErrors = [err5];
+                      } else {
+                        vErrors.push(err5);
+                      }
+
+                      errors++;
+                    }
+
+                    var valid4 = _errs12 === errors;
+                  } else {
+                    var valid4 = true;
+                  }
+
+                  if (valid4) {
+                    if (data1.password !== undefined) {
+                      const _errs14 = errors;
+
+                      if (typeof data1.password !== "string") {
+                        const err6 = {
+                          instancePath: instancePath + "/success/password",
+                          schemaPath: "#/definitions/Credentials/properties/password/type",
+                          keyword: "type",
+                          params: {
+                            type: "string"
+                          },
+                          message: "must be string"
+                        };
+
+                        if (vErrors === null) {
+                          vErrors = [err6];
+                        } else {
+                          vErrors.push(err6);
+                        }
+
+                        errors++;
+                      }
+
+                      var valid4 = _errs14 === errors;
+                    } else {
+                      var valid4 = true;
+                    }
+                  }
+                }
+              } else {
+                const err7 = {
+                  instancePath: instancePath + "/success",
+                  schemaPath: "#/definitions/Credentials/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                };
+
+                if (vErrors === null) {
+                  vErrors = [err7];
+                } else {
+                  vErrors.push(err7);
+                }
+
+                errors++;
+              }
+            }
+
+            var _valid1 = _errs9 === errors;
+
+            if (_valid1) {
+              valid2 = true;
+              passing1 = 0;
+            }
+
+            if (!valid2) {
+              const err8 = {
+                instancePath: instancePath + "/success",
+                schemaPath: "#/oneOf/0/properties/success/oneOf",
+                keyword: "oneOf",
+                params: {
+                  passingSchemas: passing1
+                },
+                message: "must match exactly one schema in oneOf"
+              };
+
+              if (vErrors === null) {
+                vErrors = [err8];
+              } else {
+                vErrors.push(err8);
+              }
+
+              errors++;
+            } else {
+              errors = _errs8;
+
+              if (vErrors !== null) {
+                if (_errs8) {
+                  vErrors.length = _errs8;
+                } else {
+                  vErrors = null;
+                }
+              }
+            }
+
+            var valid1 = _errs6 === errors;
+          } else {
+            var valid1 = true;
+          }
+        }
+      }
+    } else {
+      const err9 = {
+        instancePath,
+        schemaPath: "#/oneOf/0/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      };
+
+      if (vErrors === null) {
+        vErrors = [err9];
+      } else {
+        vErrors.push(err9);
+      }
+
+      errors++;
+    }
+  }
+
+  var _valid0 = _errs2 === errors;
+
+  if (_valid0) {
+    valid0 = true;
+    passing0 = 0;
+  }
+
+  const _errs16 = errors;
+  const _errs17 = errors;
+
+  if (errors === _errs17) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing2;
+
+      if (data.error === undefined && (missing2 = "error")) {
+        const err10 = {
+          instancePath,
+          schemaPath: "#/definitions/GenericError/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing2
+          },
+          message: "must have required property '" + missing2 + "'"
+        };
+
+        if (vErrors === null) {
+          vErrors = [err10];
+        } else {
+          vErrors.push(err10);
+        }
+
+        errors++;
+      } else {
+        if (data.error !== undefined) {
+          if (typeof data.error !== "string") {
+            const err11 = {
+              instancePath: instancePath + "/error",
+              schemaPath: "#/definitions/GenericError/properties/error/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            };
+
+            if (vErrors === null) {
+              vErrors = [err11];
+            } else {
+              vErrors.push(err11);
+            }
+
+            errors++;
+          }
+        }
+      }
+    } else {
+      const err12 = {
+        instancePath,
+        schemaPath: "#/definitions/GenericError/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      };
+
+      if (vErrors === null) {
+        vErrors = [err12];
+      } else {
+        vErrors.push(err12);
+      }
+
+      errors++;
+    }
+  }
+
+  var _valid0 = _errs16 === errors;
+
+  if (_valid0 && valid0) {
+    valid0 = false;
+    passing0 = [passing0, 1];
+  } else {
+    if (_valid0) {
+      valid0 = true;
+      passing0 = 1;
+    }
+  }
+
+  if (!valid0) {
+    const err13 = {
+      instancePath,
+      schemaPath: "#/oneOf",
+      keyword: "oneOf",
+      params: {
+        passingSchemas: passing0
+      },
+      message: "must match exactly one schema in oneOf"
+    };
+
+    if (vErrors === null) {
+      vErrors = [err13];
+    } else {
+      vErrors.push(err13);
+    }
+
+    errors++;
+    validate12.errors = vErrors;
+    return false;
+  } else {
+    errors = _errs1;
+
+    if (vErrors !== null) {
+      if (_errs1) {
+        vErrors.length = _errs1;
+      } else {
+        vErrors = null;
+      }
+    }
+  }
+
+  validate12.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/GetAvailableInputTypesResponse"] = validate13;
+const schema16 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAvailableInputTypesResponse",
+  "title": "GetAvailableInputTypesResponse",
+  "type": "object",
+  "oneOf": [{
+    "type": "object",
+    "title": "GetAvailableInputTypes Success Response",
+    "properties": {
+      "success": {
+        "type": "object",
+        "properties": {
+          "credentials": {
+            "type": "boolean"
+          },
+          "identities": {
+            "type": "boolean"
+          },
+          "creditCards": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "required": ["success"]
+  }, {
+    "$ref": "#/definitions/GenericError"
+  }]
+};
+
+function validate13(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetAvailableInputTypesResponse" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (!(data && typeof data == "object" && !Array.isArray(data))) {
+    validate13.errors = [{
+      instancePath,
+      schemaPath: "#/type",
+      keyword: "type",
+      params: {
+        type: "object"
+      },
+      message: "must be object"
+    }];
+    return false;
+  }
+
+  const _errs1 = errors;
+  let valid0 = false;
+  let passing0 = null;
+  const _errs2 = errors;
+
+  if (errors === _errs2) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.success === undefined && (missing0 = "success")) {
+        const err0 = {
+          instancePath,
+          schemaPath: "#/oneOf/0/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        };
+
+        if (vErrors === null) {
+          vErrors = [err0];
+        } else {
+          vErrors.push(err0);
+        }
+
+        errors++;
+      } else {
+        if (data.success !== undefined) {
+          let data0 = data.success;
+          const _errs4 = errors;
+
+          if (errors === _errs4) {
+            if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
+              if (data0.credentials !== undefined) {
+                const _errs6 = errors;
+
+                if (typeof data0.credentials !== "boolean") {
+                  const err1 = {
+                    instancePath: instancePath + "/success/credentials",
+                    schemaPath: "#/oneOf/0/properties/success/properties/credentials/type",
+                    keyword: "type",
+                    params: {
+                      type: "boolean"
+                    },
+                    message: "must be boolean"
+                  };
+
+                  if (vErrors === null) {
+                    vErrors = [err1];
+                  } else {
+                    vErrors.push(err1);
+                  }
+
+                  errors++;
+                }
+
+                var valid2 = _errs6 === errors;
+              } else {
+                var valid2 = true;
+              }
+
+              if (valid2) {
+                if (data0.identities !== undefined) {
+                  const _errs8 = errors;
+
+                  if (typeof data0.identities !== "boolean") {
+                    const err2 = {
+                      instancePath: instancePath + "/success/identities",
+                      schemaPath: "#/oneOf/0/properties/success/properties/identities/type",
+                      keyword: "type",
+                      params: {
+                        type: "boolean"
+                      },
+                      message: "must be boolean"
+                    };
+
+                    if (vErrors === null) {
+                      vErrors = [err2];
+                    } else {
+                      vErrors.push(err2);
+                    }
+
+                    errors++;
+                  }
+
+                  var valid2 = _errs8 === errors;
+                } else {
+                  var valid2 = true;
+                }
+
+                if (valid2) {
+                  if (data0.creditCards !== undefined) {
+                    const _errs10 = errors;
+
+                    if (typeof data0.creditCards !== "boolean") {
+                      const err3 = {
+                        instancePath: instancePath + "/success/creditCards",
+                        schemaPath: "#/oneOf/0/properties/success/properties/creditCards/type",
+                        keyword: "type",
+                        params: {
+                          type: "boolean"
+                        },
+                        message: "must be boolean"
+                      };
+
+                      if (vErrors === null) {
+                        vErrors = [err3];
+                      } else {
+                        vErrors.push(err3);
+                      }
+
+                      errors++;
+                    }
+
+                    var valid2 = _errs10 === errors;
+                  } else {
+                    var valid2 = true;
+                  }
+
+                  if (valid2) {
+                    if (data0.email !== undefined) {
+                      const _errs12 = errors;
+
+                      if (typeof data0.email !== "boolean") {
+                        const err4 = {
+                          instancePath: instancePath + "/success/email",
+                          schemaPath: "#/oneOf/0/properties/success/properties/email/type",
+                          keyword: "type",
+                          params: {
+                            type: "boolean"
+                          },
+                          message: "must be boolean"
+                        };
+
+                        if (vErrors === null) {
+                          vErrors = [err4];
+                        } else {
+                          vErrors.push(err4);
+                        }
+
+                        errors++;
+                      }
+
+                      var valid2 = _errs12 === errors;
+                    } else {
+                      var valid2 = true;
+                    }
+                  }
+                }
+              }
+            } else {
+              const err5 = {
+                instancePath: instancePath + "/success",
+                schemaPath: "#/oneOf/0/properties/success/type",
+                keyword: "type",
+                params: {
+                  type: "object"
+                },
+                message: "must be object"
+              };
+
+              if (vErrors === null) {
+                vErrors = [err5];
+              } else {
+                vErrors.push(err5);
+              }
+
+              errors++;
+            }
+          }
+        }
+      }
+    } else {
+      const err6 = {
+        instancePath,
+        schemaPath: "#/oneOf/0/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      };
+
+      if (vErrors === null) {
+        vErrors = [err6];
+      } else {
+        vErrors.push(err6);
+      }
+
+      errors++;
+    }
+  }
+
+  var _valid0 = _errs2 === errors;
+
+  if (_valid0) {
+    valid0 = true;
+    passing0 = 0;
+  }
+
+  const _errs14 = errors;
+  const _errs15 = errors;
+
+  if (errors === _errs15) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing1;
+
+      if (data.error === undefined && (missing1 = "error")) {
+        const err7 = {
+          instancePath,
+          schemaPath: "#/definitions/GenericError/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing1
+          },
+          message: "must have required property '" + missing1 + "'"
+        };
+
+        if (vErrors === null) {
+          vErrors = [err7];
+        } else {
+          vErrors.push(err7);
+        }
+
+        errors++;
+      } else {
+        if (data.error !== undefined) {
+          if (typeof data.error !== "string") {
+            const err8 = {
+              instancePath: instancePath + "/error",
+              schemaPath: "#/definitions/GenericError/properties/error/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            };
+
+            if (vErrors === null) {
+              vErrors = [err8];
+            } else {
+              vErrors.push(err8);
+            }
+
+            errors++;
+          }
+        }
+      }
+    } else {
+      const err9 = {
+        instancePath,
+        schemaPath: "#/definitions/GenericError/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      };
+
+      if (vErrors === null) {
+        vErrors = [err9];
+      } else {
+        vErrors.push(err9);
+      }
+
+      errors++;
+    }
+  }
+
+  var _valid0 = _errs14 === errors;
+
+  if (_valid0 && valid0) {
+    valid0 = false;
+    passing0 = [passing0, 1];
+  } else {
+    if (_valid0) {
+      valid0 = true;
+      passing0 = 1;
+    }
+  }
+
+  if (!valid0) {
+    const err10 = {
+      instancePath,
+      schemaPath: "#/oneOf",
+      keyword: "oneOf",
+      params: {
+        passingSchemas: passing0
+      },
+      message: "must match exactly one schema in oneOf"
+    };
+
+    if (vErrors === null) {
+      vErrors = [err10];
+    } else {
+      vErrors.push(err10);
+    }
+
+    errors++;
+    validate13.errors = vErrors;
+    return false;
+  } else {
+    errors = _errs1;
+
+    if (vErrors !== null) {
+      if (_errs1) {
+        vErrors.length = _errs1;
+      } else {
+        vErrors = null;
+      }
+    }
+  }
+
+  validate13.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/GetRuntimeConfigurationResponse"] = validate14;
+const schema18 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetRuntimeConfigurationResponse",
+  "title": "GetRuntimeConfigurationResponse",
+  "type": "object",
+  "oneOf": [{
+    "type": "object",
+    "title": "GetRuntimeConfigurationResponse Success Response",
+    "properties": {
+      "success": {
+        "description": "This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json",
+        "$ref": "#/definitions/RuntimeConfiguration"
+      }
+    },
+    "required": ["success"]
+  }, {
+    "$ref": "#/definitions/GenericError"
+  }]
+};
+const schema19 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/RuntimeConfiguration",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "Runtime Configuration Schema",
+  "description": "Required Properties to enable an instance of RuntimeConfiguration",
+  "properties": {
+    "contentScope": {
+      "$ref": "#/definitions/ContentScope"
+    },
+    "userUnprotectedDomains": {
+      "type": "array",
+      "items": {}
+    },
+    "userPreferences": {
+      "$ref": "#/definitions/UserPreferences"
+    }
+  },
+  "required": ["contentScope", "userPreferences", "userUnprotectedDomains"],
+  "definitions": {
+    "ContentScope": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "features": {
+          "$ref": "#/definitions/ContentScopeFeatures"
+        },
+        "unprotectedTemporary": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": ["features", "unprotectedTemporary"],
+      "title": "ContentScope"
+    },
+    "ContentScopeFeatures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/ContentScopeFeatureItem"
+      },
+      "title": "ContentScopeFeatures"
+    },
+    "ContentScopeFeatureItem": {
+      "type": "object",
+      "properties": {
+        "exceptions": {
+          "type": "array",
+          "items": {}
+        },
+        "state": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "object"
+        }
+      },
+      "required": ["exceptions", "state"],
+      "title": "ContentScopeFeatureItem"
+    },
+    "UserPreferences": {
+      "type": "object",
+      "properties": {
+        "debug": {
+          "type": "boolean"
+        },
+        "platform": {
+          "$ref": "#/definitions/Platform"
+        },
+        "features": {
+          "$ref": "#/definitions/UserPreferencesFeatures"
+        }
+      },
+      "required": ["debug", "features", "platform"],
+      "title": "UserPreferences"
+    },
+    "UserPreferencesFeatures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/UserPreferencesFeatureItem"
+      },
+      "title": "UserPreferencesFeatures"
+    },
+    "UserPreferencesFeatureItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/Settings"
+        }
+      },
+      "required": ["settings"],
+      "title": "UserPreferencesFeatureItem"
+    },
+    "Settings": {
+      "type": "object",
+      "additionalProperties": true,
+      "title": "Settings"
+    },
+    "Platform": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
+        }
+      },
+      "required": ["name"],
+      "title": "Platform"
+    }
+  }
+};
+const schema20 = {
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "features": {
+      "$ref": "#/definitions/ContentScopeFeatures"
+    },
+    "unprotectedTemporary": {
+      "type": "array",
+      "items": {}
+    }
+  },
+  "required": ["features", "unprotectedTemporary"],
+  "title": "ContentScope"
+};
+const schema21 = {
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/ContentScopeFeatureItem"
+  },
+  "title": "ContentScopeFeatures"
+};
+const schema22 = {
+  "type": "object",
+  "properties": {
+    "exceptions": {
+      "type": "array",
+      "items": {}
+    },
+    "state": {
+      "type": "string"
+    },
+    "settings": {
+      "type": "object"
+    }
+  },
+  "required": ["exceptions", "state"],
+  "title": "ContentScopeFeatureItem"
+};
+
+function validate17(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        let data0 = data[key0];
+        const _errs2 = errors;
+        const _errs3 = errors;
+
+        if (errors === _errs3) {
+          if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
+            let missing0;
+
+            if (data0.exceptions === undefined && (missing0 = "exceptions") || data0.state === undefined && (missing0 = "state")) {
+              validate17.errors = [{
+                instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+                schemaPath: "#/definitions/ContentScopeFeatureItem/required",
+                keyword: "required",
+                params: {
+                  missingProperty: missing0
+                },
+                message: "must have required property '" + missing0 + "'"
+              }];
+              return false;
+            } else {
+              if (data0.exceptions !== undefined) {
+                const _errs5 = errors;
+
+                if (errors === _errs5) {
+                  if (!Array.isArray(data0.exceptions)) {
+                    validate17.errors = [{
+                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/exceptions",
+                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/exceptions/type",
+                      keyword: "type",
+                      params: {
+                        type: "array"
+                      },
+                      message: "must be array"
+                    }];
+                    return false;
+                  }
+                }
+
+                var valid2 = _errs5 === errors;
+              } else {
+                var valid2 = true;
+              }
+
+              if (valid2) {
+                if (data0.state !== undefined) {
+                  const _errs7 = errors;
+
+                  if (typeof data0.state !== "string") {
+                    validate17.errors = [{
+                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/state",
+                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/state/type",
+                      keyword: "type",
+                      params: {
+                        type: "string"
+                      },
+                      message: "must be string"
+                    }];
+                    return false;
+                  }
+
+                  var valid2 = _errs7 === errors;
+                } else {
+                  var valid2 = true;
+                }
+
+                if (valid2) {
+                  if (data0.settings !== undefined) {
+                    let data3 = data0.settings;
+                    const _errs9 = errors;
+
+                    if (!(data3 && typeof data3 == "object" && !Array.isArray(data3))) {
+                      validate17.errors = [{
+                        instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/settings",
+                        schemaPath: "#/definitions/ContentScopeFeatureItem/properties/settings/type",
+                        keyword: "type",
+                        params: {
+                          type: "object"
+                        },
+                        message: "must be object"
+                      }];
+                      return false;
+                    }
+
+                    var valid2 = _errs9 === errors;
+                  } else {
+                    var valid2 = true;
+                  }
+                }
+              }
+            }
+          } else {
+            validate17.errors = [{
+              instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+              schemaPath: "#/definitions/ContentScopeFeatureItem/type",
+              keyword: "type",
+              params: {
+                type: "object"
+              },
+              message: "must be object"
+            }];
+            return false;
+          }
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
+        }
+      }
+    } else {
+      validate17.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate17.errors = vErrors;
+  return errors === 0;
+}
+
+function validate16(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
+        validate16.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.features !== undefined) {
+          const _errs2 = errors;
+
+          if (!validate17(data.features, {
+            instancePath: instancePath + "/features",
+            parentData: data,
+            parentDataProperty: "features",
+            rootData
+          })) {
+            vErrors = vErrors === null ? validate17.errors : vErrors.concat(validate17.errors);
+            errors = vErrors.length;
+          }
+
+          var valid0 = _errs2 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.unprotectedTemporary !== undefined) {
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (!Array.isArray(data.unprotectedTemporary)) {
+                validate16.errors = [{
+                  instancePath: instancePath + "/unprotectedTemporary",
+                  schemaPath: "#/properties/unprotectedTemporary/type",
+                  keyword: "type",
+                  params: {
+                    type: "array"
+                  },
+                  message: "must be array"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+        }
+      }
+    } else {
+      validate16.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate16.errors = vErrors;
+  return errors === 0;
+}
+
+const schema23 = {
+  "type": "object",
+  "properties": {
+    "debug": {
+      "type": "boolean"
+    },
+    "platform": {
+      "$ref": "#/definitions/Platform"
+    },
+    "features": {
+      "$ref": "#/definitions/UserPreferencesFeatures"
+    }
+  },
+  "required": ["debug", "features", "platform"],
+  "title": "UserPreferences"
+};
+const schema24 = {
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
+    }
+  },
+  "required": ["name"],
+  "title": "Platform"
+};
+const schema25 = {
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/UserPreferencesFeatureItem"
+  },
+  "title": "UserPreferencesFeatures"
+};
+const schema26 = {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "settings": {
+      "$ref": "#/definitions/Settings"
+    }
+  },
+  "required": ["settings"],
+  "title": "UserPreferencesFeatureItem"
+};
+const schema27 = {
+  "type": "object",
+  "additionalProperties": true,
+  "title": "Settings"
+};
+
+function validate22(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.settings === undefined && (missing0 = "settings")) {
+        validate22.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        const _errs1 = errors;
+
+        for (const key0 in data) {
+          if (!(key0 === "settings")) {
+            validate22.errors = [{
+              instancePath,
+              schemaPath: "#/additionalProperties",
+              keyword: "additionalProperties",
+              params: {
+                additionalProperty: key0
+              },
+              message: "must NOT have additional properties"
+            }];
+            return false;
+            break;
+          }
+        }
+
+        if (_errs1 === errors) {
+          if (data.settings !== undefined) {
+            let data0 = data.settings;
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {} else {
+                validate22.errors = [{
+                  instancePath: instancePath + "/settings",
+                  schemaPath: "#/definitions/Settings/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate22.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate22.errors = vErrors;
+  return errors === 0;
+}
+
+function validate21(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        const _errs2 = errors;
+
+        if (!validate22(data[key0], {
+          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+          parentData: data,
+          parentDataProperty: key0,
+          rootData
+        })) {
+          vErrors = vErrors === null ? validate22.errors : vErrors.concat(validate22.errors);
+          errors = vErrors.length;
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
+        }
+      }
+    } else {
+      validate21.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate21.errors = vErrors;
+  return errors === 0;
+}
+
+function validate20(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.debug === undefined && (missing0 = "debug") || data.features === undefined && (missing0 = "features") || data.platform === undefined && (missing0 = "platform")) {
+        validate20.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.debug !== undefined) {
+          const _errs1 = errors;
+
+          if (typeof data.debug !== "boolean") {
+            validate20.errors = [{
+              instancePath: instancePath + "/debug",
+              schemaPath: "#/properties/debug/type",
+              keyword: "type",
+              params: {
+                type: "boolean"
+              },
+              message: "must be boolean"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.platform !== undefined) {
+            let data1 = data.platform;
+            const _errs3 = errors;
+            const _errs4 = errors;
+
+            if (errors === _errs4) {
+              if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
+                let missing1;
+
+                if (data1.name === undefined && (missing1 = "name")) {
+                  validate20.errors = [{
+                    instancePath: instancePath + "/platform",
+                    schemaPath: "#/definitions/Platform/required",
+                    keyword: "required",
+                    params: {
+                      missingProperty: missing1
+                    },
+                    message: "must have required property '" + missing1 + "'"
+                  }];
+                  return false;
+                } else {
+                  if (data1.name !== undefined) {
+                    let data2 = data1.name;
+
+                    if (typeof data2 !== "string") {
+                      validate20.errors = [{
+                        instancePath: instancePath + "/platform/name",
+                        schemaPath: "#/definitions/Platform/properties/name/type",
+                        keyword: "type",
+                        params: {
+                          type: "string"
+                        },
+                        message: "must be string"
+                      }];
+                      return false;
+                    }
+
+                    if (!(data2 === "ios" || data2 === "macos" || data2 === "windows" || data2 === "extension" || data2 === "android" || data2 === "unknown")) {
+                      validate20.errors = [{
+                        instancePath: instancePath + "/platform/name",
+                        schemaPath: "#/definitions/Platform/properties/name/enum",
+                        keyword: "enum",
+                        params: {
+                          allowedValues: schema24.properties.name.enum
+                        },
+                        message: "must be equal to one of the allowed values"
+                      }];
+                      return false;
+                    }
+                  }
+                }
+              } else {
+                validate20.errors = [{
+                  instancePath: instancePath + "/platform",
+                  schemaPath: "#/definitions/Platform/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.features !== undefined) {
+              const _errs8 = errors;
+
+              if (!validate21(data.features, {
+                instancePath: instancePath + "/features",
+                parentData: data,
+                parentDataProperty: "features",
+                rootData
+              })) {
+                vErrors = vErrors === null ? validate21.errors : vErrors.concat(validate21.errors);
+                errors = vErrors.length;
+              }
+
+              var valid0 = _errs8 === errors;
+            } else {
+              var valid0 = true;
+            }
+          }
+        }
+      }
+    } else {
+      validate20.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate20.errors = vErrors;
+  return errors === 0;
+}
+
+function validate15(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/RuntimeConfiguration" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.contentScope === undefined && (missing0 = "contentScope") || data.userPreferences === undefined && (missing0 = "userPreferences") || data.userUnprotectedDomains === undefined && (missing0 = "userUnprotectedDomains")) {
+        validate15.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        const _errs1 = errors;
+
+        for (const key0 in data) {
+          if (!(key0 === "contentScope" || key0 === "userUnprotectedDomains" || key0 === "userPreferences")) {
+            validate15.errors = [{
+              instancePath,
+              schemaPath: "#/additionalProperties",
+              keyword: "additionalProperties",
+              params: {
+                additionalProperty: key0
+              },
+              message: "must NOT have additional properties"
+            }];
+            return false;
+            break;
+          }
+        }
+
+        if (_errs1 === errors) {
+          if (data.contentScope !== undefined) {
+            const _errs2 = errors;
+
+            if (!validate16(data.contentScope, {
+              instancePath: instancePath + "/contentScope",
+              parentData: data,
+              parentDataProperty: "contentScope",
+              rootData
+            })) {
+              vErrors = vErrors === null ? validate16.errors : vErrors.concat(validate16.errors);
+              errors = vErrors.length;
+            }
+
+            var valid0 = _errs2 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.userUnprotectedDomains !== undefined) {
+              const _errs3 = errors;
+
+              if (errors === _errs3) {
+                if (!Array.isArray(data.userUnprotectedDomains)) {
+                  validate15.errors = [{
+                    instancePath: instancePath + "/userUnprotectedDomains",
+                    schemaPath: "#/properties/userUnprotectedDomains/type",
+                    keyword: "type",
+                    params: {
+                      type: "array"
+                    },
+                    message: "must be array"
+                  }];
+                  return false;
+                }
+              }
+
+              var valid0 = _errs3 === errors;
+            } else {
+              var valid0 = true;
+            }
+
+            if (valid0) {
+              if (data.userPreferences !== undefined) {
+                const _errs5 = errors;
+
+                if (!validate20(data.userPreferences, {
+                  instancePath: instancePath + "/userPreferences",
+                  parentData: data,
+                  parentDataProperty: "userPreferences",
+                  rootData
+                })) {
+                  vErrors = vErrors === null ? validate20.errors : vErrors.concat(validate20.errors);
+                  errors = vErrors.length;
+                }
+
+                var valid0 = _errs5 === errors;
+              } else {
+                var valid0 = true;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate15.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate15.errors = vErrors;
+  return errors === 0;
+}
+
+function validate14(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetRuntimeConfigurationResponse" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (!(data && typeof data == "object" && !Array.isArray(data))) {
+    validate14.errors = [{
+      instancePath,
+      schemaPath: "#/type",
+      keyword: "type",
+      params: {
+        type: "object"
+      },
+      message: "must be object"
+    }];
+    return false;
+  }
+
+  const _errs1 = errors;
+  let valid0 = false;
+  let passing0 = null;
+  const _errs2 = errors;
+
+  if (errors === _errs2) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.success === undefined && (missing0 = "success")) {
+        const err0 = {
+          instancePath,
+          schemaPath: "#/oneOf/0/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        };
+
+        if (vErrors === null) {
+          vErrors = [err0];
+        } else {
+          vErrors.push(err0);
+        }
+
+        errors++;
+      } else {
+        if (data.success !== undefined) {
+          if (!validate15(data.success, {
+            instancePath: instancePath + "/success",
+            parentData: data,
+            parentDataProperty: "success",
+            rootData
+          })) {
+            vErrors = vErrors === null ? validate15.errors : vErrors.concat(validate15.errors);
+            errors = vErrors.length;
+          }
+        }
+      }
+    } else {
+      const err1 = {
+        instancePath,
+        schemaPath: "#/oneOf/0/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      };
+
+      if (vErrors === null) {
+        vErrors = [err1];
+      } else {
+        vErrors.push(err1);
+      }
+
+      errors++;
+    }
+  }
+
+  var _valid0 = _errs2 === errors;
+
+  if (_valid0) {
+    valid0 = true;
+    passing0 = 0;
+  }
+
+  const _errs5 = errors;
+  const _errs6 = errors;
+
+  if (errors === _errs6) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing1;
+
+      if (data.error === undefined && (missing1 = "error")) {
+        const err2 = {
+          instancePath,
+          schemaPath: "#/definitions/GenericError/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing1
+          },
+          message: "must have required property '" + missing1 + "'"
+        };
+
+        if (vErrors === null) {
+          vErrors = [err2];
+        } else {
+          vErrors.push(err2);
+        }
+
+        errors++;
+      } else {
+        if (data.error !== undefined) {
+          if (typeof data.error !== "string") {
+            const err3 = {
+              instancePath: instancePath + "/error",
+              schemaPath: "#/definitions/GenericError/properties/error/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            };
+
+            if (vErrors === null) {
+              vErrors = [err3];
+            } else {
+              vErrors.push(err3);
+            }
+
+            errors++;
+          }
+        }
+      }
+    } else {
+      const err4 = {
+        instancePath,
+        schemaPath: "#/definitions/GenericError/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      };
+
+      if (vErrors === null) {
+        vErrors = [err4];
+      } else {
+        vErrors.push(err4);
+      }
+
+      errors++;
+    }
+  }
+
+  var _valid0 = _errs5 === errors;
+
+  if (_valid0 && valid0) {
+    valid0 = false;
+    passing0 = [passing0, 1];
+  } else {
+    if (_valid0) {
+      valid0 = true;
+      passing0 = 1;
+    }
+  }
+
+  if (!valid0) {
+    const err5 = {
+      instancePath,
+      schemaPath: "#/oneOf",
+      keyword: "oneOf",
+      params: {
+        passingSchemas: passing0
+      },
+      message: "must match exactly one schema in oneOf"
+    };
+
+    if (vErrors === null) {
+      vErrors = [err5];
+    } else {
+      vErrors.push(err5);
+    }
+
+    errors++;
+    validate14.errors = vErrors;
+    return false;
+  } else {
+    errors = _errs1;
+
+    if (vErrors !== null) {
+      if (_errs1) {
+        vErrors.length = _errs1;
+      } else {
+        vErrors = null;
+      }
+    }
+  }
+
+  validate14.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/RuntimeConfiguration"] = validate15;
+exports["#/definitions/AutofillSettings"] = validate27;
+const schema29 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/AutofillSettings",
+  "title": "AutofillSettings",
+  "type": "object",
+  "properties": {
+    "featureToggles": {
+      "$id": "#/definitions/FeatureToggles",
+      "type": "object",
+      "properties": {
+        "inputType_credentials": {
+          "type": "boolean"
+        },
+        "inputType_identities": {
+          "type": "boolean"
+        },
+        "inputType_creditCards": {
+          "type": "boolean"
+        },
+        "emailProtection": {
+          "type": "boolean"
+        },
+        "password_generation": {
+          "type": "boolean"
+        },
+        "credentials_saving": {
+          "type": "boolean"
+        }
+      },
+      "required": ["inputType_credentials", "inputType_identities", "inputType_creditCards", "emailProtection", "password_generation", "credentials_saving"],
+      "title": "FeatureToggles"
+    }
+  },
+  "required": ["featureToggles"]
+};
+
+function validate27(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/AutofillSettings" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.featureToggles === undefined && (missing0 = "featureToggles")) {
+        validate27.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.featureToggles !== undefined) {
+          let data0 = data.featureToggles;
+          const _errs1 = errors;
+
+          if (errors === _errs1) {
+            if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
+              let missing1;
+
+              if (data0.inputType_credentials === undefined && (missing1 = "inputType_credentials") || data0.inputType_identities === undefined && (missing1 = "inputType_identities") || data0.inputType_creditCards === undefined && (missing1 = "inputType_creditCards") || data0.emailProtection === undefined && (missing1 = "emailProtection") || data0.password_generation === undefined && (missing1 = "password_generation") || data0.credentials_saving === undefined && (missing1 = "credentials_saving")) {
+                validate27.errors = [{
+                  instancePath: instancePath + "/featureToggles",
+                  schemaPath: "#/properties/featureToggles/required",
+                  keyword: "required",
+                  params: {
+                    missingProperty: missing1
+                  },
+                  message: "must have required property '" + missing1 + "'"
+                }];
+                return false;
+              } else {
+                if (data0.inputType_credentials !== undefined) {
+                  const _errs3 = errors;
+
+                  if (typeof data0.inputType_credentials !== "boolean") {
+                    validate27.errors = [{
+                      instancePath: instancePath + "/featureToggles/inputType_credentials",
+                      schemaPath: "#/properties/featureToggles/properties/inputType_credentials/type",
+                      keyword: "type",
+                      params: {
+                        type: "boolean"
+                      },
+                      message: "must be boolean"
+                    }];
+                    return false;
+                  }
+
+                  var valid1 = _errs3 === errors;
+                } else {
+                  var valid1 = true;
+                }
+
+                if (valid1) {
+                  if (data0.inputType_identities !== undefined) {
+                    const _errs5 = errors;
+
+                    if (typeof data0.inputType_identities !== "boolean") {
+                      validate27.errors = [{
+                        instancePath: instancePath + "/featureToggles/inputType_identities",
+                        schemaPath: "#/properties/featureToggles/properties/inputType_identities/type",
+                        keyword: "type",
+                        params: {
+                          type: "boolean"
+                        },
+                        message: "must be boolean"
+                      }];
+                      return false;
+                    }
+
+                    var valid1 = _errs5 === errors;
+                  } else {
+                    var valid1 = true;
+                  }
+
+                  if (valid1) {
+                    if (data0.inputType_creditCards !== undefined) {
+                      const _errs7 = errors;
+
+                      if (typeof data0.inputType_creditCards !== "boolean") {
+                        validate27.errors = [{
+                          instancePath: instancePath + "/featureToggles/inputType_creditCards",
+                          schemaPath: "#/properties/featureToggles/properties/inputType_creditCards/type",
+                          keyword: "type",
+                          params: {
+                            type: "boolean"
+                          },
+                          message: "must be boolean"
+                        }];
+                        return false;
+                      }
+
+                      var valid1 = _errs7 === errors;
+                    } else {
+                      var valid1 = true;
+                    }
+
+                    if (valid1) {
+                      if (data0.emailProtection !== undefined) {
+                        const _errs9 = errors;
+
+                        if (typeof data0.emailProtection !== "boolean") {
+                          validate27.errors = [{
+                            instancePath: instancePath + "/featureToggles/emailProtection",
+                            schemaPath: "#/properties/featureToggles/properties/emailProtection/type",
+                            keyword: "type",
+                            params: {
+                              type: "boolean"
+                            },
+                            message: "must be boolean"
+                          }];
+                          return false;
+                        }
+
+                        var valid1 = _errs9 === errors;
+                      } else {
+                        var valid1 = true;
+                      }
+
+                      if (valid1) {
+                        if (data0.password_generation !== undefined) {
+                          const _errs11 = errors;
+
+                          if (typeof data0.password_generation !== "boolean") {
+                            validate27.errors = [{
+                              instancePath: instancePath + "/featureToggles/password_generation",
+                              schemaPath: "#/properties/featureToggles/properties/password_generation/type",
+                              keyword: "type",
+                              params: {
+                                type: "boolean"
+                              },
+                              message: "must be boolean"
+                            }];
+                            return false;
+                          }
+
+                          var valid1 = _errs11 === errors;
+                        } else {
+                          var valid1 = true;
+                        }
+
+                        if (valid1) {
+                          if (data0.credentials_saving !== undefined) {
+                            const _errs13 = errors;
+
+                            if (typeof data0.credentials_saving !== "boolean") {
+                              validate27.errors = [{
+                                instancePath: instancePath + "/featureToggles/credentials_saving",
+                                schemaPath: "#/properties/featureToggles/properties/credentials_saving/type",
+                                keyword: "type",
+                                params: {
+                                  type: "boolean"
+                                },
+                                message: "must be boolean"
+                              }];
+                              return false;
+                            }
+
+                            var valid1 = _errs13 === errors;
+                          } else {
+                            var valid1 = true;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            } else {
+              validate27.errors = [{
+                instancePath: instancePath + "/featureToggles",
+                schemaPath: "#/properties/featureToggles/type",
+                keyword: "type",
+                params: {
+                  type: "object"
+                },
+                message: "must be object"
+              }];
+              return false;
+            }
+          }
+        }
+      }
+    } else {
+      validate27.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate27.errors = vErrors;
+  return errors === 0;
+}
+
+},{}],43:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AutofillSettings = void 0;
+exports.fromPlatformConfig = fromPlatformConfig;
+
+var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * A wrapper for Autofill settings
+ */
+class AutofillSettings {
+  constructor() {
+    _defineProperty(this, "validate", _validators.default['#/definitions/AutofillSettings']);
+
+    _defineProperty(this, "settings", null);
+  }
+
+  /**
+   * @throws
+   * @returns {AutofillSettings}
+   */
+  from(input) {
+    if (this.validate(input)) {
+      this.settings = input;
+    } else {
+      // @ts-ignore
+      for (const error of this.validate.errors) {
+        console.error(error.message);
+        console.error(error);
+      }
+
+      throw new Error('Could not create settings from global configuration');
+    }
+
+    return this;
+  }
+  /**
+   * @returns {FeatureTogglesSettings}
+   */
+
+
+  get featureToggles() {
+    if (!this.settings) throw new Error('unreachable');
+    return this.settings.featureToggles;
+  }
+  /** @returns {AutofillSettings} */
+
+
+  static default() {
+    return new AutofillSettings().from({
+      featureToggles: {}
+    });
+  }
+
+}
+/**
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} config
+ * @returns {AutofillSettings}
+ */
+
+
+exports.AutofillSettings = AutofillSettings;
+
+function fromPlatformConfig(config) {
+  const autofillSettings = config.getSettings('autofill');
+  const settings = new AutofillSettings().from(autofillSettings);
+  return settings;
+}
+
+},{"../schema/validators.cjs":42}],44:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+// Capture the globals we need on page start
+const secretGlobals = {
+  window,
+  // Methods must be bound to their interface, otherwise they throw Illegal invocation
+  encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
+  decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
+  generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
+  exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
+  importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
+  getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
+  TextEncoder,
+  TextDecoder,
+  Uint8Array,
+  Uint16Array,
+  Uint32Array,
+  JSONstringify: window.JSON.stringify,
+  JSONparse: window.JSON.parse,
+  Arrayfrom: window.Array.from,
+  Promise: window.Promise,
+  ObjectDefineProperty: window.Object.defineProperty
+};
+var _default = secretGlobals;
+exports.default = _default;
+
+},{}],45:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createTransport = createTransport;
+
+var _autofillUtils = require("../autofill-utils");
+
+/**
+ * @param {GlobalConfig} _globalConfig
+ * @returns {RuntimeTransport}
+ */
+function createTransport(_globalConfig) {
+  /** @type {RuntimeTransport} */
+  const transport = {
+    async send(name, data) {
+      console.log('📲 android:', name, data);
+
+      switch (name) {
+        case 'getRuntimeConfiguration':
+          {
+            const string = window.BrowserAutofill.getRuntimeConfiguration();
+            console.log('\t📲', string);
+            return JSON.parse(string);
+          }
+
+        case 'getAvailableInputTypes':
+          {
+            const string = window.BrowserAutofill.getAvailableInputTypes();
+            console.log('\t📲', string);
+            return JSON.parse(string);
+          }
+
+        case 'getAutofillData':
+          {
+            const response = (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+              return window.BrowserAutofill.getAutofillData(JSON.stringify(data));
+            }, 'getAutofillDataResponse');
+            console.log('\t📲', JSON.stringify(response));
+            return response;
+          }
+
+        case 'storeFormData':
+          {
+            return window.BrowserAutofill.storeFormData(JSON.stringify(data));
+          }
+
+        default:
+          throw new Error('android: not implemented: ' + name);
+      }
+    }
+
+  };
+  return transport;
+}
+
+},{"../autofill-utils":32}],46:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createTransport = createTransport;
+
+var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Create a wrapper around the webkit messaging that conforms
+ * to the Transport interface
+ *
+ * @param {GlobalConfig} config
+ * @returns {RuntimeTransport}
+ */
+function createTransport(config) {
+  /** @type {RuntimeTransport} */
+  const transport = {
+    // this is a separate variable to ensure type-safety is not lost when returning directly
+
+    /**
+     * @param {Names} name
+     * @param data
+     */
+    async send(name, data) {
+      console.log('🍏', name, JSON.stringify(data));
+
+      if (name in interceptions) {
+        var _interceptions$name;
+
+        console.log('--> intercepted', name, data);
+        return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, config);
+      }
+
+      const response = await wkSendAndWait(name, data, {
+        secret: config.secret,
+        hasModernWebkitAPI: config.hasModernWebkitAPI
+      });
+      console.log('\t🍏📲', JSON.stringify(response));
+      return response;
+    }
+
+  };
+  return transport;
+}
+/**
+ * @type {Interceptions}
+ */
+
+
+const interceptions = {
+  // 'getAvailableInputTypes': () => {
+  //     return {
+  //         email: true,
+  //     }
+  // },
+
+  /**
+   * @param {GlobalConfig} globalConfig
+   */
+  'getRuntimeConfiguration': globalConfig => {
+    return {
+      success: {
+        contentScope: globalConfig.contentScope,
+        userPreferences: globalConfig.userPreferences,
+        userUnprotectedDomains: globalConfig.userUnprotectedDomains
+      }
+    };
+  }
+};
+/**
+ * Sends message to the webkit layer (fire and forget)
+ * @param {String} handler
+ * @param {*} data
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
+ */
+
+const wkSend = function (handler) {
+  let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let opts = arguments.length > 2 ? arguments[2] : undefined;
+
+  if (!(handler in window.webkit.messageHandlers)) {
+    throw new Error("Missing webkit handler: '".concat(handler, "'"));
+  }
+
+  return window.webkit.messageHandlers[handler].postMessage({ ...data,
+    messageHandling: { ...data.messageHandling,
+      secret: opts.secret
+    }
+  });
+};
+/**
+ * Generate a random method name and adds it to the global scope
+ * The native layer will use this method to send the response
+ * @param {String} randomMethodName
+ * @param {Function} callback
+ */
+
+
+const generateRandomMethod = (randomMethodName, callback) => {
+  _captureDdgGlobals.default.ObjectDefineProperty(_captureDdgGlobals.default.window, randomMethodName, {
+    enumerable: false,
+    // configurable, To allow for deletion later
+    configurable: true,
+    writable: false,
+    value: function () {
+      callback(...arguments);
+      delete _captureDdgGlobals.default.window[randomMethodName];
+    }
+  });
+};
+/**
+ * Sends message to the webkit layer and waits for the specified response
+ * @param {String} handler
+ * @param {*} data
+ * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
+ * @returns {Promise<*>}
+ */
+
+
+const wkSendAndWait = async function (handler) {
+  let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  if (opts.hasModernWebkitAPI) {
+    const response = await wkSend(handler, data, opts);
+    return _captureDdgGlobals.default.JSONparse(response || '{}');
+  }
+
+  try {
+    const randMethodName = createRandMethodName();
+    const key = await createRandKey();
+    const iv = createRandIv();
+    const {
+      ciphertext,
+      tag
+    } = await new _captureDdgGlobals.default.Promise(resolve => {
+      generateRandomMethod(randMethodName, resolve);
+      data.messageHandling = {
+        methodName: randMethodName,
+        secret: opts.secret,
+        key: _captureDdgGlobals.default.Arrayfrom(key),
+        iv: _captureDdgGlobals.default.Arrayfrom(iv)
+      };
+      wkSend(handler, data, opts);
+    });
+    const cipher = new _captureDdgGlobals.default.Uint8Array([...ciphertext, ...tag]);
+    const decrypted = await decrypt(cipher, key, iv);
+    return _captureDdgGlobals.default.JSONparse(decrypted || '{}');
+  } catch (e) {
+    console.error('decryption failed', e);
+    return {
+      error: e
+    };
+  }
+};
+
+const randomString = () => '' + _captureDdgGlobals.default.getRandomValues(new _captureDdgGlobals.default.Uint32Array(1))[0];
+
+const createRandMethodName = () => '_' + randomString();
+
+const algoObj = {
+  name: 'AES-GCM',
+  length: 256
+};
+
+const createRandKey = async () => {
+  const key = await _captureDdgGlobals.default.generateKey(algoObj, true, ['encrypt', 'decrypt']);
+  const exportedKey = await _captureDdgGlobals.default.exportKey('raw', key);
+  return new _captureDdgGlobals.default.Uint8Array(exportedKey);
+};
+
+const createRandIv = () => _captureDdgGlobals.default.getRandomValues(new _captureDdgGlobals.default.Uint8Array(12));
+
+const decrypt = async (ciphertext, key, iv) => {
+  const cryptoKey = await _captureDdgGlobals.default.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
+  const algo = {
+    name: 'AES-GCM',
+    iv
+  };
+  let decrypted = await _captureDdgGlobals.default.decrypt(algo, cryptoKey, ciphertext);
+  let dec = new _captureDdgGlobals.default.TextDecoder();
+  return dec.decode(decrypted);
+};
+
+},{"./captureDdgGlobals":44}],47:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createTransport = createTransport;
+
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {RuntimeTransport}
+ */
+function createTransport(globalConfig) {
+  /** @type {RuntimeTransport} */
+  const transport = {
+    /**
+     * @param {Names} name
+     * @param data
+     */
+    async send(name, data) {
+      console.log('extension:', name, data);
+
+      if (interceptions[name]) {
+        var _interceptions$name;
+
+        console.log('--> intercepted', name, data);
+        return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, globalConfig);
+      }
+
+      throw new Error('not implemented for extension: ' + name);
+    }
+
+  };
+  return transport;
+}
+/**
+ * @type {Interceptions}
+ */
+
+
+const interceptions = {
+  // todo(Shane): Get available extension types
+  'getAvailableInputTypes': () => {
+    return {
+      success: {
+        credentials: false,
+        identities: false,
+        creditCards: false,
+        email: true
+      }
+    };
+  },
+
+  /**
+   * @param {GlobalConfig} globalConfig
+   */
+  'getRuntimeConfiguration': globalConfig => {
+    /**
+     * @type {FeatureTogglesSettings}
+     */
+    const featureToggles = {
+      'inputType_credentials': false,
+      'inputType_identities': false,
+      'inputType_creditCards': false,
+      'emailProtection': true,
+      'password_generation': false,
+      'credentials_saving': false
+    };
+    return {
+      success: {
+        contentScope: {
+          features: {
+            autofill: {
+              state: 'enabled',
+              exceptions: []
+            }
+          },
+          unprotectedTemporary: [],
+          ...globalConfig.contentScope
+        },
+        userPreferences: {
+          sessionKey: '',
+          debug: false,
+          globalPrivacyControlValue: false,
+          platform: {
+            name: 'extension'
+          },
+          features: {
+            autofill: {
+              settings: {
+                featureToggles: featureToggles
+              }
+            }
+          },
+          ...globalConfig.userPreferences
+        },
+        userUnprotectedDomains: globalConfig.userUnprotectedDomains || []
+      }
+    };
+  }
+};
+
+},{}],48:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createTransport = createTransport;
+
+/**
+ * @param {GlobalConfig} _globalConfig
+ * @returns {RuntimeTransport}
+ */
+function createTransport(_globalConfig) {
+  /** @type {RuntimeTransport} */
+  const transport = {
+    async send(name, data) {
+      console.log('📲 windows:', name, data);
+
+      switch (name) {
+        case 'getRuntimeConfiguration':
+          {
+            return sendAndWait(() => {
+              return window.chrome.webview.postMessage({
+                commandName: 'GetRuntimeConfiguration'
+              });
+            }, 'GetRuntimeConfigurationResponse');
+          }
+
+        case 'getAvailableInputTypes':
+          {
+            return sendAndWait(() => {
+              return window.chrome.webview.postMessage({
+                commandName: 'GetAvailableInputTypes'
+              });
+            }, 'GetAvailableInputTypesResponse');
+          }
+
+        default:
+          throw new Error('windows: not implemented: ' + name);
+      }
+    }
+
+  };
+  return transport;
+}
+/**
+ * Sends a message and returns a Promise that resolves with the response
+ * @param {()=>void} msgOrFn - a fn to call or an object to send via postMessage
+ * @param {String} expectedResponse - the name of the response
+ * @returns {Promise<*>}
+ */
+
+
+function sendAndWait(msgOrFn, expectedResponse) {
+  msgOrFn();
+  return new Promise(resolve => {
+    const handler = event => {
+      if (event.origin !== window.origin) {
+        console.warn("origin mis-match. window.origin: ".concat(window.origin, ", event.origin: ").concat(event.origin));
+        return;
+      }
+
+      if (!event.data) {
+        console.warn('data absent from message');
+        return;
+      }
+
+      if (event.data.type !== expectedResponse) {
+        console.warn("data.type mis-match. Expected: ".concat(expectedResponse, ", received: ").concat(event.data.type));
+        return;
+      } // at this point we're confident we have the correct message type
+
+
+      resolve(event.data);
+      window.chrome.webview.removeEventListener('message', handler);
+    };
+
+    window.chrome.webview.addEventListener('message', handler, {
+      once: true
+    });
+  });
+}
+
+},{}],49:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "RuntimeConfiguration", {
+  enumerable: true,
+  get: function () {
+    return _RuntimeConfiguration.RuntimeConfiguration;
+  }
+});
+Object.defineProperty(exports, "createRuntimeConfiguration", {
+  enumerable: true,
+  get: function () {
+    return _RuntimeConfiguration.createRuntimeConfiguration;
+  }
+});
+Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
+  enumerable: true,
+  get: function () {
+    return _RuntimeConfiguration.tryCreateRuntimeConfiguration;
+  }
+});
+
+var _RuntimeConfiguration = require("./src/config/RuntimeConfiguration.js");
+
+},{"./src/config/RuntimeConfiguration.js":53}],50:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+}); // https://github.com/ajv-validator/ajv/issues/889
+
+const equal = require("fast-deep-equal");
+
+equal.code = 'require("ajv/dist/runtime/equal").default';
+exports.default = equal;
+
+},{"fast-deep-equal":51}],51:[function(require,module,exports){
+'use strict'; // do not edit .js files directly - edit src/index.jst
+
+module.exports = function equal(a, b) {
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+    var length, i, keys;
+
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length != b.length) return false;
+
+      for (i = length; i-- !== 0;) if (!equal(a[i], b[i])) return false;
+
+      return true;
+    }
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;) if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+
+    for (i = length; i-- !== 0;) {
+      var key = keys[i];
+      if (!equal(a[key], b[key])) return false;
+    }
+
+    return true;
+  } // true if both NaN, false otherwise
+
+
+  return a !== a && b !== b;
+};
+
+},{}],52:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.processConfig = processConfig;
+
+function getTopLevelURL() {
+  try {
+    // FROM: https://stackoverflow.com/a/7739035/73479
+    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
+    if (window.location !== window.parent.location) {
+      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
+    } else {
+      return new URL(window.location.href);
+    }
+  } catch (error) {
+    return new URL(location.href);
+  }
+}
+/**
+ * @param {URL} topLevelUrl
+ * @param {*} featureList
+ */
+
+
+function isUnprotectedDomain(topLevelUrl, featureList) {
+  let unprotectedDomain = false;
+  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : []; // walk up the domain to see if it's unprotected
+
+  while (domainParts.length > 1 && !unprotectedDomain) {
+    const partialDomain = domainParts.join('.');
+    unprotectedDomain = featureList.filter(domain => domain.domain === partialDomain).length > 0;
+    domainParts.shift();
+  }
+
+  return unprotectedDomain;
+}
+/**
+ * @param {*} data
+ * @param {string[]} userList
+ * @param {*} preferences
+ * @param {string|URL} [maybeTopLevelUrl]
+ */
+
+
+function processConfig(data, userList, preferences, maybeTopLevelUrl) {
+  const topLevelUrl = maybeTopLevelUrl || getTopLevelURL();
+  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
+  const enabledFeatures = Object.keys(data.features).filter(featureName => {
+    const feature = data.features[featureName];
+    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
+  });
+  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
+  const prefs = { ...preferences,
+    site: {
+      domain: topLevelUrl.hostname,
+      isBroken,
+      allowlisted,
+      enabledFeatures
+    },
+    cookie: {}
+  };
+  return prefs;
+}
+
+},{}],53:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RuntimeConfiguration = void 0;
+exports.createRuntimeConfiguration = createRuntimeConfiguration;
+exports.tryCreateRuntimeConfiguration = tryCreateRuntimeConfiguration;
+
+var _appleUtils = require("../apple-utils.js");
+
+var _validate = _interopRequireDefault(require("./validate.cjs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @typedef {{
+ *     "globalPrivacyControlValue"?: boolean,
+ *     "sessionKey"?: string,
+ *     "debug"?: boolean,
+ *     "platform": {
+ *       "name": "macos" | "ios" | "extension" | "android" | "windows" | "unknown"
+ *     }
+ * }} UserPreferences
+ */
+
+/**
+ * @typedef {{
+ *   contentScope: any,
+ *   userUnprotectedDomains: string[],
+ *   userPreferences: UserPreferences
+ * }} InputConfig
+ */
+class RuntimeConfiguration {
+  constructor() {
+    _defineProperty(this, "validate", _validate.default);
+
+    _defineProperty(this, "config", null);
+  }
+
+  /**
+   * @throws
+   * @param {InputConfig} config
+   * @returns {RuntimeConfiguration}
+   */
+  assign(config) {
+    if (this.validate(config)) {
+      this.config = config;
+    } else {
+      for (const error of this.validate.errors) {
+        // todo: Give an error summary
+        console.error(error);
+      }
+
+      throw new Error('invalid inputs');
+    }
+
+    return this;
+  }
+  /**
+   * @param {any} config
+   * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
+   */
+
+
+  tryAssign(config) {
+    if (this.validate(config)) {
+      this.config = config;
+      return {
+        errors: [],
+        config: this
+      };
+    }
+
+    return {
+      errors: this.validate.errors.slice(),
+      config: null
+    };
+  }
+  /**
+   * This will only return settings for a feature if that feature is remotely enabled.
+   *
+   * @param {string} featureName
+   * @param {URL} [url]
+   * @returns {null|Record<string, any>}
+   */
+
+
+  getSettings(featureName, url) {
+    var _this$config$userPref, _this$config$userPref2, _this$config$contentS, _this$config$contentS2;
+
+    const isEnabled = this.isFeatureRemoteEnabled(featureName, url);
+    if (!isEnabled) return null;
+    const settings = { ...((_this$config$userPref = this.config.userPreferences.features) === null || _this$config$userPref === void 0 ? void 0 : (_this$config$userPref2 = _this$config$userPref[featureName]) === null || _this$config$userPref2 === void 0 ? void 0 : _this$config$userPref2.settings),
+      ...((_this$config$contentS = this.config.contentScope.features) === null || _this$config$contentS === void 0 ? void 0 : (_this$config$contentS2 = _this$config$contentS[featureName]) === null || _this$config$contentS2 === void 0 ? void 0 : _this$config$contentS2.settings)
+    };
+    return settings;
+  }
+  /**
+   * @returns {"macos"|"ios"|"extension"|"windows"|"android"|"unknown"}
+   */
+
+
+  get platform() {
+    return this.config.userPreferences.platform.name;
+  }
+  /**
+   * @param {string} featureName
+   * @param {URL} [url]
+   * @returns {boolean}
+   */
+
+
+  isFeatureRemoteEnabled(featureName, url) {
+    const privacyConfig = (0, _appleUtils.processConfig)(this.config.contentScope, this.config.userUnprotectedDomains, this.config.userPreferences, url);
+    const site = privacyConfig.site;
+
+    if (site.isBroken || !site.enabledFeatures.includes(featureName)) {
+      return false;
+    }
+
+    return true;
+  }
+
+}
+/**
+ * Factory for creating config instance
+ * @param {InputConfig} incoming
+ * @returns {RuntimeConfiguration}
+ */
+
+
+exports.RuntimeConfiguration = RuntimeConfiguration;
+
+function createRuntimeConfiguration(incoming) {
+  return new RuntimeConfiguration().assign(incoming);
+}
+/**
+ * Factory for creating config instance
+ * @param {InputConfig} incoming
+ * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
+ */
+
+
+function tryCreateRuntimeConfiguration(incoming) {
+  return new RuntimeConfiguration().tryAssign(incoming);
+}
+
+},{"../apple-utils.js":52,"./validate.cjs":54}],54:[function(require,module,exports){
+"use strict";
+
+module.exports = validate20;
+module.exports.default = validate20;
+const schema22 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/RuntimeConfiguration",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "Runtime Configuration Schema",
+  "description": "Required Properties to enable an instance of RuntimeConfiguration",
+  "properties": {
+    "contentScope": {
+      "$ref": "#/definitions/ContentScope"
+    },
+    "userUnprotectedDomains": {
+      "type": "array",
+      "items": {}
+    },
+    "userPreferences": {
+      "$ref": "#/definitions/UserPreferences"
+    }
+  },
+  "required": ["contentScope", "userPreferences", "userUnprotectedDomains"],
+  "definitions": {
+    "ContentScope": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "features": {
+          "$ref": "#/definitions/ContentScopeFeatures"
+        },
+        "unprotectedTemporary": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": ["features", "unprotectedTemporary"],
+      "title": "ContentScope"
+    },
+    "ContentScopeFeatures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/ContentScopeFeatureItem"
+      },
+      "title": "ContentScopeFeatures"
+    },
+    "ContentScopeFeatureItem": {
+      "type": "object",
+      "properties": {
+        "exceptions": {
+          "type": "array",
+          "items": {}
+        },
+        "state": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "object"
+        }
+      },
+      "required": ["exceptions", "state"],
+      "title": "ContentScopeFeatureItem"
+    },
+    "UserPreferences": {
+      "type": "object",
+      "properties": {
+        "debug": {
+          "type": "boolean"
+        },
+        "platform": {
+          "$ref": "#/definitions/Platform"
+        },
+        "features": {
+          "$ref": "#/definitions/UserPreferencesFeatures"
+        }
+      },
+      "required": ["debug", "features", "platform"],
+      "title": "UserPreferences"
+    },
+    "UserPreferencesFeatures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/UserPreferencesFeatureItem"
+      },
+      "title": "UserPreferencesFeatures"
+    },
+    "UserPreferencesFeatureItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/Settings"
+        }
+      },
+      "required": ["settings"],
+      "title": "UserPreferencesFeatureItem"
+    },
+    "Settings": {
+      "type": "object",
+      "additionalProperties": true,
+      "title": "Settings"
+    },
+    "Platform": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
+        }
+      },
+      "required": ["name"],
+      "title": "Platform"
+    }
+  }
+};
+const schema23 = {
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "features": {
+      "$ref": "#/definitions/ContentScopeFeatures"
+    },
+    "unprotectedTemporary": {
+      "type": "array",
+      "items": {}
+    }
+  },
+  "required": ["features", "unprotectedTemporary"],
+  "title": "ContentScope"
+};
+const schema24 = {
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/ContentScopeFeatureItem"
+  },
+  "title": "ContentScopeFeatures"
+};
+const schema25 = {
+  "type": "object",
+  "properties": {
+    "exceptions": {
+      "type": "array",
+      "items": {}
+    },
+    "state": {
+      "type": "string"
+    },
+    "settings": {
+      "type": "object"
+    }
+  },
+  "required": ["exceptions", "state"],
+  "title": "ContentScopeFeatureItem"
+};
+
+function validate22(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        let data0 = data[key0];
+        const _errs2 = errors;
+        const _errs3 = errors;
+
+        if (errors === _errs3) {
+          if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
+            let missing0;
+
+            if (data0.exceptions === undefined && (missing0 = "exceptions") || data0.state === undefined && (missing0 = "state")) {
+              validate22.errors = [{
+                instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+                schemaPath: "#/definitions/ContentScopeFeatureItem/required",
+                keyword: "required",
+                params: {
+                  missingProperty: missing0
+                },
+                message: "must have required property '" + missing0 + "'"
+              }];
+              return false;
+            } else {
+              if (data0.exceptions !== undefined) {
+                const _errs5 = errors;
+
+                if (errors === _errs5) {
+                  if (!Array.isArray(data0.exceptions)) {
+                    validate22.errors = [{
+                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/exceptions",
+                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/exceptions/type",
+                      keyword: "type",
+                      params: {
+                        type: "array"
+                      },
+                      message: "must be array"
+                    }];
+                    return false;
+                  }
+                }
+
+                var valid2 = _errs5 === errors;
+              } else {
+                var valid2 = true;
+              }
+
+              if (valid2) {
+                if (data0.state !== undefined) {
+                  const _errs7 = errors;
+
+                  if (typeof data0.state !== "string") {
+                    validate22.errors = [{
+                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/state",
+                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/state/type",
+                      keyword: "type",
+                      params: {
+                        type: "string"
+                      },
+                      message: "must be string"
+                    }];
+                    return false;
+                  }
+
+                  var valid2 = _errs7 === errors;
+                } else {
+                  var valid2 = true;
+                }
+
+                if (valid2) {
+                  if (data0.settings !== undefined) {
+                    let data3 = data0.settings;
+                    const _errs9 = errors;
+
+                    if (!(data3 && typeof data3 == "object" && !Array.isArray(data3))) {
+                      validate22.errors = [{
+                        instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/settings",
+                        schemaPath: "#/definitions/ContentScopeFeatureItem/properties/settings/type",
+                        keyword: "type",
+                        params: {
+                          type: "object"
+                        },
+                        message: "must be object"
+                      }];
+                      return false;
+                    }
+
+                    var valid2 = _errs9 === errors;
+                  } else {
+                    var valid2 = true;
+                  }
+                }
+              }
+            }
+          } else {
+            validate22.errors = [{
+              instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+              schemaPath: "#/definitions/ContentScopeFeatureItem/type",
+              keyword: "type",
+              params: {
+                type: "object"
+              },
+              message: "must be object"
+            }];
+            return false;
+          }
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
+        }
+      }
+    } else {
+      validate22.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate22.errors = vErrors;
+  return errors === 0;
+}
+
+function validate21(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
+        validate21.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.features !== undefined) {
+          const _errs2 = errors;
+
+          if (!validate22(data.features, {
+            instancePath: instancePath + "/features",
+            parentData: data,
+            parentDataProperty: "features",
+            rootData
+          })) {
+            vErrors = vErrors === null ? validate22.errors : vErrors.concat(validate22.errors);
+            errors = vErrors.length;
+          }
+
+          var valid0 = _errs2 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.unprotectedTemporary !== undefined) {
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (!Array.isArray(data.unprotectedTemporary)) {
+                validate21.errors = [{
+                  instancePath: instancePath + "/unprotectedTemporary",
+                  schemaPath: "#/properties/unprotectedTemporary/type",
+                  keyword: "type",
+                  params: {
+                    type: "array"
+                  },
+                  message: "must be array"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+        }
+      }
+    } else {
+      validate21.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate21.errors = vErrors;
+  return errors === 0;
+}
+
+const schema26 = {
+  "type": "object",
+  "properties": {
+    "debug": {
+      "type": "boolean"
+    },
+    "platform": {
+      "$ref": "#/definitions/Platform"
+    },
+    "features": {
+      "$ref": "#/definitions/UserPreferencesFeatures"
+    }
+  },
+  "required": ["debug", "features", "platform"],
+  "title": "UserPreferences"
+};
+const schema27 = {
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
+    }
+  },
+  "required": ["name"],
+  "title": "Platform"
+};
+
+const func0 = require("ajv/dist/runtime/equal").default;
+
+const schema28 = {
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/UserPreferencesFeatureItem"
+  },
+  "title": "UserPreferencesFeatures"
+};
+const schema29 = {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "settings": {
+      "$ref": "#/definitions/Settings"
+    }
+  },
+  "required": ["settings"],
+  "title": "UserPreferencesFeatureItem"
+};
+const schema30 = {
+  "type": "object",
+  "additionalProperties": true,
+  "title": "Settings"
+};
+
+function validate27(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.settings === undefined && (missing0 = "settings")) {
+        validate27.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        const _errs1 = errors;
+
+        for (const key0 in data) {
+          if (!(key0 === "settings")) {
+            validate27.errors = [{
+              instancePath,
+              schemaPath: "#/additionalProperties",
+              keyword: "additionalProperties",
+              params: {
+                additionalProperty: key0
+              },
+              message: "must NOT have additional properties"
+            }];
+            return false;
+            break;
+          }
+        }
+
+        if (_errs1 === errors) {
+          if (data.settings !== undefined) {
+            let data0 = data.settings;
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {} else {
+                validate27.errors = [{
+                  instancePath: instancePath + "/settings",
+                  schemaPath: "#/definitions/Settings/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate27.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate27.errors = vErrors;
+  return errors === 0;
+}
+
+function validate26(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        const _errs2 = errors;
+
+        if (!validate27(data[key0], {
+          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+          parentData: data,
+          parentDataProperty: key0,
+          rootData
+        })) {
+          vErrors = vErrors === null ? validate27.errors : vErrors.concat(validate27.errors);
+          errors = vErrors.length;
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
+        }
+      }
+    } else {
+      validate26.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate26.errors = vErrors;
+  return errors === 0;
+}
+
+function validate25(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.debug === undefined && (missing0 = "debug") || data.features === undefined && (missing0 = "features") || data.platform === undefined && (missing0 = "platform")) {
+        validate25.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.debug !== undefined) {
+          const _errs1 = errors;
+
+          if (typeof data.debug !== "boolean") {
+            validate25.errors = [{
+              instancePath: instancePath + "/debug",
+              schemaPath: "#/properties/debug/type",
+              keyword: "type",
+              params: {
+                type: "boolean"
+              },
+              message: "must be boolean"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.platform !== undefined) {
+            let data1 = data.platform;
+            const _errs3 = errors;
+            const _errs4 = errors;
+
+            if (errors === _errs4) {
+              if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
+                let missing1;
+
+                if (data1.name === undefined && (missing1 = "name")) {
+                  validate25.errors = [{
+                    instancePath: instancePath + "/platform",
+                    schemaPath: "#/definitions/Platform/required",
+                    keyword: "required",
+                    params: {
+                      missingProperty: missing1
+                    },
+                    message: "must have required property '" + missing1 + "'"
+                  }];
+                  return false;
+                } else {
+                  if (data1.name !== undefined) {
+                    let data2 = data1.name;
+
+                    if (typeof data2 !== "string") {
+                      validate25.errors = [{
+                        instancePath: instancePath + "/platform/name",
+                        schemaPath: "#/definitions/Platform/properties/name/type",
+                        keyword: "type",
+                        params: {
+                          type: "string"
+                        },
+                        message: "must be string"
+                      }];
+                      return false;
+                    }
+
+                    if (!(data2 === "ios" || data2 === "macos" || data2 === "windows" || data2 === "extension" || data2 === "android" || data2 === "unknown")) {
+                      validate25.errors = [{
+                        instancePath: instancePath + "/platform/name",
+                        schemaPath: "#/definitions/Platform/properties/name/enum",
+                        keyword: "enum",
+                        params: {
+                          allowedValues: schema27.properties.name.enum
+                        },
+                        message: "must be equal to one of the allowed values"
+                      }];
+                      return false;
+                    }
+                  }
+                }
+              } else {
+                validate25.errors = [{
+                  instancePath: instancePath + "/platform",
+                  schemaPath: "#/definitions/Platform/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.features !== undefined) {
+              const _errs8 = errors;
+
+              if (!validate26(data.features, {
+                instancePath: instancePath + "/features",
+                parentData: data,
+                parentDataProperty: "features",
+                rootData
+              })) {
+                vErrors = vErrors === null ? validate26.errors : vErrors.concat(validate26.errors);
+                errors = vErrors.length;
+              }
+
+              var valid0 = _errs8 === errors;
+            } else {
+              var valid0 = true;
+            }
+          }
+        }
+      }
+    } else {
+      validate25.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate25.errors = vErrors;
+  return errors === 0;
+}
+
+function validate20(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/RuntimeConfiguration" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.contentScope === undefined && (missing0 = "contentScope") || data.userPreferences === undefined && (missing0 = "userPreferences") || data.userUnprotectedDomains === undefined && (missing0 = "userUnprotectedDomains")) {
+        validate20.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        const _errs1 = errors;
+
+        for (const key0 in data) {
+          if (!(key0 === "contentScope" || key0 === "userUnprotectedDomains" || key0 === "userPreferences")) {
+            validate20.errors = [{
+              instancePath,
+              schemaPath: "#/additionalProperties",
+              keyword: "additionalProperties",
+              params: {
+                additionalProperty: key0
+              },
+              message: "must NOT have additional properties"
+            }];
+            return false;
+            break;
+          }
+        }
+
+        if (_errs1 === errors) {
+          if (data.contentScope !== undefined) {
+            const _errs2 = errors;
+
+            if (!validate21(data.contentScope, {
+              instancePath: instancePath + "/contentScope",
+              parentData: data,
+              parentDataProperty: "contentScope",
+              rootData
+            })) {
+              vErrors = vErrors === null ? validate21.errors : vErrors.concat(validate21.errors);
+              errors = vErrors.length;
+            }
+
+            var valid0 = _errs2 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.userUnprotectedDomains !== undefined) {
+              const _errs3 = errors;
+
+              if (errors === _errs3) {
+                if (!Array.isArray(data.userUnprotectedDomains)) {
+                  validate20.errors = [{
+                    instancePath: instancePath + "/userUnprotectedDomains",
+                    schemaPath: "#/properties/userUnprotectedDomains/type",
+                    keyword: "type",
+                    params: {
+                      type: "array"
+                    },
+                    message: "must be array"
+                  }];
+                  return false;
+                }
+              }
+
+              var valid0 = _errs3 === errors;
+            } else {
+              var valid0 = true;
+            }
+
+            if (valid0) {
+              if (data.userPreferences !== undefined) {
+                const _errs5 = errors;
+
+                if (!validate25(data.userPreferences, {
+                  instancePath: instancePath + "/userPreferences",
+                  parentData: data,
+                  parentDataProperty: "userPreferences",
+                  rootData
+                })) {
+                  vErrors = vErrors === null ? validate25.errors : vErrors.concat(validate25.errors);
+                  errors = vErrors.length;
+                }
+
+                var valid0 = _errs5 === errors;
+              } else {
+                var valid0 = true;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate20.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate20.errors = vErrors;
+  return errors === 0;
+}
+
+},{"ajv/dist/runtime/equal":50}]},{},[33]);

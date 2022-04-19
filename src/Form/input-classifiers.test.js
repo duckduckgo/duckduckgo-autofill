@@ -1,11 +1,12 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
+import { getUnifiedExpiryDate } from './formatters'
+import { createScanner } from '../Scanner'
+import { getInputSubtype, createMatching } from './matching'
+import { Form } from './Form'
+import InterfacePrototype from '../DeviceInterface/InterfacePrototype'
 
-const {getUnifiedExpiryDate} = require('./formatters')
-const {createScanner} = require('../Scanner')
-const {getInputSubtype, createMatching} = require('./matching')
-const {Form} = require('./Form')
-const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
+import testCases from './test-cases/index'
 
 /**
  * @param {HTMLInputElement} el
@@ -28,7 +29,7 @@ const renderInputWithLabel = () => {
     const formElement = document.createElement('form')
     formElement.append(input, label)
     document.body.append(formElement)
-    const form = new Form(formElement, input, new InterfacePrototype(createGlobalConfig()))
+    const form = new Form(formElement, input, {}, InterfacePrototype.default())
     return { input, label, formElement: formElement, form }
 }
 
@@ -129,9 +130,6 @@ describe('Input Classifiers', () => {
         })
     })
 })
-
-const testCases = require('./test-cases/index')
-const {createGlobalConfig} = require('../config')
 let testResults = []
 
 describe.each(testCases)('Test $html fields', (testCase) => {
@@ -147,7 +145,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         document.body.innerHTML = testContent
         document.title = title
 
-        const scanner = createScanner(new InterfacePrototype(createGlobalConfig()))
+        const scanner = createScanner(InterfacePrototype.default())
         scanner.findEligibleInputs(document)
 
         /**

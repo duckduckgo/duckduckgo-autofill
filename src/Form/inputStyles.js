@@ -1,4 +1,4 @@
-const {getInputConfig} = require('./inputTypeConfig.js')
+import { getInputConfig } from './inputTypeConfig.js'
 
 /**
  * Returns the css-ready base64 encoding of the icon for the given input
@@ -66,4 +66,4 @@ const getIconStylesAutofilled = (input, form) => {
     }
 }
 
-module.exports = {getIconStylesBase, getIconStylesAutofilled}
+export {getIconStylesBase, getIconStylesAutofilled}
