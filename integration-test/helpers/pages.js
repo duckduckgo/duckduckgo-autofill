@@ -172,16 +172,25 @@ export function loginPage (page, server) {
             const mockCalls = calls.filter(([name]) => name === 'storeFormData')
             expect(mockCalls.length).toBe(0)
         },
-        /** @param {Record<string, any>} data */
-        async assertWasPromptedToSave (data) {
+        /**
+         * @param {Record<string, any>} data
+         * @param {Platform} [platform]
+         */
+        async assertWasPromptedToSave (data, platform = "ios") {
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const mockCalls = calls.filter(([name]) => name === 'storeFormData')
             expect(mockCalls).toHaveLength(1)
             const [, sent] = mockCalls[0]
-            expect(sent).toEqual({
+            const expected = {
                 credentials: data,
-                messageHandling: {secret: 'PLACEHOLDER_SECRET'}
-            })
+            }
+            if (platform === "ios" || platform === "macos") {
+                expected.messageHandling = {secret: 'PLACEHOLDER_SECRET'}
+                return expect(sent).toEqual(expected)
+            }
+            if (platform === "android") {
+                expect(JSON.parse(sent)).toEqual(expected)
+            }
         }
     }
 }

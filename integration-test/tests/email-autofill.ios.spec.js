@@ -57,47 +57,39 @@ test.describe('ios', () => {
         await emailPage.assertEmailValue(privateAddress0)
     })
     test.describe('Prompting to save from a login form', () => {
-        test('username+password (should prompt)', async ({page}) => {
-            // enable in-terminal exceptions
+        /**
+         * @param {import("playwright").Page} page
+         */
+        async function setup (page) {
             await forwardConsoleMessages(page)
+            await createWebkitMocks().applyTo(page)
+            await defaultIOSScript(page)
+            const login = loginPage(page, server)
+            await login.navigate()
+            return login
+        }
+        test('username+password (should prompt)', async ({page}) => {
+            const login = await setup(page)
 
             const credentials = {
                 username: 'dax@wearejh.com',
                 password: '123456'
             }
-
-            await createWebkitMocks().applyTo(page)
-            await defaultIOSScript(page)
-
-            const login = loginPage(page, server)
-            await login.navigate()
             await login.submitLoginForm(credentials)
             await login.assertWasPromptedToSave(credentials)
         })
         test('password only (should prompt)', async ({page}) => {
-            // enable in-terminal exceptions
-            await forwardConsoleMessages(page)
-            await createWebkitMocks().applyTo(page)
-            await defaultIOSScript(page)
-
-            const login = loginPage(page, server)
+            const login = await setup(page)
 
             const credentials = { password: '123456' }
-            await login.navigate()
             await login.submitPasswordOnlyForm(credentials)
             await login.assertWasPromptedToSave(credentials)
         })
+
         test('username only (should NOT prompt)', async ({page}) => {
-            // enable in-terminal exceptions
-            await forwardConsoleMessages(page)
+            const login = await setup(page)
 
             const credentials = { username: '123456' }
-
-            await createWebkitMocks().applyTo(page)
-            await defaultIOSScript(page)
-
-            const login = loginPage(page, server)
-            await login.navigate()
             await login.submitUsernameOnlyForm(credentials.username)
             await login.assertWasNotPromptedToSave()
         })

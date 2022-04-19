@@ -155,7 +155,7 @@ export function createAutofillScript () {
 }
 
 /**
- * @param {import("playwright-core").Page} page
+ * @param {import("playwright").Page} page
  */
 export async function defaultMacosScript (page) {
     return createAutofillScript()
@@ -165,7 +165,7 @@ export async function defaultMacosScript (page) {
 }
 
 /**
- * @param {import("playwright-core").Page} page
+ * @param {import("playwright").Page} page
  */
 export async function defaultIOSScript (page) {
     return createAutofillScript()
