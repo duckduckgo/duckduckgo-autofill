@@ -1,34 +1,40 @@
-export const iosContentScopeReplacements = {
-    contentScope: {
-        features: {
-            'autofill': {
-                exceptions: [],
-                state: 'enabled'
-            }
+/**
+ * @param {object} [overrides]
+ * @param {Partial<FeatureTogglesSettings>} [overrides.featureToggles]
+ */
+export const iosContentScopeReplacements = (overrides = {}) => {
+    return {
+        contentScope: {
+            features: {
+                'autofill': {
+                    exceptions: [],
+                    state: 'enabled'
+                }
+            },
+            unprotectedTemporary: []
         },
-        unprotectedTemporary: []
-    },
-    userUnprotectedDomains: [],
-    userPreferences: {
-        debug: true,
-        platform: {name: 'ios'},
-        features: {
-            autofill: {
-                settings: {
-                    featureToggles: {
-                        'inputType_credentials': true,
-                        'inputType_identities': false,
-                        'inputType_creditCards': false,
-                        'emailProtection': true,
-                        'password_generation': false,
-                        'credentials_saving': true
+        userUnprotectedDomains: [],
+        userPreferences: {
+            debug: true,
+            platform: {name: 'ios'},
+            features: {
+                autofill: {
+                    settings: {
+                        featureToggles: {
+                            'inputType_credentials': true,
+                            'inputType_identities': false,
+                            'inputType_creditCards': false,
+                            'emailProtection': true,
+                            'password_generation': false,
+                            'credentials_saving': true,
+                            ...overrides.featureToggles
+                        }
                     }
                 }
             }
         }
     }
 }
-
 /**
  * @param {object} [overrides]
  * @param {Partial<FeatureTogglesSettings>} [overrides.featureToggles]

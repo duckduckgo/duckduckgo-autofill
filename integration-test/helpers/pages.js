@@ -172,6 +172,24 @@ export function loginPage (page, server) {
             const mockCalls = calls.filter(([name]) => name === 'storeFormData')
             expect(mockCalls.length).toBe(0)
         },
+        /** @param {string} mockCallName */
+        async assertMockCallOccurred (mockCallName) {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const mockCall = calls.find(([name]) => name === mockCallName)
+            expect(mockCall).toBeDefined()
+        },
+        /**
+         * @param {Partial<FeatureTogglesSettings>} expected
+         */
+        async assertTogglesWereMocked (expected) {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const mockCalls = calls.find(([name]) => name === 'getRuntimeConfiguration')
+            const [, , resp] = mockCalls
+            const actual = resp.userPreferences.features.autofill.settings.featureToggles
+            for (let [key, value] of Object.entries(expected)) {
+                expect(actual[key]).toBe(value)
+            }
+        },
         /**
          * @param {Record<string, any>} data
          * @param {Platform} [platform]

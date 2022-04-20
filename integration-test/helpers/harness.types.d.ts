@@ -28,7 +28,7 @@ interface MockBuilder<State> {
     // Add available input types
     withAvailableInputTypes(inputTypes: AvailableInputTypes): MockBuilder
     // Add any number of feature toggle overrides
-    withFeatureToggles(featureToggles: FeatureTogglesSettings): MockBuilder
+    withFeatureToggles(featureToggles: Partial<FeatureTogglesSettings>): MockBuilder
     // observe the current state
     tap(fn: (currentState: State) => void): MockBuilder
     // apply to the page, this is the final step

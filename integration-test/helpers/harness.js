@@ -169,7 +169,29 @@ export async function defaultMacosScript (page) {
  */
 export async function defaultIOSScript (page) {
     return createAutofillScript()
-        .replaceAll(iosContentScopeReplacements)
+        .replaceAll(iosContentScopeReplacements())
+        .platform('ios')
+        .applyTo(page)
+}
+
+/**
+ * @param {import("playwright").Page} page
+ * @param {Partial<FeatureTogglesSettings>} featureToggles
+ */
+export async function withIOSFeatureToggles (page, featureToggles) {
+    return createAutofillScript()
+        .replaceAll(iosContentScopeReplacements({
+            /** @type {FeatureTogglesSettings} */
+            featureToggles: {
+                'inputType_credentials': true,
+                'inputType_identities': false,
+                'inputType_creditCards': false,
+                'emailProtection': true,
+                'password_generation': false,
+                'credentials_saving': true,
+                ...featureToggles
+            }
+        }))
         .platform('ios')
         .applyTo(page)
 }

@@ -34,6 +34,7 @@ export function createAndroidMocks () {
                 features: {
                     autofill: {
                         settings: {
+                            /** @type {FeatureTogglesSettings} */
                             featureToggles: {
                                 inputType_credentials: true,
                                 inputType_identities: false,
@@ -73,8 +74,10 @@ export function createAndroidMocks () {
         withIdentity: function () {
             throw new Error('Function not implemented.')
         },
-        withFeatureToggles (_featureToggles) {
-            throw new Error('withFeatureToggles not implemented for android yet')
+        withFeatureToggles (featureToggles) {
+            const defaults = mocks.getRuntimeConfigurationResponse.userPreferences.features.autofill.settings.featureToggles
+            Object.assign(defaults, featureToggles)
+            return this
         },
         /**
          * @param credentials
@@ -111,6 +114,8 @@ export function createAndroidMocks () {
                 /** @type {MocksObjectAndroid} */
                 const mocksObject = {
                     getRuntimeConfiguration () {
+                        const call = ['getRuntimeConfiguration', null, mocks.getRuntimeConfigurationResponse]
+                        window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                         return JSON.stringify({
                             success: mocks.getRuntimeConfigurationResponse
                         })
