@@ -219,7 +219,9 @@ class Form {
 
     get submitButtons () {
         const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
-        const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+        let allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+
+        allButtons = allButtons.filter(button => !/facebook|twitter|google|apple/i.test(button.textContent || ''))
 
         const likelySubmitButton = allButtons.find(isLikelyASubmitButton)
         if (likelySubmitButton) return [likelySubmitButton]
