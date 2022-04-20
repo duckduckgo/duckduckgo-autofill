@@ -2,8 +2,9 @@ interface Settings {
     featureToggles: FeatureTogglesSettings
 }
 
-type json = typeof import("../schema/featureToggles.schema.json");
-type props = json['properties'];
+// be VERY careful here - the path is not validated by TSC
+type json = typeof import("../schema/settings.schema.json");
+type props = json['properties']['featureToggles']['properties'];
 
 // This is a list of known feature toggles, derived from the schema file
 type FeatureTogglesSettings = {

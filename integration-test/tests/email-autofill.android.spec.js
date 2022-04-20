@@ -109,7 +109,7 @@ test.describe('android', () => {
     })
     test.describe('Prompting to save from a login form', () => {
         /** @param {import("playwright").Page} page */
-        async function setup(page) {
+        async function setup (page) {
             await forwardConsoleMessages(page)
             const login = loginPage(page, server)
             await login.navigate()
@@ -121,26 +121,25 @@ test.describe('android', () => {
             return { login }
         }
         test('with username+password (should prompt)', async ({page}) => {
-            const { login } = await setup(page);
+            const { login } = await setup(page)
             const credentials = {
                 username: 'dax@wearejh.com',
                 password: '123456'
             }
             await login.submitLoginForm(credentials)
-            await login.assertWasPromptedToSave(credentials, "android")
+            await login.assertWasPromptedToSave(credentials, 'android')
         })
         test('with password only (should prompt)', async ({page}) => {
-            const { login } = await setup(page);
+            const { login } = await setup(page)
             const credentials = { password: '123456' }
             await login.submitPasswordOnlyForm(credentials)
-            await login.assertWasPromptedToSave(credentials, "android")
+            await login.assertWasPromptedToSave(credentials, 'android')
         })
         test('with username only (should NOT prompt)', async ({page}) => {
-            const { login } = await setup(page);
+            const { login } = await setup(page)
             const credentials = { username: '123456' }
             await login.submitUsernameOnlyForm(credentials.username)
             await login.assertWasNotPromptedToSave()
         })
     })
-
 })

@@ -39,6 +39,7 @@ class AutofillSettings {
     /** @returns {AutofillSettings} */
     static default () {
         return new AutofillSettings().from({
+            /** @type {FeatureTogglesSettings} */
             featureToggles: {
                 inputType_credentials: true,
                 inputType_identities: true,
