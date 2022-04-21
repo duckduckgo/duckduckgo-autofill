@@ -1,4 +1,4 @@
-import schema from "../schema/response.getAutofillData.schema.json";
+import schema from '../schema/response.getAutofillData.schema.json'
 /**
  * @param {GlobalConfig} _globalConfig
  * @returns {RuntimeTransport}
@@ -56,7 +56,7 @@ function sendAndWaitForAndroidAnswer (fn, expectedResponse) {
             //     console.log(`❌ origin-mismatch e.origin(${e.origin}) !== window.origin(${window.origin})`);
             //     return
             // }
-            console.warn('event.origin check was disabled on Android.');
+            console.warn('event.origin check was disabled on Android.')
             if (!e.data) {
                 console.log('❌ event.data missing')
                 return
