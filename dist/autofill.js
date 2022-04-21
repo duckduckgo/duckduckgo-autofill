@@ -8365,7 +8365,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
   return new Promise(resolve => {
     const handler = e => {
       if (e.origin !== window.origin) {
-        console.log('❌ origin-mismatch %s !== %s', e.origin, window.origin);
+        console.log("\u274C origin-mismatch e.origin(".concat(e.origin, ") !== window.origin(").concat(window.origin, ")"));
         return;
       }
 
