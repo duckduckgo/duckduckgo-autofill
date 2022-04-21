@@ -8364,8 +8364,16 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 
   return new Promise(resolve => {
     const handler = e => {
-      if (e.origin !== window.origin) return;
-      if (!e.data || e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse)) return;
+      if (e.origin !== window.origin) {
+        console.log('❌ origin-mismatch %s !== %s', e.origin, window.origin);
+        return;
+      }
+
+      if (!e.data || e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse)) {
+        console.log('❌ data or type mismatch');
+        return;
+      }
+
       resolve(e.data);
       window.removeEventListener('message', handler);
     };
