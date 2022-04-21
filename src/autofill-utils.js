@@ -25,6 +25,8 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
             //     console.log(`❌ origin-mismatch e.origin(${e.origin}) !== window.origin(${window.origin})`);
             //     return
             // }
+            console.log('typeof data', e.data);
+            console.log('JSON data', JSON.stringify(e.data));
             if (!e.data || (e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))) {
                 console.log('❌ data or type mismatch')
                 return
