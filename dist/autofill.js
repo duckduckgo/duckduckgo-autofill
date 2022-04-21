@@ -8368,15 +8368,20 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
       //     console.log(`❌ origin-mismatch e.origin(${e.origin}) !== window.origin(${window.origin})`);
       //     return
       // }
-      console.log('typeof data', e.data);
-      console.log('JSON data', JSON.stringify(e.data));
+      console.log('typeof data', typeof e.data); // console.log('JSON data', JSON.stringify(e.data));
 
-      if (!e.data || e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse)) {
+      let data = e.data;
+
+      if (typeof e.data === "string") {
+        data = JSON.parse(e.data);
+      }
+
+      if (!data || data && !(data[expectedResponse] || data.type === expectedResponse)) {
         console.log('❌ data or type mismatch');
         return;
       }
 
-      resolve(e.data);
+      resolve(data);
       window.removeEventListener('message', handler);
     };
 
