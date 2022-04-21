@@ -22,7 +22,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     return new Promise((resolve) => {
         const handler = e => {
             if (e.origin !== window.origin) {
-                console.log('❌ origin-mismatch %s !== %s', e.origin, window.origin)
+                console.log(`❌ origin-mismatch e.origin(${e.origin}) !== window.origin(${window.origin})`);
                 return
             }
             if (!e.data || (e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))) {
