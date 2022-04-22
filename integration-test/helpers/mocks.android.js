@@ -128,10 +128,10 @@ export function createAndroidMocks () {
                     getAutofillData (data) {
                         const call = ['getAutofillData', data, mocks.getAutofillData]
                         window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                        window.postMessage({
+                        window.postMessage(JSON.stringify({
                             type: 'getAutofillDataResponse',
                             success: mocks.getAutofillData
-                        }, window.origin)
+                        }), window.origin)
                     },
                     storeFormData (data) {
                         /** @type {MockCall} */

@@ -119,7 +119,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * @param {import('../Form/Form').Form} _form
+     * @param {import('../Form/Form').Form} form
      * @param {HTMLInputElement} input
      * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
      * @param {{ x: number; y: number; } | null} click
@@ -142,7 +142,6 @@ class AppleDeviceInterface extends InterfacePrototype {
             return
         }
         showTooltipAtPosition()
-        return
     }
 
     /**
@@ -306,7 +305,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         return fromPlatformConfig(platformConfig)
     }
 
-    tooltipStyles() {
+    tooltipStyles () {
         return `<style>${CSS_STYLES}</style>`
     }
 }

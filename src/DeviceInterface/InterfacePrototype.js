@@ -606,15 +606,15 @@ class InterfacePrototype {
         return ``
     }
 
-    tooltipWrapperClass() {
+    tooltipWrapperClass () {
         return ''
     }
 
-    tooltipPositionClass(top, left) {
-        return `.wrapper {transform: translate(${left}px, ${top}px);}`;
+    tooltipPositionClass (top, left) {
+        return `.wrapper {transform: translate(${left}px, ${top}px);}`
     }
 
-    setupSizeListener(_cb) {
+    setupSizeListener (_cb) {
         // no-op
     }
 

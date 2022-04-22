@@ -61,11 +61,19 @@ function sendAndWaitForAndroidAnswer (fn, expectedResponse) {
                 console.log('❌ event.data missing')
                 return
             }
-            if (!(e.data[expectedResponse] || e.data.type === expectedResponse)) {
-                console.log('❌ event.data or event.data.type mismatch', JSON.stringify(e.data))
+            if (typeof e.data !== 'string') {
+                console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
                 return
             }
-            resolve(e.data)
+            try {
+                let data = JSON.parse(e.data)
+                if (data.type === expectedResponse) {
+                    return resolve(data)
+                }
+                console.log(`❌ event.data.type didnt match '${expectedResponse}'`, JSON.stringify(data))
+            } catch (e) {
+                console.log('❌ Could not JSON.parse the response')
+            }
             window.removeEventListener('message', handler)
         }
         window.addEventListener('message', handler)

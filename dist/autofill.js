@@ -2568,7 +2568,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return !!isAppSignedIn;
   }
   /**
-   * @param {import('../Form/Form').Form} _form
+   * @param {import('../Form/Form').Form} form
    * @param {HTMLInputElement} input
    * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
    * @param {{ x: number; y: number; } | null} click
@@ -2596,7 +2596,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     }
 
     showTooltipAtPosition();
-    return;
   }
   /**
    * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
@@ -9052,10 +9051,10 @@ function createGlobalConfig() {
     isAndroid,
     isFirefox,
     isMobileApp,
-    isTopFrame: false,
+    isTopFrame,
     isWindows,
     secret,
-    supportsTopFrame: false,
+    supportsTopFrame,
     hasModernWebkitAPI,
     contentScope,
     userUnprotectedDomains,
@@ -13171,12 +13170,23 @@ function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
         return;
       }
 
-      if (!(e.data[expectedResponse] || e.data.type === expectedResponse)) {
-        console.log('❌ event.data or event.data.type mismatch', JSON.stringify(e.data));
+      if (typeof e.data !== 'string') {
+        console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed');
         return;
       }
 
-      resolve(e.data);
+      try {
+        let data = JSON.parse(e.data);
+
+        if (data.type === expectedResponse) {
+          return resolve(data);
+        }
+
+        console.log("\u274C event.data.type didnt match '".concat(expectedResponse, "'"), JSON.stringify(data));
+      } catch (e) {
+        console.log('❌ Could not JSON.parse the response');
+      }
+
       window.removeEventListener('message', handler);
     };
 

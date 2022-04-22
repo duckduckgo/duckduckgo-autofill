@@ -96,7 +96,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     }
 
     async setSize (cb) {
-        const details = cb();
+        const details = cb()
         await this.transport.send('setSize', details)
     }
 
@@ -200,19 +200,19 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
         return fromPlatformConfig(platformConfig)
     }
 
-    tooltipStyles() {
+    tooltipStyles () {
         return `<style>${CSS_STYLES}</style>`
     }
 
-    tooltipWrapperClass() {
+    tooltipWrapperClass () {
         return 'top-autofill'
     }
 
-    tooltipPositionClass(_top, _left) {
+    tooltipPositionClass (_top, _left) {
         return '.wrapper {transform: none; }'
     }
 
-    setupSizeListener(cb) {
+    setupSizeListener (cb) {
         cb()
     }
 }

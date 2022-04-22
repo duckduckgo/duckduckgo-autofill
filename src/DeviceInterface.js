@@ -17,7 +17,7 @@ export function createDevice (availableInputTypes, runtime, globalConfig, platfo
     case 'macos':
     case 'ios': {
         if (globalConfig.isTopFrame) {
-            return new AppleTopFrameDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+            return new AppleTopFrameDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
         }
         return new AppleDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
     }

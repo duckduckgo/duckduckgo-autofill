@@ -94,7 +94,7 @@ export class Tooltip {
             this.transformRuleIndex = shadow.styleSheets[0].rules.length
         }
 
-        let cssRule = this.interface.tooltipPositionClass(top, left);
+        let cssRule = this.interface.tooltipPositionClass(top, left)
         shadow.styleSheets[0].insertRule(cssRule, this.transformRuleIndex)
     }
     ensureIsLastInDOM () {
@@ -154,14 +154,14 @@ export class Tooltip {
                 this.setSize()
             })
             observer.observe({entryTypes: ['layout-shift', 'paint']})
-        });
+        })
     }
     setSize () {
         this.interface.setSize(() => {
             const innerNode = this.shadow.querySelector('.wrapper--data')
             // Shouldn't be possible
             if (!innerNode) return
-            return {height: innerNode.clientHeight, width: innerNode.clientWidth};
+            return {height: innerNode.clientHeight, width: innerNode.clientWidth}
         })
     }
     init () {
