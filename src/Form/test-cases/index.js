@@ -120,5 +120,6 @@ module.exports = [
     { html: 'containerstore_login_signup.html' },
     { html: 'containerstore_forgot_password.html', expectedFailures: ['username'] },
     { html: 'containerstore_newsletter.html' },
-    { html: 'containerstore_checkout.html' }
+    { html: 'containerstore_checkout.html' },
+    { html: 'containerstore_hidden_contact.html' }
 ]
