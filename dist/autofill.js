@@ -8756,7 +8756,7 @@ const setValueForSelect = (el, val) => {
     } // TODO: try to match localised month names
 
 
-    if (value.includes(String(val))) {
+    if (value === String(val)) {
       if (option.selected) return false;
       option.selected = true;
       fireEventsOnSelect(el);
@@ -8765,7 +8765,7 @@ const setValueForSelect = (el, val) => {
   }
 
   for (const option of el.options) {
-    if (option.innerText.includes(String(val))) {
+    if (option.innerText === String(val)) {
       if (option.selected) return false;
       option.selected = true;
       fireEventsOnSelect(el);
