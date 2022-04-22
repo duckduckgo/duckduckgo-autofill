@@ -6,10 +6,10 @@ import {
     notifyWebApp
 } from '../autofill-utils'
 
-import {getInputType, getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
+import {getInputType, getSubtypeFromType} from '../Form/matching'
 import { formatFullName } from '../Form/formatters'
-import EmailAutofill from '../UI/EmailAutofill'
-import DataAutofill from '../UI/DataAutofill'
+import EmailWebTooltip from '../UI/EmailWebTooltip'
+import DataWebTooltip from '../UI/DataWebTooltip'
 import { getInputConfigFromType } from '../Form/inputTypeConfig'
 import listenForGlobalFormSubmission from '../Form/listenForFormSubmission'
 import { fromPassword, GENERATED_ID } from '../input-types/Credentials'
@@ -19,6 +19,7 @@ import {createGlobalConfig} from '../config'
 import {AutofillSettings} from '../settings/settings'
 import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 import {createRuntime} from '../runtime/runtime'
+import {WebTooltip} from '../UI/WebTooltip'
 
 /**
  * @implements {GlobalConfigImpl}
@@ -27,7 +28,7 @@ class InterfacePrototype {
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     currentAttached = null
-    /** @type {import("../UI/Tooltip").Tooltip | null} */
+    /** @type {import("../UI/Tooltip.js").Tooltip | null} */
     currentTooltip = null
     stripCredentials = true
     /** @type {number} */
@@ -57,16 +58,21 @@ class InterfacePrototype {
     /** @type {import('../Scanner').Scanner} */
     scanner;
 
+    /** @type {TooltipInterface} */
+    tooltip;
+
     /**
      * @param {AvailableInputTypes} availableInputTypes
      * @param {import("../runtime/runtime").Runtime} runtime
+     * @param {TooltipInterface} tooltip
      * @param {GlobalConfig} globalConfig
      * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
      * @param {import("../settings/settings").AutofillSettings} autofillSettings
      */
-    constructor (availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
+    constructor (availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
         this.availableInputTypes = availableInputTypes
         this.globalConfig = globalConfig
+        this.tooltip = tooltip
         this.runtimeConfiguration = platformConfig
         this.autofillSettings = autofillSettings
         this.runtime = runtime
@@ -303,17 +309,17 @@ class InterfacePrototype {
             const asRenderers = data.map(d => config.tooltipItem(d))
 
             // construct the autofill
-            return new DataAutofill(config, topContextData.inputType, getPosition, this)
+            return new DataWebTooltip(config, topContextData.inputType, getPosition, this)
                 .render(config, asRenderers, {
                     onSelect: (id) => this.onSelect(config, data, id)
                 })
         } else {
-            return new EmailAutofill(config, topContextData.inputType, getPosition, this)
+            return new EmailWebTooltip(config, topContextData.inputType, getPosition, this)
         }
     }
 
     /**
-     * Before the DataAutofill opens, we collect the data based on the config.type
+     * Before the DataWebTooltip opens, we collect the data based on the config.type
      * @param {InputTypeConfigs} config
      * @param {import('../Form/matching').SupportedTypes} inputType
      * @param {TopContextData} [data]
@@ -353,14 +359,13 @@ class InterfacePrototype {
     /**
      * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
-     * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
+     * @param {{ (): { x: number; y: number; height: number; width: number; } }} getPosition
      * @param {{ x: number; y: number; } | null} click
      */
     attachTooltip (form, input, getPosition, click) {
         form.activeInput = input
         this.currentAttached = form
         const inputType = getInputType(input)
-        const mainType = getMainTypeFromType(inputType)
 
         if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
             return this.getEmailAlias(form)
@@ -390,15 +395,7 @@ class InterfacePrototype {
         }
 
         if (this.globalConfig.hasNativeTooltip) {
-            this.runtime.getAutofillData({inputType})
-                .then(resp => {
-                    console.log('Autofilling...', resp, mainType)
-                    form.autofillData(resp, mainType)
-                })
-                .catch(e => {
-                    console.error('this.runtime.getAutofillData')
-                    console.error(e)
-                })
+            this.tooltip.attach({input, form, click, getPosition, topContextData})
         } else {
             this.attachCloseListeners()
             this.attachTooltipInner(form, input, getPosition, click, topContextData)
@@ -503,6 +500,7 @@ class InterfacePrototype {
     setActiveTooltip (tooltip) {
         this.currentTooltip = tooltip
     }
+
     handleEvent (event) {
         switch (event.type) {
         case 'keydown':
@@ -622,7 +620,8 @@ class InterfacePrototype {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
         const runtime = createRuntime(globalConfig)
-        return new InterfacePrototype({}, runtime, globalConfig, config, AutofillSettings.default())
+        const tooltip = new WebTooltip()
+        return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, AutofillSettings.default())
     }
 }
 

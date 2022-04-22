@@ -19,8 +19,8 @@ class AppleDeviceInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
-    constructor (inputTypes, runtime, config, platformConfig, settings) {
-        super(inputTypes, runtime, config, platformConfig, settings)
+    constructor (inputTypes, runtime, tooltip, config, platformConfig, settings) {
+        super(inputTypes, runtime, tooltip, config, platformConfig, settings)
 
         // if (this.globalConfig.supportsTopFrame) {
         //     // This is always added as a child frame needs to be informed of a parent frame scroll

@@ -7,26 +7,27 @@ import {AppleTopFrameDeviceInterface} from './DeviceInterface/AppleTopFrameDevic
 /**
  * @param {AvailableInputTypes} availableInputTypes
  * @param {import("./runtime/runtime").Runtime} runtime
+ * @param {TooltipInterface} tooltip
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
  * @param {import("./settings/settings").AutofillSettings} autofillSettings
  * @returns {AndroidInterface|AppleDeviceInterface|AppleTopFrameDeviceInterface|ExtensionInterface|WindowsInterface}
  */
-export function createDevice (availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
+export function createDevice (availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
     switch (platformConfig.platform) {
     case 'macos':
     case 'ios': {
         if (globalConfig.isTopFrame) {
-            return new AppleTopFrameDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+            return new AppleTopFrameDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
         }
-        return new AppleDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+        return new AppleDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
     }
     case 'extension':
-        return new ExtensionInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+        return new ExtensionInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
     case 'windows':
-        return new WindowsInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+        return new WindowsInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
     case 'android':
-        return new AndroidInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings)
+        return new AndroidInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
     case 'unknown':
         throw new Error('unreachable. device platform was "unknown"')
     }

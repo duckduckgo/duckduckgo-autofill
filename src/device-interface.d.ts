@@ -107,6 +107,9 @@ interface GlobalConfig {
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
+     /**
+      * @deprecated use {Tooltip} interface instead
+      */
      hasNativeTooltip: boolean;
 }
 

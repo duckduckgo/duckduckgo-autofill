@@ -2,7 +2,7 @@ import { formatDuckAddress, escapeXML } from '../autofill-utils'
 import Tooltip from './Tooltip'
 import {CSS_STYLES} from './styles/styles'
 
-class EmailAutofill extends Tooltip {
+class EmailWebTooltip extends Tooltip {
     /**
      * @param config
      * @param inputType
@@ -68,4 +68,4 @@ ${includeStyles}
     }
 }
 
-export default EmailAutofill
+export default EmailWebTooltip

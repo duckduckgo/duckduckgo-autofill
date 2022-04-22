@@ -15,12 +15,8 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     /** @override */
     initialSetupDelayMs = 300
 
-    async isEnabled () {
-        return autofillEnabled(this.globalConfig, processConfig)
-    }
-
-    constructor (inputTypes, runtime, config, platformConfig, settings) {
-        super(inputTypes, runtime, config, platformConfig, settings)
+    constructor (inputTypes, runtime, tooltip, config, platformConfig, settings) {
+        super(inputTypes, runtime, tooltip, config, platformConfig, settings)
 
         this.stripCredentials = false
         window.addEventListener('mouseMove', (event) => {
@@ -32,6 +28,26 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
                 super.handleEvent(event)
             }
         })
+    }
+
+    async isEnabled () {
+        return autofillEnabled(this.globalConfig, processConfig)
+    }
+
+    async setupAutofill () {
+        if (this.globalConfig.isApp) {
+            await this.getAutofillInitData()
+        }
+
+        const signedIn = await this._checkDeviceSignedIn()
+
+        if (signedIn) {
+            if (this.globalConfig.isApp) {
+                await this.getAddresses()
+            }
+        }
+
+        await this._setupTopFrame()
     }
 
     async _setupTopFrame () {
@@ -53,22 +69,6 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
 
     processMouseMove (event) {
         this.currentTooltip?.focus(event.detail.x, event.detail.y)
-    }
-
-    async setupAutofill () {
-        if (this.globalConfig.isApp) {
-            await this.getAutofillInitData()
-        }
-
-        const signedIn = await this._checkDeviceSignedIn()
-
-        if (signedIn) {
-            if (this.globalConfig.isApp) {
-                await this.getAddresses()
-            }
-        }
-
-        await this._setupTopFrame()
     }
 
     getUserData () {

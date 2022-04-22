@@ -2317,31 +2317,32 @@ var _AppleTopFrameDeviceInterface = require("./DeviceInterface/AppleTopFrameDevi
 /**
  * @param {AvailableInputTypes} availableInputTypes
  * @param {import("./runtime/runtime").Runtime} runtime
+ * @param {TooltipInterface} tooltip
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
  * @param {import("./settings/settings").AutofillSettings} autofillSettings
  * @returns {AndroidInterface|AppleDeviceInterface|AppleTopFrameDeviceInterface|ExtensionInterface|WindowsInterface}
  */
-function createDevice(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
+function createDevice(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
   switch (platformConfig.platform) {
     case 'macos':
     case 'ios':
       {
         if (globalConfig.isTopFrame) {
-          return new _AppleTopFrameDeviceInterface.AppleTopFrameDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+          return new _AppleTopFrameDeviceInterface.AppleTopFrameDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
         }
 
-        return new _AppleDeviceInterface.AppleDeviceInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+        return new _AppleDeviceInterface.AppleDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
       }
 
     case 'extension':
-      return new _ExtensionInterface.ExtensionInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+      return new _ExtensionInterface.ExtensionInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'windows':
-      return new _WindowsInterface.WindowsInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+      return new _WindowsInterface.WindowsInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'android':
-      return new _AndroidInterface.AndroidInterface(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings);
+      return new _AndroidInterface.AndroidInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'unknown':
       throw new Error('unreachable. device platform was "unknown"');
@@ -2417,7 +2418,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../autofill-utils":33,"./InterfacePrototype.js":11}],8:[function(require,module,exports){
+},{"../autofill-utils":36,"./InterfacePrototype.js":11}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2451,8 +2452,8 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
   }
 
-  constructor(inputTypes, runtime, config, platformConfig, settings) {
-    super(inputTypes, runtime, config, platformConfig, settings); // if (this.globalConfig.supportsTopFrame) {
+  constructor(inputTypes, runtime, tooltip, config, platformConfig, settings) {
+    super(inputTypes, runtime, tooltip, config, platformConfig, settings); // if (this.globalConfig.supportsTopFrame) {
     //     // This is always added as a child frame needs to be informed of a parent frame scroll
     // }
 
@@ -2799,7 +2800,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":32,"../autofill-utils":33,"../settings/settings":45,"../transports/transport.apple":48,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":54}],9:[function(require,module,exports){
+},{"../UI/styles/styles":34,"../autofill-utils":36,"../settings/settings":48,"../transports/transport.apple":51,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":57}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2829,12 +2830,8 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
   /** @type {Transport} */
 
   /** @override */
-  async isEnabled() {
-    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
-  }
-
-  constructor(inputTypes, runtime, config, platformConfig, settings) {
-    super(inputTypes, runtime, config, platformConfig, settings);
+  constructor(inputTypes, runtime, tooltip, config, platformConfig, settings) {
+    super(inputTypes, runtime, tooltip, config, platformConfig, settings);
 
     _defineProperty(this, "pollingTimeout", void 0);
 
@@ -2853,6 +2850,26 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
           super.handleEvent(event);
       }
     });
+  }
+
+  async isEnabled() {
+    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
+  }
+
+  async setupAutofill() {
+    if (this.globalConfig.isApp) {
+      await this.getAutofillInitData();
+    }
+
+    const signedIn = await this._checkDeviceSignedIn();
+
+    if (signedIn) {
+      if (this.globalConfig.isApp) {
+        await this.getAddresses();
+      }
+    }
+
+    await this._setupTopFrame();
   }
 
   async _setupTopFrame() {
@@ -2876,22 +2893,6 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
     var _this$currentTooltip;
 
     (_this$currentTooltip = this.currentTooltip) === null || _this$currentTooltip === void 0 ? void 0 : _this$currentTooltip.focus(event.detail.x, event.detail.y);
-  }
-
-  async setupAutofill() {
-    if (this.globalConfig.isApp) {
-      await this.getAutofillInitData();
-    }
-
-    const signedIn = await this._checkDeviceSignedIn();
-
-    if (signedIn) {
-      if (this.globalConfig.isApp) {
-        await this.getAddresses();
-      }
-    }
-
-    await this._setupTopFrame();
   }
 
   getUserData() {
@@ -3082,7 +3083,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleTopFrameDeviceInterface = AppleTopFrameDeviceInterface;
 
-},{"../UI/styles/styles":32,"../autofill-utils":33,"../settings/settings":45,"../transports/transport.apple":48,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":54}],10:[function(require,module,exports){
+},{"../UI/styles/styles":34,"../autofill-utils":36,"../settings/settings":48,"../transports/transport.apple":51,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":57}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3207,7 +3208,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../autofill-utils":33,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../autofill-utils":36,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3221,9 +3222,9 @@ var _matching = require("../Form/matching");
 
 var _formatters = require("../Form/formatters");
 
-var _EmailAutofill = _interopRequireDefault(require("../UI/EmailAutofill"));
+var _EmailWebTooltip = _interopRequireDefault(require("../UI/EmailWebTooltip"));
 
-var _DataAutofill = _interopRequireDefault(require("../UI/DataAutofill"));
+var _DataWebTooltip = _interopRequireDefault(require("../UI/DataWebTooltip"));
 
 var _inputTypeConfig = require("../Form/inputTypeConfig");
 
@@ -3242,6 +3243,8 @@ var _settings = require("../settings/settings");
 var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
 
 var _runtime = require("../runtime/runtime");
+
+var _WebTooltip = require("../UI/WebTooltip");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3271,7 +3274,7 @@ var _data2 = /*#__PURE__*/new WeakMap();
 class InterfacePrototype {
   /** @type {import("../Form/Form").Form | null} */
 
-  /** @type {import("../UI/Tooltip").Tooltip | null} */
+  /** @type {import("../UI/Tooltip.js").Tooltip | null} */
 
   /** @type {number} */
 
@@ -3289,14 +3292,17 @@ class InterfacePrototype {
 
   /** @type {import('../Scanner').Scanner} */
 
+  /** @type {TooltipInterface} */
+
   /**
    * @param {AvailableInputTypes} availableInputTypes
    * @param {import("../runtime/runtime").Runtime} runtime
+   * @param {TooltipInterface} tooltip
    * @param {GlobalConfig} globalConfig
    * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
    * @param {import("../settings/settings").AutofillSettings} autofillSettings
    */
-  constructor(availableInputTypes, runtime, globalConfig, platformConfig, autofillSettings) {
+  constructor(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
     _defineProperty(this, "attempts", 0);
 
     _defineProperty(this, "currentAttached", null);
@@ -3327,6 +3333,8 @@ class InterfacePrototype {
 
     _defineProperty(this, "scanner", void 0);
 
+    _defineProperty(this, "tooltip", void 0);
+
     _classPrivateFieldInitSpec(this, _data2, {
       writable: true,
       value: {
@@ -3339,6 +3347,7 @@ class InterfacePrototype {
 
     this.availableInputTypes = availableInputTypes;
     this.globalConfig = globalConfig;
+    this.tooltip = tooltip;
     this.runtimeConfiguration = platformConfig;
     this.autofillSettings = autofillSettings;
     this.runtime = runtime;
@@ -3585,15 +3594,15 @@ class InterfacePrototype {
 
       const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
 
-      return new _DataAutofill.default(config, topContextData.inputType, getPosition, this).render(config, asRenderers, {
+      return new _DataWebTooltip.default(config, topContextData.inputType, getPosition, this).render(config, asRenderers, {
         onSelect: id => this.onSelect(config, data, id)
       });
     } else {
-      return new _EmailAutofill.default(config, topContextData.inputType, getPosition, this);
+      return new _EmailWebTooltip.default(config, topContextData.inputType, getPosition, this);
     }
   }
   /**
-   * Before the DataAutofill opens, we collect the data based on the config.type
+   * Before the DataWebTooltip opens, we collect the data based on the config.type
    * @param {InputTypeConfigs} config
    * @param {import('../Form/matching').SupportedTypes} inputType
    * @param {TopContextData} [data]
@@ -3640,7 +3649,7 @@ class InterfacePrototype {
   /**
    * @param {import("../Form/Form").Form} form
    * @param {HTMLInputElement} input
-   * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
+   * @param {{ (): { x: number; y: number; height: number; width: number; } }} getPosition
    * @param {{ x: number; y: number; } | null} click
    */
 
@@ -3649,7 +3658,6 @@ class InterfacePrototype {
     form.activeInput = input;
     this.currentAttached = form;
     const inputType = (0, _matching.getInputType)(input);
-    const mainType = (0, _matching.getMainTypeFromType)(inputType);
 
     if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
       return this.getEmailAlias(form);
@@ -3673,14 +3681,12 @@ class InterfacePrototype {
     }
 
     if (this.globalConfig.hasNativeTooltip) {
-      this.runtime.getAutofillData({
-        inputType
-      }).then(resp => {
-        console.log('Autofilling...', resp, mainType);
-        form.autofillData(resp, mainType);
-      }).catch(e => {
-        console.error('this.runtime.getAutofillData');
-        console.error(e);
+      this.tooltip.attach({
+        input,
+        form,
+        click,
+        getPosition,
+        topContextData
       });
     } else {
       this.attachCloseListeners();
@@ -3960,7 +3966,8 @@ class InterfacePrototype {
     const config = new _contentScopeScripts.RuntimeConfiguration();
     const globalConfig = (0, _config.createGlobalConfig)();
     const runtime = (0, _runtime.createRuntime)(globalConfig);
-    return new InterfacePrototype({}, runtime, globalConfig, config, _settings.AutofillSettings.default());
+    const tooltip = new _WebTooltip.WebTooltip();
+    return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, _settings.AutofillSettings.default());
   }
 
 }
@@ -3968,7 +3975,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":16,"../Form/inputTypeConfig":18,"../Form/listenForFormSubmission":20,"../Form/matching":23,"../PasswordGenerator":26,"../Scanner":27,"../UI/DataAutofill":28,"../UI/EmailAutofill":29,"../autofill-utils":33,"../config":35,"../input-types/Credentials":37,"../runtime/runtime":42,"../settings/settings":45,"@duckduckgo/content-scope-scripts":51}],12:[function(require,module,exports){
+},{"../Form/formatters":16,"../Form/inputTypeConfig":18,"../Form/listenForFormSubmission":20,"../Form/matching":23,"../PasswordGenerator":26,"../Scanner":27,"../UI/DataWebTooltip":28,"../UI/EmailWebTooltip":29,"../UI/WebTooltip":32,"../autofill-utils":36,"../config":38,"../input-types/Credentials":40,"../runtime/runtime":45,"../settings/settings":48,"@duckduckgo/content-scope-scripts":54}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4527,7 +4534,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":33,"../constants":36,"./FormAnalyzer":14,"./formatters":16,"./inputStyles":17,"./inputTypeConfig.js":18,"./matching":23}],14:[function(require,module,exports){
+},{"../autofill-utils":36,"../constants":39,"./FormAnalyzer":14,"./formatters":16,"./inputStyles":17,"./inputTypeConfig.js":18,"./matching":23}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4779,7 +4786,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":33,"../constants":36,"./matching":23,"./matching-configuration":22}],15:[function(require,module,exports){
+},{"../autofill-utils":36,"../constants":39,"./matching":23,"./matching-configuration":22}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5960,7 +5967,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../UI/img/ddgPasswordIcon":31,"../input-types/Credentials":37,"../input-types/CreditCard":38,"../input-types/Identity":39,"./logo-svg":21,"./matching":23}],19:[function(require,module,exports){
+},{"../UI/img/ddgPasswordIcon":33,"../input-types/Credentials":40,"../input-types/CreditCard":41,"../input-types/Identity":42,"./logo-svg":21,"./matching":23}],19:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -7683,7 +7690,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":36,"./label-util":19,"./matching-configuration":22,"./selectors-css":24,"./vendor-regex":25}],24:[function(require,module,exports){
+},{"../constants":39,"./label-util":19,"./matching-configuration":22,"./selectors-css":24,"./vendor-regex":25}],24:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -8177,7 +8184,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":13,"./Form/matching":23,"./Form/selectors-css":24,"./autofill-utils":33}],28:[function(require,module,exports){
+},{"./Form/Form":13,"./Form/matching":23,"./Form/selectors-css":24,"./autofill-utils":36}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8191,7 +8198,7 @@ var _Tooltip = _interopRequireDefault(require("./Tooltip"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-class DataAutofill extends _Tooltip.default {
+class DataWebTooltip extends _Tooltip.default {
   /**
    * @param {InputTypeConfigs} config
    * @param {TooltipItemRenderer[]} items
@@ -8230,10 +8237,10 @@ class DataAutofill extends _Tooltip.default {
 
 }
 
-var _default = DataAutofill;
+var _default = DataWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":33,"./Tooltip":30}],29:[function(require,module,exports){
+},{"../autofill-utils":36,"./Tooltip":31}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8249,7 +8256,7 @@ var _styles = require("./styles/styles");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-class EmailAutofill extends _Tooltip.default {
+class EmailWebTooltip extends _Tooltip.default {
   /**
    * @param config
    * @param inputType
@@ -8300,10 +8307,59 @@ class EmailAutofill extends _Tooltip.default {
 
 }
 
-var _default = EmailAutofill;
+var _default = EmailWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":33,"./Tooltip":30,"./styles/styles":32}],30:[function(require,module,exports){
+},{"../autofill-utils":36,"./Tooltip":31,"./styles/styles":34}],30:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NativeTooltip = void 0;
+
+var _matching = require("../Form/matching");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @implements {TooltipInterface}
+ */
+class NativeTooltip {
+  /** @type {import('../runtime/runtime').Runtime} */
+
+  /**
+   * @param {import('../runtime/runtime').Runtime} runtime
+   */
+  constructor(runtime) {
+    _defineProperty(this, "runtime", void 0);
+
+    this.runtime = runtime;
+  }
+
+  attach(args) {
+    const {
+      form,
+      input
+    } = args;
+    const inputType = (0, _matching.getInputType)(input);
+    const mainType = (0, _matching.getMainTypeFromType)(inputType);
+    this.runtime.getAutofillData({
+      inputType
+    }).then(resp => {
+      console.log('Autofilling...', resp, mainType);
+      form.autofillData(resp, mainType);
+    }).catch(e => {
+      console.error('this.runtime.getAutofillData');
+      console.error(e);
+    });
+  }
+
+}
+
+exports.NativeTooltip = NativeTooltip;
+
+},{"../Form/matching":23}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8547,7 +8603,25 @@ exports.Tooltip = Tooltip;
 var _default = Tooltip;
 exports.default = _default;
 
-},{"../Form/matching":23,"../autofill-utils":33}],31:[function(require,module,exports){
+},{"../Form/matching":23,"../autofill-utils":36}],32:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WebTooltip = void 0;
+
+/**
+ * @implements {TooltipInterface}
+ */
+class WebTooltip {
+  attach(_args) {}
+
+}
+
+exports.WebTooltip = WebTooltip;
+
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8569,7 +8643,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8579,7 +8653,53 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createTooltip = createTooltip;
+
+var _NativeTooltip = require("./NativeTooltip");
+
+var _WebTooltip = require("./WebTooltip");
+
+/**
+ * @param {AvailableInputTypes} _availableInputTypes
+ * @param {import('../runtime/runtime').Runtime} runtime
+ * @param {GlobalConfig} _globalConfig
+ * @param {import('@duckduckgo/content-scope-scripts').RuntimeConfiguration} platformConfig
+ * @param {import('../settings/settings').AutofillSettings} _autofillSettings
+ * @returns {TooltipInterface}
+ */
+function createTooltip(_availableInputTypes, runtime, _globalConfig, platformConfig, _autofillSettings) {
+  switch (platformConfig.platform) {
+    case 'macos':
+      {
+        return new _WebTooltip.WebTooltip();
+      }
+
+    case 'android':
+    case 'ios':
+      {
+        return new _NativeTooltip.NativeTooltip(runtime);
+      }
+
+    case 'windows':
+    case 'extension':
+      {
+        return new _WebTooltip.WebTooltip();
+      }
+
+    case 'unknown':
+      throw new Error('unreachable. device platform was "unknown"');
+  }
+
+  throw new Error('undefined');
+}
+
+},{"./NativeTooltip":30,"./WebTooltip":32}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8959,7 +9079,7 @@ el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":23}],34:[function(require,module,exports){
+},{"./Form/matching":23}],37:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -8973,6 +9093,8 @@ var _config = require("./config");
 var _runtime = require("./runtime/runtime");
 
 var _inputTypes = require("./input-types/input-types");
+
+var _tooltips = require("./UI/tooltips");
 
 // Polyfills/shims
 (async () => {
@@ -8997,7 +9119,8 @@ var _inputTypes = require("./input-types/input-types");
       const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
       const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles); // Determine the device type
 
-      const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings); // Init services
+      const tooltip = (0, _tooltips.createTooltip)(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings);
+      const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // Init services
 
       await device.init();
     } else {
@@ -9008,7 +9131,7 @@ var _inputTypes = require("./input-types/input-types");
   }
 })();
 
-},{"./DeviceInterface":6,"./config":35,"./input-types/input-types":40,"./requestIdleCallback":41,"./runtime/runtime":42,"./transports/captureDdgGlobals":46}],35:[function(require,module,exports){
+},{"./DeviceInterface":6,"./UI/tooltips":35,"./config":38,"./input-types/input-types":43,"./requestIdleCallback":44,"./runtime/runtime":45,"./transports/captureDdgGlobals":49}],38:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -9068,7 +9191,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],36:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9082,7 +9205,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],37:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9161,7 +9284,7 @@ module.exports.CredentialsTooltipItem = CredentialsTooltipItem;
 module.exports.fromPassword = fromPassword;
 module.exports.GENERATED_ID = GENERATED_ID;
 
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9213,7 +9336,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9287,7 +9410,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":16}],40:[function(require,module,exports){
+},{"../Form/formatters":16}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9322,7 +9445,7 @@ function featureToggleAwareInputTypes(inputTypes, featureToggles) {
   return local;
 }
 
-},{}],41:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9370,7 +9493,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}],42:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9583,7 +9706,7 @@ function throwError(errors, name) {
   throw new Error('Schema validation errors for ' + name);
 }
 
-},{"../Form/matching":23,"../schema/validators.cjs":44,"../settings/settings":45,"../transports/transport.android":47,"../transports/transport.apple":48,"../transports/transport.extension":49,"../transports/transport.windows":50,"@duckduckgo/content-scope-scripts":51}],43:[function(require,module,exports){
+},{"../Form/matching":23,"../schema/validators.cjs":47,"../settings/settings":48,"../transports/transport.android":50,"../transports/transport.apple":51,"../transports/transport.extension":52,"../transports/transport.windows":53,"@duckduckgo/content-scope-scripts":54}],46:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
@@ -9612,7 +9735,7 @@ module.exports={
   ]
 }
 
-},{}],44:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 // @ts-nocheck
 "use strict";
 
@@ -12968,7 +13091,7 @@ function validate30(data) {
   return errors === 0;
 }
 
-},{}],45:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13053,7 +13176,7 @@ function fromPlatformConfig(config) {
   return settings;
 }
 
-},{"../schema/validators.cjs":44}],46:[function(require,module,exports){
+},{"../schema/validators.cjs":47}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13084,7 +13207,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],47:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13194,7 +13317,7 @@ function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
   });
 }
 
-},{"../schema/response.getAutofillData.schema.json":43}],48:[function(require,module,exports){
+},{"../schema/response.getAutofillData.schema.json":46}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13386,7 +13509,7 @@ const decrypt = async (ciphertext, key, iv) => {
   return dec.decode(decrypted);
 };
 
-},{"./captureDdgGlobals":46}],49:[function(require,module,exports){
+},{"./captureDdgGlobals":49}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13488,7 +13611,7 @@ const interceptions = {
   }
 };
 
-},{}],50:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13571,7 +13694,7 @@ function sendAndWait(msgOrFn, expectedResponse) {
   });
 }
 
-},{}],51:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13598,7 +13721,7 @@ Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
 
 var _RuntimeConfiguration = require("./src/config/RuntimeConfiguration.js");
 
-},{"./src/config/RuntimeConfiguration.js":55}],52:[function(require,module,exports){
+},{"./src/config/RuntimeConfiguration.js":58}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13610,7 +13733,7 @@ const equal = require("fast-deep-equal");
 equal.code = 'require("ajv/dist/runtime/equal").default';
 exports.default = equal;
 
-},{"fast-deep-equal":53}],53:[function(require,module,exports){
+},{"fast-deep-equal":56}],56:[function(require,module,exports){
 'use strict'; // do not edit .js files directly - edit src/index.jst
 
 module.exports = function equal(a, b) {
@@ -13650,7 +13773,7 @@ module.exports = function equal(a, b) {
   return a !== a && b !== b;
 };
 
-},{}],54:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13717,7 +13840,7 @@ function processConfig(data, userList, preferences, maybeTopLevelUrl) {
   return prefs;
 }
 
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13868,7 +13991,7 @@ function tryCreateRuntimeConfiguration(incoming) {
   return new RuntimeConfiguration().tryAssign(incoming);
 }
 
-},{"../apple-utils.js":54,"./validate.cjs":56}],56:[function(require,module,exports){
+},{"../apple-utils.js":57,"./validate.cjs":59}],59:[function(require,module,exports){
 "use strict";
 
 module.exports = validate20;
@@ -14727,4 +14850,4 @@ function validate20(data) {
   return errors === 0;
 }
 
-},{"ajv/dist/runtime/equal":52}]},{},[34]);
+},{"ajv/dist/runtime/equal":55}]},{},[37]);

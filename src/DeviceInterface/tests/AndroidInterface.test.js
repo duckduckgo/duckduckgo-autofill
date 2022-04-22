@@ -3,6 +3,7 @@ import {createGlobalConfig} from '../../config'
 import {RuntimeConfiguration, tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 import {AutofillSettings, fromPlatformConfig} from '../../settings/settings'
 import {createRuntime} from '../../runtime/runtime'
+import {NativeTooltip} from '../../UI/NativeTooltip'
 
 describe('AndroidInterface', function () {
     beforeEach(() => {
@@ -12,7 +13,8 @@ describe('AndroidInterface', function () {
         const config = createGlobalConfig()
         const runtimeConfig = new RuntimeConfiguration()
         const runtime = createRuntime(config)
-        const device = new AndroidInterface({}, runtime, config, runtimeConfig, AutofillSettings.default())
+        const tooltip = new NativeTooltip(runtime)
+        const device = new AndroidInterface({}, runtime, tooltip, config, runtimeConfig, AutofillSettings.default())
         device.init()
     })
     it('can create platform configuration', () => {

@@ -5,6 +5,7 @@ import {createDevice} from './DeviceInterface'
 import {createGlobalConfig} from './config'
 import {createRuntime} from './runtime/runtime'
 import {featureToggleAwareInputTypes} from './input-types/input-types'
+import {createTooltip} from './UI/tooltips'
 
 (async () => {
     if (!window.isSecureContext) return false
@@ -32,7 +33,8 @@ import {featureToggleAwareInputTypes} from './input-types/input-types'
             const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles)
 
             // Determine the device type
-            const device = createDevice(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings)
+            const tooltip = createTooltip(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings)
+            const device = createDevice(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
 
             // Init services
             await device.init()

@@ -1,7 +1,7 @@
 import { escapeXML } from '../autofill-utils'
 import Tooltip from './Tooltip'
 
-class DataAutofill extends Tooltip {
+class DataWebTooltip extends Tooltip {
     /**
      * @param {InputTypeConfigs} config
      * @param {TooltipItemRenderer[]} items
@@ -56,4 +56,4 @@ ${includeStyles}
     }
 }
 
-export default DataAutofill
+export default DataWebTooltip
