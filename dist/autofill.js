@@ -13179,15 +13179,15 @@ function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
         let data = JSON.parse(e.data);
 
         if (data.type === expectedResponse) {
+          window.removeEventListener('message', handler);
           return resolve(data);
         }
 
         console.log("\u274C event.data.type didnt match '".concat(expectedResponse, "'"), JSON.stringify(data));
       } catch (e) {
+        window.removeEventListener('message', handler);
         console.log('❌ Could not JSON.parse the response');
       }
-
-      window.removeEventListener('message', handler);
     };
 
     window.addEventListener('message', handler);
