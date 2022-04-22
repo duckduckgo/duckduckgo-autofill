@@ -185,7 +185,7 @@ module.exports = [
     { html: 'yourtango_login.html' },
     { html: 'yourtango_signup.html' },
     { html: 'newgrounds_login.html' },
-    { html: 'newgrounds_signup.html', expectedFailures: ['birthday']},
+    { html: 'newgrounds_signup.html', expectedFailures: ['birthday'] },
     { html: 'itemfix_login.html' },
     { html: 'itemfix_signup.html', expectedFailures: ['birthday'] },
     { html: 'cookpad_login.html' },
@@ -216,6 +216,6 @@ module.exports = [
     { html: 'thermoworks_checkout.html' },
     { html: 'thermoworks_newsletter.html' },
     { html: 'wikihow_login.html' },
-    { html: 'wikihow_signup.html', expectedFailures: ['fullName']},
-    { html: 'airbnb_login_signup.html' },
+    { html: 'wikihow_signup.html', expectedFailures: ['fullName'] },
+    { html: 'airbnb_login_signup.html' }
 ]
