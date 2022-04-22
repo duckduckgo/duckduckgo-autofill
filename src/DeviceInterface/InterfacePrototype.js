@@ -597,12 +597,25 @@ class InterfacePrototype {
         return this.runtime.storeFormData(data)
     }
 
-    /** @param {{height: number, width: number}} _args */
-    setSize (_args) {}
+    setSize (_cb) {
+        // noop
+    }
 
     /** @returns {string} */
     tooltipStyles () {
         return ``
+    }
+
+    tooltipWrapperClass() {
+        return ''
+    }
+
+    tooltipPositionClass(top, left) {
+        return `.wrapper {transform: translate(${left}px, ${top}px);}`;
+    }
+
+    setupSizeListener(_cb) {
+        // no-op
     }
 
     static default () {

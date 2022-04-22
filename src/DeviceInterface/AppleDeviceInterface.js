@@ -3,6 +3,7 @@ import {createTransport} from '../transports/transport.apple'
 import {formatDuckAddress, autofillEnabled} from '../autofill-utils'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 import {fromPlatformConfig} from '../settings/settings'
+import {CSS_STYLES} from '../UI/styles/styles'
 
 class AppleDeviceInterface extends InterfacePrototype {
     /* @type {Timeout | undefined} */
@@ -21,30 +22,10 @@ class AppleDeviceInterface extends InterfacePrototype {
     constructor (inputTypes, runtime, config, platformConfig, settings) {
         super(inputTypes, runtime, config, platformConfig, settings)
 
-        if (this.globalConfig.isTopFrame) {
-            this.stripCredentials = false
-            window.addEventListener('mouseMove', this)
-        } else if (this.globalConfig.supportsTopFrame) {
-            // This is always added as a child frame needs to be informed of a parent frame scroll
-            window.addEventListener('scroll', this)
-        }
-    }
-
-    async _setupTopFrame () {
-        const topContextData = this.getTopContextData()
-        if (!topContextData) throw new Error('unreachable, topContextData should be available')
-        // Provide dummy values, they're not used
-        const getPosition = () => {
-            return {
-                x: 0,
-                y: 0,
-                height: 50,
-                width: 50
-            }
-        }
-        const tooltip = this.createTooltip(getPosition, topContextData)
-
-        this.setActiveTooltip(tooltip)
+        // if (this.globalConfig.supportsTopFrame) {
+        //     // This is always added as a child frame needs to be informed of a parent frame scroll
+        // }
+        window.addEventListener('scroll', this)
     }
 
     /**
@@ -111,11 +92,6 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         const cleanup = this.scanner.init()
         this.addLogoutListener(cleanup)
-
-        // todo(top-frame): Move this
-        if (this.globalConfig.isTopFrame) {
-            await this._setupTopFrame()
-        }
     }
 
     getUserData () {
@@ -142,33 +118,31 @@ class AppleDeviceInterface extends InterfacePrototype {
         return !!isAppSignedIn
     }
 
-    async setSize (details) {
-        await this.transport.send('setSize', details)
-    }
-
     /**
-     * @param {import('../Form/Form').Form} form
+     * @param {import('../Form/Form').Form} _form
      * @param {HTMLInputElement} input
      * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
      * @param {{ x: number; y: number; } | null} click
      * @param {TopContextData} topContextData
      */
     attachTooltipInner (form, input, getPosition, click, topContextData) {
-        const {isTopFrame, supportsTopFrame} = this.globalConfig
-        if (!isTopFrame && supportsTopFrame) {
-            const showTooltipAtPosition = () => {
-                this.showTopTooltip(click, getPosition(), topContextData)
-            }
-            if (!click &&
-                !this.elementIsInViewport(getPosition())) {
-                input.scrollIntoView(true)
-                setTimeout(showTooltipAtPosition, 500)
-                return
-            }
-            showTooltipAtPosition()
+        const {supportsTopFrame} = this.globalConfig
+
+        if (!supportsTopFrame) {
+            return super.attachTooltipInner(form, input, getPosition, click, topContextData)
+        }
+
+        const showTooltipAtPosition = () => {
+            this.showTopTooltip(click, getPosition(), topContextData)
+        }
+        if (!click &&
+            !this.elementIsInViewport(getPosition())) {
+            input.scrollIntoView(true)
+            setTimeout(showTooltipAtPosition, 500)
             return
         }
-        super.attachTooltipInner(form, input, getPosition, click, topContextData)
+        showTooltipAtPosition()
+        return
     }
 
     /**
@@ -305,15 +279,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     // Used to encode data to send back to the child autofill
     async selectedDetail (detailIn, configType) {
-        if (this.globalConfig.isTopFrame) {
-            let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
-                return [key, String(value)]
-            })
-            const data = Object.fromEntries(detailsEntries)
-            this.transport.send('selectedDetail', {data, configType})
-        } else {
-            this.activeFormSelectedDetail(detailIn, configType)
-        }
+        this.activeFormSelectedDetail(detailIn, configType)
     }
 
     async getCurrentInputType () {
@@ -338,6 +304,10 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     async getAutofillSettings (platformConfig) {
         return fromPlatformConfig(platformConfig)
+    }
+
+    tooltipStyles() {
+        return `<style>${CSS_STYLES}</style>`
     }
 }
 

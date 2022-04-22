@@ -1,6 +1,5 @@
 import { escapeXML } from '../autofill-utils'
 import Tooltip from './Tooltip'
-import {CSS_STYLES} from './styles/styles.js'
 
 class DataAutofill extends Tooltip {
     /**
@@ -9,11 +8,7 @@ class DataAutofill extends Tooltip {
      * @param {{onSelect(id:string): void}} callbacks
      */
     render (config, items, callbacks) {
-        const {isApp, isTopFrame} = this.interface.globalConfig
-        const includeStyles = isApp
-            ? `<style>${CSS_STYLES}</style>`
-            : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
-
+        const includeStyles = this.interface.tooltipStyles();
         let hasAddedSeparator = false
         // Only show an hr above the first duck address button, but it can be either personal or private
         const shouldShowSeparator = (dataId) => {
@@ -22,7 +17,7 @@ class DataAutofill extends Tooltip {
             return shouldShow
         }
 
-        const topClass = isTopFrame ? 'top-autofill' : ''
+        const topClass = this.interface.tooltipWrapperClass();
 
         this.shadow.innerHTML = `
 ${includeStyles}
