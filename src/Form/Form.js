@@ -219,20 +219,17 @@ class Form {
 
     get submitButtons () {
         const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
-        let allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+        const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
 
-        allButtons = allButtons.filter(button => !/facebook|twitter|google|apple/i.test(button.textContent || ''))
-
-        const likelySubmitButton = allButtons.find(isLikelyASubmitButton)
-        if (likelySubmitButton) return [likelySubmitButton]
-
-        return allButtons.filter((button) => {
-            const content = button.textContent || ''
-            const ariaLabel = button.getAttribute('aria-label') || ''
-            const title = button.title || ''
-            // trying to exclude the little buttons to show and hide passwords
-            return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
-        })
+        return allButtons
+            .filter(isLikelyASubmitButton)
+            .filter((button) => {
+                const content = button.textContent || ''
+                const ariaLabel = button.getAttribute('aria-label') || ''
+                const title = button.title || ''
+                // exclude buttons to show/hide passwords, cancel buttons, social login buttons
+                return !/facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
+            })
     }
 
     /**
