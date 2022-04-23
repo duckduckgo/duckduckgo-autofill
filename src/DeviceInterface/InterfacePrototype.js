@@ -206,7 +206,19 @@ class InterfacePrototype {
         return this.#data.creditCards
     }
 
-    async startInit () {
+    async init () {
+        if (document.readyState === 'complete') {
+            this._startInit()
+                .catch(e => console.error('init error', e))
+        } else {
+            window.addEventListener('load', () => {
+                this._startInit()
+                    .catch(e => console.error('init error', e))
+            })
+        }
+    }
+
+    async _startInit () {
         window.addEventListener('pointerdown', this, true)
 
         // todo(toggles): move to runtime polymorphism
@@ -218,20 +230,8 @@ class InterfacePrototype {
         await this.setupSettingsPage()
     }
 
-    async init () {
-        if (document.readyState === 'complete') {
-            this.startInit()
-                .catch(e => console.error('init error', e))
-        } else {
-            window.addEventListener('load', () => {
-                this.startInit()
-                    .catch(e => console.error('init error', e))
-            })
-        }
-    }
-
     // Global listener for event delegation
-    pointerDownListener (e) {
+    _pointerDownListener (e) {
         if (!e.isTrusted) return
 
         // @ts-ignore
@@ -512,7 +512,7 @@ class InterfacePrototype {
             this.removeTooltip()
             break
         case 'pointerdown':
-            this.pointerDownListener(event)
+            this._pointerDownListener(event)
             break
         }
     }
@@ -550,6 +550,7 @@ class InterfacePrototype {
     getUserData () { return Promise.resolve(null) }
 
     refreshAlias () {}
+
     async trySigningIn () {
         if (this.globalConfig.isDDGDomain) {
             if (this.attempts < 10) {

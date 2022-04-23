@@ -53,7 +53,6 @@ class AppleDeviceInterface extends InterfacePrototype {
             return this.activeFormSelectedDetail(response.data, response.configType)
         case 'stop':
             // Parent wants us to stop polling
-
             break
         }
     }
