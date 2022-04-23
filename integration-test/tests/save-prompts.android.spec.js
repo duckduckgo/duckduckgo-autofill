@@ -9,7 +9,7 @@ import {createAndroidMocks} from '../helpers/mocks.android.js'
 import {constants} from '../helpers/mocks.js'
 
 /**
- *  Tests for email autofill on ios device
+ *  Tests for email autofill on ios tooltipHandler
  */
 const test = withAndroidContext(base)
 

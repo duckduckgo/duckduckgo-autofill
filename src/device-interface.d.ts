@@ -108,7 +108,7 @@ interface GlobalConfig {
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
      /**
-      * @deprecated use {Tooltip} interface instead
+      * @deprecated use {Tooltip} tooltipHandler instead
       */
      hasNativeTooltip: boolean;
 }

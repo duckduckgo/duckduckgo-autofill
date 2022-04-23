@@ -35,7 +35,7 @@ const defaultScannerOptions = {
 
 /**
  * This allows:
- *   1) synchronous DOM scanning + mutations - via `createScanner(device).findEligibleInputs(document)`
+ *   1) synchronous DOM scanning + mutations - via `createScanner(tooltipHandler).findEligibleInputs(document)`
  *   2) or, as above + a debounced mutation observer to re-run the scan after the given time
  */
 class DefaultScanner {

@@ -11,7 +11,7 @@ import {createWebkitMocks, iosContentScopeReplacements} from '../helpers/mocks.w
 import {constants} from '../helpers/mocks.js'
 
 /**
- *  Tests for email autofill on ios device
+ *  Tests for email autofill on ios tooltipHandler
  */
 const test = withIOSContext(base)
 

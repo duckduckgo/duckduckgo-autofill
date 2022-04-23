@@ -1,3 +1,4 @@
+alert('checking...');
 // Polyfills/shims
 import './requestIdleCallback'
 import './transports/captureDdgGlobals'
@@ -32,7 +33,7 @@ import {createTooltip} from './UI/tooltips'
             const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes()
             const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles)
 
-            // Determine the device type
+            // Determine the tooltipHandler type
             const tooltip = createTooltip(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings)
             const device = createDevice(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
 

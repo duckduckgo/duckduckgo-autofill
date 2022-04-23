@@ -66,8 +66,10 @@ class AppleDeviceInterface extends InterfacePrototype {
             this.removeTooltip()
             break
         }
-        default:
-            super.handleEvent(event)
+        default: {
+            throw new Error('event not handled in base apple interface')
+            // super.handleEvent(event)
+        }
         }
     }
 
@@ -118,17 +120,18 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * @param {import('../Form/Form').Form} form
+     * @param {import('../Form/Form').Form} _form
      * @param {HTMLInputElement} input
      * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
      * @param {{ x: number; y: number; } | null} click
      * @param {TopContextData} topContextData
      */
-    attachTooltipInner (form, input, getPosition, click, topContextData) {
+    attachTooltipInner (_form, input, getPosition, click, topContextData) {
         const {supportsTopFrame} = this.globalConfig
 
         if (!supportsTopFrame) {
-            return super.attachTooltipInner(form, input, getPosition, click, topContextData)
+            console.log('how to attach normally?');
+            // return super.attachTooltipInner(form, input, getPosition, click, topContextData)
         }
 
         const showTooltipAtPosition = () => {
@@ -195,7 +198,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     async removeTooltip () {
         if (!this.globalConfig.supportsTopFrame) return super.removeTooltip()
-        this.removeCloseListeners()
+        // this.removeCloseListeners()
         await this.transport.send('closeAutofillParent', {})
     }
 
@@ -217,7 +220,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * Gets the init data from the device
+     * Gets the init data from the tooltipHandler
      * @returns {APIResponse<PMData>}
      */
     async getAutofillInitData () {

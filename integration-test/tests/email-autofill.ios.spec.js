@@ -10,7 +10,7 @@ import {emailAutofillPage, loginPage} from '../helpers/pages.js'
 import {createWebkitMocks, iosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 
 /**
- *  Tests for email autofill on ios device
+ *  Tests for email autofill on ios tooltipHandler
  */
 const test = withIOSContext(base)
 

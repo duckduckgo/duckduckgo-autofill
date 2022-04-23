@@ -24,8 +24,11 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
             case 'mouseMove':
                 this.processMouseMove(event)
                 break
-            default:
-                super.handleEvent(event)
+            default: {
+                // todo: what will this break?
+                throw new Error('todo: what will this break?. Apple top frame cannot delegate event');
+                // super.handleEvent(event)
+            }
             }
         })
     }
@@ -62,7 +65,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
                 width: 50
             }
         }
-        const tooltip = this.createTooltip(getPosition, topContextData)
+        const tooltip = this.tooltip.createTooltip?.(getPosition, topContextData)
 
         this.setActiveTooltip(tooltip)
     }
@@ -101,7 +104,6 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     }
 
     async removeTooltip () {
-        this.removeCloseListeners()
         await this.transport.send('closeAutofillParent', {})
     }
 
@@ -123,7 +125,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * Gets the init data from the device
+     * Gets the init data from the tooltipHandler
      * @returns {APIResponse<PMData>}
      */
     async getAutofillInitData () {

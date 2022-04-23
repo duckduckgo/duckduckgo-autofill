@@ -107,7 +107,7 @@ function createRuntime (config) {
 }
 
 /**
- * The runtime has to decide on a transport, *before* we have a 'device'.
+ * The runtime has to decide on a transport, *before* we have a 'tooltipHandler'.
  *
  * This is because an initial message to retrieve the platform configuration might be needed
  *

@@ -2,7 +2,7 @@ import ddgGlobals from './captureDdgGlobals'
 
 /**
  * Create a wrapper around the webkit messaging that conforms
- * to the Transport interface
+ * to the Transport tooltipHandler
  *
  * @param {GlobalConfig} config
  * @returns {RuntimeTransport}

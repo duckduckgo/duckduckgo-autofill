@@ -8,9 +8,6 @@ import {
 
 import {getInputType, getSubtypeFromType} from '../Form/matching'
 import { formatFullName } from '../Form/formatters'
-import EmailWebTooltip from '../UI/EmailWebTooltip'
-import DataWebTooltip from '../UI/DataWebTooltip'
-import { getInputConfigFromType } from '../Form/inputTypeConfig'
 import listenForGlobalFormSubmission from '../Form/listenForFormSubmission'
 import { fromPassword, GENERATED_ID } from '../input-types/Credentials'
 import { PasswordGenerator } from '../PasswordGenerator'
@@ -152,7 +149,7 @@ class InterfacePrototype {
     }
 
     /**
-     * Stores init data coming from the device
+     * Stores init data coming from the tooltipHandler
      * @param { InboundPMData } data
      */
     storeLocalData (data) {
@@ -219,8 +216,6 @@ class InterfacePrototype {
     }
 
     async _startInit () {
-        window.addEventListener('pointerdown', this, true)
-
         // todo(toggles): move to runtime polymorphism
         if (this.autofillSettings.featureToggles.credentials_saving) {
             listenForGlobalFormSubmission(this.scanner.forms)
@@ -228,42 +223,6 @@ class InterfacePrototype {
 
         await this.setupAutofill()
         await this.setupSettingsPage()
-    }
-
-    // Global listener for event delegation
-    _pointerDownListener (e) {
-        if (!e.isTrusted) return
-
-        // @ts-ignore
-        if (e.target.nodeName === 'DDG-AUTOFILL') {
-            e.preventDefault()
-            e.stopImmediatePropagation()
-
-            const activeTooltip = this.getActiveTooltip()
-            activeTooltip?.dispatchClick()
-        } else {
-            this.removeTooltip()
-        }
-
-        if (!this.globalConfig.isApp) return
-
-        // exit now if form saving was not enabled
-        // todo(Shane): more runtime polymorphism here, + where does this live?
-        if (this.autofillSettings.featureToggles.credentials_saving) {
-            // Check for clicks on submit buttons
-            const matchingForm = [...this.scanner.forms.values()].find(
-                (form) => {
-                    const btns = [...form.submitButtons]
-                    // @ts-ignore
-                    if (btns.includes(e.target)) return true
-
-                    // @ts-ignore
-                    if (btns.find((btn) => btn.contains(e.target))) return true
-                }
-            )
-
-            matchingForm?.submitHandler()
-        }
     }
 
     /**
@@ -294,29 +253,7 @@ class InterfacePrototype {
         this.removeTooltip()
     }
 
-    /**
-     * @param {()=>void} getPosition
-     * @param {TopContextData} topContextData
-     */
-    createTooltip (getPosition, topContextData) {
-        const config = getInputConfigFromType(topContextData.inputType)
 
-        if (this.globalConfig.isApp) {
-            // collect the data for each item to display
-            const data = this.dataForAutofill(config, topContextData.inputType, topContextData)
-
-            // convert the data into tool tip item renderers
-            const asRenderers = data.map(d => config.tooltipItem(d))
-
-            // construct the autofill
-            return new DataWebTooltip(config, topContextData.inputType, getPosition, this)
-                .render(config, asRenderers, {
-                    onSelect: (id) => this.onSelect(config, data, id)
-                })
-        } else {
-            return new EmailWebTooltip(config, topContextData.inputType, getPosition, this)
-        }
-    }
 
     /**
      * Before the DataWebTooltip opens, we collect the data based on the config.type
@@ -394,26 +331,16 @@ class InterfacePrototype {
             topContextData.credentials = [fromPassword(password)]
         }
 
-        if (this.globalConfig.hasNativeTooltip) {
-            this.tooltip.attach({input, form, click, getPosition, topContextData})
-        } else {
-            this.attachCloseListeners()
-            this.attachTooltipInner(form, input, getPosition, click, topContextData)
-        }
-    }
-
-    attachCloseListeners () {
-        window.addEventListener('input', this)
-        window.addEventListener('keydown', this)
-    }
-
-    removeCloseListeners () {
-        window.removeEventListener('input', this)
-        window.removeEventListener('keydown', this)
+        this.tooltip.attach({input, form, click, getPosition, topContextData, device: this})
+        // if (this.globalConfig.hasNativeTooltip) {
+        // } else {
+        //     this.attachCloseListeners()
+        //     this.attachTooltipInner(form, input, getPosition, click, topContextData)
+        // }
     }
 
     /**
-     * If the device was capable of generating password, and it
+     * If the tooltipHandler was capable of generating password, and it
      * previously did so for the form in question, then offer to
      * save the credentials
      *
@@ -432,7 +359,7 @@ class InterfacePrototype {
     }
 
     /**
-     * When an item was selected, we then call back to the device
+     * When an item was selected, we then call back to the tooltipHandler
      * to fetch the full suite of data needed to complete the autofill
      *
      * @param {InputTypeConfigs} config
@@ -458,7 +385,7 @@ class InterfacePrototype {
             }
         })()
 
-        // wait for the data back from the device
+        // wait for the data back from the tooltipHandler
         dataPromise.then(response => {
             if (response.success) {
                 return this.selectedDetail(response.success, config.type)
@@ -471,51 +398,16 @@ class InterfacePrototype {
         })
     }
 
-    /**
-     * @param {import("../Form/Form").Form} form
-     * @param {any} input
-     * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-     * @param {{ x: number; y: number; } | null} _click
-     * @param {TopContextData} data
-     */
-    attachTooltipInner (form, input, getPosition, _click, data) {
-        if (this.currentTooltip) return
-        this.currentTooltip = this.createTooltip(getPosition, data)
-        form.showingTooltip(input)
-    }
 
-    async removeTooltip () {
-        if (this.currentTooltip) {
-            this.removeCloseListeners()
-            this.currentTooltip.remove()
-            this.currentTooltip = null
-            this.currentAttached = null
-        }
-    }
 
     getActiveTooltip () {
-        return this.currentTooltip
+        return this.tooltip.getActiveTooltip();
     }
 
     setActiveTooltip (tooltip) {
-        this.currentTooltip = tooltip
+        this.tooltip.setActiveTooltip(tooltip);
     }
 
-    handleEvent (event) {
-        switch (event.type) {
-        case 'keydown':
-            if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
-                this.removeTooltip()
-            }
-            break
-        case 'input':
-            this.removeTooltip()
-            break
-        case 'pointerdown':
-            this._pointerDownListener(event)
-            break
-        }
-    }
 
     async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
         if (this.globalConfig.isDDGDomain) {
@@ -621,8 +513,16 @@ class InterfacePrototype {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
         const runtime = createRuntime(globalConfig)
-        const tooltip = new WebTooltip()
+        const tooltip = new WebTooltip({tooltipKind: "modern"})
         return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, AutofillSettings.default())
+    }
+
+    removeTooltip () {
+        return this.tooltip.removeTooltip()
+    }
+
+    isTestMode() {
+        return this.globalConfig.isDDGTestMode
     }
 }
 

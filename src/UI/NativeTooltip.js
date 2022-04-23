@@ -29,4 +29,14 @@ export class NativeTooltip {
                 console.error(e)
             })
     }
+
+    getActiveTooltip () {
+        return null
+    }
+
+    removeTooltip () {
+    }
+
+    setActiveTooltip (_tooltip) {
+    }
 }

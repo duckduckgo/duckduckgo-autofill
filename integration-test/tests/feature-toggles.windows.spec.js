@@ -10,7 +10,7 @@ import { createWindowsMocks } from '../helpers/mocks.windows.js'
 import { constants } from '../helpers/mocks.js'
 
 /**
- *  Tests for email autofill on windows device
+ *  Tests for email autofill on windows tooltipHandler
  */
 const test = withWindowsContext(base)
 

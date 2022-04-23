@@ -198,7 +198,7 @@ const shouldStoreCreditCards = ({creditCards}) => {
 }
 
 /**
- * Formats form data into an object to send to the device for storage
+ * Formats form data into an object to send to the tooltipHandler for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
  * @return {DataStorageObject}

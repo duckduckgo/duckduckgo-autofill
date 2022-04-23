@@ -10,7 +10,7 @@ import {emailAutofillPage, loginPage} from '../helpers/pages.js'
 import {createAndroidMocks} from '../helpers/mocks.android.js'
 
 /**
- *  Tests for email autofill on android device
+ *  Tests for email autofill on android tooltipHandler
  */
 const test = withAndroidContext(base)
 
@@ -47,7 +47,7 @@ test.describe('android', () => {
             .platform('android')
             .applyTo(page)
 
-        // if this works, the interface must have loaded and added the field decorations
+        // if this works, the tooltipHandler must have loaded and added the field decorations
         await emailPage.clickIntoInput()
 
         // Because of the mock above, assume an email was selected and ensure it's autofilled

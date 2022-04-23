@@ -11,19 +11,19 @@ import {WebTooltip} from './WebTooltip'
  */
 export function createTooltip (_availableInputTypes, runtime, _globalConfig, platformConfig, _autofillSettings) {
     switch (platformConfig.platform) {
-    case 'macos': {
-        return new WebTooltip()
+    case 'macos':
+    case 'windows': {
+        return new WebTooltip({tooltipKind: "modern"})
     }
     case 'android':
     case 'ios': {
         return new NativeTooltip(runtime)
     }
-    case 'windows':
     case 'extension': {
-        return new WebTooltip()
+        return new WebTooltip({tooltipKind: "legacy"})
     }
     case 'unknown':
-        throw new Error('unreachable. device platform was "unknown"')
+        throw new Error('unreachable. tooltipHandler platform was "unknown"')
     }
     throw new Error('undefined')
 }

@@ -29,7 +29,7 @@ export function createDevice (availableInputTypes, runtime, tooltip, globalConfi
     case 'android':
         return new AndroidInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
     case 'unknown':
-        throw new Error('unreachable. device platform was "unknown"')
+        throw new Error('unreachable. tooltipHandler platform was "unknown"')
     }
     throw new Error('undefined')
 }

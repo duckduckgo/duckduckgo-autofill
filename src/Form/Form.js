@@ -160,7 +160,7 @@ class Form {
     }
 
     /**
-     * Determine if the form has values we want to store in the device
+     * Determine if the form has values we want to store in the tooltipHandler
      * @param {DataStorageObject} [values]
      * @return {boolean}
      */
