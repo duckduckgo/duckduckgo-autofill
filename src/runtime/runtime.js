@@ -63,6 +63,7 @@ class Runtime {
     }
 
     /**
+     * @public
      * @param {GetAutofillDataArgs} input
      * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
      */
@@ -87,6 +88,7 @@ class Runtime {
     }
 
     /**
+     * @public
      * @param {DataStorageObject} data
      */
     async storeFormData (data) {
@@ -94,10 +96,19 @@ class Runtime {
     }
 
     /**
+     * @public
      * @returns {Promise<import("../settings/settings").AutofillSettings>}
      */
     async getAutofillSettings (platformConfig) {
         return fromPlatformConfig(platformConfig)
+    }
+
+    /**
+     * @param {Schema.ShowAutofillParentRequest} parentArgs
+     * @returns {Promise<void>}
+     */
+    async showAutofillParent(parentArgs) {
+        return this.transport.send('showAutofillParent', parentArgs);
     }
 }
 

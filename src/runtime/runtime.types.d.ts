@@ -13,14 +13,14 @@ type RuntimeMessages = {
     },
     getAutofillData: {
         response: { success: CredentialsObject | CreditCardObject | IdentityObject },
-        request: {
-            inputType: string,
-            mainType: string,
-            subType: string,
-        }
+        request: Schema.GetAutofillDataRequest
     },
     storeFormData: {
         request: DataStorageObject
+        response: { success: {} },
+    },
+    showAutofillParent: {
+        request: Schema.ShowAutofillParentRequest,
         response: { success: {} },
     }
 }
@@ -49,3 +49,4 @@ interface AvailableInputTypes {
     creditCards?: boolean;
     email?: boolean;
 }
+

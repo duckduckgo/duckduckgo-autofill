@@ -385,7 +385,9 @@ class Form {
         }
 
         const handler = (e) => {
-            if (this.device.getActiveTooltip() || this.isAutofilling) return
+            if (this.device.getActiveTooltip() || this.isAutofilling) {
+                return
+            }
 
             const input = e.target
             let click = null
@@ -417,7 +419,10 @@ class Form {
 
         if (input.nodeName !== 'SELECT') {
             const events = ['pointerdown']
-            if (!this.device.globalConfig.isMobileApp) events.push('focus')
+            if (!this.device.globalConfig.isMobileApp) {
+                // todo(Shane): Re-enable focus event?
+                // events.push('focus')
+            }
             input.labels.forEach((label) => {
                 this.addListener(label, 'pointerdown', handlerLabel)
             })

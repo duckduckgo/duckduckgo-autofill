@@ -209,6 +209,10 @@ export class WebTooltip {
     }
 
     tooltipWrapperClass () {
-        return this.#device.tooltipPositionClass()
+        return this.#device.tooltipWrapperClass()
+    }
+
+    setDevice (device) {
+        this.#setDevice(device);
     }
 }

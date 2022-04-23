@@ -16,7 +16,6 @@ export class Tooltip {
      */
     constructor (config, inputType, getPosition, tooltipHandler, options) {
         this.shadow = document.createElement('ddg-autofill').attachShadow({
-            // todo(Shane): Pass through options
             mode: options.testMode
                 ? 'open'
                 : 'closed'

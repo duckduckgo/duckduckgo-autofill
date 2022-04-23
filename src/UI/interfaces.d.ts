@@ -42,6 +42,7 @@ interface TooltipInterface {
    * @deprecated use 'attach' only
    */
   createTooltip?(pos: PosFn, topContextData: TopContextData): LocalTooltip;
+  setDevice?(device: Device);
 }
 
 

@@ -56,6 +56,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     async _setupTopFrame () {
         const topContextData = this.getTopContextData()
         if (!topContextData) throw new Error('unreachable, topContextData should be available')
+
         // Provide dummy values, they're not used
         const getPosition = () => {
             return {
@@ -65,13 +66,15 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
                 width: 50
             }
         }
+        this.tooltip.setDevice?.(this);
         const tooltip = this.tooltip.createTooltip?.(getPosition, topContextData)
-
         this.setActiveTooltip(tooltip)
     }
 
     processMouseMove (event) {
-        this.currentTooltip?.focus(event.detail.x, event.detail.y)
+        // todo(Shane): How to make this part cleaner?
+        const tooltip = this.tooltip.getActiveTooltip();
+        tooltip?.focus(event.detail.x, event.detail.y)
     }
 
     getUserData () {
