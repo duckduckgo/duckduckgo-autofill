@@ -15,23 +15,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     /** @override */
     initialSetupDelayMs = 300
 
-    constructor (inputTypes, runtime, tooltip, config, platformConfig, settings) {
-        super(inputTypes, runtime, tooltip, config, platformConfig, settings)
-
-        this.stripCredentials = false
-        window.addEventListener('mouseMove', (event) => {
-            switch (event.type) {
-            case 'mouseMove':
-                this.processMouseMove(event)
-                break
-            default: {
-                // todo: what will this break?
-                throw new Error('todo: what will this break?. Apple top frame cannot delegate event');
-                // super.handleEvent(event)
-            }
-            }
-        })
-    }
+    stripCredentials = false;
 
     async isEnabled () {
         return autofillEnabled(this.globalConfig, processConfig)
@@ -58,6 +42,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
         if (!topContextData) throw new Error('unreachable, topContextData should be available')
 
         // Provide dummy values, they're not used
+        // todo(Shane): Is this truly not used?
         const getPosition = () => {
             return {
                 x: 0,
@@ -66,15 +51,20 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
                 width: 50
             }
         }
-        this.tooltip.setDevice?.(this);
+
+        // this is the apple specific part about faking the focus etc.
+        this.tooltip.addListener(() => {
+            const handler = (event) => {
+                const tooltip = this.tooltip.getActiveTooltip();
+                tooltip?.focus(event.detail.x, event.detail.y)
+            }
+            window.addEventListener("mouseMove", handler);
+            return () => {
+                window.removeEventListener("mouseMove", handler);
+            }
+        })
         const tooltip = this.tooltip.createTooltip?.(getPosition, topContextData)
         this.setActiveTooltip(tooltip)
-    }
-
-    processMouseMove (event) {
-        // todo(Shane): How to make this part cleaner?
-        const tooltip = this.tooltip.getActiveTooltip();
-        tooltip?.focus(event.detail.x, event.detail.y)
     }
 
     getUserData () {

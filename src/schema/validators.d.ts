@@ -60,9 +60,11 @@ namespace Schema {
   }
   /** @link {import("./response.getAvailableInputTypes.schema.json")} */
   interface GetAvailableInputTypesResponse {
+    type?: string
   }
   /** @link {import("./response.getRuntimeConfiguration.schema.json")} */
   interface GetRuntimeConfigurationResponse {
+    type?: string
   }
   /** @link {import("./runtime-configuration.schema.json")} */
   interface RuntimeConfiguration {

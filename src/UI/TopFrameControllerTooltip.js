@@ -10,43 +10,64 @@ export class TopFrameControllerTooltip {
     /** @type {import('../runtime/runtime').Runtime} */
     runtime
 
-    /** @type {import("../UI/Tooltip.js").Tooltip | null} */
+    /** @type {import('../UI/Tooltip.js').Tooltip | null} */
     _activeTooltip = null
 
+    /** @type {boolean} */
+    _parentShown = false
+
     /** @type {TopFrameControllerTooltipOptions} */
-    _options;
+    _options
 
     /**
      * @deprecated do not access the tooltipHandler directly here
-     * @type {import("../DeviceInterface/InterfacePrototype").default | null}
+     * @type {import('../DeviceInterface/InterfacePrototype').default | null}
      */
-    _device = null;
+    _device = null
+
+    _listenerFactories = []
+    _listenerCleanups = []
 
     /**
      * @param {import('../runtime/runtime').Runtime} runtime
      * @param {TopFrameControllerTooltipOptions} options
      */
     constructor (runtime, options) {
-        this.runtime = runtime;
-        this._options = options;
-        // window.addEventListener('pointerdown', this, true)
+        this.runtime = runtime
+        this._options = options
     }
 
     attach (args) {
-        if (this._activeTooltip) return
-        const { getPosition, topContextData, click, input } = args;
-        let delay = 0;
+        if (this._parentShown) {
+            this.removeTooltip()
+                .catch((e) => {
+                    console.log("could not remove", e);
+                })
+                .finally(() => this._attach(args))
+        } else {
+            this._attach(args);
+        }
+    }
+
+    /**
+     * @param {AttachArgs} args
+     * @private
+     */
+    _attach(args) {
+        const {getPosition, topContextData, click, input} = args
+        let delay = 0
         if (!click && !this.elementIsInViewport(getPosition())) {
             input.scrollIntoView(true)
-            delay = 500;
+            delay = 500
         }
         setTimeout(() => {
             this.showTopTooltip(click, getPosition(), topContextData)
                 .catch(e => {
-                    console.error("error from showTopTooltip", e);
+                    console.error('error from showTopTooltip', e)
                 })
-        }, delay);
+        }, delay)
     }
+
     /**
      * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
      * @returns {boolean}
@@ -65,6 +86,7 @@ export class TopFrameControllerTooltip {
         }
         return true
     }
+
     /**
      * @param {{ x: number; y: number; } | null} click
      * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
@@ -92,14 +114,109 @@ export class TopFrameControllerTooltip {
         }
 
         await this.runtime.showAutofillParent(details)
+            .then(() => {
+                this._parentShown = true
+                this.#attachListeners();
+            })
+            .catch(() => {
+                this._parentShown = false
+            })
         // // Start listening for the user initiated credential
-        // // this.listenForSelectedCredential()
+        this.listenForSelectedCredential()
+    }
+
+    #attachListeners () {
+        window.addEventListener('scroll', this)
+        window.addEventListener('keydown', this)
+        window.addEventListener('input', this)
+        window.addEventListener('pointerdown', this)
+        this._listenerCleanups = [];
+        for (let listenerFactory of this._listenerFactories) {
+            this._listenerCleanups.push(listenerFactory())
+        }
+    }
+
+    #removeListeners () {
+        window.removeEventListener('scroll', this)
+        window.removeEventListener('keydown', this)
+        window.removeEventListener('input', this)
+        window.removeEventListener('pointerdown', this)
+        for (let listenerCleanup of this._listenerCleanups) {
+            listenerCleanup();
+        }
+    }
+
+    handleEvent (event) {
+        switch (event.type) {
+        case 'scroll': {
+            this.removeTooltip()
+            break
+        }
+        case 'keydown': {
+            if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+                this.removeTooltip()
+            }
+            break
+        }
+        case 'input': {
+            this.removeTooltip()
+            break
+        }
+        case 'pointerdown': {
+            this.removeTooltip()
+            break
+        }
+        }
+    }
+
+    /** @type {number|null} */
+    pollingTimeout = null
+
+    /**
+     * Poll the native listener until the user has selected a credential.
+     * Message return types are:
+     * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
+     *     - This also is triggered when the close event is called and prevents any edge case continued polling.
+     * - 'ok' is when the user has selected a credential and the value can be injected into the page.
+     * - 'none' is when the tooltip is open in the native window however hasn't been entered.
+     * todo(Shane): How to make this generic - probably don't assume polling.
+     * @returns {Promise<void>}
+     */
+    async listenForSelectedCredential () {
+        // Prevent two timeouts from happening
+        // @ts-ignore
+        clearTimeout(this.pollingTimeout)
+
+        const response = await this.runtime.getSelectedCredentials()
+        switch (response.type) {
+        case 'none':
+            // Parent hasn't got a selected credential yet
+            // @ts-ignore
+            this.pollingTimeout = setTimeout(() => {
+                this.listenForSelectedCredential()
+            }, 100)
+            return
+        case 'ok': {
+            return this._device?.activeFormSelectedDetail(response.data, response.configType)
+        }
+        case 'stop':
+            // Parent wants us to stop polling
+            break
+        }
     }
 
     async removeTooltip () {
-        console.log('REMOVE');
-        // await this.transport.send('closeAutofillParent', {})
+        if (this._parentShown) {
+            await this.runtime.closeAutofillParent()
+                .catch(e => console.error('Could not close parent', e))
+                .finally(() => this._parentShown = false)
+
+            this.#removeListeners()
+        } else {
+            console.error('trued to remove, but nothing was open')
+        }
     }
+
     /**
      * TODO: Don't allow this to be called from outside since it's deprecated.
      * @param {PosFn} _getPosition
@@ -107,14 +224,15 @@ export class TopFrameControllerTooltip {
      * @return {import('./Tooltip').Tooltip}
      */
     createTooltip (_getPosition, _topContextData) {
-        throw new Error('unimplemented');
+        throw new Error('unimplemented')
     }
 
     getActiveTooltip () {
-        return null
+        return this._activeTooltip
     }
 
-    setActiveTooltip (_tooltip) {
+    setActiveTooltip (tooltip) {
+        this._activeTooltip = tooltip
     }
 
     setSize (_cb) {
@@ -133,5 +251,13 @@ export class TopFrameControllerTooltip {
 
     tooltipWrapperClass () {
         return ''
+    }
+
+    setDevice (device) {
+        this._device = device
+    }
+
+    addListener (cb) {
+        this._listenerFactories.push(cb);
     }
 }

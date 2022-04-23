@@ -39,7 +39,8 @@ import {createTooltip} from './UI/tooltips'
             // Determine the tooltipHandler type
             const tooltip = createTooltip(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings)
             const device = createDevice(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
-            console.log(device);
+
+            tooltip.setDevice?.(device);
 
             // Init services
             await device.init()

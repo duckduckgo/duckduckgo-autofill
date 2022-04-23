@@ -2345,7 +2345,7 @@ function createDevice(availableInputTypes, runtime, tooltip, globalConfig, platf
       return new _AndroidInterface.AndroidInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'unknown':
-      throw new Error('unreachable. device platform was "unknown"');
+      throw new Error('unreachable. tooltipHandler platform was "unknown"');
   }
 
   throw new Error('undefined');
@@ -2418,7 +2418,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../autofill-utils":36,"./InterfacePrototype.js":11}],8:[function(require,module,exports){
+},{"../autofill-utils":37,"./InterfacePrototype.js":11}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2443,82 +2443,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class AppleDeviceInterface extends _InterfacePrototype.default {
-  /* @type {Timeout | undefined} */
-
-  /** @type {Transport} */
-
-  /** @override */
-  async isEnabled() {
-    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
-  }
-
-  constructor(inputTypes, runtime, tooltip, config, platformConfig, settings) {
-    super(inputTypes, runtime, tooltip, config, platformConfig, settings); // if (this.globalConfig.supportsTopFrame) {
-    //     // This is always added as a child frame needs to be informed of a parent frame scroll
-    // }
+  constructor() {
+    super(...arguments);
 
     _defineProperty(this, "pollingTimeout", void 0);
 
     _defineProperty(this, "transport", (0, _transport.createTransport)(this.globalConfig));
 
     _defineProperty(this, "initialSetupDelayMs", 300);
-
-    window.addEventListener('scroll', this);
-  }
-  /**
-   * Poll the native listener until the user has selected a credential.
-   * Message return types are:
-   * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
-   *     - This also is triggered when the close event is called and prevents any edge case continued polling.
-   * - 'ok' is when the user has selected a credential and the value can be injected into the page.
-   * - 'none' is when the tooltip is open in the native window however hasn't been entered.
-   * @returns {Promise<void>}
-   */
-
-
-  async listenForSelectedCredential() {
-    // Prevent two timeouts from happening
-    clearTimeout(this.pollingTimeout);
-    const response = await this.transport.send('getSelectedCredentials');
-
-    switch (response.type) {
-      case 'none':
-        // Parent hasn't got a selected credential yet
-        this.pollingTimeout = setTimeout(() => {
-          this.listenForSelectedCredential();
-        }, 100);
-        return;
-
-      case 'ok':
-        return this.activeFormSelectedDetail(response.data, response.configType);
-
-      case 'stop':
-        // Parent wants us to stop polling
-        break;
-    }
   }
 
-  handleEvent(event) {
-    switch (event.type) {
-      case 'mouseMove':
-        this.processMouseMove(event);
-        break;
-
-      case 'scroll':
-        {
-          this.removeTooltip();
-          break;
-        }
-
-      default:
-        super.handleEvent(event);
-    }
-  }
-
-  processMouseMove(event) {
-    var _this$currentTooltip;
-
-    (_this$currentTooltip = this.currentTooltip) === null || _this$currentTooltip === void 0 ? void 0 : _this$currentTooltip.focus(event.detail.x, event.detail.y);
+  async isEnabled() {
+    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
   }
 
   async setupAutofill() {
@@ -2568,92 +2504,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
     return !!isAppSignedIn;
   }
-  /**
-   * @param {import('../Form/Form').Form} form
-   * @param {HTMLInputElement} input
-   * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
-   * @param {{ x: number; y: number; } | null} click
-   * @param {TopContextData} topContextData
-   */
-
-
-  attachTooltipInner(form, input, getPosition, click, topContextData) {
-    const {
-      supportsTopFrame
-    } = this.globalConfig;
-
-    if (!supportsTopFrame) {
-      return super.attachTooltipInner(form, input, getPosition, click, topContextData);
-    }
-
-    const showTooltipAtPosition = () => {
-      this.showTopTooltip(click, getPosition(), topContextData);
-    };
-
-    if (!click && !this.elementIsInViewport(getPosition())) {
-      input.scrollIntoView(true);
-      setTimeout(showTooltipAtPosition, 500);
-      return;
-    }
-
-    showTooltipAtPosition();
-  }
-  /**
-   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-   * @returns {boolean}
-   */
-
-
-  elementIsInViewport(inputDimensions) {
-    if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
-      return false;
-    }
-
-    const viewport = document.documentElement;
-
-    if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
-      return false;
-    }
-
-    return true;
-  }
-  /**
-   * @param {{ x: number; y: number; } | null} click
-   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-   * @param {TopContextData} [data]
-   */
-
-
-  async showTopTooltip(click, inputDimensions, data) {
-    let diffX = inputDimensions.x;
-    let diffY = inputDimensions.y;
-
-    if (click) {
-      diffX -= click.x;
-      diffY -= click.y;
-    } else if (!this.elementIsInViewport(inputDimensions)) {
-      // If the focus event is outside the viewport ignore, we've already tried to scroll to it
-      return;
-    }
-
-    const details = {
-      wasFromClick: Boolean(click),
-      inputTop: Math.floor(diffY),
-      inputLeft: Math.floor(diffX),
-      inputHeight: Math.floor(inputDimensions.height),
-      inputWidth: Math.floor(inputDimensions.width),
-      serializedInputContext: JSON.stringify(data)
-    };
-    await this.transport.send('showAutofillParent', details); // Start listening for the user initiated credential
-
-    this.listenForSelectedCredential();
-  }
-
-  async removeTooltip() {
-    if (!this.globalConfig.supportsTopFrame) return super.removeTooltip();
-    this.removeCloseListeners();
-    await this.transport.send('closeAutofillParent', {});
-  }
 
   storeUserData(_ref) {
     let {
@@ -2684,7 +2534,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return this.transport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
-   * Gets the init data from the device
+   * Gets the init data from the tooltipHandler
    * @returns {APIResponse<PMData>}
    */
 
@@ -2800,7 +2650,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":34,"../autofill-utils":36,"../settings/settings":50,"../transports/transport.apple":53,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":59}],9:[function(require,module,exports){
+},{"../UI/styles/styles":35,"../autofill-utils":37,"../settings/settings":51,"../transports/transport.apple":54,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":60}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2825,13 +2675,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
-  /* @type {Timeout | undefined} */
-
-  /** @type {Transport} */
-
-  /** @override */
-  constructor(inputTypes, runtime, tooltip, config, platformConfig, settings) {
-    super(inputTypes, runtime, tooltip, config, platformConfig, settings);
+  constructor() {
+    super(...arguments);
 
     _defineProperty(this, "pollingTimeout", void 0);
 
@@ -2839,17 +2684,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
     _defineProperty(this, "initialSetupDelayMs", 300);
 
-    this.stripCredentials = false;
-    window.addEventListener('mouseMove', event => {
-      switch (event.type) {
-        case 'mouseMove':
-          this.processMouseMove(event);
-          break;
-
-        default:
-          super.handleEvent(event);
-      }
-    });
+    _defineProperty(this, "stripCredentials", false);
   }
 
   async isEnabled() {
@@ -2873,8 +2708,11 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
   }
 
   async _setupTopFrame() {
+    var _this$tooltip$createT, _this$tooltip;
+
     const topContextData = this.getTopContextData();
     if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
+    // todo(Shane): Is this truly not used?
 
     const getPosition = () => {
       return {
@@ -2883,16 +2721,22 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
         height: 50,
         width: 50
       };
-    };
+    }; // this is the apple specific part about faking the focus etc.
 
-    const tooltip = this.createTooltip(getPosition, topContextData);
+
+    this.tooltip.addListener(() => {
+      const handler = event => {
+        const tooltip = this.tooltip.getActiveTooltip();
+        tooltip === null || tooltip === void 0 ? void 0 : tooltip.focus(event.detail.x, event.detail.y);
+      };
+
+      window.addEventListener("mouseMove", handler);
+      return () => {
+        window.removeEventListener("mouseMove", handler);
+      };
+    });
+    const tooltip = (_this$tooltip$createT = (_this$tooltip = this.tooltip).createTooltip) === null || _this$tooltip$createT === void 0 ? void 0 : _this$tooltip$createT.call(_this$tooltip, getPosition, topContextData);
     this.setActiveTooltip(tooltip);
-  }
-
-  processMouseMove(event) {
-    var _this$currentTooltip;
-
-    (_this$currentTooltip = this.currentTooltip) === null || _this$currentTooltip === void 0 ? void 0 : _this$currentTooltip.focus(event.detail.x, event.detail.y);
   }
 
   getUserData() {
@@ -2930,7 +2774,6 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
   }
 
   async removeTooltip() {
-    this.removeCloseListeners();
     await this.transport.send('closeAutofillParent', {});
   }
 
@@ -2963,7 +2806,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
     return this.transport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
-   * Gets the init data from the device
+   * Gets the init data from the tooltipHandler
    * @returns {APIResponse<PMData>}
    */
 
@@ -3083,7 +2926,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleTopFrameDeviceInterface = AppleTopFrameDeviceInterface;
 
-},{"../UI/styles/styles":34,"../autofill-utils":36,"../settings/settings":50,"../transports/transport.apple":53,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":59}],10:[function(require,module,exports){
+},{"../UI/styles/styles":35,"../autofill-utils":37,"../settings/settings":51,"../transports/transport.apple":54,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":60}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3208,7 +3051,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../autofill-utils":36,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../autofill-utils":37,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3221,12 +3064,6 @@ var _autofillUtils = require("../autofill-utils");
 var _matching = require("../Form/matching");
 
 var _formatters = require("../Form/formatters");
-
-var _EmailWebTooltip = _interopRequireDefault(require("../UI/EmailWebTooltip"));
-
-var _DataWebTooltip = _interopRequireDefault(require("../UI/DataWebTooltip"));
-
-var _inputTypeConfig = require("../Form/inputTypeConfig");
 
 var _listenForFormSubmission = _interopRequireDefault(require("../Form/listenForFormSubmission"));
 
@@ -3430,7 +3267,7 @@ class InterfacePrototype {
     return [...identities, ...newIdentities];
   }
   /**
-   * Stores init data coming from the device
+   * Stores init data coming from the tooltipHandler
    * @param { InboundPMData } data
    */
 
@@ -3507,43 +3344,13 @@ class InterfacePrototype {
   }
 
   async _startInit() {
-    window.addEventListener('pointerdown', this, true); // todo(toggles): move to runtime polymorphism
-
+    // todo(toggles): move to runtime polymorphism
     if (this.autofillSettings.featureToggles.credentials_saving) {
       (0, _listenForFormSubmission.default)(this.scanner.forms);
     }
 
     await this.setupAutofill();
     await this.setupSettingsPage();
-  } // Global listener for event delegation
-
-
-  _pointerDownListener(e) {
-    if (!e.isTrusted) return; // @ts-ignore
-
-    if (e.target.nodeName === 'DDG-AUTOFILL') {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const activeTooltip = this.getActiveTooltip();
-      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.dispatchClick();
-    } else {
-      this.removeTooltip();
-    }
-
-    if (!this.globalConfig.isApp) return; // exit now if form saving was not enabled
-    // todo(Shane): more runtime polymorphism here, + where does this live?
-
-    if (this.autofillSettings.featureToggles.credentials_saving) {
-      // Check for clicks on submit buttons
-      const matchingForm = [...this.scanner.forms.values()].find(form => {
-        const btns = [...form.submitButtons]; // @ts-ignore
-
-        if (btns.includes(e.target)) return true; // @ts-ignore
-
-        if (btns.find(btn => btn.contains(e.target))) return true;
-      });
-      matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
-    }
   }
   /**
    * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
@@ -3578,28 +3385,6 @@ class InterfacePrototype {
     }
 
     this.removeTooltip();
-  }
-  /**
-   * @param {()=>void} getPosition
-   * @param {TopContextData} topContextData
-   */
-
-
-  createTooltip(getPosition, topContextData) {
-    const config = (0, _inputTypeConfig.getInputConfigFromType)(topContextData.inputType);
-
-    if (this.globalConfig.isApp) {
-      // collect the data for each item to display
-      const data = this.dataForAutofill(config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
-
-      const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
-
-      return new _DataWebTooltip.default(config, topContextData.inputType, getPosition, this).render(config, asRenderers, {
-        onSelect: id => this.onSelect(config, data, id)
-      });
-    } else {
-      return new _EmailWebTooltip.default(config, topContextData.inputType, getPosition, this);
-    }
   }
   /**
    * Before the DataWebTooltip opens, we collect the data based on the config.type
@@ -3680,31 +3465,21 @@ class InterfacePrototype {
       topContextData.credentials = [(0, _Credentials.fromPassword)(password)];
     }
 
-    if (this.globalConfig.hasNativeTooltip) {
-      this.tooltip.attach({
-        input,
-        form,
-        click,
-        getPosition,
-        topContextData
-      });
-    } else {
-      this.attachCloseListeners();
-      this.attachTooltipInner(form, input, getPosition, click, topContextData);
-    }
-  }
-
-  attachCloseListeners() {
-    window.addEventListener('input', this);
-    window.addEventListener('keydown', this);
-  }
-
-  removeCloseListeners() {
-    window.removeEventListener('input', this);
-    window.removeEventListener('keydown', this);
+    this.tooltip.attach({
+      input,
+      form,
+      click,
+      getPosition,
+      topContextData,
+      device: this
+    }); // if (this.globalConfig.hasNativeTooltip) {
+    // } else {
+    //     this.attachCloseListeners()
+    //     this.attachTooltipInner(form, input, getPosition, click, topContextData)
+    // }
   }
   /**
-   * If the device was capable of generating password, and it
+   * If the tooltipHandler was capable of generating password, and it
    * previously did so for the form in question, then offer to
    * save the credentials
    *
@@ -3723,7 +3498,7 @@ class InterfacePrototype {
     return false;
   }
   /**
-   * When an item was selected, we then call back to the device
+   * When an item was selected, we then call back to the tooltipHandler
    * to fetch the full suite of data needed to complete the autofill
    *
    * @param {InputTypeConfigs} config
@@ -3759,7 +3534,7 @@ class InterfacePrototype {
         default:
           throw new Error('unreachable!');
       }
-    })(); // wait for the data back from the device
+    })(); // wait for the data back from the tooltipHandler
 
 
     dataPromise.then(response => {
@@ -3773,56 +3548,13 @@ class InterfacePrototype {
       return this.removeTooltip();
     });
   }
-  /**
-   * @param {import("../Form/Form").Form} form
-   * @param {any} input
-   * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-   * @param {{ x: number; y: number; } | null} _click
-   * @param {TopContextData} data
-   */
-
-
-  attachTooltipInner(form, input, getPosition, _click, data) {
-    if (this.currentTooltip) return;
-    this.currentTooltip = this.createTooltip(getPosition, data);
-    form.showingTooltip(input);
-  }
-
-  async removeTooltip() {
-    if (this.currentTooltip) {
-      this.removeCloseListeners();
-      this.currentTooltip.remove();
-      this.currentTooltip = null;
-      this.currentAttached = null;
-    }
-  }
 
   getActiveTooltip() {
-    return this.currentTooltip;
+    return this.tooltip.getActiveTooltip();
   }
 
   setActiveTooltip(tooltip) {
-    this.currentTooltip = tooltip;
-  }
-
-  handleEvent(event) {
-    switch (event.type) {
-      case 'keydown':
-        if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
-          this.removeTooltip();
-        }
-
-        break;
-
-      case 'input':
-        this.removeTooltip();
-        break;
-
-      case 'pointerdown':
-        this._pointerDownListener(event);
-
-        break;
-    }
+    this.tooltip.setActiveTooltip(tooltip);
   }
 
   async setupSettingsPage() {
@@ -3967,8 +3699,18 @@ class InterfacePrototype {
     const config = new _contentScopeScripts.RuntimeConfiguration();
     const globalConfig = (0, _config.createGlobalConfig)();
     const runtime = (0, _runtime.createRuntime)(globalConfig);
-    const tooltip = new _WebTooltip.WebTooltip();
+    const tooltip = new _WebTooltip.WebTooltip({
+      tooltipKind: "modern"
+    });
     return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, _settings.AutofillSettings.default());
+  }
+
+  removeTooltip() {
+    return this.tooltip.removeTooltip();
+  }
+
+  isTestMode() {
+    return this.globalConfig.isDDGTestMode;
   }
 
 }
@@ -3976,7 +3718,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":16,"../Form/inputTypeConfig":18,"../Form/listenForFormSubmission":20,"../Form/matching":23,"../PasswordGenerator":26,"../Scanner":27,"../UI/DataWebTooltip":28,"../UI/EmailWebTooltip":29,"../UI/WebTooltip":32,"../autofill-utils":36,"../config":38,"../input-types/Credentials":40,"../runtime/runtime":45,"../settings/settings":50,"@duckduckgo/content-scope-scripts":56}],12:[function(require,module,exports){
+},{"../Form/formatters":16,"../Form/listenForFormSubmission":20,"../Form/matching":23,"../PasswordGenerator":26,"../Scanner":27,"../UI/WebTooltip":33,"../autofill-utils":37,"../config":39,"../input-types/Credentials":41,"../runtime/runtime":46,"../settings/settings":51,"@duckduckgo/content-scope-scripts":57}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4169,7 +3911,7 @@ class Form {
     return (0, _formatters.prepareFormValuesForStorage)(formValues);
   }
   /**
-   * Determine if the form has values we want to store in the device
+   * Determine if the form has values we want to store in the tooltipHandler
    * @param {DataStorageObject} [values]
    * @return {boolean}
    */
@@ -4417,7 +4159,10 @@ class Form {
     };
 
     const handler = e => {
-      if (this.device.getActiveTooltip() || this.isAutofilling) return;
+      if (this.device.getActiveTooltip() || this.isAutofilling) {
+        return;
+      }
+
       const input = e.target;
       let click = null;
 
@@ -4449,7 +4194,11 @@ class Form {
 
     if (input.nodeName !== 'SELECT') {
       const events = ['pointerdown'];
-      if (!this.device.globalConfig.isMobileApp) events.push('focus');
+
+      if (!this.device.globalConfig.isMobileApp) {// todo(Shane): Re-enable focus event?
+        // events.push('focus')
+      }
+
       input.labels.forEach(label => {
         this.addListener(label, 'pointerdown', handlerLabel);
       });
@@ -4535,7 +4284,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":36,"../constants":39,"./FormAnalyzer":14,"./formatters":16,"./inputStyles":17,"./inputTypeConfig.js":18,"./matching":23}],14:[function(require,module,exports){
+},{"../autofill-utils":37,"../constants":40,"./FormAnalyzer":14,"./formatters":16,"./inputStyles":17,"./inputTypeConfig.js":18,"./matching":23}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4787,7 +4536,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":36,"../constants":39,"./matching":23,"./matching-configuration":22}],15:[function(require,module,exports){
+},{"../autofill-utils":37,"../constants":40,"./matching":23,"./matching-configuration":22}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5603,7 +5352,7 @@ const shouldStoreCreditCards = _ref5 => {
   return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
 };
 /**
- * Formats form data into an object to send to the device for storage
+ * Formats form data into an object to send to the tooltipHandler for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
  * @return {DataStorageObject}
@@ -5968,7 +5717,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../UI/img/ddgPasswordIcon":33,"../input-types/Credentials":40,"../input-types/CreditCard":41,"../input-types/Identity":42,"./logo-svg":21,"./matching":23}],19:[function(require,module,exports){
+},{"../UI/img/ddgPasswordIcon":34,"../input-types/Credentials":41,"../input-types/CreditCard":42,"../input-types/Identity":43,"./logo-svg":21,"./matching":23}],19:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -7691,7 +7440,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":39,"./label-util":19,"./matching-configuration":22,"./selectors-css":24,"./vendor-regex":25}],24:[function(require,module,exports){
+},{"../constants":40,"./label-util":19,"./matching-configuration":22,"./selectors-css":24,"./vendor-regex":25}],24:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -7930,7 +7679,7 @@ const defaultScannerOptions = {
 };
 /**
  * This allows:
- *   1) synchronous DOM scanning + mutations - via `createScanner(device).findEligibleInputs(document)`
+ *   1) synchronous DOM scanning + mutations - via `createScanner(tooltipHandler).findEligibleInputs(document)`
  *   2) or, as above + a debounced mutation observer to re-run the scan after the given time
  */
 
@@ -8185,7 +7934,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":13,"./Form/matching":23,"./Form/selectors-css":24,"./autofill-utils":36}],28:[function(require,module,exports){
+},{"./Form/Form":13,"./Form/matching":23,"./Form/selectors-css":24,"./autofill-utils":37}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8206,7 +7955,7 @@ class DataWebTooltip extends _Tooltip.default {
    * @param {{onSelect(id:string): void}} callbacks
    */
   render(config, items, callbacks) {
-    const includeStyles = this.interface.tooltipStyles();
+    const includeStyles = this.tooltipHandler.tooltipStyles();
     let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
 
     const shouldShowSeparator = dataId => {
@@ -8215,7 +7964,7 @@ class DataWebTooltip extends _Tooltip.default {
       return shouldShow;
     };
 
-    const topClass = this.interface.tooltipWrapperClass();
+    const topClass = this.tooltipHandler.tooltipWrapperClass();
     this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
       var _item$labelSmall, _item$label;
 
@@ -8241,7 +7990,7 @@ class DataWebTooltip extends _Tooltip.default {
 var _default = DataWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":36,"./Tooltip":31}],29:[function(require,module,exports){
+},{"../autofill-utils":37,"./Tooltip":31}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8259,15 +8008,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 class EmailWebTooltip extends _Tooltip.default {
   /**
-   * @param config
-   * @param inputType
-   * @param position
-   * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
    */
-  constructor(config, inputType, position, deviceInterface) {
-    super(config, inputType, position, deviceInterface);
-    this.addresses = this.interface.getLocalAddresses();
-    const includeStyles = deviceInterface.globalConfig.isApp ? "<style>".concat(_styles.CSS_STYLES, "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
+  render(device) {
+    this.device = device;
+    this.addresses = device.getLocalAddresses();
+    const includeStyles = device.globalConfig.isApp ? "<style>".concat(_styles.CSS_STYLES, "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
@@ -8289,8 +8035,9 @@ class EmailWebTooltip extends _Tooltip.default {
       this.fillForm('privateAddress');
     }); // Get the alias from the extension
 
-    this.interface.getAddresses().then(this.updateAddresses);
+    device.getAddresses().then(this.updateAddresses);
     this.init();
+    return this;
   }
   /**
    * @param {'personalAddress' | 'privateAddress'} id
@@ -8298,9 +8045,11 @@ class EmailWebTooltip extends _Tooltip.default {
 
 
   async fillForm(id) {
+    var _this$device;
+
     const address = this.addresses[id];
     const formattedAddress = (0, _autofillUtils.formatDuckAddress)(address);
-    this.interface.selectedDetail({
+    (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.selectedDetail({
       email: formattedAddress,
       id
     }, 'email');
@@ -8311,7 +8060,7 @@ class EmailWebTooltip extends _Tooltip.default {
 var _default = EmailWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":36,"./Tooltip":31,"./styles/styles":34}],30:[function(require,module,exports){
+},{"../autofill-utils":37,"./Tooltip":31,"./styles/styles":35}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8356,6 +8105,18 @@ class NativeTooltip {
     });
   }
 
+  getActiveTooltip() {
+    return null;
+  }
+
+  removeTooltip() {}
+
+  setActiveTooltip(_tooltip) {}
+
+  addListener(_cb) {}
+
+  setDevice(_device) {}
+
 }
 
 exports.NativeTooltip = NativeTooltip;
@@ -8374,14 +8135,19 @@ var _matching = require("../Form/matching");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+/**
+ * @typedef {object} TooltipOptions
+ * @property {boolean} testMode
+ */
 class Tooltip {
   /**
    * @param config
    * @param inputType
    * @param getPosition
-   * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
+   * @param {TooltipHandler} tooltipHandler
+   * @param {TooltipOptions} options
    */
-  constructor(config, inputType, getPosition, deviceInterface) {
+  constructor(config, inputType, getPosition, tooltipHandler, options) {
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
@@ -8401,7 +8167,7 @@ class Tooltip {
     _defineProperty(this, "clickableButtons", new Map());
 
     this.shadow = document.createElement('ddg-autofill').attachShadow({
-      mode: deviceInterface.globalConfig.isDDGTestMode ? 'open' : 'closed'
+      mode: options.testMode ? 'open' : 'closed'
     });
     this.host = this.shadow.host;
     this.config = config;
@@ -8415,7 +8181,7 @@ class Tooltip {
     }; // @ts-ignore how to narrow this.host to HTMLElement?
 
     (0, _autofillUtils.addInlineStyles)(this.host, forcedVisibilityStyles);
-    this.interface = deviceInterface;
+    this.tooltipHandler = tooltipHandler;
     this.count = 0;
   }
 
@@ -8505,7 +8271,7 @@ class Tooltip {
       this.transformRuleIndex = shadow.styleSheets[0].rules.length;
     }
 
-    let cssRule = this.interface.tooltipPositionClass(top, left);
+    let cssRule = this.tooltipHandler.tooltipPositionClass(top, left);
     shadow.styleSheets[0].insertRule(cssRule, this.transformRuleIndex);
   }
 
@@ -8521,7 +8287,7 @@ class Tooltip {
         this.count++;
       } else {
         // Remove the tooltip from the form to cleanup listeners and observers
-        this.interface.removeTooltip();
+        this.tooltipHandler.removeTooltip();
         console.info("DDG autofill bailing out");
       }
     }
@@ -8551,7 +8317,7 @@ class Tooltip {
   }
 
   setupSizeListener() {
-    this.interface.setupSizeListener(() => {
+    this.tooltipHandler.setupSizeListener(() => {
       // Listen to layout and paint changes to register the size
       const observer = new PerformanceObserver(() => {
         this.setSize();
@@ -8563,7 +8329,7 @@ class Tooltip {
   }
 
   setSize() {
-    this.interface.setSize(() => {
+    this.tooltipHandler.setSize(() => {
       const innerNode = this.shadow.querySelector('.wrapper--data'); // Shouldn't be possible
 
       if (!innerNode) return;
@@ -8604,7 +8370,323 @@ exports.Tooltip = Tooltip;
 var _default = Tooltip;
 exports.default = _default;
 
-},{"../Form/matching":23,"../autofill-utils":36}],32:[function(require,module,exports){
+},{"../Form/matching":23,"../autofill-utils":37}],32:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TopFrameControllerTooltip = void 0;
+
+function _classPrivateMethodInitSpec(obj, privateSet) { _checkPrivateRedeclaration(obj, privateSet); privateSet.add(obj); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+var _attachListeners = /*#__PURE__*/new WeakSet();
+
+var _removeListeners = /*#__PURE__*/new WeakSet();
+
+/**
+ * @typedef {object} TopFrameControllerTooltipOptions
+ */
+
+/**
+ * @implements {TooltipInterface}
+ * @implements {TooltipHandler}
+ */
+class TopFrameControllerTooltip {
+  /** @type {import('../runtime/runtime').Runtime} */
+
+  /** @type {import('../UI/Tooltip.js').Tooltip | null} */
+
+  /** @type {boolean} */
+
+  /** @type {TopFrameControllerTooltipOptions} */
+
+  /**
+   * @deprecated do not access the tooltipHandler directly here
+   * @type {import('../DeviceInterface/InterfacePrototype').default | null}
+   */
+
+  /**
+   * @param {import('../runtime/runtime').Runtime} runtime
+   * @param {TopFrameControllerTooltipOptions} options
+   */
+  constructor(runtime, options) {
+    _classPrivateMethodInitSpec(this, _removeListeners);
+
+    _classPrivateMethodInitSpec(this, _attachListeners);
+
+    _defineProperty(this, "runtime", void 0);
+
+    _defineProperty(this, "_activeTooltip", null);
+
+    _defineProperty(this, "_parentShown", false);
+
+    _defineProperty(this, "_options", void 0);
+
+    _defineProperty(this, "_device", null);
+
+    _defineProperty(this, "_listenerFactories", []);
+
+    _defineProperty(this, "_listenerCleanups", []);
+
+    _defineProperty(this, "pollingTimeout", null);
+
+    this.runtime = runtime;
+    this._options = options;
+  }
+
+  attach(args) {
+    if (this._parentShown) {
+      this.removeTooltip().catch(e => {
+        console.log("could not remove", e);
+      }).finally(() => this._attach(args));
+    } else {
+      this._attach(args);
+    }
+  }
+  /**
+   * @param {AttachArgs} args
+   * @private
+   */
+
+
+  _attach(args) {
+    const {
+      getPosition,
+      topContextData,
+      click,
+      input
+    } = args;
+    let delay = 0;
+
+    if (!click && !this.elementIsInViewport(getPosition())) {
+      input.scrollIntoView(true);
+      delay = 500;
+    }
+
+    setTimeout(() => {
+      this.showTopTooltip(click, getPosition(), topContextData).catch(e => {
+        console.error('error from showTopTooltip', e);
+      });
+    }, delay);
+  }
+  /**
+   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
+   * @returns {boolean}
+   */
+
+
+  elementIsInViewport(inputDimensions) {
+    if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
+      return false;
+    }
+
+    const viewport = document.documentElement;
+
+    if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
+      return false;
+    }
+
+    return true;
+  }
+  /**
+   * @param {{ x: number; y: number; } | null} click
+   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
+   * @param {TopContextData} [data]
+   */
+
+
+  async showTopTooltip(click, inputDimensions, data) {
+    let diffX = inputDimensions.x;
+    let diffY = inputDimensions.y;
+
+    if (click) {
+      diffX -= click.x;
+      diffY -= click.y;
+    } else if (!this.elementIsInViewport(inputDimensions)) {
+      // If the focus event is outside the viewport ignore, we've already tried to scroll to it
+      return;
+    }
+    /** @type {Schema.ShowAutofillParentRequest} */
+
+
+    const details = {
+      wasFromClick: Boolean(click),
+      inputTop: Math.floor(diffY),
+      inputLeft: Math.floor(diffX),
+      inputHeight: Math.floor(inputDimensions.height),
+      inputWidth: Math.floor(inputDimensions.width),
+      serializedInputContext: JSON.stringify(data)
+    };
+    await this.runtime.showAutofillParent(details).then(() => {
+      this._parentShown = true;
+
+      _classPrivateMethodGet(this, _attachListeners, _attachListeners2).call(this);
+    }).catch(() => {
+      this._parentShown = false;
+    }); // // Start listening for the user initiated credential
+
+    this.listenForSelectedCredential();
+  }
+
+  handleEvent(event) {
+    switch (event.type) {
+      case 'scroll':
+        {
+          this.removeTooltip();
+          break;
+        }
+
+      case 'keydown':
+        {
+          if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+            this.removeTooltip();
+          }
+
+          break;
+        }
+
+      case 'input':
+        {
+          this.removeTooltip();
+          break;
+        }
+
+      case 'pointerdown':
+        {
+          this.removeTooltip();
+          break;
+        }
+    }
+  }
+  /** @type {number|null} */
+
+
+  /**
+   * Poll the native listener until the user has selected a credential.
+   * Message return types are:
+   * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
+   *     - This also is triggered when the close event is called and prevents any edge case continued polling.
+   * - 'ok' is when the user has selected a credential and the value can be injected into the page.
+   * - 'none' is when the tooltip is open in the native window however hasn't been entered.
+   * todo(Shane): How to make this generic - probably don't assume polling.
+   * @returns {Promise<void>}
+   */
+  async listenForSelectedCredential() {
+    // Prevent two timeouts from happening
+    // @ts-ignore
+    clearTimeout(this.pollingTimeout);
+    const response = await this.runtime.getSelectedCredentials();
+
+    switch (response.type) {
+      case 'none':
+        // Parent hasn't got a selected credential yet
+        // @ts-ignore
+        this.pollingTimeout = setTimeout(() => {
+          this.listenForSelectedCredential();
+        }, 100);
+        return;
+
+      case 'ok':
+        {
+          var _this$_device;
+
+          return (_this$_device = this._device) === null || _this$_device === void 0 ? void 0 : _this$_device.activeFormSelectedDetail(response.data, response.configType);
+        }
+
+      case 'stop':
+        // Parent wants us to stop polling
+        break;
+    }
+  }
+
+  async removeTooltip() {
+    if (this._parentShown) {
+      await this.runtime.closeAutofillParent().catch(e => console.error('Could not close parent', e)).finally(() => this._parentShown = false);
+
+      _classPrivateMethodGet(this, _removeListeners, _removeListeners2).call(this);
+    } else {
+      console.error('trued to remove, but nothing was open');
+    }
+  }
+  /**
+   * TODO: Don't allow this to be called from outside since it's deprecated.
+   * @param {PosFn} _getPosition
+   * @param {TopContextData} _topContextData
+   * @return {import('./Tooltip').Tooltip}
+   */
+
+
+  createTooltip(_getPosition, _topContextData) {
+    throw new Error('unimplemented');
+  }
+
+  getActiveTooltip() {
+    return this._activeTooltip;
+  }
+
+  setActiveTooltip(tooltip) {
+    this._activeTooltip = tooltip;
+  }
+
+  setSize(_cb) {}
+
+  setupSizeListener(_cb) {}
+
+  tooltipPositionClass(_top, _left) {
+    return '';
+  }
+
+  tooltipStyles() {
+    return '';
+  }
+
+  tooltipWrapperClass() {
+    return '';
+  }
+
+  setDevice(device) {
+    this._device = device;
+  }
+
+  addListener(cb) {
+    this._listenerFactories.push(cb);
+  }
+
+}
+
+exports.TopFrameControllerTooltip = TopFrameControllerTooltip;
+
+function _attachListeners2() {
+  window.addEventListener('scroll', this);
+  window.addEventListener('keydown', this);
+  window.addEventListener('input', this);
+  window.addEventListener('pointerdown', this);
+  this._listenerCleanups = [];
+
+  for (let listenerFactory of this._listenerFactories) {
+    this._listenerCleanups.push(listenerFactory());
+  }
+}
+
+function _removeListeners2() {
+  window.removeEventListener('scroll', this);
+  window.removeEventListener('keydown', this);
+  window.removeEventListener('input', this);
+  window.removeEventListener('pointerdown', this);
+
+  for (let listenerCleanup of this._listenerCleanups) {
+    listenerCleanup();
+  }
+}
+
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8612,17 +8694,303 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.WebTooltip = void 0;
 
+var _inputTypeConfig = require("../Form/inputTypeConfig");
+
+var _DataWebTooltip = _interopRequireDefault(require("./DataWebTooltip"));
+
+var _EmailWebTooltip = _interopRequireDefault(require("./EmailWebTooltip"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _classPrivateMethodInitSpec(obj, privateSet) { _checkPrivateRedeclaration(obj, privateSet); privateSet.add(obj); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+var _attachCloseListeners = /*#__PURE__*/new WeakSet();
+
+var _removeCloseListeners = /*#__PURE__*/new WeakSet();
+
+var _device = /*#__PURE__*/new WeakMap();
+
+var _setDevice = /*#__PURE__*/new WeakSet();
+
+var _dataForAutofill = /*#__PURE__*/new WeakSet();
+
+var _onSelect = /*#__PURE__*/new WeakSet();
+
+/**
+ * @typedef {object} WebTooltipOptions
+ * @property {"modern" | "legacy"} tooltipKind
+ */
+
 /**
  * @implements {TooltipInterface}
+ * @implements {TooltipHandler}
  */
 class WebTooltip {
-  attach(_args) {}
+  /** @type {import("../UI/Tooltip.js").Tooltip | null} */
+
+  /** @type {WebTooltipOptions} */
+
+  /**
+   * @deprecated do not access the tooltipHandler directly here
+   * @type {import("../DeviceInterface/InterfacePrototype").default | null}
+   */
+
+  /**
+   * @param {WebTooltipOptions} options
+   */
+  constructor(options) {
+    _classPrivateMethodInitSpec(this, _onSelect);
+
+    _classPrivateMethodInitSpec(this, _dataForAutofill);
+
+    _classPrivateMethodInitSpec(this, _setDevice);
+
+    _classPrivateFieldInitSpec(this, _device, {
+      get: _get_device,
+      set: void 0
+    });
+
+    _classPrivateMethodInitSpec(this, _removeCloseListeners);
+
+    _classPrivateMethodInitSpec(this, _attachCloseListeners);
+
+    _defineProperty(this, "_activeTooltip", null);
+
+    _defineProperty(this, "_options", void 0);
+
+    _defineProperty(this, "_device", null);
+
+    _defineProperty(this, "_listenerFactories", []);
+
+    _defineProperty(this, "_listenerCleanups", []);
+
+    this._options = options;
+    window.addEventListener('pointerdown', this, true);
+  }
+
+  attach(args) {
+    if (this.getActiveTooltip()) {
+      // todo: Is this is correct logic?
+      return;
+    }
+
+    _classPrivateMethodGet(this, _setDevice, _setDevice2).call(this, args.device);
+
+    const {
+      topContextData,
+      getPosition,
+      input,
+      form
+    } = args;
+    this.setActiveTooltip(this.createTooltip(getPosition, topContextData));
+    form.showingTooltip(input);
+  }
+  /**
+   * TODO: Don't allow this to be called from outside since it's deprecated.
+   * @param {PosFn} getPosition
+   * @param {TopContextData} topContextData
+   * @return {import("./Tooltip").Tooltip}
+   */
+
+
+  createTooltip(getPosition, topContextData) {
+    _classPrivateMethodGet(this, _attachCloseListeners, _attachCloseListeners2).call(this);
+
+    const config = (0, _inputTypeConfig.getInputConfigFromType)(topContextData.inputType);
+
+    if (this._options.tooltipKind === "modern") {
+      // collect the data for each item to display
+      const data = _classPrivateMethodGet(this, _dataForAutofill, _dataForAutofill2).call(this, config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
+
+
+      const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
+
+      return new _DataWebTooltip.default(config, topContextData.inputType, getPosition, this, {
+        testMode: _classPrivateFieldGet(this, _device).isTestMode()
+      }).render(config, asRenderers, {
+        onSelect: id => _classPrivateMethodGet(this, _onSelect, _onSelect2).call(this, config, data, id)
+      });
+    } else {
+      return new _EmailWebTooltip.default(config, topContextData.inputType, getPosition, this, {
+        testMode: _classPrivateFieldGet(this, _device).isTestMode()
+      }).render(_classPrivateFieldGet(this, _device));
+    }
+  }
+
+  handleEvent(event) {
+    switch (event.type) {
+      case 'keydown':
+        if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+          this.removeTooltip();
+        }
+
+        break;
+
+      case 'input':
+        this.removeTooltip();
+        break;
+
+      case 'pointerdown':
+        this._pointerDownListener(event);
+
+        break;
+    }
+  } // Global listener for event delegation
+
+
+  _pointerDownListener(e) {
+    if (!e.isTrusted) return; // @ts-ignore
+
+    if (e.target.nodeName === 'DDG-AUTOFILL') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const activeTooltip = this.getActiveTooltip();
+
+      if (!activeTooltip) {
+        console.warn('Could not get activeTooltip');
+      } else {
+        activeTooltip.dispatchClick();
+      }
+    } else {
+      this.removeTooltip().catch(e => {
+        console.error('error removing tooltip', e);
+      });
+    } // todo(Shane): Form submissions here
+    // exit now if form saving was not enabled
+    // todo(Shane): more runtime polymorphism here, + where does this live?
+    // if (this.autofillSettings.featureToggles.credentials_saving) {
+    //     // Check for clicks on submit buttons
+    //     const matchingForm = [...this.scanner.forms.values()].find(
+    //         (form) => {
+    //             const btns = [...form.submitButtons]
+    //             // @ts-ignore
+    //             if (btns.includes(e.target)) return true
+    //
+    //             // @ts-ignore
+    //             if (btns.find((btn) => btn.contains(e.target))) return true
+    //         }
+    //     )
+    //
+    //     matchingForm?.submitHandler()
+    // }
+
+  }
+
+  async removeTooltip() {
+    if (this._activeTooltip) {
+      _classPrivateMethodGet(this, _removeCloseListeners, _removeCloseListeners2).call(this);
+
+      this._activeTooltip.remove();
+
+      this._activeTooltip = null;
+      this.currentAttached = null;
+    }
+  }
+  /**
+   * @returns {import("../UI/Tooltip.js").Tooltip|null}
+   */
+
+
+  getActiveTooltip() {
+    return this._activeTooltip;
+  }
+  /**
+   * @param {import("../UI/Tooltip.js").Tooltip} value
+   */
+
+
+  setActiveTooltip(value) {
+    this._activeTooltip = value;
+  }
+  /**
+   * @deprecated don't rely in device in this class
+   * @returns {Device}
+   */
+
+
+  setSize(_cb) {
+    _classPrivateFieldGet(this, _device).setSize(_cb);
+  }
+
+  setupSizeListener(_cb) {
+    _classPrivateFieldGet(this, _device).setupSizeListener(_cb);
+  }
+
+  tooltipPositionClass(top, left) {
+    return _classPrivateFieldGet(this, _device).tooltipPositionClass(top, left);
+  }
+
+  tooltipStyles() {
+    return _classPrivateFieldGet(this, _device).tooltipStyles();
+  }
+
+  tooltipWrapperClass() {
+    return _classPrivateFieldGet(this, _device).tooltipWrapperClass();
+  }
+
+  setDevice(device) {
+    _classPrivateMethodGet(this, _setDevice, _setDevice2).call(this, device);
+  }
+
+  addListener(cb) {
+    this._listenerFactories.push(cb);
+  }
 
 }
 
 exports.WebTooltip = WebTooltip;
 
-},{}],33:[function(require,module,exports){
+function _attachCloseListeners2() {
+  window.addEventListener('input', this);
+  window.addEventListener('keydown', this);
+  this._listenerCleanups = [];
+
+  for (let listenerFactory of this._listenerFactories) {
+    this._listenerCleanups.push(listenerFactory());
+  }
+}
+
+function _removeCloseListeners2() {
+  window.removeEventListener('input', this);
+  window.removeEventListener('keydown', this);
+
+  for (let listenerCleanup of this._listenerCleanups) {
+    listenerCleanup();
+  }
+}
+
+function _get_device() {
+  if (!this._device) throw new Error('device was not assigned');
+  return this._device;
+}
+
+function _setDevice2(device) {
+  return this._device = device;
+}
+
+function _dataForAutofill2(config, inputType, topContextData) {
+  return _classPrivateFieldGet(this, _device).dataForAutofill(config, inputType, topContextData);
+}
+
+function _onSelect2(config, data, id) {
+  return _classPrivateFieldGet(this, _device).onSelect(config, data, id);
+}
+
+},{"../Form/inputTypeConfig":18,"./DataWebTooltip":28,"./EmailWebTooltip":29}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8644,7 +9012,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8654,7 +9022,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8666,19 +9034,34 @@ var _NativeTooltip = require("./NativeTooltip");
 
 var _WebTooltip = require("./WebTooltip");
 
+var _TopFrameControllerTooltip = require("./TopFrameControllerTooltip");
+
 /**
  * @param {AvailableInputTypes} _availableInputTypes
  * @param {import('../runtime/runtime').Runtime} runtime
- * @param {GlobalConfig} _globalConfig
+ * @param {GlobalConfig} globalConfig
  * @param {import('@duckduckgo/content-scope-scripts').RuntimeConfiguration} platformConfig
  * @param {import('../settings/settings').AutofillSettings} _autofillSettings
  * @returns {TooltipInterface}
  */
-function createTooltip(_availableInputTypes, runtime, _globalConfig, platformConfig, _autofillSettings) {
+function createTooltip(_availableInputTypes, runtime, globalConfig, platformConfig, _autofillSettings) {
   switch (platformConfig.platform) {
     case 'macos':
+    case 'windows':
       {
-        return new _WebTooltip.WebTooltip();
+        if (globalConfig.supportsTopFrame) {
+          if (globalConfig.isTopFrame) {
+            return new _WebTooltip.WebTooltip({
+              tooltipKind: "modern"
+            });
+          } else {
+            return new _TopFrameControllerTooltip.TopFrameControllerTooltip(runtime, {});
+          }
+        }
+
+        return new _WebTooltip.WebTooltip({
+          tooltipKind: "modern"
+        });
       }
 
     case 'android':
@@ -8687,20 +9070,21 @@ function createTooltip(_availableInputTypes, runtime, _globalConfig, platformCon
         return new _NativeTooltip.NativeTooltip(runtime);
       }
 
-    case 'windows':
     case 'extension':
       {
-        return new _WebTooltip.WebTooltip();
+        return new _WebTooltip.WebTooltip({
+          tooltipKind: "legacy"
+        });
       }
 
     case 'unknown':
-      throw new Error('unreachable. device platform was "unknown"');
+      throw new Error('unreachable. tooltipHandler platform was "unknown"');
   }
 
   throw new Error('undefined');
 }
 
-},{"./NativeTooltip":30,"./WebTooltip":32}],36:[function(require,module,exports){
+},{"./NativeTooltip":30,"./TopFrameControllerTooltip":32,"./WebTooltip":33}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9080,7 +9464,7 @@ el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":23}],37:[function(require,module,exports){
+},{"./Form/matching":23}],38:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -9103,7 +9487,12 @@ var _tooltips = require("./UI/tooltips");
 
   try {
     // this is config already present in the script, or derived from the page etc.
-    const globalConfig = (0, _config.createGlobalConfig)(); // Create the runtime, this does a best-guesses job of determining where we're running.
+    const globalConfig = (0, _config.createGlobalConfig)();
+
+    if (globalConfig.isDDGTestMode) {
+      console.log("globalConfig", globalConfig);
+    } // Create the runtime, this does a best-guesses job of determining where we're running.
+
 
     const runtime = (0, _runtime.createRuntime)(globalConfig); // Get runtime configuration - this may include messaging
 
@@ -9117,11 +9506,14 @@ var _tooltips = require("./UI/tooltips");
 
 
     if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
+      var _tooltip$setDevice;
+
       const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
-      const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles); // Determine the device type
+      const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles); // Determine the tooltipHandler type
 
       const tooltip = (0, _tooltips.createTooltip)(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings);
-      const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // Init services
+      const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings);
+      (_tooltip$setDevice = tooltip.setDevice) === null || _tooltip$setDevice === void 0 ? void 0 : _tooltip$setDevice.call(tooltip, device); // Init services
 
       await device.init();
     } else {
@@ -9132,7 +9524,7 @@ var _tooltips = require("./UI/tooltips");
   }
 })();
 
-},{"./DeviceInterface":6,"./UI/tooltips":35,"./config":38,"./input-types/input-types":43,"./requestIdleCallback":44,"./runtime/runtime":45,"./transports/captureDdgGlobals":51}],38:[function(require,module,exports){
+},{"./DeviceInterface":6,"./UI/tooltips":36,"./config":39,"./input-types/input-types":44,"./requestIdleCallback":45,"./runtime/runtime":46,"./transports/captureDdgGlobals":52}],39:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -9192,7 +9584,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9206,7 +9598,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9285,7 +9677,7 @@ module.exports.CredentialsTooltipItem = CredentialsTooltipItem;
 module.exports.fromPassword = fromPassword;
 module.exports.GENERATED_ID = GENERATED_ID;
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9337,7 +9729,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9411,7 +9803,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":16}],43:[function(require,module,exports){
+},{"../Form/formatters":16}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9446,7 +9838,7 @@ function featureToggleAwareInputTypes(inputTypes, featureToggles) {
   return local;
 }
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9494,7 +9886,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9576,6 +9968,7 @@ class Runtime {
     validator);
   }
   /**
+   * @public
    * @param {GetAutofillDataArgs} input
    * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
    */
@@ -9601,6 +9994,7 @@ class Runtime {
     return data;
   }
   /**
+   * @public
    * @param {DataStorageObject} data
    */
 
@@ -9609,12 +10003,40 @@ class Runtime {
     return this.transport.send('storeFormData', data);
   }
   /**
+   * @public
    * @returns {Promise<import("../settings/settings").AutofillSettings>}
    */
 
 
   async getAutofillSettings(platformConfig) {
     return (0, _settings.fromPlatformConfig)(platformConfig);
+  }
+  /**
+   * @param {Schema.ShowAutofillParentRequest} parentArgs
+   * @returns {Promise<void>}
+   */
+
+
+  async showAutofillParent(parentArgs) {
+    return this.transport.send('showAutofillParent', parentArgs);
+  }
+  /**
+   * todo(Shane): Schema for this
+   * @returns {Promise<any>}
+   */
+
+
+  async getSelectedCredentials() {
+    return this.transport.send('getSelectedCredentials');
+  }
+  /**
+   * todo(Shane): Schema for this
+   * @returns {Promise<any>}
+   */
+
+
+  async closeAutofillParent() {
+    return this.transport.send('closeAutofillParent');
   }
 
 }
@@ -9626,7 +10048,7 @@ function createRuntime(config) {
   return new Runtime(config, transport);
 }
 /**
- * The runtime has to decide on a transport, *before* we have a 'device'.
+ * The runtime has to decide on a transport, *before* we have a 'tooltipHandler'.
  *
  * This is because an initial message to retrieve the platform configuration might be needed
  *
@@ -9707,7 +10129,7 @@ function throwError(errors, name) {
   throw new Error('Schema validation errors for ' + name);
 }
 
-},{"../Form/matching":23,"../schema/validators.cjs":49,"../settings/settings":50,"../transports/transport.android":52,"../transports/transport.apple":53,"../transports/transport.extension":54,"../transports/transport.windows":55,"@duckduckgo/content-scope-scripts":56}],46:[function(require,module,exports){
+},{"../Form/matching":23,"../schema/validators.cjs":50,"../settings/settings":51,"../transports/transport.android":53,"../transports/transport.apple":54,"../transports/transport.extension":55,"../transports/transport.windows":56,"@duckduckgo/content-scope-scripts":57}],47:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
@@ -9736,7 +10158,7 @@ module.exports={
   ]
 }
 
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
@@ -9775,7 +10197,7 @@ module.exports={
   ]
 }
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
@@ -9801,7 +10223,7 @@ module.exports={
   ]
 }
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 // @ts-nocheck
 "use strict";
 
@@ -10998,8 +11420,226 @@ function validate14(data) {
   return errors === 0;
 }
 
-exports["#/definitions/GetAutofillDataResponse"] = validate15;
+exports["#/definitions/ShowAutofillParentRequest"] = validate15;
 const schema16 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/ShowAutofillParentRequest",
+  "title": "ShowAutofillParentRequest Request Object",
+  "type": "object",
+  "description": "This describes the argument given to showAutofillParent(data)",
+  "properties": {
+    "wasFromClick": {
+      "type": "boolean"
+    },
+    "inputTop": {
+      "type": "number"
+    },
+    "inputLeft": {
+      "type": "number"
+    },
+    "inputHeight": {
+      "type": "number"
+    },
+    "inputWidth": {
+      "type": "number"
+    },
+    "serializedInputContext": {
+      "description": "todo(Shane): How to deal with the fact that this is a JSON string with type TopContextData",
+      "type": "string"
+    }
+  },
+  "required": ["wasFromClick", "inputTop", "inputLeft", "inputHeight", "inputWidth", "serializedInputContext"]
+};
+
+function validate15(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/ShowAutofillParentRequest" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.wasFromClick === undefined && (missing0 = "wasFromClick") || data.inputTop === undefined && (missing0 = "inputTop") || data.inputLeft === undefined && (missing0 = "inputLeft") || data.inputHeight === undefined && (missing0 = "inputHeight") || data.inputWidth === undefined && (missing0 = "inputWidth") || data.serializedInputContext === undefined && (missing0 = "serializedInputContext")) {
+        validate15.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.wasFromClick !== undefined) {
+          const _errs1 = errors;
+
+          if (typeof data.wasFromClick !== "boolean") {
+            validate15.errors = [{
+              instancePath: instancePath + "/wasFromClick",
+              schemaPath: "#/properties/wasFromClick/type",
+              keyword: "type",
+              params: {
+                type: "boolean"
+              },
+              message: "must be boolean"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.inputTop !== undefined) {
+            let data1 = data.inputTop;
+            const _errs3 = errors;
+
+            if (!(typeof data1 == "number" && isFinite(data1))) {
+              validate15.errors = [{
+                instancePath: instancePath + "/inputTop",
+                schemaPath: "#/properties/inputTop/type",
+                keyword: "type",
+                params: {
+                  type: "number"
+                },
+                message: "must be number"
+              }];
+              return false;
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.inputLeft !== undefined) {
+              let data2 = data.inputLeft;
+              const _errs5 = errors;
+
+              if (!(typeof data2 == "number" && isFinite(data2))) {
+                validate15.errors = [{
+                  instancePath: instancePath + "/inputLeft",
+                  schemaPath: "#/properties/inputLeft/type",
+                  keyword: "type",
+                  params: {
+                    type: "number"
+                  },
+                  message: "must be number"
+                }];
+                return false;
+              }
+
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
+
+            if (valid0) {
+              if (data.inputHeight !== undefined) {
+                let data3 = data.inputHeight;
+                const _errs7 = errors;
+
+                if (!(typeof data3 == "number" && isFinite(data3))) {
+                  validate15.errors = [{
+                    instancePath: instancePath + "/inputHeight",
+                    schemaPath: "#/properties/inputHeight/type",
+                    keyword: "type",
+                    params: {
+                      type: "number"
+                    },
+                    message: "must be number"
+                  }];
+                  return false;
+                }
+
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
+
+              if (valid0) {
+                if (data.inputWidth !== undefined) {
+                  let data4 = data.inputWidth;
+                  const _errs9 = errors;
+
+                  if (!(typeof data4 == "number" && isFinite(data4))) {
+                    validate15.errors = [{
+                      instancePath: instancePath + "/inputWidth",
+                      schemaPath: "#/properties/inputWidth/type",
+                      keyword: "type",
+                      params: {
+                        type: "number"
+                      },
+                      message: "must be number"
+                    }];
+                    return false;
+                  }
+
+                  var valid0 = _errs9 === errors;
+                } else {
+                  var valid0 = true;
+                }
+
+                if (valid0) {
+                  if (data.serializedInputContext !== undefined) {
+                    const _errs11 = errors;
+
+                    if (typeof data.serializedInputContext !== "string") {
+                      validate15.errors = [{
+                        instancePath: instancePath + "/serializedInputContext",
+                        schemaPath: "#/properties/serializedInputContext/type",
+                        keyword: "type",
+                        params: {
+                          type: "string"
+                        },
+                        message: "must be string"
+                      }];
+                      return false;
+                    }
+
+                    var valid0 = _errs11 === errors;
+                  } else {
+                    var valid0 = true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate15.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate15.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/GetAutofillDataResponse"] = validate16;
+const schema17 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
   "title": "GetAutofillDataResponse",
@@ -11025,7 +11665,7 @@ const schema16 = {
   "required": ["success"]
 };
 
-function validate15(data) {
+function validate16(data) {
   let {
     instancePath = "",
     parentData,
@@ -11043,7 +11683,7 @@ function validate15(data) {
       let missing0;
 
       if (data.success === undefined && (missing0 = "success")) {
-        validate15.errors = [{
+        validate16.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -11059,7 +11699,7 @@ function validate15(data) {
           const _errs1 = errors;
 
           if (typeof data0 !== "string") {
-            validate15.errors = [{
+            validate16.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/type",
               keyword: "type",
@@ -11072,7 +11712,7 @@ function validate15(data) {
           }
 
           if ("getAutofillDataResponse" !== data0) {
-            validate15.errors = [{
+            validate16.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/const",
               keyword: "const",
@@ -11095,7 +11735,7 @@ function validate15(data) {
             const _errs3 = errors;
 
             if (!(data1 && typeof data1 == "object" && !Array.isArray(data1))) {
-              validate15.errors = [{
+              validate16.errors = [{
                 instancePath: instancePath + "/success",
                 schemaPath: "#/properties/success/type",
                 keyword: "type",
@@ -11346,7 +11986,7 @@ function validate15(data) {
               }
 
               errors++;
-              validate15.errors = vErrors;
+              validate16.errors = vErrors;
               return false;
             } else {
               errors = _errs5;
@@ -11376,7 +12016,7 @@ function validate15(data) {
                   let missing2;
 
                   if (data5.error === undefined && (missing2 = "error")) {
-                    validate15.errors = [{
+                    validate16.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
@@ -11389,7 +12029,7 @@ function validate15(data) {
                   } else {
                     if (data5.error !== undefined) {
                       if (typeof data5.error !== "string") {
-                        validate15.errors = [{
+                        validate16.errors = [{
                           instancePath: instancePath + "/error/error",
                           schemaPath: "#/definitions/GenericError/properties/error/type",
                           keyword: "type",
@@ -11403,7 +12043,7 @@ function validate15(data) {
                     }
                   }
                 } else {
-                  validate15.errors = [{
+                  validate16.errors = [{
                     instancePath: instancePath + "/error",
                     schemaPath: "#/definitions/GenericError/type",
                     keyword: "type",
@@ -11424,7 +12064,7 @@ function validate15(data) {
         }
       }
     } else {
-      validate15.errors = [{
+      validate16.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -11437,12 +12077,12 @@ function validate15(data) {
     }
   }
 
-  validate15.errors = vErrors;
+  validate16.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/GetAvailableInputTypesResponse"] = validate16;
-const schema19 = {
+exports["#/definitions/GetAvailableInputTypesResponse"] = validate17;
+const schema20 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
   "type": "object",
@@ -11478,7 +12118,7 @@ const schema19 = {
   "required": ["success"]
 };
 
-function validate16(data) {
+function validate17(data) {
   let {
     instancePath = "",
     parentData,
@@ -11496,7 +12136,7 @@ function validate16(data) {
       let missing0;
 
       if (data.success === undefined && (missing0 = "success")) {
-        validate16.errors = [{
+        validate17.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -11512,7 +12152,7 @@ function validate16(data) {
           const _errs1 = errors;
 
           if (typeof data0 !== "string") {
-            validate16.errors = [{
+            validate17.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/type",
               keyword: "type",
@@ -11525,7 +12165,7 @@ function validate16(data) {
           }
 
           if ("getAvailableInputTypesResponse" !== data0) {
-            validate16.errors = [{
+            validate17.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/const",
               keyword: "const",
@@ -11553,7 +12193,7 @@ function validate16(data) {
                   const _errs5 = errors;
 
                   if (typeof data1.credentials !== "boolean") {
-                    validate16.errors = [{
+                    validate17.errors = [{
                       instancePath: instancePath + "/success/credentials",
                       schemaPath: "#/properties/success/properties/credentials/type",
                       keyword: "type",
@@ -11575,7 +12215,7 @@ function validate16(data) {
                     const _errs7 = errors;
 
                     if (typeof data1.identities !== "boolean") {
-                      validate16.errors = [{
+                      validate17.errors = [{
                         instancePath: instancePath + "/success/identities",
                         schemaPath: "#/properties/success/properties/identities/type",
                         keyword: "type",
@@ -11597,7 +12237,7 @@ function validate16(data) {
                       const _errs9 = errors;
 
                       if (typeof data1.creditCards !== "boolean") {
-                        validate16.errors = [{
+                        validate17.errors = [{
                           instancePath: instancePath + "/success/creditCards",
                           schemaPath: "#/properties/success/properties/creditCards/type",
                           keyword: "type",
@@ -11619,7 +12259,7 @@ function validate16(data) {
                         const _errs11 = errors;
 
                         if (typeof data1.email !== "boolean") {
-                          validate16.errors = [{
+                          validate17.errors = [{
                             instancePath: instancePath + "/success/email",
                             schemaPath: "#/properties/success/properties/email/type",
                             keyword: "type",
@@ -11639,7 +12279,7 @@ function validate16(data) {
                   }
                 }
               } else {
-                validate16.errors = [{
+                validate17.errors = [{
                   instancePath: instancePath + "/success",
                   schemaPath: "#/properties/success/type",
                   keyword: "type",
@@ -11668,7 +12308,7 @@ function validate16(data) {
                   let missing1;
 
                   if (data6.error === undefined && (missing1 = "error")) {
-                    validate16.errors = [{
+                    validate17.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
@@ -11681,7 +12321,7 @@ function validate16(data) {
                   } else {
                     if (data6.error !== undefined) {
                       if (typeof data6.error !== "string") {
-                        validate16.errors = [{
+                        validate17.errors = [{
                           instancePath: instancePath + "/error/error",
                           schemaPath: "#/definitions/GenericError/properties/error/type",
                           keyword: "type",
@@ -11695,7 +12335,7 @@ function validate16(data) {
                     }
                   }
                 } else {
-                  validate16.errors = [{
+                  validate17.errors = [{
                     instancePath: instancePath + "/error",
                     schemaPath: "#/definitions/GenericError/type",
                     keyword: "type",
@@ -11716,7 +12356,7 @@ function validate16(data) {
         }
       }
     } else {
-      validate16.errors = [{
+      validate17.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -11729,12 +12369,12 @@ function validate16(data) {
     }
   }
 
-  validate16.errors = vErrors;
+  validate17.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/GetRuntimeConfigurationResponse"] = validate17;
-const schema21 = {
+exports["#/definitions/GetRuntimeConfigurationResponse"] = validate18;
+const schema22 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
   "type": "object",
@@ -11756,7 +12396,7 @@ const schema21 = {
   },
   "required": ["success"]
 };
-const schema22 = {
+const schema23 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/RuntimeConfiguration",
   "type": "object",
@@ -11868,7 +12508,7 @@ const schema22 = {
     }
   }
 };
-const schema23 = {
+const schema24 = {
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -11883,14 +12523,14 @@ const schema23 = {
   "required": ["features", "unprotectedTemporary"],
   "title": "ContentScope"
 };
-const schema24 = {
+const schema25 = {
   "type": "object",
   "additionalProperties": {
     "$ref": "#/definitions/ContentScopeFeatureItem"
   },
   "title": "ContentScopeFeatures"
 };
-const schema25 = {
+const schema26 = {
   "type": "object",
   "properties": {
     "exceptions": {
@@ -11908,7 +12548,7 @@ const schema25 = {
   "title": "ContentScopeFeatureItem"
 };
 
-function validate20(data) {
+function validate21(data) {
   let {
     instancePath = "",
     parentData,
@@ -11930,7 +12570,7 @@ function validate20(data) {
             let missing0;
 
             if (data0.exceptions === undefined && (missing0 = "exceptions") || data0.state === undefined && (missing0 = "state")) {
-              validate20.errors = [{
+              validate21.errors = [{
                 instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
                 schemaPath: "#/definitions/ContentScopeFeatureItem/required",
                 keyword: "required",
@@ -11946,7 +12586,7 @@ function validate20(data) {
 
                 if (errors === _errs5) {
                   if (!Array.isArray(data0.exceptions)) {
-                    validate20.errors = [{
+                    validate21.errors = [{
                       instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/exceptions",
                       schemaPath: "#/definitions/ContentScopeFeatureItem/properties/exceptions/type",
                       keyword: "type",
@@ -11969,7 +12609,7 @@ function validate20(data) {
                   const _errs7 = errors;
 
                   if (typeof data0.state !== "string") {
-                    validate20.errors = [{
+                    validate21.errors = [{
                       instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/state",
                       schemaPath: "#/definitions/ContentScopeFeatureItem/properties/state/type",
                       keyword: "type",
@@ -11992,7 +12632,7 @@ function validate20(data) {
                     const _errs9 = errors;
 
                     if (!(data3 && typeof data3 == "object" && !Array.isArray(data3))) {
-                      validate20.errors = [{
+                      validate21.errors = [{
                         instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/settings",
                         schemaPath: "#/definitions/ContentScopeFeatureItem/properties/settings/type",
                         keyword: "type",
@@ -12012,7 +12652,7 @@ function validate20(data) {
               }
             }
           } else {
-            validate20.errors = [{
+            validate21.errors = [{
               instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
               schemaPath: "#/definitions/ContentScopeFeatureItem/type",
               keyword: "type",
@@ -12029,6 +12669,93 @@ function validate20(data) {
 
         if (!valid0) {
           break;
+        }
+      }
+    } else {
+      validate21.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate21.errors = vErrors;
+  return errors === 0;
+}
+
+function validate20(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
+        validate20.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.features !== undefined) {
+          const _errs2 = errors;
+
+          if (!validate21(data.features, {
+            instancePath: instancePath + "/features",
+            parentData: data,
+            parentDataProperty: "features",
+            rootData
+          })) {
+            vErrors = vErrors === null ? validate21.errors : vErrors.concat(validate21.errors);
+            errors = vErrors.length;
+          }
+
+          var valid0 = _errs2 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.unprotectedTemporary !== undefined) {
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (!Array.isArray(data.unprotectedTemporary)) {
+                validate20.errors = [{
+                  instancePath: instancePath + "/unprotectedTemporary",
+                  schemaPath: "#/properties/unprotectedTemporary/type",
+                  keyword: "type",
+                  params: {
+                    type: "array"
+                  },
+                  message: "must be array"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
         }
       }
     } else {
@@ -12049,94 +12776,7 @@ function validate20(data) {
   return errors === 0;
 }
 
-function validate19(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
-        validate19.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        if (data.features !== undefined) {
-          const _errs2 = errors;
-
-          if (!validate20(data.features, {
-            instancePath: instancePath + "/features",
-            parentData: data,
-            parentDataProperty: "features",
-            rootData
-          })) {
-            vErrors = vErrors === null ? validate20.errors : vErrors.concat(validate20.errors);
-            errors = vErrors.length;
-          }
-
-          var valid0 = _errs2 === errors;
-        } else {
-          var valid0 = true;
-        }
-
-        if (valid0) {
-          if (data.unprotectedTemporary !== undefined) {
-            const _errs3 = errors;
-
-            if (errors === _errs3) {
-              if (!Array.isArray(data.unprotectedTemporary)) {
-                validate19.errors = [{
-                  instancePath: instancePath + "/unprotectedTemporary",
-                  schemaPath: "#/properties/unprotectedTemporary/type",
-                  keyword: "type",
-                  params: {
-                    type: "array"
-                  },
-                  message: "must be array"
-                }];
-                return false;
-              }
-            }
-
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-        }
-      }
-    } else {
-      validate19.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate19.errors = vErrors;
-  return errors === 0;
-}
-
-const schema26 = {
+const schema27 = {
   "type": "object",
   "properties": {
     "debug": {
@@ -12152,7 +12792,7 @@ const schema26 = {
   "required": ["debug", "features", "platform"],
   "title": "UserPreferences"
 };
-const schema27 = {
+const schema28 = {
   "type": "object",
   "properties": {
     "name": {
@@ -12163,14 +12803,14 @@ const schema27 = {
   "required": ["name"],
   "title": "Platform"
 };
-const schema28 = {
+const schema29 = {
   "type": "object",
   "additionalProperties": {
     "$ref": "#/definitions/UserPreferencesFeatureItem"
   },
   "title": "UserPreferencesFeatures"
 };
-const schema29 = {
+const schema30 = {
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -12181,13 +12821,13 @@ const schema29 = {
   "required": ["settings"],
   "title": "UserPreferencesFeatureItem"
 };
-const schema30 = {
+const schema31 = {
   "type": "object",
   "additionalProperties": true,
   "title": "Settings"
 };
 
-function validate25(data) {
+function validate26(data) {
   let {
     instancePath = "",
     parentData,
@@ -12202,7 +12842,7 @@ function validate25(data) {
       let missing0;
 
       if (data.settings === undefined && (missing0 = "settings")) {
-        validate25.errors = [{
+        validate26.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -12217,7 +12857,7 @@ function validate25(data) {
 
         for (const key0 in data) {
           if (!(key0 === "settings")) {
-            validate25.errors = [{
+            validate26.errors = [{
               instancePath,
               schemaPath: "#/additionalProperties",
               keyword: "additionalProperties",
@@ -12238,7 +12878,7 @@ function validate25(data) {
 
             if (errors === _errs3) {
               if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {} else {
-                validate25.errors = [{
+                validate26.errors = [{
                   instancePath: instancePath + "/settings",
                   schemaPath: "#/definitions/Settings/type",
                   keyword: "type",
@@ -12251,6 +12891,55 @@ function validate25(data) {
               }
             }
           }
+        }
+      }
+    } else {
+      validate26.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate26.errors = vErrors;
+  return errors === 0;
+}
+
+function validate25(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        const _errs2 = errors;
+
+        if (!validate26(data[key0], {
+          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+          parentData: data,
+          parentDataProperty: key0,
+          rootData
+        })) {
+          vErrors = vErrors === null ? validate26.errors : vErrors.concat(validate26.errors);
+          errors = vErrors.length;
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
         }
       }
     } else {
@@ -12283,59 +12972,10 @@ function validate24(data) {
 
   if (errors === 0) {
     if (data && typeof data == "object" && !Array.isArray(data)) {
-      for (const key0 in data) {
-        const _errs2 = errors;
-
-        if (!validate25(data[key0], {
-          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
-          parentData: data,
-          parentDataProperty: key0,
-          rootData
-        })) {
-          vErrors = vErrors === null ? validate25.errors : vErrors.concat(validate25.errors);
-          errors = vErrors.length;
-        }
-
-        var valid0 = _errs2 === errors;
-
-        if (!valid0) {
-          break;
-        }
-      }
-    } else {
-      validate24.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate24.errors = vErrors;
-  return errors === 0;
-}
-
-function validate23(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
       let missing0;
 
       if (data.debug === undefined && (missing0 = "debug") || data.features === undefined && (missing0 = "features") || data.platform === undefined && (missing0 = "platform")) {
-        validate23.errors = [{
+        validate24.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -12350,7 +12990,7 @@ function validate23(data) {
           const _errs1 = errors;
 
           if (typeof data.debug !== "boolean") {
-            validate23.errors = [{
+            validate24.errors = [{
               instancePath: instancePath + "/debug",
               schemaPath: "#/properties/debug/type",
               keyword: "type",
@@ -12378,7 +13018,7 @@ function validate23(data) {
                 let missing1;
 
                 if (data1.name === undefined && (missing1 = "name")) {
-                  validate23.errors = [{
+                  validate24.errors = [{
                     instancePath: instancePath + "/platform",
                     schemaPath: "#/definitions/Platform/required",
                     keyword: "required",
@@ -12393,7 +13033,7 @@ function validate23(data) {
                     let data2 = data1.name;
 
                     if (typeof data2 !== "string") {
-                      validate23.errors = [{
+                      validate24.errors = [{
                         instancePath: instancePath + "/platform/name",
                         schemaPath: "#/definitions/Platform/properties/name/type",
                         keyword: "type",
@@ -12406,12 +13046,12 @@ function validate23(data) {
                     }
 
                     if (!(data2 === "ios" || data2 === "macos" || data2 === "windows" || data2 === "extension" || data2 === "android" || data2 === "unknown")) {
-                      validate23.errors = [{
+                      validate24.errors = [{
                         instancePath: instancePath + "/platform/name",
                         schemaPath: "#/definitions/Platform/properties/name/enum",
                         keyword: "enum",
                         params: {
-                          allowedValues: schema27.properties.name.enum
+                          allowedValues: schema28.properties.name.enum
                         },
                         message: "must be equal to one of the allowed values"
                       }];
@@ -12420,7 +13060,7 @@ function validate23(data) {
                   }
                 }
               } else {
-                validate23.errors = [{
+                validate24.errors = [{
                   instancePath: instancePath + "/platform",
                   schemaPath: "#/definitions/Platform/type",
                   keyword: "type",
@@ -12442,13 +13082,13 @@ function validate23(data) {
             if (data.features !== undefined) {
               const _errs8 = errors;
 
-              if (!validate24(data.features, {
+              if (!validate25(data.features, {
                 instancePath: instancePath + "/features",
                 parentData: data,
                 parentDataProperty: "features",
                 rootData
               })) {
-                vErrors = vErrors === null ? validate24.errors : vErrors.concat(validate24.errors);
+                vErrors = vErrors === null ? validate25.errors : vErrors.concat(validate25.errors);
                 errors = vErrors.length;
               }
 
@@ -12460,7 +13100,7 @@ function validate23(data) {
         }
       }
     } else {
-      validate23.errors = [{
+      validate24.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -12473,11 +13113,11 @@ function validate23(data) {
     }
   }
 
-  validate23.errors = vErrors;
+  validate24.errors = vErrors;
   return errors === 0;
 }
 
-function validate18(data) {
+function validate19(data) {
   let {
     instancePath = "",
     parentData,
@@ -12495,7 +13135,7 @@ function validate18(data) {
       let missing0;
 
       if (data.contentScope === undefined && (missing0 = "contentScope") || data.userPreferences === undefined && (missing0 = "userPreferences") || data.userUnprotectedDomains === undefined && (missing0 = "userUnprotectedDomains")) {
-        validate18.errors = [{
+        validate19.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -12510,7 +13150,7 @@ function validate18(data) {
 
         for (const key0 in data) {
           if (!(key0 === "contentScope" || key0 === "userUnprotectedDomains" || key0 === "userPreferences")) {
-            validate18.errors = [{
+            validate19.errors = [{
               instancePath,
               schemaPath: "#/additionalProperties",
               keyword: "additionalProperties",
@@ -12528,13 +13168,13 @@ function validate18(data) {
           if (data.contentScope !== undefined) {
             const _errs2 = errors;
 
-            if (!validate19(data.contentScope, {
+            if (!validate20(data.contentScope, {
               instancePath: instancePath + "/contentScope",
               parentData: data,
               parentDataProperty: "contentScope",
               rootData
             })) {
-              vErrors = vErrors === null ? validate19.errors : vErrors.concat(validate19.errors);
+              vErrors = vErrors === null ? validate20.errors : vErrors.concat(validate20.errors);
               errors = vErrors.length;
             }
 
@@ -12549,7 +13189,7 @@ function validate18(data) {
 
               if (errors === _errs3) {
                 if (!Array.isArray(data.userUnprotectedDomains)) {
-                  validate18.errors = [{
+                  validate19.errors = [{
                     instancePath: instancePath + "/userUnprotectedDomains",
                     schemaPath: "#/properties/userUnprotectedDomains/type",
                     keyword: "type",
@@ -12571,13 +13211,13 @@ function validate18(data) {
               if (data.userPreferences !== undefined) {
                 const _errs5 = errors;
 
-                if (!validate23(data.userPreferences, {
+                if (!validate24(data.userPreferences, {
                   instancePath: instancePath + "/userPreferences",
                   parentData: data,
                   parentDataProperty: "userPreferences",
                   rootData
                 })) {
-                  vErrors = vErrors === null ? validate23.errors : vErrors.concat(validate23.errors);
+                  vErrors = vErrors === null ? validate24.errors : vErrors.concat(validate24.errors);
                   errors = vErrors.length;
                 }
 
@@ -12585,6 +13225,165 @@ function validate18(data) {
               } else {
                 var valid0 = true;
               }
+            }
+          }
+        }
+      }
+    } else {
+      validate19.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate19.errors = vErrors;
+  return errors === 0;
+}
+
+function validate18(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetRuntimeConfigurationResponse" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.success === undefined && (missing0 = "success")) {
+        validate18.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.type !== undefined) {
+          let data0 = data.type;
+          const _errs1 = errors;
+
+          if (typeof data0 !== "string") {
+            validate18.errors = [{
+              instancePath: instancePath + "/type",
+              schemaPath: "#/properties/type/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            }];
+            return false;
+          }
+
+          if ("getRuntimeConfigurationResponse" !== data0) {
+            validate18.errors = [{
+              instancePath: instancePath + "/type",
+              schemaPath: "#/properties/type/const",
+              keyword: "const",
+              params: {
+                allowedValue: "getRuntimeConfigurationResponse"
+              },
+              message: "must be equal to constant"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.success !== undefined) {
+            const _errs3 = errors;
+
+            if (!validate19(data.success, {
+              instancePath: instancePath + "/success",
+              parentData: data,
+              parentDataProperty: "success",
+              rootData
+            })) {
+              vErrors = vErrors === null ? validate19.errors : vErrors.concat(validate19.errors);
+              errors = vErrors.length;
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.error !== undefined) {
+              let data2 = data.error;
+              const _errs4 = errors;
+              const _errs5 = errors;
+
+              if (errors === _errs5) {
+                if (data2 && typeof data2 == "object" && !Array.isArray(data2)) {
+                  let missing1;
+
+                  if (data2.error === undefined && (missing1 = "error")) {
+                    validate18.errors = [{
+                      instancePath: instancePath + "/error",
+                      schemaPath: "#/definitions/GenericError/required",
+                      keyword: "required",
+                      params: {
+                        missingProperty: missing1
+                      },
+                      message: "must have required property '" + missing1 + "'"
+                    }];
+                    return false;
+                  } else {
+                    if (data2.error !== undefined) {
+                      if (typeof data2.error !== "string") {
+                        validate18.errors = [{
+                          instancePath: instancePath + "/error/error",
+                          schemaPath: "#/definitions/GenericError/properties/error/type",
+                          keyword: "type",
+                          params: {
+                            type: "string"
+                          },
+                          message: "must be string"
+                        }];
+                        return false;
+                      }
+                    }
+                  }
+                } else {
+                  validate18.errors = [{
+                    instancePath: instancePath + "/error",
+                    schemaPath: "#/definitions/GenericError/type",
+                    keyword: "type",
+                    params: {
+                      type: "object"
+                    },
+                    message: "must be object"
+                  }];
+                  return false;
+                }
+              }
+
+              var valid0 = _errs4 === errors;
+            } else {
+              var valid0 = true;
             }
           }
         }
@@ -12607,168 +13406,9 @@ function validate18(data) {
   return errors === 0;
 }
 
-function validate17(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  /*# sourceURL="#/definitions/GetRuntimeConfigurationResponse" */
-  ;
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.success === undefined && (missing0 = "success")) {
-        validate17.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        if (data.type !== undefined) {
-          let data0 = data.type;
-          const _errs1 = errors;
-
-          if (typeof data0 !== "string") {
-            validate17.errors = [{
-              instancePath: instancePath + "/type",
-              schemaPath: "#/properties/type/type",
-              keyword: "type",
-              params: {
-                type: "string"
-              },
-              message: "must be string"
-            }];
-            return false;
-          }
-
-          if ("getRuntimeConfigurationResponse" !== data0) {
-            validate17.errors = [{
-              instancePath: instancePath + "/type",
-              schemaPath: "#/properties/type/const",
-              keyword: "const",
-              params: {
-                allowedValue: "getRuntimeConfigurationResponse"
-              },
-              message: "must be equal to constant"
-            }];
-            return false;
-          }
-
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-
-        if (valid0) {
-          if (data.success !== undefined) {
-            const _errs3 = errors;
-
-            if (!validate18(data.success, {
-              instancePath: instancePath + "/success",
-              parentData: data,
-              parentDataProperty: "success",
-              rootData
-            })) {
-              vErrors = vErrors === null ? validate18.errors : vErrors.concat(validate18.errors);
-              errors = vErrors.length;
-            }
-
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-
-          if (valid0) {
-            if (data.error !== undefined) {
-              let data2 = data.error;
-              const _errs4 = errors;
-              const _errs5 = errors;
-
-              if (errors === _errs5) {
-                if (data2 && typeof data2 == "object" && !Array.isArray(data2)) {
-                  let missing1;
-
-                  if (data2.error === undefined && (missing1 = "error")) {
-                    validate17.errors = [{
-                      instancePath: instancePath + "/error",
-                      schemaPath: "#/definitions/GenericError/required",
-                      keyword: "required",
-                      params: {
-                        missingProperty: missing1
-                      },
-                      message: "must have required property '" + missing1 + "'"
-                    }];
-                    return false;
-                  } else {
-                    if (data2.error !== undefined) {
-                      if (typeof data2.error !== "string") {
-                        validate17.errors = [{
-                          instancePath: instancePath + "/error/error",
-                          schemaPath: "#/definitions/GenericError/properties/error/type",
-                          keyword: "type",
-                          params: {
-                            type: "string"
-                          },
-                          message: "must be string"
-                        }];
-                        return false;
-                      }
-                    }
-                  }
-                } else {
-                  validate17.errors = [{
-                    instancePath: instancePath + "/error",
-                    schemaPath: "#/definitions/GenericError/type",
-                    keyword: "type",
-                    params: {
-                      type: "object"
-                    },
-                    message: "must be object"
-                  }];
-                  return false;
-                }
-              }
-
-              var valid0 = _errs4 === errors;
-            } else {
-              var valid0 = true;
-            }
-          }
-        }
-      }
-    } else {
-      validate17.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate17.errors = vErrors;
-  return errors === 0;
-}
-
-exports["#/definitions/RuntimeConfiguration"] = validate18;
-exports["#/definitions/AutofillSettings"] = validate30;
-const schema32 = {
+exports["#/definitions/RuntimeConfiguration"] = validate19;
+exports["#/definitions/AutofillSettings"] = validate31;
+const schema33 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/AutofillSettings",
   "title": "AutofillSettings",
@@ -12804,7 +13444,7 @@ const schema32 = {
   "required": ["featureToggles"]
 };
 
-function validate30(data) {
+function validate31(data) {
   let {
     instancePath = "",
     parentData,
@@ -12822,7 +13462,7 @@ function validate30(data) {
       let missing0;
 
       if (data.featureToggles === undefined && (missing0 = "featureToggles")) {
-        validate30.errors = [{
+        validate31.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -12842,7 +13482,7 @@ function validate30(data) {
               let missing1;
 
               if (data0.inputType_credentials === undefined && (missing1 = "inputType_credentials") || data0.inputType_identities === undefined && (missing1 = "inputType_identities") || data0.inputType_creditCards === undefined && (missing1 = "inputType_creditCards") || data0.emailProtection === undefined && (missing1 = "emailProtection") || data0.password_generation === undefined && (missing1 = "password_generation") || data0.credentials_saving === undefined && (missing1 = "credentials_saving")) {
-                validate30.errors = [{
+                validate31.errors = [{
                   instancePath: instancePath + "/featureToggles",
                   schemaPath: "#/properties/featureToggles/required",
                   keyword: "required",
@@ -12857,7 +13497,7 @@ function validate30(data) {
                   const _errs3 = errors;
 
                   if (typeof data0.inputType_credentials !== "boolean") {
-                    validate30.errors = [{
+                    validate31.errors = [{
                       instancePath: instancePath + "/featureToggles/inputType_credentials",
                       schemaPath: "#/properties/featureToggles/properties/inputType_credentials/type",
                       keyword: "type",
@@ -12879,7 +13519,7 @@ function validate30(data) {
                     const _errs5 = errors;
 
                     if (typeof data0.inputType_identities !== "boolean") {
-                      validate30.errors = [{
+                      validate31.errors = [{
                         instancePath: instancePath + "/featureToggles/inputType_identities",
                         schemaPath: "#/properties/featureToggles/properties/inputType_identities/type",
                         keyword: "type",
@@ -12901,7 +13541,7 @@ function validate30(data) {
                       const _errs7 = errors;
 
                       if (typeof data0.inputType_creditCards !== "boolean") {
-                        validate30.errors = [{
+                        validate31.errors = [{
                           instancePath: instancePath + "/featureToggles/inputType_creditCards",
                           schemaPath: "#/properties/featureToggles/properties/inputType_creditCards/type",
                           keyword: "type",
@@ -12923,7 +13563,7 @@ function validate30(data) {
                         const _errs9 = errors;
 
                         if (typeof data0.emailProtection !== "boolean") {
-                          validate30.errors = [{
+                          validate31.errors = [{
                             instancePath: instancePath + "/featureToggles/emailProtection",
                             schemaPath: "#/properties/featureToggles/properties/emailProtection/type",
                             keyword: "type",
@@ -12945,7 +13585,7 @@ function validate30(data) {
                           const _errs11 = errors;
 
                           if (typeof data0.password_generation !== "boolean") {
-                            validate30.errors = [{
+                            validate31.errors = [{
                               instancePath: instancePath + "/featureToggles/password_generation",
                               schemaPath: "#/properties/featureToggles/properties/password_generation/type",
                               keyword: "type",
@@ -12967,7 +13607,7 @@ function validate30(data) {
                             const _errs13 = errors;
 
                             if (typeof data0.credentials_saving !== "boolean") {
-                              validate30.errors = [{
+                              validate31.errors = [{
                                 instancePath: instancePath + "/featureToggles/credentials_saving",
                                 schemaPath: "#/properties/featureToggles/properties/credentials_saving/type",
                                 keyword: "type",
@@ -12990,7 +13630,7 @@ function validate30(data) {
                 }
               }
             } else {
-              validate30.errors = [{
+              validate31.errors = [{
                 instancePath: instancePath + "/featureToggles",
                 schemaPath: "#/properties/featureToggles/type",
                 keyword: "type",
@@ -13005,7 +13645,7 @@ function validate30(data) {
         }
       }
     } else {
-      validate30.errors = [{
+      validate31.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -13018,11 +13658,11 @@ function validate30(data) {
     }
   }
 
-  validate30.errors = vErrors;
+  validate31.errors = vErrors;
   return errors === 0;
 }
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13107,7 +13747,7 @@ function fromPlatformConfig(config) {
   return settings;
 }
 
-},{"../schema/validators.cjs":49}],51:[function(require,module,exports){
+},{"../schema/validators.cjs":50}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13117,7 +13757,7 @@ exports.default = void 0;
 // Capture the globals we need on page start
 const secretGlobals = {
   window,
-  // Methods must be bound to their interface, otherwise they throw Illegal invocation
+  // Methods must be bound to their tooltipHandler, otherwise they throw Illegal invocation
   encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
   decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
   generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
@@ -13138,7 +13778,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13257,7 +13897,7 @@ function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
   });
 }
 
-},{"../schema/response.getAutofillData.schema.json":46,"../schema/response.getAvailableInputTypes.schema.json":47,"../schema/response.getRuntimeConfiguration.schema.json":48}],53:[function(require,module,exports){
+},{"../schema/response.getAutofillData.schema.json":47,"../schema/response.getAvailableInputTypes.schema.json":48,"../schema/response.getRuntimeConfiguration.schema.json":49}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13272,7 +13912,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * Create a wrapper around the webkit messaging that conforms
- * to the Transport interface
+ * to the Transport tooltipHandler
  *
  * @param {GlobalConfig} config
  * @returns {RuntimeTransport}
@@ -13449,7 +14089,7 @@ const decrypt = async (ciphertext, key, iv) => {
   return dec.decode(decrypted);
 };
 
-},{"./captureDdgGlobals":51}],54:[function(require,module,exports){
+},{"./captureDdgGlobals":52}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13551,7 +14191,7 @@ const interceptions = {
   }
 };
 
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13644,7 +14284,7 @@ function sendAndWait(msgOrFn, expectedResponse) {
   });
 }
 
-},{"../schema/response.getAvailableInputTypes.schema.json":47,"../schema/response.getRuntimeConfiguration.schema.json":48}],56:[function(require,module,exports){
+},{"../schema/response.getAvailableInputTypes.schema.json":48,"../schema/response.getRuntimeConfiguration.schema.json":49}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13671,7 +14311,7 @@ Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
 
 var _RuntimeConfiguration = require("./src/config/RuntimeConfiguration.js");
 
-},{"./src/config/RuntimeConfiguration.js":60}],57:[function(require,module,exports){
+},{"./src/config/RuntimeConfiguration.js":61}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13683,7 +14323,7 @@ const equal = require("fast-deep-equal");
 equal.code = 'require("ajv/dist/runtime/equal").default';
 exports.default = equal;
 
-},{"fast-deep-equal":58}],58:[function(require,module,exports){
+},{"fast-deep-equal":59}],59:[function(require,module,exports){
 'use strict'; // do not edit .js files directly - edit src/index.jst
 
 module.exports = function equal(a, b) {
@@ -13723,7 +14363,7 @@ module.exports = function equal(a, b) {
   return a !== a && b !== b;
 };
 
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13790,7 +14430,7 @@ function processConfig(data, userList, preferences, maybeTopLevelUrl) {
   return prefs;
 }
 
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13941,7 +14581,7 @@ function tryCreateRuntimeConfiguration(incoming) {
   return new RuntimeConfiguration().tryAssign(incoming);
 }
 
-},{"../apple-utils.js":59,"./validate.cjs":61}],61:[function(require,module,exports){
+},{"../apple-utils.js":60,"./validate.cjs":62}],62:[function(require,module,exports){
 "use strict";
 
 module.exports = validate20;
@@ -14800,4 +15440,4 @@ function validate20(data) {
   return errors === 0;
 }
 
-},{"ajv/dist/runtime/equal":57}]},{},[37]);
+},{"ajv/dist/runtime/equal":58}]},{},[38]);

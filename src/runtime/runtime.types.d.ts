@@ -22,6 +22,14 @@ type RuntimeMessages = {
     showAutofillParent: {
         request: Schema.ShowAutofillParentRequest,
         response: { success: {} },
+    },
+    getSelectedCredentials: {
+        request: null,
+        response: { success: {} },
+    },
+    closeAutofillParent: {
+        request: null,
+        response: { success: {} },
     }
 }
 

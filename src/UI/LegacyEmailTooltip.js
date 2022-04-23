@@ -14,4 +14,15 @@ export class LegacyEmailTooltip {
 
     setActiveTooltip (_tooltip) {
     }
+
+    addListener (_cb) {
+    }
+
+    // @ts-ignore
+    createTooltip (_pos, _topContextData) {
+        return undefined
+    }
+
+    setDevice (_device) {
+    }
 }

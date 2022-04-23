@@ -25,6 +25,9 @@ export class WebTooltip {
      */
     _device = null;
 
+    _listenerFactories = []
+    _listenerCleanups = []
+
     /**
      * @param {WebTooltipOptions} options
      */
@@ -34,10 +37,12 @@ export class WebTooltip {
     }
 
     attach (args) {
-        if (this.getActiveTooltip()) return
+        if (this.getActiveTooltip()) {
+            // todo: Is this is correct logic?
+            return
+        }
         this.#setDevice(args.device);
         const {topContextData, getPosition, input, form } = args;
-        this.#attachCloseListeners();
         this.setActiveTooltip(this.createTooltip(getPosition, topContextData))
         form.showingTooltip(input)
     }
@@ -49,6 +54,7 @@ export class WebTooltip {
      * @return {import("./Tooltip").Tooltip}
      */
     createTooltip (getPosition, topContextData) {
+        this.#attachCloseListeners();
         const config = getInputConfigFromType(topContextData.inputType)
 
         if (this._options.tooltipKind === "modern" ) {
@@ -72,11 +78,18 @@ export class WebTooltip {
     #attachCloseListeners () {
         window.addEventListener('input', this)
         window.addEventListener('keydown', this)
+        this._listenerCleanups = [];
+        for (let listenerFactory of this._listenerFactories) {
+            this._listenerCleanups.push(listenerFactory())
+        }
     }
 
     #removeCloseListeners () {
         window.removeEventListener('input', this)
         window.removeEventListener('keydown', this)
+        for (let listenerCleanup of this._listenerCleanups) {
+            listenerCleanup();
+        }
     }
 
     handleEvent (event) {
@@ -214,5 +227,9 @@ export class WebTooltip {
 
     setDevice (device) {
         this.#setDevice(device);
+    }
+
+    addListener (cb) {
+        this._listenerFactories.push(cb);
     }
 }

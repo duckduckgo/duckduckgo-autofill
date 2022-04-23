@@ -19,64 +19,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
-    constructor (inputTypes, runtime, tooltip, config, platformConfig, settings) {
-        super(inputTypes, runtime, tooltip, config, platformConfig, settings)
-
-        // if (this.globalConfig.supportsTopFrame) {
-        //     // This is always added as a child frame needs to be informed of a parent frame scroll
-        // }
-        window.addEventListener('scroll', this)
-    }
-
-    /**
-     * Poll the native listener until the user has selected a credential.
-     * Message return types are:
-     * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
-     *     - This also is triggered when the close event is called and prevents any edge case continued polling.
-     * - 'ok' is when the user has selected a credential and the value can be injected into the page.
-     * - 'none' is when the tooltip is open in the native window however hasn't been entered.
-     * @returns {Promise<void>}
-     */
-    async listenForSelectedCredential () {
-        // Prevent two timeouts from happening
-        clearTimeout(this.pollingTimeout)
-
-        const response = await this.transport.send('getSelectedCredentials')
-        switch (response.type) {
-        case 'none':
-            // Parent hasn't got a selected credential yet
-            this.pollingTimeout = setTimeout(() => {
-                this.listenForSelectedCredential()
-            }, 100)
-            return
-        case 'ok':
-            return this.activeFormSelectedDetail(response.data, response.configType)
-        case 'stop':
-            // Parent wants us to stop polling
-            break
-        }
-    }
-
-    handleEvent (event) {
-        switch (event.type) {
-        case 'mouseMove':
-            this.processMouseMove(event)
-            break
-        case 'scroll': {
-            this.removeTooltip()
-            break
-        }
-        default: {
-            throw new Error('event not handled in base apple interface')
-            // super.handleEvent(event)
-        }
-        }
-    }
-
-    processMouseMove (event) {
-        this.currentTooltip?.focus(event.detail.x, event.detail.y)
-    }
-
     async setupAutofill () {
         if (this.globalConfig.isApp) {
             await this.getAutofillInitData()

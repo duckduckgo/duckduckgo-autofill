@@ -35,6 +35,7 @@ interface AttachArgs {
 interface TooltipInterface {
   getActiveTooltip(): LocalTooltip | null;
   setActiveTooltip(tooltip: LocalTooltip);
+  addListener(cb: ()=>void);
   removeTooltip();
   attach(args: AttachArgs): void;
 

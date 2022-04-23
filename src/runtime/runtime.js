@@ -110,6 +110,22 @@ class Runtime {
     async showAutofillParent(parentArgs) {
         return this.transport.send('showAutofillParent', parentArgs);
     }
+
+    /**
+     * todo(Shane): Schema for this
+     * @returns {Promise<any>}
+     */
+    async getSelectedCredentials() {
+        return this.transport.send('getSelectedCredentials');
+    }
+
+    /**
+     * todo(Shane): Schema for this
+     * @returns {Promise<any>}
+     */
+    async closeAutofillParent() {
+        return this.transport.send('closeAutofillParent');
+    }
 }
 
 function createRuntime (config) {

@@ -39,4 +39,10 @@ export class NativeTooltip {
 
     setActiveTooltip (_tooltip) {
     }
+
+    addListener (_cb) {
+    }
+
+    setDevice (_device) {
+    }
 }
