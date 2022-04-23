@@ -105,7 +105,11 @@ export class WebTooltip {
             e.stopImmediatePropagation()
 
             const activeTooltip = this.getActiveTooltip()
-            activeTooltip?.dispatchClick()
+            if (!activeTooltip) {
+                console.warn('Could not get activeTooltip');
+            } else {
+                activeTooltip.dispatchClick()
+            }
         } else {
             this.removeTooltip().catch(e => {
                 console.error('error removing tooltip', e);
