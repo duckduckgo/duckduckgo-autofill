@@ -14,7 +14,7 @@ import EmailWebTooltip from './EmailWebTooltip'
 export class WebTooltip {
 
     /** @type {import("../UI/Tooltip.js").Tooltip | null} */
-    _currentTooltip = null
+    _activeTooltip = null
 
     /** @type {WebTooltipOptions} */
     _options;
@@ -34,11 +34,11 @@ export class WebTooltip {
     }
 
     attach (args) {
-        if (this.currentTooltip) return
+        if (this.getActiveTooltip()) return
         this.#setDevice(args.device);
         const {topContextData, getPosition, input, form } = args;
         this.#attachCloseListeners();
-        this.currentTooltip = this.createTooltip(getPosition, topContextData)
+        this.setActiveTooltip(this.createTooltip(getPosition, topContextData))
         form.showingTooltip(input)
     }
 
@@ -134,10 +134,10 @@ export class WebTooltip {
 
 
     async removeTooltip () {
-        if (this._currentTooltip) {
+        if (this._activeTooltip) {
             this.#removeCloseListeners()
-            this._currentTooltip.remove()
-            this._currentTooltip = null
+            this._activeTooltip.remove()
+            this._activeTooltip = null
             this.currentAttached = null
         }
     }
@@ -146,14 +146,14 @@ export class WebTooltip {
      * @returns {import("../UI/Tooltip.js").Tooltip|null}
      */
     getActiveTooltip () {
-        return this._currentTooltip
+        return this._activeTooltip
     }
 
     /**
      * @param {import("../UI/Tooltip.js").Tooltip} value
      */
     setActiveTooltip (value) {
-        this._currentTooltip = value
+        this._activeTooltip = value
     }
 
     /**

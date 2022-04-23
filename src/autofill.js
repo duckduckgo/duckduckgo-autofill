@@ -1,4 +1,3 @@
-alert('checking...');
 // Polyfills/shims
 import './requestIdleCallback'
 import './transports/captureDdgGlobals'
