@@ -1,12 +1,15 @@
 ## `window.BrowserAutofill.getRuntimeConfiguration()`
 
-- Return type: `string`
+- Response Message via: `window.postMessage(response)`
+  - See [Response Schema](../src/schema/response.getRuntimeConfiguration.schema.json)
 - Autofill will `JSON.parse(string)` this response.
-- [Response Schema](../src/schema/response.getRuntimeConfiguration.schema.json)
 - [Runtime Configuration Schema (linked from above, but in a separate repo)](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
+
+**`response`** example
 
 ```json
 {
+  "type": "getRuntimeConfigurationResponse",
   "success": {
     "contentScope": {
       "features": {
@@ -48,12 +51,15 @@
 
 This represents which input types we can autofill for the current user.
 
-- Return type: `string`
+- Response Message via: `window.postMessage(response)`
+  - See [Response Schema](../src/schema/response.getAvailableInputTypes.schema.json)
 - Autofill will `JSON.parse(string)` the response.
-- [../src/schema/response.getAvailableInputTypes.schema.json](../src/schema/response.getAvailableInputTypes.schema.json)
+
+**`response`** example
 
 ```json
 {
+  "type": "getAvailableInputTypesResponse",
   "success": {
     "email": true,
     "credentials": true
@@ -69,6 +75,7 @@ This represents which input types we can autofill for the current user.
 
 Autofill will send a *string* of JSON data, conforming to the following schema: (TODO: Add schema)
 
+- Currently, autofill doesn't care/listen for any response.
 - TODO: Schema for the 'data' argument above
 
 ```json
