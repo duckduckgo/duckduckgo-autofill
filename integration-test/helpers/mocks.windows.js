@@ -76,34 +76,55 @@ export function createWindowsMocks () {
         },
         async applyTo (page) {
             return page.evaluate(mocks => {
+                window.__playwright = { mocks: { calls: [] } }
                 const listeners = []
-                const emit = (data) => {
+
+                /**
+                 * @param {Names} name
+                 * @param {any} request
+                 * @param {any} response
+                 */
+                function respond (name, request, response) {
+                    const call = [name, request, response]
+                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     setTimeout(() => {
                         for (let listener of listeners) {
                             listener({
                                 origin: window.origin,
-                                data: data
+                                data: {
+                                    type: name + 'Response',
+                                    success: response
+                                }
                             })
                         }
                     }, 0)
                 }
                 // @ts-ignore
+                /** @type {MocksObjectAndroid} */
+                const mocksObject = {
+                    getRuntimeConfiguration () {
+                        return respond('getRuntimeConfiguration', null, mocks.getRuntimeConfiguration)
+                    },
+                    getAvailableInputTypes () {
+                        return respond('getAvailableInputTypes', null, mocks.getAvailableInputTypes)
+                    },
+                    getAutofillData (_request) {
+                        throw new Error('unimplemented windows.getAutofillData')
+                    },
+                    storeFormData (_request) {
+                        // /** @type {MockCall} */
+                        // const call = ['storeFormData', request, mocks.getAutofillData]
+                        // window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                        throw new Error('unimplemented windows.storeFormData')
+                    }
+                }
+
+                // @ts-ignore
                 window.chrome = {
                     webview: {
                         postMessage (input) {
-                            switch (input.commandName) {
-                            case 'GetRuntimeConfiguration': {
-                                return emit({
-                                    type: 'getRuntimeConfigurationResponse',
-                                    success: mocks.getRuntimeConfiguration
-                                })
-                            }
-                            case 'GetAvailableInputTypes': {
-                                return emit({
-                                    type: 'getAvailableInputTypesResponse',
-                                    success: mocks.getAvailableInputTypes
-                                })
-                            }
+                            if (mocksObject[input.type]) {
+                                return mocksObject[input.type](input)
                             }
                         },
                         removeEventListener (_name, _listener) {

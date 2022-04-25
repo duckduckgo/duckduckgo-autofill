@@ -58,6 +58,7 @@ function sendAndWaitForAndroidAnswer (fn, expectedResponse) {
     fn()
     return new Promise((resolve) => {
         const handler = e => {
+            // todo(Shane): Allow blank string, try sandboxed iframe. allow-scripts
             // if (e.origin !== window.origin) {
             //     console.log(`❌ origin-mismatch e.origin(${e.origin}) !== window.origin(${window.origin})`);
             //     return
@@ -77,7 +78,7 @@ function sendAndWaitForAndroidAnswer (fn, expectedResponse) {
                     window.removeEventListener('message', handler)
                     return resolve(data)
                 }
-                console.log(`❌ event.data.type didnt match '${expectedResponse}'`, JSON.stringify(data))
+                console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
             } catch (e) {
                 window.removeEventListener('message', handler)
                 console.log('❌ Could not JSON.parse the response')

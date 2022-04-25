@@ -1,11 +1,23 @@
-## `window.BrowserAutofill.getRuntimeConfiguration()`
+## `getRuntimeConfiguration()`
 
-- Response Message via: `window.postMessage(response)`
+- `window.chrome.webview.postMessage({ type: 'getRuntimeConfiguration' })`
+- Response Message via: `window.chrome.webview.addEventListener({type: "getRuntimeConfigurationResponse", success: {...} }')`
   - See [Response Schema](../src/schema/response.getRuntimeConfiguration.schema.json)
-- Autofill will `JSON.parse(string)` this response.
 - [Runtime Configuration Schema (linked from above, but in a separate repo)](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
 
-**`response`** example
+**request example**
+
+```js
+window.chrome.webview.postMessage({ type: 'getRuntimeConfiguration' })
+```
+
+**`response`** example, via:
+
+```js
+window.chrome.webview.addEventListener('message', (event) => {...})
+```
+
+Where `event.data` is:
 
 ```json
 {
@@ -24,7 +36,7 @@
     "userPreferences": {
       "debug": false,
       "platform": {
-        "name": "android"
+        "name": "windows"
       },
       "features": {
         "autofill": {
@@ -47,15 +59,27 @@
 
 --- 
 
-## `window.BrowserAutofill.getAvailableInputTypes()`
+## `getAvailableInputTypes()`
 
 This represents which input types we can autofill for the current user.
 
-- Response Message via: `window.postMessage(response)`
+- `window.chrome.webview.postMessage({ type: 'getAvailableInputTypes' })`
+- Response Message via: `window.chrome.webview.addEventListener({type: "getAvailableInputTypesResponse", success: {...} }')`
   - See [Response Schema](../src/schema/response.getAvailableInputTypes.schema.json)
-- Autofill will `JSON.parse(string)` the response.
 
-**`response`** example
+**request example**
+
+```js
+window.chrome.webview.postMessage({ type: 'getAvailableInputTypes' })
+```
+
+**`response`** example, via: 
+
+```js
+window.chrome.webview.addEventListener('message', (event) => {...})
+```
+
+where `event.data` is:
 
 ```json
 {
@@ -69,13 +93,10 @@ This represents which input types we can autofill for the current user.
 
 ---
 
-## `window.BrowserAutofill.storeFormData(data)`
+## `storeFormData(data)`
 
-**data** type: `string`
-
-Autofill will send a *string* of JSON data, conforming to the following schema: (TODO: Add schema)
-
-- Currently, autofill doesn't care/listen for any response.
+- `window.chrome.webview.postMessage({ type: 'storeFormData', data: {...} })` 
+- Currently, autofill doesn't care/listen for any response to this, but may do later.
 - TODO: Schema for the 'data' argument above
 
 **request example**
@@ -87,46 +108,5 @@ const data = {
     "password": "123456"
   }
 }
-window.BrowserAutofill.storeFormData(data)
-```
-
-
-```json
-{
-  "credentials": {
-    "username": "dax@duck.com",
-    "password": "123456"
-  }
-}
-```
-
----
-
-## `window.BrowserAutofill.getAutofillData(request)`
-
-- Autofill will send `request` as a string of JSON 
-- See: [../src/schema/request.getAutofillData.schema.json](../src/schema/request.getAutofillData.schema.json)
-- Response Message via: `window.postMessage(response)`
-  - See: [../src/schema/response.getAutofillData.schema.json](../src/schema/response.getAutofillData.schema.json)
-
-**`request`** example
-
-```json
-{
-  "type": "credentials.username",
-  "mainType": "credentials",
-  "subType": "username"
-}
-```
-
-**`response`** example
-
-```json
-{
-  "type": "getAutofillDataResponse",
-  "success": {
-    "username": "dax@example.com",
-    "password": "123456"
-  }
-}
+window.chrome.webview.postMessage({ type: 'storeFormData', data: data })
 ```

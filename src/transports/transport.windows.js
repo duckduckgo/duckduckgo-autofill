@@ -1,6 +1,7 @@
 // import getAutofillData from '../schema/response.getAutofillData.schema.json'
 import getAvailableInputTypes from '../schema/response.getAvailableInputTypes.schema.json'
 import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.schema.json'
+
 /**
  * @param {GlobalConfig} _globalConfig
  * @returns {RuntimeTransport}
@@ -13,12 +14,14 @@ export function createTransport (_globalConfig) {
             switch (name) {
             case 'getRuntimeConfiguration': {
                 return sendAndWait(() => {
-                    return window.chrome.webview.postMessage({ commandName: 'GetRuntimeConfiguration' })
+                    // todo(Shane): How to prevent these strings...
+                    return window.chrome.webview.postMessage({ type: 'getRuntimeConfiguration' })
                 }, getRuntimeConfiguration.properties.type.const)
             }
             case 'getAvailableInputTypes': {
                 return sendAndWait(() => {
-                    return window.chrome.webview.postMessage({ commandName: 'GetAvailableInputTypes' })
+                    // todo(Shane): How to prevent these strings...
+                    return window.chrome.webview.postMessage({ type: 'getAvailableInputTypes' })
                 }, getAvailableInputTypes.properties.type.const)
             }
             default: throw new Error('windows: not implemented: ' + name)

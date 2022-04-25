@@ -13221,6 +13221,7 @@ function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
   fn();
   return new Promise(resolve => {
     const handler = e => {
+      // todo(Shane): Allow blank string, try sandboxed iframe. allow-scripts
       // if (e.origin !== window.origin) {
       //     console.log(`❌ origin-mismatch e.origin(${e.origin}) !== window.origin(${window.origin})`);
       //     return
@@ -13245,7 +13246,7 @@ function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
           return resolve(data);
         }
 
-        console.log("\u274C event.data.type didnt match '".concat(expectedResponse, "'"), JSON.stringify(data));
+        console.log("\u274C event.data.type was '".concat(data.type, "', which didnt match '").concat(expectedResponse, "'"), JSON.stringify(data));
       } catch (e) {
         window.removeEventListener('message', handler);
         console.log('❌ Could not JSON.parse the response');
@@ -13580,8 +13581,9 @@ function createTransport(_globalConfig) {
         case 'getRuntimeConfiguration':
           {
             return sendAndWait(() => {
+              // todo(Shane): How to prevent these strings...
               return window.chrome.webview.postMessage({
-                commandName: 'GetRuntimeConfiguration'
+                type: 'getRuntimeConfiguration'
               });
             }, _responseGetRuntimeConfigurationSchema.default.properties.type.const);
           }
@@ -13589,8 +13591,9 @@ function createTransport(_globalConfig) {
         case 'getAvailableInputTypes':
           {
             return sendAndWait(() => {
+              // todo(Shane): How to prevent these strings...
               return window.chrome.webview.postMessage({
-                commandName: 'GetAvailableInputTypes'
+                type: 'getAvailableInputTypes'
               });
             }, _responseGetAvailableInputTypesSchema.default.properties.type.const);
           }

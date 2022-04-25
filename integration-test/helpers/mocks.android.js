@@ -110,6 +110,11 @@ export function createAndroidMocks () {
                         return ''
                     }
                 }
+                /**
+                 * @param {Names} name
+                 * @param {any} request
+                 * @param {any} response
+                 */
                 function respond (name, request, response) {
                     const call = [name, request, response]
                     window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
