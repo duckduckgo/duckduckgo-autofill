@@ -158,14 +158,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         return formatDuckAddress(alias)
     }
 
-    /**
-     * @param {PlatformConfig} platformConfig
-     * @returns {Promise<import('../settings/settings').AutofillSettings>}
-     */
-    async getAutofillSettings (platformConfig) {
-        return fromPlatformConfig(platformConfig)
-    }
-
     tooltipStyles () {
         return `<style>${CSS_STYLES}</style>`
     }

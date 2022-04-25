@@ -9,6 +9,7 @@ import {
 } from '../autofill-utils'
 
 class ExtensionInterface extends InterfacePrototype {
+    // todo(Shane): How will this be handled in the new model.
     async isEnabled () {
         return new Promise(resolve => {
             chrome.runtime.sendMessage(

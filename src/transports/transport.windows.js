@@ -1,4 +1,5 @@
 // import getAutofillData from '../schema/response.getAutofillData.schema.json'
+import getAutofillInitData from '../schema/response.getAutofillInitData.schema.json'
 import getAvailableInputTypes from '../schema/response.getAvailableInputTypes.schema.json'
 import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.schema.json'
 
@@ -10,7 +11,7 @@ export function createTransport (_globalConfig) {
     /** @type {RuntimeTransport} */
     const transport = {
         async send (name, data) {
-            console.log('📲 windows:', name, data)
+            console.log('💻 windows:', name, data)
             switch (name) {
             case 'getRuntimeConfiguration': {
                 return sendAndWait(() => {
@@ -23,6 +24,12 @@ export function createTransport (_globalConfig) {
                     // todo(Shane): How to prevent these strings...
                     return window.chrome.webview.postMessage({ type: 'getAvailableInputTypes' })
                 }, getAvailableInputTypes.properties.type.const)
+            }
+            case 'getAutofillInitData': {
+                return sendAndWait(() => {
+                    // todo(Shane): How to prevent these strings...
+                    return window.chrome.webview.postMessage({ type: 'getAutofillInitData' })
+                }, getAutofillInitData.properties.type.const)
             }
             default: throw new Error('windows: not implemented: ' + name)
             }
@@ -54,6 +61,7 @@ function sendAndWait (msgOrFn, expectedResponse) {
                 return
             }
             // at this point we're confident we have the correct message type
+            console.log('💻 windows:', expectedResponse, event.data);
             resolve(event.data)
             window.chrome.webview.removeEventListener('message', handler)
         }

@@ -84,7 +84,7 @@ test.describe('macos', () => {
             firstName: 'shane',
             emailAddress: personalAddress
         }
-        test.only('with an identity only', async ({page}) => {
+        test('with an identity only', async ({page}) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page, server)
 

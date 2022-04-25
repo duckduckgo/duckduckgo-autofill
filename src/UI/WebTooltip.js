@@ -67,7 +67,10 @@ export class WebTooltip {
             // construct the autofill
             return new DataWebTooltip(config, topContextData.inputType, getPosition, this, {testMode: this.#device.isTestMode()})
                 .render(config, asRenderers, {
-                    onSelect: (id) => this.#onSelect(config, data, id)
+                    onSelect: (id) => {
+                        console.log('on select?');
+                        this.#onSelect(config, data, id)
+                    }
                 })
         } else {
             return new EmailWebTooltip(config, topContextData.inputType, getPosition, this, {testMode: this.#device.isTestMode()})
@@ -110,6 +113,7 @@ export class WebTooltip {
 
     // Global listener for event delegation
     _pointerDownListener (e) {
+        console.log('EVENT');
         if (!e.isTrusted) return
 
         // @ts-ignore

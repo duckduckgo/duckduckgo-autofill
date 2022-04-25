@@ -50,6 +50,13 @@ export function createWindowsMocks () {
         /** @type {AvailableInputTypes} */
         getAvailableInputTypes: {
             credentials: true
+        },
+        /** @type {InboundPMData} */
+        getAutofillInitData: {
+            credentials: [],
+            creditCards: [],
+            identities: [],
+            serializedInputContext: "{}"
         }
     }
     /** @type {MockBuilder} */
@@ -116,6 +123,9 @@ export function createWindowsMocks () {
                         // const call = ['storeFormData', request, mocks.getAutofillData]
                         // window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                         throw new Error('unimplemented windows.storeFormData')
+                    },
+                    getAutofillInitData() {
+                        return respond('getAutofillInitData', null, mocks.getAutofillInitData)
                     }
                 }
 
@@ -125,6 +135,8 @@ export function createWindowsMocks () {
                         postMessage (input) {
                             if (mocksObject[input.type]) {
                                 return mocksObject[input.type](input)
+                            } else {
+                                throw new Error('windows mock missing for ' + input.type)
                             }
                         },
                         removeEventListener (_name, _listener) {
@@ -140,8 +152,9 @@ export function createWindowsMocks () {
         withIdentity: function () {
             throw new Error('Function not implemented.')
         },
-        withCredentials: function () {
-            throw new Error('Function not implemented.')
+        withCredentials: function (credentials) {
+            mocks.getAutofillInitData.credentials.push(credentials);
+            return this;
         }
     }
     return builder

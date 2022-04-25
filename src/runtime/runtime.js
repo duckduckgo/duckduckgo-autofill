@@ -88,6 +88,17 @@ class Runtime {
     }
 
     /**
+     * @returns {Promise<InboundPMData>}
+     */
+    async getAutofillInitData() {
+        const response = await this.transport.send('getAutofillInitData');
+        return runtimeResponse(response, 'getAutofillInitData',
+            // @ts-ignore
+            validators['#/definitions/GetAutofillInitDataResponse']
+        )
+    }
+
+    /**
      * @public
      * @param {DataStorageObject} data
      */

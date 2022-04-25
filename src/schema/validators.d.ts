@@ -58,6 +58,10 @@ namespace Schema {
   interface GetAutofillDataResponse {
     type?: string
   }
+  /** @link {import("./response.getAutofillInitData.schema.json")} */
+  interface GetAutofillInitDataResponse {
+    type?: string
+  }
   /** @link {import("./response.getAvailableInputTypes.schema.json")} */
   interface GetAvailableInputTypesResponse {
     type?: string

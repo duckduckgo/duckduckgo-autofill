@@ -2,6 +2,8 @@ interface RuntimeTransport {
     send<N extends Names>(name: N, data?: RuntimeMessages[N]['request']): Promise<any>
 }
 
+type Names = keyof RuntimeMessages;
+
 type RuntimeMessages = {
     getAvailableInputTypes: {
         response: { success: AvailableInputTypes },
@@ -30,10 +32,12 @@ type RuntimeMessages = {
     closeAutofillParent: {
         request: null,
         response: { success: {} },
+    },
+    getAutofillInitData: {
+        request: null,
+        response: { success: PMData },
     }
 }
-
-type Names = keyof RuntimeMessages;
 
 type Interceptions = {
     [N in Names]?: (config: GlobalConfig) => RuntimeMessages[N]['response']

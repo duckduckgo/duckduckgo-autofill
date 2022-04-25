@@ -46,7 +46,7 @@ interface InboundPMData {
      credentials: CredentialsObject[],
      creditCards: CreditCardObject[],
      identities: IdentityObject[],
-     serializedInputContext: string,
+     serializedInputContext?: string,
 }
 
 interface TopContextData {

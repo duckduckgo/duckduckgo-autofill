@@ -40,6 +40,8 @@ import {createTooltip} from './UI/tooltips'
             const tooltip = createTooltip(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings)
             const device = createDevice(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
 
+            console.log(device);
+
             tooltip.setDevice?.(device);
 
             // Init services
