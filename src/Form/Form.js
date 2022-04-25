@@ -230,6 +230,16 @@ class Form {
                 // exclude buttons to show/hide passwords, cancel buttons, social login buttons
                 return !/facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
             })
+            // filter out buttons of the wrong type - login buttons on a signup form, signup buttons on a login form
+            .filter((button) => {
+                if (this.isLogin) {
+                    return !/sign.?up/i.test(button.textContent || '')
+                } else if (this.isSignup) {
+                    return !/(log|sign).?([io])n/i.test(button.textContent || '')
+                } else {
+                    return true
+                }
+            })
     }
 
     /**
