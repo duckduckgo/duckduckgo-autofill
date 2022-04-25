@@ -9166,7 +9166,7 @@ function createGlobalConfig() {
   const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
   const isMobileApp = isDDGApp && !isApp;
   const isFirefox = navigator.userAgent.includes('Firefox');
-  const isWindows = navigator.userAgent.includes('Windows 11');
+  const isWindows = navigator.userAgent.includes('Edg/');
   const hasNativeTooltip = isMobileApp;
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
   return {
