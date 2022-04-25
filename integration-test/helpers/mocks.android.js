@@ -110,32 +110,29 @@ export function createAndroidMocks () {
                         return ''
                     }
                 }
+                function respond (name, request, response) {
+                    const call = [name, request, response]
+                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.postMessage(JSON.stringify({
+                        type: name + 'Response',
+                        success: response
+                    }), window.origin)
+                }
                 // todo(Shane): This is the proposed android API.
                 /** @type {MocksObjectAndroid} */
                 const mocksObject = {
                     getRuntimeConfiguration () {
-                        const call = ['getRuntimeConfiguration', null, mocks.getRuntimeConfigurationResponse]
-                        window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                        return JSON.stringify({
-                            success: mocks.getRuntimeConfigurationResponse
-                        })
+                        return respond('getRuntimeConfiguration', null, mocks.getRuntimeConfigurationResponse)
                     },
                     getAvailableInputTypes () {
-                        return JSON.stringify({
-                            success: mocks.getAvailableInputTypesResponse
-                        })
+                        return respond('getAvailableInputTypes', null, mocks.getAvailableInputTypesResponse)
                     },
-                    getAutofillData (data) {
-                        const call = ['getAutofillData', data, mocks.getAutofillData]
-                        window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                        window.postMessage(JSON.stringify({
-                            type: 'getAutofillDataResponse',
-                            success: mocks.getAutofillData
-                        }), window.origin)
+                    getAutofillData (request) {
+                        return respond('getAutofillData', request, mocks.getAutofillData)
                     },
-                    storeFormData (data) {
+                    storeFormData (request) {
                         /** @type {MockCall} */
-                        const call = ['storeFormData', data, mocks.getAutofillData]
+                        const call = ['storeFormData', request, mocks.getAutofillData]
                         window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     }
                 }

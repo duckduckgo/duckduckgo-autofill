@@ -1,37 +1,37 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
-  "title": "GetAvailableInputTypesResponse",
   "type": "object",
-  "oneOf": [
-    {
-      "type": "object",
-      "title": "GetAvailableInputTypes Success Response",
-      "properties": {
-        "success": {
-          "type": "object",
-          "properties": {
-            "credentials": {
-              "type": "boolean"
-            },
-            "identities": {
-              "type": "boolean"
-            },
-            "creditCards": {
-              "type": "boolean"
-            },
-            "email": {
-              "type": "boolean"
-            }
-          }
-        }
-      },
-      "required": [
-        "success"
-      ]
+  "title": "GetAvailableInputTypesResponse Success Response",
+  "properties": {
+    "type": {
+      "title": "This is the 'type' field on message that may be sent back to the window",
+      "description": "Required on Android + Windows devices, optional on iOS",
+      "type": "string",
+      "const": "getAvailableInputTypesResponse"
     },
-    {
+    "success": {
+      "type": "object",
+      "properties": {
+        "credentials": {
+          "type": "boolean"
+        },
+        "identities": {
+          "type": "boolean"
+        },
+        "creditCards": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "boolean"
+        }
+      }
+    },
+    "error":  {
       "$ref": "#/definitions/GenericError"
     }
+  },
+  "required": [
+    "success"
   ]
 }

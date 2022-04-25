@@ -94,13 +94,13 @@ export function createWindowsMocks () {
                             switch (input.commandName) {
                             case 'GetRuntimeConfiguration': {
                                 return emit({
-                                    type: 'GetRuntimeConfigurationResponse',
+                                    type: 'getRuntimeConfigurationResponse',
                                     success: mocks.getRuntimeConfiguration
                                 })
                             }
                             case 'GetAvailableInputTypes': {
                                 return emit({
-                                    type: 'GetAvailableInputTypesResponse',
+                                    type: 'getAvailableInputTypesResponse',
                                     success: mocks.getAvailableInputTypes
                                 })
                             }

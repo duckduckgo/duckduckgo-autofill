@@ -1,4 +1,6 @@
-import schema from '../schema/response.getAutofillData.schema.json'
+import getAutofillData from '../schema/response.getAutofillData.schema.json'
+import getAvailableInputTypes from '../schema/response.getAvailableInputTypes.schema.json'
+import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.schema.json'
 /**
  * @param {GlobalConfig} _globalConfig
  * @returns {RuntimeTransport}
@@ -10,19 +12,23 @@ export function createTransport (_globalConfig) {
             console.log('📲 android:', name, data)
             switch (name) {
             case 'getRuntimeConfiguration': {
-                const string = window.BrowserAutofill.getRuntimeConfiguration()
-                console.log('\t📲', string)
-                return JSON.parse(string)
+                const response = sendAndWaitForAndroidAnswer(() => {
+                    return window.BrowserAutofill.getRuntimeConfiguration()
+                }, getRuntimeConfiguration.properties.type.const)
+                console.log('\t📲', JSON.stringify(response))
+                return response
             }
             case 'getAvailableInputTypes': {
-                const string = window.BrowserAutofill.getAvailableInputTypes()
-                console.log('\t📲', string)
-                return JSON.parse(string)
+                const response = sendAndWaitForAndroidAnswer(() => {
+                    return window.BrowserAutofill.getAvailableInputTypes()
+                }, getAvailableInputTypes.properties.type.const)
+                console.log('\t📲', JSON.stringify(response))
+                return response
             }
             case 'getAutofillData': {
                 const response = sendAndWaitForAndroidAnswer(() => {
                     return window.BrowserAutofill.getAutofillData(JSON.stringify(data))
-                }, schema.properties.type.const)
+                }, getAutofillData.properties.type.const)
                 console.log('\t📲', JSON.stringify(response))
                 return response
             }
