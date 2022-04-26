@@ -6,8 +6,8 @@ class EmailWebTooltip extends Tooltip {
     /**
      * @param {import("../DeviceInterface/InterfacePrototype").default} device
      */
-    render(device) {
-        this.device = device;
+    render (device) {
+        this.device = device
         this.addresses = device.getLocalAddresses()
 
         const includeStyles = device.globalConfig.isApp
@@ -53,7 +53,7 @@ ${includeStyles}
         device.getAddresses().then(this.updateAddresses)
 
         this.init()
-        return this;
+        return this
     }
     /**
      * @param {'personalAddress' | 'privateAddress'} id

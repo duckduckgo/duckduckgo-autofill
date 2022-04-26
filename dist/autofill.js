@@ -2434,8 +2434,6 @@ var _autofillUtils = require("../autofill-utils");
 
 var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 
-var _settings = require("../settings/settings");
-
 var _styles = require("../UI/styles/styles");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -2641,7 +2639,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":35,"../autofill-utils":37,"../settings/settings":52,"../transports/transport.apple":55,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":61}],9:[function(require,module,exports){
+},{"../UI/styles/styles":35,"../autofill-utils":37,"../transports/transport.apple":55,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":61}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2656,8 +2654,6 @@ var _transport = require("../transports/transport.apple");
 var _autofillUtils = require("../autofill-utils");
 
 var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
-
-var _settings = require("../settings/settings");
 
 var _styles = require("../UI/styles/styles");
 
@@ -2721,9 +2717,9 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
         tooltip === null || tooltip === void 0 ? void 0 : tooltip.focus(event.detail.x, event.detail.y);
       };
 
-      window.addEventListener("mouseMove", handler);
+      window.addEventListener('mouseMove', handler);
       return () => {
-        window.removeEventListener("mouseMove", handler);
+        window.removeEventListener('mouseMove', handler);
       };
     });
     const tooltip = (_this$tooltip$createT = (_this$tooltip = this.tooltip).createTooltip) === null || _this$tooltip$createT === void 0 ? void 0 : _this$tooltip$createT.call(_this$tooltip, getPosition, topContextData);
@@ -2908,7 +2904,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleTopFrameDeviceInterface = AppleTopFrameDeviceInterface;
 
-},{"../UI/styles/styles":35,"../autofill-utils":37,"../settings/settings":52,"../transports/transport.apple":55,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":61}],10:[function(require,module,exports){
+},{"../UI/styles/styles":35,"../autofill-utils":37,"../transports/transport.apple":55,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":61}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3683,7 +3679,7 @@ class InterfacePrototype {
     const globalConfig = (0, _config.createGlobalConfig)();
     const runtime = (0, _runtime.createRuntime)(globalConfig);
     const tooltip = new _WebTooltip.WebTooltip({
-      tooltipKind: "modern"
+      tooltipKind: 'modern'
     });
     return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, _settings.AutofillSettings.default());
   }
@@ -8439,7 +8435,7 @@ class TopFrameControllerTooltip {
   attach(args) {
     if (this._parentShown) {
       this.removeTooltip().catch(e => {
-        console.log("could not remove", e);
+        console.log('could not remove', e);
       }).finally(() => this._attach(args));
     } else {
       this._attach(args);
@@ -8603,7 +8599,9 @@ class TopFrameControllerTooltip {
 
   async removeTooltip() {
     if (this._parentShown) {
-      await this.runtime.closeAutofillParent().catch(e => console.error('Could not close parent', e)).finally(() => this._parentShown = false);
+      await this.runtime.closeAutofillParent().catch(e => console.error('Could not close parent', e)).finally(() => {
+        this._parentShown = false;
+      });
 
       _classPrivateMethodGet(this, _removeListeners, _removeListeners2).call(this);
     } else {
@@ -8807,7 +8805,7 @@ class WebTooltip {
 
     const config = (0, _inputTypeConfig.getInputConfigFromType)(topContextData.inputType);
 
-    if (this._options.tooltipKind === "modern") {
+    if (this._options.tooltipKind === 'modern') {
       // collect the data for each item to display
       const data = _classPrivateMethodGet(this, _dataForAutofill, _dataForAutofill2).call(this, config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
 
@@ -8979,7 +8977,7 @@ function _get_device() {
 }
 
 function _setDevice2(device) {
-  return this._device = device;
+  this._device = device;
 }
 
 function _dataForAutofill2(config, inputType, topContextData) {
@@ -9052,7 +9050,7 @@ function createTooltip(_availableInputTypes, runtime, globalConfig, platformConf
         if (globalConfig.supportsTopFrame) {
           if (globalConfig.isTopFrame) {
             return new _WebTooltip.WebTooltip({
-              tooltipKind: "modern"
+              tooltipKind: 'modern'
             });
           } else {
             return new _TopFrameControllerTooltip.TopFrameControllerTooltip(runtime, {});
@@ -9060,7 +9058,7 @@ function createTooltip(_availableInputTypes, runtime, globalConfig, platformConf
         }
 
         return new _WebTooltip.WebTooltip({
-          tooltipKind: "modern"
+          tooltipKind: 'modern'
         });
       }
 
@@ -9073,7 +9071,7 @@ function createTooltip(_availableInputTypes, runtime, globalConfig, platformConf
     case 'extension':
       {
         return new _WebTooltip.WebTooltip({
-          tooltipKind: "legacy"
+          tooltipKind: 'legacy'
         });
       }
 
@@ -9490,7 +9488,7 @@ var _tooltips = require("./UI/tooltips");
     const globalConfig = (0, _config.createGlobalConfig)();
 
     if (globalConfig.isDDGTestMode) {
-      console.log("globalConfig", globalConfig);
+      console.log('globalConfig', globalConfig);
     } // Create the runtime, this does a best-guesses job of determining where we're running.
 
 

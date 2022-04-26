@@ -12,7 +12,6 @@ import EmailWebTooltip from './EmailWebTooltip'
  * @implements {TooltipHandler}
  */
 export class WebTooltip {
-
     /** @type {import("../UI/Tooltip.js").Tooltip | null} */
     _activeTooltip = null
 
@@ -32,7 +31,7 @@ export class WebTooltip {
      * @param {WebTooltipOptions} options
      */
     constructor (options) {
-        this._options = options;
+        this._options = options
         window.addEventListener('pointerdown', this, true)
     }
 
@@ -41,8 +40,8 @@ export class WebTooltip {
             // todo: Is this is correct logic?
             return
         }
-        this.#setDevice(args.device);
-        const {topContextData, getPosition, input, form } = args;
+        this.#setDevice(args.device)
+        const { topContextData, getPosition, input, form } = args
         this.setActiveTooltip(this.createTooltip(getPosition, topContextData))
         form.showingTooltip(input)
     }
@@ -54,10 +53,10 @@ export class WebTooltip {
      * @return {import("./Tooltip").Tooltip}
      */
     createTooltip (getPosition, topContextData) {
-        this.#attachCloseListeners();
+        this.#attachCloseListeners()
         const config = getInputConfigFromType(topContextData.inputType)
 
-        if (this._options.tooltipKind === "modern" ) {
+        if (this._options.tooltipKind === 'modern') {
             // collect the data for each item to display
             const data = this.#dataForAutofill(config, topContextData.inputType, topContextData)
 
@@ -68,7 +67,7 @@ export class WebTooltip {
             return new DataWebTooltip(config, topContextData.inputType, getPosition, this, {testMode: this.#device.isTestMode()})
                 .render(config, asRenderers, {
                     onSelect: (id) => {
-                        console.log('on select?');
+                        console.log('on select?')
                         this.#onSelect(config, data, id)
                     }
                 })
@@ -81,7 +80,7 @@ export class WebTooltip {
     #attachCloseListeners () {
         window.addEventListener('input', this)
         window.addEventListener('keydown', this)
-        this._listenerCleanups = [];
+        this._listenerCleanups = []
         for (let listenerFactory of this._listenerFactories) {
             this._listenerCleanups.push(listenerFactory())
         }
@@ -91,7 +90,7 @@ export class WebTooltip {
         window.removeEventListener('input', this)
         window.removeEventListener('keydown', this)
         for (let listenerCleanup of this._listenerCleanups) {
-            listenerCleanup();
+            listenerCleanup()
         }
     }
 
@@ -113,7 +112,6 @@ export class WebTooltip {
 
     // Global listener for event delegation
     _pointerDownListener (e) {
-        console.log('EVENT');
         if (!e.isTrusted) return
 
         // @ts-ignore
@@ -123,13 +121,13 @@ export class WebTooltip {
 
             const activeTooltip = this.getActiveTooltip()
             if (!activeTooltip) {
-                console.warn('Could not get activeTooltip');
+                console.warn('Could not get activeTooltip')
             } else {
                 activeTooltip.dispatchClick()
             }
         } else {
             this.removeTooltip().catch(e => {
-                console.error('error removing tooltip', e);
+                console.error('error removing tooltip', e)
             })
         }
 
@@ -152,7 +150,6 @@ export class WebTooltip {
         //     matchingForm?.submitHandler()
         // }
     }
-
 
     async removeTooltip () {
         if (this._activeTooltip) {
@@ -181,14 +178,13 @@ export class WebTooltip {
      * @deprecated don't rely in device in this class
      * @returns {Device}
      */
-    get #device() {
-        if (!this._device) throw new Error('device was not assigned');
-        return this._device;
+    get #device () {
+        if (!this._device) throw new Error('device was not assigned')
+        return this._device
     }
 
-    /** @returns {Device} */
-    #setDevice(device) {
-        return this._device = device;
+    #setDevice (device) {
+        this._device = device
     }
 
     /**
@@ -197,7 +193,7 @@ export class WebTooltip {
      * @param {TopContextData} topContextData
      */
     #dataForAutofill (config, inputType, topContextData) {
-        return this.#device.dataForAutofill(config, inputType, topContextData);
+        return this.#device.dataForAutofill(config, inputType, topContextData)
     }
 
     /**
@@ -206,15 +202,15 @@ export class WebTooltip {
      * @param {string | number} id
      */
     #onSelect (config, data, id) {
-        return this.#device.onSelect(config, data, id);
+        return this.#device.onSelect(config, data, id)
     }
 
     setSize (_cb) {
-        this.#device.setSize(_cb);
+        this.#device.setSize(_cb)
     }
 
     setupSizeListener (_cb) {
-        this.#device.setupSizeListener(_cb);
+        this.#device.setupSizeListener(_cb)
     }
 
     tooltipPositionClass (top, left) {
@@ -222,7 +218,7 @@ export class WebTooltip {
     }
 
     tooltipStyles () {
-        return this.#device.tooltipStyles();
+        return this.#device.tooltipStyles()
     }
 
     tooltipWrapperClass () {
@@ -230,10 +226,10 @@ export class WebTooltip {
     }
 
     setDevice (device) {
-        this.#setDevice(device);
+        this.#setDevice(device)
     }
 
     addListener (cb) {
-        this._listenerFactories.push(cb);
+        this._listenerFactories.push(cb)
     }
 }

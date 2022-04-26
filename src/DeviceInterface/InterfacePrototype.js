@@ -253,8 +253,6 @@ class InterfacePrototype {
         this.removeTooltip()
     }
 
-
-
     /**
      * Before the DataWebTooltip opens, we collect the data based on the config.type
      * @param {InputTypeConfigs} config
@@ -398,16 +396,13 @@ class InterfacePrototype {
         })
     }
 
-
-
     getActiveTooltip () {
-        return this.tooltip.getActiveTooltip();
+        return this.tooltip.getActiveTooltip()
     }
 
     setActiveTooltip (tooltip) {
-        this.tooltip.setActiveTooltip(tooltip);
+        this.tooltip.setActiveTooltip(tooltip)
     }
-
 
     async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
         if (this.globalConfig.isDDGDomain) {
@@ -513,7 +508,7 @@ class InterfacePrototype {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
         const runtime = createRuntime(globalConfig)
-        const tooltip = new WebTooltip({tooltipKind: "modern"})
+        const tooltip = new WebTooltip({tooltipKind: 'modern'})
         return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, AutofillSettings.default())
     }
 
@@ -521,7 +516,7 @@ class InterfacePrototype {
         return this.tooltip.removeTooltip()
     }
 
-    isTestMode() {
+    isTestMode () {
         return this.globalConfig.isDDGTestMode
     }
 }

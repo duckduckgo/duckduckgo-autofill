@@ -2,7 +2,7 @@ import InterfacePrototype from './InterfacePrototype.js'
 import {createTransport} from '../transports/transport.apple'
 import {formatDuckAddress, autofillEnabled} from '../autofill-utils'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
-import {fromPlatformConfig} from '../settings/settings'
+// import {fromPlatformConfig} from '../settings/settings'
 import {CSS_STYLES} from '../UI/styles/styles'
 
 class AppleTopFrameDeviceInterface extends InterfacePrototype {
@@ -55,12 +55,12 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
         // this is the apple specific part about faking the focus etc.
         this.tooltip.addListener(() => {
             const handler = (event) => {
-                const tooltip = this.tooltip.getActiveTooltip();
+                const tooltip = this.tooltip.getActiveTooltip()
                 tooltip?.focus(event.detail.x, event.detail.y)
             }
-            window.addEventListener("mouseMove", handler);
+            window.addEventListener('mouseMove', handler)
             return () => {
-                window.removeEventListener("mouseMove", handler);
+                window.removeEventListener('mouseMove', handler)
             }
         })
         const tooltip = this.tooltip.createTooltip?.(getPosition, topContextData)

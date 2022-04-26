@@ -1,11 +1,11 @@
 import {
     createAutofillScript,
-    forwardConsoleMessages, performanceEntries,
+    forwardConsoleMessages,
     setupServer, withWindowsContext
 } from '../helpers/harness.js'
-import {test as base, expect} from '@playwright/test'
+import {test as base} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage, loginPage, signupPage} from '../helpers/pages.js'
+import {loginPage} from '../helpers/pages.js'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
 
 /**
@@ -13,7 +13,7 @@ import {createWindowsMocks} from '../helpers/mocks.windows.js'
  */
 const test = withWindowsContext(base)
 
-test.describe.only('windows', () => {
+test.describe('windows', () => {
     let server
     test.beforeAll(async () => {
         server = setupServer()
@@ -21,7 +21,7 @@ test.describe.only('windows', () => {
     test.afterAll(async () => {
         server.close()
     })
-    test('autofill a login form', async ({page}) => {
+    test.skip('autofill a login form', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 

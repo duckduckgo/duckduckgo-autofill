@@ -33,40 +33,40 @@ function generateSchemas () {
         const text = fs.readFileSync(filepath, 'utf8')
         const json = JSON.parse(text)
         console.log('✅ %s', relative(process.cwd(), filepath))
-        inputs.push({json, relative: relative(process.cwd(), filepath)});
+        inputs.push({json, relative: relative(process.cwd(), filepath)})
     }
-    const interfaces = [];
+    const interfaces = []
     for (let input of inputs) {
-        const json = input.json;
+        const json = input.json
         if (json['$id']) {
             if (json['$id'].startsWith('#/definitions/')) {
-                const members = [];
-                const name = json['$id'].slice(14);
+                const members = []
+                const name = json['$id'].slice(14)
                 // const hasProps = Boolean(json.properties);
                 // const isObject = json.type === "object";
                 for (let [propName, value] of Object.entries(json.properties || {})) {
-                    const required = json.required?.includes(propName);
+                    const required = json.required?.includes(propName)
                     switch (value.type) {
-                    case "string": {
-                        members.push({ name: propName, type: ["string"], required})
-                        break;
+                    case 'string': {
+                        members.push({name: propName, type: ['string'], required})
+                        break
                     }
-                    case "number": {
-                        members.push({name: propName, type: ["number"], required})
-                        break;
+                    case 'number': {
+                        members.push({name: propName, type: ['number'], required})
+                        break
                     }
-                    case "boolean": {
-                        members.push({name: propName, type: ["boolean"], required})
-                        break;
+                    case 'boolean': {
+                        members.push({name: propName, type: ['boolean'], required})
+                        break
                     }
                     }
                 }
                 interfaces.push({name, members, source: input.relative})
             } else {
-                console.log('did not start with definitions');
+                console.log('did not start with definitions')
             }
         } else {
-            console.log('no id');
+            console.log('no id')
         }
     }
 
@@ -77,23 +77,23 @@ function generateSchemas () {
     writeFileSync(TS_OUTPUT, printTs(interfaces))
 }
 
-function printTs(interfaces) {
+function printTs (interfaces) {
     let output = '// Do not edit, this was created by `scripts/schema.js`\n'
-    output += `namespace Schema {\n`;
-    output += interfaces.map(x => print(x).split('\n').map(x => `  ${x}`).join('\n')).join('\n');
-    output += `\n}`;
-    return output;
+    output += `namespace Schema {\n`
+    output += interfaces.map(x => print(x).split('\n').map(x => `  ${x}`).join('\n')).join('\n')
+    output += `\n}`
+    return output
 }
 
-function print(int) {
-    let output = '';
+function print (int) {
+    let output = ''
     output += `/** @link {import("./${basename(int.source)}")} */\n`
     output += `interface ${int.name} {\n`
     for (let member of int.members) {
         output += `  ${member.name}${member.required ? '' : '?'}: ${member.type.join('|')}\n`
     }
     output += `}`
-    return output;
+    return output
 }
 
 generateSchemas()

@@ -61,7 +61,7 @@ function sendAndWait (msgOrFn, expectedResponse) {
                 return
             }
             // at this point we're confident we have the correct message type
-            console.log('💻 windows:', expectedResponse, event.data);
+            console.log('💻 windows:', expectedResponse, event.data)
             resolve(event.data)
             window.chrome.webview.removeEventListener('message', handler)
         }

@@ -90,8 +90,8 @@ class Runtime {
     /**
      * @returns {Promise<InboundPMData>}
      */
-    async getAutofillInitData() {
-        const response = await this.transport.send('getAutofillInitData');
+    async getAutofillInitData () {
+        const response = await this.transport.send('getAutofillInitData')
         return runtimeResponse(response, 'getAutofillInitData',
             // @ts-ignore
             validators['#/definitions/GetAutofillInitDataResponse']
@@ -118,24 +118,24 @@ class Runtime {
      * @param {Schema.ShowAutofillParentRequest} parentArgs
      * @returns {Promise<void>}
      */
-    async showAutofillParent(parentArgs) {
-        return this.transport.send('showAutofillParent', parentArgs);
+    async showAutofillParent (parentArgs) {
+        return this.transport.send('showAutofillParent', parentArgs)
     }
 
     /**
      * todo(Shane): Schema for this
      * @returns {Promise<any>}
      */
-    async getSelectedCredentials() {
-        return this.transport.send('getSelectedCredentials');
+    async getSelectedCredentials () {
+        return this.transport.send('getSelectedCredentials')
     }
 
     /**
      * todo(Shane): Schema for this
      * @returns {Promise<any>}
      */
-    async closeAutofillParent() {
-        return this.transport.send('closeAutofillParent');
+    async closeAutofillParent () {
+        return this.transport.send('closeAutofillParent')
     }
 }
 

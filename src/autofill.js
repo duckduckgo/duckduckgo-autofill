@@ -14,7 +14,7 @@ import {createTooltip} from './UI/tooltips'
         const globalConfig = createGlobalConfig()
 
         if (globalConfig.isDDGTestMode) {
-            console.log("globalConfig", globalConfig);
+            console.log('globalConfig', globalConfig)
         }
 
         // Create the runtime, this does a best-guesses job of determining where we're running.
@@ -40,9 +40,9 @@ import {createTooltip} from './UI/tooltips'
             const tooltip = createTooltip(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings)
             const device = createDevice(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
 
-            console.log(device);
+            console.log(device)
 
-            tooltip.setDevice?.(device);
+            tooltip.setDevice?.(device)
 
             // Init services
             await device.init()

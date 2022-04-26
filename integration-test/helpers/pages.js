@@ -131,7 +131,7 @@ export function loginPage (page, server) {
         async selectFirstCredential (username) {
             const email = page.locator('#email')
             await email.click()
-            await page.pause();
+            await page.pause()
             const button = await page.waitForSelector(`button:has-text("${username}")`)
             await button.click({ force: true })
         },

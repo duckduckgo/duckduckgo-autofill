@@ -16,19 +16,19 @@ export function createTooltip (_availableInputTypes, runtime, globalConfig, plat
     case 'windows': {
         if (globalConfig.supportsTopFrame) {
             if (globalConfig.isTopFrame) {
-                return new WebTooltip({tooltipKind: "modern"})
+                return new WebTooltip({tooltipKind: 'modern'})
             } else {
-                return new TopFrameControllerTooltip(runtime,{});
+                return new TopFrameControllerTooltip(runtime, {})
             }
         }
-        return new WebTooltip({tooltipKind: "modern"})
+        return new WebTooltip({tooltipKind: 'modern'})
     }
     case 'android':
     case 'ios': {
         return new NativeTooltip(runtime)
     }
     case 'extension': {
-        return new WebTooltip({tooltipKind: "legacy"})
+        return new WebTooltip({tooltipKind: 'legacy'})
     }
     case 'unknown':
         throw new Error('unreachable. tooltipHandler platform was "unknown"')

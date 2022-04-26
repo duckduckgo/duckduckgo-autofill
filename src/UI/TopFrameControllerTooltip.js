@@ -41,11 +41,11 @@ export class TopFrameControllerTooltip {
         if (this._parentShown) {
             this.removeTooltip()
                 .catch((e) => {
-                    console.log("could not remove", e);
+                    console.log('could not remove', e)
                 })
                 .finally(() => this._attach(args))
         } else {
-            this._attach(args);
+            this._attach(args)
         }
     }
 
@@ -53,7 +53,7 @@ export class TopFrameControllerTooltip {
      * @param {AttachArgs} args
      * @private
      */
-    _attach(args) {
+    _attach (args) {
         const {getPosition, topContextData, click, input} = args
         let delay = 0
         if (!click && !this.elementIsInViewport(getPosition())) {
@@ -116,7 +116,7 @@ export class TopFrameControllerTooltip {
         await this.runtime.showAutofillParent(details)
             .then(() => {
                 this._parentShown = true
-                this.#attachListeners();
+                this.#attachListeners()
             })
             .catch(() => {
                 this._parentShown = false
@@ -130,7 +130,7 @@ export class TopFrameControllerTooltip {
         window.addEventListener('keydown', this)
         window.addEventListener('input', this)
         window.addEventListener('pointerdown', this)
-        this._listenerCleanups = [];
+        this._listenerCleanups = []
         for (let listenerFactory of this._listenerFactories) {
             this._listenerCleanups.push(listenerFactory())
         }
@@ -142,7 +142,7 @@ export class TopFrameControllerTooltip {
         window.removeEventListener('input', this)
         window.removeEventListener('pointerdown', this)
         for (let listenerCleanup of this._listenerCleanups) {
-            listenerCleanup();
+            listenerCleanup()
         }
     }
 
@@ -209,7 +209,9 @@ export class TopFrameControllerTooltip {
         if (this._parentShown) {
             await this.runtime.closeAutofillParent()
                 .catch(e => console.error('Could not close parent', e))
-                .finally(() => this._parentShown = false)
+                .finally(() => {
+                    this._parentShown = false
+                })
 
             this.#removeListeners()
         } else {
@@ -258,6 +260,6 @@ export class TopFrameControllerTooltip {
     }
 
     addListener (cb) {
-        this._listenerFactories.push(cb);
+        this._listenerFactories.push(cb)
     }
 }
