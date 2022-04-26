@@ -103,6 +103,7 @@ class Runtime {
      * @param {DataStorageObject} data
      */
     async storeFormData (data) {
+        // todo(Shane): Ensure this data matches an outgoing schema
         return this.transport.send('storeFormData', data)
     }
 

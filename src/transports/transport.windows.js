@@ -31,6 +31,9 @@ export function createTransport (_globalConfig) {
                     return window.chrome.webview.postMessage({ type: 'getAutofillInitData' })
                 }, getAutofillInitData.properties.type.const)
             }
+            case 'storeFormData': {
+                return window.chrome.webview.postMessage({ type: 'storeFormData', data: data })
+            }
             default: throw new Error('windows: not implemented: ' + name)
             }
         }
@@ -48,11 +51,11 @@ function sendAndWait (msgOrFn, expectedResponse) {
     msgOrFn()
     return new Promise((resolve) => {
         const handler = event => {
-            /*if (event.origin !== window.origin) {
+            /* if (event.origin !== window.origin) {
                 console.warn(`origin mis-match. window.origin: ${window.origin}, event.origin: ${event.origin}`)
                 return
-            }*/
-            
+            } */
+
             if (!event.data) {
                 console.warn('data absent from message')
                 return

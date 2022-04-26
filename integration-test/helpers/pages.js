@@ -83,6 +83,16 @@ export function signupPage (page, server) {
          * @param {Omit<CredentialsObject, "id">} credentials
          * @returns {Promise<void>}
          */
+        async assertWasPromptedToSaveWindows (credentials) {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const mockCalls = calls.find(([name]) => name === 'storeFormData')
+            const [, sent] = mockCalls
+            expect(sent.data.credentials).toEqual(credentials)
+        },
+        /**
+         * @param {Omit<CredentialsObject, "id">} credentials
+         * @returns {Promise<void>}
+         */
         async assertWasPromptedToSaveAndroid (credentials) {
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const mockCalls = calls.find(([name]) => name === 'storeFormData')

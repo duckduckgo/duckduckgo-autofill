@@ -118,11 +118,11 @@ export function createWindowsMocks () {
                     getAutofillData (_request) {
                         throw new Error('unimplemented windows.getAutofillData')
                     },
-                    storeFormData (_request) {
+                    storeFormData (request) {
                         // /** @type {MockCall} */
-                        // const call = ['storeFormData', request, mocks.getAutofillData]
-                        // window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                        throw new Error('unimplemented windows.storeFormData')
+                        const call = ['storeFormData', request, null]
+                        console.log('store', JSON.stringify(call))
+                        window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     },
                     getAutofillInitData () {
                         return respond('getAutofillInitData', null, mocks.getAutofillInitData)
