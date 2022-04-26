@@ -2,6 +2,7 @@
 namespace Schema {
   /** @link {import("./data.credentials.schema.json")} */
   interface Credentials {
+    id?: string
     username: string
     password?: string
   }

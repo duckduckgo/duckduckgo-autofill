@@ -4,6 +4,1162 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+Object.defineProperty(exports, "RuntimeConfiguration", {
+  enumerable: true,
+  get: function () {
+    return _RuntimeConfiguration.RuntimeConfiguration;
+  }
+});
+Object.defineProperty(exports, "createRuntimeConfiguration", {
+  enumerable: true,
+  get: function () {
+    return _RuntimeConfiguration.createRuntimeConfiguration;
+  }
+});
+Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
+  enumerable: true,
+  get: function () {
+    return _RuntimeConfiguration.tryCreateRuntimeConfiguration;
+  }
+});
+
+var _RuntimeConfiguration = require("./src/config/RuntimeConfiguration.js");
+
+},{"./src/config/RuntimeConfiguration.js":3}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.processConfig = processConfig;
+
+function getTopLevelURL() {
+  try {
+    // FROM: https://stackoverflow.com/a/7739035/73479
+    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
+    if (window.location !== window.parent.location) {
+      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
+    } else {
+      return new URL(window.location.href);
+    }
+  } catch (error) {
+    return new URL(location.href);
+  }
+}
+/**
+ * @param {URL} topLevelUrl
+ * @param {*} featureList
+ */
+
+
+function isUnprotectedDomain(topLevelUrl, featureList) {
+  let unprotectedDomain = false;
+  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : []; // walk up the domain to see if it's unprotected
+
+  while (domainParts.length > 1 && !unprotectedDomain) {
+    const partialDomain = domainParts.join('.');
+    unprotectedDomain = featureList.filter(domain => domain.domain === partialDomain).length > 0;
+    domainParts.shift();
+  }
+
+  return unprotectedDomain;
+}
+/**
+ * @param {*} data
+ * @param {string[]} userList
+ * @param {*} preferences
+ * @param {string|URL} [maybeTopLevelUrl]
+ */
+
+
+function processConfig(data, userList, preferences, maybeTopLevelUrl) {
+  const topLevelUrl = maybeTopLevelUrl || getTopLevelURL();
+  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
+  const enabledFeatures = Object.keys(data.features).filter(featureName => {
+    const feature = data.features[featureName];
+    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
+  });
+  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
+  const prefs = { ...preferences,
+    site: {
+      domain: topLevelUrl.hostname,
+      isBroken,
+      allowlisted,
+      enabledFeatures
+    },
+    cookie: {}
+  };
+  return prefs;
+}
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RuntimeConfiguration = void 0;
+exports.createRuntimeConfiguration = createRuntimeConfiguration;
+exports.tryCreateRuntimeConfiguration = tryCreateRuntimeConfiguration;
+
+var _appleUtils = require("../apple-utils.js");
+
+var _validate = _interopRequireDefault(require("./validate.cjs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @typedef {{
+ *     "globalPrivacyControlValue"?: boolean,
+ *     "sessionKey"?: string,
+ *     "debug"?: boolean,
+ *     "platform": {
+ *       "name": "macos" | "ios" | "extension" | "android" | "windows" | "unknown"
+ *     }
+ * }} UserPreferences
+ */
+
+/**
+ * @typedef {{
+ *   contentScope: any,
+ *   userUnprotectedDomains: string[],
+ *   userPreferences: UserPreferences
+ * }} InputConfig
+ */
+class RuntimeConfiguration {
+  constructor() {
+    _defineProperty(this, "validate", _validate.default);
+
+    _defineProperty(this, "config", null);
+  }
+
+  /**
+   * @throws
+   * @param {InputConfig} config
+   * @returns {RuntimeConfiguration}
+   */
+  assign(config) {
+    if (this.validate(config)) {
+      this.config = config;
+    } else {
+      for (const error of this.validate.errors) {
+        // todo: Give an error summary
+        console.error(error);
+      }
+
+      throw new Error('invalid inputs');
+    }
+
+    return this;
+  }
+  /**
+   * @param {any} config
+   * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
+   */
+
+
+  tryAssign(config) {
+    if (this.validate(config)) {
+      this.config = config;
+      return {
+        errors: [],
+        config: this
+      };
+    }
+
+    return {
+      errors: this.validate.errors.slice(),
+      config: null
+    };
+  }
+  /**
+   * This will only return settings for a feature if that feature is remotely enabled.
+   *
+   * @param {string} featureName
+   * @param {URL} [url]
+   * @returns {null|Record<string, any>}
+   */
+
+
+  getSettings(featureName, url) {
+    var _this$config$userPref, _this$config$userPref2, _this$config$contentS, _this$config$contentS2;
+
+    const isEnabled = this.isFeatureRemoteEnabled(featureName, url);
+    if (!isEnabled) return null;
+    const settings = { ...((_this$config$userPref = this.config.userPreferences.features) === null || _this$config$userPref === void 0 ? void 0 : (_this$config$userPref2 = _this$config$userPref[featureName]) === null || _this$config$userPref2 === void 0 ? void 0 : _this$config$userPref2.settings),
+      ...((_this$config$contentS = this.config.contentScope.features) === null || _this$config$contentS === void 0 ? void 0 : (_this$config$contentS2 = _this$config$contentS[featureName]) === null || _this$config$contentS2 === void 0 ? void 0 : _this$config$contentS2.settings)
+    };
+    return settings;
+  }
+  /**
+   * @returns {"macos"|"ios"|"extension"|"windows"|"android"|"unknown"}
+   */
+
+
+  get platform() {
+    return this.config.userPreferences.platform.name;
+  }
+  /**
+   * @param {string} featureName
+   * @param {URL} [url]
+   * @returns {boolean}
+   */
+
+
+  isFeatureRemoteEnabled(featureName, url) {
+    const privacyConfig = (0, _appleUtils.processConfig)(this.config.contentScope, this.config.userUnprotectedDomains, this.config.userPreferences, url);
+    const site = privacyConfig.site;
+
+    if (site.isBroken || !site.enabledFeatures.includes(featureName)) {
+      return false;
+    }
+
+    return true;
+  }
+
+}
+/**
+ * Factory for creating config instance
+ * @param {InputConfig} incoming
+ * @returns {RuntimeConfiguration}
+ */
+
+
+exports.RuntimeConfiguration = RuntimeConfiguration;
+
+function createRuntimeConfiguration(incoming) {
+  return new RuntimeConfiguration().assign(incoming);
+}
+/**
+ * Factory for creating config instance
+ * @param {InputConfig} incoming
+ * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
+ */
+
+
+function tryCreateRuntimeConfiguration(incoming) {
+  return new RuntimeConfiguration().tryAssign(incoming);
+}
+
+},{"../apple-utils.js":2,"./validate.cjs":4}],4:[function(require,module,exports){
+"use strict";
+
+module.exports = validate20;
+module.exports.default = validate20;
+const schema22 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/RuntimeConfiguration",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "Runtime Configuration Schema",
+  "description": "Required Properties to enable an instance of RuntimeConfiguration",
+  "properties": {
+    "contentScope": {
+      "$ref": "#/definitions/ContentScope"
+    },
+    "userUnprotectedDomains": {
+      "type": "array",
+      "items": {}
+    },
+    "userPreferences": {
+      "$ref": "#/definitions/UserPreferences"
+    }
+  },
+  "required": ["contentScope", "userPreferences", "userUnprotectedDomains"],
+  "definitions": {
+    "ContentScope": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "features": {
+          "$ref": "#/definitions/ContentScopeFeatures"
+        },
+        "unprotectedTemporary": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": ["features", "unprotectedTemporary"],
+      "title": "ContentScope"
+    },
+    "ContentScopeFeatures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/ContentScopeFeatureItem"
+      },
+      "title": "ContentScopeFeatures"
+    },
+    "ContentScopeFeatureItem": {
+      "type": "object",
+      "properties": {
+        "exceptions": {
+          "type": "array",
+          "items": {}
+        },
+        "state": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "object"
+        }
+      },
+      "required": ["exceptions", "state"],
+      "title": "ContentScopeFeatureItem"
+    },
+    "UserPreferences": {
+      "type": "object",
+      "properties": {
+        "debug": {
+          "type": "boolean"
+        },
+        "platform": {
+          "$ref": "#/definitions/Platform"
+        },
+        "features": {
+          "$ref": "#/definitions/UserPreferencesFeatures"
+        }
+      },
+      "required": ["debug", "features", "platform"],
+      "title": "UserPreferences"
+    },
+    "UserPreferencesFeatures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/UserPreferencesFeatureItem"
+      },
+      "title": "UserPreferencesFeatures"
+    },
+    "UserPreferencesFeatureItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/Settings"
+        }
+      },
+      "required": ["settings"],
+      "title": "UserPreferencesFeatureItem"
+    },
+    "Settings": {
+      "type": "object",
+      "additionalProperties": true,
+      "title": "Settings"
+    },
+    "Platform": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
+        }
+      },
+      "required": ["name"],
+      "title": "Platform"
+    }
+  }
+};
+const schema23 = {
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "features": {
+      "$ref": "#/definitions/ContentScopeFeatures"
+    },
+    "unprotectedTemporary": {
+      "type": "array",
+      "items": {}
+    }
+  },
+  "required": ["features", "unprotectedTemporary"],
+  "title": "ContentScope"
+};
+const schema24 = {
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/ContentScopeFeatureItem"
+  },
+  "title": "ContentScopeFeatures"
+};
+const schema25 = {
+  "type": "object",
+  "properties": {
+    "exceptions": {
+      "type": "array",
+      "items": {}
+    },
+    "state": {
+      "type": "string"
+    },
+    "settings": {
+      "type": "object"
+    }
+  },
+  "required": ["exceptions", "state"],
+  "title": "ContentScopeFeatureItem"
+};
+
+function validate22(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        let data0 = data[key0];
+        const _errs2 = errors;
+        const _errs3 = errors;
+
+        if (errors === _errs3) {
+          if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
+            let missing0;
+
+            if (data0.exceptions === undefined && (missing0 = "exceptions") || data0.state === undefined && (missing0 = "state")) {
+              validate22.errors = [{
+                instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+                schemaPath: "#/definitions/ContentScopeFeatureItem/required",
+                keyword: "required",
+                params: {
+                  missingProperty: missing0
+                },
+                message: "must have required property '" + missing0 + "'"
+              }];
+              return false;
+            } else {
+              if (data0.exceptions !== undefined) {
+                const _errs5 = errors;
+
+                if (errors === _errs5) {
+                  if (!Array.isArray(data0.exceptions)) {
+                    validate22.errors = [{
+                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/exceptions",
+                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/exceptions/type",
+                      keyword: "type",
+                      params: {
+                        type: "array"
+                      },
+                      message: "must be array"
+                    }];
+                    return false;
+                  }
+                }
+
+                var valid2 = _errs5 === errors;
+              } else {
+                var valid2 = true;
+              }
+
+              if (valid2) {
+                if (data0.state !== undefined) {
+                  const _errs7 = errors;
+
+                  if (typeof data0.state !== "string") {
+                    validate22.errors = [{
+                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/state",
+                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/state/type",
+                      keyword: "type",
+                      params: {
+                        type: "string"
+                      },
+                      message: "must be string"
+                    }];
+                    return false;
+                  }
+
+                  var valid2 = _errs7 === errors;
+                } else {
+                  var valid2 = true;
+                }
+
+                if (valid2) {
+                  if (data0.settings !== undefined) {
+                    let data3 = data0.settings;
+                    const _errs9 = errors;
+
+                    if (!(data3 && typeof data3 == "object" && !Array.isArray(data3))) {
+                      validate22.errors = [{
+                        instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/settings",
+                        schemaPath: "#/definitions/ContentScopeFeatureItem/properties/settings/type",
+                        keyword: "type",
+                        params: {
+                          type: "object"
+                        },
+                        message: "must be object"
+                      }];
+                      return false;
+                    }
+
+                    var valid2 = _errs9 === errors;
+                  } else {
+                    var valid2 = true;
+                  }
+                }
+              }
+            }
+          } else {
+            validate22.errors = [{
+              instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+              schemaPath: "#/definitions/ContentScopeFeatureItem/type",
+              keyword: "type",
+              params: {
+                type: "object"
+              },
+              message: "must be object"
+            }];
+            return false;
+          }
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
+        }
+      }
+    } else {
+      validate22.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate22.errors = vErrors;
+  return errors === 0;
+}
+
+function validate21(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
+        validate21.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.features !== undefined) {
+          const _errs2 = errors;
+
+          if (!validate22(data.features, {
+            instancePath: instancePath + "/features",
+            parentData: data,
+            parentDataProperty: "features",
+            rootData
+          })) {
+            vErrors = vErrors === null ? validate22.errors : vErrors.concat(validate22.errors);
+            errors = vErrors.length;
+          }
+
+          var valid0 = _errs2 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.unprotectedTemporary !== undefined) {
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (!Array.isArray(data.unprotectedTemporary)) {
+                validate21.errors = [{
+                  instancePath: instancePath + "/unprotectedTemporary",
+                  schemaPath: "#/properties/unprotectedTemporary/type",
+                  keyword: "type",
+                  params: {
+                    type: "array"
+                  },
+                  message: "must be array"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+        }
+      }
+    } else {
+      validate21.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate21.errors = vErrors;
+  return errors === 0;
+}
+
+const schema26 = {
+  "type": "object",
+  "properties": {
+    "debug": {
+      "type": "boolean"
+    },
+    "platform": {
+      "$ref": "#/definitions/Platform"
+    },
+    "features": {
+      "$ref": "#/definitions/UserPreferencesFeatures"
+    }
+  },
+  "required": ["debug", "features", "platform"],
+  "title": "UserPreferences"
+};
+const schema27 = {
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
+    }
+  },
+  "required": ["name"],
+  "title": "Platform"
+};
+
+const func0 = require("ajv/dist/runtime/equal").default;
+
+const schema28 = {
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/UserPreferencesFeatureItem"
+  },
+  "title": "UserPreferencesFeatures"
+};
+const schema29 = {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "settings": {
+      "$ref": "#/definitions/Settings"
+    }
+  },
+  "required": ["settings"],
+  "title": "UserPreferencesFeatureItem"
+};
+const schema30 = {
+  "type": "object",
+  "additionalProperties": true,
+  "title": "Settings"
+};
+
+function validate27(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.settings === undefined && (missing0 = "settings")) {
+        validate27.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        const _errs1 = errors;
+
+        for (const key0 in data) {
+          if (!(key0 === "settings")) {
+            validate27.errors = [{
+              instancePath,
+              schemaPath: "#/additionalProperties",
+              keyword: "additionalProperties",
+              params: {
+                additionalProperty: key0
+              },
+              message: "must NOT have additional properties"
+            }];
+            return false;
+            break;
+          }
+        }
+
+        if (_errs1 === errors) {
+          if (data.settings !== undefined) {
+            let data0 = data.settings;
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {} else {
+                validate27.errors = [{
+                  instancePath: instancePath + "/settings",
+                  schemaPath: "#/definitions/Settings/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate27.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate27.errors = vErrors;
+  return errors === 0;
+}
+
+function validate26(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        const _errs2 = errors;
+
+        if (!validate27(data[key0], {
+          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+          parentData: data,
+          parentDataProperty: key0,
+          rootData
+        })) {
+          vErrors = vErrors === null ? validate27.errors : vErrors.concat(validate27.errors);
+          errors = vErrors.length;
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
+        }
+      }
+    } else {
+      validate26.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate26.errors = vErrors;
+  return errors === 0;
+}
+
+function validate25(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.debug === undefined && (missing0 = "debug") || data.features === undefined && (missing0 = "features") || data.platform === undefined && (missing0 = "platform")) {
+        validate25.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.debug !== undefined) {
+          const _errs1 = errors;
+
+          if (typeof data.debug !== "boolean") {
+            validate25.errors = [{
+              instancePath: instancePath + "/debug",
+              schemaPath: "#/properties/debug/type",
+              keyword: "type",
+              params: {
+                type: "boolean"
+              },
+              message: "must be boolean"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.platform !== undefined) {
+            let data1 = data.platform;
+            const _errs3 = errors;
+            const _errs4 = errors;
+
+            if (errors === _errs4) {
+              if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
+                let missing1;
+
+                if (data1.name === undefined && (missing1 = "name")) {
+                  validate25.errors = [{
+                    instancePath: instancePath + "/platform",
+                    schemaPath: "#/definitions/Platform/required",
+                    keyword: "required",
+                    params: {
+                      missingProperty: missing1
+                    },
+                    message: "must have required property '" + missing1 + "'"
+                  }];
+                  return false;
+                } else {
+                  if (data1.name !== undefined) {
+                    let data2 = data1.name;
+
+                    if (typeof data2 !== "string") {
+                      validate25.errors = [{
+                        instancePath: instancePath + "/platform/name",
+                        schemaPath: "#/definitions/Platform/properties/name/type",
+                        keyword: "type",
+                        params: {
+                          type: "string"
+                        },
+                        message: "must be string"
+                      }];
+                      return false;
+                    }
+
+                    if (!(data2 === "ios" || data2 === "macos" || data2 === "windows" || data2 === "extension" || data2 === "android" || data2 === "unknown")) {
+                      validate25.errors = [{
+                        instancePath: instancePath + "/platform/name",
+                        schemaPath: "#/definitions/Platform/properties/name/enum",
+                        keyword: "enum",
+                        params: {
+                          allowedValues: schema27.properties.name.enum
+                        },
+                        message: "must be equal to one of the allowed values"
+                      }];
+                      return false;
+                    }
+                  }
+                }
+              } else {
+                validate25.errors = [{
+                  instancePath: instancePath + "/platform",
+                  schemaPath: "#/definitions/Platform/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.features !== undefined) {
+              const _errs8 = errors;
+
+              if (!validate26(data.features, {
+                instancePath: instancePath + "/features",
+                parentData: data,
+                parentDataProperty: "features",
+                rootData
+              })) {
+                vErrors = vErrors === null ? validate26.errors : vErrors.concat(validate26.errors);
+                errors = vErrors.length;
+              }
+
+              var valid0 = _errs8 === errors;
+            } else {
+              var valid0 = true;
+            }
+          }
+        }
+      }
+    } else {
+      validate25.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate25.errors = vErrors;
+  return errors === 0;
+}
+
+function validate20(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/RuntimeConfiguration" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.contentScope === undefined && (missing0 = "contentScope") || data.userPreferences === undefined && (missing0 = "userPreferences") || data.userUnprotectedDomains === undefined && (missing0 = "userUnprotectedDomains")) {
+        validate20.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        const _errs1 = errors;
+
+        for (const key0 in data) {
+          if (!(key0 === "contentScope" || key0 === "userUnprotectedDomains" || key0 === "userPreferences")) {
+            validate20.errors = [{
+              instancePath,
+              schemaPath: "#/additionalProperties",
+              keyword: "additionalProperties",
+              params: {
+                additionalProperty: key0
+              },
+              message: "must NOT have additional properties"
+            }];
+            return false;
+            break;
+          }
+        }
+
+        if (_errs1 === errors) {
+          if (data.contentScope !== undefined) {
+            const _errs2 = errors;
+
+            if (!validate21(data.contentScope, {
+              instancePath: instancePath + "/contentScope",
+              parentData: data,
+              parentDataProperty: "contentScope",
+              rootData
+            })) {
+              vErrors = vErrors === null ? validate21.errors : vErrors.concat(validate21.errors);
+              errors = vErrors.length;
+            }
+
+            var valid0 = _errs2 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.userUnprotectedDomains !== undefined) {
+              const _errs3 = errors;
+
+              if (errors === _errs3) {
+                if (!Array.isArray(data.userUnprotectedDomains)) {
+                  validate20.errors = [{
+                    instancePath: instancePath + "/userUnprotectedDomains",
+                    schemaPath: "#/properties/userUnprotectedDomains/type",
+                    keyword: "type",
+                    params: {
+                      type: "array"
+                    },
+                    message: "must be array"
+                  }];
+                  return false;
+                }
+              }
+
+              var valid0 = _errs3 === errors;
+            } else {
+              var valid0 = true;
+            }
+
+            if (valid0) {
+              if (data.userPreferences !== undefined) {
+                const _errs5 = errors;
+
+                if (!validate25(data.userPreferences, {
+                  instancePath: instancePath + "/userPreferences",
+                  parentData: data,
+                  parentDataProperty: "userPreferences",
+                  rootData
+                })) {
+                  vErrors = vErrors === null ? validate25.errors : vErrors.concat(validate25.errors);
+                  errors = vErrors.length;
+                }
+
+                var valid0 = _errs5 === errors;
+              } else {
+                var valid0 = true;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      validate20.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate20.errors = vErrors;
+  return errors === 0;
+}
+
+},{"ajv/dist/runtime/equal":5}],5:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+}); // https://github.com/ajv-validator/ajv/issues/889
+
+const equal = require("fast-deep-equal");
+
+equal.code = 'require("ajv/dist/runtime/equal").default';
+exports.default = equal;
+
+},{"fast-deep-equal":6}],6:[function(require,module,exports){
+'use strict'; // do not edit .js files directly - edit src/index.jst
+
+module.exports = function equal(a, b) {
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+    var length, i, keys;
+
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length != b.length) return false;
+
+      for (i = length; i-- !== 0;) if (!equal(a[i], b[i])) return false;
+
+      return true;
+    }
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;) if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+
+    for (i = length; i-- !== 0;) {
+      var key = keys[i];
+      if (!equal(a[key], b[key])) return false;
+    }
+
+    return true;
+  } // true if both NaN, false otherwise
+
+
+  return a !== a && b !== b;
+};
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.HostnameInputError = void 0;
 Object.defineProperty(exports, "ParserError", {
   enumerable: true,
@@ -147,7 +1303,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":2,"./lib/constants.js":3,"./lib/rules-parser.js":4}],2:[function(require,module,exports){
+},{"./lib/apple.password.js":8,"./lib/constants.js":9,"./lib/rules-parser.js":10}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -771,7 +1927,7 @@ exports.Password = Password;
 
 _defineProperty(Password, "defaults", defaults);
 
-},{"./constants.js":3,"./rules-parser.js":4}],3:[function(require,module,exports){
+},{"./constants.js":9,"./rules-parser.js":10}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -792,7 +1948,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],4:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1525,7 +2681,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],5:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -2296,7 +3452,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],6:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2351,7 +3507,7 @@ function createDevice(availableInputTypes, runtime, tooltip, globalConfig, platf
   throw new Error('undefined');
 }
 
-},{"./DeviceInterface/AndroidInterface":7,"./DeviceInterface/AppleDeviceInterface":8,"./DeviceInterface/AppleTopFrameDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./DeviceInterface/WindowsInterface":12}],7:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":13,"./DeviceInterface/AppleDeviceInterface":14,"./DeviceInterface/AppleTopFrameDeviceInterface":15,"./DeviceInterface/ExtensionInterface":16,"./DeviceInterface/WindowsInterface":18}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2418,7 +3574,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../autofill-utils":37,"./InterfacePrototype.js":11}],8:[function(require,module,exports){
+},{"../autofill-utils":43,"./InterfacePrototype.js":17}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2639,7 +3795,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":35,"../autofill-utils":37,"../transports/transport.apple":55,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":61}],9:[function(require,module,exports){
+},{"../UI/styles/styles":41,"../autofill-utils":43,"../transports/transport.apple":61,"./InterfacePrototype.js":17,"@duckduckgo/content-scope-scripts/src/apple-utils":2}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2904,7 +4060,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleTopFrameDeviceInterface = AppleTopFrameDeviceInterface;
 
-},{"../UI/styles/styles":35,"../autofill-utils":37,"../transports/transport.apple":55,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":61}],10:[function(require,module,exports){
+},{"../UI/styles/styles":41,"../autofill-utils":43,"../transports/transport.apple":61,"./InterfacePrototype.js":17,"@duckduckgo/content-scope-scripts/src/apple-utils":2}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3030,7 +4186,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../autofill-utils":37,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../autofill-utils":43,"./InterfacePrototype.js":17}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3252,6 +4408,8 @@ class InterfacePrototype {
 
 
   storeLocalData(data) {
+    console.log('incoming data', data);
+
     if (this.stripCredentials) {
       data.credentials.forEach(cred => delete cred.password);
       data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode);
@@ -3697,7 +4855,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":16,"../Form/listenForFormSubmission":20,"../Form/matching":23,"../PasswordGenerator":26,"../Scanner":27,"../UI/WebTooltip":33,"../autofill-utils":37,"../config":39,"../input-types/Credentials":41,"../runtime/runtime":46,"../settings/settings":52,"@duckduckgo/content-scope-scripts":58}],12:[function(require,module,exports){
+},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../PasswordGenerator":32,"../Scanner":33,"../UI/WebTooltip":39,"../autofill-utils":43,"../config":45,"../input-types/Credentials":47,"../runtime/runtime":52,"../settings/settings":58,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3730,7 +4888,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 exports.WindowsInterface = WindowsInterface;
 
-},{"../UI/styles/styles":35,"./InterfacePrototype":11}],13:[function(require,module,exports){
+},{"../UI/styles/styles":41,"./InterfacePrototype":17}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4275,7 +5433,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":37,"../constants":40,"./FormAnalyzer":14,"./formatters":16,"./inputStyles":17,"./inputTypeConfig.js":18,"./matching":23}],14:[function(require,module,exports){
+},{"../autofill-utils":43,"../constants":46,"./FormAnalyzer":20,"./formatters":22,"./inputStyles":23,"./inputTypeConfig.js":24,"./matching":29}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4527,7 +5685,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":37,"../constants":40,"./matching":23,"./matching-configuration":22}],15:[function(require,module,exports){
+},{"../autofill-utils":43,"../constants":46,"./matching":29,"./matching-configuration":28}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5095,7 +6253,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],16:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5437,7 +6595,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames":15,"./matching":23}],17:[function(require,module,exports){
+},{"./countryNames":21,"./matching":29}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5519,7 +6677,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":18}],18:[function(require,module,exports){
+},{"./inputTypeConfig.js":24}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5708,7 +6866,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../UI/img/ddgPasswordIcon":34,"../input-types/Credentials":41,"../input-types/CreditCard":42,"../input-types/Identity":43,"./logo-svg":21,"./matching":23}],19:[function(require,module,exports){
+},{"../UI/img/ddgPasswordIcon":40,"../input-types/Credentials":47,"../input-types/CreditCard":48,"../input-types/Identity":49,"./logo-svg":27,"./matching":29}],25:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -5760,7 +6918,7 @@ const extractElementStrings = element => {
 
 module.exports.extractElementStrings = extractElementStrings;
 
-},{}],20:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5803,7 +6961,7 @@ const listenForGlobalFormSubmission = forms => {
 var _default = listenForGlobalFormSubmission;
 exports.default = _default;
 
-},{}],21:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5813,7 +6971,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],22:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6436,7 +7594,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":24}],23:[function(require,module,exports){
+},{"./selectors-css":30}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7431,7 +8589,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":40,"./label-util":19,"./matching-configuration":22,"./selectors-css":24,"./vendor-regex":25}],24:[function(require,module,exports){
+},{"../constants":46,"./label-util":25,"./matching-configuration":28,"./selectors-css":30,"./vendor-regex":31}],30:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -7498,7 +8656,7 @@ module.exports.__secret_do_not_use = {
   birthdayYear
 };
 
-},{}],25:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 /**
@@ -7555,7 +8713,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 
 module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
-},{}],26:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7621,7 +8779,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":1,"../packages/password/rules.json":5}],27:[function(require,module,exports){
+},{"../packages/password":7,"../packages/password/rules.json":11}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7925,7 +9083,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":13,"./Form/matching":23,"./Form/selectors-css":24,"./autofill-utils":37}],28:[function(require,module,exports){
+},{"./Form/Form":19,"./Form/matching":29,"./Form/selectors-css":30,"./autofill-utils":43}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7981,7 +9139,7 @@ class DataWebTooltip extends _Tooltip.default {
 var _default = DataWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":37,"./Tooltip":31}],29:[function(require,module,exports){
+},{"../autofill-utils":43,"./Tooltip":37}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8051,7 +9209,7 @@ class EmailWebTooltip extends _Tooltip.default {
 var _default = EmailWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":37,"./Tooltip":31,"./styles/styles":35}],30:[function(require,module,exports){
+},{"../autofill-utils":43,"./Tooltip":37,"./styles/styles":41}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8112,7 +9270,7 @@ class NativeTooltip {
 
 exports.NativeTooltip = NativeTooltip;
 
-},{"../Form/matching":23}],31:[function(require,module,exports){
+},{"../Form/matching":29}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8361,7 +9519,7 @@ exports.Tooltip = Tooltip;
 var _default = Tooltip;
 exports.default = _default;
 
-},{"../Form/matching":23,"../autofill-utils":37}],32:[function(require,module,exports){
+},{"../Form/matching":29,"../autofill-utils":43}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8679,7 +9837,7 @@ function _removeListeners2() {
   }
 }
 
-},{}],33:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8987,7 +10145,7 @@ function _onSelect2(config, data, id) {
   return _classPrivateFieldGet(this, _device).onSelect(config, data, id);
 }
 
-},{"../Form/inputTypeConfig":18,"./DataWebTooltip":28,"./EmailWebTooltip":29}],34:[function(require,module,exports){
+},{"../Form/inputTypeConfig":24,"./DataWebTooltip":34,"./EmailWebTooltip":35}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9009,17 +10167,17 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],35:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.CSS_STYLES = void 0;
-const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
+const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\r\n    box-sizing: border-box;\r\n}\r\n.wrapper {\r\n    position: fixed;\r\n    top: 0;\r\n    left: 0;\r\n    padding: 0;\r\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\r\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\r\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\r\n    -webkit-font-smoothing: antialiased;\r\n    /* move it offscreen to avoid flashing */\r\n    transform: translate(-1000px);\r\n    z-index: 2147483647;\r\n}\r\n:not(.top-autofill).wrapper--data {\r\n    font-family: 'SF Pro Text', -apple-system,\r\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\r\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\r\n}\r\n:not(.top-autofill) .tooltip {\r\n    position: absolute;\r\n    width: 300px;\r\n    max-width: calc(100vw - 25px);\r\n    z-index: 2147483647;\r\n}\r\n.tooltip--data, #topAutofill {\r\n    background-color: rgba(242, 240, 240, 0.9);\r\n    -webkit-backdrop-filter: blur(40px);\r\n    backdrop-filter: blur(40px);\r\n}\r\n.tooltip--data {\r\n    padding: 6px;\r\n    font-size: 13px;\r\n    line-height: 14px;\r\n    width: 315px;\r\n}\r\n:not(.top-autofill) .tooltip--data {\r\n    top: 100%;\r\n    left: 100%;\r\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\r\n    border-radius: 6px;\r\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\r\n}\r\n:not(.top-autofill) .tooltip--email {\r\n    top: calc(100% + 6px);\r\n    right: calc(100% - 46px);\r\n    padding: 8px;\r\n    border: 1px solid #D0D0D0;\r\n    border-radius: 10px;\r\n    background-color: #FFFFFF;\r\n    font-size: 14px;\r\n    line-height: 1.3;\r\n    color: #333333;\r\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\r\n}\r\n.tooltip--email::before,\r\n.tooltip--email::after {\r\n    content: \"\";\r\n    width: 0;\r\n    height: 0;\r\n    border-left: 10px solid transparent;\r\n    border-right: 10px solid transparent;\r\n    display: block;\r\n    border-bottom: 8px solid #D0D0D0;\r\n    position: absolute;\r\n    right: 20px;\r\n}\r\n.tooltip--email::before {\r\n    border-bottom-color: #D0D0D0;\r\n    top: -9px;\r\n}\r\n.tooltip--email::after {\r\n    border-bottom-color: #FFFFFF;\r\n    top: -8px;\r\n}\r\n\r\n/* Buttons */\r\n.tooltip__button {\r\n    display: flex;\r\n    width: 100%;\r\n    padding: 8px 0px;\r\n    font-family: inherit;\r\n    color: inherit;\r\n    background: transparent;\r\n    border: none;\r\n    border-radius: 6px;\r\n}\r\n.tooltip__button.currentFocus,\r\n.tooltip__button:hover {\r\n    background-color: rgba(0, 121, 242, 0.8);\r\n    color: #FFFFFF;\r\n}\r\n\r\n/* Data autofill tooltip specific */\r\n.tooltip__button--data {\r\n    min-height: 48px;\r\n    flex-direction: row;\r\n    justify-content: flex-start;\r\n    font-size: inherit;\r\n    font-weight: 500;\r\n    line-height: 16px;\r\n    text-align: left;\r\n}\r\n.tooltip__button--data > * {\r\n    opacity: 0.9;\r\n}\r\n.tooltip__button--data:first-child {\r\n    margin-top: 0;\r\n}\r\n.tooltip__button--data:last-child {\r\n    margin-bottom: 0;\r\n}\r\n.tooltip__button--data::before {\r\n    content: '';\r\n    flex-shrink: 0;\r\n    display: block;\r\n    width: 32px;\r\n    height: 32px;\r\n    margin: 0 8px;\r\n    background-size: 24px 24px;\r\n    background-repeat: no-repeat;\r\n    background-position: center 1px;\r\n}\r\n.tooltip__button--data.currentFocus::before,\r\n.tooltip__button--data:hover::before {\r\n    filter: invert(100%);\r\n}\r\n.tooltip__button__text-container {\r\n    margin: auto 0;\r\n}\r\n.label {\r\n    display: block;\r\n    font-weight: 400;\r\n    letter-spacing: -0.25px;\r\n    color: rgba(0,0,0,.8);\r\n    line-height: 13px;\r\n}\r\n.label + .label {\r\n    margin-top: 5px;\r\n}\r\n.label.label--medium {\r\n    letter-spacing: -0.08px;\r\n    color: rgba(0,0,0,.9)\r\n}\r\n.label.label--small {\r\n    font-size: 11px;\r\n    font-weight: 400;\r\n    letter-spacing: 0.06px;\r\n    color: rgba(0,0,0,0.6);\r\n}\r\n.tooltip__button.currentFocus .label,\r\n.tooltip__button:hover .label,\r\n.tooltip__button.currentFocus .label,\r\n.tooltip__button:hover .label {\r\n    color: #FFFFFF;\r\n}\r\n\r\n/* Icons */\r\n.tooltip__button--data--credentials::before {\r\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\r\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\r\n}\r\n.tooltip__button--data--creditCards::before {\r\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\r\n}\r\n.tooltip__button--data--identities::before {\r\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\r\n}\r\n\r\nhr {\r\n    display: block;\r\n    margin: 5px 10px;\r\n    border: none; /* reset the border */\r\n    border-top: 1px solid rgba(0,0,0,.1);\r\n}\r\n\r\nhr:first-child {\r\n    display: none;\r\n}\r\n\r\n#privateAddress {\r\n    align-items: flex-start;\r\n}\r\n#personalAddress::before,\r\n#privateAddress::before,\r\n#personalAddress.currentFocus::before,\r\n#personalAddress:hover::before,\r\n#privateAddress.currentFocus::before,\r\n#privateAddress:hover::before {\r\n    filter: none;\r\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\r\n}\r\n\r\n/* Email tooltip specific */\r\n.tooltip__button--email {\r\n    flex-direction: column;\r\n    justify-content: center;\r\n    align-items: flex-start;\r\n    font-size: 14px;\r\n    padding: 4px 8px;\r\n}\r\n.tooltip__button--email__primary-text {\r\n    font-weight: bold;\r\n}\r\n.tooltip__button--email__secondary-text {\r\n    font-size: 12px;\r\n}\r\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],36:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9081,7 +10239,7 @@ function createTooltip(_availableInputTypes, runtime, globalConfig, platformConf
   throw new Error('undefined');
 }
 
-},{"./NativeTooltip":30,"./TopFrameControllerTooltip":32,"./WebTooltip":33}],37:[function(require,module,exports){
+},{"./NativeTooltip":36,"./TopFrameControllerTooltip":38,"./WebTooltip":39}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9461,7 +10619,7 @@ el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":23}],38:[function(require,module,exports){
+},{"./Form/matching":29}],44:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -9522,7 +10680,7 @@ var _tooltips = require("./UI/tooltips");
   }
 })();
 
-},{"./DeviceInterface":6,"./UI/tooltips":36,"./config":39,"./input-types/input-types":44,"./requestIdleCallback":45,"./runtime/runtime":46,"./transports/captureDdgGlobals":53}],39:[function(require,module,exports){
+},{"./DeviceInterface":12,"./UI/tooltips":42,"./config":45,"./input-types/input-types":50,"./requestIdleCallback":51,"./runtime/runtime":52,"./transports/captureDdgGlobals":59}],45:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -9582,7 +10740,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],40:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9596,7 +10754,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],41:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9675,7 +10833,7 @@ module.exports.CredentialsTooltipItem = CredentialsTooltipItem;
 module.exports.fromPassword = fromPassword;
 module.exports.GENERATED_ID = GENERATED_ID;
 
-},{}],42:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9727,7 +10885,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],43:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9801,7 +10959,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":16}],44:[function(require,module,exports){
+},{"../Form/formatters":22}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9836,7 +10994,7 @@ function featureToggleAwareInputTypes(inputTypes, featureToggles) {
   return local;
 }
 
-},{}],45:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9884,7 +11042,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}],46:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10137,7 +11295,7 @@ function throwError(errors, name) {
   throw new Error('Schema validation errors for ' + name);
 }
 
-},{"../Form/matching":23,"../schema/validators.cjs":51,"../settings/settings":52,"../transports/transport.android":54,"../transports/transport.apple":55,"../transports/transport.extension":56,"../transports/transport.windows":57,"@duckduckgo/content-scope-scripts":58}],47:[function(require,module,exports){
+},{"../Form/matching":29,"../schema/validators.cjs":57,"../settings/settings":58,"../transports/transport.android":60,"../transports/transport.apple":61,"../transports/transport.extension":62,"../transports/transport.windows":63,"@duckduckgo/content-scope-scripts":1}],53:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
@@ -10166,7 +11324,7 @@ module.exports={
   ]
 }
 
-},{}],48:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillInitDataResponse",
@@ -10189,12 +11347,27 @@ module.exports={
             "$ref": "#/definitions/Credentials"
           }
         },
+        "identities": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "creditCards": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
         "serializedInputContext": {
           "type": "string"
         }
       },
       "required": [
-        "serializedInputContext"
+        "serializedInputContext",
+        "credentials",
+        "creditCards",
+        "identities"
       ]
     },
     "error": {
@@ -10206,7 +11379,7 @@ module.exports={
   ]
 }
 
-},{}],49:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
@@ -10245,7 +11418,7 @@ module.exports={
   ]
 }
 
-},{}],50:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
@@ -10271,7 +11444,7 @@ module.exports={
   ]
 }
 
-},{}],51:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 // @ts-nocheck
 "use strict";
 
@@ -10283,11 +11456,9 @@ const schema11 = {
   "type": "object",
   "properties": {
     "id": {
-      "oneOf": [{
-        "type": "string"
-      }, {
-        "type": "number"
-      }]
+      "title": "Credentials.id",
+      "description": "If present, must be a string",
+      "type": "string"
     },
     "username": {
       "title": "Credentials.username",
@@ -10333,104 +11504,19 @@ function validate10(data) {
         return false;
       } else {
         if (data.id !== undefined) {
-          let data0 = data.id;
           const _errs1 = errors;
-          const _errs2 = errors;
-          let valid1 = false;
-          let passing0 = null;
-          const _errs3 = errors;
 
-          if (typeof data0 !== "string") {
-            const err0 = {
+          if (typeof data.id !== "string") {
+            validate10.errors = [{
               instancePath: instancePath + "/id",
-              schemaPath: "#/properties/id/oneOf/0/type",
+              schemaPath: "#/properties/id/type",
               keyword: "type",
               params: {
                 type: "string"
               },
               message: "must be string"
-            };
-
-            if (vErrors === null) {
-              vErrors = [err0];
-            } else {
-              vErrors.push(err0);
-            }
-
-            errors++;
-          }
-
-          var _valid0 = _errs3 === errors;
-
-          if (_valid0) {
-            valid1 = true;
-            passing0 = 0;
-          }
-
-          const _errs5 = errors;
-
-          if (!(typeof data0 == "number" && isFinite(data0))) {
-            const err1 = {
-              instancePath: instancePath + "/id",
-              schemaPath: "#/properties/id/oneOf/1/type",
-              keyword: "type",
-              params: {
-                type: "number"
-              },
-              message: "must be number"
-            };
-
-            if (vErrors === null) {
-              vErrors = [err1];
-            } else {
-              vErrors.push(err1);
-            }
-
-            errors++;
-          }
-
-          var _valid0 = _errs5 === errors;
-
-          if (_valid0 && valid1) {
-            valid1 = false;
-            passing0 = [passing0, 1];
-          } else {
-            if (_valid0) {
-              valid1 = true;
-              passing0 = 1;
-            }
-          }
-
-          if (!valid1) {
-            const err2 = {
-              instancePath: instancePath + "/id",
-              schemaPath: "#/properties/id/oneOf",
-              keyword: "oneOf",
-              params: {
-                passingSchemas: passing0
-              },
-              message: "must match exactly one schema in oneOf"
-            };
-
-            if (vErrors === null) {
-              vErrors = [err2];
-            } else {
-              vErrors.push(err2);
-            }
-
-            errors++;
-            validate10.errors = vErrors;
+            }];
             return false;
-          } else {
-            errors = _errs2;
-
-            if (vErrors !== null) {
-              if (_errs2) {
-                vErrors.length = _errs2;
-              } else {
-                vErrors = null;
-              }
-            }
           }
 
           var valid0 = _errs1 === errors;
@@ -10440,7 +11526,7 @@ function validate10(data) {
 
         if (valid0) {
           if (data.username !== undefined) {
-            const _errs7 = errors;
+            const _errs3 = errors;
 
             if (typeof data.username !== "string") {
               validate10.errors = [{
@@ -10455,14 +11541,14 @@ function validate10(data) {
               return false;
             }
 
-            var valid0 = _errs7 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
 
           if (valid0) {
             if (data.password !== undefined) {
-              const _errs9 = errors;
+              const _errs5 = errors;
 
               if (typeof data.password !== "string") {
                 validate10.errors = [{
@@ -10477,7 +11563,7 @@ function validate10(data) {
                 return false;
               }
 
-              var valid0 = _errs9 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
             }
@@ -11825,17 +12911,12 @@ function validate16(data) {
                   errors++;
                 } else {
                   if (data1.id !== undefined) {
-                    let data2 = data1.id;
                     const _errs9 = errors;
-                    const _errs10 = errors;
-                    let valid4 = false;
-                    let passing1 = null;
-                    const _errs11 = errors;
 
-                    if (typeof data2 !== "string") {
+                    if (typeof data1.id !== "string") {
                       const err1 = {
                         instancePath: instancePath + "/success/id",
-                        schemaPath: "#/definitions/Credentials/properties/id/oneOf/0/type",
+                        schemaPath: "#/definitions/Credentials/properties/id/type",
                         keyword: "type",
                         params: {
                           type: "string"
@@ -11852,77 +12933,6 @@ function validate16(data) {
                       errors++;
                     }
 
-                    var _valid1 = _errs11 === errors;
-
-                    if (_valid1) {
-                      valid4 = true;
-                      passing1 = 0;
-                    }
-
-                    const _errs13 = errors;
-
-                    if (!(typeof data2 == "number" && isFinite(data2))) {
-                      const err2 = {
-                        instancePath: instancePath + "/success/id",
-                        schemaPath: "#/definitions/Credentials/properties/id/oneOf/1/type",
-                        keyword: "type",
-                        params: {
-                          type: "number"
-                        },
-                        message: "must be number"
-                      };
-
-                      if (vErrors === null) {
-                        vErrors = [err2];
-                      } else {
-                        vErrors.push(err2);
-                      }
-
-                      errors++;
-                    }
-
-                    var _valid1 = _errs13 === errors;
-
-                    if (_valid1 && valid4) {
-                      valid4 = false;
-                      passing1 = [passing1, 1];
-                    } else {
-                      if (_valid1) {
-                        valid4 = true;
-                        passing1 = 1;
-                      }
-                    }
-
-                    if (!valid4) {
-                      const err3 = {
-                        instancePath: instancePath + "/success/id",
-                        schemaPath: "#/definitions/Credentials/properties/id/oneOf",
-                        keyword: "oneOf",
-                        params: {
-                          passingSchemas: passing1
-                        },
-                        message: "must match exactly one schema in oneOf"
-                      };
-
-                      if (vErrors === null) {
-                        vErrors = [err3];
-                      } else {
-                        vErrors.push(err3);
-                      }
-
-                      errors++;
-                    } else {
-                      errors = _errs10;
-
-                      if (vErrors !== null) {
-                        if (_errs10) {
-                          vErrors.length = _errs10;
-                        } else {
-                          vErrors = null;
-                        }
-                      }
-                    }
-
                     var valid3 = _errs9 === errors;
                   } else {
                     var valid3 = true;
@@ -11930,10 +12940,10 @@ function validate16(data) {
 
                   if (valid3) {
                     if (data1.username !== undefined) {
-                      const _errs15 = errors;
+                      const _errs11 = errors;
 
                       if (typeof data1.username !== "string") {
-                        const err4 = {
+                        const err2 = {
                           instancePath: instancePath + "/success/username",
                           schemaPath: "#/definitions/Credentials/properties/username/type",
                           keyword: "type",
@@ -11944,25 +12954,25 @@ function validate16(data) {
                         };
 
                         if (vErrors === null) {
-                          vErrors = [err4];
+                          vErrors = [err2];
                         } else {
-                          vErrors.push(err4);
+                          vErrors.push(err2);
                         }
 
                         errors++;
                       }
 
-                      var valid3 = _errs15 === errors;
+                      var valid3 = _errs11 === errors;
                     } else {
                       var valid3 = true;
                     }
 
                     if (valid3) {
                       if (data1.password !== undefined) {
-                        const _errs17 = errors;
+                        const _errs13 = errors;
 
                         if (typeof data1.password !== "string") {
-                          const err5 = {
+                          const err3 = {
                             instancePath: instancePath + "/success/password",
                             schemaPath: "#/definitions/Credentials/properties/password/type",
                             keyword: "type",
@@ -11973,15 +12983,15 @@ function validate16(data) {
                           };
 
                           if (vErrors === null) {
-                            vErrors = [err5];
+                            vErrors = [err3];
                           } else {
-                            vErrors.push(err5);
+                            vErrors.push(err3);
                           }
 
                           errors++;
                         }
 
-                        var valid3 = _errs17 === errors;
+                        var valid3 = _errs13 === errors;
                       } else {
                         var valid3 = true;
                       }
@@ -11989,7 +12999,7 @@ function validate16(data) {
                   }
                 }
               } else {
-                const err6 = {
+                const err4 = {
                   instancePath: instancePath + "/success",
                   schemaPath: "#/definitions/Credentials/type",
                   keyword: "type",
@@ -12000,9 +13010,9 @@ function validate16(data) {
                 };
 
                 if (vErrors === null) {
-                  vErrors = [err6];
+                  vErrors = [err4];
                 } else {
-                  vErrors.push(err6);
+                  vErrors.push(err4);
                 }
 
                 errors++;
@@ -12017,7 +13027,7 @@ function validate16(data) {
             }
 
             if (!valid1) {
-              const err7 = {
+              const err5 = {
                 instancePath: instancePath + "/success",
                 schemaPath: "#/properties/success/oneOf",
                 keyword: "oneOf",
@@ -12028,9 +13038,9 @@ function validate16(data) {
               };
 
               if (vErrors === null) {
-                vErrors = [err7];
+                vErrors = [err5];
               } else {
-                vErrors.push(err7);
+                vErrors.push(err5);
               }
 
               errors++;
@@ -12056,10 +13066,10 @@ function validate16(data) {
           if (valid0) {
             if (data.error !== undefined) {
               let data5 = data.error;
-              const _errs19 = errors;
-              const _errs20 = errors;
+              const _errs15 = errors;
+              const _errs16 = errors;
 
-              if (errors === _errs20) {
+              if (errors === _errs16) {
                 if (data5 && typeof data5 == "object" && !Array.isArray(data5)) {
                   let missing2;
 
@@ -12104,7 +13114,7 @@ function validate16(data) {
                 }
               }
 
-              var valid0 = _errs19 === errors;
+              var valid0 = _errs15 === errors;
             } else {
               var valid0 = true;
             }
@@ -12152,11 +13162,23 @@ const schema20 = {
             "$ref": "#/definitions/Credentials"
           }
         },
+        "identities": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "creditCards": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
         "serializedInputContext": {
           "type": "string"
         }
       },
-      "required": ["serializedInputContext"]
+      "required": ["serializedInputContext", "credentials", "creditCards", "identities"]
     },
     "error": {
       "$ref": "#/definitions/GenericError"
@@ -12238,7 +13260,7 @@ function validate17(data) {
               if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
                 let missing1;
 
-                if (data1.serializedInputContext === undefined && (missing1 = "serializedInputContext")) {
+                if (data1.serializedInputContext === undefined && (missing1 = "serializedInputContext") || data1.credentials === undefined && (missing1 = "credentials") || data1.creditCards === undefined && (missing1 = "creditCards") || data1.identities === undefined && (missing1 = "identities")) {
                   validate17.errors = [{
                     instancePath: instancePath + "/success",
                     schemaPath: "#/properties/success/required",
@@ -12281,104 +13303,19 @@ function validate17(data) {
                                 return false;
                               } else {
                                 if (data3.id !== undefined) {
-                                  let data4 = data3.id;
                                   const _errs10 = errors;
-                                  const _errs11 = errors;
-                                  let valid5 = false;
-                                  let passing0 = null;
-                                  const _errs12 = errors;
 
-                                  if (typeof data4 !== "string") {
-                                    const err0 = {
+                                  if (typeof data3.id !== "string") {
+                                    validate17.errors = [{
                                       instancePath: instancePath + "/success/credentials/" + i0 + "/id",
-                                      schemaPath: "#/definitions/Credentials/properties/id/oneOf/0/type",
+                                      schemaPath: "#/definitions/Credentials/properties/id/type",
                                       keyword: "type",
                                       params: {
                                         type: "string"
                                       },
                                       message: "must be string"
-                                    };
-
-                                    if (vErrors === null) {
-                                      vErrors = [err0];
-                                    } else {
-                                      vErrors.push(err0);
-                                    }
-
-                                    errors++;
-                                  }
-
-                                  var _valid0 = _errs12 === errors;
-
-                                  if (_valid0) {
-                                    valid5 = true;
-                                    passing0 = 0;
-                                  }
-
-                                  const _errs14 = errors;
-
-                                  if (!(typeof data4 == "number" && isFinite(data4))) {
-                                    const err1 = {
-                                      instancePath: instancePath + "/success/credentials/" + i0 + "/id",
-                                      schemaPath: "#/definitions/Credentials/properties/id/oneOf/1/type",
-                                      keyword: "type",
-                                      params: {
-                                        type: "number"
-                                      },
-                                      message: "must be number"
-                                    };
-
-                                    if (vErrors === null) {
-                                      vErrors = [err1];
-                                    } else {
-                                      vErrors.push(err1);
-                                    }
-
-                                    errors++;
-                                  }
-
-                                  var _valid0 = _errs14 === errors;
-
-                                  if (_valid0 && valid5) {
-                                    valid5 = false;
-                                    passing0 = [passing0, 1];
-                                  } else {
-                                    if (_valid0) {
-                                      valid5 = true;
-                                      passing0 = 1;
-                                    }
-                                  }
-
-                                  if (!valid5) {
-                                    const err2 = {
-                                      instancePath: instancePath + "/success/credentials/" + i0 + "/id",
-                                      schemaPath: "#/definitions/Credentials/properties/id/oneOf",
-                                      keyword: "oneOf",
-                                      params: {
-                                        passingSchemas: passing0
-                                      },
-                                      message: "must match exactly one schema in oneOf"
-                                    };
-
-                                    if (vErrors === null) {
-                                      vErrors = [err2];
-                                    } else {
-                                      vErrors.push(err2);
-                                    }
-
-                                    errors++;
-                                    validate17.errors = vErrors;
+                                    }];
                                     return false;
-                                  } else {
-                                    errors = _errs11;
-
-                                    if (vErrors !== null) {
-                                      if (_errs11) {
-                                        vErrors.length = _errs11;
-                                      } else {
-                                        vErrors = null;
-                                      }
-                                    }
                                   }
 
                                   var valid4 = _errs10 === errors;
@@ -12388,7 +13325,7 @@ function validate17(data) {
 
                                 if (valid4) {
                                   if (data3.username !== undefined) {
-                                    const _errs16 = errors;
+                                    const _errs12 = errors;
 
                                     if (typeof data3.username !== "string") {
                                       validate17.errors = [{
@@ -12403,14 +13340,14 @@ function validate17(data) {
                                       return false;
                                     }
 
-                                    var valid4 = _errs16 === errors;
+                                    var valid4 = _errs12 === errors;
                                   } else {
                                     var valid4 = true;
                                   }
 
                                   if (valid4) {
                                     if (data3.password !== undefined) {
-                                      const _errs18 = errors;
+                                      const _errs14 = errors;
 
                                       if (typeof data3.password !== "string") {
                                         validate17.errors = [{
@@ -12425,7 +13362,7 @@ function validate17(data) {
                                         return false;
                                       }
 
-                                      var valid4 = _errs18 === errors;
+                                      var valid4 = _errs14 === errors;
                                     } else {
                                       var valid4 = true;
                                     }
@@ -12472,25 +13409,131 @@ function validate17(data) {
                   }
 
                   if (valid1) {
-                    if (data1.serializedInputContext !== undefined) {
-                      const _errs20 = errors;
+                    if (data1.identities !== undefined) {
+                      let data7 = data1.identities;
+                      const _errs16 = errors;
 
-                      if (typeof data1.serializedInputContext !== "string") {
-                        validate17.errors = [{
-                          instancePath: instancePath + "/success/serializedInputContext",
-                          schemaPath: "#/properties/success/properties/serializedInputContext/type",
-                          keyword: "type",
-                          params: {
-                            type: "string"
-                          },
-                          message: "must be string"
-                        }];
-                        return false;
+                      if (errors === _errs16) {
+                        if (Array.isArray(data7)) {
+                          var valid5 = true;
+                          const len1 = data7.length;
+
+                          for (let i1 = 0; i1 < len1; i1++) {
+                            let data8 = data7[i1];
+                            const _errs18 = errors;
+
+                            if (!(data8 && typeof data8 == "object" && !Array.isArray(data8))) {
+                              validate17.errors = [{
+                                instancePath: instancePath + "/success/identities/" + i1,
+                                schemaPath: "#/properties/success/properties/identities/items/type",
+                                keyword: "type",
+                                params: {
+                                  type: "object"
+                                },
+                                message: "must be object"
+                              }];
+                              return false;
+                            }
+
+                            var valid5 = _errs18 === errors;
+
+                            if (!valid5) {
+                              break;
+                            }
+                          }
+                        } else {
+                          validate17.errors = [{
+                            instancePath: instancePath + "/success/identities",
+                            schemaPath: "#/properties/success/properties/identities/type",
+                            keyword: "type",
+                            params: {
+                              type: "array"
+                            },
+                            message: "must be array"
+                          }];
+                          return false;
+                        }
                       }
 
-                      var valid1 = _errs20 === errors;
+                      var valid1 = _errs16 === errors;
                     } else {
                       var valid1 = true;
+                    }
+
+                    if (valid1) {
+                      if (data1.creditCards !== undefined) {
+                        let data9 = data1.creditCards;
+                        const _errs20 = errors;
+
+                        if (errors === _errs20) {
+                          if (Array.isArray(data9)) {
+                            var valid6 = true;
+                            const len2 = data9.length;
+
+                            for (let i2 = 0; i2 < len2; i2++) {
+                              let data10 = data9[i2];
+                              const _errs22 = errors;
+
+                              if (!(data10 && typeof data10 == "object" && !Array.isArray(data10))) {
+                                validate17.errors = [{
+                                  instancePath: instancePath + "/success/creditCards/" + i2,
+                                  schemaPath: "#/properties/success/properties/creditCards/items/type",
+                                  keyword: "type",
+                                  params: {
+                                    type: "object"
+                                  },
+                                  message: "must be object"
+                                }];
+                                return false;
+                              }
+
+                              var valid6 = _errs22 === errors;
+
+                              if (!valid6) {
+                                break;
+                              }
+                            }
+                          } else {
+                            validate17.errors = [{
+                              instancePath: instancePath + "/success/creditCards",
+                              schemaPath: "#/properties/success/properties/creditCards/type",
+                              keyword: "type",
+                              params: {
+                                type: "array"
+                              },
+                              message: "must be array"
+                            }];
+                            return false;
+                          }
+                        }
+
+                        var valid1 = _errs20 === errors;
+                      } else {
+                        var valid1 = true;
+                      }
+
+                      if (valid1) {
+                        if (data1.serializedInputContext !== undefined) {
+                          const _errs24 = errors;
+
+                          if (typeof data1.serializedInputContext !== "string") {
+                            validate17.errors = [{
+                              instancePath: instancePath + "/success/serializedInputContext",
+                              schemaPath: "#/properties/success/properties/serializedInputContext/type",
+                              keyword: "type",
+                              params: {
+                                type: "string"
+                              },
+                              message: "must be string"
+                            }];
+                            return false;
+                          }
+
+                          var valid1 = _errs24 === errors;
+                        } else {
+                          var valid1 = true;
+                        }
+                      }
                     }
                   }
                 }
@@ -12515,15 +13558,15 @@ function validate17(data) {
 
           if (valid0) {
             if (data.error !== undefined) {
-              let data8 = data.error;
-              const _errs22 = errors;
-              const _errs23 = errors;
+              let data12 = data.error;
+              const _errs26 = errors;
+              const _errs27 = errors;
 
-              if (errors === _errs23) {
-                if (data8 && typeof data8 == "object" && !Array.isArray(data8)) {
+              if (errors === _errs27) {
+                if (data12 && typeof data12 == "object" && !Array.isArray(data12)) {
                   let missing3;
 
-                  if (data8.error === undefined && (missing3 = "error")) {
+                  if (data12.error === undefined && (missing3 = "error")) {
                     validate17.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
@@ -12535,8 +13578,8 @@ function validate17(data) {
                     }];
                     return false;
                   } else {
-                    if (data8.error !== undefined) {
-                      if (typeof data8.error !== "string") {
+                    if (data12.error !== undefined) {
+                      if (typeof data12.error !== "string") {
                         validate17.errors = [{
                           instancePath: instancePath + "/error/error",
                           schemaPath: "#/definitions/GenericError/properties/error/type",
@@ -12564,7 +13607,7 @@ function validate17(data) {
                 }
               }
 
-              var valid0 = _errs22 === errors;
+              var valid0 = _errs26 === errors;
             } else {
               var valid0 = true;
             }
@@ -14170,7 +15213,7 @@ function validate32(data) {
   return errors === 0;
 }
 
-},{}],52:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14255,7 +15298,7 @@ function fromPlatformConfig(config) {
   return settings;
 }
 
-},{"../schema/validators.cjs":51}],53:[function(require,module,exports){
+},{"../schema/validators.cjs":57}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14286,7 +15329,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],54:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14405,7 +15448,7 @@ function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
   });
 }
 
-},{"../schema/response.getAutofillData.schema.json":47,"../schema/response.getAvailableInputTypes.schema.json":49,"../schema/response.getRuntimeConfiguration.schema.json":50}],55:[function(require,module,exports){
+},{"../schema/response.getAutofillData.schema.json":53,"../schema/response.getAvailableInputTypes.schema.json":55,"../schema/response.getRuntimeConfiguration.schema.json":56}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14597,7 +15640,7 @@ const decrypt = async (ciphertext, key, iv) => {
   return dec.decode(decrypted);
 };
 
-},{"./captureDdgGlobals":53}],56:[function(require,module,exports){
+},{"./captureDdgGlobals":59}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14699,7 +15742,7 @@ const interceptions = {
   }
 };
 
-},{}],57:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14778,11 +15821,10 @@ function sendAndWait(msgOrFn, expectedResponse) {
   msgOrFn();
   return new Promise(resolve => {
     const handler = event => {
-      if (event.origin !== window.origin) {
-        console.warn("origin mis-match. window.origin: ".concat(window.origin, ", event.origin: ").concat(event.origin));
-        return;
-      }
-
+      /*if (event.origin !== window.origin) {
+          console.warn(`origin mis-match. window.origin: ${window.origin}, event.origin: ${event.origin}`)
+          return
+      }*/
       if (!event.data) {
         console.warn('data absent from message');
         return;
@@ -14805,1160 +15847,4 @@ function sendAndWait(msgOrFn, expectedResponse) {
   });
 }
 
-},{"../schema/response.getAutofillInitData.schema.json":48,"../schema/response.getAvailableInputTypes.schema.json":49,"../schema/response.getRuntimeConfiguration.schema.json":50}],58:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "RuntimeConfiguration", {
-  enumerable: true,
-  get: function () {
-    return _RuntimeConfiguration.RuntimeConfiguration;
-  }
-});
-Object.defineProperty(exports, "createRuntimeConfiguration", {
-  enumerable: true,
-  get: function () {
-    return _RuntimeConfiguration.createRuntimeConfiguration;
-  }
-});
-Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
-  enumerable: true,
-  get: function () {
-    return _RuntimeConfiguration.tryCreateRuntimeConfiguration;
-  }
-});
-
-var _RuntimeConfiguration = require("./src/config/RuntimeConfiguration.js");
-
-},{"./src/config/RuntimeConfiguration.js":62}],59:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-}); // https://github.com/ajv-validator/ajv/issues/889
-
-const equal = require("fast-deep-equal");
-
-equal.code = 'require("ajv/dist/runtime/equal").default';
-exports.default = equal;
-
-},{"fast-deep-equal":60}],60:[function(require,module,exports){
-'use strict'; // do not edit .js files directly - edit src/index.jst
-
-module.exports = function equal(a, b) {
-  if (a === b) return true;
-
-  if (a && b && typeof a == 'object' && typeof b == 'object') {
-    if (a.constructor !== b.constructor) return false;
-    var length, i, keys;
-
-    if (Array.isArray(a)) {
-      length = a.length;
-      if (length != b.length) return false;
-
-      for (i = length; i-- !== 0;) if (!equal(a[i], b[i])) return false;
-
-      return true;
-    }
-
-    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
-    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
-    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
-    keys = Object.keys(a);
-    length = keys.length;
-    if (length !== Object.keys(b).length) return false;
-
-    for (i = length; i-- !== 0;) if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
-
-    for (i = length; i-- !== 0;) {
-      var key = keys[i];
-      if (!equal(a[key], b[key])) return false;
-    }
-
-    return true;
-  } // true if both NaN, false otherwise
-
-
-  return a !== a && b !== b;
-};
-
-},{}],61:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.processConfig = processConfig;
-
-function getTopLevelURL() {
-  try {
-    // FROM: https://stackoverflow.com/a/7739035/73479
-    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
-    if (window.location !== window.parent.location) {
-      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
-    } else {
-      return new URL(window.location.href);
-    }
-  } catch (error) {
-    return new URL(location.href);
-  }
-}
-/**
- * @param {URL} topLevelUrl
- * @param {*} featureList
- */
-
-
-function isUnprotectedDomain(topLevelUrl, featureList) {
-  let unprotectedDomain = false;
-  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : []; // walk up the domain to see if it's unprotected
-
-  while (domainParts.length > 1 && !unprotectedDomain) {
-    const partialDomain = domainParts.join('.');
-    unprotectedDomain = featureList.filter(domain => domain.domain === partialDomain).length > 0;
-    domainParts.shift();
-  }
-
-  return unprotectedDomain;
-}
-/**
- * @param {*} data
- * @param {string[]} userList
- * @param {*} preferences
- * @param {string|URL} [maybeTopLevelUrl]
- */
-
-
-function processConfig(data, userList, preferences, maybeTopLevelUrl) {
-  const topLevelUrl = maybeTopLevelUrl || getTopLevelURL();
-  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
-  const enabledFeatures = Object.keys(data.features).filter(featureName => {
-    const feature = data.features[featureName];
-    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
-  });
-  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
-  const prefs = { ...preferences,
-    site: {
-      domain: topLevelUrl.hostname,
-      isBroken,
-      allowlisted,
-      enabledFeatures
-    },
-    cookie: {}
-  };
-  return prefs;
-}
-
-},{}],62:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.RuntimeConfiguration = void 0;
-exports.createRuntimeConfiguration = createRuntimeConfiguration;
-exports.tryCreateRuntimeConfiguration = tryCreateRuntimeConfiguration;
-
-var _appleUtils = require("../apple-utils.js");
-
-var _validate = _interopRequireDefault(require("./validate.cjs"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * @typedef {{
- *     "globalPrivacyControlValue"?: boolean,
- *     "sessionKey"?: string,
- *     "debug"?: boolean,
- *     "platform": {
- *       "name": "macos" | "ios" | "extension" | "android" | "windows" | "unknown"
- *     }
- * }} UserPreferences
- */
-
-/**
- * @typedef {{
- *   contentScope: any,
- *   userUnprotectedDomains: string[],
- *   userPreferences: UserPreferences
- * }} InputConfig
- */
-class RuntimeConfiguration {
-  constructor() {
-    _defineProperty(this, "validate", _validate.default);
-
-    _defineProperty(this, "config", null);
-  }
-
-  /**
-   * @throws
-   * @param {InputConfig} config
-   * @returns {RuntimeConfiguration}
-   */
-  assign(config) {
-    if (this.validate(config)) {
-      this.config = config;
-    } else {
-      for (const error of this.validate.errors) {
-        // todo: Give an error summary
-        console.error(error);
-      }
-
-      throw new Error('invalid inputs');
-    }
-
-    return this;
-  }
-  /**
-   * @param {any} config
-   * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
-   */
-
-
-  tryAssign(config) {
-    if (this.validate(config)) {
-      this.config = config;
-      return {
-        errors: [],
-        config: this
-      };
-    }
-
-    return {
-      errors: this.validate.errors.slice(),
-      config: null
-    };
-  }
-  /**
-   * This will only return settings for a feature if that feature is remotely enabled.
-   *
-   * @param {string} featureName
-   * @param {URL} [url]
-   * @returns {null|Record<string, any>}
-   */
-
-
-  getSettings(featureName, url) {
-    var _this$config$userPref, _this$config$userPref2, _this$config$contentS, _this$config$contentS2;
-
-    const isEnabled = this.isFeatureRemoteEnabled(featureName, url);
-    if (!isEnabled) return null;
-    const settings = { ...((_this$config$userPref = this.config.userPreferences.features) === null || _this$config$userPref === void 0 ? void 0 : (_this$config$userPref2 = _this$config$userPref[featureName]) === null || _this$config$userPref2 === void 0 ? void 0 : _this$config$userPref2.settings),
-      ...((_this$config$contentS = this.config.contentScope.features) === null || _this$config$contentS === void 0 ? void 0 : (_this$config$contentS2 = _this$config$contentS[featureName]) === null || _this$config$contentS2 === void 0 ? void 0 : _this$config$contentS2.settings)
-    };
-    return settings;
-  }
-  /**
-   * @returns {"macos"|"ios"|"extension"|"windows"|"android"|"unknown"}
-   */
-
-
-  get platform() {
-    return this.config.userPreferences.platform.name;
-  }
-  /**
-   * @param {string} featureName
-   * @param {URL} [url]
-   * @returns {boolean}
-   */
-
-
-  isFeatureRemoteEnabled(featureName, url) {
-    const privacyConfig = (0, _appleUtils.processConfig)(this.config.contentScope, this.config.userUnprotectedDomains, this.config.userPreferences, url);
-    const site = privacyConfig.site;
-
-    if (site.isBroken || !site.enabledFeatures.includes(featureName)) {
-      return false;
-    }
-
-    return true;
-  }
-
-}
-/**
- * Factory for creating config instance
- * @param {InputConfig} incoming
- * @returns {RuntimeConfiguration}
- */
-
-
-exports.RuntimeConfiguration = RuntimeConfiguration;
-
-function createRuntimeConfiguration(incoming) {
-  return new RuntimeConfiguration().assign(incoming);
-}
-/**
- * Factory for creating config instance
- * @param {InputConfig} incoming
- * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
- */
-
-
-function tryCreateRuntimeConfiguration(incoming) {
-  return new RuntimeConfiguration().tryAssign(incoming);
-}
-
-},{"../apple-utils.js":61,"./validate.cjs":63}],63:[function(require,module,exports){
-"use strict";
-
-module.exports = validate20;
-module.exports.default = validate20;
-const schema22 = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "#/definitions/RuntimeConfiguration",
-  "type": "object",
-  "additionalProperties": false,
-  "title": "Runtime Configuration Schema",
-  "description": "Required Properties to enable an instance of RuntimeConfiguration",
-  "properties": {
-    "contentScope": {
-      "$ref": "#/definitions/ContentScope"
-    },
-    "userUnprotectedDomains": {
-      "type": "array",
-      "items": {}
-    },
-    "userPreferences": {
-      "$ref": "#/definitions/UserPreferences"
-    }
-  },
-  "required": ["contentScope", "userPreferences", "userUnprotectedDomains"],
-  "definitions": {
-    "ContentScope": {
-      "type": "object",
-      "additionalProperties": true,
-      "properties": {
-        "features": {
-          "$ref": "#/definitions/ContentScopeFeatures"
-        },
-        "unprotectedTemporary": {
-          "type": "array",
-          "items": {}
-        }
-      },
-      "required": ["features", "unprotectedTemporary"],
-      "title": "ContentScope"
-    },
-    "ContentScopeFeatures": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/ContentScopeFeatureItem"
-      },
-      "title": "ContentScopeFeatures"
-    },
-    "ContentScopeFeatureItem": {
-      "type": "object",
-      "properties": {
-        "exceptions": {
-          "type": "array",
-          "items": {}
-        },
-        "state": {
-          "type": "string"
-        },
-        "settings": {
-          "type": "object"
-        }
-      },
-      "required": ["exceptions", "state"],
-      "title": "ContentScopeFeatureItem"
-    },
-    "UserPreferences": {
-      "type": "object",
-      "properties": {
-        "debug": {
-          "type": "boolean"
-        },
-        "platform": {
-          "$ref": "#/definitions/Platform"
-        },
-        "features": {
-          "$ref": "#/definitions/UserPreferencesFeatures"
-        }
-      },
-      "required": ["debug", "features", "platform"],
-      "title": "UserPreferences"
-    },
-    "UserPreferencesFeatures": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/UserPreferencesFeatureItem"
-      },
-      "title": "UserPreferencesFeatures"
-    },
-    "UserPreferencesFeatureItem": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "settings": {
-          "$ref": "#/definitions/Settings"
-        }
-      },
-      "required": ["settings"],
-      "title": "UserPreferencesFeatureItem"
-    },
-    "Settings": {
-      "type": "object",
-      "additionalProperties": true,
-      "title": "Settings"
-    },
-    "Platform": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
-        }
-      },
-      "required": ["name"],
-      "title": "Platform"
-    }
-  }
-};
-const schema23 = {
-  "type": "object",
-  "additionalProperties": true,
-  "properties": {
-    "features": {
-      "$ref": "#/definitions/ContentScopeFeatures"
-    },
-    "unprotectedTemporary": {
-      "type": "array",
-      "items": {}
-    }
-  },
-  "required": ["features", "unprotectedTemporary"],
-  "title": "ContentScope"
-};
-const schema24 = {
-  "type": "object",
-  "additionalProperties": {
-    "$ref": "#/definitions/ContentScopeFeatureItem"
-  },
-  "title": "ContentScopeFeatures"
-};
-const schema25 = {
-  "type": "object",
-  "properties": {
-    "exceptions": {
-      "type": "array",
-      "items": {}
-    },
-    "state": {
-      "type": "string"
-    },
-    "settings": {
-      "type": "object"
-    }
-  },
-  "required": ["exceptions", "state"],
-  "title": "ContentScopeFeatureItem"
-};
-
-function validate22(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      for (const key0 in data) {
-        let data0 = data[key0];
-        const _errs2 = errors;
-        const _errs3 = errors;
-
-        if (errors === _errs3) {
-          if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
-            let missing0;
-
-            if (data0.exceptions === undefined && (missing0 = "exceptions") || data0.state === undefined && (missing0 = "state")) {
-              validate22.errors = [{
-                instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
-                schemaPath: "#/definitions/ContentScopeFeatureItem/required",
-                keyword: "required",
-                params: {
-                  missingProperty: missing0
-                },
-                message: "must have required property '" + missing0 + "'"
-              }];
-              return false;
-            } else {
-              if (data0.exceptions !== undefined) {
-                const _errs5 = errors;
-
-                if (errors === _errs5) {
-                  if (!Array.isArray(data0.exceptions)) {
-                    validate22.errors = [{
-                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/exceptions",
-                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/exceptions/type",
-                      keyword: "type",
-                      params: {
-                        type: "array"
-                      },
-                      message: "must be array"
-                    }];
-                    return false;
-                  }
-                }
-
-                var valid2 = _errs5 === errors;
-              } else {
-                var valid2 = true;
-              }
-
-              if (valid2) {
-                if (data0.state !== undefined) {
-                  const _errs7 = errors;
-
-                  if (typeof data0.state !== "string") {
-                    validate22.errors = [{
-                      instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/state",
-                      schemaPath: "#/definitions/ContentScopeFeatureItem/properties/state/type",
-                      keyword: "type",
-                      params: {
-                        type: "string"
-                      },
-                      message: "must be string"
-                    }];
-                    return false;
-                  }
-
-                  var valid2 = _errs7 === errors;
-                } else {
-                  var valid2 = true;
-                }
-
-                if (valid2) {
-                  if (data0.settings !== undefined) {
-                    let data3 = data0.settings;
-                    const _errs9 = errors;
-
-                    if (!(data3 && typeof data3 == "object" && !Array.isArray(data3))) {
-                      validate22.errors = [{
-                        instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/settings",
-                        schemaPath: "#/definitions/ContentScopeFeatureItem/properties/settings/type",
-                        keyword: "type",
-                        params: {
-                          type: "object"
-                        },
-                        message: "must be object"
-                      }];
-                      return false;
-                    }
-
-                    var valid2 = _errs9 === errors;
-                  } else {
-                    var valid2 = true;
-                  }
-                }
-              }
-            }
-          } else {
-            validate22.errors = [{
-              instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
-              schemaPath: "#/definitions/ContentScopeFeatureItem/type",
-              keyword: "type",
-              params: {
-                type: "object"
-              },
-              message: "must be object"
-            }];
-            return false;
-          }
-        }
-
-        var valid0 = _errs2 === errors;
-
-        if (!valid0) {
-          break;
-        }
-      }
-    } else {
-      validate22.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate22.errors = vErrors;
-  return errors === 0;
-}
-
-function validate21(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
-        validate21.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        if (data.features !== undefined) {
-          const _errs2 = errors;
-
-          if (!validate22(data.features, {
-            instancePath: instancePath + "/features",
-            parentData: data,
-            parentDataProperty: "features",
-            rootData
-          })) {
-            vErrors = vErrors === null ? validate22.errors : vErrors.concat(validate22.errors);
-            errors = vErrors.length;
-          }
-
-          var valid0 = _errs2 === errors;
-        } else {
-          var valid0 = true;
-        }
-
-        if (valid0) {
-          if (data.unprotectedTemporary !== undefined) {
-            const _errs3 = errors;
-
-            if (errors === _errs3) {
-              if (!Array.isArray(data.unprotectedTemporary)) {
-                validate21.errors = [{
-                  instancePath: instancePath + "/unprotectedTemporary",
-                  schemaPath: "#/properties/unprotectedTemporary/type",
-                  keyword: "type",
-                  params: {
-                    type: "array"
-                  },
-                  message: "must be array"
-                }];
-                return false;
-              }
-            }
-
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-        }
-      }
-    } else {
-      validate21.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate21.errors = vErrors;
-  return errors === 0;
-}
-
-const schema26 = {
-  "type": "object",
-  "properties": {
-    "debug": {
-      "type": "boolean"
-    },
-    "platform": {
-      "$ref": "#/definitions/Platform"
-    },
-    "features": {
-      "$ref": "#/definitions/UserPreferencesFeatures"
-    }
-  },
-  "required": ["debug", "features", "platform"],
-  "title": "UserPreferences"
-};
-const schema27 = {
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string",
-      "enum": ["ios", "macos", "windows", "extension", "android", "unknown"]
-    }
-  },
-  "required": ["name"],
-  "title": "Platform"
-};
-
-const func0 = require("ajv/dist/runtime/equal").default;
-
-const schema28 = {
-  "type": "object",
-  "additionalProperties": {
-    "$ref": "#/definitions/UserPreferencesFeatureItem"
-  },
-  "title": "UserPreferencesFeatures"
-};
-const schema29 = {
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "settings": {
-      "$ref": "#/definitions/Settings"
-    }
-  },
-  "required": ["settings"],
-  "title": "UserPreferencesFeatureItem"
-};
-const schema30 = {
-  "type": "object",
-  "additionalProperties": true,
-  "title": "Settings"
-};
-
-function validate27(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.settings === undefined && (missing0 = "settings")) {
-        validate27.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        const _errs1 = errors;
-
-        for (const key0 in data) {
-          if (!(key0 === "settings")) {
-            validate27.errors = [{
-              instancePath,
-              schemaPath: "#/additionalProperties",
-              keyword: "additionalProperties",
-              params: {
-                additionalProperty: key0
-              },
-              message: "must NOT have additional properties"
-            }];
-            return false;
-            break;
-          }
-        }
-
-        if (_errs1 === errors) {
-          if (data.settings !== undefined) {
-            let data0 = data.settings;
-            const _errs3 = errors;
-
-            if (errors === _errs3) {
-              if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {} else {
-                validate27.errors = [{
-                  instancePath: instancePath + "/settings",
-                  schemaPath: "#/definitions/Settings/type",
-                  keyword: "type",
-                  params: {
-                    type: "object"
-                  },
-                  message: "must be object"
-                }];
-                return false;
-              }
-            }
-          }
-        }
-      }
-    } else {
-      validate27.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate27.errors = vErrors;
-  return errors === 0;
-}
-
-function validate26(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      for (const key0 in data) {
-        const _errs2 = errors;
-
-        if (!validate27(data[key0], {
-          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
-          parentData: data,
-          parentDataProperty: key0,
-          rootData
-        })) {
-          vErrors = vErrors === null ? validate27.errors : vErrors.concat(validate27.errors);
-          errors = vErrors.length;
-        }
-
-        var valid0 = _errs2 === errors;
-
-        if (!valid0) {
-          break;
-        }
-      }
-    } else {
-      validate26.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate26.errors = vErrors;
-  return errors === 0;
-}
-
-function validate25(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.debug === undefined && (missing0 = "debug") || data.features === undefined && (missing0 = "features") || data.platform === undefined && (missing0 = "platform")) {
-        validate25.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        if (data.debug !== undefined) {
-          const _errs1 = errors;
-
-          if (typeof data.debug !== "boolean") {
-            validate25.errors = [{
-              instancePath: instancePath + "/debug",
-              schemaPath: "#/properties/debug/type",
-              keyword: "type",
-              params: {
-                type: "boolean"
-              },
-              message: "must be boolean"
-            }];
-            return false;
-          }
-
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-
-        if (valid0) {
-          if (data.platform !== undefined) {
-            let data1 = data.platform;
-            const _errs3 = errors;
-            const _errs4 = errors;
-
-            if (errors === _errs4) {
-              if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
-                let missing1;
-
-                if (data1.name === undefined && (missing1 = "name")) {
-                  validate25.errors = [{
-                    instancePath: instancePath + "/platform",
-                    schemaPath: "#/definitions/Platform/required",
-                    keyword: "required",
-                    params: {
-                      missingProperty: missing1
-                    },
-                    message: "must have required property '" + missing1 + "'"
-                  }];
-                  return false;
-                } else {
-                  if (data1.name !== undefined) {
-                    let data2 = data1.name;
-
-                    if (typeof data2 !== "string") {
-                      validate25.errors = [{
-                        instancePath: instancePath + "/platform/name",
-                        schemaPath: "#/definitions/Platform/properties/name/type",
-                        keyword: "type",
-                        params: {
-                          type: "string"
-                        },
-                        message: "must be string"
-                      }];
-                      return false;
-                    }
-
-                    if (!(data2 === "ios" || data2 === "macos" || data2 === "windows" || data2 === "extension" || data2 === "android" || data2 === "unknown")) {
-                      validate25.errors = [{
-                        instancePath: instancePath + "/platform/name",
-                        schemaPath: "#/definitions/Platform/properties/name/enum",
-                        keyword: "enum",
-                        params: {
-                          allowedValues: schema27.properties.name.enum
-                        },
-                        message: "must be equal to one of the allowed values"
-                      }];
-                      return false;
-                    }
-                  }
-                }
-              } else {
-                validate25.errors = [{
-                  instancePath: instancePath + "/platform",
-                  schemaPath: "#/definitions/Platform/type",
-                  keyword: "type",
-                  params: {
-                    type: "object"
-                  },
-                  message: "must be object"
-                }];
-                return false;
-              }
-            }
-
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-
-          if (valid0) {
-            if (data.features !== undefined) {
-              const _errs8 = errors;
-
-              if (!validate26(data.features, {
-                instancePath: instancePath + "/features",
-                parentData: data,
-                parentDataProperty: "features",
-                rootData
-              })) {
-                vErrors = vErrors === null ? validate26.errors : vErrors.concat(validate26.errors);
-                errors = vErrors.length;
-              }
-
-              var valid0 = _errs8 === errors;
-            } else {
-              var valid0 = true;
-            }
-          }
-        }
-      }
-    } else {
-      validate25.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate25.errors = vErrors;
-  return errors === 0;
-}
-
-function validate20(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  /*# sourceURL="#/definitions/RuntimeConfiguration" */
-  ;
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.contentScope === undefined && (missing0 = "contentScope") || data.userPreferences === undefined && (missing0 = "userPreferences") || data.userUnprotectedDomains === undefined && (missing0 = "userUnprotectedDomains")) {
-        validate20.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        const _errs1 = errors;
-
-        for (const key0 in data) {
-          if (!(key0 === "contentScope" || key0 === "userUnprotectedDomains" || key0 === "userPreferences")) {
-            validate20.errors = [{
-              instancePath,
-              schemaPath: "#/additionalProperties",
-              keyword: "additionalProperties",
-              params: {
-                additionalProperty: key0
-              },
-              message: "must NOT have additional properties"
-            }];
-            return false;
-            break;
-          }
-        }
-
-        if (_errs1 === errors) {
-          if (data.contentScope !== undefined) {
-            const _errs2 = errors;
-
-            if (!validate21(data.contentScope, {
-              instancePath: instancePath + "/contentScope",
-              parentData: data,
-              parentDataProperty: "contentScope",
-              rootData
-            })) {
-              vErrors = vErrors === null ? validate21.errors : vErrors.concat(validate21.errors);
-              errors = vErrors.length;
-            }
-
-            var valid0 = _errs2 === errors;
-          } else {
-            var valid0 = true;
-          }
-
-          if (valid0) {
-            if (data.userUnprotectedDomains !== undefined) {
-              const _errs3 = errors;
-
-              if (errors === _errs3) {
-                if (!Array.isArray(data.userUnprotectedDomains)) {
-                  validate20.errors = [{
-                    instancePath: instancePath + "/userUnprotectedDomains",
-                    schemaPath: "#/properties/userUnprotectedDomains/type",
-                    keyword: "type",
-                    params: {
-                      type: "array"
-                    },
-                    message: "must be array"
-                  }];
-                  return false;
-                }
-              }
-
-              var valid0 = _errs3 === errors;
-            } else {
-              var valid0 = true;
-            }
-
-            if (valid0) {
-              if (data.userPreferences !== undefined) {
-                const _errs5 = errors;
-
-                if (!validate25(data.userPreferences, {
-                  instancePath: instancePath + "/userPreferences",
-                  parentData: data,
-                  parentDataProperty: "userPreferences",
-                  rootData
-                })) {
-                  vErrors = vErrors === null ? validate25.errors : vErrors.concat(validate25.errors);
-                  errors = vErrors.length;
-                }
-
-                var valid0 = _errs5 === errors;
-              } else {
-                var valid0 = true;
-              }
-            }
-          }
-        }
-      }
-    } else {
-      validate20.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate20.errors = vErrors;
-  return errors === 0;
-}
-
-},{"ajv/dist/runtime/equal":59}]},{},[38]);
+},{"../schema/response.getAutofillInitData.schema.json":54,"../schema/response.getAvailableInputTypes.schema.json":55,"../schema/response.getRuntimeConfiguration.schema.json":56}]},{},[44]);

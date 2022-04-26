@@ -20,12 +20,27 @@
             "$ref": "#/definitions/Credentials"
           }
         },
+        "identities": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "creditCards": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
         "serializedInputContext": {
           "type": "string"
         }
       },
       "required": [
-        "serializedInputContext"
+        "serializedInputContext",
+        "credentials",
+        "creditCards",
+        "identities"
       ]
     },
     "error": {

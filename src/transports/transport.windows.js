@@ -48,10 +48,11 @@ function sendAndWait (msgOrFn, expectedResponse) {
     msgOrFn()
     return new Promise((resolve) => {
         const handler = event => {
-            if (event.origin !== window.origin) {
+            /*if (event.origin !== window.origin) {
                 console.warn(`origin mis-match. window.origin: ${window.origin}, event.origin: ${event.origin}`)
                 return
-            }
+            }*/
+            
             if (!event.data) {
                 console.warn('data absent from message')
                 return
