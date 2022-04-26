@@ -8850,7 +8850,6 @@ class WebTooltip {
 
 
   _pointerDownListener(e) {
-    console.log('EVENT');
     if (!e.isTrusted) return; // @ts-ignore
 
     if (e.target.nodeName === 'DDG-AUTOFILL') {
