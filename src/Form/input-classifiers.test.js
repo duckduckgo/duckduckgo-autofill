@@ -151,6 +151,9 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         scanner.findEligibleInputs(document)
 
         const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()
+        /**
+         * @type {HTMLElement[]}
+         */
         const identifiedSubmitButtons = Array.from(document.querySelectorAll('[data-manual-submit]'))
 
         let submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button)).length
