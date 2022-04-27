@@ -267,16 +267,24 @@ function escapeXML (str) {
 }
 
 const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i
+const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
  * @return {boolean}
  */
-const isLikelyASubmitButton = (el) =>
-    el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+const isLikelyASubmitButton = (el) => {
+    const text = el.textContent || ''
+    const ariaLabel = el.getAttribute('aria-label') || ''
+    const title = el.title || ''
+    const value = el.value || ''
+
+    return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
     /primary|submit/i.test(el.className) || // has high-signal submit classes
-    SUBMIT_BUTTON_REGEX.test(el.textContent || el.title || el.value) || // has high-signal text
-    el.offsetHeight * el.offsetWidth >= 10000 // it's a large element, at least 250x40px
+    SUBMIT_BUTTON_REGEX.test(text + title + value) || // has high-signal text
+    el.offsetHeight * el.offsetWidth >= 10000) && // it's a large element, at least 250x40px
+    !SUBMIT_BUTTON_UNLIKELY_REGEX.test(text + ariaLabel + title + value)
+}
 
 module.exports = {
     notifyWebApp,
