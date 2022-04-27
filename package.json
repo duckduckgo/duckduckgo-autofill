@@ -32,19 +32,19 @@
     "@babel/eslint-parser": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@playwright/test": "^1.20.2",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/node": "^16.11.7",
     "asana": "^0.18.6",
     "babel-jest": "^27.5.1",
     "babelify": "^10.0.0",
     "eslint": "^7.25.0",
     "eslint-config-standard": "11.0.0",
-    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^5.0.0",
     "fast-check": "^2.23.2",
-    "grunt": "^1.4.0",
+    "grunt": "^1.5.2",
     "grunt-babel": "^8.0.0",
     "grunt-browserify": "^6.0.0",
     "grunt-contrib-watch": "^1.1.0",
@@ -54,11 +54,11 @@
     "jest-chrome": "^0.7.2",
     "jest-html-reporter": "^3.4.2",
     "load-grunt-tasks": "^5.1.0",
-    "markdown-it": "^12.2.0",
+    "markdown-it": "^12.3.2",
     "playwright": "^1.20.1",
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#1.1.2"
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#1.2.1"
   }
 }
