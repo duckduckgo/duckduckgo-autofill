@@ -8932,7 +8932,7 @@ const isLikelyASubmitButton = el => {
   const text = el.textContent || '';
   const ariaLabel = el.getAttribute('aria-label') || '';
   const title = el.title || '';
-  const value = el.value || '';
+  const value = el instanceof HTMLInputElement ? el.value || '' : '';
   return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
   /primary|submit/i.test(el.className) || // has high-signal submit classes
   SUBMIT_BUTTON_REGEX.test(text + title + value) || // has high-signal text
