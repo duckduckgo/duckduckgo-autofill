@@ -43,7 +43,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^5.0.0",
-    "fast-check": "^2.23.2",
+    "fast-check": "^2.25.0",
     "grunt": "^1.5.2",
     "grunt-babel": "^8.0.0",
     "grunt-browserify": "^6.0.0",
