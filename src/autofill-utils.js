@@ -278,12 +278,13 @@ const isLikelyASubmitButton = (el) => {
     const ariaLabel = el.getAttribute('aria-label') || ''
     const title = el.title || ''
     const value = (el instanceof HTMLInputElement ? el.value || '' : '')
+    const contentExcludingLabel = text + ' ' + title + ' ' + value
 
     return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
     /primary|submit/i.test(el.className) || // has high-signal submit classes
-    SUBMIT_BUTTON_REGEX.test(text + title + value) || // has high-signal text
+    SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
     el.offsetHeight * el.offsetWidth >= 10000) && // it's a large element, at least 250x40px
-    !SUBMIT_BUTTON_UNLIKELY_REGEX.test(text + ariaLabel + title + value)
+    !SUBMIT_BUTTON_UNLIKELY_REGEX.test(contentExcludingLabel + ' ' + ariaLabel)
 }
 
 module.exports = {
