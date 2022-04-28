@@ -1683,6 +1683,9 @@ module.exports={
   "bhphotovideo.com": {
     "password-rules": "maxlength: 15;"
   },
+  "bilibili.com": {
+    "password-rules": "maxlength: 16;"
+  },
   "billerweb.com": {
     "password-rules": "minlength: 8; max-consecutive: 2; required: digit; required: upper,lower;"
   },
