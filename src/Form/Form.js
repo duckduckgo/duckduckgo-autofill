@@ -1,14 +1,29 @@
-const FormAnalyzer = require('./FormAnalyzer')
-const {
-    addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
-    getDaxBoundingBox, isLikelyASubmitButton, isVisible
-} = require('../autofill-utils')
-const {getInputSubtype, getInputMainType, createMatching} = require('./matching')
-const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
-const {ATTR_AUTOFILL} = require('../constants')
-const {getInputConfig} = require('./inputTypeConfig.js')
-const {getUnifiedExpiryDate, formatCCYear, getCountryName,
-    prepareFormValuesForStorage, inferCountryCodeFromElement} = require('./formatters')
+import FormAnalyzer from './FormAnalyzer'
+
+import {
+    addInlineStyles,
+    removeInlineStyles,
+    setValue,
+    isEventWithinDax,
+    getDaxBoundingBox,
+    isLikelyASubmitButton,
+    isVisible
+} from '../autofill-utils'
+
+import { getInputSubtype, getInputMainType, createMatching } from './matching'
+import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles'
+import { getInputConfig } from './inputTypeConfig.js'
+
+import {
+    getUnifiedExpiryDate,
+    formatCCYear,
+    getCountryName,
+    prepareFormValuesForStorage,
+    inferCountryCodeFromElement
+} from './formatters'
+
+import {constants} from '../constants'
+const {ATTR_AUTOFILL} = constants
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
@@ -22,7 +37,7 @@ class Form {
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+     * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
      */
     constructor (form, input, deviceInterface, matching) {
@@ -450,4 +465,4 @@ class Form {
     }
 }
 
-module.exports.Form = Form
+export { Form }

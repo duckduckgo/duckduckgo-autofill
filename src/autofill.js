@@ -1,10 +1,11 @@
 // Polyfills/shims
-require('./requestIdleCallback');
+import './requestIdleCallback'
+import {createDevice} from './DeviceInterface'
 
 (() => {
     if (!window.isSecureContext) return false
     try {
-        const deviceInterface = require('./DeviceInterface')
+        const deviceInterface = createDevice()
         deviceInterface.init()
     } catch (e) {
         console.error(e)

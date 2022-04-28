@@ -1,10 +1,12 @@
-const InterfacePrototype = require('./InterfacePrototype.js')
-const {
+import InterfacePrototype from './InterfacePrototype.js'
+
+import {
     SIGN_IN_MSG,
-    sendAndWaitForAnswer, setValue,
+    sendAndWaitForAnswer,
+    setValue,
     formatDuckAddress,
     isAutofillEnabledFromProcessedConfig
-} = require('../autofill-utils')
+} from '../autofill-utils'
 
 class ExtensionInterface extends InterfacePrototype {
     async isEnabled () {
@@ -111,11 +113,6 @@ class ExtensionInterface extends InterfacePrototype {
             }
         })
     }
-
-    /** @override */
-    tooltipStyles () {
-        return `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
-    }
 }
 
-module.exports = ExtensionInterface
+export default ExtensionInterface

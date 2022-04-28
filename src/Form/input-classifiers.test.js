@@ -1,11 +1,13 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
+import { getUnifiedExpiryDate } from './formatters'
+import { createScanner } from '../Scanner'
+import { getInputSubtype, createMatching } from './matching'
+import { Form } from './Form'
+import InterfacePrototype from '../DeviceInterface/InterfacePrototype'
 
-const {getUnifiedExpiryDate} = require('./formatters')
-const {createScanner} = require('../Scanner')
-const {getInputSubtype, createMatching} = require('./matching')
-const {Form} = require('./Form')
-const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
+import testCases from './test-cases/index'
+import { createGlobalConfig } from '../config'
 
 /**
  * @param {HTMLInputElement} el
@@ -129,9 +131,6 @@ describe('Input Classifiers', () => {
         })
     })
 })
-
-const testCases = require('./test-cases/index')
-const {createGlobalConfig} = require('../config')
 let testResults = []
 
 describe.each(testCases)('Test $html fields', (testCase) => {

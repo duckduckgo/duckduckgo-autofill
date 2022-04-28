@@ -1,9 +1,9 @@
-const {daxBase64} = require('./logo-svg')
-const ddgPasswordIcons = require('../UI/img/ddgPasswordIcon')
-const {getInputType, getMainTypeFromType, getInputSubtype} = require('./matching')
-const {CredentialsTooltipItem} = require('../InputTypes/Credentials')
-const {CreditCardTooltipItem} = require('../InputTypes/CreditCard')
-const {IdentityTooltipItem} = require('../InputTypes/Identity')
+import { daxBase64 } from './logo-svg'
+import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon'
+import { getInputType, getMainTypeFromType, getInputSubtype } from './matching'
+import { CredentialsTooltipItem } from '../InputTypes/Credentials'
+import { CreditCardTooltipItem } from '../InputTypes/CreditCard'
+import { IdentityTooltipItem } from '../InputTypes/Identity'
 
 /**
  * Get the icon for the identities (currently only Dax for emails)
@@ -124,7 +124,7 @@ const getInputConfigFromType = (inputType) => {
     return inputTypeConfig[inputMainType]
 }
 
-module.exports = {
+export {
     getInputConfig,
     getInputConfigFromType
 }

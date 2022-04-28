@@ -1,3 +1,4 @@
+const {readFileSync} = require('fs')
 module.exports = function (grunt) {
     'use strict'
 
@@ -5,6 +6,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-eslint')
     grunt.loadNpmTasks('grunt-browserify')
     grunt.loadNpmTasks('grunt-contrib-watch')
+    const through = require('through2')
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -17,7 +19,20 @@ module.exports = function (grunt) {
                                 presets: ['@babel/preset-env'],
                                 global: true
                             }
-                        ]
+                        ],
+                        [(file) => {
+                            return through(function (buf, _enc, next) {
+                                if (!file.endsWith('styles.js')) {
+                                    this.push(buf)
+                                    return next()
+                                }
+                                const fileContent = readFileSync('./src/UI/styles/autofill-tooltip-styles.css', 'utf8')
+                                const matcher = '\'$CSS_STYLES$\''
+                                const asString = buf.toString().replace(matcher, JSON.stringify(fileContent))
+                                this.push(asString)
+                                next()
+                            })
+                        }]
                     ]
                 },
                 files: {
