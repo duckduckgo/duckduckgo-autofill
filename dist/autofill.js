@@ -3076,7 +3076,7 @@ var _data2 = /*#__PURE__*/new WeakMap();
 class InterfacePrototype {
   /** @type {import("../Form/Form").Form | null} */
 
-  /** @type {import("../UI/Tooltip").Tooltip | null} */
+  /** @type {import("../UI/Tooltip").default | null} */
 
   /** @type {number} */
 
@@ -8169,7 +8169,7 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.Tooltip = void 0;
+exports.default = void 0;
 
 var _autofillUtils = require("../autofill-utils");
 
@@ -8406,7 +8406,6 @@ class Tooltip {
 
 }
 
-exports.Tooltip = Tooltip;
 var _default = Tooltip;
 exports.default = _default;
 

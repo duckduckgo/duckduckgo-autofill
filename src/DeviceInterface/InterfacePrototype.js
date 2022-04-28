@@ -25,7 +25,7 @@ class InterfacePrototype {
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     currentAttached = null
-    /** @type {import("../UI/Tooltip").Tooltip | null} */
+    /** @type {import("../UI/Tooltip").default | null} */
     currentTooltip = null
     stripCredentials = true
     /** @type {number} */

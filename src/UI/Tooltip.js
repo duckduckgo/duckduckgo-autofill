@@ -1,7 +1,7 @@
 import { safeExecute, addInlineStyles } from '../autofill-utils'
 import { getSubtypeFromType } from '../Form/matching'
 
-export class Tooltip {
+class Tooltip {
     /**
      * @param config
      * @param inputType
