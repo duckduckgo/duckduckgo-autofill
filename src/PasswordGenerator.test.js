@@ -1,4 +1,4 @@
-const {PasswordGenerator} = require('./PasswordGenerator')
+import { PasswordGenerator } from './PasswordGenerator'
 
 describe('PasswordGenerator', () => {
     it('generates a password once', () => {

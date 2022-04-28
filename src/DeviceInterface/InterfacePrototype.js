@@ -1,22 +1,21 @@
-const {
+import {
     ADDRESS_DOMAIN,
     SIGN_IN_MSG,
     sendAndWaitForAnswer,
     formatDuckAddress,
     autofillEnabled,
     notifyWebApp
-} = require('../autofill-utils')
-const {getInputType, getSubtypeFromType} = require('../Form/matching')
-const {
-    formatFullName
-} = require('../Form/formatters')
-const EmailAutofill = require('../UI/EmailAutofill')
-const DataAutofill = require('../UI/DataAutofill')
-const {getInputConfigFromType} = require('../Form/inputTypeConfig')
-const listenForGlobalFormSubmission = require('../Form/listenForFormSubmission')
-const {fromPassword, GENERATED_ID} = require('../InputTypes/Credentials')
-const {PasswordGenerator} = require('../PasswordGenerator')
-const {createScanner} = require('../Scanner')
+} from '../autofill-utils'
+
+import { getInputType, getSubtypeFromType } from '../Form/matching'
+import { formatFullName } from '../Form/formatters'
+import EmailAutofill from '../UI/EmailAutofill'
+import DataAutofill from '../UI/DataAutofill'
+import { getInputConfigFromType } from '../Form/inputTypeConfig'
+import listenForGlobalFormSubmission from '../Form/listenForFormSubmission'
+import { fromPassword, GENERATED_ID } from '../InputTypes/Credentials'
+import { PasswordGenerator } from '../PasswordGenerator'
+import { createScanner } from '../Scanner'
 
 /**
  * @implements {FeatureToggles}
@@ -26,7 +25,7 @@ class InterfacePrototype {
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     currentAttached = null
-    /** @type {import("../UI/Tooltip") | null} */
+    /** @type {import("../UI/Tooltip").default | null} */
     currentTooltip = null
     stripCredentials = true
     /** @type {number} */
@@ -181,7 +180,12 @@ class InterfacePrototype {
 
     async startInit () {
         window.addEventListener('pointerdown', this, true)
-        listenForGlobalFormSubmission(this.scanner.forms)
+
+        // Only setup listeners on macOS
+        if (this.globalConfig.isApp) {
+            listenForGlobalFormSubmission(this.scanner.forms)
+        }
+
         this.addDeviceListeners()
         await this.setupAutofill()
         await this.setupSettingsPage()
@@ -556,11 +560,6 @@ class InterfacePrototype {
     supportsFeature (_name) {
         return false
     }
-
-    /** @returns {string} */
-    tooltipStyles () {
-        return `<style>${require('../UI/styles/autofill-tooltip-styles.js')}</style>`
-    }
 }
 
-module.exports = InterfacePrototype
+export default InterfacePrototype

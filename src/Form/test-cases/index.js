@@ -1,4 +1,4 @@
-module.exports = [
+export default [
     { html: 'poor-markup-form.html' },
     { html: 'wikipedia_login.html' },
     { html: 'wikipedia_signup.html' },

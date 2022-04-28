@@ -35,4 +35,4 @@ window.cancelIdleCallback = window.cancelIdleCallback ||
         clearTimeout(id)
     }
 
-module.exports = {}
+export default {}

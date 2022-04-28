@@ -20,4 +20,4 @@ const secretGlobals = {
     ObjectDefineProperty: window.Object.defineProperty
 }
 
-module.exports = secretGlobals
+export default secretGlobals

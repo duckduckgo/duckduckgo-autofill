@@ -1,7 +1,5 @@
-const InterfacePrototype = require('./InterfacePrototype.js')
-const {
-    sendAndWaitForAnswer
-} = require('../autofill-utils')
+import InterfacePrototype from './InterfacePrototype.js'
+import { sendAndWaitForAnswer } from '../autofill-utils'
 
 class AndroidInterface extends InterfacePrototype {
     async getAlias () {
@@ -45,4 +43,4 @@ class AndroidInterface extends InterfacePrototype {
     }
 }
 
-module.exports = AndroidInterface
+export default AndroidInterface

@@ -1,4 +1,4 @@
-const ddgGlobals = require('./captureDdgGlobals')
+import ddgGlobals from './captureDdgGlobals'
 
 /**
  * Sends message to the webkit layer (fire and forget)
@@ -114,4 +114,4 @@ function createTransport (config) {
     return transport
 }
 
-module.exports = { createTransport }
+export { createTransport }

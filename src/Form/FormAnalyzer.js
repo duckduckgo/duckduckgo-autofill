@@ -1,7 +1,7 @@
-const {removeExcessWhitespace, Matching} = require('./matching')
-const {TEXT_LENGTH_CUTOFF} = require('../constants')
-const {matchingConfiguration} = require('./matching-configuration')
-const {isLikelyASubmitButton} = require('../autofill-utils')
+import { removeExcessWhitespace, Matching } from './matching'
+import { constants } from '../constants'
+import { matchingConfiguration } from './matching-configuration'
+import { isLikelyASubmitButton } from '../autofill-utils'
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -185,7 +185,7 @@ class FormAnalyzer {
         } else {
             // any other case
             // only consider the el if it's a small text to avoid noisy disclaimers
-            if (removeExcessWhitespace(el.textContent)?.length < TEXT_LENGTH_CUTOFF) {
+            if (removeExcessWhitespace(el.textContent)?.length < constants.TEXT_LENGTH_CUTOFF) {
                 this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
             }
         }
@@ -215,4 +215,4 @@ class FormAnalyzer {
     }
 }
 
-module.exports = FormAnalyzer
+export default FormAnalyzer

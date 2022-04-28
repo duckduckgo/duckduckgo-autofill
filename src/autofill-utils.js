@@ -1,4 +1,4 @@
-const {getInputSubtype} = require('./Form/matching')
+import { getInputSubtype } from './Form/matching'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -278,7 +278,7 @@ const isLikelyASubmitButton = (el) =>
     SUBMIT_BUTTON_REGEX.test(el.textContent || el.title) || // has high-signal text
     el.offsetHeight * el.offsetWidth >= 10000 // it's a large element, at least 250x40px
 
-module.exports = {
+export {
     notifyWebApp,
     sendAndWaitForAnswer,
     isAutofillEnabledFromProcessedConfig,

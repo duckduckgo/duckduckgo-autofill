@@ -7,9 +7,8 @@ copyAutofillCSS()
 copyAutofillScriptToExtension()
 
 function copyAutofillCSS () {
-    const css = require('../src/UI/styles/autofill-tooltip-styles.js')
-    writeFileSync(filepath('dist/autofill.css'), css.trim() + '\n')
-    writeFileSync(filepath('integration-test/extension/public/css/autofill.css'), css.trim() + '\n')
+    copyFileSync(filepath('src/UI/styles/autofill-tooltip-styles.css'), filepath('dist/autofill.css'))
+    copyFileSync(filepath('src/UI/styles/autofill-tooltip-styles.css'), filepath('integration-test/extension/public/css/autofill.css'))
 
     copyFileSync(filepath('src/UI/styles/autofill-host-styles.css'), filepath('dist/autofill-host-styles_chrome.css'))
     copyFirefoxCSSFile(filepath('src/UI/styles/autofill-host-styles.css'), filepath('dist/autofill-host-styles_firefox.css'))
