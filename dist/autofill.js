@@ -3981,7 +3981,7 @@ class Form {
     const allButtons =
     /** @type {HTMLElement[]} */
     [...this.form.querySelectorAll(selector)];
-    return allButtons.filter(isLikelyASubmitButton) // filter out buttons of the wrong type - login buttons on a signup form, signup buttons on a login form
+    return allButtons.filter(_autofillUtils.isLikelyASubmitButton) // filter out buttons of the wrong type - login buttons on a signup form, signup buttons on a login form
     .filter(button => {
       if (this.isLogin) {
         return !/sign.?up/i.test(button.textContent || '');
