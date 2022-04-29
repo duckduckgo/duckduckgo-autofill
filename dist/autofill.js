@@ -2469,21 +2469,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-var _supportedFeatures = /*#__PURE__*/new WeakMap();
-
-/**
- * @implements {FeatureToggles}
- */
 class AppleDeviceInterface extends _InterfacePrototype.default {
   /** @type {FeatureToggleNames[]} */
 
@@ -2499,10 +2484,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   constructor(config) {
     super(config); // Only enable 'password.generation' if we're on the macOS app (for now);
 
-    _classPrivateFieldInitSpec(this, _supportedFeatures, {
-      writable: true,
-      value: []
-    });
+    _defineProperty(this, "supportedFeatures", []);
 
     _defineProperty(this, "pollingTimeout", void 0);
 
@@ -2511,7 +2493,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     _defineProperty(this, "initialSetupDelayMs", 300);
 
     if (this.globalConfig.isApp) {
-      _classPrivateFieldGet(this, _supportedFeatures).push('password.generation');
+      this.supportedFeatures.push('password.generation');
     }
 
     if (this.globalConfig.isTopFrame) {
@@ -2791,7 +2773,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   /**
    * Gets credentials ready for autofill
    * @param {Number} id - the credential id
-   * @returns {APIResponse<CredentialsObject>}
+   * @returns {APIResponseSingle<CredentialsObject>}
    */
 
 
@@ -2876,7 +2858,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     const {
       inputType
     } = this.getTopContextData() || {};
-    return inputType;
+    return inputType || 'unknown';
   }
 
   async getAlias() {
@@ -2887,12 +2869,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
     });
     return (0, _autofillUtils.formatDuckAddress)(alias);
-  }
-  /** @param {FeatureToggleNames} name */
-
-
-  supportsFeature(name) {
-    return _classPrivateFieldGet(this, _supportedFeatures).includes(name);
   }
 
 }
@@ -3072,6 +3048,8 @@ var _data2 = /*#__PURE__*/new WeakMap();
 /**
  * @implements {FeatureToggles}
  * @implements {GlobalConfigImpl}
+ * @implements {FormExtensionPoints}
+ * @implements {DeviceExtensionPoints}
  */
 class InterfacePrototype {
   /** @type {import("../Form/Form").Form | null} */
@@ -3079,6 +3057,8 @@ class InterfacePrototype {
   /** @type {import("../UI/Tooltip").default | null} */
 
   /** @type {number} */
+
+  /** @type {FeatureToggleNames[]} */
 
   /** @type {PasswordGenerator} */
 
@@ -3099,6 +3079,8 @@ class InterfacePrototype {
     _defineProperty(this, "stripCredentials", true);
 
     _defineProperty(this, "initialSetupDelayMs", 0);
+
+    _defineProperty(this, "supportedFeatures", []);
 
     _defineProperty(this, "passwordGenerator", new _PasswordGenerator.PasswordGenerator());
 
@@ -3439,21 +3421,12 @@ class InterfacePrototype {
 
     const topContextData = {
       inputType
-    }; // A list of checks to determine if we need to generate a password
+    }; // Allow features to append/change top context data
+    // for example, generated passwords may get appended here
 
-    const checks = [inputType === 'credentials.password', this.supportsFeature('password.generation'), form.isSignup]; // if all checks pass, generate and save a password
-
-    if (checks.every(Boolean)) {
-      const password = this.passwordGenerator.generate({
-        input: input.getAttribute('passwordrules'),
-        domain: window.location.hostname
-      }); // append the new credential to the topContextData so that the top autofill can display it
-
-      topContextData.credentials = [(0, _Credentials.fromPassword)(password)];
-    }
-
+    const processedTopContext = this.preAttachTooltip(topContextData, input, form);
     this.attachCloseListeners();
-    this.attachTooltipInner(form, input, getPosition, click, topContextData);
+    this.attachTooltipInner(form, input, getPosition, click, processedTopContext);
   }
 
   attachCloseListeners() {
@@ -3464,25 +3437,6 @@ class InterfacePrototype {
   removeCloseListeners() {
     window.removeEventListener('input', this);
     window.removeEventListener('keydown', this);
-  }
-  /**
-   * If the device was capable of generating password, and it
-   * previously did so for the form in question, then offer to
-   * save the credentials
-   *
-   * @param {{ formElement?: HTMLElement; }} options
-   */
-
-
-  shouldPromptToStoreCredentials(options) {
-    if (!options.formElement) return false;
-    if (!this.supportsFeature('password.generation')) return false; // if we previously generated a password, allow it to be saved
-
-    if (this.passwordGenerator.generated) {
-      return true;
-    }
-
-    return false;
   }
   /**
    * When an item was selected, we then call back to the device
@@ -3509,7 +3463,7 @@ class InterfacePrototype {
 
         case 'credentials':
           {
-            if (id === _Credentials.GENERATED_ID) {
+            if (_Credentials.AUTOGENERATED_KEY in matchingData) {
               return Promise.resolve({
                 success: matchingData
               });
@@ -3676,7 +3630,11 @@ class InterfacePrototype {
   storeCredentials(_opts) {}
 
   getAccounts() {}
-  /** @returns {APIResponse<CredentialsObject>} */
+  /**
+   * Gets credentials ready for autofill
+   * @param {number|string} _id - the credential id
+   * @returns {APIResponseSingle<CredentialsObject>}
+   */
 
 
   getAutofillCredentials(_id) {
@@ -3702,11 +3660,83 @@ class InterfacePrototype {
 
 
   setSize(_args) {}
-  /** @param {FeatureToggleNames} _name */
+  /** @param {FeatureToggleNames} name */
 
 
-  supportsFeature(_name) {
-    return false;
+  supportsFeature(name) {
+    return this.supportedFeatures.includes(name);
+  }
+  /**
+   * `preAttachTooltip` happens just before a tooltip is show - features may want to append some data
+   * at this point.
+   *
+   * For example, if password generation is enabled, this will generate
+   * a password and send it to the tooltip as though it were a stored credential.
+   *
+   * @param {TopContextData} topContextData
+   * @param {HTMLInputElement} input
+   * @param {{isSignup: boolean|null}} form
+   */
+
+
+  preAttachTooltip(topContextData, input, form) {
+    // A list of checks to determine if we need to generate a password
+    const checks = [topContextData.inputType === 'credentials.password', this.supportsFeature('password.generation'), form.isSignup]; // if all checks pass, generate and save a password
+
+    if (checks.every(Boolean)) {
+      const password = this.passwordGenerator.generate({
+        input: input.getAttribute('passwordrules'),
+        domain: window.location.hostname
+      }); // append the new credential to the topContextData so that the top autofill can display it
+
+      topContextData.credentials = [(0, _Credentials.fromPassword)(password)];
+    }
+
+    return topContextData;
+  }
+  /**
+   * `postAutofill` gives features an opportunity to perform an action directly
+   * following an autofill.
+   *
+   * For example, if a generated password was used, we want to fire a save event.
+   *
+   * @param {IdentityObject|CreditCardObject|CredentialsObject} data
+   * @param {DataStorageObject} formValues
+   */
+
+
+  postAutofill(data, formValues) {
+    if (_Credentials.AUTOGENERATED_KEY in data && 'password' in data) {
+      var _formValues$credentia;
+
+      if (((_formValues$credentia = formValues.credentials) === null || _formValues$credentia === void 0 ? void 0 : _formValues$credentia.password) === data.password) {
+        const withAutoGeneratedFlag = (0, _Credentials.appendGeneratedId)(formValues, data.password);
+        this.storeFormData(withAutoGeneratedFlag);
+      }
+    }
+  }
+  /**
+   * `postSubmit` gives features a one-time-only opportunity to perform an
+   * action directly after a form submission was observed.
+   *
+   * Mostly this is about storing data from the form submission, but it can
+   * also be used like in the case of Password generation, to append additional
+   * data before it's sent to be saved.
+   *
+   * @param {DataStorageObject} values
+   * @param {import("../Form/Form").Form} form
+   */
+
+
+  postSubmit(values, form) {
+    if (!form.form) return;
+    if (!form.hasValues(values)) return;
+    const checks = [form.shouldPromptToStoreData, this.passwordGenerator.generated];
+
+    if (checks.some(Boolean)) {
+      const withAutoGeneratedFlag = (0, _Credentials.appendGeneratedId)(values, this.passwordGenerator.password);
+      this.storeFormData(withAutoGeneratedFlag);
+    }
   }
 
 }
@@ -3837,18 +3867,12 @@ class Form {
   }
 
   submitHandler() {
+    var _this$device$postSubm, _this$device;
+
     if (this.handlerExecuted) return;
     if (!this.isValid()) return;
-    const values = this.getValues(); // checks to determine if we should offer to store credentials and/or fireproof
-
-    const checks = [this.shouldPromptToStoreData && this.hasValues(values), this.device.shouldPromptToStoreCredentials({
-      formElement: this.form
-    })]; // if *any* of the checks are truthy, proceed to offer
-
-    if (checks.some(Boolean)) {
-      this.device.storeFormData(values);
-    } // mark this form as being handled
-
+    const values = this.getValues();
+    (_this$device$postSubm = (_this$device = this.device).postSubmit) === null || _this$device$postSubm === void 0 ? void 0 : _this$device$postSubm.call(_this$device, values, this); // mark this form as being handled
 
     this.handlerExecuted = true;
   }
@@ -4183,6 +4207,8 @@ class Form {
   }
 
   autofillData(data, dataType) {
+    var _this$device$postAuto, _this$device2;
+
     this.shouldPromptToStoreData = false;
     this.isAutofilling = true;
     this.execOnInputs(input => {
@@ -4204,6 +4230,7 @@ class Form {
       if (autofillData) this.autofillInput(input, autofillData, dataType);
     }, dataType);
     this.isAutofilling = false;
+    (_this$device$postAuto = (_this$device2 = this.device).postAutofill) === null || _this$device$postAuto === void 0 ? void 0 : _this$device$postAuto.call(_this$device2, data, this.getValues());
     this.removeTooltip();
   }
 
@@ -5543,7 +5570,7 @@ const inputTypeConfig = {
       return false;
     },
     dataType: 'Credentials',
-    tooltipItem: data => new _Credentials.CredentialsTooltipItem(data)
+    tooltipItem: data => (0, _Credentials.createCredentialsTooltipItem)(data)
   },
 
   /** @type {CreditCardsInputTypeConfig} */
@@ -7482,7 +7509,7 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 
 function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
 
-const GENERATED_ID = '__generated__';
+const AUTOGENERATED_KEY = 'autogenerated';
 /**
  * @implements {TooltipItemRenderer}
  */
@@ -7501,23 +7528,40 @@ class CredentialsTooltipItem {
 
     _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data).id));
 
+    _defineProperty(this, "labelMedium", _subtype => _classPrivateFieldGet(this, _data).username);
+
+    _defineProperty(this, "labelSmall", _subtype => '•••••••••••••••');
+
     _classPrivateFieldSet(this, _data, data);
   }
 
-  labelMedium(_subtype) {
-    if (_classPrivateFieldGet(this, _data).id === GENERATED_ID) {
-      return 'Generated password';
-    }
+}
+/**
+ * @implements {TooltipItemRenderer}
+ */
 
-    return _classPrivateFieldGet(this, _data).username;
-  }
 
-  labelSmall(_subtype) {
-    if (_classPrivateFieldGet(this, _data).id === GENERATED_ID && _classPrivateFieldGet(this, _data).password) {
-      return _classPrivateFieldGet(this, _data).password;
-    }
+var _data2 = /*#__PURE__*/new WeakMap();
 
-    return '•••••••••••••••';
+class AutoGeneratedCredential {
+  /** @type {CredentialsObject} */
+
+  /** @param {CredentialsObject} data */
+  constructor(data) {
+    _classPrivateFieldInitSpec(this, _data2, {
+      writable: true,
+      value: void 0
+    });
+
+    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data2).id));
+
+    _defineProperty(this, "label", _subtype => _classPrivateFieldGet(this, _data2).password);
+
+    _defineProperty(this, "labelMedium", _subtype => 'Generated password');
+
+    _defineProperty(this, "labelSmall", _subtype => 'Login information will be saved for this website');
+
+    _classPrivateFieldSet(this, _data2, data);
   }
 
 }
@@ -7532,15 +7576,54 @@ class CredentialsTooltipItem {
 
 function fromPassword(password) {
   return {
-    id: GENERATED_ID,
+    [AUTOGENERATED_KEY]: true,
     password: password,
     username: ''
   };
 }
+/**
+ * If the locally generated/stored password ends up being the same
+ * as submitted in a subsequent form submission - then we mark the
+ * credentials as 'autogenerated' so that the native layer can decide
+ * how to process it
+ *
+ * @type {PreRequest<DataStorageObject, string|null>}
+ */
 
-module.exports.CredentialsTooltipItem = CredentialsTooltipItem;
+
+function appendGeneratedId(data, generatedPassword) {
+  var _data$credentials;
+
+  if (generatedPassword && ((_data$credentials = data.credentials) === null || _data$credentials === void 0 ? void 0 : _data$credentials.password) === generatedPassword) {
+    return { ...data,
+      credentials: { ...data.credentials,
+        [AUTOGENERATED_KEY]: true
+      }
+    };
+  }
+
+  return data;
+}
+/**
+ * Factory for creating a TooltipItemRenderer
+ *
+ * @param {CredentialsObject} data
+ * @returns {TooltipItemRenderer}
+ */
+
+
+function createCredentialsTooltipItem(data) {
+  if (AUTOGENERATED_KEY in data && data.password) {
+    return new AutoGeneratedCredential(data);
+  }
+
+  return new CredentialsTooltipItem(data);
+}
+
+module.exports.createCredentialsTooltipItem = createCredentialsTooltipItem;
 module.exports.fromPassword = fromPassword;
-module.exports.GENERATED_ID = GENERATED_ID;
+module.exports.appendGeneratedId = appendGeneratedId;
+module.exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
 
 },{}],26:[function(require,module,exports){
 "use strict";
@@ -7712,6 +7795,12 @@ class PasswordGenerator {
   /** @returns {boolean} */
   get generated() {
     return _classPrivateFieldGet(this, _previous) !== null;
+  }
+  /** @returns {string|null} */
+
+
+  get password() {
+    return _classPrivateFieldGet(this, _previous);
   }
   /** @param {import('../packages/password').GenerateOptions} [params] */
 
