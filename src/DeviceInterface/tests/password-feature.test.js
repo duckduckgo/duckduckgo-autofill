@@ -1,7 +1,7 @@
-const AppleDeviceInterface = require('../AppleDeviceInterface')
-const InterfacePrototype = require('../InterfacePrototype')
-const {Form} = require('../../Form/Form')
-const {createGlobalConfig} = require('../../config')
+import AppleDeviceInterface from '../AppleDeviceInterface'
+import InterfacePrototype from '../InterfacePrototype'
+import { Form } from '../../Form/Form'
+import { createGlobalConfig } from '../../config'
 
 function pmHandlerStoreDataSpy () {
     const spy = jest.fn().mockReturnValueOnce(Promise.resolve(null))
