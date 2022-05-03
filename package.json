@@ -50,7 +50,7 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-eslint": "^24.0.0",
     "grunt-exec": "^3.0.0",
-    "jest": "^27.5.1",
+    "jest": "^28.0.3",
     "jest-chrome": "^0.7.2",
     "jest-html-reporter": "^3.4.2",
     "load-grunt-tasks": "^5.1.0",
