@@ -75,17 +75,9 @@ interface InternalDataStorageObject {
 
 type APIResponse<Type> = Promise<{ success: Type[], error?: string }>
 
-type APIResponseSingle<Type> =
-    | { success: Type, error?: string }
-    | { data: Type, error?: string }
-
 interface EmailAddresses {
      privateAddress?: string,
      personalAddress?: string
-}
-
-interface Transport {
-     send(name: string, data?: any): Promise<any>
 }
 
 interface GlobalConfig {

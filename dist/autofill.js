@@ -3471,7 +3471,7 @@ var _AppleDeviceInterface = require("./DeviceInterface/AppleDeviceInterface");
 
 var _WindowsInterface = require("./DeviceInterface/WindowsInterface");
 
-var _AppleTopFrameDeviceInterface = require("./DeviceInterface/AppleTopFrameDeviceInterface");
+var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDeviceInterface");
 
 /**
  * @param {AvailableInputTypes} availableInputTypes
@@ -3479,8 +3479,8 @@ var _AppleTopFrameDeviceInterface = require("./DeviceInterface/AppleTopFrameDevi
  * @param {TooltipInterface} tooltip
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
- * @param {import("./settings/settings").AutofillSettings} autofillSettings
- * @returns {AndroidInterface|AppleDeviceInterface|AppleTopFrameDeviceInterface|ExtensionInterface|WindowsInterface}
+ * @param {import("./settings/settings").Settings} autofillSettings
+ * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface}
  */
 function createDevice(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
   switch (platformConfig.platform) {
@@ -3488,7 +3488,7 @@ function createDevice(availableInputTypes, runtime, tooltip, globalConfig, platf
     case 'ios':
       {
         if (globalConfig.isTopFrame) {
-          return new _AppleTopFrameDeviceInterface.AppleTopFrameDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
+          return new _AppleOverlayDeviceInterface.AppleOverlayDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
         }
 
         return new _AppleDeviceInterface.AppleDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
@@ -3510,7 +3510,7 @@ function createDevice(availableInputTypes, runtime, tooltip, globalConfig, platf
   throw new Error('undefined');
 }
 
-},{"./DeviceInterface/AndroidInterface":13,"./DeviceInterface/AppleDeviceInterface":14,"./DeviceInterface/AppleTopFrameDeviceInterface":15,"./DeviceInterface/ExtensionInterface":16,"./DeviceInterface/WindowsInterface":18}],13:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":13,"./DeviceInterface/AppleDeviceInterface":14,"./DeviceInterface/AppleOverlayDeviceInterface":15,"./DeviceInterface/ExtensionInterface":16,"./DeviceInterface/WindowsInterface":18}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3587,13 +3587,11 @@ exports.AppleDeviceInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
-var _transport = require("../transports/transport.apple");
-
 var _autofillUtils = require("../autofill-utils");
 
-var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
-
 var _styles = require("../UI/styles/styles");
+
+var _apple = require("../transports/apple.transport");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3603,23 +3601,18 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "pollingTimeout", void 0);
-
-    _defineProperty(this, "transport", (0, _transport.createTransport)(this.globalConfig));
+    _defineProperty(this, "legacyTransport", (0, _apple.createLegacyTransport)(this.globalConfig));
 
     _defineProperty(this, "initialSetupDelayMs", 300);
   }
 
-  async isEnabled() {
-    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
-  }
-
   async setupAutofill() {
     if (this.globalConfig.isApp) {
-      await this.getAutofillInitData();
+      const response = await this.runtime.getAutofillInitData();
+      this.storeLocalData(response);
     }
 
-    const signedIn = await this._checkDeviceSignedIn();
+    const signedIn = this.availableInputTypes.email;
 
     if (signedIn) {
       if (this.globalConfig.isApp) {
@@ -3633,33 +3626,27 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     this.addLogoutListener(cleanup);
   }
 
+  isDeviceSignedIn() {
+    return Boolean(this.availableInputTypes.email);
+  }
+
   getUserData() {
-    return this.transport.send('emailHandlerGetUserData');
+    return this.legacyTransport.send('emailHandlerGetUserData');
   }
 
   async getAddresses() {
     if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await this.transport.send('emailHandlerGetAddresses');
+    } = await this.legacyTransport.send('emailHandlerGetAddresses');
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await this.transport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
+    await this.legacyTransport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
 
     if (this.globalConfig.isApp) this.getAddresses();
-  }
-
-  async _checkDeviceSignedIn() {
-    const {
-      isAppSignedIn
-    } = await this.transport.send('emailHandlerCheckAppSignedInStatus');
-
-    this.isDeviceSignedIn = () => !!isAppSignedIn;
-
-    return !!isAppSignedIn;
   }
 
   storeUserData(_ref) {
@@ -3670,7 +3657,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
         cohort
       }
     } = _ref;
-    return this.transport.send('emailHandlerStoreToken', {
+    return this.legacyTransport.send('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
@@ -3688,18 +3675,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeCredentials(credentials) {
-    return this.transport.send('pmHandlerStoreCredentials', credentials);
-  }
-  /**
-   * Gets the init data from the tooltipHandler
-   * @returns {APIResponse<PMData>}
-   */
-
-
-  async getAutofillInitData() {
-    const response = await this.transport.send('pmHandlerGetAutofillInitData');
-    this.storeLocalData(response.success);
-    return response;
+    return this.legacyTransport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
    * Gets credentials ready for autofill
@@ -3709,7 +3685,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCredentials(id) {
-    return this.transport.send('pmHandlerGetAutofillCredentials', {
+    return this.legacyTransport.send('pmHandlerGetAutofillCredentials', {
       id
     });
   }
@@ -3719,7 +3695,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManagePasswords() {
-    return this.transport.send('pmHandlerOpenManagePasswords');
+    return this.legacyTransport.send('pmHandlerOpenManagePasswords');
   }
   /**
    * Opens the native UI for managing identities
@@ -3727,7 +3703,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageIdentities() {
-    return this.transport.send('pmHandlerOpenManageIdentities');
+    return this.legacyTransport.send('pmHandlerOpenManageIdentities');
   }
   /**
    * Opens the native UI for managing credit cards
@@ -3735,7 +3711,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageCreditCards() {
-    return this.transport.send('pmHandlerOpenManageCreditCards');
+    return this.legacyTransport.send('pmHandlerOpenManageCreditCards');
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -3763,7 +3739,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCreditCard(id) {
-    return this.transport.send('pmHandlerGetCreditCard', {
+    return this.legacyTransport.send('pmHandlerGetCreditCard', {
       id
     });
   } // Used to encode data to send back to the child autofill
@@ -3783,7 +3759,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   async getAlias() {
     const {
       alias
-    } = await this.transport.send('emailHandlerGetAlias', {
+    } = await this.legacyTransport.send('emailHandlerGetAlias', {
       requiresUserPermission: !this.globalConfig.isApp,
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
     });
@@ -3798,51 +3774,42 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":41,"../autofill-utils":43,"../transports/transport.apple":61,"./InterfacePrototype.js":17,"@duckduckgo/content-scope-scripts/src/apple-utils":2}],15:[function(require,module,exports){
+},{"../UI/styles/styles":41,"../autofill-utils":43,"../transports/apple.transport":60,"./InterfacePrototype.js":17}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.AppleTopFrameDeviceInterface = void 0;
+exports.AppleOverlayDeviceInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
-var _transport = require("../transports/transport.apple");
-
 var _autofillUtils = require("../autofill-utils");
 
-var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
-
 var _styles = require("../UI/styles/styles");
+
+var _apple = require("../transports/apple.transport");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
+/**
+ * todo(Shane): Decide which data is/isn't needed when apple is inside overlay
+ */
+class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "pollingTimeout", void 0);
-
-    _defineProperty(this, "transport", (0, _transport.createTransport)(this.globalConfig));
-
-    _defineProperty(this, "initialSetupDelayMs", 300);
+    _defineProperty(this, "legacyTransport", (0, _apple.createLegacyTransport)(this.globalConfig));
 
     _defineProperty(this, "stripCredentials", false);
   }
 
-  async isEnabled() {
-    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
-  }
-
   async setupAutofill() {
-    if (this.globalConfig.isApp) {
-      await this.getAutofillInitData();
-    }
-
-    const signedIn = await this._checkDeviceSignedIn();
+    const response = await this.runtime.getAutofillInitData();
+    this.storeLocalData(response);
+    const signedIn = this.availableInputTypes.email;
 
     if (signedIn) {
       if (this.globalConfig.isApp) {
@@ -3853,8 +3820,12 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
     await this._setupTopFrame();
   }
 
+  isDeviceSignedIn() {
+    return Boolean(this.availableInputTypes.email);
+  }
+
   async _setupTopFrame() {
-    var _this$tooltip$createT, _this$tooltip;
+    var _this$tooltip$addList, _this$tooltip, _this$tooltip$createT, _this$tooltip3;
 
     const topContextData = this.getTopContextData();
     if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
@@ -3868,11 +3839,14 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
         width: 50
       };
     }; // this is the apple specific part about faking the focus etc.
+    // todo(Shane): The fact this 'addListener' could be undefined is a design problem
 
 
-    this.tooltip.addListener(() => {
+    (_this$tooltip$addList = (_this$tooltip = this.tooltip).addListener) === null || _this$tooltip$addList === void 0 ? void 0 : _this$tooltip$addList.call(_this$tooltip, () => {
       const handler = event => {
-        const tooltip = this.tooltip.getActiveTooltip();
+        var _this$tooltip$getActi, _this$tooltip2;
+
+        const tooltip = (_this$tooltip$getActi = (_this$tooltip2 = this.tooltip).getActiveTooltip) === null || _this$tooltip$getActi === void 0 ? void 0 : _this$tooltip$getActi.call(_this$tooltip2);
         tooltip === null || tooltip === void 0 ? void 0 : tooltip.focus(event.detail.x, event.detail.y);
       };
 
@@ -3881,46 +3855,38 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
         window.removeEventListener('mouseMove', handler);
       };
     });
-    const tooltip = (_this$tooltip$createT = (_this$tooltip = this.tooltip).createTooltip) === null || _this$tooltip$createT === void 0 ? void 0 : _this$tooltip$createT.call(_this$tooltip, getPosition, topContextData);
+    const tooltip = (_this$tooltip$createT = (_this$tooltip3 = this.tooltip).createTooltip) === null || _this$tooltip$createT === void 0 ? void 0 : _this$tooltip$createT.call(_this$tooltip3, getPosition, topContextData);
     this.setActiveTooltip(tooltip);
   }
 
   getUserData() {
-    return this.transport.send('emailHandlerGetUserData');
+    return this.legacyTransport.send('emailHandlerGetUserData');
   }
 
   async getAddresses() {
     if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await this.transport.send('emailHandlerGetAddresses');
+    } = await this.legacyTransport.send('emailHandlerGetAddresses');
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await this.transport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
+    await this.legacyTransport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
 
     if (this.globalConfig.isApp) this.getAddresses();
   }
 
-  async _checkDeviceSignedIn() {
-    const {
-      isAppSignedIn
-    } = await this.transport.send('emailHandlerCheckAppSignedInStatus');
-
-    this.isDeviceSignedIn = () => !!isAppSignedIn;
-
-    return !!isAppSignedIn;
-  }
-
   async setSize(cb) {
-    const details = cb();
-    await this.transport.send('setSize', details);
+    const details = cb(); // todo(Shane): Upgrade to new runtime
+
+    await this.legacyTransport.send('setSize', details);
   }
 
   async removeTooltip() {
-    await this.transport.send('closeAutofillParent', {});
+    console.log('AppleOverlayDeviceInterface', 'closeAutofillParent');
+    await this.runtime.closeAutofillParent();
   }
 
   storeUserData(_ref) {
@@ -3931,7 +3897,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
         cohort
       }
     } = _ref;
-    return this.transport.send('emailHandlerStoreToken', {
+    return this.legacyTransport.send('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
@@ -3949,18 +3915,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 
   storeCredentials(credentials) {
-    return this.transport.send('pmHandlerStoreCredentials', credentials);
-  }
-  /**
-   * Gets the init data from the tooltipHandler
-   * @returns {APIResponse<PMData>}
-   */
-
-
-  async getAutofillInitData() {
-    const response = await this.transport.send('pmHandlerGetAutofillInitData');
-    this.storeLocalData(response.success);
-    return response;
+    return this.legacyTransport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
    * Gets credentials ready for autofill
@@ -3970,7 +3925,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCredentials(id) {
-    return this.transport.send('pmHandlerGetAutofillCredentials', {
+    return this.legacyTransport.send('pmHandlerGetAutofillCredentials', {
       id
     });
   }
@@ -3980,7 +3935,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 
   openManagePasswords() {
-    return this.transport.send('pmHandlerOpenManagePasswords');
+    return this.legacyTransport.send('pmHandlerOpenManagePasswords');
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -4008,7 +3963,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCreditCard(id) {
-    return this.transport.send('pmHandlerGetCreditCard', {
+    return this.legacyTransport.send('pmHandlerGetCreditCard', {
       id
     });
   } // Used to encode data to send back to the child autofill
@@ -4019,8 +3974,9 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
       let [key, value] = _ref3;
       return [key, String(value)];
     });
-    const data = Object.fromEntries(detailsEntries);
-    this.transport.send('selectedDetail', {
+    const data = Object.fromEntries(detailsEntries); // todo(Shane): Migrate
+
+    await this.legacyTransport.send('selectedDetail', {
       data,
       configType
     });
@@ -4036,7 +3992,7 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
   async getAlias() {
     const {
       alias
-    } = await this.transport.send('emailHandlerGetAlias', {
+    } = await this.legacyTransport.send('emailHandlerGetAlias', {
       requiresUserPermission: !this.globalConfig.isApp,
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
     });
@@ -4061,9 +4017,9 @@ class AppleTopFrameDeviceInterface extends _InterfacePrototype.default {
 
 }
 
-exports.AppleTopFrameDeviceInterface = AppleTopFrameDeviceInterface;
+exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../UI/styles/styles":41,"../autofill-utils":43,"../transports/transport.apple":61,"./InterfacePrototype.js":17,"@duckduckgo/content-scope-scripts/src/apple-utils":2}],16:[function(require,module,exports){
+},{"../UI/styles/styles":41,"../autofill-utils":43,"../transports/apple.transport":60,"./InterfacePrototype.js":17}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4221,6 +4177,10 @@ var _runtime = require("../runtime/runtime");
 
 var _WebTooltip = require("../UI/WebTooltip");
 
+var _transport = require("../transports/transport");
+
+var _inputTypes = require("../input-types/input-types");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
@@ -4261,7 +4221,7 @@ class InterfacePrototype {
 
   /** @type {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} */
 
-  /** @type {import("../settings/settings").AutofillSettings} */
+  /** @type {import("../settings/settings").Settings} */
 
   /** @type {AvailableInputTypes} */
 
@@ -4275,7 +4235,7 @@ class InterfacePrototype {
    * @param {TooltipInterface} tooltip
    * @param {GlobalConfig} globalConfig
    * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
-   * @param {import("../settings/settings").AutofillSettings} autofillSettings
+   * @param {import("../settings/settings").Settings} autofillSettings
    */
   constructor(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
     _defineProperty(this, "attempts", 0);
@@ -4610,11 +4570,7 @@ class InterfacePrototype {
       getPosition,
       topContextData,
       device: this
-    }); // if (this.globalConfig.hasNativeTooltip) {
-    // } else {
-    //     this.attachCloseListeners()
-    //     this.attachTooltipInner(form, input, getPosition, click, topContextData)
-    // }
+    });
   }
   /**
    * If the tooltipHandler was capable of generating password, and it
@@ -4688,11 +4644,15 @@ class InterfacePrototype {
   }
 
   getActiveTooltip() {
-    return this.tooltip.getActiveTooltip();
+    var _this$tooltip$getActi, _this$tooltip;
+
+    return (_this$tooltip$getActi = (_this$tooltip = this.tooltip).getActiveTooltip) === null || _this$tooltip$getActi === void 0 ? void 0 : _this$tooltip$getActi.call(_this$tooltip);
   }
 
   setActiveTooltip(tooltip) {
-    this.tooltip.setActiveTooltip(tooltip);
+    var _this$tooltip$setActi, _this$tooltip2;
+
+    (_this$tooltip$setActi = (_this$tooltip2 = this.tooltip).setActiveTooltip) === null || _this$tooltip$setActi === void 0 ? void 0 : _this$tooltip$setActi.call(_this$tooltip2, tooltip);
   }
 
   async setupSettingsPage() {
@@ -4702,30 +4662,44 @@ class InterfacePrototype {
       shouldLog: false
     };
 
-    if (this.globalConfig.isDDGDomain) {
-      (0, _autofillUtils.notifyWebApp)({
-        isApp: this.globalConfig.isApp
-      });
-
-      if (this.isDeviceSignedIn()) {
-        let userData;
-
-        try {
-          userData = await this.getUserData();
-        } catch (e) {}
-
-        const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
-        (0, _autofillUtils.notifyWebApp)({
-          deviceSignedIn: {
-            value: true,
-            shouldLog,
-            userData: hasUserData ? userData : undefined
-          }
-        });
-      } else {
-        this.trySigningIn();
-      }
+    if (!this.globalConfig.isDDGDomain) {
+      return;
     }
+
+    (0, _autofillUtils.notifyWebApp)({
+      isApp: this.globalConfig.isApp
+    });
+
+    if (this.isDeviceSignedIn()) {
+      let userData;
+
+      try {
+        userData = await this.getUserData();
+      } catch (e) {}
+
+      const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
+      (0, _autofillUtils.notifyWebApp)({
+        deviceSignedIn: {
+          value: true,
+          shouldLog,
+          userData: hasUserData ? userData : undefined
+        }
+      });
+    } else {
+      // todo(Shane): Handle this case of signing i
+      this.trySigningIn();
+    }
+  }
+  /**
+   * Update availableInputTypes on the fly, this could happen when signing in for email, as an example
+   * @returns {Promise<void>}
+   */
+
+
+  async refreshAvailableInputTypes() {
+    const runtimeAvailableInputTypes = await this.runtime.getAvailableInputTypes();
+    const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, this.autofillSettings.featureToggles);
+    this.availableInputTypes = inputTypes;
   }
 
   async setupAutofill() {}
@@ -4751,6 +4725,7 @@ class InterfacePrototype {
         const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
 
         this.storeUserData(data);
+        await this.refreshAvailableInputTypes();
         await this.setupAutofill();
         await this.setupSettingsPage({
           shouldLog: true
@@ -4836,15 +4811,18 @@ class InterfacePrototype {
   static default() {
     const config = new _contentScopeScripts.RuntimeConfiguration();
     const globalConfig = (0, _config.createGlobalConfig)();
-    const runtime = (0, _runtime.createRuntime)(globalConfig);
+    const transport = (0, _transport.createRuntimeTransport)(globalConfig);
+    const runtime = (0, _runtime.createRuntime)(globalConfig, transport);
     const tooltip = new _WebTooltip.WebTooltip({
       tooltipKind: 'modern'
     });
-    return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, _settings.AutofillSettings.default());
+    return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, _settings.Settings.default());
   }
 
   removeTooltip() {
-    return this.tooltip.removeTooltip();
+    var _this$tooltip$removeT, _this$tooltip3;
+
+    return (_this$tooltip$removeT = (_this$tooltip3 = this.tooltip).removeTooltip) === null || _this$tooltip$removeT === void 0 ? void 0 : _this$tooltip$removeT.call(_this$tooltip3);
   }
 
   isTestMode() {
@@ -4856,7 +4834,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../PasswordGenerator":32,"../Scanner":33,"../UI/WebTooltip":39,"../autofill-utils":43,"../config":45,"../input-types/Credentials":47,"../runtime/runtime":52,"../settings/settings":58,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
+},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../PasswordGenerator":32,"../Scanner":33,"../UI/WebTooltip":39,"../autofill-utils":43,"../config":45,"../input-types/Credentials":47,"../input-types/input-types":50,"../runtime/runtime":52,"../settings/settings":58,"../transports/transport":63,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6810,7 +6788,7 @@ const inputTypeConfig = {
         return false;
       }
 
-      const subtype = (0, _matching.getInputSubtype)(_input); // todo(Shane): Handle the mac specfici logic also with feature toggles
+      const subtype = (0, _matching.getInputSubtype)(_input); // todo(Shane): Handle the mac specific logic also with feature toggles
 
       if (device.globalConfig.isApp) {
         var _device$getLocalIdent;
@@ -6820,7 +6798,7 @@ const inputTypeConfig = {
 
 
       if (subtype === 'emailAddress') {
-        return Boolean(device.isDeviceSignedIn());
+        return Boolean(device.availableInputTypes.email);
       }
 
       return false;
@@ -9140,7 +9118,7 @@ class DataWebTooltip extends _Tooltip.default {
 var _default = DataWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":43,"./Tooltip":37}],35:[function(require,module,exports){
+},{"../autofill-utils":43,"./Tooltip":38}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9210,7 +9188,7 @@ class EmailWebTooltip extends _Tooltip.default {
 var _default = EmailWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":43,"./Tooltip":37,"./styles/styles":41}],36:[function(require,module,exports){
+},{"../autofill-utils":43,"./Tooltip":38,"./styles/styles":41}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9223,6 +9201,9 @@ var _matching = require("../Form/matching");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
+ * A 'Native' tooltip means that that autofill is not responsible
+ * for rendering **any** UI relating to the selecting of items
+ *
  * @implements {TooltipInterface}
  */
 class NativeTooltip {
@@ -9236,6 +9217,12 @@ class NativeTooltip {
 
     this.runtime = runtime;
   }
+  /**
+   * To 'attach' on iOS/Android is to ask the runtime for autofill data - this
+   * will eventually cause the native overlays to show
+   * @param args
+   */
+
 
   attach(args) {
     const {
@@ -9255,23 +9242,316 @@ class NativeTooltip {
     });
   }
 
-  getActiveTooltip() {
-    return null;
-  }
-
-  removeTooltip() {}
-
-  setActiveTooltip(_tooltip) {}
-
-  addListener(_cb) {}
-
-  setDevice(_device) {}
-
 }
 
 exports.NativeTooltip = NativeTooltip;
 
 },{"../Form/matching":29}],37:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.OverlayControllerTooltip = void 0;
+
+function _classPrivateMethodInitSpec(obj, privateSet) { _checkPrivateRedeclaration(obj, privateSet); privateSet.add(obj); }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
+
+function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+var _state = /*#__PURE__*/new WeakMap();
+
+var _attachListeners = /*#__PURE__*/new WeakSet();
+
+var _removeListeners = /*#__PURE__*/new WeakSet();
+
+/**
+ * @typedef {object} TopFrameControllerTooltipOptions
+ */
+
+/**
+ * @implements {TooltipInterface}
+ */
+class OverlayControllerTooltip {
+  /** @type {import('../runtime/runtime').Runtime} */
+
+  /** @type {import('../UI/Tooltip.js').Tooltip | null} */
+
+  /** @type {"idle" | "parentShown" | "removingParent"} */
+
+  /**
+   * @deprecated do not access the tooltipHandler directly here
+   * @type {import('../DeviceInterface/InterfacePrototype').default | null}
+   */
+
+  /**
+   * @param {import('../runtime/runtime').Runtime} runtime
+   */
+  constructor(runtime) {
+    _classPrivateMethodInitSpec(this, _removeListeners);
+
+    _classPrivateMethodInitSpec(this, _attachListeners);
+
+    _defineProperty(this, "runtime", void 0);
+
+    _defineProperty(this, "_activeTooltip", null);
+
+    _classPrivateFieldInitSpec(this, _state, {
+      writable: true,
+      value: "idle"
+    });
+
+    _defineProperty(this, "_device", null);
+
+    _defineProperty(this, "_listenerFactories", []);
+
+    _defineProperty(this, "_listenerCleanups", []);
+
+    _defineProperty(this, "pollingTimeout", null);
+
+    this.runtime = runtime;
+  }
+
+  attach(args) {
+    if (_classPrivateFieldGet(this, _state) !== "idle") {
+      this.removeTooltip().catch(e => {
+        // todo(Shane): can we recover here?
+        console.log('could not remove', e);
+      }).finally(() => this._attach(args));
+    } else {
+      this._attach(args);
+    }
+  }
+  /**
+   * @param {AttachArgs} args
+   * @private
+   */
+
+
+  _attach(args) {
+    const {
+      getPosition,
+      topContextData,
+      click,
+      input
+    } = args;
+    let delay = 0;
+
+    if (!click && !this.elementIsInViewport(getPosition())) {
+      input.scrollIntoView(true);
+      delay = 500;
+    }
+
+    setTimeout(() => {
+      this.showTopTooltip(click, getPosition(), topContextData).catch(e => {
+        console.error('error from showTopTooltip', e);
+      });
+    }, delay);
+  }
+  /**
+   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
+   * @returns {boolean}
+   */
+
+
+  elementIsInViewport(inputDimensions) {
+    if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
+      return false;
+    }
+
+    const viewport = document.documentElement;
+
+    if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
+      return false;
+    }
+
+    return true;
+  }
+  /**
+   * @param {{ x: number; y: number; } | null} click
+   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
+   * @param {TopContextData} [data]
+   */
+
+
+  async showTopTooltip(click, inputDimensions, data) {
+    let diffX = inputDimensions.x;
+    let diffY = inputDimensions.y;
+
+    if (click) {
+      diffX -= click.x;
+      diffY -= click.y;
+    } else if (!this.elementIsInViewport(inputDimensions)) {
+      // If the focus event is outside the viewport ignore, we've already tried to scroll to it
+      return;
+    }
+    /** @type {Schema.ShowAutofillParentRequest} */
+
+
+    const details = {
+      wasFromClick: Boolean(click),
+      inputTop: Math.floor(diffY),
+      inputLeft: Math.floor(diffX),
+      inputHeight: Math.floor(inputDimensions.height),
+      inputWidth: Math.floor(inputDimensions.width),
+      serializedInputContext: JSON.stringify(data)
+    };
+
+    try {
+      await this.runtime.showAutofillParent(details);
+
+      _classPrivateFieldSet(this, _state, "parentShown");
+
+      _classPrivateMethodGet(this, _attachListeners, _attachListeners2).call(this);
+    } catch (e) {
+      console.error("could not show parent", e);
+
+      _classPrivateFieldSet(this, _state, "idle");
+    }
+  }
+
+  handleEvent(event) {
+    switch (event.type) {
+      case 'scroll':
+        {
+          this.removeTooltip();
+          break;
+        }
+
+      case 'keydown':
+        {
+          if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+            this.removeTooltip();
+          }
+
+          break;
+        }
+
+      case 'input':
+        {
+          this.removeTooltip();
+          break;
+        }
+
+      case 'pointerdown':
+        {
+          this.removeTooltip();
+          break;
+        }
+    }
+  }
+  /** @type {number|null} */
+
+
+  /**
+   * Poll the native listener until the user has selected a credential.
+   * Message return types are:
+   * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
+   *     - This also is triggered when the close event is called and prevents any edge case continued polling.
+   * - 'ok' is when the user has selected a credential and the value can be injected into the page.
+   * - 'none' is when the tooltip is open in the native window however hasn't been entered.
+   * todo(Shane): How to make this generic - probably don't assume polling.
+   * @returns {Promise<void>}
+   */
+  async listenForSelectedCredential() {
+    // Prevent two timeouts from happening
+    // @ts-ignore
+    clearTimeout(this.pollingTimeout);
+    const response = await this.runtime.getSelectedCredentials();
+
+    switch (response.type) {
+      case 'none':
+        // Parent hasn't got a selected credential yet
+        // @ts-ignore
+        this.pollingTimeout = setTimeout(() => {
+          this.listenForSelectedCredential();
+        }, 100);
+        return;
+
+      case 'ok':
+        {
+          var _this$_device;
+
+          return (_this$_device = this._device) === null || _this$_device === void 0 ? void 0 : _this$_device.activeFormSelectedDetail(response.data, response.configType);
+        }
+
+      case 'stop':
+        // Parent wants us to stop polling
+        break;
+    }
+  }
+
+  async removeTooltip() {
+    if (_classPrivateFieldGet(this, _state) === "removingParent") return;
+    if (_classPrivateFieldGet(this, _state) === "idle") return;
+
+    _classPrivateFieldSet(this, _state, "removingParent");
+
+    await this.runtime.closeAutofillParent().catch(e => console.error('Could not close parent', e));
+
+    _classPrivateFieldSet(this, _state, "idle");
+
+    _classPrivateMethodGet(this, _removeListeners, _removeListeners2).call(this);
+  }
+  /**
+   * TODO: Don't allow this to be called from outside since it's deprecated.
+   * @param {PosFn} _getPosition
+   * @param {TopContextData} _topContextData
+   * @return {import('./Tooltip').Tooltip}
+   */
+
+
+  createTooltip(_getPosition, _topContextData) {
+    throw new Error('unimplemented');
+  }
+
+  getActiveTooltip() {
+    return this._activeTooltip;
+  }
+
+  setActiveTooltip(tooltip) {
+    this._activeTooltip = tooltip;
+  }
+
+  setDevice(device) {
+    this._device = device;
+  }
+
+}
+
+exports.OverlayControllerTooltip = OverlayControllerTooltip;
+
+function _attachListeners2() {
+  this.listenForSelectedCredential();
+  window.addEventListener('scroll', this);
+  window.addEventListener('keydown', this);
+  window.addEventListener('input', this);
+  window.addEventListener('pointerdown', this);
+}
+
+function _removeListeners2() {
+  window.removeEventListener('scroll', this);
+  window.removeEventListener('keydown', this);
+  window.removeEventListener('input', this);
+  window.removeEventListener('pointerdown', this);
+}
+
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9294,7 +9574,7 @@ class Tooltip {
    * @param config
    * @param inputType
    * @param getPosition
-   * @param {TooltipHandler} tooltipHandler
+   * @param {WebTooltipHandler} tooltipHandler
    * @param {TooltipOptions} options
    */
   constructor(config, inputType, getPosition, tooltipHandler, options) {
@@ -9520,325 +9800,7 @@ exports.Tooltip = Tooltip;
 var _default = Tooltip;
 exports.default = _default;
 
-},{"../Form/matching":29,"../autofill-utils":43}],38:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.TopFrameControllerTooltip = void 0;
-
-function _classPrivateMethodInitSpec(obj, privateSet) { _checkPrivateRedeclaration(obj, privateSet); privateSet.add(obj); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
-
-var _attachListeners = /*#__PURE__*/new WeakSet();
-
-var _removeListeners = /*#__PURE__*/new WeakSet();
-
-/**
- * @typedef {object} TopFrameControllerTooltipOptions
- */
-
-/**
- * @implements {TooltipInterface}
- * @implements {TooltipHandler}
- */
-class TopFrameControllerTooltip {
-  /** @type {import('../runtime/runtime').Runtime} */
-
-  /** @type {import('../UI/Tooltip.js').Tooltip | null} */
-
-  /** @type {boolean} */
-
-  /** @type {TopFrameControllerTooltipOptions} */
-
-  /**
-   * @deprecated do not access the tooltipHandler directly here
-   * @type {import('../DeviceInterface/InterfacePrototype').default | null}
-   */
-
-  /**
-   * @param {import('../runtime/runtime').Runtime} runtime
-   * @param {TopFrameControllerTooltipOptions} options
-   */
-  constructor(runtime, options) {
-    _classPrivateMethodInitSpec(this, _removeListeners);
-
-    _classPrivateMethodInitSpec(this, _attachListeners);
-
-    _defineProperty(this, "runtime", void 0);
-
-    _defineProperty(this, "_activeTooltip", null);
-
-    _defineProperty(this, "_parentShown", false);
-
-    _defineProperty(this, "_options", void 0);
-
-    _defineProperty(this, "_device", null);
-
-    _defineProperty(this, "_listenerFactories", []);
-
-    _defineProperty(this, "_listenerCleanups", []);
-
-    _defineProperty(this, "pollingTimeout", null);
-
-    this.runtime = runtime;
-    this._options = options;
-  }
-
-  attach(args) {
-    if (this._parentShown) {
-      this.removeTooltip().catch(e => {
-        console.log('could not remove', e);
-      }).finally(() => this._attach(args));
-    } else {
-      this._attach(args);
-    }
-  }
-  /**
-   * @param {AttachArgs} args
-   * @private
-   */
-
-
-  _attach(args) {
-    const {
-      getPosition,
-      topContextData,
-      click,
-      input
-    } = args;
-    let delay = 0;
-
-    if (!click && !this.elementIsInViewport(getPosition())) {
-      input.scrollIntoView(true);
-      delay = 500;
-    }
-
-    setTimeout(() => {
-      this.showTopTooltip(click, getPosition(), topContextData).catch(e => {
-        console.error('error from showTopTooltip', e);
-      });
-    }, delay);
-  }
-  /**
-   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-   * @returns {boolean}
-   */
-
-
-  elementIsInViewport(inputDimensions) {
-    if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
-      return false;
-    }
-
-    const viewport = document.documentElement;
-
-    if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
-      return false;
-    }
-
-    return true;
-  }
-  /**
-   * @param {{ x: number; y: number; } | null} click
-   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-   * @param {TopContextData} [data]
-   */
-
-
-  async showTopTooltip(click, inputDimensions, data) {
-    let diffX = inputDimensions.x;
-    let diffY = inputDimensions.y;
-
-    if (click) {
-      diffX -= click.x;
-      diffY -= click.y;
-    } else if (!this.elementIsInViewport(inputDimensions)) {
-      // If the focus event is outside the viewport ignore, we've already tried to scroll to it
-      return;
-    }
-    /** @type {Schema.ShowAutofillParentRequest} */
-
-
-    const details = {
-      wasFromClick: Boolean(click),
-      inputTop: Math.floor(diffY),
-      inputLeft: Math.floor(diffX),
-      inputHeight: Math.floor(inputDimensions.height),
-      inputWidth: Math.floor(inputDimensions.width),
-      serializedInputContext: JSON.stringify(data)
-    };
-    await this.runtime.showAutofillParent(details).then(() => {
-      this._parentShown = true;
-
-      _classPrivateMethodGet(this, _attachListeners, _attachListeners2).call(this);
-    }).catch(() => {
-      this._parentShown = false;
-    }); // // Start listening for the user initiated credential
-
-    this.listenForSelectedCredential();
-  }
-
-  handleEvent(event) {
-    switch (event.type) {
-      case 'scroll':
-        {
-          this.removeTooltip();
-          break;
-        }
-
-      case 'keydown':
-        {
-          if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
-            this.removeTooltip();
-          }
-
-          break;
-        }
-
-      case 'input':
-        {
-          this.removeTooltip();
-          break;
-        }
-
-      case 'pointerdown':
-        {
-          this.removeTooltip();
-          break;
-        }
-    }
-  }
-  /** @type {number|null} */
-
-
-  /**
-   * Poll the native listener until the user has selected a credential.
-   * Message return types are:
-   * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
-   *     - This also is triggered when the close event is called and prevents any edge case continued polling.
-   * - 'ok' is when the user has selected a credential and the value can be injected into the page.
-   * - 'none' is when the tooltip is open in the native window however hasn't been entered.
-   * todo(Shane): How to make this generic - probably don't assume polling.
-   * @returns {Promise<void>}
-   */
-  async listenForSelectedCredential() {
-    // Prevent two timeouts from happening
-    // @ts-ignore
-    clearTimeout(this.pollingTimeout);
-    const response = await this.runtime.getSelectedCredentials();
-
-    switch (response.type) {
-      case 'none':
-        // Parent hasn't got a selected credential yet
-        // @ts-ignore
-        this.pollingTimeout = setTimeout(() => {
-          this.listenForSelectedCredential();
-        }, 100);
-        return;
-
-      case 'ok':
-        {
-          var _this$_device;
-
-          return (_this$_device = this._device) === null || _this$_device === void 0 ? void 0 : _this$_device.activeFormSelectedDetail(response.data, response.configType);
-        }
-
-      case 'stop':
-        // Parent wants us to stop polling
-        break;
-    }
-  }
-
-  async removeTooltip() {
-    if (this._parentShown) {
-      await this.runtime.closeAutofillParent().catch(e => console.error('Could not close parent', e)).finally(() => {
-        this._parentShown = false;
-      });
-
-      _classPrivateMethodGet(this, _removeListeners, _removeListeners2).call(this);
-    } else {
-      console.error('trued to remove, but nothing was open');
-    }
-  }
-  /**
-   * TODO: Don't allow this to be called from outside since it's deprecated.
-   * @param {PosFn} _getPosition
-   * @param {TopContextData} _topContextData
-   * @return {import('./Tooltip').Tooltip}
-   */
-
-
-  createTooltip(_getPosition, _topContextData) {
-    throw new Error('unimplemented');
-  }
-
-  getActiveTooltip() {
-    return this._activeTooltip;
-  }
-
-  setActiveTooltip(tooltip) {
-    this._activeTooltip = tooltip;
-  }
-
-  setSize(_cb) {}
-
-  setupSizeListener(_cb) {}
-
-  tooltipPositionClass(_top, _left) {
-    return '';
-  }
-
-  tooltipStyles() {
-    return '';
-  }
-
-  tooltipWrapperClass() {
-    return '';
-  }
-
-  setDevice(device) {
-    this._device = device;
-  }
-
-  addListener(cb) {
-    this._listenerFactories.push(cb);
-  }
-
-}
-
-exports.TopFrameControllerTooltip = TopFrameControllerTooltip;
-
-function _attachListeners2() {
-  window.addEventListener('scroll', this);
-  window.addEventListener('keydown', this);
-  window.addEventListener('input', this);
-  window.addEventListener('pointerdown', this);
-  this._listenerCleanups = [];
-
-  for (let listenerFactory of this._listenerFactories) {
-    this._listenerCleanups.push(listenerFactory());
-  }
-}
-
-function _removeListeners2() {
-  window.removeEventListener('scroll', this);
-  window.removeEventListener('keydown', this);
-  window.removeEventListener('input', this);
-  window.removeEventListener('pointerdown', this);
-
-  for (let listenerCleanup of this._listenerCleanups) {
-    listenerCleanup();
-  }
-}
-
-},{}],39:[function(require,module,exports){
+},{"../Form/matching":29,"../autofill-utils":43}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9889,7 +9851,7 @@ var _onSelect = /*#__PURE__*/new WeakSet();
 
 /**
  * @implements {TooltipInterface}
- * @implements {TooltipHandler}
+ * @implements {WebTooltipHandler}
  */
 class WebTooltip {
   /** @type {import("../UI/Tooltip.js").Tooltip | null} */
@@ -9975,8 +9937,6 @@ class WebTooltip {
         testMode: _classPrivateFieldGet(this, _device).isTestMode()
       }).render(config, asRenderers, {
         onSelect: id => {
-          console.log('on select?');
-
           _classPrivateMethodGet(this, _onSelect, _onSelect2).call(this, config, data, id);
         }
       });
@@ -10190,17 +10150,16 @@ var _NativeTooltip = require("./NativeTooltip");
 
 var _WebTooltip = require("./WebTooltip");
 
-var _TopFrameControllerTooltip = require("./TopFrameControllerTooltip");
+var _OverlayControllerTooltip = require("./OverlayControllerTooltip");
 
 /**
- * @param {AvailableInputTypes} _availableInputTypes
  * @param {import('../runtime/runtime').Runtime} runtime
  * @param {GlobalConfig} globalConfig
  * @param {import('@duckduckgo/content-scope-scripts').RuntimeConfiguration} platformConfig
- * @param {import('../settings/settings').AutofillSettings} _autofillSettings
+ * @param {import('../settings/settings').Settings} _autofillSettings
  * @returns {TooltipInterface}
  */
-function createTooltip(_availableInputTypes, runtime, globalConfig, platformConfig, _autofillSettings) {
+function createTooltip(runtime, globalConfig, platformConfig, _autofillSettings) {
   switch (platformConfig.platform) {
     case 'macos':
     case 'windows':
@@ -10211,7 +10170,7 @@ function createTooltip(_availableInputTypes, runtime, globalConfig, platformConf
               tooltipKind: 'modern'
             });
           } else {
-            return new _TopFrameControllerTooltip.TopFrameControllerTooltip(runtime, {});
+            return new _OverlayControllerTooltip.OverlayControllerTooltip(runtime);
           }
         }
 
@@ -10240,7 +10199,7 @@ function createTooltip(_availableInputTypes, runtime, globalConfig, platformConf
   throw new Error('undefined');
 }
 
-},{"./NativeTooltip":36,"./TopFrameControllerTooltip":38,"./WebTooltip":39}],43:[function(require,module,exports){
+},{"./NativeTooltip":36,"./OverlayControllerTooltip":37,"./WebTooltip":39}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10637,6 +10596,10 @@ var _inputTypes = require("./input-types/input-types");
 
 var _tooltips = require("./UI/tooltips");
 
+var _settings = require("./settings/settings");
+
+var _transport = require("./transports/transport");
+
 // Polyfills/shims
 (async () => {
   if (!window.isSecureContext) return false;
@@ -10647,14 +10610,17 @@ var _tooltips = require("./UI/tooltips");
 
     if (globalConfig.isDDGTestMode) {
       console.log('globalConfig', globalConfig);
-    } // Create the runtime, this does a best-guesses job of determining where we're running.
+    } // Transport is needed very early because we may need to fetch initial configuration, before any
+    // autofill logic can run...
 
 
-    const runtime = (0, _runtime.createRuntime)(globalConfig); // Get runtime configuration - this may include messaging
+    const transport = (0, _transport.createLoggingTransport)(globalConfig); // Create the runtime, this does a best-guesses job of determining where we're running.
+
+    const runtime = (0, _runtime.createRuntime)(globalConfig, transport); // Get runtime configuration - this may include messaging
 
     const runtimeConfiguration = await runtime.getRuntimeConfiguration(); // Autofill settings need to be derived from runtime config
 
-    const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration); // log feature toggles for clarity when testing
+    const autofillSettings = (0, _settings.fromRuntimeConfig)(runtimeConfiguration); // log feature toggles for clarity when testing
 
     if (globalConfig.isDDGTestMode) {
       console.log(JSON.stringify(autofillSettings.featureToggles, null, 2));
@@ -10664,12 +10630,12 @@ var _tooltips = require("./UI/tooltips");
     if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
       var _tooltip$setDevice;
 
+      // Determine the tooltipHandler type
+      const tooltip = (0, _tooltips.createTooltip)(runtime, globalConfig, runtimeConfiguration, autofillSettings);
       const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
-      const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles); // Determine the tooltipHandler type
+      const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles);
+      const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // This is a workaround for the previous design, we should refactor if possible
 
-      const tooltip = (0, _tooltips.createTooltip)(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings);
-      const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings);
-      console.log(device);
       (_tooltip$setDevice = tooltip.setDevice) === null || _tooltip$setDevice === void 0 ? void 0 : _tooltip$setDevice.call(tooltip, device); // Init services
 
       await device.init();
@@ -10681,7 +10647,7 @@ var _tooltips = require("./UI/tooltips");
   }
 })();
 
-},{"./DeviceInterface":12,"./UI/tooltips":42,"./config":45,"./input-types/input-types":50,"./requestIdleCallback":51,"./runtime/runtime":52,"./transports/captureDdgGlobals":59}],45:[function(require,module,exports){
+},{"./DeviceInterface":12,"./UI/tooltips":42,"./config":45,"./input-types/input-types":50,"./requestIdleCallback":51,"./runtime/runtime":52,"./settings/settings":58,"./transports/captureDdgGlobals":61,"./transports/transport":63}],45:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -10727,6 +10693,7 @@ function createGlobalConfig() {
     isTopFrame,
     isWindows,
     secret,
+    // supportsTopFrame: false,
     supportsTopFrame,
     hasModernWebkitAPI,
     contentScope,
@@ -11053,17 +11020,7 @@ exports.Runtime = void 0;
 exports.createRuntime = createRuntime;
 exports.runtimeResponse = runtimeResponse;
 
-var _transport = require("../transports/transport.apple");
-
-var _transport2 = require("../transports/transport.android");
-
-var _transport3 = require("../transports/transport.extension");
-
-var _transport4 = require("../transports/transport.windows");
-
 var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
-
-var _settings = require("../settings/settings");
 
 var _matching = require("../Form/matching");
 
@@ -11073,6 +11030,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+/**
+ * The Runtime is the centralised place for dealing with messages.
+ *
+ * It should validate incoming arguments, as well as outputs.
+ *
+ * Note: This runtime should not encode information about how to transmit
+ * data, that's a job for the provided RuntimeTransport
+ */
 class Runtime {
   /** @type {RuntimeTransport} */
 
@@ -11114,7 +11079,7 @@ class Runtime {
   }
   /**
    * @public
-   * @returns {Promise<RuntimeMessages['getAvailableInputTypes']['response']['success']>}
+   * @returns {Promise<AvailableInputTypes>}
    */
 
 
@@ -11134,6 +11099,13 @@ class Runtime {
   async getAutofillData(input) {
     const mainType = (0, _matching.getMainTypeFromType)(input.inputType);
     const subType = (0, _matching.getSubtypeFromType)(input.inputType);
+
+    if (mainType === 'unknown') {
+      throw new Error('unreachable, should not be here if (mainType === "unknown")');
+    }
+    /** @type {Schema.GetAutofillDataRequest} */
+
+
     const payload = {
       inputType: input.inputType,
       mainType,
@@ -11167,17 +11139,13 @@ class Runtime {
 
 
   async storeFormData(data) {
-    // todo(Shane): Ensure this data matches an outgoing schema
+    const validator = _validators.default['#/definitions/StoreFormDataRequest'];
+
+    if (!(validator !== null && validator !== void 0 && validator(data))) {
+      throwError(validator === null || validator === void 0 ? void 0 : validator['errors'], 'storeFormData');
+    }
+
     return this.transport.send('storeFormData', data);
-  }
-  /**
-   * @public
-   * @returns {Promise<import("../settings/settings").AutofillSettings>}
-   */
-
-
-  async getAutofillSettings(platformConfig) {
-    return (0, _settings.fromPlatformConfig)(platformConfig);
   }
   /**
    * @param {Schema.ShowAutofillParentRequest} parentArgs
@@ -11186,10 +11154,17 @@ class Runtime {
 
 
   async showAutofillParent(parentArgs) {
-    return this.transport.send('showAutofillParent', parentArgs);
+    const validator = _validators.default['#/definitions/ShowAutofillParentRequest'];
+
+    if (!(validator !== null && validator !== void 0 && validator(parentArgs))) {
+      throwError(validator === null || validator === void 0 ? void 0 : validator['errors'], 'showAutofillParent');
+    }
+
+    await this.transport.send('showAutofillParent', parentArgs);
   }
   /**
-   * todo(Shane): Schema for this
+   * todo(Shane): Schema for this?
+   * @deprecated This was a port from the macOS implementation so the API may not be suitable for all
    * @returns {Promise<any>}
    */
 
@@ -11198,7 +11173,6 @@ class Runtime {
     return this.transport.send('getSelectedCredentials');
   }
   /**
-   * todo(Shane): Schema for this
    * @returns {Promise<any>}
    */
 
@@ -11208,57 +11182,20 @@ class Runtime {
   }
 
 }
-
-exports.Runtime = Runtime;
-
-function createRuntime(config) {
-  const transport = selectTransport(config);
-  return new Runtime(config, transport);
-}
 /**
- * The runtime has to decide on a transport, *before* we have a 'tooltipHandler'.
- *
- * This is because an initial message to retrieve the platform configuration might be needed
- *
- * @param {GlobalConfig} globalConfig
- * @returns {RuntimeTransport}
+ * @param {GlobalConfig} config
+ * @param {RuntimeTransport} transport
+ * @returns {Runtime}
  */
 
 
-function selectTransport(globalConfig) {
-  var _globalConfig$userPre, _globalConfig$userPre2, _globalConfig$userPre3, _globalConfig$userPre4;
+exports.Runtime = Runtime;
 
-  if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) === 'string') {
-    switch ((_globalConfig$userPre3 = globalConfig.userPreferences) === null || _globalConfig$userPre3 === void 0 ? void 0 : (_globalConfig$userPre4 = _globalConfig$userPre3.platform) === null || _globalConfig$userPre4 === void 0 ? void 0 : _globalConfig$userPre4.name) {
-      case 'ios':
-        return (0, _transport.createTransport)(globalConfig);
-
-      case 'macos':
-        return (0, _transport.createTransport)(globalConfig);
-
-      default:
-        throw new Error('selectTransport unimplemented!');
-    }
-  }
-
-  if (globalConfig.isDDGApp) {
-    if (globalConfig.isAndroid) {
-      return (0, _transport2.createTransport)(globalConfig);
-    }
-
-    console.warn('should never get here...');
-    return (0, _transport.createTransport)(globalConfig);
-  }
-
-  if (globalConfig.isWindows) {
-    return (0, _transport4.createTransport)(globalConfig);
-  } // falls back to extension... is this still the best way to determine this?
-
-
-  return (0, _transport3.createTransport)(globalConfig);
+function createRuntime(config, transport) {
+  return new Runtime(config, transport);
 }
 /**
- * @param {APIResponseSingle<any>} object
+ * @param {GenericRuntimeResponse<any>} object
  * @param {string} [name]
  * @param {import("ajv").ValidateFunction} [validator]
  */
@@ -11297,7 +11234,7 @@ function throwError(errors, name) {
   throw new Error('Schema validation errors for ' + name);
 }
 
-},{"../Form/matching":29,"../schema/validators.cjs":57,"../settings/settings":58,"../transports/transport.android":60,"../transports/transport.apple":61,"../transports/transport.extension":62,"../transports/transport.windows":63,"@duckduckgo/content-scope-scripts":1}],53:[function(require,module,exports){
+},{"../Form/matching":29,"../schema/validators.cjs":57,"@duckduckgo/content-scope-scripts":1}],53:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
@@ -11311,7 +11248,9 @@ module.exports={
       "const": "getAutofillDataResponse"
     },
     "success": {
+      "$id": "#/definitions/AutofillData",
       "title": "GetAutofillDataResponse Success Response",
+      "description": "The data returned, containing only fields that will be auto-filled",
       "type": "object",
       "oneOf": [
         { "$ref": "#/definitions/Credentials" }
@@ -11341,6 +11280,7 @@ module.exports={
     },
     "success": {
       "title": "GetAutofillInitDataResponse Success Response",
+      "$id": "#/definitions/AutofillInitData",
       "type": "object",
       "properties": {
         "credentials": {
@@ -11362,6 +11302,7 @@ module.exports={
           }
         },
         "serializedInputContext": {
+          "description": "A clone of the `serializedInputContext` that was sent in the request",
           "type": "string"
         }
       },
@@ -11396,17 +11337,22 @@ module.exports={
     },
     "success": {
       "type": "object",
+      "$id": "#/definitions/AvailableInputTypes",
       "properties": {
         "credentials": {
+          "description": "true if *any* credentials are available",
           "type": "boolean"
         },
         "identities": {
+          "description": "true if *any* identities are available",
           "type": "boolean"
         },
         "creditCards": {
+          "description": "true if *any* credit cards are available",
           "type": "boolean"
         },
         "email": {
+          "description": "true if signed in for Email Protection",
           "type": "boolean"
         }
       }
@@ -11426,6 +11372,7 @@ module.exports={
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
   "type": "object",
   "title": "GetRuntimeConfigurationResponse Success Response",
+  "description": "Data that can be understood by @duckduckgo/content-scope-scripts",
   "properties": {
     "type": {
       "title": "This is the 'type' field on message that may be sent back to the window",
@@ -11854,11 +11801,88 @@ function validate11(data) {
   return errors === 0;
 }
 
-exports["#/definitions/Identity"] = validate12;
+exports["#/definitions/GenericError"] = validate12;
 const schema13 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "#/definitions/Identity",
+  "$id": "#/definitions/GenericError",
   "title": "GenericError",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string"
+    }
+  },
+  "required": ["message"]
+};
+
+function validate12(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GenericError" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.message === undefined && (missing0 = "message")) {
+        validate12.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.message !== undefined) {
+          if (typeof data.message !== "string") {
+            validate12.errors = [{
+              instancePath: instancePath + "/message",
+              schemaPath: "#/properties/message/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            }];
+            return false;
+          }
+        }
+      }
+    } else {
+      validate12.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate12.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/Identity"] = validate13;
+const schema14 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/Identity",
+  "title": "Identity",
+  "description": "A user's Identity",
   "type": "object",
   "properties": {
     "id": {
@@ -11913,7 +11937,7 @@ const schema13 = {
   "required": ["title"]
 };
 
-function validate12(data) {
+function validate13(data) {
   let {
     instancePath = "",
     parentData,
@@ -11931,7 +11955,7 @@ function validate12(data) {
       let missing0;
 
       if (data.title === undefined && (missing0 = "title")) {
-        validate12.errors = [{
+        validate13.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -11946,7 +11970,7 @@ function validate12(data) {
           const _errs1 = errors;
 
           if (typeof data.id !== "string") {
-            validate12.errors = [{
+            validate13.errors = [{
               instancePath: instancePath + "/id",
               schemaPath: "#/properties/id/type",
               keyword: "type",
@@ -11968,7 +11992,7 @@ function validate12(data) {
             const _errs3 = errors;
 
             if (typeof data.title !== "string") {
-              validate12.errors = [{
+              validate13.errors = [{
                 instancePath: instancePath + "/title",
                 schemaPath: "#/properties/title/type",
                 keyword: "type",
@@ -11990,7 +12014,7 @@ function validate12(data) {
               const _errs5 = errors;
 
               if (typeof data.firstName !== "string") {
-                validate12.errors = [{
+                validate13.errors = [{
                   instancePath: instancePath + "/firstName",
                   schemaPath: "#/properties/firstName/type",
                   keyword: "type",
@@ -12012,7 +12036,7 @@ function validate12(data) {
                 const _errs7 = errors;
 
                 if (typeof data.middleName !== "string") {
-                  validate12.errors = [{
+                  validate13.errors = [{
                     instancePath: instancePath + "/middleName",
                     schemaPath: "#/properties/middleName/type",
                     keyword: "type",
@@ -12034,7 +12058,7 @@ function validate12(data) {
                   const _errs9 = errors;
 
                   if (typeof data.lastName !== "string") {
-                    validate12.errors = [{
+                    validate13.errors = [{
                       instancePath: instancePath + "/lastName",
                       schemaPath: "#/properties/lastName/type",
                       keyword: "type",
@@ -12056,7 +12080,7 @@ function validate12(data) {
                     const _errs11 = errors;
 
                     if (typeof data.birthdayDay !== "string") {
-                      validate12.errors = [{
+                      validate13.errors = [{
                         instancePath: instancePath + "/birthdayDay",
                         schemaPath: "#/properties/birthdayDay/type",
                         keyword: "type",
@@ -12078,7 +12102,7 @@ function validate12(data) {
                       const _errs13 = errors;
 
                       if (typeof data.birthdayMonth !== "string") {
-                        validate12.errors = [{
+                        validate13.errors = [{
                           instancePath: instancePath + "/birthdayMonth",
                           schemaPath: "#/properties/birthdayMonth/type",
                           keyword: "type",
@@ -12100,7 +12124,7 @@ function validate12(data) {
                         const _errs15 = errors;
 
                         if (typeof data.birthdayYear !== "string") {
-                          validate12.errors = [{
+                          validate13.errors = [{
                             instancePath: instancePath + "/birthdayYear",
                             schemaPath: "#/properties/birthdayYear/type",
                             keyword: "type",
@@ -12122,7 +12146,7 @@ function validate12(data) {
                           const _errs17 = errors;
 
                           if (typeof data.addressStreet !== "string") {
-                            validate12.errors = [{
+                            validate13.errors = [{
                               instancePath: instancePath + "/addressStreet",
                               schemaPath: "#/properties/addressStreet/type",
                               keyword: "type",
@@ -12144,7 +12168,7 @@ function validate12(data) {
                             const _errs19 = errors;
 
                             if (typeof data.addressStreet2 !== "string") {
-                              validate12.errors = [{
+                              validate13.errors = [{
                                 instancePath: instancePath + "/addressStreet2",
                                 schemaPath: "#/properties/addressStreet2/type",
                                 keyword: "type",
@@ -12166,7 +12190,7 @@ function validate12(data) {
                               const _errs21 = errors;
 
                               if (typeof data.addressCity !== "string") {
-                                validate12.errors = [{
+                                validate13.errors = [{
                                   instancePath: instancePath + "/addressCity",
                                   schemaPath: "#/properties/addressCity/type",
                                   keyword: "type",
@@ -12188,7 +12212,7 @@ function validate12(data) {
                                 const _errs23 = errors;
 
                                 if (typeof data.addressProvince !== "string") {
-                                  validate12.errors = [{
+                                  validate13.errors = [{
                                     instancePath: instancePath + "/addressProvince",
                                     schemaPath: "#/properties/addressProvince/type",
                                     keyword: "type",
@@ -12210,7 +12234,7 @@ function validate12(data) {
                                   const _errs25 = errors;
 
                                   if (typeof data.addressPostalCode !== "string") {
-                                    validate12.errors = [{
+                                    validate13.errors = [{
                                       instancePath: instancePath + "/addressPostalCode",
                                       schemaPath: "#/properties/addressPostalCode/type",
                                       keyword: "type",
@@ -12232,7 +12256,7 @@ function validate12(data) {
                                     const _errs27 = errors;
 
                                     if (typeof data.addressCountryCode !== "string") {
-                                      validate12.errors = [{
+                                      validate13.errors = [{
                                         instancePath: instancePath + "/addressCountryCode",
                                         schemaPath: "#/properties/addressCountryCode/type",
                                         keyword: "type",
@@ -12254,7 +12278,7 @@ function validate12(data) {
                                       const _errs29 = errors;
 
                                       if (typeof data.phone !== "string") {
-                                        validate12.errors = [{
+                                        validate13.errors = [{
                                           instancePath: instancePath + "/phone",
                                           schemaPath: "#/properties/phone/type",
                                           keyword: "type",
@@ -12276,7 +12300,7 @@ function validate12(data) {
                                         const _errs31 = errors;
 
                                         if (typeof data.emailAddress !== "string") {
-                                          validate12.errors = [{
+                                          validate13.errors = [{
                                             instancePath: instancePath + "/emailAddress",
                                             schemaPath: "#/properties/emailAddress/type",
                                             keyword: "type",
@@ -12309,82 +12333,6 @@ function validate12(data) {
         }
       }
     } else {
-      validate12.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate12.errors = vErrors;
-  return errors === 0;
-}
-
-exports["#/definitions/GenericError"] = validate13;
-const schema14 = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "#/definitions/GenericError",
-  "title": "GenericError",
-  "type": "object",
-  "properties": {
-    "error": {
-      "type": "string"
-    }
-  },
-  "required": ["error"]
-};
-
-function validate13(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  /*# sourceURL="#/definitions/GenericError" */
-  ;
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.error === undefined && (missing0 = "error")) {
-        validate13.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        if (data.error !== undefined) {
-          if (typeof data.error !== "string") {
-            validate13.errors = [{
-              instancePath: instancePath + "/error",
-              schemaPath: "#/properties/error/type",
-              keyword: "type",
-              params: {
-                type: "string"
-              },
-              message: "must be string"
-            }];
-            return false;
-          }
-        }
-      }
-    } else {
       validate13.errors = [{
         instancePath,
         schemaPath: "#/type",
@@ -12408,7 +12356,7 @@ const schema15 = {
   "$id": "#/definitions/GetAutofillDataRequest",
   "title": "GetAutofillDataRequest Request Object",
   "type": "object",
-  "description": "This describes the argument given to getAutofillData(data)",
+  "description": "This describes the argument given to `getAutofillData(data)`",
   "properties": {
     "inputType": {
       "title": "The input type that triggered the call",
@@ -12416,7 +12364,7 @@ const schema15 = {
       "type": "string"
     },
     "mainType": {
-      "title": "The main input type, such as `credentials`",
+      "title": "The main input type",
       "type": "string",
       "enum": ["credentials", "identities", "creditCards"]
     },
@@ -12580,7 +12528,7 @@ const schema16 = {
       "type": "number"
     },
     "serializedInputContext": {
-      "description": "todo(Shane): How to deal with the fact that this is a JSON string with type TopContextData",
+      "description": "JSON string that will be available from `getAutofillInitData()`",
       "type": "string"
     }
   },
@@ -12774,8 +12722,773 @@ function validate15(data) {
   return errors === 0;
 }
 
-exports["#/definitions/GetAutofillDataResponse"] = validate16;
+exports["#/definitions/StoreFormDataRequest"] = validate16;
 const schema17 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/StoreFormDataRequest",
+  "title": "StoreFormData Request",
+  "type": "object",
+  "description": "Autofill could send this data at any point. \n\nIt will **not** listen for a response, it's expected that the native side will handle",
+  "properties": {
+    "credentials": {
+      "type": "object",
+      "$id": "#/definitions/CredentialsOutgoing",
+      "properties": {
+        "username": {
+          "description": "Optional username",
+          "type": "string"
+        },
+        "password": {
+          "description": "Optional password",
+          "type": "string"
+        }
+      }
+    },
+    "identities": {
+      "description": "todo(Shane): Rename to identity",
+      "$ref": "#/definitions/Identity"
+    },
+    "creditCards": {
+      "description": "todo(Shane): Rename to creditCard",
+      "$ref": "#/definitions/CreditCard"
+    }
+  }
+};
+
+function validate16(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/StoreFormDataRequest" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      if (data.credentials !== undefined) {
+        let data0 = data.credentials;
+        const _errs1 = errors;
+
+        if (errors === _errs1) {
+          if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {
+            if (data0.username !== undefined) {
+              const _errs3 = errors;
+
+              if (typeof data0.username !== "string") {
+                validate16.errors = [{
+                  instancePath: instancePath + "/credentials/username",
+                  schemaPath: "#/properties/credentials/properties/username/type",
+                  keyword: "type",
+                  params: {
+                    type: "string"
+                  },
+                  message: "must be string"
+                }];
+                return false;
+              }
+
+              var valid1 = _errs3 === errors;
+            } else {
+              var valid1 = true;
+            }
+
+            if (valid1) {
+              if (data0.password !== undefined) {
+                const _errs5 = errors;
+
+                if (typeof data0.password !== "string") {
+                  validate16.errors = [{
+                    instancePath: instancePath + "/credentials/password",
+                    schemaPath: "#/properties/credentials/properties/password/type",
+                    keyword: "type",
+                    params: {
+                      type: "string"
+                    },
+                    message: "must be string"
+                  }];
+                  return false;
+                }
+
+                var valid1 = _errs5 === errors;
+              } else {
+                var valid1 = true;
+              }
+            }
+          } else {
+            validate16.errors = [{
+              instancePath: instancePath + "/credentials",
+              schemaPath: "#/properties/credentials/type",
+              keyword: "type",
+              params: {
+                type: "object"
+              },
+              message: "must be object"
+            }];
+            return false;
+          }
+        }
+
+        var valid0 = _errs1 === errors;
+      } else {
+        var valid0 = true;
+      }
+
+      if (valid0) {
+        if (data.identities !== undefined) {
+          let data3 = data.identities;
+          const _errs7 = errors;
+          const _errs8 = errors;
+
+          if (errors === _errs8) {
+            if (data3 && typeof data3 == "object" && !Array.isArray(data3)) {
+              let missing0;
+
+              if (data3.title === undefined && (missing0 = "title")) {
+                validate16.errors = [{
+                  instancePath: instancePath + "/identities",
+                  schemaPath: "#/definitions/Identity/required",
+                  keyword: "required",
+                  params: {
+                    missingProperty: missing0
+                  },
+                  message: "must have required property '" + missing0 + "'"
+                }];
+                return false;
+              } else {
+                if (data3.id !== undefined) {
+                  const _errs10 = errors;
+
+                  if (typeof data3.id !== "string") {
+                    validate16.errors = [{
+                      instancePath: instancePath + "/identities/id",
+                      schemaPath: "#/definitions/Identity/properties/id/type",
+                      keyword: "type",
+                      params: {
+                        type: "string"
+                      },
+                      message: "must be string"
+                    }];
+                    return false;
+                  }
+
+                  var valid3 = _errs10 === errors;
+                } else {
+                  var valid3 = true;
+                }
+
+                if (valid3) {
+                  if (data3.title !== undefined) {
+                    const _errs12 = errors;
+
+                    if (typeof data3.title !== "string") {
+                      validate16.errors = [{
+                        instancePath: instancePath + "/identities/title",
+                        schemaPath: "#/definitions/Identity/properties/title/type",
+                        keyword: "type",
+                        params: {
+                          type: "string"
+                        },
+                        message: "must be string"
+                      }];
+                      return false;
+                    }
+
+                    var valid3 = _errs12 === errors;
+                  } else {
+                    var valid3 = true;
+                  }
+
+                  if (valid3) {
+                    if (data3.firstName !== undefined) {
+                      const _errs14 = errors;
+
+                      if (typeof data3.firstName !== "string") {
+                        validate16.errors = [{
+                          instancePath: instancePath + "/identities/firstName",
+                          schemaPath: "#/definitions/Identity/properties/firstName/type",
+                          keyword: "type",
+                          params: {
+                            type: "string"
+                          },
+                          message: "must be string"
+                        }];
+                        return false;
+                      }
+
+                      var valid3 = _errs14 === errors;
+                    } else {
+                      var valid3 = true;
+                    }
+
+                    if (valid3) {
+                      if (data3.middleName !== undefined) {
+                        const _errs16 = errors;
+
+                        if (typeof data3.middleName !== "string") {
+                          validate16.errors = [{
+                            instancePath: instancePath + "/identities/middleName",
+                            schemaPath: "#/definitions/Identity/properties/middleName/type",
+                            keyword: "type",
+                            params: {
+                              type: "string"
+                            },
+                            message: "must be string"
+                          }];
+                          return false;
+                        }
+
+                        var valid3 = _errs16 === errors;
+                      } else {
+                        var valid3 = true;
+                      }
+
+                      if (valid3) {
+                        if (data3.lastName !== undefined) {
+                          const _errs18 = errors;
+
+                          if (typeof data3.lastName !== "string") {
+                            validate16.errors = [{
+                              instancePath: instancePath + "/identities/lastName",
+                              schemaPath: "#/definitions/Identity/properties/lastName/type",
+                              keyword: "type",
+                              params: {
+                                type: "string"
+                              },
+                              message: "must be string"
+                            }];
+                            return false;
+                          }
+
+                          var valid3 = _errs18 === errors;
+                        } else {
+                          var valid3 = true;
+                        }
+
+                        if (valid3) {
+                          if (data3.birthdayDay !== undefined) {
+                            const _errs20 = errors;
+
+                            if (typeof data3.birthdayDay !== "string") {
+                              validate16.errors = [{
+                                instancePath: instancePath + "/identities/birthdayDay",
+                                schemaPath: "#/definitions/Identity/properties/birthdayDay/type",
+                                keyword: "type",
+                                params: {
+                                  type: "string"
+                                },
+                                message: "must be string"
+                              }];
+                              return false;
+                            }
+
+                            var valid3 = _errs20 === errors;
+                          } else {
+                            var valid3 = true;
+                          }
+
+                          if (valid3) {
+                            if (data3.birthdayMonth !== undefined) {
+                              const _errs22 = errors;
+
+                              if (typeof data3.birthdayMonth !== "string") {
+                                validate16.errors = [{
+                                  instancePath: instancePath + "/identities/birthdayMonth",
+                                  schemaPath: "#/definitions/Identity/properties/birthdayMonth/type",
+                                  keyword: "type",
+                                  params: {
+                                    type: "string"
+                                  },
+                                  message: "must be string"
+                                }];
+                                return false;
+                              }
+
+                              var valid3 = _errs22 === errors;
+                            } else {
+                              var valid3 = true;
+                            }
+
+                            if (valid3) {
+                              if (data3.birthdayYear !== undefined) {
+                                const _errs24 = errors;
+
+                                if (typeof data3.birthdayYear !== "string") {
+                                  validate16.errors = [{
+                                    instancePath: instancePath + "/identities/birthdayYear",
+                                    schemaPath: "#/definitions/Identity/properties/birthdayYear/type",
+                                    keyword: "type",
+                                    params: {
+                                      type: "string"
+                                    },
+                                    message: "must be string"
+                                  }];
+                                  return false;
+                                }
+
+                                var valid3 = _errs24 === errors;
+                              } else {
+                                var valid3 = true;
+                              }
+
+                              if (valid3) {
+                                if (data3.addressStreet !== undefined) {
+                                  const _errs26 = errors;
+
+                                  if (typeof data3.addressStreet !== "string") {
+                                    validate16.errors = [{
+                                      instancePath: instancePath + "/identities/addressStreet",
+                                      schemaPath: "#/definitions/Identity/properties/addressStreet/type",
+                                      keyword: "type",
+                                      params: {
+                                        type: "string"
+                                      },
+                                      message: "must be string"
+                                    }];
+                                    return false;
+                                  }
+
+                                  var valid3 = _errs26 === errors;
+                                } else {
+                                  var valid3 = true;
+                                }
+
+                                if (valid3) {
+                                  if (data3.addressStreet2 !== undefined) {
+                                    const _errs28 = errors;
+
+                                    if (typeof data3.addressStreet2 !== "string") {
+                                      validate16.errors = [{
+                                        instancePath: instancePath + "/identities/addressStreet2",
+                                        schemaPath: "#/definitions/Identity/properties/addressStreet2/type",
+                                        keyword: "type",
+                                        params: {
+                                          type: "string"
+                                        },
+                                        message: "must be string"
+                                      }];
+                                      return false;
+                                    }
+
+                                    var valid3 = _errs28 === errors;
+                                  } else {
+                                    var valid3 = true;
+                                  }
+
+                                  if (valid3) {
+                                    if (data3.addressCity !== undefined) {
+                                      const _errs30 = errors;
+
+                                      if (typeof data3.addressCity !== "string") {
+                                        validate16.errors = [{
+                                          instancePath: instancePath + "/identities/addressCity",
+                                          schemaPath: "#/definitions/Identity/properties/addressCity/type",
+                                          keyword: "type",
+                                          params: {
+                                            type: "string"
+                                          },
+                                          message: "must be string"
+                                        }];
+                                        return false;
+                                      }
+
+                                      var valid3 = _errs30 === errors;
+                                    } else {
+                                      var valid3 = true;
+                                    }
+
+                                    if (valid3) {
+                                      if (data3.addressProvince !== undefined) {
+                                        const _errs32 = errors;
+
+                                        if (typeof data3.addressProvince !== "string") {
+                                          validate16.errors = [{
+                                            instancePath: instancePath + "/identities/addressProvince",
+                                            schemaPath: "#/definitions/Identity/properties/addressProvince/type",
+                                            keyword: "type",
+                                            params: {
+                                              type: "string"
+                                            },
+                                            message: "must be string"
+                                          }];
+                                          return false;
+                                        }
+
+                                        var valid3 = _errs32 === errors;
+                                      } else {
+                                        var valid3 = true;
+                                      }
+
+                                      if (valid3) {
+                                        if (data3.addressPostalCode !== undefined) {
+                                          const _errs34 = errors;
+
+                                          if (typeof data3.addressPostalCode !== "string") {
+                                            validate16.errors = [{
+                                              instancePath: instancePath + "/identities/addressPostalCode",
+                                              schemaPath: "#/definitions/Identity/properties/addressPostalCode/type",
+                                              keyword: "type",
+                                              params: {
+                                                type: "string"
+                                              },
+                                              message: "must be string"
+                                            }];
+                                            return false;
+                                          }
+
+                                          var valid3 = _errs34 === errors;
+                                        } else {
+                                          var valid3 = true;
+                                        }
+
+                                        if (valid3) {
+                                          if (data3.addressCountryCode !== undefined) {
+                                            const _errs36 = errors;
+
+                                            if (typeof data3.addressCountryCode !== "string") {
+                                              validate16.errors = [{
+                                                instancePath: instancePath + "/identities/addressCountryCode",
+                                                schemaPath: "#/definitions/Identity/properties/addressCountryCode/type",
+                                                keyword: "type",
+                                                params: {
+                                                  type: "string"
+                                                },
+                                                message: "must be string"
+                                              }];
+                                              return false;
+                                            }
+
+                                            var valid3 = _errs36 === errors;
+                                          } else {
+                                            var valid3 = true;
+                                          }
+
+                                          if (valid3) {
+                                            if (data3.phone !== undefined) {
+                                              const _errs38 = errors;
+
+                                              if (typeof data3.phone !== "string") {
+                                                validate16.errors = [{
+                                                  instancePath: instancePath + "/identities/phone",
+                                                  schemaPath: "#/definitions/Identity/properties/phone/type",
+                                                  keyword: "type",
+                                                  params: {
+                                                    type: "string"
+                                                  },
+                                                  message: "must be string"
+                                                }];
+                                                return false;
+                                              }
+
+                                              var valid3 = _errs38 === errors;
+                                            } else {
+                                              var valid3 = true;
+                                            }
+
+                                            if (valid3) {
+                                              if (data3.emailAddress !== undefined) {
+                                                const _errs40 = errors;
+
+                                                if (typeof data3.emailAddress !== "string") {
+                                                  validate16.errors = [{
+                                                    instancePath: instancePath + "/identities/emailAddress",
+                                                    schemaPath: "#/definitions/Identity/properties/emailAddress/type",
+                                                    keyword: "type",
+                                                    params: {
+                                                      type: "string"
+                                                    },
+                                                    message: "must be string"
+                                                  }];
+                                                  return false;
+                                                }
+
+                                                var valid3 = _errs40 === errors;
+                                              } else {
+                                                var valid3 = true;
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            } else {
+              validate16.errors = [{
+                instancePath: instancePath + "/identities",
+                schemaPath: "#/definitions/Identity/type",
+                keyword: "type",
+                params: {
+                  type: "object"
+                },
+                message: "must be object"
+              }];
+              return false;
+            }
+          }
+
+          var valid0 = _errs7 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.creditCards !== undefined) {
+            let data20 = data.creditCards;
+            const _errs42 = errors;
+            const _errs43 = errors;
+
+            if (errors === _errs43) {
+              if (data20 && typeof data20 == "object" && !Array.isArray(data20)) {
+                let missing1;
+
+                if (data20.username === undefined && (missing1 = "username")) {
+                  validate16.errors = [{
+                    instancePath: instancePath + "/creditCards",
+                    schemaPath: "#/definitions/CreditCard/required",
+                    keyword: "required",
+                    params: {
+                      missingProperty: missing1
+                    },
+                    message: "must have required property '" + missing1 + "'"
+                  }];
+                  return false;
+                } else {
+                  if (data20.id !== undefined) {
+                    const _errs45 = errors;
+
+                    if (typeof data20.id !== "string") {
+                      validate16.errors = [{
+                        instancePath: instancePath + "/creditCards/id",
+                        schemaPath: "#/definitions/CreditCard/properties/id/type",
+                        keyword: "type",
+                        params: {
+                          type: "string"
+                        },
+                        message: "must be string"
+                      }];
+                      return false;
+                    }
+
+                    var valid5 = _errs45 === errors;
+                  } else {
+                    var valid5 = true;
+                  }
+
+                  if (valid5) {
+                    if (data20.title !== undefined) {
+                      const _errs47 = errors;
+
+                      if (typeof data20.title !== "string") {
+                        validate16.errors = [{
+                          instancePath: instancePath + "/creditCards/title",
+                          schemaPath: "#/definitions/CreditCard/properties/title/type",
+                          keyword: "type",
+                          params: {
+                            type: "string"
+                          },
+                          message: "must be string"
+                        }];
+                        return false;
+                      }
+
+                      var valid5 = _errs47 === errors;
+                    } else {
+                      var valid5 = true;
+                    }
+
+                    if (valid5) {
+                      if (data20.displayNumber !== undefined) {
+                        const _errs49 = errors;
+
+                        if (typeof data20.displayNumber !== "string") {
+                          validate16.errors = [{
+                            instancePath: instancePath + "/creditCards/displayNumber",
+                            schemaPath: "#/definitions/CreditCard/properties/displayNumber/type",
+                            keyword: "type",
+                            params: {
+                              type: "string"
+                            },
+                            message: "must be string"
+                          }];
+                          return false;
+                        }
+
+                        var valid5 = _errs49 === errors;
+                      } else {
+                        var valid5 = true;
+                      }
+
+                      if (valid5) {
+                        if (data20.cardName !== undefined) {
+                          const _errs51 = errors;
+
+                          if (typeof data20.cardName !== "string") {
+                            validate16.errors = [{
+                              instancePath: instancePath + "/creditCards/cardName",
+                              schemaPath: "#/definitions/CreditCard/properties/cardName/type",
+                              keyword: "type",
+                              params: {
+                                type: "string"
+                              },
+                              message: "must be string"
+                            }];
+                            return false;
+                          }
+
+                          var valid5 = _errs51 === errors;
+                        } else {
+                          var valid5 = true;
+                        }
+
+                        if (valid5) {
+                          if (data20.cardSecurityCode !== undefined) {
+                            const _errs53 = errors;
+
+                            if (typeof data20.cardSecurityCode !== "string") {
+                              validate16.errors = [{
+                                instancePath: instancePath + "/creditCards/cardSecurityCode",
+                                schemaPath: "#/definitions/CreditCard/properties/cardSecurityCode/type",
+                                keyword: "type",
+                                params: {
+                                  type: "string"
+                                },
+                                message: "must be string"
+                              }];
+                              return false;
+                            }
+
+                            var valid5 = _errs53 === errors;
+                          } else {
+                            var valid5 = true;
+                          }
+
+                          if (valid5) {
+                            if (data20.expirationMonth !== undefined) {
+                              const _errs55 = errors;
+
+                              if (typeof data20.expirationMonth !== "string") {
+                                validate16.errors = [{
+                                  instancePath: instancePath + "/creditCards/expirationMonth",
+                                  schemaPath: "#/definitions/CreditCard/properties/expirationMonth/type",
+                                  keyword: "type",
+                                  params: {
+                                    type: "string"
+                                  },
+                                  message: "must be string"
+                                }];
+                                return false;
+                              }
+
+                              var valid5 = _errs55 === errors;
+                            } else {
+                              var valid5 = true;
+                            }
+
+                            if (valid5) {
+                              if (data20.expirationYear !== undefined) {
+                                const _errs57 = errors;
+
+                                if (typeof data20.expirationYear !== "string") {
+                                  validate16.errors = [{
+                                    instancePath: instancePath + "/creditCards/expirationYear",
+                                    schemaPath: "#/definitions/CreditCard/properties/expirationYear/type",
+                                    keyword: "type",
+                                    params: {
+                                      type: "string"
+                                    },
+                                    message: "must be string"
+                                  }];
+                                  return false;
+                                }
+
+                                var valid5 = _errs57 === errors;
+                              } else {
+                                var valid5 = true;
+                              }
+
+                              if (valid5) {
+                                if (data20.cardNumber !== undefined) {
+                                  const _errs59 = errors;
+
+                                  if (typeof data20.cardNumber !== "string") {
+                                    validate16.errors = [{
+                                      instancePath: instancePath + "/creditCards/cardNumber",
+                                      schemaPath: "#/definitions/CreditCard/properties/cardNumber/type",
+                                      keyword: "type",
+                                      params: {
+                                        type: "string"
+                                      },
+                                      message: "must be string"
+                                    }];
+                                    return false;
+                                  }
+
+                                  var valid5 = _errs59 === errors;
+                                } else {
+                                  var valid5 = true;
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              } else {
+                validate16.errors = [{
+                  instancePath: instancePath + "/creditCards",
+                  schemaPath: "#/definitions/CreditCard/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs42 === errors;
+          } else {
+            var valid0 = true;
+          }
+        }
+      }
+    } else {
+      validate16.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate16.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/GetAutofillDataResponse"] = validate17;
+const schema20 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
   "title": "GetAutofillDataResponse",
@@ -12788,7 +13501,9 @@ const schema17 = {
       "const": "getAutofillDataResponse"
     },
     "success": {
+      "$id": "#/definitions/AutofillData",
       "title": "GetAutofillDataResponse Success Response",
+      "description": "The data returned, containing only fields that will be auto-filled",
       "type": "object",
       "oneOf": [{
         "$ref": "#/definitions/Credentials"
@@ -12801,7 +13516,7 @@ const schema17 = {
   "required": ["success"]
 };
 
-function validate16(data) {
+function validate17(data) {
   let {
     instancePath = "",
     parentData,
@@ -12819,7 +13534,7 @@ function validate16(data) {
       let missing0;
 
       if (data.success === undefined && (missing0 = "success")) {
-        validate16.errors = [{
+        validate17.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -12835,7 +13550,7 @@ function validate16(data) {
           const _errs1 = errors;
 
           if (typeof data0 !== "string") {
-            validate16.errors = [{
+            validate17.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/type",
               keyword: "type",
@@ -12848,7 +13563,7 @@ function validate16(data) {
           }
 
           if ("getAutofillDataResponse" !== data0) {
-            validate16.errors = [{
+            validate17.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/const",
               keyword: "const",
@@ -12871,7 +13586,7 @@ function validate16(data) {
             const _errs3 = errors;
 
             if (!(data1 && typeof data1 == "object" && !Array.isArray(data1))) {
-              validate16.errors = [{
+              validate17.errors = [{
                 instancePath: instancePath + "/success",
                 schemaPath: "#/properties/success/type",
                 keyword: "type",
@@ -13046,7 +13761,7 @@ function validate16(data) {
               }
 
               errors++;
-              validate16.errors = vErrors;
+              validate17.errors = vErrors;
               return false;
             } else {
               errors = _errs5;
@@ -13075,8 +13790,8 @@ function validate16(data) {
                 if (data5 && typeof data5 == "object" && !Array.isArray(data5)) {
                   let missing2;
 
-                  if (data5.error === undefined && (missing2 = "error")) {
-                    validate16.errors = [{
+                  if (data5.message === undefined && (missing2 = "message")) {
+                    validate17.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
@@ -13087,11 +13802,11 @@ function validate16(data) {
                     }];
                     return false;
                   } else {
-                    if (data5.error !== undefined) {
-                      if (typeof data5.error !== "string") {
-                        validate16.errors = [{
-                          instancePath: instancePath + "/error/error",
-                          schemaPath: "#/definitions/GenericError/properties/error/type",
+                    if (data5.message !== undefined) {
+                      if (typeof data5.message !== "string") {
+                        validate17.errors = [{
+                          instancePath: instancePath + "/error/message",
+                          schemaPath: "#/definitions/GenericError/properties/message/type",
                           keyword: "type",
                           params: {
                             type: "string"
@@ -13103,7 +13818,7 @@ function validate16(data) {
                     }
                   }
                 } else {
-                  validate16.errors = [{
+                  validate17.errors = [{
                     instancePath: instancePath + "/error",
                     schemaPath: "#/definitions/GenericError/type",
                     keyword: "type",
@@ -13117,499 +13832,6 @@ function validate16(data) {
               }
 
               var valid0 = _errs15 === errors;
-            } else {
-              var valid0 = true;
-            }
-          }
-        }
-      }
-    } else {
-      validate16.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate16.errors = vErrors;
-  return errors === 0;
-}
-
-exports["#/definitions/GetAutofillInitDataResponse"] = validate17;
-const schema20 = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "#/definitions/GetAutofillInitDataResponse",
-  "title": "GetAutofillInitDataResponse",
-  "type": "object",
-  "properties": {
-    "type": {
-      "title": "This is the 'type' field on message that may be sent back to the window",
-      "description": "Required on Android + Windows devices, optional on iOS",
-      "type": "string",
-      "const": "getAutofillInitDataResponse"
-    },
-    "success": {
-      "title": "GetAutofillInitDataResponse Success Response",
-      "type": "object",
-      "properties": {
-        "credentials": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Credentials"
-          }
-        },
-        "identities": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          }
-        },
-        "creditCards": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          }
-        },
-        "serializedInputContext": {
-          "type": "string"
-        }
-      },
-      "required": ["serializedInputContext", "credentials", "creditCards", "identities"]
-    },
-    "error": {
-      "$ref": "#/definitions/GenericError"
-    }
-  },
-  "required": ["success"]
-};
-
-function validate17(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  /*# sourceURL="#/definitions/GetAutofillInitDataResponse" */
-  ;
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.success === undefined && (missing0 = "success")) {
-        validate17.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        if (data.type !== undefined) {
-          let data0 = data.type;
-          const _errs1 = errors;
-
-          if (typeof data0 !== "string") {
-            validate17.errors = [{
-              instancePath: instancePath + "/type",
-              schemaPath: "#/properties/type/type",
-              keyword: "type",
-              params: {
-                type: "string"
-              },
-              message: "must be string"
-            }];
-            return false;
-          }
-
-          if ("getAutofillInitDataResponse" !== data0) {
-            validate17.errors = [{
-              instancePath: instancePath + "/type",
-              schemaPath: "#/properties/type/const",
-              keyword: "const",
-              params: {
-                allowedValue: "getAutofillInitDataResponse"
-              },
-              message: "must be equal to constant"
-            }];
-            return false;
-          }
-
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-
-        if (valid0) {
-          if (data.success !== undefined) {
-            let data1 = data.success;
-            const _errs3 = errors;
-
-            if (errors === _errs3) {
-              if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
-                let missing1;
-
-                if (data1.serializedInputContext === undefined && (missing1 = "serializedInputContext") || data1.credentials === undefined && (missing1 = "credentials") || data1.creditCards === undefined && (missing1 = "creditCards") || data1.identities === undefined && (missing1 = "identities")) {
-                  validate17.errors = [{
-                    instancePath: instancePath + "/success",
-                    schemaPath: "#/properties/success/required",
-                    keyword: "required",
-                    params: {
-                      missingProperty: missing1
-                    },
-                    message: "must have required property '" + missing1 + "'"
-                  }];
-                  return false;
-                } else {
-                  if (data1.credentials !== undefined) {
-                    let data2 = data1.credentials;
-                    const _errs5 = errors;
-
-                    if (errors === _errs5) {
-                      if (Array.isArray(data2)) {
-                        var valid2 = true;
-                        const len0 = data2.length;
-
-                        for (let i0 = 0; i0 < len0; i0++) {
-                          let data3 = data2[i0];
-                          const _errs7 = errors;
-                          const _errs8 = errors;
-
-                          if (errors === _errs8) {
-                            if (data3 && typeof data3 == "object" && !Array.isArray(data3)) {
-                              let missing2;
-
-                              if (data3.username === undefined && (missing2 = "username")) {
-                                validate17.errors = [{
-                                  instancePath: instancePath + "/success/credentials/" + i0,
-                                  schemaPath: "#/definitions/Credentials/required",
-                                  keyword: "required",
-                                  params: {
-                                    missingProperty: missing2
-                                  },
-                                  message: "must have required property '" + missing2 + "'"
-                                }];
-                                return false;
-                              } else {
-                                if (data3.id !== undefined) {
-                                  const _errs10 = errors;
-
-                                  if (typeof data3.id !== "string") {
-                                    validate17.errors = [{
-                                      instancePath: instancePath + "/success/credentials/" + i0 + "/id",
-                                      schemaPath: "#/definitions/Credentials/properties/id/type",
-                                      keyword: "type",
-                                      params: {
-                                        type: "string"
-                                      },
-                                      message: "must be string"
-                                    }];
-                                    return false;
-                                  }
-
-                                  var valid4 = _errs10 === errors;
-                                } else {
-                                  var valid4 = true;
-                                }
-
-                                if (valid4) {
-                                  if (data3.username !== undefined) {
-                                    const _errs12 = errors;
-
-                                    if (typeof data3.username !== "string") {
-                                      validate17.errors = [{
-                                        instancePath: instancePath + "/success/credentials/" + i0 + "/username",
-                                        schemaPath: "#/definitions/Credentials/properties/username/type",
-                                        keyword: "type",
-                                        params: {
-                                          type: "string"
-                                        },
-                                        message: "must be string"
-                                      }];
-                                      return false;
-                                    }
-
-                                    var valid4 = _errs12 === errors;
-                                  } else {
-                                    var valid4 = true;
-                                  }
-
-                                  if (valid4) {
-                                    if (data3.password !== undefined) {
-                                      const _errs14 = errors;
-
-                                      if (typeof data3.password !== "string") {
-                                        validate17.errors = [{
-                                          instancePath: instancePath + "/success/credentials/" + i0 + "/password",
-                                          schemaPath: "#/definitions/Credentials/properties/password/type",
-                                          keyword: "type",
-                                          params: {
-                                            type: "string"
-                                          },
-                                          message: "must be string"
-                                        }];
-                                        return false;
-                                      }
-
-                                      var valid4 = _errs14 === errors;
-                                    } else {
-                                      var valid4 = true;
-                                    }
-                                  }
-                                }
-                              }
-                            } else {
-                              validate17.errors = [{
-                                instancePath: instancePath + "/success/credentials/" + i0,
-                                schemaPath: "#/definitions/Credentials/type",
-                                keyword: "type",
-                                params: {
-                                  type: "object"
-                                },
-                                message: "must be object"
-                              }];
-                              return false;
-                            }
-                          }
-
-                          var valid2 = _errs7 === errors;
-
-                          if (!valid2) {
-                            break;
-                          }
-                        }
-                      } else {
-                        validate17.errors = [{
-                          instancePath: instancePath + "/success/credentials",
-                          schemaPath: "#/properties/success/properties/credentials/type",
-                          keyword: "type",
-                          params: {
-                            type: "array"
-                          },
-                          message: "must be array"
-                        }];
-                        return false;
-                      }
-                    }
-
-                    var valid1 = _errs5 === errors;
-                  } else {
-                    var valid1 = true;
-                  }
-
-                  if (valid1) {
-                    if (data1.identities !== undefined) {
-                      let data7 = data1.identities;
-                      const _errs16 = errors;
-
-                      if (errors === _errs16) {
-                        if (Array.isArray(data7)) {
-                          var valid5 = true;
-                          const len1 = data7.length;
-
-                          for (let i1 = 0; i1 < len1; i1++) {
-                            let data8 = data7[i1];
-                            const _errs18 = errors;
-
-                            if (!(data8 && typeof data8 == "object" && !Array.isArray(data8))) {
-                              validate17.errors = [{
-                                instancePath: instancePath + "/success/identities/" + i1,
-                                schemaPath: "#/properties/success/properties/identities/items/type",
-                                keyword: "type",
-                                params: {
-                                  type: "object"
-                                },
-                                message: "must be object"
-                              }];
-                              return false;
-                            }
-
-                            var valid5 = _errs18 === errors;
-
-                            if (!valid5) {
-                              break;
-                            }
-                          }
-                        } else {
-                          validate17.errors = [{
-                            instancePath: instancePath + "/success/identities",
-                            schemaPath: "#/properties/success/properties/identities/type",
-                            keyword: "type",
-                            params: {
-                              type: "array"
-                            },
-                            message: "must be array"
-                          }];
-                          return false;
-                        }
-                      }
-
-                      var valid1 = _errs16 === errors;
-                    } else {
-                      var valid1 = true;
-                    }
-
-                    if (valid1) {
-                      if (data1.creditCards !== undefined) {
-                        let data9 = data1.creditCards;
-                        const _errs20 = errors;
-
-                        if (errors === _errs20) {
-                          if (Array.isArray(data9)) {
-                            var valid6 = true;
-                            const len2 = data9.length;
-
-                            for (let i2 = 0; i2 < len2; i2++) {
-                              let data10 = data9[i2];
-                              const _errs22 = errors;
-
-                              if (!(data10 && typeof data10 == "object" && !Array.isArray(data10))) {
-                                validate17.errors = [{
-                                  instancePath: instancePath + "/success/creditCards/" + i2,
-                                  schemaPath: "#/properties/success/properties/creditCards/items/type",
-                                  keyword: "type",
-                                  params: {
-                                    type: "object"
-                                  },
-                                  message: "must be object"
-                                }];
-                                return false;
-                              }
-
-                              var valid6 = _errs22 === errors;
-
-                              if (!valid6) {
-                                break;
-                              }
-                            }
-                          } else {
-                            validate17.errors = [{
-                              instancePath: instancePath + "/success/creditCards",
-                              schemaPath: "#/properties/success/properties/creditCards/type",
-                              keyword: "type",
-                              params: {
-                                type: "array"
-                              },
-                              message: "must be array"
-                            }];
-                            return false;
-                          }
-                        }
-
-                        var valid1 = _errs20 === errors;
-                      } else {
-                        var valid1 = true;
-                      }
-
-                      if (valid1) {
-                        if (data1.serializedInputContext !== undefined) {
-                          const _errs24 = errors;
-
-                          if (typeof data1.serializedInputContext !== "string") {
-                            validate17.errors = [{
-                              instancePath: instancePath + "/success/serializedInputContext",
-                              schemaPath: "#/properties/success/properties/serializedInputContext/type",
-                              keyword: "type",
-                              params: {
-                                type: "string"
-                              },
-                              message: "must be string"
-                            }];
-                            return false;
-                          }
-
-                          var valid1 = _errs24 === errors;
-                        } else {
-                          var valid1 = true;
-                        }
-                      }
-                    }
-                  }
-                }
-              } else {
-                validate17.errors = [{
-                  instancePath: instancePath + "/success",
-                  schemaPath: "#/properties/success/type",
-                  keyword: "type",
-                  params: {
-                    type: "object"
-                  },
-                  message: "must be object"
-                }];
-                return false;
-              }
-            }
-
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-
-          if (valid0) {
-            if (data.error !== undefined) {
-              let data12 = data.error;
-              const _errs26 = errors;
-              const _errs27 = errors;
-
-              if (errors === _errs27) {
-                if (data12 && typeof data12 == "object" && !Array.isArray(data12)) {
-                  let missing3;
-
-                  if (data12.error === undefined && (missing3 = "error")) {
-                    validate17.errors = [{
-                      instancePath: instancePath + "/error",
-                      schemaPath: "#/definitions/GenericError/required",
-                      keyword: "required",
-                      params: {
-                        missingProperty: missing3
-                      },
-                      message: "must have required property '" + missing3 + "'"
-                    }];
-                    return false;
-                  } else {
-                    if (data12.error !== undefined) {
-                      if (typeof data12.error !== "string") {
-                        validate17.errors = [{
-                          instancePath: instancePath + "/error/error",
-                          schemaPath: "#/definitions/GenericError/properties/error/type",
-                          keyword: "type",
-                          params: {
-                            type: "string"
-                          },
-                          message: "must be string"
-                        }];
-                        return false;
-                      }
-                    }
-                  }
-                } else {
-                  validate17.errors = [{
-                    instancePath: instancePath + "/error",
-                    schemaPath: "#/definitions/GenericError/type",
-                    keyword: "type",
-                    params: {
-                      type: "object"
-                    },
-                    message: "must be object"
-                  }];
-                  return false;
-                }
-              }
-
-              var valid0 = _errs26 === errors;
             } else {
               var valid0 = true;
             }
@@ -13634,35 +13856,48 @@ function validate17(data) {
   return errors === 0;
 }
 
-exports["#/definitions/GetAvailableInputTypesResponse"] = validate18;
+exports["#/definitions/GetAutofillInitDataResponse"] = validate18;
 const schema23 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "#/definitions/GetAvailableInputTypesResponse",
+  "$id": "#/definitions/GetAutofillInitDataResponse",
+  "title": "GetAutofillInitDataResponse",
   "type": "object",
-  "title": "GetAvailableInputTypesResponse Success Response",
   "properties": {
     "type": {
       "title": "This is the 'type' field on message that may be sent back to the window",
       "description": "Required on Android + Windows devices, optional on iOS",
       "type": "string",
-      "const": "getAvailableInputTypesResponse"
+      "const": "getAutofillInitDataResponse"
     },
     "success": {
+      "title": "GetAutofillInitDataResponse Success Response",
+      "$id": "#/definitions/AutofillInitData",
       "type": "object",
       "properties": {
         "credentials": {
-          "type": "boolean"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Credentials"
+          }
         },
         "identities": {
-          "type": "boolean"
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
         },
         "creditCards": {
-          "type": "boolean"
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
         },
-        "email": {
-          "type": "boolean"
+        "serializedInputContext": {
+          "description": "A clone of the `serializedInputContext` that was sent in the request",
+          "type": "string"
         }
-      }
+      },
+      "required": ["serializedInputContext", "credentials", "creditCards", "identities"]
     },
     "error": {
       "$ref": "#/definitions/GenericError"
@@ -13679,7 +13914,7 @@ function validate18(data) {
     rootData = data
   } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  /*# sourceURL="#/definitions/GetAvailableInputTypesResponse" */
+  /*# sourceURL="#/definitions/GetAutofillInitDataResponse" */
   ;
   let vErrors = null;
   let errors = 0;
@@ -13717,8 +13952,495 @@ function validate18(data) {
             return false;
           }
 
-          if ("getAvailableInputTypesResponse" !== data0) {
+          if ("getAutofillInitDataResponse" !== data0) {
             validate18.errors = [{
+              instancePath: instancePath + "/type",
+              schemaPath: "#/properties/type/const",
+              keyword: "const",
+              params: {
+                allowedValue: "getAutofillInitDataResponse"
+              },
+              message: "must be equal to constant"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.success !== undefined) {
+            let data1 = data.success;
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
+                let missing1;
+
+                if (data1.serializedInputContext === undefined && (missing1 = "serializedInputContext") || data1.credentials === undefined && (missing1 = "credentials") || data1.creditCards === undefined && (missing1 = "creditCards") || data1.identities === undefined && (missing1 = "identities")) {
+                  validate18.errors = [{
+                    instancePath: instancePath + "/success",
+                    schemaPath: "#/properties/success/required",
+                    keyword: "required",
+                    params: {
+                      missingProperty: missing1
+                    },
+                    message: "must have required property '" + missing1 + "'"
+                  }];
+                  return false;
+                } else {
+                  if (data1.credentials !== undefined) {
+                    let data2 = data1.credentials;
+                    const _errs5 = errors;
+
+                    if (errors === _errs5) {
+                      if (Array.isArray(data2)) {
+                        var valid2 = true;
+                        const len0 = data2.length;
+
+                        for (let i0 = 0; i0 < len0; i0++) {
+                          let data3 = data2[i0];
+                          const _errs7 = errors;
+                          const _errs8 = errors;
+
+                          if (errors === _errs8) {
+                            if (data3 && typeof data3 == "object" && !Array.isArray(data3)) {
+                              let missing2;
+
+                              if (data3.username === undefined && (missing2 = "username")) {
+                                validate18.errors = [{
+                                  instancePath: instancePath + "/success/credentials/" + i0,
+                                  schemaPath: "#/definitions/Credentials/required",
+                                  keyword: "required",
+                                  params: {
+                                    missingProperty: missing2
+                                  },
+                                  message: "must have required property '" + missing2 + "'"
+                                }];
+                                return false;
+                              } else {
+                                if (data3.id !== undefined) {
+                                  const _errs10 = errors;
+
+                                  if (typeof data3.id !== "string") {
+                                    validate18.errors = [{
+                                      instancePath: instancePath + "/success/credentials/" + i0 + "/id",
+                                      schemaPath: "#/definitions/Credentials/properties/id/type",
+                                      keyword: "type",
+                                      params: {
+                                        type: "string"
+                                      },
+                                      message: "must be string"
+                                    }];
+                                    return false;
+                                  }
+
+                                  var valid4 = _errs10 === errors;
+                                } else {
+                                  var valid4 = true;
+                                }
+
+                                if (valid4) {
+                                  if (data3.username !== undefined) {
+                                    const _errs12 = errors;
+
+                                    if (typeof data3.username !== "string") {
+                                      validate18.errors = [{
+                                        instancePath: instancePath + "/success/credentials/" + i0 + "/username",
+                                        schemaPath: "#/definitions/Credentials/properties/username/type",
+                                        keyword: "type",
+                                        params: {
+                                          type: "string"
+                                        },
+                                        message: "must be string"
+                                      }];
+                                      return false;
+                                    }
+
+                                    var valid4 = _errs12 === errors;
+                                  } else {
+                                    var valid4 = true;
+                                  }
+
+                                  if (valid4) {
+                                    if (data3.password !== undefined) {
+                                      const _errs14 = errors;
+
+                                      if (typeof data3.password !== "string") {
+                                        validate18.errors = [{
+                                          instancePath: instancePath + "/success/credentials/" + i0 + "/password",
+                                          schemaPath: "#/definitions/Credentials/properties/password/type",
+                                          keyword: "type",
+                                          params: {
+                                            type: "string"
+                                          },
+                                          message: "must be string"
+                                        }];
+                                        return false;
+                                      }
+
+                                      var valid4 = _errs14 === errors;
+                                    } else {
+                                      var valid4 = true;
+                                    }
+                                  }
+                                }
+                              }
+                            } else {
+                              validate18.errors = [{
+                                instancePath: instancePath + "/success/credentials/" + i0,
+                                schemaPath: "#/definitions/Credentials/type",
+                                keyword: "type",
+                                params: {
+                                  type: "object"
+                                },
+                                message: "must be object"
+                              }];
+                              return false;
+                            }
+                          }
+
+                          var valid2 = _errs7 === errors;
+
+                          if (!valid2) {
+                            break;
+                          }
+                        }
+                      } else {
+                        validate18.errors = [{
+                          instancePath: instancePath + "/success/credentials",
+                          schemaPath: "#/properties/success/properties/credentials/type",
+                          keyword: "type",
+                          params: {
+                            type: "array"
+                          },
+                          message: "must be array"
+                        }];
+                        return false;
+                      }
+                    }
+
+                    var valid1 = _errs5 === errors;
+                  } else {
+                    var valid1 = true;
+                  }
+
+                  if (valid1) {
+                    if (data1.identities !== undefined) {
+                      let data7 = data1.identities;
+                      const _errs16 = errors;
+
+                      if (errors === _errs16) {
+                        if (Array.isArray(data7)) {
+                          var valid5 = true;
+                          const len1 = data7.length;
+
+                          for (let i1 = 0; i1 < len1; i1++) {
+                            let data8 = data7[i1];
+                            const _errs18 = errors;
+
+                            if (!(data8 && typeof data8 == "object" && !Array.isArray(data8))) {
+                              validate18.errors = [{
+                                instancePath: instancePath + "/success/identities/" + i1,
+                                schemaPath: "#/properties/success/properties/identities/items/type",
+                                keyword: "type",
+                                params: {
+                                  type: "object"
+                                },
+                                message: "must be object"
+                              }];
+                              return false;
+                            }
+
+                            var valid5 = _errs18 === errors;
+
+                            if (!valid5) {
+                              break;
+                            }
+                          }
+                        } else {
+                          validate18.errors = [{
+                            instancePath: instancePath + "/success/identities",
+                            schemaPath: "#/properties/success/properties/identities/type",
+                            keyword: "type",
+                            params: {
+                              type: "array"
+                            },
+                            message: "must be array"
+                          }];
+                          return false;
+                        }
+                      }
+
+                      var valid1 = _errs16 === errors;
+                    } else {
+                      var valid1 = true;
+                    }
+
+                    if (valid1) {
+                      if (data1.creditCards !== undefined) {
+                        let data9 = data1.creditCards;
+                        const _errs20 = errors;
+
+                        if (errors === _errs20) {
+                          if (Array.isArray(data9)) {
+                            var valid6 = true;
+                            const len2 = data9.length;
+
+                            for (let i2 = 0; i2 < len2; i2++) {
+                              let data10 = data9[i2];
+                              const _errs22 = errors;
+
+                              if (!(data10 && typeof data10 == "object" && !Array.isArray(data10))) {
+                                validate18.errors = [{
+                                  instancePath: instancePath + "/success/creditCards/" + i2,
+                                  schemaPath: "#/properties/success/properties/creditCards/items/type",
+                                  keyword: "type",
+                                  params: {
+                                    type: "object"
+                                  },
+                                  message: "must be object"
+                                }];
+                                return false;
+                              }
+
+                              var valid6 = _errs22 === errors;
+
+                              if (!valid6) {
+                                break;
+                              }
+                            }
+                          } else {
+                            validate18.errors = [{
+                              instancePath: instancePath + "/success/creditCards",
+                              schemaPath: "#/properties/success/properties/creditCards/type",
+                              keyword: "type",
+                              params: {
+                                type: "array"
+                              },
+                              message: "must be array"
+                            }];
+                            return false;
+                          }
+                        }
+
+                        var valid1 = _errs20 === errors;
+                      } else {
+                        var valid1 = true;
+                      }
+
+                      if (valid1) {
+                        if (data1.serializedInputContext !== undefined) {
+                          const _errs24 = errors;
+
+                          if (typeof data1.serializedInputContext !== "string") {
+                            validate18.errors = [{
+                              instancePath: instancePath + "/success/serializedInputContext",
+                              schemaPath: "#/properties/success/properties/serializedInputContext/type",
+                              keyword: "type",
+                              params: {
+                                type: "string"
+                              },
+                              message: "must be string"
+                            }];
+                            return false;
+                          }
+
+                          var valid1 = _errs24 === errors;
+                        } else {
+                          var valid1 = true;
+                        }
+                      }
+                    }
+                  }
+                }
+              } else {
+                validate18.errors = [{
+                  instancePath: instancePath + "/success",
+                  schemaPath: "#/properties/success/type",
+                  keyword: "type",
+                  params: {
+                    type: "object"
+                  },
+                  message: "must be object"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.error !== undefined) {
+              let data12 = data.error;
+              const _errs26 = errors;
+              const _errs27 = errors;
+
+              if (errors === _errs27) {
+                if (data12 && typeof data12 == "object" && !Array.isArray(data12)) {
+                  let missing3;
+
+                  if (data12.message === undefined && (missing3 = "message")) {
+                    validate18.errors = [{
+                      instancePath: instancePath + "/error",
+                      schemaPath: "#/definitions/GenericError/required",
+                      keyword: "required",
+                      params: {
+                        missingProperty: missing3
+                      },
+                      message: "must have required property '" + missing3 + "'"
+                    }];
+                    return false;
+                  } else {
+                    if (data12.message !== undefined) {
+                      if (typeof data12.message !== "string") {
+                        validate18.errors = [{
+                          instancePath: instancePath + "/error/message",
+                          schemaPath: "#/definitions/GenericError/properties/message/type",
+                          keyword: "type",
+                          params: {
+                            type: "string"
+                          },
+                          message: "must be string"
+                        }];
+                        return false;
+                      }
+                    }
+                  }
+                } else {
+                  validate18.errors = [{
+                    instancePath: instancePath + "/error",
+                    schemaPath: "#/definitions/GenericError/type",
+                    keyword: "type",
+                    params: {
+                      type: "object"
+                    },
+                    message: "must be object"
+                  }];
+                  return false;
+                }
+              }
+
+              var valid0 = _errs26 === errors;
+            } else {
+              var valid0 = true;
+            }
+          }
+        }
+      }
+    } else {
+      validate18.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate18.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/GetAvailableInputTypesResponse"] = validate19;
+const schema26 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAvailableInputTypesResponse",
+  "type": "object",
+  "title": "GetAvailableInputTypesResponse Success Response",
+  "properties": {
+    "type": {
+      "title": "This is the 'type' field on message that may be sent back to the window",
+      "description": "Required on Android + Windows devices, optional on iOS",
+      "type": "string",
+      "const": "getAvailableInputTypesResponse"
+    },
+    "success": {
+      "type": "object",
+      "$id": "#/definitions/AvailableInputTypes",
+      "properties": {
+        "credentials": {
+          "description": "true if *any* credentials are available",
+          "type": "boolean"
+        },
+        "identities": {
+          "description": "true if *any* identities are available",
+          "type": "boolean"
+        },
+        "creditCards": {
+          "description": "true if *any* credit cards are available",
+          "type": "boolean"
+        },
+        "email": {
+          "description": "true if signed in for Email Protection",
+          "type": "boolean"
+        }
+      }
+    },
+    "error": {
+      "$ref": "#/definitions/GenericError"
+    }
+  },
+  "required": ["success"]
+};
+
+function validate19(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetAvailableInputTypesResponse" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.success === undefined && (missing0 = "success")) {
+        validate19.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.type !== undefined) {
+          let data0 = data.type;
+          const _errs1 = errors;
+
+          if (typeof data0 !== "string") {
+            validate19.errors = [{
+              instancePath: instancePath + "/type",
+              schemaPath: "#/properties/type/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            }];
+            return false;
+          }
+
+          if ("getAvailableInputTypesResponse" !== data0) {
+            validate19.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/const",
               keyword: "const",
@@ -13746,7 +14468,7 @@ function validate18(data) {
                   const _errs5 = errors;
 
                   if (typeof data1.credentials !== "boolean") {
-                    validate18.errors = [{
+                    validate19.errors = [{
                       instancePath: instancePath + "/success/credentials",
                       schemaPath: "#/properties/success/properties/credentials/type",
                       keyword: "type",
@@ -13768,7 +14490,7 @@ function validate18(data) {
                     const _errs7 = errors;
 
                     if (typeof data1.identities !== "boolean") {
-                      validate18.errors = [{
+                      validate19.errors = [{
                         instancePath: instancePath + "/success/identities",
                         schemaPath: "#/properties/success/properties/identities/type",
                         keyword: "type",
@@ -13790,7 +14512,7 @@ function validate18(data) {
                       const _errs9 = errors;
 
                       if (typeof data1.creditCards !== "boolean") {
-                        validate18.errors = [{
+                        validate19.errors = [{
                           instancePath: instancePath + "/success/creditCards",
                           schemaPath: "#/properties/success/properties/creditCards/type",
                           keyword: "type",
@@ -13812,7 +14534,7 @@ function validate18(data) {
                         const _errs11 = errors;
 
                         if (typeof data1.email !== "boolean") {
-                          validate18.errors = [{
+                          validate19.errors = [{
                             instancePath: instancePath + "/success/email",
                             schemaPath: "#/properties/success/properties/email/type",
                             keyword: "type",
@@ -13832,7 +14554,7 @@ function validate18(data) {
                   }
                 }
               } else {
-                validate18.errors = [{
+                validate19.errors = [{
                   instancePath: instancePath + "/success",
                   schemaPath: "#/properties/success/type",
                   keyword: "type",
@@ -13860,8 +14582,8 @@ function validate18(data) {
                 if (data6 && typeof data6 == "object" && !Array.isArray(data6)) {
                   let missing1;
 
-                  if (data6.error === undefined && (missing1 = "error")) {
-                    validate18.errors = [{
+                  if (data6.message === undefined && (missing1 = "message")) {
+                    validate19.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
@@ -13872,11 +14594,11 @@ function validate18(data) {
                     }];
                     return false;
                   } else {
-                    if (data6.error !== undefined) {
-                      if (typeof data6.error !== "string") {
-                        validate18.errors = [{
-                          instancePath: instancePath + "/error/error",
-                          schemaPath: "#/definitions/GenericError/properties/error/type",
+                    if (data6.message !== undefined) {
+                      if (typeof data6.message !== "string") {
+                        validate19.errors = [{
+                          instancePath: instancePath + "/error/message",
+                          schemaPath: "#/definitions/GenericError/properties/message/type",
                           keyword: "type",
                           params: {
                             type: "string"
@@ -13888,7 +14610,7 @@ function validate18(data) {
                     }
                   }
                 } else {
-                  validate18.errors = [{
+                  validate19.errors = [{
                     instancePath: instancePath + "/error",
                     schemaPath: "#/definitions/GenericError/type",
                     keyword: "type",
@@ -13909,7 +14631,7 @@ function validate18(data) {
         }
       }
     } else {
-      validate18.errors = [{
+      validate19.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -13922,16 +14644,17 @@ function validate18(data) {
     }
   }
 
-  validate18.errors = vErrors;
+  validate19.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/GetRuntimeConfigurationResponse"] = validate19;
-const schema25 = {
+exports["#/definitions/GetRuntimeConfigurationResponse"] = validate20;
+const schema28 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
   "type": "object",
   "title": "GetRuntimeConfigurationResponse Success Response",
+  "description": "Data that can be understood by @duckduckgo/content-scope-scripts",
   "properties": {
     "type": {
       "title": "This is the 'type' field on message that may be sent back to the window",
@@ -13949,7 +14672,7 @@ const schema25 = {
   },
   "required": ["success"]
 };
-const schema26 = {
+const schema29 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/RuntimeConfiguration",
   "type": "object",
@@ -14061,7 +14784,7 @@ const schema26 = {
     }
   }
 };
-const schema27 = {
+const schema30 = {
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -14076,14 +14799,14 @@ const schema27 = {
   "required": ["features", "unprotectedTemporary"],
   "title": "ContentScope"
 };
-const schema28 = {
+const schema31 = {
   "type": "object",
   "additionalProperties": {
     "$ref": "#/definitions/ContentScopeFeatureItem"
   },
   "title": "ContentScopeFeatures"
 };
-const schema29 = {
+const schema32 = {
   "type": "object",
   "properties": {
     "exceptions": {
@@ -14101,7 +14824,7 @@ const schema29 = {
   "title": "ContentScopeFeatureItem"
 };
 
-function validate22(data) {
+function validate23(data) {
   let {
     instancePath = "",
     parentData,
@@ -14123,7 +14846,7 @@ function validate22(data) {
             let missing0;
 
             if (data0.exceptions === undefined && (missing0 = "exceptions") || data0.state === undefined && (missing0 = "state")) {
-              validate22.errors = [{
+              validate23.errors = [{
                 instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
                 schemaPath: "#/definitions/ContentScopeFeatureItem/required",
                 keyword: "required",
@@ -14139,7 +14862,7 @@ function validate22(data) {
 
                 if (errors === _errs5) {
                   if (!Array.isArray(data0.exceptions)) {
-                    validate22.errors = [{
+                    validate23.errors = [{
                       instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/exceptions",
                       schemaPath: "#/definitions/ContentScopeFeatureItem/properties/exceptions/type",
                       keyword: "type",
@@ -14162,7 +14885,7 @@ function validate22(data) {
                   const _errs7 = errors;
 
                   if (typeof data0.state !== "string") {
-                    validate22.errors = [{
+                    validate23.errors = [{
                       instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/state",
                       schemaPath: "#/definitions/ContentScopeFeatureItem/properties/state/type",
                       keyword: "type",
@@ -14185,7 +14908,7 @@ function validate22(data) {
                     const _errs9 = errors;
 
                     if (!(data3 && typeof data3 == "object" && !Array.isArray(data3))) {
-                      validate22.errors = [{
+                      validate23.errors = [{
                         instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/settings",
                         schemaPath: "#/definitions/ContentScopeFeatureItem/properties/settings/type",
                         keyword: "type",
@@ -14205,7 +14928,7 @@ function validate22(data) {
               }
             }
           } else {
-            validate22.errors = [{
+            validate23.errors = [{
               instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
               schemaPath: "#/definitions/ContentScopeFeatureItem/type",
               keyword: "type",
@@ -14222,6 +14945,93 @@ function validate22(data) {
 
         if (!valid0) {
           break;
+        }
+      }
+    } else {
+      validate23.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate23.errors = vErrors;
+  return errors === 0;
+}
+
+function validate22(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
+        validate22.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.features !== undefined) {
+          const _errs2 = errors;
+
+          if (!validate23(data.features, {
+            instancePath: instancePath + "/features",
+            parentData: data,
+            parentDataProperty: "features",
+            rootData
+          })) {
+            vErrors = vErrors === null ? validate23.errors : vErrors.concat(validate23.errors);
+            errors = vErrors.length;
+          }
+
+          var valid0 = _errs2 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.unprotectedTemporary !== undefined) {
+            const _errs3 = errors;
+
+            if (errors === _errs3) {
+              if (!Array.isArray(data.unprotectedTemporary)) {
+                validate22.errors = [{
+                  instancePath: instancePath + "/unprotectedTemporary",
+                  schemaPath: "#/properties/unprotectedTemporary/type",
+                  keyword: "type",
+                  params: {
+                    type: "array"
+                  },
+                  message: "must be array"
+                }];
+                return false;
+              }
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
         }
       }
     } else {
@@ -14242,94 +15052,7 @@ function validate22(data) {
   return errors === 0;
 }
 
-function validate21(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
-        validate21.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        if (data.features !== undefined) {
-          const _errs2 = errors;
-
-          if (!validate22(data.features, {
-            instancePath: instancePath + "/features",
-            parentData: data,
-            parentDataProperty: "features",
-            rootData
-          })) {
-            vErrors = vErrors === null ? validate22.errors : vErrors.concat(validate22.errors);
-            errors = vErrors.length;
-          }
-
-          var valid0 = _errs2 === errors;
-        } else {
-          var valid0 = true;
-        }
-
-        if (valid0) {
-          if (data.unprotectedTemporary !== undefined) {
-            const _errs3 = errors;
-
-            if (errors === _errs3) {
-              if (!Array.isArray(data.unprotectedTemporary)) {
-                validate21.errors = [{
-                  instancePath: instancePath + "/unprotectedTemporary",
-                  schemaPath: "#/properties/unprotectedTemporary/type",
-                  keyword: "type",
-                  params: {
-                    type: "array"
-                  },
-                  message: "must be array"
-                }];
-                return false;
-              }
-            }
-
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-        }
-      }
-    } else {
-      validate21.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate21.errors = vErrors;
-  return errors === 0;
-}
-
-const schema30 = {
+const schema33 = {
   "type": "object",
   "properties": {
     "debug": {
@@ -14345,7 +15068,7 @@ const schema30 = {
   "required": ["debug", "features", "platform"],
   "title": "UserPreferences"
 };
-const schema31 = {
+const schema34 = {
   "type": "object",
   "properties": {
     "name": {
@@ -14356,14 +15079,14 @@ const schema31 = {
   "required": ["name"],
   "title": "Platform"
 };
-const schema32 = {
+const schema35 = {
   "type": "object",
   "additionalProperties": {
     "$ref": "#/definitions/UserPreferencesFeatureItem"
   },
   "title": "UserPreferencesFeatures"
 };
-const schema33 = {
+const schema36 = {
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -14374,13 +15097,13 @@ const schema33 = {
   "required": ["settings"],
   "title": "UserPreferencesFeatureItem"
 };
-const schema34 = {
+const schema37 = {
   "type": "object",
   "additionalProperties": true,
   "title": "Settings"
 };
 
-function validate27(data) {
+function validate28(data) {
   let {
     instancePath = "",
     parentData,
@@ -14395,7 +15118,7 @@ function validate27(data) {
       let missing0;
 
       if (data.settings === undefined && (missing0 = "settings")) {
-        validate27.errors = [{
+        validate28.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -14410,7 +15133,7 @@ function validate27(data) {
 
         for (const key0 in data) {
           if (!(key0 === "settings")) {
-            validate27.errors = [{
+            validate28.errors = [{
               instancePath,
               schemaPath: "#/additionalProperties",
               keyword: "additionalProperties",
@@ -14431,7 +15154,7 @@ function validate27(data) {
 
             if (errors === _errs3) {
               if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {} else {
-                validate27.errors = [{
+                validate28.errors = [{
                   instancePath: instancePath + "/settings",
                   schemaPath: "#/definitions/Settings/type",
                   keyword: "type",
@@ -14444,6 +15167,55 @@ function validate27(data) {
               }
             }
           }
+        }
+      }
+    } else {
+      validate28.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate28.errors = vErrors;
+  return errors === 0;
+}
+
+function validate27(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      for (const key0 in data) {
+        const _errs2 = errors;
+
+        if (!validate28(data[key0], {
+          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
+          parentData: data,
+          parentDataProperty: key0,
+          rootData
+        })) {
+          vErrors = vErrors === null ? validate28.errors : vErrors.concat(validate28.errors);
+          errors = vErrors.length;
+        }
+
+        var valid0 = _errs2 === errors;
+
+        if (!valid0) {
+          break;
         }
       }
     } else {
@@ -14476,59 +15248,10 @@ function validate26(data) {
 
   if (errors === 0) {
     if (data && typeof data == "object" && !Array.isArray(data)) {
-      for (const key0 in data) {
-        const _errs2 = errors;
-
-        if (!validate27(data[key0], {
-          instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
-          parentData: data,
-          parentDataProperty: key0,
-          rootData
-        })) {
-          vErrors = vErrors === null ? validate27.errors : vErrors.concat(validate27.errors);
-          errors = vErrors.length;
-        }
-
-        var valid0 = _errs2 === errors;
-
-        if (!valid0) {
-          break;
-        }
-      }
-    } else {
-      validate26.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate26.errors = vErrors;
-  return errors === 0;
-}
-
-function validate25(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
       let missing0;
 
       if (data.debug === undefined && (missing0 = "debug") || data.features === undefined && (missing0 = "features") || data.platform === undefined && (missing0 = "platform")) {
-        validate25.errors = [{
+        validate26.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -14543,7 +15266,7 @@ function validate25(data) {
           const _errs1 = errors;
 
           if (typeof data.debug !== "boolean") {
-            validate25.errors = [{
+            validate26.errors = [{
               instancePath: instancePath + "/debug",
               schemaPath: "#/properties/debug/type",
               keyword: "type",
@@ -14571,7 +15294,7 @@ function validate25(data) {
                 let missing1;
 
                 if (data1.name === undefined && (missing1 = "name")) {
-                  validate25.errors = [{
+                  validate26.errors = [{
                     instancePath: instancePath + "/platform",
                     schemaPath: "#/definitions/Platform/required",
                     keyword: "required",
@@ -14586,7 +15309,7 @@ function validate25(data) {
                     let data2 = data1.name;
 
                     if (typeof data2 !== "string") {
-                      validate25.errors = [{
+                      validate26.errors = [{
                         instancePath: instancePath + "/platform/name",
                         schemaPath: "#/definitions/Platform/properties/name/type",
                         keyword: "type",
@@ -14599,12 +15322,12 @@ function validate25(data) {
                     }
 
                     if (!(data2 === "ios" || data2 === "macos" || data2 === "windows" || data2 === "extension" || data2 === "android" || data2 === "unknown")) {
-                      validate25.errors = [{
+                      validate26.errors = [{
                         instancePath: instancePath + "/platform/name",
                         schemaPath: "#/definitions/Platform/properties/name/enum",
                         keyword: "enum",
                         params: {
-                          allowedValues: schema31.properties.name.enum
+                          allowedValues: schema34.properties.name.enum
                         },
                         message: "must be equal to one of the allowed values"
                       }];
@@ -14613,7 +15336,7 @@ function validate25(data) {
                   }
                 }
               } else {
-                validate25.errors = [{
+                validate26.errors = [{
                   instancePath: instancePath + "/platform",
                   schemaPath: "#/definitions/Platform/type",
                   keyword: "type",
@@ -14635,13 +15358,13 @@ function validate25(data) {
             if (data.features !== undefined) {
               const _errs8 = errors;
 
-              if (!validate26(data.features, {
+              if (!validate27(data.features, {
                 instancePath: instancePath + "/features",
                 parentData: data,
                 parentDataProperty: "features",
                 rootData
               })) {
-                vErrors = vErrors === null ? validate26.errors : vErrors.concat(validate26.errors);
+                vErrors = vErrors === null ? validate27.errors : vErrors.concat(validate27.errors);
                 errors = vErrors.length;
               }
 
@@ -14653,7 +15376,7 @@ function validate25(data) {
         }
       }
     } else {
-      validate25.errors = [{
+      validate26.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -14666,11 +15389,11 @@ function validate25(data) {
     }
   }
 
-  validate25.errors = vErrors;
+  validate26.errors = vErrors;
   return errors === 0;
 }
 
-function validate20(data) {
+function validate21(data) {
   let {
     instancePath = "",
     parentData,
@@ -14688,7 +15411,7 @@ function validate20(data) {
       let missing0;
 
       if (data.contentScope === undefined && (missing0 = "contentScope") || data.userPreferences === undefined && (missing0 = "userPreferences") || data.userUnprotectedDomains === undefined && (missing0 = "userUnprotectedDomains")) {
-        validate20.errors = [{
+        validate21.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -14703,7 +15426,7 @@ function validate20(data) {
 
         for (const key0 in data) {
           if (!(key0 === "contentScope" || key0 === "userUnprotectedDomains" || key0 === "userPreferences")) {
-            validate20.errors = [{
+            validate21.errors = [{
               instancePath,
               schemaPath: "#/additionalProperties",
               keyword: "additionalProperties",
@@ -14721,13 +15444,13 @@ function validate20(data) {
           if (data.contentScope !== undefined) {
             const _errs2 = errors;
 
-            if (!validate21(data.contentScope, {
+            if (!validate22(data.contentScope, {
               instancePath: instancePath + "/contentScope",
               parentData: data,
               parentDataProperty: "contentScope",
               rootData
             })) {
-              vErrors = vErrors === null ? validate21.errors : vErrors.concat(validate21.errors);
+              vErrors = vErrors === null ? validate22.errors : vErrors.concat(validate22.errors);
               errors = vErrors.length;
             }
 
@@ -14742,7 +15465,7 @@ function validate20(data) {
 
               if (errors === _errs3) {
                 if (!Array.isArray(data.userUnprotectedDomains)) {
-                  validate20.errors = [{
+                  validate21.errors = [{
                     instancePath: instancePath + "/userUnprotectedDomains",
                     schemaPath: "#/properties/userUnprotectedDomains/type",
                     keyword: "type",
@@ -14764,13 +15487,13 @@ function validate20(data) {
               if (data.userPreferences !== undefined) {
                 const _errs5 = errors;
 
-                if (!validate25(data.userPreferences, {
+                if (!validate26(data.userPreferences, {
                   instancePath: instancePath + "/userPreferences",
                   parentData: data,
                   parentDataProperty: "userPreferences",
                   rootData
                 })) {
-                  vErrors = vErrors === null ? validate25.errors : vErrors.concat(validate25.errors);
+                  vErrors = vErrors === null ? validate26.errors : vErrors.concat(validate26.errors);
                   errors = vErrors.length;
                 }
 
@@ -14778,6 +15501,165 @@ function validate20(data) {
               } else {
                 var valid0 = true;
               }
+            }
+          }
+        }
+      }
+    } else {
+      validate21.errors = [{
+        instancePath,
+        schemaPath: "#/type",
+        keyword: "type",
+        params: {
+          type: "object"
+        },
+        message: "must be object"
+      }];
+      return false;
+    }
+  }
+
+  validate21.errors = vErrors;
+  return errors === 0;
+}
+
+function validate20(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetRuntimeConfigurationResponse" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (errors === 0) {
+    if (data && typeof data == "object" && !Array.isArray(data)) {
+      let missing0;
+
+      if (data.success === undefined && (missing0 = "success")) {
+        validate20.errors = [{
+          instancePath,
+          schemaPath: "#/required",
+          keyword: "required",
+          params: {
+            missingProperty: missing0
+          },
+          message: "must have required property '" + missing0 + "'"
+        }];
+        return false;
+      } else {
+        if (data.type !== undefined) {
+          let data0 = data.type;
+          const _errs1 = errors;
+
+          if (typeof data0 !== "string") {
+            validate20.errors = [{
+              instancePath: instancePath + "/type",
+              schemaPath: "#/properties/type/type",
+              keyword: "type",
+              params: {
+                type: "string"
+              },
+              message: "must be string"
+            }];
+            return false;
+          }
+
+          if ("getRuntimeConfigurationResponse" !== data0) {
+            validate20.errors = [{
+              instancePath: instancePath + "/type",
+              schemaPath: "#/properties/type/const",
+              keyword: "const",
+              params: {
+                allowedValue: "getRuntimeConfigurationResponse"
+              },
+              message: "must be equal to constant"
+            }];
+            return false;
+          }
+
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+
+        if (valid0) {
+          if (data.success !== undefined) {
+            const _errs3 = errors;
+
+            if (!validate21(data.success, {
+              instancePath: instancePath + "/success",
+              parentData: data,
+              parentDataProperty: "success",
+              rootData
+            })) {
+              vErrors = vErrors === null ? validate21.errors : vErrors.concat(validate21.errors);
+              errors = vErrors.length;
+            }
+
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+
+          if (valid0) {
+            if (data.error !== undefined) {
+              let data2 = data.error;
+              const _errs4 = errors;
+              const _errs5 = errors;
+
+              if (errors === _errs5) {
+                if (data2 && typeof data2 == "object" && !Array.isArray(data2)) {
+                  let missing1;
+
+                  if (data2.message === undefined && (missing1 = "message")) {
+                    validate20.errors = [{
+                      instancePath: instancePath + "/error",
+                      schemaPath: "#/definitions/GenericError/required",
+                      keyword: "required",
+                      params: {
+                        missingProperty: missing1
+                      },
+                      message: "must have required property '" + missing1 + "'"
+                    }];
+                    return false;
+                  } else {
+                    if (data2.message !== undefined) {
+                      if (typeof data2.message !== "string") {
+                        validate20.errors = [{
+                          instancePath: instancePath + "/error/message",
+                          schemaPath: "#/definitions/GenericError/properties/message/type",
+                          keyword: "type",
+                          params: {
+                            type: "string"
+                          },
+                          message: "must be string"
+                        }];
+                        return false;
+                      }
+                    }
+                  }
+                } else {
+                  validate20.errors = [{
+                    instancePath: instancePath + "/error",
+                    schemaPath: "#/definitions/GenericError/type",
+                    keyword: "type",
+                    params: {
+                      type: "object"
+                    },
+                    message: "must be object"
+                  }];
+                  return false;
+                }
+              }
+
+              var valid0 = _errs4 === errors;
+            } else {
+              var valid0 = true;
             }
           }
         }
@@ -14800,175 +15682,18 @@ function validate20(data) {
   return errors === 0;
 }
 
-function validate19(data) {
-  let {
-    instancePath = "",
-    parentData,
-    parentDataProperty,
-    rootData = data
-  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  /*# sourceURL="#/definitions/GetRuntimeConfigurationResponse" */
-  ;
-  let vErrors = null;
-  let errors = 0;
-
-  if (errors === 0) {
-    if (data && typeof data == "object" && !Array.isArray(data)) {
-      let missing0;
-
-      if (data.success === undefined && (missing0 = "success")) {
-        validate19.errors = [{
-          instancePath,
-          schemaPath: "#/required",
-          keyword: "required",
-          params: {
-            missingProperty: missing0
-          },
-          message: "must have required property '" + missing0 + "'"
-        }];
-        return false;
-      } else {
-        if (data.type !== undefined) {
-          let data0 = data.type;
-          const _errs1 = errors;
-
-          if (typeof data0 !== "string") {
-            validate19.errors = [{
-              instancePath: instancePath + "/type",
-              schemaPath: "#/properties/type/type",
-              keyword: "type",
-              params: {
-                type: "string"
-              },
-              message: "must be string"
-            }];
-            return false;
-          }
-
-          if ("getRuntimeConfigurationResponse" !== data0) {
-            validate19.errors = [{
-              instancePath: instancePath + "/type",
-              schemaPath: "#/properties/type/const",
-              keyword: "const",
-              params: {
-                allowedValue: "getRuntimeConfigurationResponse"
-              },
-              message: "must be equal to constant"
-            }];
-            return false;
-          }
-
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-
-        if (valid0) {
-          if (data.success !== undefined) {
-            const _errs3 = errors;
-
-            if (!validate20(data.success, {
-              instancePath: instancePath + "/success",
-              parentData: data,
-              parentDataProperty: "success",
-              rootData
-            })) {
-              vErrors = vErrors === null ? validate20.errors : vErrors.concat(validate20.errors);
-              errors = vErrors.length;
-            }
-
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-
-          if (valid0) {
-            if (data.error !== undefined) {
-              let data2 = data.error;
-              const _errs4 = errors;
-              const _errs5 = errors;
-
-              if (errors === _errs5) {
-                if (data2 && typeof data2 == "object" && !Array.isArray(data2)) {
-                  let missing1;
-
-                  if (data2.error === undefined && (missing1 = "error")) {
-                    validate19.errors = [{
-                      instancePath: instancePath + "/error",
-                      schemaPath: "#/definitions/GenericError/required",
-                      keyword: "required",
-                      params: {
-                        missingProperty: missing1
-                      },
-                      message: "must have required property '" + missing1 + "'"
-                    }];
-                    return false;
-                  } else {
-                    if (data2.error !== undefined) {
-                      if (typeof data2.error !== "string") {
-                        validate19.errors = [{
-                          instancePath: instancePath + "/error/error",
-                          schemaPath: "#/definitions/GenericError/properties/error/type",
-                          keyword: "type",
-                          params: {
-                            type: "string"
-                          },
-                          message: "must be string"
-                        }];
-                        return false;
-                      }
-                    }
-                  }
-                } else {
-                  validate19.errors = [{
-                    instancePath: instancePath + "/error",
-                    schemaPath: "#/definitions/GenericError/type",
-                    keyword: "type",
-                    params: {
-                      type: "object"
-                    },
-                    message: "must be object"
-                  }];
-                  return false;
-                }
-              }
-
-              var valid0 = _errs4 === errors;
-            } else {
-              var valid0 = true;
-            }
-          }
-        }
-      }
-    } else {
-      validate19.errors = [{
-        instancePath,
-        schemaPath: "#/type",
-        keyword: "type",
-        params: {
-          type: "object"
-        },
-        message: "must be object"
-      }];
-      return false;
-    }
-  }
-
-  validate19.errors = vErrors;
-  return errors === 0;
-}
-
-exports["#/definitions/RuntimeConfiguration"] = validate20;
-exports["#/definitions/AutofillSettings"] = validate32;
-const schema36 = {
+exports["#/definitions/RuntimeConfiguration"] = validate21;
+exports["#/definitions/AutofillSettings"] = validate33;
+const schema39 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/AutofillSettings",
   "title": "AutofillSettings",
   "type": "object",
   "properties": {
     "featureToggles": {
+      "title": "FeatureToggles",
       "$id": "#/definitions/FeatureToggles",
+      "description": "These are toggles used throughout the application to enable/disable features fully",
       "type": "object",
       "properties": {
         "inputType_credentials": {
@@ -14990,14 +15715,13 @@ const schema36 = {
           "type": "boolean"
         }
       },
-      "required": ["inputType_credentials", "inputType_identities", "inputType_creditCards", "emailProtection", "password_generation", "credentials_saving"],
-      "title": "FeatureToggles"
+      "required": ["inputType_credentials", "inputType_identities", "inputType_creditCards", "emailProtection", "password_generation", "credentials_saving"]
     }
   },
   "required": ["featureToggles"]
 };
 
-function validate32(data) {
+function validate33(data) {
   let {
     instancePath = "",
     parentData,
@@ -15015,7 +15739,7 @@ function validate32(data) {
       let missing0;
 
       if (data.featureToggles === undefined && (missing0 = "featureToggles")) {
-        validate32.errors = [{
+        validate33.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -15035,7 +15759,7 @@ function validate32(data) {
               let missing1;
 
               if (data0.inputType_credentials === undefined && (missing1 = "inputType_credentials") || data0.inputType_identities === undefined && (missing1 = "inputType_identities") || data0.inputType_creditCards === undefined && (missing1 = "inputType_creditCards") || data0.emailProtection === undefined && (missing1 = "emailProtection") || data0.password_generation === undefined && (missing1 = "password_generation") || data0.credentials_saving === undefined && (missing1 = "credentials_saving")) {
-                validate32.errors = [{
+                validate33.errors = [{
                   instancePath: instancePath + "/featureToggles",
                   schemaPath: "#/properties/featureToggles/required",
                   keyword: "required",
@@ -15050,7 +15774,7 @@ function validate32(data) {
                   const _errs3 = errors;
 
                   if (typeof data0.inputType_credentials !== "boolean") {
-                    validate32.errors = [{
+                    validate33.errors = [{
                       instancePath: instancePath + "/featureToggles/inputType_credentials",
                       schemaPath: "#/properties/featureToggles/properties/inputType_credentials/type",
                       keyword: "type",
@@ -15072,7 +15796,7 @@ function validate32(data) {
                     const _errs5 = errors;
 
                     if (typeof data0.inputType_identities !== "boolean") {
-                      validate32.errors = [{
+                      validate33.errors = [{
                         instancePath: instancePath + "/featureToggles/inputType_identities",
                         schemaPath: "#/properties/featureToggles/properties/inputType_identities/type",
                         keyword: "type",
@@ -15094,7 +15818,7 @@ function validate32(data) {
                       const _errs7 = errors;
 
                       if (typeof data0.inputType_creditCards !== "boolean") {
-                        validate32.errors = [{
+                        validate33.errors = [{
                           instancePath: instancePath + "/featureToggles/inputType_creditCards",
                           schemaPath: "#/properties/featureToggles/properties/inputType_creditCards/type",
                           keyword: "type",
@@ -15116,7 +15840,7 @@ function validate32(data) {
                         const _errs9 = errors;
 
                         if (typeof data0.emailProtection !== "boolean") {
-                          validate32.errors = [{
+                          validate33.errors = [{
                             instancePath: instancePath + "/featureToggles/emailProtection",
                             schemaPath: "#/properties/featureToggles/properties/emailProtection/type",
                             keyword: "type",
@@ -15138,7 +15862,7 @@ function validate32(data) {
                           const _errs11 = errors;
 
                           if (typeof data0.password_generation !== "boolean") {
-                            validate32.errors = [{
+                            validate33.errors = [{
                               instancePath: instancePath + "/featureToggles/password_generation",
                               schemaPath: "#/properties/featureToggles/properties/password_generation/type",
                               keyword: "type",
@@ -15160,7 +15884,7 @@ function validate32(data) {
                             const _errs13 = errors;
 
                             if (typeof data0.credentials_saving !== "boolean") {
-                              validate32.errors = [{
+                              validate33.errors = [{
                                 instancePath: instancePath + "/featureToggles/credentials_saving",
                                 schemaPath: "#/properties/featureToggles/properties/credentials_saving/type",
                                 keyword: "type",
@@ -15183,7 +15907,7 @@ function validate32(data) {
                 }
               }
             } else {
-              validate32.errors = [{
+              validate33.errors = [{
                 instancePath: instancePath + "/featureToggles",
                 schemaPath: "#/properties/featureToggles/type",
                 keyword: "type",
@@ -15198,7 +15922,7 @@ function validate32(data) {
         }
       }
     } else {
-      validate32.errors = [{
+      validate33.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -15211,7 +15935,7 @@ function validate32(data) {
     }
   }
 
-  validate32.errors = vErrors;
+  validate33.errors = vErrors;
   return errors === 0;
 }
 
@@ -15221,8 +15945,8 @@ function validate32(data) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.AutofillSettings = void 0;
-exports.fromPlatformConfig = fromPlatformConfig;
+exports.Settings = void 0;
+exports.fromRuntimeConfig = fromRuntimeConfig;
 
 var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
 
@@ -15233,7 +15957,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * A wrapper for Autofill settings
  */
-class AutofillSettings {
+class Settings {
   constructor() {
     _defineProperty(this, "validate", _validators.default['#/definitions/AutofillSettings']);
 
@@ -15241,8 +15965,11 @@ class AutofillSettings {
   }
 
   /**
+   * Try to convert an object into Autofill Settings.
+   * This will try to validate the keys against the schema
+   *
    * @throws
-   * @returns {AutofillSettings}
+   * @returns {Settings}
    */
   from(input) {
     if (this.validate(input)) {
@@ -15268,11 +15995,11 @@ class AutofillSettings {
     if (!this.settings) throw new Error('unreachable');
     return this.settings.featureToggles;
   }
-  /** @returns {AutofillSettings} */
+  /** @returns {Settings} */
 
 
   static default() {
-    return new AutofillSettings().from({
+    return new Settings().from({
       /** @type {FeatureTogglesSettings} */
       featureToggles: {
         inputType_credentials: true,
@@ -15288,50 +16015,19 @@ class AutofillSettings {
 }
 /**
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} config
- * @returns {AutofillSettings}
+ * @returns {Settings}
  */
 
 
-exports.AutofillSettings = AutofillSettings;
+exports.Settings = Settings;
 
-function fromPlatformConfig(config) {
+function fromRuntimeConfig(config) {
   const autofillSettings = config.getSettings('autofill');
-  const settings = new AutofillSettings().from(autofillSettings);
+  const settings = new Settings().from(autofillSettings);
   return settings;
 }
 
 },{"../schema/validators.cjs":57}],59:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-// Capture the globals we need on page start
-const secretGlobals = {
-  window,
-  // Methods must be bound to their tooltipHandler, otherwise they throw Illegal invocation
-  encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
-  decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
-  generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
-  exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
-  importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
-  getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
-  TextEncoder,
-  TextDecoder,
-  Uint8Array,
-  Uint16Array,
-  Uint32Array,
-  JSONstringify: window.JSON.stringify,
-  JSONparse: window.JSON.parse,
-  Arrayfrom: window.Array.from,
-  Promise: window.Promise,
-  ObjectDefineProperty: window.Object.defineProperty
-};
-var _default = secretGlobals;
-exports.default = _default;
-
-},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15352,66 +16048,59 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @returns {RuntimeTransport}
  */
 function createTransport(_globalConfig) {
-  /** @type {RuntimeTransport} */
-  const transport = {
-    async send(name, data) {
-      console.log('📲 android:', name, data);
+  return new AndroidTransport();
+}
+/**
+ * @implements {RuntimeTransport}
+ */
 
-      switch (name) {
-        case 'getRuntimeConfiguration':
-          {
-            const response = sendAndWaitForAndroidAnswer(() => {
-              return window.BrowserAutofill.getRuntimeConfiguration();
-            }, _responseGetRuntimeConfigurationSchema.default.properties.type.const);
-            console.log('\t📲', JSON.stringify(response));
-            return response;
-          }
 
-        case 'getAvailableInputTypes':
-          {
-            const response = sendAndWaitForAndroidAnswer(() => {
-              return window.BrowserAutofill.getAvailableInputTypes();
-            }, _responseGetAvailableInputTypesSchema.default.properties.type.const);
-            console.log('\t📲', JSON.stringify(response));
-            return response;
-          }
+class AndroidTransport {
+  /**
+   * @param {keyof RuntimeMessages} name
+   * @param data
+   * @returns {Promise<void|*>}
+   */
+  async send(name, data) {
+    switch (name) {
+      case 'getRuntimeConfiguration':
+        {
+          window.BrowserAutofill.getRuntimeConfiguration();
+          return waitForResponse(_responseGetRuntimeConfigurationSchema.default.properties.type.const);
+        }
 
-        case 'getAutofillData':
-          {
-            const response = sendAndWaitForAndroidAnswer(() => {
-              return window.BrowserAutofill.getAutofillData(JSON.stringify(data));
-            }, _responseGetAutofillDataSchema.default.properties.type.const);
-            console.log('\t📲', JSON.stringify(response));
-            return response;
-          }
+      case 'getAvailableInputTypes':
+        {
+          window.BrowserAutofill.getAvailableInputTypes();
+          return waitForResponse(_responseGetAvailableInputTypesSchema.default.properties.type.const);
+        }
 
-        case 'storeFormData':
-          {
-            return window.BrowserAutofill.storeFormData(JSON.stringify(data));
-          }
+      case 'getAutofillData':
+        {
+          window.BrowserAutofill.getAutofillData(JSON.stringify(data));
+          return waitForResponse(_responseGetAutofillDataSchema.default.properties.type.const);
+        }
 
-        default:
-          throw new Error('android: not implemented: ' + name);
-      }
+      case 'storeFormData':
+        {
+          return window.BrowserAutofill.storeFormData(JSON.stringify(data));
+        }
+
+      default:
+        throw new Error('android: not implemented: ' + name);
     }
+  }
 
-  };
-  return transport;
 }
 /**
  * Sends a message and returns a Promise that resolves with the response
  *
- * NOTE: This is deliberately different to the one from autofill-utils.,ks for android
- * as we're not 100% sure on the post message implementation yet.
- *
- * @param {Function} fn - a fn to call or an object to send via postMessage
  * @param {string} expectedResponse - the name of the response
  * @returns {Promise<*>}
  */
 
 
-function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
-  fn();
+function waitForResponse(expectedResponse) {
   return new Promise(resolve => {
     const handler = e => {
       // todo(Shane): Allow blank string, try sandboxed iframe. allow-scripts
@@ -15450,12 +16139,13 @@ function sendAndWaitForAndroidAnswer(fn, expectedResponse) {
   });
 }
 
-},{"../schema/response.getAutofillData.schema.json":53,"../schema/response.getAvailableInputTypes.schema.json":55,"../schema/response.getRuntimeConfiguration.schema.json":56}],61:[function(require,module,exports){
+},{"../schema/response.getAutofillData.schema.json":53,"../schema/response.getAvailableInputTypes.schema.json":55,"../schema/response.getRuntimeConfiguration.schema.json":56}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.createLegacyTransport = createLegacyTransport;
 exports.createTransport = createTransport;
 exports.wkSendAndWait = void 0;
 
@@ -15463,42 +16153,75 @@ var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @implements {RuntimeTransport}
+ */
+class AppleTransport {
+  /** @type {GlobalConfig} */
+
+  /** @param {GlobalConfig} globalConfig */
+  constructor(globalConfig) {
+    _defineProperty(this, "config", void 0);
+
+    this.config = globalConfig;
+  }
+
+  async send(name, data) {
+    try {
+      const response = await wkSendAndWait(name, data, {
+        secret: this.config.secret,
+        hasModernWebkitAPI: this.config.hasModernWebkitAPI
+      });
+      return response;
+    } catch (e) {
+      if (e instanceof MissingWebkitHandler) {
+        if (name in interceptions) {
+          var _interceptions$name;
+
+          console.log('--> faling back to: ', name, data);
+          return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, this.config);
+        } else {
+          throw new Error('unimplemented handler: ' + name);
+        }
+      } else {
+        throw e;
+      }
+    }
+  }
+
+}
 /**
  * Create a wrapper around the webkit messaging that conforms
  * to the Transport tooltipHandler
  *
  * @param {GlobalConfig} config
- * @returns {RuntimeTransport}
  */
+
+
 function createTransport(config) {
-  /** @type {RuntimeTransport} */
-  const transport = {
-    // this is a separate variable to ensure type-safety is not lost when returning directly
+  return new AppleTransport(config);
+}
+/**
+ * @returns {LegacyTransport}
+ */
 
-    /**
-     * @param {Names} name
-     * @param data
-     */
+
+function createLegacyTransport(config) {
+  const transport = createTransport(config);
+  /** @type {LegacyTransport} */
+
+  const loggingTransport = {
     async send(name, data) {
-      console.log('🍏', name, JSON.stringify(data));
-
-      if (name in interceptions) {
-        var _interceptions$name;
-
-        console.log('--> intercepted', name, data);
-        return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, config);
-      }
-
-      const response = await wkSendAndWait(name, data, {
-        secret: config.secret,
-        hasModernWebkitAPI: config.hasModernWebkitAPI
-      });
-      console.log('\t🍏📲', JSON.stringify(response));
-      return response;
+      console.log("\uD83D\uDE48 LegacyTransport: ".concat(JSON.stringify(name)), data);
+      const res = await transport.send(name, data);
+      console.log("\t \uD83D\uDE48 LegacyTransport::Response ".concat(JSON.stringify(name)), res);
+      return res;
     }
 
   };
-  return transport;
+  return loggingTransport;
 }
 /**
  * @type {Interceptions}
@@ -15506,25 +16229,107 @@ function createTransport(config) {
 
 
 const interceptions = {
-  // 'getAvailableInputTypes': () => {
-  //     return {
-  //         email: true,
-  //     }
-  // },
+  'getAutofillInitData': async globalConfig => {
+    var _data$success;
+
+    const legacyTransport = createLegacyTransport(globalConfig);
+    const data = await legacyTransport.send('pmHandlerGetAutofillInitData'); // todo(Shane): Fix this problem with ids with native team
+
+    (_data$success = data.success) === null || _data$success === void 0 ? void 0 : _data$success.credentials.forEach(cred => {
+      cred.id = String(cred.id);
+    });
+    return {
+      success: {
+        // default, allowing it to be overriden
+        serializedInputContext: "{}",
+        ...data.success
+      }
+    };
+  },
+
+  /**
+   * If this handler is not available, we default to the old check for email, which is
+   * to call 'emailHandlerCheckAppSignedInStatus'
+   * @param globalConfig
+   */
+  'getAvailableInputTypes': async globalConfig => {
+    const legacyTransport = createLegacyTransport(globalConfig);
+    const {
+      isAppSignedIn
+    } = await legacyTransport.send('emailHandlerCheckAppSignedInStatus');
+    /** @type {AvailableInputTypes} */
+
+    const legacyMacOsTypes = {
+      credentials: true,
+      identities: true,
+      creditCards: true,
+      email: isAppSignedIn
+    };
+    /** @type {AvailableInputTypes} */
+
+    const legacyIOsTypes = {
+      credentials: false,
+      identities: false,
+      creditCards: false,
+      email: isAppSignedIn
+    };
+    return {
+      /** @type {AvailableInputTypes} */
+      success: globalConfig.isApp ? legacyMacOsTypes : legacyIOsTypes
+    };
+  },
 
   /**
    * @param {GlobalConfig} globalConfig
    */
-  'getRuntimeConfiguration': globalConfig => {
+  'getRuntimeConfiguration': async globalConfig => {
+    const legacyMacOSToggles = {
+      inputType_credentials: true,
+      inputType_identities: true,
+      inputType_creditCards: true,
+      emailProtection: true,
+      password_generation: true,
+      credentials_saving: true
+    };
+    const legacyIOSToggles = {
+      inputType_credentials: false,
+      inputType_identities: false,
+      inputType_creditCards: false,
+      emailProtection: true,
+      password_generation: false,
+      credentials_saving: false
+    };
     return {
       success: {
         contentScope: globalConfig.contentScope,
-        userPreferences: globalConfig.userPreferences,
+        userPreferences: {
+          // this is for old ios/macos
+          features: {
+            autofill: {
+              settings: {
+                /** @type {Schema.FeatureToggles} */
+                featureToggles: globalConfig.isApp ? legacyMacOSToggles : legacyIOSToggles
+              }
+            }
+          },
+          ...globalConfig.userPreferences
+        },
         userUnprotectedDomains: globalConfig.userUnprotectedDomains
       }
     };
   }
 };
+
+class MissingWebkitHandler extends Error {
+  constructor(handlerName) {
+    super();
+
+    _defineProperty(this, "handlerName", void 0);
+
+    this.handlerName = handlerName;
+  }
+
+}
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
@@ -15532,12 +16337,13 @@ const interceptions = {
  * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  */
 
+
 const wkSend = function (handler) {
   let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   let opts = arguments.length > 2 ? arguments[2] : undefined;
 
   if (!(handler in window.webkit.messageHandlers)) {
-    throw new Error("Missing webkit handler: '".concat(handler, "'"));
+    throw new MissingWebkitHandler("Missing webkit handler: '".concat(handler, "'"));
   }
 
   return window.webkit.messageHandlers[handler].postMessage({ ...data,
@@ -15642,7 +16448,38 @@ const decrypt = async (ciphertext, key, iv) => {
   return dec.decode(decrypted);
 };
 
-},{"./captureDdgGlobals":59}],62:[function(require,module,exports){
+},{"./captureDdgGlobals":61}],61:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+// Capture the globals we need on page start
+const secretGlobals = {
+  window,
+  // Methods must be bound to their tooltipHandler, otherwise they throw Illegal invocation
+  encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
+  decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
+  generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
+  exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
+  importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
+  getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
+  TextEncoder,
+  TextDecoder,
+  Uint8Array,
+  Uint16Array,
+  Uint32Array,
+  JSONstringify: window.JSON.stringify,
+  JSONparse: window.JSON.parse,
+  Arrayfrom: window.Array.from,
+  Promise: window.Promise,
+  ObjectDefineProperty: window.Object.defineProperty
+};
+var _default = secretGlobals;
+exports.default = _default;
+
+},{}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15650,32 +16487,94 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createTransport = createTransport;
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @implements {RuntimeTransport}
+ */
+class ExtensionTransport {
+  /** @type {GlobalConfig} */
+
+  /** @param {GlobalConfig} globalConfig */
+  constructor(globalConfig) {
+    _defineProperty(this, "config", void 0);
+
+    this.config = globalConfig;
+  }
+
+  async send(name, data) {
+    try {
+      const result = await sendToExtension(name);
+      return result;
+    } catch (e) {
+      if (e instanceof MissingExtensionHandler) {
+        if (name in interceptions) {
+          var _interceptions$name;
+
+          console.log('--> falling back to: ', name, data);
+          return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, this.config);
+        } else {
+          throw new Error('unimplemented handler: ' + name);
+        }
+      } else {
+        throw e;
+      }
+    }
+  }
+
+}
 /**
  * @param {GlobalConfig} globalConfig
  * @returns {RuntimeTransport}
  */
+
+
 function createTransport(globalConfig) {
-  /** @type {RuntimeTransport} */
-  const transport = {
-    /**
-     * @param {Names} name
-     * @param data
-     */
-    async send(name, data) {
-      console.log('extension:', name, data);
+  return new ExtensionTransport(globalConfig);
+}
 
-      if (interceptions[name]) {
-        var _interceptions$name;
+class MissingExtensionHandler extends Error {
+  constructor(handlerName) {
+    super();
 
-        console.log('--> intercepted', name, data);
-        return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, globalConfig);
+    _defineProperty(this, "handlerName", void 0);
+
+    this.handlerName = handlerName;
+  }
+
+}
+/**
+ * Try to send a message to the Extension.
+ *
+ * This will try to detect if you've called a handler that's not available in the extension,
+ * if so, it will throw a known message so that you can decide to fallback/recover if possible.
+ *
+ * For example, this can help when implementing new messaging
+ *
+ * @param {string} name
+ * @returns {Promise<any>}
+ */
+
+
+function sendToExtension(name) {
+  return new Promise((resolve, reject) => chrome.runtime.sendMessage({
+    [name]: true
+  }, data => {
+    if (typeof data === "undefined") {
+      var _chrome$runtime$lastE, _chrome$runtime$lastE2;
+
+      if ((_chrome$runtime$lastE = chrome.runtime.lastError) !== null && _chrome$runtime$lastE !== void 0 && (_chrome$runtime$lastE2 = _chrome$runtime$lastE.message) !== null && _chrome$runtime$lastE2 !== void 0 && _chrome$runtime$lastE2.includes("The message port closed before a response was received")) {
+        console.warn("Missing extension handler: '".concat(name, "'"));
+        reject(new MissingExtensionHandler("Missing extension handler: '".concat(name, "'")));
+      } else {
+        reject(new Error('Unknown extension error for message: ' + name));
       }
-
-      throw new Error('not implemented for extension: ' + name);
+    } else {
+      return resolve({
+        success: data
+      });
     }
-
-  };
-  return transport;
+  }));
 }
 /**
  * @type {Interceptions}
@@ -15683,22 +16582,10 @@ function createTransport(globalConfig) {
 
 
 const interceptions = {
-  // todo(Shane): Get available extension types
-  'getAvailableInputTypes': () => {
-    return {
-      success: {
-        credentials: false,
-        identities: false,
-        creditCards: false,
-        email: true
-      }
-    };
-  },
-
   /**
    * @param {GlobalConfig} globalConfig
    */
-  'getRuntimeConfiguration': globalConfig => {
+  'getRuntimeConfiguration': async globalConfig => {
     /**
      * @type {FeatureTogglesSettings}
      */
@@ -15750,6 +16637,87 @@ const interceptions = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.createLoggingTransport = createLoggingTransport;
+exports.createRuntimeTransport = createRuntimeTransport;
+
+var _apple = require("./apple.transport");
+
+var _android = require("./android.transport");
+
+var _windows = require("./windows.transport");
+
+var _extension = require("./extension.transport");
+
+/**
+ * The runtime has to decide on a transport, *before* we have a 'tooltipHandler'.
+ *
+ * This is because an initial message to retrieve the platform configuration might be needed
+ *
+ * @param {GlobalConfig} globalConfig
+ * @returns {RuntimeTransport}
+ */
+function createRuntimeTransport(globalConfig) {
+  var _globalConfig$userPre, _globalConfig$userPre2, _globalConfig$userPre3, _globalConfig$userPre4;
+
+  // On some platforms, things like `platform.name` are embedded into the script
+  // and therefor may be immediately available.
+  if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) === 'string') {
+    switch ((_globalConfig$userPre3 = globalConfig.userPreferences) === null || _globalConfig$userPre3 === void 0 ? void 0 : (_globalConfig$userPre4 = _globalConfig$userPre3.platform) === null || _globalConfig$userPre4 === void 0 ? void 0 : _globalConfig$userPre4.name) {
+      case 'ios':
+        return (0, _apple.createTransport)(globalConfig);
+
+      case 'macos':
+        return (0, _apple.createTransport)(globalConfig);
+
+      default:
+        throw new Error('selectTransport unimplemented!');
+    }
+  }
+
+  if (globalConfig.isDDGApp) {
+    if (globalConfig.isAndroid) {
+      return (0, _android.createTransport)(globalConfig);
+    }
+
+    console.warn('should never get here...');
+    return (0, _apple.createTransport)(globalConfig);
+  }
+
+  if (globalConfig.isWindows) {
+    return (0, _windows.createTransport)(globalConfig);
+  } // falls back to extension... is this still the best way to determine this?
+
+
+  return (0, _extension.createTransport)(globalConfig);
+}
+/**
+ * @param {GlobalConfig} config
+ * @returns {BaseTransport<any>}
+ */
+
+
+function createLoggingTransport(config) {
+  const transport = createRuntimeTransport(config);
+  /** @type {RuntimeTransport} */
+
+  const loggingTransport = {
+    async send(name, data) {
+      console.log("RuntimeTransport: ".concat(name), data);
+      const res = await transport.send(name, data);
+      console.log("\tRuntimeTransport::Response ".concat(name), res);
+      return res;
+    }
+
+  };
+  return loggingTransport;
+}
+
+},{"./android.transport":59,"./apple.transport":60,"./extension.transport":62,"./windows.transport":64}],64:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.createTransport = createTransport;
 
 var _responseGetAutofillInitDataSchema = _interopRequireDefault(require("../schema/response.getAutofillInitData.schema.json"));
@@ -15763,98 +16731,100 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import getAutofillData from '../schema/response.getAutofillData.schema.json'
 
 /**
+ * @implements {RuntimeTransport}
+ */
+class WindowsTransport {
+  async send(name, data) {
+    switch (name) {
+      case 'getRuntimeConfiguration':
+        {
+          return windowsTransport(name).withResponse(_responseGetRuntimeConfigurationSchema.default.properties.type.const);
+        }
+
+      case 'getAvailableInputTypes':
+        {
+          return windowsTransport(name).withResponse(_responseGetAvailableInputTypesSchema.default.properties.type.const);
+        }
+
+      case 'getAutofillInitData':
+        {
+          return windowsTransport(name).withResponse(_responseGetAutofillInitDataSchema.default.properties.type.const);
+        }
+
+      case 'storeFormData':
+        {
+          return windowsTransport('storeFormData', data);
+        }
+
+      default:
+        throw new Error('windows: not implemented: ' + name);
+    }
+  }
+
+}
+/**
  * @param {GlobalConfig} _globalConfig
  * @returns {RuntimeTransport}
  */
+
+
 function createTransport(_globalConfig) {
-  /** @type {RuntimeTransport} */
-  const transport = {
-    async send(name, data) {
-      console.log('💻 windows:', name, data);
-
-      switch (name) {
-        case 'getRuntimeConfiguration':
-          {
-            return sendAndWait(() => {
-              // todo(Shane): How to prevent these strings...
-              return window.chrome.webview.postMessage({
-                type: 'getRuntimeConfiguration'
-              });
-            }, _responseGetRuntimeConfigurationSchema.default.properties.type.const);
-          }
-
-        case 'getAvailableInputTypes':
-          {
-            return sendAndWait(() => {
-              // todo(Shane): How to prevent these strings...
-              return window.chrome.webview.postMessage({
-                type: 'getAvailableInputTypes'
-              });
-            }, _responseGetAvailableInputTypesSchema.default.properties.type.const);
-          }
-
-        case 'getAutofillInitData':
-          {
-            return sendAndWait(() => {
-              // todo(Shane): How to prevent these strings...
-              return window.chrome.webview.postMessage({
-                type: 'getAutofillInitData'
-              });
-            }, _responseGetAutofillInitDataSchema.default.properties.type.const);
-          }
-
-        case 'storeFormData':
-          {
-            return window.chrome.webview.postMessage({
-              type: 'storeFormData',
-              data: data
-            });
-          }
-
-        default:
-          throw new Error('windows: not implemented: ' + name);
-      }
-    }
-
-  };
-  return transport;
+  return new WindowsTransport();
 }
 /**
- * Sends a message and returns a Promise that resolves with the response
- * @param {()=>void} msgOrFn - a fn to call or an object to send via postMessage
- * @param {String} expectedResponse - the name of the response
- * @returns {Promise<*>}
+ * @param {Names} name
+ * @param {any} [data]
  */
 
 
-function sendAndWait(msgOrFn, expectedResponse) {
-  msgOrFn();
-  return new Promise(resolve => {
-    const handler = event => {
-      /* if (event.origin !== window.origin) {
-          console.warn(`origin mis-match. window.origin: ${window.origin}, event.origin: ${event.origin}`)
-          return
-      } */
-      if (!event.data) {
-        console.warn('data absent from message');
-        return;
-      }
-
-      if (event.data.type !== expectedResponse) {
-        console.warn("data.type mis-match. Expected: ".concat(expectedResponse, ", received: ").concat(event.data.type));
-        return;
-      } // at this point we're confident we have the correct message type
-
-
-      console.log('💻 windows:', expectedResponse, event.data);
-      resolve(event.data);
-      window.chrome.webview.removeEventListener('message', handler);
-    };
-
-    window.chrome.webview.addEventListener('message', handler, {
-      once: true
+function windowsTransport(name, data) {
+  if (data) {
+    window.chrome.webview.postMessage({
+      type: name,
+      data: data
     });
-  });
+  } else {
+    window.chrome.webview.postMessage({
+      type: name
+    });
+  }
+
+  return {
+    /**
+     * Sends a message and returns a Promise that resolves with the response
+     * @param responseName
+     * @returns {Promise<*>}
+     */
+    withResponse(responseName) {
+      return new Promise(resolve => {
+        const handler = event => {
+          /* if (event.origin !== window.origin) {
+              console.warn(`origin mis-match. window.origin: ${window.origin}, event.origin: ${event.origin}`)
+              return
+          } */
+          if (!event.data) {
+            console.warn('data absent from message');
+            return;
+          }
+
+          if (event.data.type !== responseName) {
+            console.warn("data.type mis-match. Expected: ".concat(responseName, ", received: ").concat(event.data.type));
+            return;
+          } // at this point we're confident we have the correct message type
+
+
+          console.log('💻 windows:', responseName, event.data);
+          resolve(event.data);
+          window.chrome.webview.removeEventListener('message', handler);
+        };
+
+        window.chrome.webview.addEventListener('message', handler, {
+          once: true
+        });
+      });
+    }
+
+  };
 }
 
 },{"../schema/response.getAutofillInitData.schema.json":54,"../schema/response.getAvailableInputTypes.schema.json":55,"../schema/response.getRuntimeConfiguration.schema.json":56}]},{},[44]);

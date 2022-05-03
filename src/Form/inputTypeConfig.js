@@ -89,14 +89,14 @@ const inputTypeConfig = {
 
             const subtype = getInputSubtype(_input)
 
-            // todo(Shane): Handle the mac specfici logic also with feature toggles
+            // todo(Shane): Handle the mac specific logic also with feature toggles
             if (device.globalConfig.isApp) {
                 return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))
             }
 
             // if it's email then we can always decorate
             if (subtype === 'emailAddress') {
-                return Boolean(device.isDeviceSignedIn())
+                return Boolean(device.availableInputTypes.email)
             }
 
             return false

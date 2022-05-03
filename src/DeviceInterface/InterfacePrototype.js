@@ -13,10 +13,12 @@ import { fromPassword, GENERATED_ID } from '../input-types/Credentials'
 import { PasswordGenerator } from '../PasswordGenerator'
 import { createScanner } from '../Scanner'
 import {createGlobalConfig} from '../config'
-import {AutofillSettings} from '../settings/settings'
+import {Settings} from '../settings/settings'
 import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 import {createRuntime} from '../runtime/runtime'
 import {WebTooltip} from '../UI/WebTooltip'
+import {createRuntimeTransport} from '../transports/transport'
+import {featureToggleAwareInputTypes} from '../input-types/input-types'
 
 /**
  * @implements {GlobalConfigImpl}
@@ -46,7 +48,7 @@ class InterfacePrototype {
     /** @type {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} */
     runtimeConfiguration;
 
-    /** @type {import("../settings/settings").AutofillSettings} */
+    /** @type {import("../settings/settings").Settings} */
     autofillSettings;
 
     /** @type {AvailableInputTypes} */
@@ -64,7 +66,7 @@ class InterfacePrototype {
      * @param {TooltipInterface} tooltip
      * @param {GlobalConfig} globalConfig
      * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
-     * @param {import("../settings/settings").AutofillSettings} autofillSettings
+     * @param {import("../settings/settings").Settings} autofillSettings
      */
     constructor (availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
         this.availableInputTypes = availableInputTypes
@@ -330,11 +332,6 @@ class InterfacePrototype {
         }
 
         this.tooltip.attach({input, form, click, getPosition, topContextData, device: this})
-        // if (this.globalConfig.hasNativeTooltip) {
-        // } else {
-        //     this.attachCloseListeners()
-        //     this.attachTooltipInner(form, input, getPosition, click, topContextData)
-        // }
     }
 
     /**
@@ -397,35 +394,50 @@ class InterfacePrototype {
     }
 
     getActiveTooltip () {
-        return this.tooltip.getActiveTooltip()
+        return this.tooltip.getActiveTooltip?.()
     }
 
     setActiveTooltip (tooltip) {
-        this.tooltip.setActiveTooltip(tooltip)
+        this.tooltip.setActiveTooltip?.(tooltip)
     }
 
     async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
-        if (this.globalConfig.isDDGDomain) {
-            notifyWebApp({isApp: this.globalConfig.isApp})
 
-            if (this.isDeviceSignedIn()) {
-                let userData
-                try {
-                    userData = await this.getUserData()
-                } catch (e) {}
-
-                const hasUserData = userData && !userData.error && Object.entries(userData).length > 0
-                notifyWebApp({
-                    deviceSignedIn: {
-                        value: true,
-                        shouldLog,
-                        userData: hasUserData ? userData : undefined
-                    }
-                })
-            } else {
-                this.trySigningIn()
-            }
+        if (!this.globalConfig.isDDGDomain) {
+            return
         }
+
+        notifyWebApp({isApp: this.globalConfig.isApp})
+
+        if (this.isDeviceSignedIn()) {
+            let userData
+            try {
+                userData = await this.getUserData()
+            } catch (e) {
+            }
+
+            const hasUserData = userData && !userData.error && Object.entries(userData).length > 0
+            notifyWebApp({
+                deviceSignedIn: {
+                    value: true,
+                    shouldLog,
+                    userData: hasUserData ? userData : undefined
+                }
+            })
+        } else {
+            // todo(Shane): Handle this case of signing i
+            this.trySigningIn()
+        }
+    }
+
+    /**
+     * Update availableInputTypes on the fly, this could happen when signing in for email, as an example
+     * @returns {Promise<void>}
+     */
+    async refreshAvailableInputTypes() {
+        const runtimeAvailableInputTypes = await this.runtime.getAvailableInputTypes()
+        const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, this.autofillSettings.featureToggles)
+        this.availableInputTypes = inputTypes;
     }
 
     async setupAutofill () {}
@@ -445,6 +457,7 @@ class InterfacePrototype {
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
+                await this.refreshAvailableInputTypes();
                 await this.setupAutofill()
                 await this.setupSettingsPage({shouldLog: true})
             } else {
@@ -507,13 +520,14 @@ class InterfacePrototype {
     static default () {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
-        const runtime = createRuntime(globalConfig)
+        const transport = createRuntimeTransport(globalConfig);
+        const runtime = createRuntime(globalConfig, transport)
         const tooltip = new WebTooltip({tooltipKind: 'modern'})
-        return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, AutofillSettings.default())
+        return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, Settings.default())
     }
 
     removeTooltip () {
-        return this.tooltip.removeTooltip()
+        return this.tooltip.removeTooltip?.()
     }
 
     isTestMode () {

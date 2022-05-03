@@ -1,9 +1,9 @@
-import {AutofillSettings, fromPlatformConfig} from './settings'
+import {Settings, fromRuntimeConfig} from './settings'
 import {createRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
 describe('autofill settings', () => {
     it('can be created with default values', () => {
-        const settings = AutofillSettings.default()
+        const settings = Settings.default()
         expect(settings.featureToggles).toBeDefined()
     })
     it('can be created from platform configuration (content-scope-scripts)', () => {
@@ -39,7 +39,7 @@ describe('autofill settings', () => {
                 }
             }
         })
-        const settings = fromPlatformConfig(config)
+        const settings = fromRuntimeConfig(config)
         expect(settings.featureToggles).toBeDefined()
     })
 })

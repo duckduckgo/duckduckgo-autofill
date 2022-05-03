@@ -1,6 +1,9 @@
 import {getInputType, getMainTypeFromType} from '../Form/matching'
 
 /**
+ * A 'Native' tooltip means that that autofill is not responsible
+ * for rendering **any** UI relating to the selecting of items
+ *
  * @implements {TooltipInterface}
  */
 export class NativeTooltip {
@@ -14,6 +17,11 @@ export class NativeTooltip {
         this.runtime = runtime
     }
 
+    /**
+     * To 'attach' on iOS/Android is to ask the runtime for autofill data - this
+     * will eventually cause the native overlays to show
+     * @param args
+     */
     attach (args) {
         const {form, input} = args
         const inputType = getInputType(input)
@@ -28,21 +36,5 @@ export class NativeTooltip {
                 console.error('this.runtime.getAutofillData')
                 console.error(e)
             })
-    }
-
-    getActiveTooltip () {
-        return null
-    }
-
-    removeTooltip () {
-    }
-
-    setActiveTooltip (_tooltip) {
-    }
-
-    addListener (_cb) {
-    }
-
-    setDevice (_device) {
     }
 }

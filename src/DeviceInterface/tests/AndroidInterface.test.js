@@ -1,9 +1,10 @@
 import {AndroidInterface} from '../AndroidInterface'
 import {createGlobalConfig} from '../../config'
 import {RuntimeConfiguration, tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
-import {AutofillSettings, fromPlatformConfig} from '../../settings/settings'
+import {Settings, fromRuntimeConfig} from '../../settings/settings'
 import {createRuntime} from '../../runtime/runtime'
 import {NativeTooltip} from '../../UI/NativeTooltip'
+import {createRuntimeTransport} from '../../transports/transport'
 
 describe('AndroidInterface', function () {
     beforeEach(() => {
@@ -12,9 +13,10 @@ describe('AndroidInterface', function () {
     it('can be instantiated without throwing', () => {
         const config = createGlobalConfig()
         const runtimeConfig = new RuntimeConfiguration()
-        const runtime = createRuntime(config)
+        const transport = createRuntimeTransport(config);
+        const runtime = createRuntime(config, transport)
         const tooltip = new NativeTooltip(runtime)
-        const device = new AndroidInterface({}, runtime, tooltip, config, runtimeConfig, AutofillSettings.default())
+        const device = new AndroidInterface({}, runtime, tooltip, config, runtimeConfig, Settings.default())
         device.init()
     })
     it('can create platform configuration', () => {
@@ -48,7 +50,7 @@ describe('AndroidInterface', function () {
             },
             userUnprotectedDomains: []
         })
-        const settings = fromPlatformConfig(config)
+        const settings = fromRuntimeConfig(config)
         expect(settings.featureToggles.inputType_credentials).toBe(true)
     })
 })

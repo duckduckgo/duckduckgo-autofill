@@ -3,6 +3,7 @@
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
   "type": "object",
   "title": "GetRuntimeConfigurationResponse Success Response",
+  "description": "Data that can be understood by @duckduckgo/content-scope-scripts",
   "properties": {
     "type": {
       "title": "This is the 'type' field on message that may be sent back to the window",

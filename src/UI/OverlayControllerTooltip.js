@@ -4,20 +4,16 @@
 
 /**
  * @implements {TooltipInterface}
- * @implements {TooltipHandler}
  */
-export class TopFrameControllerTooltip {
+export class OverlayControllerTooltip {
     /** @type {import('../runtime/runtime').Runtime} */
     runtime
 
     /** @type {import('../UI/Tooltip.js').Tooltip | null} */
     _activeTooltip = null
 
-    /** @type {boolean} */
-    _parentShown = false
-
-    /** @type {TopFrameControllerTooltipOptions} */
-    _options
+    /** @type {"idle" | "parentShown" | "removingParent"} */
+    #state = "idle";
 
     /**
      * @deprecated do not access the tooltipHandler directly here
@@ -30,17 +26,16 @@ export class TopFrameControllerTooltip {
 
     /**
      * @param {import('../runtime/runtime').Runtime} runtime
-     * @param {TopFrameControllerTooltipOptions} options
      */
-    constructor (runtime, options) {
+    constructor (runtime) {
         this.runtime = runtime
-        this._options = options
     }
 
     attach (args) {
-        if (this._parentShown) {
+        if (this.#state !== "idle") {
             this.removeTooltip()
                 .catch((e) => {
+                    // todo(Shane): can we recover here?
                     console.log('could not remove', e)
                 })
                 .finally(() => this._attach(args))
@@ -113,27 +108,22 @@ export class TopFrameControllerTooltip {
             serializedInputContext: JSON.stringify(data)
         }
 
-        await this.runtime.showAutofillParent(details)
-            .then(() => {
-                this._parentShown = true
-                this.#attachListeners()
-            })
-            .catch(() => {
-                this._parentShown = false
-            })
-        // // Start listening for the user initiated credential
-        this.listenForSelectedCredential()
+        try {
+            await this.runtime.showAutofillParent(details)
+            this.#state = "parentShown";
+            this.#attachListeners()
+        } catch (e) {
+            console.error("could not show parent", e)
+            this.#state = "idle";
+        }
     }
 
     #attachListeners () {
+        this.listenForSelectedCredential();
         window.addEventListener('scroll', this)
         window.addEventListener('keydown', this)
         window.addEventListener('input', this)
         window.addEventListener('pointerdown', this)
-        this._listenerCleanups = []
-        for (let listenerFactory of this._listenerFactories) {
-            this._listenerCleanups.push(listenerFactory())
-        }
     }
 
     #removeListeners () {
@@ -141,9 +131,6 @@ export class TopFrameControllerTooltip {
         window.removeEventListener('keydown', this)
         window.removeEventListener('input', this)
         window.removeEventListener('pointerdown', this)
-        for (let listenerCleanup of this._listenerCleanups) {
-            listenerCleanup()
-        }
     }
 
     handleEvent (event) {
@@ -206,17 +193,15 @@ export class TopFrameControllerTooltip {
     }
 
     async removeTooltip () {
-        if (this._parentShown) {
-            await this.runtime.closeAutofillParent()
-                .catch(e => console.error('Could not close parent', e))
-                .finally(() => {
-                    this._parentShown = false
-                })
+        if (this.#state === "removingParent") return;
+        if (this.#state === "idle") return;
 
-            this.#removeListeners()
-        } else {
-            console.error('trued to remove, but nothing was open')
-        }
+        this.#state = "removingParent";
+        await this.runtime.closeAutofillParent()
+            .catch(e => console.error('Could not close parent', e))
+
+        this.#state = "idle";
+        this.#removeListeners();
     }
 
     /**
@@ -237,29 +222,7 @@ export class TopFrameControllerTooltip {
         this._activeTooltip = tooltip
     }
 
-    setSize (_cb) {
-    }
-
-    setupSizeListener (_cb) {
-    }
-
-    tooltipPositionClass (_top, _left) {
-        return ''
-    }
-
-    tooltipStyles () {
-        return ''
-    }
-
-    tooltipWrapperClass () {
-        return ''
-    }
-
     setDevice (device) {
         this._device = device
-    }
-
-    addListener (cb) {
-        this._listenerFactories.push(cb)
     }
 }

@@ -2,7 +2,7 @@ import {AndroidInterface} from './DeviceInterface/AndroidInterface'
 import {ExtensionInterface} from './DeviceInterface/ExtensionInterface'
 import {AppleDeviceInterface} from './DeviceInterface/AppleDeviceInterface'
 import {WindowsInterface} from './DeviceInterface/WindowsInterface'
-import {AppleTopFrameDeviceInterface} from './DeviceInterface/AppleTopFrameDeviceInterface'
+import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceInterface'
 
 /**
  * @param {AvailableInputTypes} availableInputTypes
@@ -10,15 +10,15 @@ import {AppleTopFrameDeviceInterface} from './DeviceInterface/AppleTopFrameDevic
  * @param {TooltipInterface} tooltip
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
- * @param {import("./settings/settings").AutofillSettings} autofillSettings
- * @returns {AndroidInterface|AppleDeviceInterface|AppleTopFrameDeviceInterface|ExtensionInterface|WindowsInterface}
+ * @param {import("./settings/settings").Settings} autofillSettings
+ * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface}
  */
-export function createDevice (availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
+export function createDevice (availableInputTypes, runtime,  tooltip, globalConfig, platformConfig, autofillSettings) {
     switch (platformConfig.platform) {
     case 'macos':
     case 'ios': {
         if (globalConfig.isTopFrame) {
-            return new AppleTopFrameDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
+            return new AppleOverlayDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
         }
         return new AppleDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
     }

@@ -11,7 +11,9 @@
       "const": "getAutofillDataResponse"
     },
     "success": {
+      "$id": "#/definitions/AutofillData",
       "title": "GetAutofillDataResponse Success Response",
+      "description": "The data returned, containing only fields that will be auto-filled",
       "type": "object",
       "oneOf": [
         { "$ref": "#/definitions/Credentials" }

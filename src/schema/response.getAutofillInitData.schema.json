@@ -12,6 +12,7 @@
     },
     "success": {
       "title": "GetAutofillInitDataResponse Success Response",
+      "$id": "#/definitions/AutofillInitData",
       "type": "object",
       "properties": {
         "credentials": {
@@ -33,6 +34,7 @@
           }
         },
         "serializedInputContext": {
+          "description": "A clone of the `serializedInputContext` that was sent in the request",
           "type": "string"
         }
       },

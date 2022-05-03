@@ -21,7 +21,7 @@
       "type": "number"
     },
     "serializedInputContext": {
-      "description": "todo(Shane): How to deal with the fact that this is a JSON string with type TopContextData",
+      "description": "JSON string that will be available from `getAutofillInitData()`",
       "type": "string"
     }
   },

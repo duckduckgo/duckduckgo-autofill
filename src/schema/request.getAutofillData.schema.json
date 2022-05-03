@@ -3,7 +3,7 @@
   "$id": "#/definitions/GetAutofillDataRequest",
   "title": "GetAutofillDataRequest Request Object",
   "type": "object",
-  "description": "This describes the argument given to getAutofillData(data)",
+  "description": "This describes the argument given to `getAutofillData(data)`",
   "properties": {
     "inputType": {
       "title": "The input type that triggered the call",
@@ -11,7 +11,7 @@
       "type": "string"
     },
     "mainType": {
-      "title": "The main input type, such as `credentials`",
+      "title": "The main input type",
       "type": "string",
       "enum": [
         "credentials",

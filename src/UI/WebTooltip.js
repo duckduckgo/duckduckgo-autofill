@@ -9,7 +9,7 @@ import EmailWebTooltip from './EmailWebTooltip'
 
 /**
  * @implements {TooltipInterface}
- * @implements {TooltipHandler}
+ * @implements {WebTooltipHandler}
  */
 export class WebTooltip {
     /** @type {import("../UI/Tooltip.js").Tooltip | null} */
@@ -67,7 +67,6 @@ export class WebTooltip {
             return new DataWebTooltip(config, topContextData.inputType, getPosition, this, {testMode: this.#device.isTestMode()})
                 .render(config, asRenderers, {
                     onSelect: (id) => {
-                        console.log('on select?')
                         this.#onSelect(config, data, id)
                     }
                 })

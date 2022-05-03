@@ -5,7 +5,9 @@
   "type": "object",
   "properties": {
     "featureToggles": {
+      "title": "FeatureToggles",
       "$id": "#/definitions/FeatureToggles",
+      "description": "These are toggles used throughout the application to enable/disable features fully",
       "type": "object",
       "properties": {
         "inputType_credentials": {
@@ -34,8 +36,7 @@
         "emailProtection",
         "password_generation",
         "credentials_saving"
-      ],
-      "title": "FeatureToggles"
+      ]
     }
   },
   "required": [

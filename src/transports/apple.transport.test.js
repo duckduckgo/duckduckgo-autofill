@@ -1,5 +1,5 @@
 import { createGlobalConfig } from '../config'
-import { wkSendAndWait } from './transport.apple'
+import { wkSendAndWait } from './apple.transport'
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data
@@ -35,7 +35,7 @@ window.webkit = {
     }
 }
 
-/** @returns {Transport} */
+/** @returns {LegacyTransport} */
 const mocktransport = (config) => {
     return {
         async send (name, data) {

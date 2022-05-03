@@ -4,11 +4,11 @@
   "title": "GenericError",
   "type": "object",
   "properties": {
-    "error": {
+    "message": {
       "type": "string"
     }
   },
   "required": [
-    "error"
+    "message"
   ]
 }

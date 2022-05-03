@@ -1,12 +1,23 @@
-interface RuntimeTransport {
-    send<N extends Names>(name: N, data?: RuntimeMessages[N]['request']): Promise<any>
+/**
+ * The base transport, you can constrain the use of certain messages by
+ * passing a mapping of event names -> request/response
+ */
+interface BaseTransport<Msgs extends Record<string, any> = Record<string, any>> {
+    send<MsgName extends keyof Msgs>(name: MsgName, data?: Msgs[MsgName]['request']): Promise<Msgs[MsgName]['response']>
 }
 
+type RuntimeTransport = BaseTransport<RuntimeMessages>;
+
 type Names = keyof RuntimeMessages;
+type AvailableInputTypes = Schema.AvailableInputTypes;
+
+type GenericRuntimeResponse<Type> =
+    | { success: Type, error?: Schema.GenericError }
+    | { data: Type, error?: Schema.GenericError }
 
 type RuntimeMessages = {
     getAvailableInputTypes: {
-        response: { success: AvailableInputTypes },
+        response: Schema.GetAvailableInputTypesResponse,
         request: null
     },
     getRuntimeConfiguration: {
@@ -40,7 +51,7 @@ type RuntimeMessages = {
 }
 
 type Interceptions = {
-    [N in Names]?: (config: GlobalConfig) => RuntimeMessages[N]['response']
+    [N in Names]?: (config: GlobalConfig) => Promise<RuntimeMessages[N]['response']>
 }
 
 type MocksObjectAndroid = {
@@ -55,10 +66,77 @@ interface GetAutofillDataArgs {
     inputType: import("../Form/matching").SupportedTypes
 }
 
-interface AvailableInputTypes {
-    credentials?: boolean;
-    identities?: boolean;
-    creditCards?: boolean;
-    email?: boolean;
+type LegacyMessages = {
+    emailHandlerGetAlias: {
+        request: {
+            requiresUserPermission: boolean,
+            shouldConsumeAliasIfProvided: boolean
+        },
+        response: {alias: string}
+    },
+    selectedDetail: {
+        request: any,
+        response: any,
+    },
+    pmHandlerGetCreditCard: {
+        request: any,
+        response: any,
+    },
+    pmHandlerOpenManagePasswords: {
+        request: any,
+        response: any,
+    },
+    pmHandlerGetAutofillCredentials: {
+        request: any,
+        response: any,
+    },
+    pmHandlerGetAutofillInitData: {
+        request: any,
+        response: any,
+    },
+    pmHandlerStoreCredentials: {
+        request: any,
+        response: any,
+    },
+    emailHandlerStoreToken: {
+        request: any,
+        response: any,
+    },
+    setSize: {
+        request: any,
+        response: any,
+    },
+    emailHandlerCheckAppSignedInStatus: {
+        request: any,
+        response: any,
+    },
+    emailHandlerRefreshAlias: {
+        request: any,
+        response: any,
+    },
+    emailHandlerGetAddresses: {
+        request: any,
+        response: any,
+    },
+    emailHandlerGetUserData: {
+        request: any,
+        response: any,
+    },
+    pmHandlerOpenManageCreditCards: {
+        request: any,
+        response: any,
+    },
+    pmHandlerOpenManageIdentities: {
+        request: any,
+        response: any,
+    },
+    testMock: {
+        request: any,
+        response: any,
+    }
 }
 
+/**
+ * This is the legacy transport used for old apple devices.
+ */
+type LegacyTransport = BaseTransport<LegacyMessages>;

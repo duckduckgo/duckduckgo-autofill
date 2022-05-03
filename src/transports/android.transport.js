@@ -6,56 +6,48 @@ import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.
  * @returns {RuntimeTransport}
  */
 export function createTransport (_globalConfig) {
-    /** @type {RuntimeTransport} */
-    const transport = {
-        async send (name, data) {
-            console.log('📲 android:', name, data)
-            switch (name) {
-            case 'getRuntimeConfiguration': {
-                const response = sendAndWaitForAndroidAnswer(() => {
-                    return window.BrowserAutofill.getRuntimeConfiguration()
-                }, getRuntimeConfiguration.properties.type.const)
-                console.log('\t📲', JSON.stringify(response))
-                return response
-            }
-            case 'getAvailableInputTypes': {
-                const response = sendAndWaitForAndroidAnswer(() => {
-                    return window.BrowserAutofill.getAvailableInputTypes()
-                }, getAvailableInputTypes.properties.type.const)
-                console.log('\t📲', JSON.stringify(response))
-                return response
-            }
-            case 'getAutofillData': {
-                const response = sendAndWaitForAndroidAnswer(() => {
-                    return window.BrowserAutofill.getAutofillData(JSON.stringify(data))
-                }, getAutofillData.properties.type.const)
-                console.log('\t📲', JSON.stringify(response))
-                return response
-            }
-            case 'storeFormData': {
-                return window.BrowserAutofill.storeFormData(JSON.stringify(data))
-            }
-            default:
-                throw new Error('android: not implemented: ' + name)
-            }
+    return new AndroidTransport()
+}
+
+/**
+ * @implements {RuntimeTransport}
+ */
+class AndroidTransport {
+    /**
+     * @param {keyof RuntimeMessages} name
+     * @param data
+     * @returns {Promise<void|*>}
+     */
+    async send (name, data) {
+        switch (name) {
+        case 'getRuntimeConfiguration': {
+            window.BrowserAutofill.getRuntimeConfiguration()
+            return waitForResponse(getRuntimeConfiguration.properties.type.const)
+        }
+        case 'getAvailableInputTypes': {
+            window.BrowserAutofill.getAvailableInputTypes()
+            return waitForResponse(getAvailableInputTypes.properties.type.const)
+        }
+        case 'getAutofillData': {
+            window.BrowserAutofill.getAutofillData(JSON.stringify(data))
+            return waitForResponse(getAutofillData.properties.type.const)
+        }
+        case 'storeFormData': {
+            return window.BrowserAutofill.storeFormData(JSON.stringify(data))
+        }
+        default:
+            throw new Error('android: not implemented: ' + name)
         }
     }
-
-    return transport
 }
 
 /**
  * Sends a message and returns a Promise that resolves with the response
  *
- * NOTE: This is deliberately different to the one from autofill-utils.,ks for android
- * as we're not 100% sure on the post message implementation yet.
- *
- * @param {Function} fn - a fn to call or an object to send via postMessage
  * @param {string} expectedResponse - the name of the response
  * @returns {Promise<*>}
  */
-function sendAndWaitForAndroidAnswer (fn, expectedResponse) {
-    fn()
+function waitForResponse (expectedResponse) {
     return new Promise((resolve) => {
         const handler = e => {
             // todo(Shane): Allow blank string, try sandboxed iframe. allow-scripts

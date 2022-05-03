@@ -11,7 +11,7 @@ export class Tooltip {
      * @param config
      * @param inputType
      * @param getPosition
-     * @param {TooltipHandler} tooltipHandler
+     * @param {WebTooltipHandler} tooltipHandler
      * @param {TooltipOptions} options
      */
     constructor (config, inputType, getPosition, tooltipHandler, options) {

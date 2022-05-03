@@ -1,32 +1,26 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import {createTransport} from '../transports/transport.apple'
-import {formatDuckAddress, autofillEnabled} from '../autofill-utils'
-import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
+import {formatDuckAddress} from '../autofill-utils'
 // import {fromPlatformConfig} from '../settings/settings'
 import {CSS_STYLES} from '../UI/styles/styles'
+import {createLegacyTransport} from '../transports/apple.transport'
 
-class AppleTopFrameDeviceInterface extends InterfacePrototype {
-    /* @type {Timeout | undefined} */
-    pollingTimeout
-
-    /** @type {Transport} */
-    transport = createTransport(this.globalConfig)
-
-    /** @override */
-    initialSetupDelayMs = 300
+/**
+ * todo(Shane): Decide which data is/isn't needed when apple is inside overlay
+ */
+class AppleOverlayDeviceInterface extends InterfacePrototype {
+    /**
+     * @deprecated use the runtime only.
+     * @type {LegacyTransport}
+     */
+    legacyTransport = createLegacyTransport(this.globalConfig)
 
     stripCredentials = false;
 
-    async isEnabled () {
-        return autofillEnabled(this.globalConfig, processConfig)
-    }
-
     async setupAutofill () {
-        if (this.globalConfig.isApp) {
-            await this.getAutofillInitData()
-        }
+        const response = await this.runtime.getAutofillInitData();
+        this.storeLocalData(response)
 
-        const signedIn = await this._checkDeviceSignedIn()
+        const signedIn = this.availableInputTypes.email;
 
         if (signedIn) {
             if (this.globalConfig.isApp) {
@@ -35,6 +29,10 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
         }
 
         await this._setupTopFrame()
+    }
+
+    isDeviceSignedIn() {
+        return Boolean(this.availableInputTypes.email)
     }
 
     async _setupTopFrame () {
@@ -53,9 +51,10 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
         }
 
         // this is the apple specific part about faking the focus etc.
-        this.tooltip.addListener(() => {
+        // todo(Shane): The fact this 'addListener' could be undefined is a design problem
+        this.tooltip.addListener?.(() => {
             const handler = (event) => {
-                const tooltip = this.tooltip.getActiveTooltip()
+                const tooltip = this.tooltip.getActiveTooltip?.()
                 tooltip?.focus(event.detail.x, event.detail.y)
             }
             window.addEventListener('mouseMove', handler)
@@ -68,40 +67,36 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     }
 
     getUserData () {
-        return this.transport.send('emailHandlerGetUserData')
+        return this.legacyTransport.send('emailHandlerGetUserData')
     }
 
     async getAddresses () {
         if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await this.transport.send('emailHandlerGetAddresses')
+        const {addresses} = await this.legacyTransport.send('emailHandlerGetAddresses')
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
     async refreshAlias () {
-        await this.transport.send('emailHandlerRefreshAlias')
+        await this.legacyTransport.send('emailHandlerRefreshAlias')
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
 
-    async _checkDeviceSignedIn () {
-        const {isAppSignedIn} = await this.transport.send('emailHandlerCheckAppSignedInStatus')
-        this.isDeviceSignedIn = () => !!isAppSignedIn
-        return !!isAppSignedIn
-    }
-
     async setSize (cb) {
         const details = cb()
-        await this.transport.send('setSize', details)
+        // todo(Shane): Upgrade to new runtime
+        await this.legacyTransport.send('setSize', details)
     }
 
     async removeTooltip () {
-        await this.transport.send('closeAutofillParent', {})
+        console.log('AppleOverlayDeviceInterface', 'closeAutofillParent');
+        await this.runtime.closeAutofillParent()
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.transport.send('emailHandlerStoreToken', {token, username: userName, cohort})
+        return this.legacyTransport.send('emailHandlerStoreToken', {token, username: userName, cohort})
     }
 
     /**
@@ -114,17 +109,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
      * @deprecated
      */
     storeCredentials (credentials) {
-        return this.transport.send('pmHandlerStoreCredentials', credentials)
-    }
-
-    /**
-     * Gets the init data from the tooltipHandler
-     * @returns {APIResponse<PMData>}
-     */
-    async getAutofillInitData () {
-        const response = await this.transport.send('pmHandlerGetAutofillInitData')
-        this.storeLocalData(response.success)
-        return response
+        return this.legacyTransport.send('pmHandlerStoreCredentials', credentials)
     }
 
     /**
@@ -133,14 +118,14 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return this.transport.send('pmHandlerGetAutofillCredentials', {id})
+        return this.legacyTransport.send('pmHandlerGetAutofillCredentials', {id})
     }
 
     /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {
-        return this.transport.send('pmHandlerOpenManagePasswords')
+        return this.legacyTransport.send('pmHandlerOpenManagePasswords')
     }
 
     /**
@@ -159,7 +144,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.transport.send('pmHandlerGetCreditCard', {id})
+        return this.legacyTransport.send('pmHandlerGetCreditCard', {id})
     }
 
     // Used to encode data to send back to the child autofill
@@ -168,7 +153,8 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
             return [key, String(value)]
         })
         const data = Object.fromEntries(detailsEntries)
-        this.transport.send('selectedDetail', {data, configType})
+        // todo(Shane): Migrate
+        await this.legacyTransport.send('selectedDetail', {data, configType})
     }
 
     async getCurrentInputType () {
@@ -177,7 +163,7 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     }
 
     async getAlias () {
-        const {alias} = await this.transport.send(
+        const {alias} = await this.legacyTransport.send(
             'emailHandlerGetAlias',
             {
                 requiresUserPermission: !this.globalConfig.isApp,
@@ -204,4 +190,4 @@ class AppleTopFrameDeviceInterface extends InterfacePrototype {
     }
 }
 
-export { AppleTopFrameDeviceInterface }
+export { AppleOverlayDeviceInterface }

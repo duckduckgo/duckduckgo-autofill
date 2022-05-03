@@ -28,15 +28,15 @@ interface AttachArgs {
 }
 
 /**
- * The tooltip tooltipHandler is an abstraction over the concept
+ * The TooltipInterface is an abstraction over the concept
  * of 'attaching'. On ios/android this may result in nothing more than showing
  * an overlay, but on other platforms it may... todo(Shane): Description
  */
 interface TooltipInterface {
-  getActiveTooltip(): LocalTooltip | null;
-  setActiveTooltip(tooltip: LocalTooltip);
-  addListener(cb: ()=>void);
-  removeTooltip();
+  getActiveTooltip?(): LocalTooltip | null;
+  setActiveTooltip?(tooltip: LocalTooltip);
+  addListener?(cb: ()=>void);
+  removeTooltip?();
   attach(args: AttachArgs): void;
 
   /**
@@ -46,8 +46,7 @@ interface TooltipInterface {
   setDevice?(device: Device);
 }
 
-
-interface TooltipHandler {
+interface WebTooltipHandler {
   tooltipWrapperClass(): string;
   tooltipStyles(): string;
   tooltipPositionClass(top: number, left: number): string

@@ -49,6 +49,7 @@ function createGlobalConfig () {
         isTopFrame,
         isWindows,
         secret,
+        // supportsTopFrame: false,
         supportsTopFrame,
         hasModernWebkitAPI,
         contentScope,

@@ -6,6 +6,8 @@ import {createGlobalConfig} from './config'
 import {createRuntime} from './runtime/runtime'
 import {featureToggleAwareInputTypes} from './input-types/input-types'
 import {createTooltip} from './UI/tooltips'
+import {fromRuntimeConfig} from './settings/settings'
+import {createLoggingTransport} from './transports/transport'
 
 (async () => {
     if (!window.isSecureContext) return false
@@ -17,14 +19,18 @@ import {createTooltip} from './UI/tooltips'
             console.log('globalConfig', globalConfig)
         }
 
+        // Transport is needed very early because we may need to fetch initial configuration, before any
+        // autofill logic can run...
+        const transport = createLoggingTransport(globalConfig);
+
         // Create the runtime, this does a best-guesses job of determining where we're running.
-        const runtime = createRuntime(globalConfig)
+        const runtime = createRuntime(globalConfig, transport)
 
         // Get runtime configuration - this may include messaging
         const runtimeConfiguration = await runtime.getRuntimeConfiguration()
 
         // Autofill settings need to be derived from runtime config
-        const autofillSettings = await runtime.getAutofillSettings(runtimeConfiguration)
+        const autofillSettings = fromRuntimeConfig(runtimeConfiguration)
 
         // log feature toggles for clarity when testing
         if (globalConfig.isDDGTestMode) {
@@ -33,15 +39,15 @@ import {createTooltip} from './UI/tooltips'
 
         // If it was enabled, try to ask for available input types
         if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
+            // Determine the tooltipHandler type
+            const tooltip = createTooltip(runtime, globalConfig, runtimeConfiguration, autofillSettings)
+
             const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes()
             const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles)
 
-            // Determine the tooltipHandler type
-            const tooltip = createTooltip(inputTypes, runtime, globalConfig, runtimeConfiguration, autofillSettings)
             const device = createDevice(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
 
-            console.log(device)
-
+            // This is a workaround for the previous design, we should refactor if possible
             tooltip.setDevice?.(device)
 
             // Init services

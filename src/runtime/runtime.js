@@ -1,13 +1,16 @@
-import { createTransport as createAppleTransport } from '../transports/transport.apple'
-import { createTransport as createAndroidTransport } from '../transports/transport.android'
-import { createTransport as createExtensionTransport } from '../transports/transport.extension'
-import { createTransport as createWindowsTransport } from '../transports/transport.windows'
 import { tryCreateRuntimeConfiguration } from '@duckduckgo/content-scope-scripts'
 
-import {fromPlatformConfig} from '../settings/settings'
 import {getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
 import validators from '../schema/validators.cjs'
 
+/**
+ * The Runtime is the centralised place for dealing with messages.
+ *
+ * It should validate incoming arguments, as well as outputs.
+ *
+ * Note: This runtime should not encode information about how to transmit
+ * data, that's a job for the provided RuntimeTransport
+ */
 class Runtime {
     /** @type {RuntimeTransport} */
     transport;
@@ -49,7 +52,7 @@ class Runtime {
 
     /**
      * @public
-     * @returns {Promise<RuntimeMessages['getAvailableInputTypes']['response']['success']>}
+     * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes () {
         const response = await this.transport.send('getAvailableInputTypes')
@@ -70,11 +73,18 @@ class Runtime {
     async getAutofillData (input) {
         const mainType = getMainTypeFromType(input.inputType)
         const subType = getSubtypeFromType(input.inputType)
+
+        if (mainType === 'unknown') {
+            throw new Error('unreachable, should not be here if (mainType === "unknown")')
+        }
+
+        /** @type {Schema.GetAutofillDataRequest} */
         const payload = {
             inputType: input.inputType,
             mainType,
             subType
         }
+
         const validator = validators['#/definitions/GetAutofillDataRequest']
         if (!validator?.(payload)) {
             throwError(validator?.['errors'], 'getAutofillDataRequest')
@@ -103,16 +113,11 @@ class Runtime {
      * @param {DataStorageObject} data
      */
     async storeFormData (data) {
-        // todo(Shane): Ensure this data matches an outgoing schema
+        const validator = validators['#/definitions/StoreFormDataRequest']
+        if (!validator?.(data)) {
+            throwError(validator?.['errors'], 'storeFormData')
+        }
         return this.transport.send('storeFormData', data)
-    }
-
-    /**
-     * @public
-     * @returns {Promise<import("../settings/settings").AutofillSettings>}
-     */
-    async getAutofillSettings (platformConfig) {
-        return fromPlatformConfig(platformConfig)
     }
 
     /**
@@ -120,11 +125,16 @@ class Runtime {
      * @returns {Promise<void>}
      */
     async showAutofillParent (parentArgs) {
-        return this.transport.send('showAutofillParent', parentArgs)
+        const validator = validators['#/definitions/ShowAutofillParentRequest']
+        if (!validator?.(parentArgs)) {
+            throwError(validator?.['errors'], 'showAutofillParent')
+        }
+        await this.transport.send('showAutofillParent', parentArgs)
     }
 
     /**
-     * todo(Shane): Schema for this
+     * todo(Shane): Schema for this?
+     * @deprecated This was a port from the macOS implementation so the API may not be suitable for all
      * @returns {Promise<any>}
      */
     async getSelectedCredentials () {
@@ -132,7 +142,6 @@ class Runtime {
     }
 
     /**
-     * todo(Shane): Schema for this
      * @returns {Promise<any>}
      */
     async closeAutofillParent () {
@@ -140,46 +149,17 @@ class Runtime {
     }
 }
 
-function createRuntime (config) {
-    const transport = selectTransport(config)
+/**
+ * @param {GlobalConfig} config
+ * @param {RuntimeTransport} transport
+ * @returns {Runtime}
+ */
+function createRuntime (config, transport) {
     return new Runtime(config, transport)
 }
 
 /**
- * The runtime has to decide on a transport, *before* we have a 'tooltipHandler'.
- *
- * This is because an initial message to retrieve the platform configuration might be needed
- *
- * @param {GlobalConfig} globalConfig
- * @returns {RuntimeTransport}
- */
-function selectTransport (globalConfig) {
-    if (typeof globalConfig.userPreferences?.platform?.name === 'string') {
-        switch (globalConfig.userPreferences?.platform?.name) {
-        case 'ios': return createAppleTransport(globalConfig)
-        case 'macos': return createAppleTransport(globalConfig)
-        default: throw new Error('selectTransport unimplemented!')
-        }
-    }
-
-    if (globalConfig.isDDGApp) {
-        if (globalConfig.isAndroid) {
-            return createAndroidTransport(globalConfig)
-        }
-        console.warn('should never get here...')
-        return createAppleTransport(globalConfig)
-    }
-
-    if (globalConfig.isWindows) {
-        return createWindowsTransport(globalConfig)
-    }
-
-    // falls back to extension... is this still the best way to determine this?
-    return createExtensionTransport(globalConfig)
-}
-
-/**
- * @param {APIResponseSingle<any>} object
+ * @param {GenericRuntimeResponse<any>} object
  * @param {string} [name]
  * @param {import("ajv").ValidateFunction} [validator]
  */

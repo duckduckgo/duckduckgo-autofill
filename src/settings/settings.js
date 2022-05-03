@@ -3,15 +3,18 @@ import validators from '../schema/validators.cjs'
 /**
  * A wrapper for Autofill settings
  */
-class AutofillSettings {
+class Settings {
     validate = validators['#/definitions/AutofillSettings']
 
     /** @type {Settings | null} */
     settings = null
 
     /**
+     * Try to convert an object into Autofill Settings.
+     * This will try to validate the keys against the schema
+     *
      * @throws
-     * @returns {AutofillSettings}
+     * @returns {Settings}
      */
     from (input) {
         if (this.validate(input)) {
@@ -36,9 +39,9 @@ class AutofillSettings {
         return this.settings.featureToggles
     }
 
-    /** @returns {AutofillSettings} */
+    /** @returns {Settings} */
     static default () {
-        return new AutofillSettings().from({
+        return new Settings().from({
             /** @type {FeatureTogglesSettings} */
             featureToggles: {
                 inputType_credentials: true,
@@ -54,12 +57,12 @@ class AutofillSettings {
 
 /**
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} config
- * @returns {AutofillSettings}
+ * @returns {Settings}
  */
-export function fromPlatformConfig (config) {
+export function fromRuntimeConfig (config) {
     const autofillSettings = config.getSettings('autofill')
-    const settings = (new AutofillSettings()).from(autofillSettings)
+    const settings = (new Settings()).from(autofillSettings)
     return settings
 }
 
-export { AutofillSettings }
+export { Settings }
