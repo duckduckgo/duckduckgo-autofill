@@ -64,7 +64,7 @@ export function createWebkitMocks (platform = 'macos') {
         },
         closeAutofillParent: {},
         getSelectedCredentials: {type: 'none'},
-
+        pmHandlerStoreData: {},
         pmHandlerGetAutofillCredentials: {
             /** @type {CredentialsObject|null} */
             success: null
