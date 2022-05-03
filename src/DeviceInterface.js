@@ -1,14 +1,35 @@
-import { createGlobalConfig } from './config'
-import AndroidInterface from './DeviceInterface/AndroidInterface'
-import ExtensionInterface from './DeviceInterface/ExtensionInterface'
-import AppleDeviceInterface from './DeviceInterface/AppleDeviceInterface'
+import {AndroidInterface} from './DeviceInterface/AndroidInterface'
+import {ExtensionInterface} from './DeviceInterface/ExtensionInterface'
+import {AppleDeviceInterface} from './DeviceInterface/AppleDeviceInterface'
+import {WindowsInterface} from './DeviceInterface/WindowsInterface'
+import {AppleTopFrameDeviceInterface} from './DeviceInterface/AppleTopFrameDeviceInterface'
 
-function createDevice () {
-    const globalConfig = createGlobalConfig()
-    if (globalConfig.isDDGApp) {
-        return globalConfig.isAndroid ? new AndroidInterface(globalConfig) : new AppleDeviceInterface(globalConfig)
+/**
+ * @param {AvailableInputTypes} availableInputTypes
+ * @param {import("./runtime/runtime").Runtime} runtime
+ * @param {TooltipInterface} tooltip
+ * @param {GlobalConfig} globalConfig
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
+ * @param {import("./settings/settings").AutofillSettings} autofillSettings
+ * @returns {AndroidInterface|AppleDeviceInterface|AppleTopFrameDeviceInterface|ExtensionInterface|WindowsInterface}
+ */
+export function createDevice (availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
+    switch (platformConfig.platform) {
+    case 'macos':
+    case 'ios': {
+        if (globalConfig.isTopFrame) {
+            return new AppleTopFrameDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
+        }
+        return new AppleDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
     }
-    return new ExtensionInterface(globalConfig)
+    case 'extension':
+        return new ExtensionInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
+    case 'windows':
+        return new WindowsInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
+    case 'android':
+        return new AndroidInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings)
+    case 'unknown':
+        throw new Error('unreachable. tooltipHandler platform was "unknown"')
+    }
+    throw new Error('undefined')
 }
-
-export { createDevice }

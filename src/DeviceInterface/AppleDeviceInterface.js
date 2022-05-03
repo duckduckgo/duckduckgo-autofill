@@ -1,15 +1,11 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import { createTransport } from '../appleDeviceUtils/appleDeviceUtils'
-import { formatDuckAddress, autofillEnabled } from '../autofill-utils'
-import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
+import {createTransport} from '../transports/transport.apple'
+import {formatDuckAddress, autofillEnabled} from '../autofill-utils'
+import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
+// import {fromPlatformConfig} from '../settings/settings'
+import {CSS_STYLES} from '../UI/styles/styles'
 
-/**
- * @implements {FeatureToggles}
- */
 class AppleDeviceInterface extends InterfacePrototype {
-    /** @type {FeatureToggleNames[]} */
-    #supportedFeatures = [];
-
     /* @type {Timeout | undefined} */
     pollingTimeout
 
@@ -23,99 +19,13 @@ class AppleDeviceInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
-    constructor (config) {
-        super(config)
-
-        // Only enable 'password.generation' if we're on the macOS app (for now);
-        if (this.globalConfig.isApp) {
-            this.#supportedFeatures.push('password.generation')
-        }
-
-        if (this.globalConfig.isTopFrame) {
-            this.stripCredentials = false
-            window.addEventListener('mouseMove', this)
-        } else if (this.globalConfig.supportsTopFrame) {
-            // This is always added as a child frame needs to be informed of a parent frame scroll
-            window.addEventListener('scroll', this)
-        }
-    }
-
-    postInit () {
-        if (!this.globalConfig.isTopFrame) return
-        this.setupTopFrame()
-    }
-
-    async setupTopFrame () {
-        const topContextData = this.getTopContextData()
-        if (!topContextData) throw new Error('unreachable, topContextData should be available')
-        // Provide dummy values, they're not used
-        const getPosition = () => {
-            return {
-                x: 0,
-                y: 0,
-                height: 50,
-                width: 50
-            }
-        }
-        const tooltip = this.createTooltip(getPosition, topContextData)
-
-        this.setActiveTooltip(tooltip)
-    }
-
-    /**
-     * Poll the native listener until the user has selected a credential.
-     * Message return types are:
-     * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
-     *     - This also is triggered when the close event is called and prevents any edge case continued polling.
-     * - 'ok' is when the user has selected a credential and the value can be injected into the page.
-     * - 'none' is when the tooltip is open in the native window however hasn't been entered.
-     * @returns {Promise<void>}
-     */
-    async listenForSelectedCredential () {
-        // Prevent two timeouts from happening
-        clearTimeout(this.pollingTimeout)
-
-        const response = await this.transport.send('getSelectedCredentials')
-        switch (response.type) {
-        case 'none':
-            // Parent hasn't got a selected credential yet
-            this.pollingTimeout = setTimeout(() => {
-                this.listenForSelectedCredential()
-            }, 100)
-            return
-        case 'ok':
-            return this.activeFormSelectedDetail(response.data, response.configType)
-        case 'stop':
-            // Parent wants us to stop polling
-
-            break
-        }
-    }
-
-    handleEvent (event) {
-        switch (event.type) {
-        case 'mouseMove':
-            this.processMouseMove(event)
-            break
-        case 'scroll': {
-            this.removeTooltip()
-            break
-        }
-        default:
-            super.handleEvent(event)
-        }
-    }
-
-    processMouseMove (event) {
-        this.currentTooltip?.focus(event.detail.x, event.detail.y)
-    }
-
     async setupAutofill () {
         if (this.globalConfig.isApp) {
             await this.getAutofillInitData()
         }
 
         const signedIn = await this._checkDeviceSignedIn()
+
         if (signedIn) {
             if (this.globalConfig.isApp) {
                 await this.getAddresses()
@@ -151,93 +61,8 @@ class AppleDeviceInterface extends InterfacePrototype {
         return !!isAppSignedIn
     }
 
-    async setSize (details) {
-        await this.transport.send('setSize', details)
-    }
-
-    /**
-     * @param {import("../Form/Form").Form} form
-     * @param {HTMLInputElement} input
-     * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
-     * @param {{ x: number; y: number; } | null} click
-     * @param {TopContextData} topContextData
-     */
-    attachTooltipInner (form, input, getPosition, click, topContextData) {
-        const {isTopFrame, supportsTopFrame} = this.globalConfig
-        if (!isTopFrame && supportsTopFrame) {
-            const showTooltipAtPosition = () => {
-                this.showTopTooltip(click, getPosition(), topContextData)
-            }
-            if (!click &&
-                !this.elementIsInViewport(getPosition())) {
-                input.scrollIntoView(true)
-                setTimeout(showTooltipAtPosition, 500)
-                return
-            }
-            showTooltipAtPosition()
-            return
-        }
-        super.attachTooltipInner(form, input, getPosition, click, topContextData)
-    }
-
-    /**
-     * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-     * @returns {boolean}
-     */
-    elementIsInViewport (inputDimensions) {
-        if (inputDimensions.x < 0 ||
-            inputDimensions.y < 0 ||
-            inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth ||
-            inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
-            return false
-        }
-        const viewport = document.documentElement
-        if (inputDimensions.x + inputDimensions.width > viewport.clientWidth ||
-            inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
-            return false
-        }
-        return true
-    }
-
-    /**
-     * @param {{ x: number; y: number; } | null} click
-     * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-     * @param {TopContextData} [data]
-     */
-    async showTopTooltip (click, inputDimensions, data) {
-        let diffX = inputDimensions.x
-        let diffY = inputDimensions.y
-        if (click) {
-            diffX -= click.x
-            diffY -= click.y
-        } else if (!this.elementIsInViewport(inputDimensions)) {
-            // If the focus event is outside the viewport ignore, we've already tried to scroll to it
-            return
-        }
-
-        const details = {
-            wasFromClick: Boolean(click),
-            inputTop: Math.floor(diffY),
-            inputLeft: Math.floor(diffX),
-            inputHeight: Math.floor(inputDimensions.height),
-            inputWidth: Math.floor(inputDimensions.width),
-            serializedInputContext: JSON.stringify(data)
-        }
-
-        await this.transport.send('showAutofillParent', details)
-
-        // Start listening for the user initiated credential
-        this.listenForSelectedCredential()
-    }
-
-    async removeTooltip () {
-        if (!this.globalConfig.supportsTopFrame) return super.removeTooltip()
-        this.removeCloseListeners()
-        await this.transport.send('closeAutofillParent', {})
-    }
-
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.transport.send('emailHandlerStoreToken', { token, username: userName, cohort })
+        return this.transport.send('emailHandlerStoreToken', {token, username: userName, cohort})
     }
 
     /**
@@ -254,15 +79,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * Sends form data to the native layer
-     * @param {DataStorageObject} data
-     */
-    storeFormData (data) {
-        return this.transport.send('pmHandlerStoreData', data)
-    }
-
-    /**
-     * Gets the init data from the device
+     * Gets the init data from the tooltipHandler
      * @returns {APIResponse<PMData>}
      */
     async getAutofillInitData () {
@@ -277,7 +94,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return this.transport.send('pmHandlerGetAutofillCredentials', { id })
+        return this.transport.send('pmHandlerGetAutofillCredentials', {id})
     }
 
     /**
@@ -317,20 +134,12 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.transport.send('pmHandlerGetCreditCard', { id })
+        return this.transport.send('pmHandlerGetCreditCard', {id})
     }
 
     // Used to encode data to send back to the child autofill
     async selectedDetail (detailIn, configType) {
-        if (this.globalConfig.isTopFrame) {
-            let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
-                return [key, String(value)]
-            })
-            const data = Object.fromEntries(detailsEntries)
-            this.transport.send('selectedDetail', { data, configType })
-        } else {
-            this.activeFormSelectedDetail(detailIn, configType)
-        }
+        this.activeFormSelectedDetail(detailIn, configType)
     }
 
     async getCurrentInputType () {
@@ -349,10 +158,9 @@ class AppleDeviceInterface extends InterfacePrototype {
         return formatDuckAddress(alias)
     }
 
-    /** @param {FeatureToggleNames} name */
-    supportsFeature (name) {
-        return this.#supportedFeatures.includes(name)
+    tooltipStyles () {
+        return `<style>${CSS_STYLES}</style>`
     }
 }
 
-export default AppleDeviceInterface
+export { AppleDeviceInterface }

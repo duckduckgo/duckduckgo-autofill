@@ -1,5 +1,6 @@
-type Platform = "ios" | "macos" | "android" | "extension";
-type Replacements = Record<keyof GlobalConfig, string | boolean>;
+type Platform = "ios" | "macos" | "android" | "extension" | "windows";
+type Replacements = Record<keyof GlobalConfig, any>;
+type MockCall = [name: string, input: any, output: any];
 
 /**
  * This is an API Abstraction for mock user data.
@@ -24,6 +25,10 @@ interface MockBuilder<State> {
     withIdentity(identity: IdentityObject): MockBuilder
     // Add a credential
     withCredentials(credentials: CredentialsObject): MockBuilder
+    // Add available input types
+    withAvailableInputTypes(inputTypes: AvailableInputTypes): MockBuilder
+    // Add any number of feature toggle overrides
+    withFeatureToggles(featureToggles: Partial<FeatureTogglesSettings>): MockBuilder
     // observe the current state
     tap(fn: (currentState: State) => void): MockBuilder
     // apply to the page, this is the final step

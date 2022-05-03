@@ -9,6 +9,7 @@ import {
 } from '../autofill-utils'
 
 class ExtensionInterface extends InterfacePrototype {
+    // todo(Shane): How will this be handled in the new model.
     async isEnabled () {
         return new Promise(resolve => {
             chrome.runtime.sendMessage(
@@ -27,7 +28,9 @@ class ExtensionInterface extends InterfacePrototype {
         return this.hasLocalAddresses
     }
 
-    setupAutofill () {
+    async setupAutofill () {
+        await this._addDeviceListeners()
+
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
                 const cleanup = this.scanner.init()
@@ -71,7 +74,7 @@ class ExtensionInterface extends InterfacePrototype {
         return chrome.runtime.sendMessage(data)
     }
 
-    addDeviceListeners () {
+    _addDeviceListeners () {
         // Add contextual menu listeners
         let activeEl = null
         document.addEventListener('contextmenu', e => {
@@ -113,6 +116,11 @@ class ExtensionInterface extends InterfacePrototype {
             }
         })
     }
+
+    /** @override */
+    tooltipStyles () {
+        return `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
+    }
 }
 
-export default ExtensionInterface
+export { ExtensionInterface }

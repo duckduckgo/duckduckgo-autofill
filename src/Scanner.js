@@ -15,6 +15,7 @@ import { createMatching } from './Form/matching'
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
+ *     availableInputTypes: AvailableInputTypes,
  * }} ScannerOptions
  */
 
@@ -27,12 +28,14 @@ const defaultScannerOptions = {
     // wait for a 500ms window of event silence before performing the scan
     debounceTimePeriod: 500,
     // how long to wait when performing the initial scan
-    initialDelay: 0
+    initialDelay: 0,
+    // default has no available input types
+    availableInputTypes: {}
 }
 
 /**
  * This allows:
- *   1) synchronous DOM scanning + mutations - via `createScanner(device).findEligibleInputs(document)`
+ *   1) synchronous DOM scanning + mutations - via `createScanner(tooltipHandler).findEligibleInputs(document)`
  *   2) or, as above + a debounced mutation observer to re-run the scan after the given time
  */
 class DefaultScanner {
@@ -58,6 +61,7 @@ class DefaultScanner {
         this.matching = createMatching()
         this.options = options
     }
+
     /**
      * Call this to scan once and then watch for changes.
      *
@@ -156,7 +160,10 @@ class DefaultScanner {
                 this.forms.delete(childForm)
             }
 
-            this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching))
+            if (!this.options.availableInputTypes) {
+                throw new Error('unreachble. availableInputTypes must be set')
+            }
+            this.forms.set(parentForm, new Form(parentForm, input, this.options.availableInputTypes, this.device, this.matching))
         }
     }
 

@@ -1,6 +1,60 @@
 import ddgGlobals from './captureDdgGlobals'
 
 /**
+ * Create a wrapper around the webkit messaging that conforms
+ * to the Transport tooltipHandler
+ *
+ * @param {GlobalConfig} config
+ * @returns {RuntimeTransport}
+ */
+export function createTransport (config) {
+    /** @type {RuntimeTransport} */
+    const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
+        /**
+         * @param {Names} name
+         * @param data
+         */
+        async send (name, data) {
+            console.log('🍏', name, JSON.stringify(data))
+            if (name in interceptions) {
+                console.log('--> intercepted', name, data)
+                return interceptions[name]?.(config)
+            }
+            const response = await wkSendAndWait(name, data, {
+                secret: config.secret,
+                hasModernWebkitAPI: config.hasModernWebkitAPI
+            })
+            console.log('\t🍏📲', JSON.stringify(response))
+            return response
+        }
+    }
+    return transport
+}
+
+/**
+ * @type {Interceptions}
+ */
+const interceptions = {
+    // 'getAvailableInputTypes': () => {
+    //     return {
+    //         email: true,
+    //     }
+    // },
+    /**
+     * @param {GlobalConfig} globalConfig
+     */
+    'getRuntimeConfiguration': (globalConfig) => {
+        return {
+            success: {
+                contentScope: globalConfig.contentScope,
+                userPreferences: globalConfig.userPreferences,
+                userUnprotectedDomains: globalConfig.userUnprotectedDomains
+            }
+        }
+    }
+}
+
+/**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
@@ -39,7 +93,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  * @returns {Promise<*>}
  */
-const wkSendAndWait = async (handler, data = {}, opts = {}) => {
+export const wkSendAndWait = async (handler, data = {}, opts = {}) => {
     if (opts.hasModernWebkitAPI) {
         const response = await wkSend(handler, data, opts)
         return ddgGlobals.JSONparse(response || '{}')
@@ -93,25 +147,3 @@ const decrypt = async (ciphertext, key, iv) => {
     let dec = new ddgGlobals.TextDecoder()
     return dec.decode(decrypted)
 }
-
-/**
- * Create a wrapper around the webkit messaging that conforms
- * to the Transport interface
- *
- * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {Transport}
- */
-function createTransport (config) {
-    /** @type {Transport} */
-    const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
-        send (name, data) {
-            return wkSendAndWait(name, data, {
-                secret: config.secret,
-                hasModernWebkitAPI: config.hasModernWebkitAPI
-            })
-        }
-    }
-    return transport
-}
-
-export { createTransport }

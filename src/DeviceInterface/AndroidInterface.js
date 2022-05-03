@@ -43,4 +43,4 @@ class AndroidInterface extends InterfacePrototype {
     }
 }
 
-export default AndroidInterface
+export {AndroidInterface}

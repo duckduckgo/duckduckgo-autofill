@@ -1,6 +1,5 @@
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype'
 import { createScanner } from '../Scanner'
-import { createGlobalConfig } from '../config'
 
 afterEach(() => {
     document.body.innerHTML = ''
@@ -252,7 +251,14 @@ describe('Test the form class reading values correctly', () => {
         document.body.innerHTML = form
         // When we require autofill, the script scores the fields in the DOM
 
-        const scanner = createScanner(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
+        const scanner = createScanner(InterfacePrototype.default(), {
+            availableInputTypes: {
+                email: true,
+                creditCards: true,
+                credentials: true,
+                identities: true
+            }
+        }).findEligibleInputs(document)
         const formEl = document.querySelector('form')
         if (!formEl) throw new Error('unreachable')
         const formClass = scanner.forms.get(formEl)
@@ -330,7 +336,7 @@ describe('Form validity is reported correctly', () => {
         }) => {
         document.body.innerHTML = form
         // When we require autofill, the script scores the fields in the DOM
-        const scanner = createScanner(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
 
         const formEl = /** @type {HTMLElement} */ (document.querySelector('form, #form'))
         if (!formEl) throw new Error('unreachable')
@@ -350,7 +356,7 @@ describe('Check form has focus', () => {
 </form>`
 
         // When we require autofill, the script scores the fields in the DOM
-        const scanner = createScanner(new InterfacePrototype(createGlobalConfig())).findEligibleInputs(document)
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
 
         const formEl = /** @type {HTMLFormElement} */ (document.querySelector('form'))
         if (!formEl) throw new Error('unreachable')

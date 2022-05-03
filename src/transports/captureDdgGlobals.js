@@ -1,7 +1,7 @@
 // Capture the globals we need on page start
 const secretGlobals = {
     window,
-    // Methods must be bound to their interface, otherwise they throw Illegal invocation
+    // Methods must be bound to their tooltipHandler, otherwise they throw Illegal invocation
     encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
     decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
     generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
