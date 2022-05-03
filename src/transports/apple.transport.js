@@ -18,6 +18,10 @@ class AppleTransport {
                 secret: this.config.secret,
                 hasModernWebkitAPI: this.config.hasModernWebkitAPI
             })
+            // todo(Shane): make this applicable in more places, not tied to the apple implementation.
+            if (middlewares[name]) {
+                return middlewares[name](response, data)
+            }
             return response
         } catch (e) {
             if (e instanceof MissingWebkitHandler) {
@@ -33,7 +37,6 @@ class AppleTransport {
         }
     }
 }
-
 /**
  * Create a wrapper around the webkit messaging that conforms
  * to the Transport tooltipHandler
@@ -43,7 +46,6 @@ class AppleTransport {
 export function createTransport (config) {
     return new AppleTransport(config)
 }
-
 /**
  * @returns {LegacyTransport}
  */
@@ -62,23 +64,42 @@ export function createLegacyTransport (config) {
 }
 
 /**
+ *
+ * @type {Middlewares}
+ */
+const middlewares = {
+    getAutofillData: async (data) => {
+        const cloned = JSON.parse(JSON.stringify(data.success))
+        if ('id' in cloned) {
+            if (typeof cloned.id === 'number') {
+                console.warn("updated the credentials' id field as it was a number, but should be a string")
+                cloned.id = String(cloned.id)
+            }
+        }
+        return {
+            success: cloned
+        }
+    }
+}
+
+/**
  * @type {Interceptions}
  */
 const interceptions = {
     'getAutofillInitData': async (globalConfig) => {
-        const legacyTransport = createLegacyTransport(globalConfig);
-        const data = await legacyTransport.send('pmHandlerGetAutofillInitData');
+        const legacyTransport = createLegacyTransport(globalConfig)
+        const data = await legacyTransport.send('pmHandlerGetAutofillInitData')
 
         // todo(Shane): Fix this problem with ids with native team
         data.success?.credentials.forEach(cred => {
-            cred.id = String(cred.id);
-        });
+            cred.id = String(cred.id)
+        })
 
         return {
             success: {
                 // default, allowing it to be overriden
-                serializedInputContext: "{}",
-                ...data.success,
+                serializedInputContext: '{}',
+                ...data.success
             }
         }
     },
@@ -88,16 +109,15 @@ const interceptions = {
      * @param globalConfig
      */
     'getAvailableInputTypes': async (globalConfig) => {
-
-        const legacyTransport = createLegacyTransport(globalConfig);
-        const { isAppSignedIn } = await legacyTransport.send('emailHandlerCheckAppSignedInStatus');
+        const legacyTransport = createLegacyTransport(globalConfig)
+        const { isAppSignedIn } = await legacyTransport.send('emailHandlerCheckAppSignedInStatus')
 
         /** @type {AvailableInputTypes} */
         const legacyMacOsTypes = {
             credentials: true,
             identities: true,
             creditCards: true,
-            email: isAppSignedIn,
+            email: isAppSignedIn
         }
 
         /** @type {AvailableInputTypes} */
@@ -105,7 +125,7 @@ const interceptions = {
             credentials: false,
             identities: false,
             creditCards: false,
-            email: isAppSignedIn,
+            email: isAppSignedIn
         }
 
         return {
@@ -117,7 +137,6 @@ const interceptions = {
      * @param {GlobalConfig} globalConfig
      */
     'getRuntimeConfiguration': async (globalConfig) => {
-
         const legacyMacOSToggles = {
             inputType_credentials: true,
             inputType_identities: true,
@@ -151,7 +170,7 @@ const interceptions = {
                             }
                         }
                     },
-                    ...globalConfig.userPreferences,
+                    ...globalConfig.userPreferences
                 },
                 userUnprotectedDomains: globalConfig.userUnprotectedDomains
             }

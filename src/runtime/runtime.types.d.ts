@@ -54,6 +54,10 @@ type Interceptions = {
     [N in Names]?: (config: GlobalConfig) => Promise<RuntimeMessages[N]['response']>
 }
 
+type Middlewares = {
+    [N in Names]?: (response: RuntimeMessages[N]['response']) => Promise<RuntimeMessages[N]['response']>
+}
+
 type MocksObjectAndroid = {
     [N in Names]?: () => void
 }

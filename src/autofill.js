@@ -21,7 +21,7 @@ import {createLoggingTransport} from './transports/transport'
 
         // Transport is needed very early because we may need to fetch initial configuration, before any
         // autofill logic can run...
-        const transport = createLoggingTransport(globalConfig);
+        const transport = createLoggingTransport(globalConfig)
 
         // Create the runtime, this does a best-guesses job of determining where we're running.
         const runtime = createRuntime(globalConfig, transport)

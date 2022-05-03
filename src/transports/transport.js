@@ -42,7 +42,7 @@ export function createRuntimeTransport (globalConfig) {
  * @param {GlobalConfig} config
  * @returns {BaseTransport<any>}
  */
-export function createLoggingTransport(config) {
+export function createLoggingTransport (config) {
     const transport = createRuntimeTransport(config)
     /** @type {RuntimeTransport} */
     const loggingTransport = {
@@ -53,5 +53,5 @@ export function createLoggingTransport(config) {
             return res
         }
     }
-    return loggingTransport;
+    return loggingTransport
 }

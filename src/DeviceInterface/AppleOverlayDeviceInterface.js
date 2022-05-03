@@ -17,10 +17,10 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
     stripCredentials = false;
 
     async setupAutofill () {
-        const response = await this.runtime.getAutofillInitData();
+        const response = await this.runtime.getAutofillInitData()
         this.storeLocalData(response)
 
-        const signedIn = this.availableInputTypes.email;
+        const signedIn = this.availableInputTypes.email
 
         if (signedIn) {
             if (this.globalConfig.isApp) {
@@ -31,7 +31,7 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
         await this._setupTopFrame()
     }
 
-    isDeviceSignedIn() {
+    isDeviceSignedIn () {
         return Boolean(this.availableInputTypes.email)
     }
 
@@ -91,7 +91,7 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
     }
 
     async removeTooltip () {
-        console.log('AppleOverlayDeviceInterface', 'closeAutofillParent');
+        console.log('AppleOverlayDeviceInterface', 'closeAutofillParent')
         await this.runtime.closeAutofillParent()
     }
 

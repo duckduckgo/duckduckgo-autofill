@@ -9313,7 +9313,7 @@ class OverlayControllerTooltip {
 
     _classPrivateFieldInitSpec(this, _state, {
       writable: true,
-      value: "idle"
+      value: 'idle'
     });
 
     _defineProperty(this, "_device", null);
@@ -9328,7 +9328,7 @@ class OverlayControllerTooltip {
   }
 
   attach(args) {
-    if (_classPrivateFieldGet(this, _state) !== "idle") {
+    if (_classPrivateFieldGet(this, _state) !== 'idle') {
       this.removeTooltip().catch(e => {
         // todo(Shane): can we recover here?
         console.log('could not remove', e);
@@ -9415,13 +9415,13 @@ class OverlayControllerTooltip {
     try {
       await this.runtime.showAutofillParent(details);
 
-      _classPrivateFieldSet(this, _state, "parentShown");
+      _classPrivateFieldSet(this, _state, 'parentShown');
 
       _classPrivateMethodGet(this, _attachListeners, _attachListeners2).call(this);
     } catch (e) {
-      console.error("could not show parent", e);
+      console.error('could not show parent', e);
 
-      _classPrivateFieldSet(this, _state, "idle");
+      _classPrivateFieldSet(this, _state, 'idle');
     }
   }
 
@@ -9497,14 +9497,14 @@ class OverlayControllerTooltip {
   }
 
   async removeTooltip() {
-    if (_classPrivateFieldGet(this, _state) === "removingParent") return;
-    if (_classPrivateFieldGet(this, _state) === "idle") return;
+    if (_classPrivateFieldGet(this, _state) === 'removingParent') return;
+    if (_classPrivateFieldGet(this, _state) === 'idle') return;
 
-    _classPrivateFieldSet(this, _state, "removingParent");
+    _classPrivateFieldSet(this, _state, 'removingParent');
 
     await this.runtime.closeAutofillParent().catch(e => console.error('Could not close parent', e));
 
-    _classPrivateFieldSet(this, _state, "idle");
+    _classPrivateFieldSet(this, _state, 'idle');
 
     _classPrivateMethodGet(this, _removeListeners, _removeListeners2).call(this);
   }
@@ -16173,7 +16173,12 @@ class AppleTransport {
       const response = await wkSendAndWait(name, data, {
         secret: this.config.secret,
         hasModernWebkitAPI: this.config.hasModernWebkitAPI
-      });
+      }); // todo(Shane): make this applicable in more places, not tied to the apple implementation.
+
+      if (middlewares[name]) {
+        return middlewares[name](response, data);
+      }
+
       return response;
     } catch (e) {
       if (e instanceof MissingWebkitHandler) {
@@ -16224,9 +16229,30 @@ function createLegacyTransport(config) {
   return loggingTransport;
 }
 /**
- * @type {Interceptions}
+ *
+ * @type {Middlewares}
  */
 
+
+const middlewares = {
+  getAutofillData: async data => {
+    const cloned = JSON.parse(JSON.stringify(data.success));
+
+    if ('id' in cloned) {
+      if (typeof cloned.id === 'number') {
+        console.warn("updated the credentials' id field as it was a number, but should be a string");
+        cloned.id = String(cloned.id);
+      }
+    }
+
+    return {
+      success: cloned
+    };
+  }
+};
+/**
+ * @type {Interceptions}
+ */
 
 const interceptions = {
   'getAutofillInitData': async globalConfig => {
@@ -16241,7 +16267,7 @@ const interceptions = {
     return {
       success: {
         // default, allowing it to be overriden
-        serializedInputContext: "{}",
+        serializedInputContext: '{}',
         ...data.success
       }
     };
@@ -16504,6 +16530,7 @@ class ExtensionTransport {
 
   async send(name, data) {
     try {
+      console.log('name...', name);
       const result = await sendToExtension(name);
       return result;
     } catch (e) {
@@ -16560,10 +16587,10 @@ function sendToExtension(name) {
   return new Promise((resolve, reject) => chrome.runtime.sendMessage({
     [name]: true
   }, data => {
-    if (typeof data === "undefined") {
+    if (typeof data === 'undefined') {
       var _chrome$runtime$lastE, _chrome$runtime$lastE2;
 
-      if ((_chrome$runtime$lastE = chrome.runtime.lastError) !== null && _chrome$runtime$lastE !== void 0 && (_chrome$runtime$lastE2 = _chrome$runtime$lastE.message) !== null && _chrome$runtime$lastE2 !== void 0 && _chrome$runtime$lastE2.includes("The message port closed before a response was received")) {
+      if ((_chrome$runtime$lastE = chrome.runtime.lastError) !== null && _chrome$runtime$lastE !== void 0 && (_chrome$runtime$lastE2 = _chrome$runtime$lastE.message) !== null && _chrome$runtime$lastE2 !== void 0 && _chrome$runtime$lastE2.includes('The message port closed before a response was received')) {
         console.warn("Missing extension handler: '".concat(name, "'"));
         reject(new MissingExtensionHandler("Missing extension handler: '".concat(name, "'")));
       } else {

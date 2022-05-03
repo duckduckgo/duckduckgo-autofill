@@ -13,7 +13,7 @@ import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceI
  * @param {import("./settings/settings").Settings} autofillSettings
  * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface}
  */
-export function createDevice (availableInputTypes, runtime,  tooltip, globalConfig, platformConfig, autofillSettings) {
+export function createDevice (availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
     switch (platformConfig.platform) {
     case 'macos':
     case 'ios': {

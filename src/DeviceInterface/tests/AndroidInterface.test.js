@@ -13,7 +13,7 @@ describe('AndroidInterface', function () {
     it('can be instantiated without throwing', () => {
         const config = createGlobalConfig()
         const runtimeConfig = new RuntimeConfiguration()
-        const transport = createRuntimeTransport(config);
+        const transport = createRuntimeTransport(config)
         const runtime = createRuntime(config, transport)
         const tooltip = new NativeTooltip(runtime)
         const device = new AndroidInterface({}, runtime, tooltip, config, runtimeConfig, Settings.default())

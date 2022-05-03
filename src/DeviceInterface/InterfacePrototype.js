@@ -402,7 +402,6 @@ class InterfacePrototype {
     }
 
     async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
-
         if (!this.globalConfig.isDDGDomain) {
             return
         }
@@ -434,10 +433,10 @@ class InterfacePrototype {
      * Update availableInputTypes on the fly, this could happen when signing in for email, as an example
      * @returns {Promise<void>}
      */
-    async refreshAvailableInputTypes() {
+    async refreshAvailableInputTypes () {
         const runtimeAvailableInputTypes = await this.runtime.getAvailableInputTypes()
         const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, this.autofillSettings.featureToggles)
-        this.availableInputTypes = inputTypes;
+        this.availableInputTypes = inputTypes
     }
 
     async setupAutofill () {}
@@ -457,7 +456,7 @@ class InterfacePrototype {
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
-                await this.refreshAvailableInputTypes();
+                await this.refreshAvailableInputTypes()
                 await this.setupAutofill()
                 await this.setupSettingsPage({shouldLog: true})
             } else {
@@ -520,7 +519,7 @@ class InterfacePrototype {
     static default () {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
-        const transport = createRuntimeTransport(globalConfig);
+        const transport = createRuntimeTransport(globalConfig)
         const runtime = createRuntime(globalConfig, transport)
         const tooltip = new WebTooltip({tooltipKind: 'modern'})
         return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, Settings.default())

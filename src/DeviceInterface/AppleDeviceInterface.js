@@ -16,11 +16,11 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     async setupAutofill () {
         if (this.globalConfig.isApp) {
-            const response = await this.runtime.getAutofillInitData();
+            const response = await this.runtime.getAutofillInitData()
             this.storeLocalData(response)
         }
 
-        const signedIn = this.availableInputTypes.email;
+        const signedIn = this.availableInputTypes.email
 
         if (signedIn) {
             if (this.globalConfig.isApp) {
@@ -33,7 +33,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         this.addLogoutListener(cleanup)
     }
 
-    isDeviceSignedIn() {
+    isDeviceSignedIn () {
         return Boolean(this.availableInputTypes.email)
     }
 
@@ -54,7 +54,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
-
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
         return this.legacyTransport.send('emailHandlerStoreToken', {token, username: userName, cohort})

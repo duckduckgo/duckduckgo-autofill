@@ -11,7 +11,7 @@ class ExtensionTransport {
     async send (name, data) {
         try {
             const result = await sendToExtension(name)
-            return result;
+            return result
         } catch (e) {
             if (e instanceof MissingExtensionHandler) {
                 if (name in interceptions) {
@@ -55,12 +55,12 @@ class MissingExtensionHandler extends Error {
  * @param {string} name
  * @returns {Promise<any>}
  */
-function sendToExtension(name) {
+function sendToExtension (name) {
     return new Promise((resolve, reject) => chrome.runtime.sendMessage(
         {[name]: true},
         (data) => {
-            if (typeof data === "undefined") {
-                if (chrome.runtime.lastError?.message?.includes("The message port closed before a response was received")) {
+            if (typeof data === 'undefined') {
+                if (chrome.runtime.lastError?.message?.includes('The message port closed before a response was received')) {
                     console.warn(`Missing extension handler: '${name}'`)
                     reject(new MissingExtensionHandler(`Missing extension handler: '${name}'`))
                 } else {
@@ -71,7 +71,7 @@ function sendToExtension(name) {
                     success: data
                 })
             }
-        },
+        }
     ))
 }
 

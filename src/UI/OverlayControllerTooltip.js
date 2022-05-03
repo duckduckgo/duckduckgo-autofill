@@ -13,7 +13,7 @@ export class OverlayControllerTooltip {
     _activeTooltip = null
 
     /** @type {"idle" | "parentShown" | "removingParent"} */
-    #state = "idle";
+    #state = 'idle';
 
     /**
      * @deprecated do not access the tooltipHandler directly here
@@ -32,7 +32,7 @@ export class OverlayControllerTooltip {
     }
 
     attach (args) {
-        if (this.#state !== "idle") {
+        if (this.#state !== 'idle') {
             this.removeTooltip()
                 .catch((e) => {
                     // todo(Shane): can we recover here?
@@ -110,16 +110,16 @@ export class OverlayControllerTooltip {
 
         try {
             await this.runtime.showAutofillParent(details)
-            this.#state = "parentShown";
+            this.#state = 'parentShown'
             this.#attachListeners()
         } catch (e) {
-            console.error("could not show parent", e)
-            this.#state = "idle";
+            console.error('could not show parent', e)
+            this.#state = 'idle'
         }
     }
 
     #attachListeners () {
-        this.listenForSelectedCredential();
+        this.listenForSelectedCredential()
         window.addEventListener('scroll', this)
         window.addEventListener('keydown', this)
         window.addEventListener('input', this)
@@ -193,15 +193,15 @@ export class OverlayControllerTooltip {
     }
 
     async removeTooltip () {
-        if (this.#state === "removingParent") return;
-        if (this.#state === "idle") return;
+        if (this.#state === 'removingParent') return
+        if (this.#state === 'idle') return
 
-        this.#state = "removingParent";
+        this.#state = 'removingParent'
         await this.runtime.closeAutofillParent()
             .catch(e => console.error('Could not close parent', e))
 
-        this.#state = "idle";
-        this.#removeListeners();
+        this.#state = 'idle'
+        this.#removeListeners()
     }
 
     /**
