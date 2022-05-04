@@ -4141,7 +4141,8 @@ class Form {
       }
 
       if (this.shouldOpenTooltip(e, input)) {
-        if ((0, _autofillUtils.isEventWithinDax)(e, input) || this.device.globalConfig.isMobileApp) {
+        if (this.device.globalConfig.isMobileApp && // Avoid the icon capturing clicks on small fields making it impossible to focus
+        input.offsetWidth > 50 && (0, _autofillUtils.isEventWithinDax)(e, input)) {
           e.preventDefault();
           e.stopImmediatePropagation();
         }
