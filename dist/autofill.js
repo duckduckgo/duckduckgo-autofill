@@ -4005,14 +4005,15 @@ class Form {
     const allButtons =
     /** @type {HTMLElement[]} */
     [...this.form.querySelectorAll(selector)];
-    const likelySubmitButton = allButtons.find(_autofillUtils.isLikelyASubmitButton);
-    if (likelySubmitButton) return [likelySubmitButton];
-    return allButtons.filter(button => {
-      const content = button.textContent || '';
-      const ariaLabel = button.getAttribute('aria-label') || '';
-      const title = button.title || ''; // trying to exclude the little buttons to show and hide passwords
-
-      return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title);
+    return allButtons.filter(_autofillUtils.isLikelyASubmitButton) // filter out buttons of the wrong type - login buttons on a signup form, signup buttons on a login form
+    .filter(button => {
+      if (this.isLogin) {
+        return !/sign.?up/i.test(button.textContent || '');
+      } else if (this.isSignup) {
+        return !/(log|sign).?([io])n/i.test(button.textContent || '');
+      } else {
+        return true;
+      }
     });
   }
   /**
@@ -9062,18 +9063,26 @@ function escapeXML(str) {
   return String(str).replace(/[&"'<>/]/g, m => replacements[m]);
 }
 
-const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|sign|log.?([io])n|buy|purchase|check.?out/i;
+const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i;
+const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i;
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
  * @return {boolean}
  */
 
-const isLikelyASubmitButton = el => el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-/primary|submit/i.test(el.className) || // has high-signal submit classes
-SUBMIT_BUTTON_REGEX.test(el.textContent || el.title) || // has high-signal text
-el.offsetHeight * el.offsetWidth >= 10000; // it's a large element, at least 250x40px
-
+const isLikelyASubmitButton = el => {
+  const text = el.textContent || '';
+  const ariaLabel = el.getAttribute('aria-label') || '';
+  const title = el.title || '';
+  const value = el instanceof HTMLInputElement ? el.value || '' : '';
+  const contentExcludingLabel = text + ' ' + title + ' ' + value;
+  return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+  /primary|submit/i.test(el.className) || // has high-signal submit classes
+  SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
+  el.offsetHeight * el.offsetWidth >= 10000) && // it's a large element, at least 250x40px
+  !SUBMIT_BUTTON_UNLIKELY_REGEX.test(contentExcludingLabel + ' ' + ariaLabel);
+};
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 

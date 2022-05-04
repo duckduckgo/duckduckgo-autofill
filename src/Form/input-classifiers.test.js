@@ -134,7 +134,7 @@ describe('Input Classifiers', () => {
 let testResults = []
 
 describe.each(testCases)('Test $html fields', (testCase) => {
-    const { html, expectedFailures = [], title = '__test__' } = testCase
+    const { html, expectedFailures = [], expectedSubmitFalsePositives = 0, expectedSubmitFalseNegatives = 0, title = '__test__' } = testCase
 
     const testTextString = expectedFailures.length > 0
         ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
@@ -148,6 +148,18 @@ describe.each(testCases)('Test $html fields', (testCase) => {
 
         const scanner = createScanner(new InterfacePrototype(createGlobalConfig()))
         scanner.findEligibleInputs(document)
+
+        const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()
+        /**
+         * @type {HTMLElement[]}
+         */
+        const identifiedSubmitButtons = Array.from(document.querySelectorAll('[data-manual-submit]'))
+
+        let submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button)).length
+        let submitFalseNegatives = identifiedSubmitButtons.filter(button => !detectedSubmitButtons.includes(button)).length
+
+        expect(submitFalsePositives).toEqual(expectedSubmitFalsePositives)
+        expect(submitFalseNegatives).toEqual(expectedSubmitFalseNegatives)
 
         /**
          * @type {NodeListOf<HTMLInputElement>}
@@ -170,7 +182,14 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             }
         })
 
-        testResults.push({ testCase, scores })
+        const submitButtonScores = {
+            detected: detectedSubmitButtons.length,
+            identified: identifiedSubmitButtons.length,
+            falsePositives: submitFalsePositives,
+            falseNegatives: submitFalseNegatives
+        }
+
+        testResults.push({ testCase, scores, submitButtonScores })
 
         let bad = scores.filter(x => x.inferredType !== x.manualScore)
         let failed = bad.map(x => x.manualScore)
@@ -249,5 +268,16 @@ afterAll(() => {
                     ' out of ' + String(totalFieldsByType[type]).padStart(4) + ' fields | ' +
                     ' (' + Math.round((totalFailuresByFieldType[type] / totalFailedFields) * 100) + '% of all failures)'
         }).join('') + '\n'
+    )
+
+    let totalDetectedButtons = testResults.map(test => test.submitButtonScores.detected).reduce((a, b) => a + b)
+    let totalIdentifiedButtons = testResults.map(test => test.submitButtonScores.identified).reduce((a, b) => a + b)
+    let totalFalsePositiveButtons = testResults.map(test => test.submitButtonScores.falsePositives).reduce((a, b) => a + b)
+    let totalFalseNegativeButtons = testResults.map(test => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b)
+
+    console.log(
+        'Submit button statistics:\n',
+        totalDetectedButtons + ' detected (' + Math.round((totalFalsePositiveButtons / totalDetectedButtons) * 100) + '% false positive)\n',
+        totalIdentifiedButtons + ' manually identified (' + Math.round((totalFalseNegativeButtons / totalIdentifiedButtons) * 100) + '% false negative)\n'
     )
 })

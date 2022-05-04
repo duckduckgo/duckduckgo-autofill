@@ -225,16 +225,18 @@ class Form {
         const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
         const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
 
-        const likelySubmitButton = allButtons.find(isLikelyASubmitButton)
-        if (likelySubmitButton) return [likelySubmitButton]
-
-        return allButtons.filter((button) => {
-            const content = button.textContent || ''
-            const ariaLabel = button.getAttribute('aria-label') || ''
-            const title = button.title || ''
-            // trying to exclude the little buttons to show and hide passwords
-            return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
-        })
+        return allButtons
+            .filter(isLikelyASubmitButton)
+            // filter out buttons of the wrong type - login buttons on a signup form, signup buttons on a login form
+            .filter((button) => {
+                if (this.isLogin) {
+                    return !/sign.?up/i.test(button.textContent || '')
+                } else if (this.isSignup) {
+                    return !/(log|sign).?([io])n/i.test(button.textContent || '')
+                } else {
+                    return true
+                }
+            })
     }
 
     /**
