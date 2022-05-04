@@ -47,8 +47,7 @@ module.exports = function (grunt) {
             target: 'src/**/*.js'
         },
         exec: {
-            copyAssets: 'npm run copy-assets',
-            copyHtml: 'cp src/TopAutofill.html dist/TopAutofill.html'
+            copyAssets: 'npm run copy-assets'
         },
         /**
          * Run predefined tasks whenever watched files are added,
@@ -61,7 +60,7 @@ module.exports = function (grunt) {
             },
             html: {
                 files: ['src/**/*.html'],
-                tasks: ['exec:copyHtml']
+                tasks: ['exec:copyAssets']
             },
             styles: {
                 files: ['src/**/*.css', 'src/UI/styles/*'],
@@ -72,7 +71,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [
         'browserify',
-        'exec:copyHtml',
         'exec:copyAssets'
     ])
     grunt.registerTask('dev', ['default', 'watch'])
