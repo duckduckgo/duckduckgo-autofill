@@ -6056,7 +6056,7 @@ const matchingConfiguration = {
           skip: 'first'
         },
         fullName: {
-          match: '^(full.?|whole\\s|first.*last\\s|contact.?)?name\\b',
+          match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b',
           forceUnknown: 'company|org|item'
         },
         phone: {
