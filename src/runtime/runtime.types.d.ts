@@ -6,10 +6,11 @@ interface BaseTransport<Msgs extends Record<string, any> = Record<string, any>> 
     send<MsgName extends keyof Msgs>(name: MsgName, data?: Msgs[MsgName]['request']): Promise<Msgs[MsgName]['response']>
 }
 
-type RuntimeTransport = BaseTransport<RuntimeMessages>;
+interface RuntimeTransport {
+    send(name: any, data?: any): Promise<any>
+}
 
 type Names = keyof RuntimeMessages;
-type AvailableInputTypes = Schema.AvailableInputTypes;
 
 type GenericRuntimeResponse<Type> =
     | { success: Type, error?: Schema.GenericError }
@@ -25,7 +26,7 @@ type RuntimeMessages = {
         request: null
     },
     getAutofillData: {
-        response: { success: CredentialsObject | CreditCardObject | IdentityObject },
+        response: Schema.GetAutofillDataResponse,
         request: Schema.GetAutofillDataRequest
     },
     storeFormData: {

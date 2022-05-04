@@ -154,6 +154,252 @@ interface GetAutofillDataResponse {
 
 
 ---
+## `getAvailableInputTypes`
+
+**request**
+
+
+<details>
+<summary><code>request.getAvailableInputTypes.schema.json</code></summary>
+<br/>
+
+[./request.getAvailableInputTypes.schema.json](./request.getAvailableInputTypes.schema.json)
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAvailableInputTypesRequest",
+  "type": "object",
+  "title": "GetAvailableInputTypesRequest",
+  "description": "This method does not currently send any data"
+}
+```
+
+</details>
+  
+
+### GetAvailableInputTypesRequest
+
+
+
+```ts
+
+/**
+ * This method does not currently send any data
+ * 
+ * @link {./request.getAvailableInputTypes.schema.json}
+ */
+interface GetAvailableInputTypesRequest {
+}
+```
+
+
+**response**
+
+
+<details>
+<summary><code>response.getAvailableInputTypes.schema.json</code></summary>
+<br/>
+
+[./response.getAvailableInputTypes.schema.json](./response.getAvailableInputTypes.schema.json)
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAvailableInputTypesResponse",
+  "type": "object",
+  "title": "GetAvailableInputTypesResponse Success Response",
+  "properties": {
+    "type": {
+      "title": "This is the 'type' field on message that may be sent back to the window",
+      "description": "Required on Android + Windows devices, optional on iOS",
+      "type": "string",
+      "const": "getAvailableInputTypesResponse"
+    },
+    "success": {
+      "type": "object",
+      "$id": "#/definitions/AvailableInputTypes",
+      "properties": {
+        "credentials": {
+          "description": "true if *any* credentials are available",
+          "type": "boolean"
+        },
+        "identities": {
+          "description": "true if *any* identities are available",
+          "type": "boolean"
+        },
+        "creditCards": {
+          "description": "true if *any* credit cards are available",
+          "type": "boolean"
+        },
+        "email": {
+          "description": "true if signed in for Email Protection",
+          "type": "boolean"
+        }
+      }
+    },
+    "error": {
+      "$ref": "#/definitions/GenericError"
+    }
+  },
+  "required": [
+    "success"
+  ]
+}
+```
+
+</details>
+  
+
+### GetAvailableInputTypesResponse
+
+
+
+```ts
+
+/**
+ * GetAvailableInputTypesResponse Success Response
+ * 
+ * @link {./response.getAvailableInputTypes.schema.json}
+ */
+interface GetAvailableInputTypesResponse {
+    
+    /**
+     * This is the 'type' field on message that may be sent back to the window
+     * Required on Android + Windows devices, optional on iOS
+     */
+    type?: "getAvailableInputTypesResponse"
+    success: AvailableInputTypes
+    error?: GenericError
+}
+```
+
+
+### AvailableInputTypes
+
+
+
+```ts
+
+/**
+ * @link {./response.getAvailableInputTypes.schema.json}
+ */
+interface AvailableInputTypes {
+    credentials?: boolean
+    identities?: boolean
+    creditCards?: boolean
+    email?: boolean
+}
+```
+
+
+---
+## `getRuntimeConfiguration`
+
+**request**
+
+
+<details>
+<summary><code>request.getRuntimeConfiguration.schema.json</code></summary>
+<br/>
+
+[./request.getRuntimeConfiguration.schema.json](./request.getRuntimeConfiguration.schema.json)
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetRuntimeConfigurationRequest",
+  "title": "GetRuntimeConfigurationRequest",
+  "description": "This method does not currently send any data"
+}
+```
+
+</details>
+  
+
+### GetRuntimeConfigurationRequest
+
+
+
+```ts
+
+/**
+ * This method does not currently send any data
+ * 
+ * @link {./request.getRuntimeConfiguration.schema.json}
+ */
+interface GetRuntimeConfigurationRequest {
+}
+```
+
+
+**response**
+
+
+<details>
+<summary><code>response.getRuntimeConfiguration.schema.json</code></summary>
+<br/>
+
+[./response.getRuntimeConfiguration.schema.json](./response.getRuntimeConfiguration.schema.json)
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetRuntimeConfigurationResponse",
+  "type": "object",
+  "title": "GetRuntimeConfigurationResponse Success Response",
+  "description": "Data that can be understood by @duckduckgo/content-scope-scripts",
+  "properties": {
+    "type": {
+      "title": "This is the 'type' field on message that may be sent back to the window",
+      "description": "Required on Android + Windows devices, optional on iOS",
+      "type": "string",
+      "const": "getRuntimeConfigurationResponse"
+    },
+    "success": {
+      "description": "This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json",
+      "$ref": "#/definitions/RuntimeConfiguration"
+    },
+    "error": {
+      "$ref": "#/definitions/GenericError"
+    }
+  },
+  "required": [
+    "success"
+  ]
+}
+```
+
+</details>
+  
+
+### GetRuntimeConfigurationResponse
+
+
+
+```ts
+
+/**
+ * GetRuntimeConfigurationResponse Success Response
+ * 
+ * Data that can be understood by @duckduckgo/content-scope-scripts
+ * 
+ * @link {./response.getRuntimeConfiguration.schema.json}
+ */
+interface GetRuntimeConfigurationResponse {
+    
+    /**
+     * This is the 'type' field on message that may be sent back to the window
+     * Required on Android + Windows devices, optional on iOS
+     */
+    type?: "getRuntimeConfigurationResponse"
+    success: RuntimeConfiguration
+    error?: GenericError
+}
+```
+
+
+---
 ## `showAutofillParent`
 
 **request**
@@ -451,177 +697,6 @@ interface AutofillInitData {
 
 
 ---
-## `getAvailableInputTypes`
-
-**response**
-
-
-<details>
-<summary><code>response.getAvailableInputTypes.schema.json</code></summary>
-<br/>
-
-[./response.getAvailableInputTypes.schema.json](./response.getAvailableInputTypes.schema.json)
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "#/definitions/GetAvailableInputTypesResponse",
-  "type": "object",
-  "title": "GetAvailableInputTypesResponse Success Response",
-  "properties": {
-    "type": {
-      "title": "This is the 'type' field on message that may be sent back to the window",
-      "description": "Required on Android + Windows devices, optional on iOS",
-      "type": "string",
-      "const": "getAvailableInputTypesResponse"
-    },
-    "success": {
-      "type": "object",
-      "$id": "#/definitions/AvailableInputTypes",
-      "properties": {
-        "credentials": {
-          "description": "true if *any* credentials are available",
-          "type": "boolean"
-        },
-        "identities": {
-          "description": "true if *any* identities are available",
-          "type": "boolean"
-        },
-        "creditCards": {
-          "description": "true if *any* credit cards are available",
-          "type": "boolean"
-        },
-        "email": {
-          "description": "true if signed in for Email Protection",
-          "type": "boolean"
-        }
-      }
-    },
-    "error": {
-      "$ref": "#/definitions/GenericError"
-    }
-  },
-  "required": [
-    "success"
-  ]
-}
-```
-
-</details>
-  
-
-### GetAvailableInputTypesResponse
-
-
-
-```ts
-
-/**
- * GetAvailableInputTypesResponse Success Response
- * 
- * @link {./response.getAvailableInputTypes.schema.json}
- */
-interface GetAvailableInputTypesResponse {
-    
-    /**
-     * This is the 'type' field on message that may be sent back to the window
-     * Required on Android + Windows devices, optional on iOS
-     */
-    type?: "getAvailableInputTypesResponse"
-    success: AvailableInputTypes
-    error?: GenericError
-}
-```
-
-
-### AvailableInputTypes
-
-
-
-```ts
-
-/**
- * @link {./response.getAvailableInputTypes.schema.json}
- */
-interface AvailableInputTypes {
-    credentials?: boolean
-    identities?: boolean
-    creditCards?: boolean
-    email?: boolean
-}
-```
-
-
----
-## `getRuntimeConfiguration`
-
-**response**
-
-
-<details>
-<summary><code>response.getRuntimeConfiguration.schema.json</code></summary>
-<br/>
-
-[./response.getRuntimeConfiguration.schema.json](./response.getRuntimeConfiguration.schema.json)
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "#/definitions/GetRuntimeConfigurationResponse",
-  "type": "object",
-  "title": "GetRuntimeConfigurationResponse Success Response",
-  "description": "Data that can be understood by @duckduckgo/content-scope-scripts",
-  "properties": {
-    "type": {
-      "title": "This is the 'type' field on message that may be sent back to the window",
-      "description": "Required on Android + Windows devices, optional on iOS",
-      "type": "string",
-      "const": "getRuntimeConfigurationResponse"
-    },
-    "success": {
-      "description": "This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json",
-      "$ref": "#/definitions/RuntimeConfiguration"
-    },
-    "error": {
-      "$ref": "#/definitions/GenericError"
-    }
-  },
-  "required": [
-    "success"
-  ]
-}
-```
-
-</details>
-  
-
-### GetRuntimeConfigurationResponse
-
-
-
-```ts
-
-/**
- * GetRuntimeConfigurationResponse Success Response
- * 
- * Data that can be understood by @duckduckgo/content-scope-scripts
- * 
- * @link {./response.getRuntimeConfiguration.schema.json}
- */
-interface GetRuntimeConfigurationResponse {
-    
-    /**
-     * This is the 'type' field on message that may be sent back to the window
-     * Required on Android + Windows devices, optional on iOS
-     */
-    type?: "getRuntimeConfigurationResponse"
-    success: RuntimeConfiguration
-    error?: GenericError
-}
-```
-
-
----
 ## `credentials`
 
 
@@ -835,6 +910,7 @@ interface GenericError {
       "type": "string"
     },
     "title": {
+      "description": "This is the only required field",
       "type": "string"
     },
     "firstName": {
@@ -902,6 +978,10 @@ interface GenericError {
  */
 interface Identity {
     id?: string
+    
+    /**
+     * This is the only required field
+     */
     title: string
     firstName?: string
     middleName?: string

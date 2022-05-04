@@ -24,6 +24,7 @@
     "noUnusedParameters": true,
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
+    "keyofStringsOnly": true
   },
   "include": [
     "src",

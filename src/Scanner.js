@@ -249,3 +249,4 @@ function createScanner (device, scannerOptions) {
 export {
     createScanner
 }
+

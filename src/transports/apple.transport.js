@@ -163,7 +163,7 @@ const interceptions = {
                     features: {
                         autofill: {
                             settings: {
-                                /** @type {Schema.FeatureToggles} */
+                                /** @type {FeatureToggles} */
                                 featureToggles: globalConfig.isApp
                                     ? legacyMacOSToggles
                                     : legacyIOSToggles

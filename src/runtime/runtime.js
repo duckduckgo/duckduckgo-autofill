@@ -26,9 +26,10 @@ class Runtime {
 
     /**
      * @public
+     * @param {GetRuntimeConfigurationRequest} [_args]
      * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
-    async getRuntimeConfiguration () {
+    async getRuntimeConfiguration (_args = {}) {
         const response = await this.transport.send('getRuntimeConfiguration')
         const validator = validators['#/definitions/GetRuntimeConfigurationResponse']
 
@@ -78,23 +79,16 @@ class Runtime {
             throw new Error('unreachable, should not be here if (mainType === "unknown")')
         }
 
-        /** @type {Schema.GetAutofillDataRequest} */
+        /** @type {GetAutofillDataRequest} */
         const payload = {
             inputType: input.inputType,
             mainType,
             subType
         }
 
-        const validator = validators['#/definitions/GetAutofillDataRequest']
-        if (!validator?.(payload)) {
-            throwError(validator?.['errors'], 'getAutofillDataRequest')
-        }
-        const response = await this.transport.send('getAutofillData', payload)
-        const data = runtimeResponse(response, 'getAutofillData',
-            // @ts-ignore
-            validators['#/definitions/GetAutofillDataResponse']
-        )
-        return data
+        const request = messages.GetRuntimeConfigurationRequest.request(payload);
+        const response = await this.transport.send('GetRuntimeConfigurationRequest', request)
+        return runtimeResponse(messages.GetRuntimeConfigurationRequest.response(response));
     }
 
     /**
@@ -121,7 +115,7 @@ class Runtime {
     }
 
     /**
-     * @param {Schema.ShowAutofillParentRequest} parentArgs
+     * @param {ShowAutofillParentRequest} parentArgs
      * @returns {Promise<void>}
      */
     async showAutofillParent (parentArgs) {
@@ -192,3 +186,21 @@ function throwError (errors, name) {
 }
 
 export { Runtime, createRuntime, runtimeResponse }
+
+const messages = {
+    'GetRuntimeConfigurationRequest': {
+        /**
+         * @param {GetAutofillDataRequest} req
+         */
+        request: (req) => req,
+        /**
+         * @param {GetAutofillDataResponse} res
+         */
+        response: (res) => res,
+        validators: {
+            request: validators['#/definitions/GetAutofillDataRequest'],
+            response: validators['#/definitions/GetAutofillDataResponse']
+        }
+    }
+}
+
