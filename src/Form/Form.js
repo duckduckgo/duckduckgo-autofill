@@ -356,7 +356,12 @@ class Form {
             }
 
             if (this.shouldOpenTooltip(e, input)) {
-                if (isEventWithinDax(e, input) || this.device.globalConfig.isMobileApp) {
+                if (
+                    this.device.globalConfig.isMobileApp &&
+                    // Avoid the icon capturing clicks on small fields making it impossible to focus
+                    input.offsetWidth > 50 &&
+                    isEventWithinDax(e, input)
+                ) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
                 }

@@ -6,7 +6,6 @@ const SUBMIT_BUTTON_SELECTOR = `
 input[type=submit],
 input[type=button],
 button:not([role=switch]):not([role=link]),
-[class*=submit i][class*=button i],
 [role=button]`
 
 const email = `
@@ -125,7 +124,7 @@ const fullName = `
 [name*=your-name i], [autocomplete*=your-name i]`
 
 const phone = `
-[name*=phone i], [name*=mobile i], [autocomplete=tel]`
+[name*=phone i], [name*=mobile i], [autocomplete=tel], [placeholder*="phone number" i]`
 
 const addressStreet1 = `
 [name=address], [autocomplete=street-address], [autocomplete=address-line1],

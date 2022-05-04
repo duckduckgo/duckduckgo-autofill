@@ -4141,7 +4141,8 @@ class Form {
       }
 
       if (this.shouldOpenTooltip(e, input)) {
-        if ((0, _autofillUtils.isEventWithinDax)(e, input) || this.device.globalConfig.isMobileApp) {
+        if (this.device.globalConfig.isMobileApp && // Avoid the icon capturing clicks on small fields making it impossible to focus
+        input.offsetWidth > 50 && (0, _autofillUtils.isEventWithinDax)(e, input)) {
           e.preventDefault();
           e.stopImmediatePropagation();
         }
@@ -6007,7 +6008,8 @@ const matchingConfiguration = {
     ddgMatcher: {
       matchers: {
         email: {
-          match: '.mail',
+          match: '.mail\\b',
+          skip: 'phone',
           forceUnknown: 'search|filter|subject'
         },
         password: {
@@ -6015,7 +6017,7 @@ const matchingConfiguration = {
           forceUnknown: 'captcha'
         },
         username: {
-          match: '(user|account|apple)((.)?(name|id|login).?)?$',
+          match: '(user|account|apple|login)((.)?(name|id|login).?)?$',
           forceUnknown: 'search'
         },
         // CC
@@ -6043,16 +6045,18 @@ const matchingConfiguration = {
         },
         // Identities
         firstName: {
-          match: '(first|given|fore).?name'
+          match: '(first|given|fore).?name',
+          skip: 'last'
         },
         middleName: {
           match: '(middle|additional).?name'
         },
         lastName: {
-          match: '(last|family|sur)[^i]?name'
+          match: '(last|family|sur)[^i]?name',
+          skip: 'first'
         },
         fullName: {
-          match: '^(full.?|whole\\s)?name\\b',
+          match: '^(full.?|whole\\s|first.*last\\s|contact.?)?name\\b',
           forceUnknown: 'company|org|item'
         },
         phone: {
@@ -6061,7 +6065,7 @@ const matchingConfiguration = {
         },
         addressStreet: {
           match: 'address',
-          forceUnknown: '\\bip\\b|duck',
+          forceUnknown: '\\bip\\b|duck|web|url',
           skip: 'address.*(2|two)|email|log.?in|sign.?in'
         },
         addressStreet2: {
@@ -6948,7 +6952,7 @@ class Matching {
     /** @type {MatchableStrings[]} */
 
 
-    const stringsToMatch = ['nameAttr', 'labelText', 'placeholderAttr', 'id', 'relatedText'];
+    const stringsToMatch = ['placeholderAttr', 'nameAttr', 'labelText', 'id', 'relatedText'];
 
     for (let stringName of stringsToMatch) {
       let elementString = this.activeElementStrings[stringName];
@@ -7371,7 +7375,7 @@ function createMatching() {
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
-const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[class*=submit i][class*=button i],\n[role=button]";
+const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
 const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
@@ -7386,7 +7390,7 @@ const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firs
 const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
 const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
 const fullName = "\n[name=name], [autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
-const phone = "\n[name*=phone i], [name*=mobile i], [autocomplete=tel]";
+const phone = "\n[name*=phone i], [name*=mobile i], [autocomplete=tel], [placeholder*=\"phone number\" i]";
 const addressStreet1 = "\n[name=address], [autocomplete=street-address], [autocomplete=address-line1],\n[name=street],\n[name=ppw-line1], [name*=addressLine1 i]";
 const addressStreet2 = "\n[name=address], [autocomplete=address-line2],\n[name=ppw-line2], [name*=addressLine2 i]";
 const addressCity = "\n[name=city], [autocomplete=address-level2],\n[name=ppw-city], [name*=addressCity i]";
@@ -8880,7 +8884,7 @@ const setValueForSelect = (el, val) => {
     } // TODO: try to match localised month names
 
 
-    if (value.includes(String(val))) {
+    if (value === String(val)) {
       if (option.selected) return false;
       option.selected = true;
       fireEventsOnSelect(el);
@@ -8889,7 +8893,7 @@ const setValueForSelect = (el, val) => {
   }
 
   for (const option of el.options) {
-    if (option.innerText.includes(String(val))) {
+    if (option.innerText === String(val)) {
       if (option.selected) return false;
       option.selected = true;
       fireEventsOnSelect(el);
