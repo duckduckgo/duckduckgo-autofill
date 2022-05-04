@@ -1,14 +1,29 @@
-const FormAnalyzer = require('./FormAnalyzer')
-const {
-    addInlineStyles, removeInlineStyles, setValue, isEventWithinDax,
-    getDaxBoundingBox, isLikelyASubmitButton, isVisible
-} = require('../autofill-utils')
-const {getInputSubtype, getInputMainType, createMatching} = require('./matching')
-const {getIconStylesAutofilled, getIconStylesBase} = require('./inputStyles')
-const {ATTR_AUTOFILL} = require('../constants')
-const {getInputConfig} = require('./inputTypeConfig.js')
-const {getUnifiedExpiryDate, formatCCYear, getCountryName,
-    prepareFormValuesForStorage, inferCountryCodeFromElement} = require('./formatters')
+import FormAnalyzer from './FormAnalyzer'
+
+import {
+    addInlineStyles,
+    removeInlineStyles,
+    setValue,
+    isEventWithinDax,
+    getDaxBoundingBox,
+    isLikelyASubmitButton,
+    isVisible
+} from '../autofill-utils'
+
+import { getInputSubtype, getInputMainType, createMatching } from './matching'
+import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles'
+import { getInputConfig } from './inputTypeConfig.js'
+
+import {
+    getUnifiedExpiryDate,
+    formatCCYear,
+    getCountryName,
+    prepareFormValuesForStorage,
+    inferCountryCodeFromElement
+} from './formatters'
+
+import {constants} from '../constants'
+const {ATTR_AUTOFILL} = constants
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
@@ -22,7 +37,7 @@ class Form {
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {import("../DeviceInterface/InterfacePrototype")} deviceInterface
+     * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
      */
     constructor (form, input, deviceInterface, matching) {
@@ -102,18 +117,7 @@ class Form {
 
         const values = this.getValues()
 
-        // checks to determine if we should offer to store credentials and/or fireproof
-        const checks = [
-            (this.shouldPromptToStoreData && this.hasValues(values)),
-            this.device.shouldPromptToStoreCredentials({
-                formElement: this.form
-            })
-        ]
-
-        // if *any* of the checks are truthy, proceed to offer
-        if (checks.some(Boolean)) {
-            this.device.storeFormData(values)
-        }
+        this.device.postSubmit?.(values, this)
 
         // mark this form as being handled
         this.handlerExecuted = true
@@ -221,16 +225,18 @@ class Form {
         const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
         const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
 
-        const likelySubmitButton = allButtons.find(isLikelyASubmitButton)
-        if (likelySubmitButton) return [likelySubmitButton]
-
-        return allButtons.filter((button) => {
-            const content = button.textContent || ''
-            const ariaLabel = button.getAttribute('aria-label') || ''
-            const title = button.title || ''
-            // trying to exclude the little buttons to show and hide passwords
-            return !/password|show|toggle|reveal|hide/i.test(content + ariaLabel + title)
-        })
+        return allButtons
+            .filter(isLikelyASubmitButton)
+            // filter out buttons of the wrong type - login buttons on a signup form, signup buttons on a login form
+            .filter((button) => {
+                if (this.isLogin) {
+                    return !/sign.?up/i.test(button.textContent || '')
+                } else if (this.isSignup) {
+                    return !/(log|sign).?([io])n/i.test(button.textContent || '')
+                } else {
+                    return true
+                }
+            })
     }
 
     /**
@@ -446,8 +452,10 @@ class Form {
 
         this.isAutofilling = false
 
+        this.device.postAutofill?.(data, this.getValues())
+
         this.removeTooltip()
     }
 }
 
-module.exports.Form = Form
+export { Form }

@@ -1,17 +1,11 @@
-const InterfacePrototype = require('./InterfacePrototype.js')
-const {createTransport} = require('../appleDeviceUtils/appleDeviceUtils')
-const {
-    formatDuckAddress,
-    autofillEnabled
-} = require('../autofill-utils')
-const {processConfig} = require('@duckduckgo/content-scope-scripts/src/apple-utils')
+import InterfacePrototype from './InterfacePrototype.js'
+import { createTransport } from '../appleDeviceUtils/appleDeviceUtils'
+import { formatDuckAddress, autofillEnabled } from '../autofill-utils'
+import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
-/**
- * @implements {FeatureToggles}
- */
 class AppleDeviceInterface extends InterfacePrototype {
     /** @type {FeatureToggleNames[]} */
-    #supportedFeatures = [];
+    supportedFeatures = [];
 
     /* @type {Timeout | undefined} */
     pollingTimeout
@@ -31,7 +25,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
         // Only enable 'password.generation' if we're on the macOS app (for now);
         if (this.globalConfig.isApp) {
-            this.#supportedFeatures.push('password.generation')
+            this.supportedFeatures.push('password.generation')
         }
 
         if (this.globalConfig.isTopFrame) {
@@ -277,7 +271,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     /**
      * Gets credentials ready for autofill
      * @param {Number} id - the credential id
-     * @returns {APIResponse<CredentialsObject>}
+     * @returns {APIResponseSingle<CredentialsObject>}
      */
     getAutofillCredentials (id) {
         return this.transport.send('pmHandlerGetAutofillCredentials', { id })
@@ -338,7 +332,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     async getCurrentInputType () {
         const {inputType} = this.getTopContextData() || {}
-        return inputType
+        return inputType || 'unknown'
     }
 
     async getAlias () {
@@ -351,11 +345,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         )
         return formatDuckAddress(alias)
     }
-
-    /** @param {FeatureToggleNames} name */
-    supportsFeature (name) {
-        return this.#supportedFeatures.includes(name)
-    }
 }
 
-module.exports = AppleDeviceInterface
+export default AppleDeviceInterface

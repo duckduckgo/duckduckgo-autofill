@@ -20,7 +20,9 @@ module.exports = {
     snapshotFormat: {
         printBasicPrototype: false
     },
-
+    transformIgnorePatterns: [
+        '/node_modules/(?!@duckduckgo/content-scope-scripts)'
+    ],
     testPathIgnorePatterns: [
         '/node_modules/',
         '<rootDir>/integration-test'

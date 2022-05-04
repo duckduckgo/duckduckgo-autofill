@@ -1,5 +1,5 @@
-const {generate} = require('../packages/password')
-const rules = require('../packages/password/rules.json')
+import { generate } from '../packages/password'
+import rules from '../packages/password/rules.json'
 
 /**
  * Create a password once and reuse it.
@@ -11,6 +11,11 @@ class PasswordGenerator {
     /** @returns {boolean} */
     get generated () {
         return this.#previous !== null
+    }
+
+    /** @returns {string|null} */
+    get password () {
+        return this.#previous
     }
 
     /** @param {import('../packages/password').GenerateOptions} [params] */
@@ -25,4 +30,4 @@ class PasswordGenerator {
     }
 }
 
-module.exports.PasswordGenerator = PasswordGenerator
+export { PasswordGenerator }

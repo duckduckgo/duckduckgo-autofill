@@ -1,5 +1,5 @@
-const AndroidInterface = require('../AndroidInterface')
-const {createGlobalConfig} = require('../../config')
+import AndroidInterface from '../AndroidInterface'
+import { createGlobalConfig } from '../../config'
 
 describe('AndroidInterface', function () {
     beforeEach(() => {

@@ -7,7 +7,7 @@
     <input type="email" name="username" class="primary-field ng-pristine ng-untouched ng-empty ng-valid-email ng-invalid ng-invalid-required" ng-class="{error: $ctrl.checkValidity() &amp;&amp; $ctrl.emailError}" ng-model="$ctrl.email" ng-change="$ctrl.resetErrors()" ng-trim="" required="" autocorrect="off" placeholder="Email&nbsp;address" data-manual-scoring="username">
     <!-- ngIf: $ctrl.checkValidity() && $ctrl.emailError -->
 
-    <button class="highlight btn-block text-center btn-lg" ng-click="$ctrl.onNext()" type="button">
+    <button class="highlight btn-block text-center btn-lg" ng-click="$ctrl.onNext()" type="button" data-manual-submit>
       Next
     </button>
   </div><!-- end ngIf: !$ctrl.askForPassword -->

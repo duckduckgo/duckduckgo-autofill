@@ -545,3 +545,261 @@
     <div id="hiddenClonedForm" class="hide">
     </div>
 </form>
+
+<!-- right-side column (submit button) -->
+
+<div id="order-summary-body" automation-id="orderSummary" class="checkout-container-body card_space order-summary-body-v2">
+    <!-- BEGIN Redesign/v2/Widgets/Checkout/OrderSummary/OrderSummary.jsp Widget -->
+    <!-- BEGIN OrderTotalSummary_Data.jspf Widget -->
+    <link rel="preload" as="image" href="/wcsstore/CostcoGLOBALSAS/images/Widgets/membership/membership-number.svg">
+
+    <link rel="preload" as="image" href="/wcsstore/CostcoGLOBALSAS/images/Widgets/membership/membership-number.svg">
+
+    <!-- Start Grocery Surcharge logic -->
+    <!-- Added condition to subtract surcharge from shipping charge only in case of groceryItems and non zero surcharge -->
+    <!-- End Grocery Surcharge logic -->
+
+    <div id="edit-membership-block" class="hide">
+        <div class="row">
+            <div class="col-xs-3">
+
+            </div>
+            <div class="col-xs-7 body-copy" automation-id="costcoMembershipNumberHeader">
+                Membership Number<br>
+                <span id="membership-number" automation-id="costcoMembershipNumber"></span>
+            </div>
+
+            <div class="col-xs-2">
+                <a class="body-copy-link pull-right" id="edit-membership-number" automation-id="editCostcoMembershipNumberLink" href="javascript:void(0);" aria-label="Edit Membership Number">Edit</a>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="apply-membership-block">
+        <div class="body-copy" automation-id="enterMembershipLabel" id="enter-membership-text">Enter your membership number to avoid paying a surcharge on your order.<button class="a11y-tooltip" aria-label="Help" aria-expanded="false" data-html="true" data-placement="top" data-trigger="focus" role="button" data-toggle="popover" data-content="<div style=&quot;margin-bottom:10px;&quot;>If you have the Costco Citi Visa card the membership number is located on the back of the card right next to your picture.</div><img src=&quot;/wcsstore/CostcoGLOBALSAS/images/Widgets/membership/membership-number.svg&quot; alt=&quot;&quot;>" data-viewport="" data-container="" onkeyup="COSTCO.Tooltip.keyupHandler(this, window.event); return false;" onclick="COSTCO.Tooltip.clickHandler(this, window.event); return false;" data-original-title="" title="">
+	<span class="co-help" automation-id="toolTipImage_" data-original-title="" title=""></span>
+</button>
+        </div>
+        <div class="row" id="membership-input">
+            <form id="membership-apply-form">
+                <div class="col-xs-8">
+                    <div class="form-group input-field-v2">
+                        <div class="outline">
+                            <input id="add-membership-number" automation-id="addMembershipNumberInputText" maxlength="12" type="text" class="input-outline form-control ctHidden" name="add-membership-number">
+                            <label id="membership-number-label" for="add-membership-number" automation-id="membershipNumberLabel" class="label-outline form-label">Membership Number</label>
+                        </div>
+                    </div>
+                    <input type="hidden" name="apply-membership-url" value="https://www.costco.com/AjaxMembershipApplyCmd">
+                    <input type="hidden" name="checkoutPage" value="review">
+                    <div id="membership-number-error" class="error"></div>
+                </div>
+                <div id="apply-membership" class="col-xs-4">
+                    <input type="button" automation-id="membershipApplyButton" class="primary-button-v2" value="Add" aria-describedby="membership-number-label">
+                </div>
+            </form>
+        </div>
+
+        <!-- BEGIN RewardDiscount.jsp Widget -->
+        <div class="body-copy rewards-block rewards-block-membership">
+
+            <!-- Default -->
+            Executive Members will earn approximately <span class="bold">
+			$1.26
+		</span> towards their annual 2% Reward on this purchase. <a href="/join-costco.html" target="_blank">Sign up for a membership</a>!
+
+        </div>
+        <!-- END RewardDiscount.jsp Widget -->
+
+    </div>
+
+    <hr class="divider-line">
+
+    <div class="order-summary-table-layout" automation-id="orderSummaryHeaderLabel">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 id="subtotal-name" class="h7-style-guide-v2">Subtotal </h2>
+
+                <h2 id="subtotal-value" class="h7-style-guide-v2" automation-id="subTotalOutput">$62.99</h2>
+            </div>
+        </div>
+
+        <h3 class="h8-style-guide summary-left">Shipping &amp; Handling</h3>
+        <h3 class="h8-style-guide summary-right" automation-id="shippingPriceOutput">$0.00</h3>
+
+        <h3 class="h8-style-guide summary-left">Tax</h3>
+        <h3 class="h8-style-guide summary-right" automation-id="taxOutputText">$3.70</h3>
+
+        <div id="promo-code-link-block" class="hide">
+            <div class="summary-left"><a class="body-copy-link" id="enter-promo-link" href="javascript:void(0);">Enter Promo Code</a></div>
+            <div class="summary-right"><input type="hidden" name="order-promo-url" value="https://www.costco.com/AjaxOrderPromotionCmd"></div>
+        </div>
+        <div id="promo-code-input-block">
+            <div class="row" id="promo-code-input">
+                <form id="promo-code-form">
+                    <input type="hidden" name="checkoutPage" value="review">
+                    <div id="promo-code-success" class="success col-xs-12 hide"></div>
+                    <div id="promo-code-error" class="error col-xs-12"></div>
+                    <div class="col-xs-6">
+                        <div class="input-field-v2">
+                            <div class="outline">
+                                <input id="enter-promo-code-input" automation-id="promoCodeInputText" name="enter-promo-code" class="input-outline form-control">
+                                <label id="promo-code-label" class="label-outline form-label" for="enter-promo-code-input"> Promo Code </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="apply-promo-code" class="col-xs-6">
+                        <input name="apply-promo" automation-id="promoCodeApplyButton" type="button" class="primary-button-v2" value="Apply Code" aria-describedby="promo-code-label">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <a href="#" class="col-xs-6 checkout-promocode-tooltip">Learn More
+		<span class="tooltiptext">Promotional codes can only be used once. Taxes, shipping and handling charges are not discounted as part of the offer. </span>
+	</a>
+
+        <div id="non-member-surcharge">
+            <h3 class="h8-style-guide summary-left" automation-id="nonMemberSurchargeLabel">Non-Member 5% Surcharge</h3>
+            <h3 class="h8-style-guide summary-right" automation-id="nonMemberSurchargeOutput">$3.15</h3>
+        </div>
+
+    </div>
+
+    <hr class="divider-line">
+
+    <div class="order-summary-table-layout">
+        <h2 class="h6-style-guide summary-left" automation-id="orderTotalLabel">Total</h2>
+        <h2 class="h6-style-guide summary-right surchargeOrderTotal" automation-id="orderTotalOutput">
+            $69.84
+        </h2>
+        <input type="hidden" id="outstandingPrincipal" automation-id="orderTotalAmountOutputText" name="outstandingPrincipal" value="69.84000">
+
+        <input type="hidden" id="currentOrderTotal" value="69.84000">
+
+    </div>
+
+    <div class="hide">
+        <!-- BEGIN RewardDiscount.jsp Widget -->
+        <div class="body-copy rewards-block">
+
+            <!-- Default -->
+            Executive Members will earn approximately <span class="bold">
+			$1.26
+		</span> towards their annual 2% Reward on this purchase. <a href="/join-costco.html" target="_blank">Sign up for a membership</a>!
+
+        </div>
+        <!-- END RewardDiscount.jsp Widget -->
+    </div>
+
+    <hr class="divider-line">
+
+    <div class="cash-rewards" automation-id="cashRewardsText" id="cashRewardsText">
+        By using the Costco Anywhere Visa® Card by Citi, you could earn <b>$1.40</b> in annual cash back rewards for this purchase. Not a Cardmember? Click <span class="link-decoration-dotted-solid"><a href="https://www.citicards.com/cards/credit/application/flow.action?PO=CostcoOnline&amp;ID=CostcoLanding&amp;HKOPC=356ce502094ce2f0ba498b227e6c82e1fd641a07c29a927c25c6d8ae80b44ead&amp;ID_cn=3405&amp;HKOPB=4d2e3b1f787a41134a3391ab2cf108fd81e402818340c18ef043bd24cf711617&amp;ID_biz=3406" target="_blank" data-bi-tc="ui:checkout | citi card link">here <span class="offscreen"> for information about the Costco Anywhere Visa® Card by Citi</span></a>
+        </span> to learn more.
+    </div>
+
+    <div>
+
+        <script>
+            fraudStatic = {
+            		collectorUrl : 'www.cdn-path.com',
+            		siteKey : '8c3a2ce6c351cd1e',
+            		enabled : true,
+            		deviceId : '847-965788260'
+            	}
+        </script>
+
+        <script>
+            var _cc = _cc || [];
+            	_cc.push(['ci', {'sid': '8c3a2ce6c351cd1e', 'tid': '847-965788260'}]);
+            
+            	_cc.push(['cf', 1022963]);
+            	_cc.push(['run', ('https:' == document.location.protocol ? 'https://' : 'http://') + 'www.cdn-path.com']);
+            	
+            	
+            		_cc.push(['st', '500']);
+            	
+            		_cc.push(['st', '500']);
+            	
+            	
+            	(function() {
+            		var c = document.createElement('script'); 
+            		c.type = 'text/javascript';
+            		c.async = true;
+            		c.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'www.cdn-path.com/cc.js?ts=' + (new Date()).getTime();
+            		var s = document.getElementsByTagName('script')[0];
+            		s.parentNode.insertBefore(c, s);
+            	})();
+        </script>
+
+        <noscript>
+	&lt;img src="https://www.cdn-path.com/s1.gif?sid=8c3a2ce6c351cd1e&amp;tid=847-965788260" /&gt;
+</noscript>
+
+        <div id="checkout-button-wrapper" class="order-summary-button-box">
+            <div class="hidden-lg hidden-xl">
+                <div class="h6-style-guide col-xs-6 estimated-total-label">Total</div>
+                <div class="h6-style-guide col-xs-6">
+                    <div class="surchargeOrderTotal order-estimated-total pull-right">
+                        $69.84
+                    </div>
+                </div>
+            </div>
+
+            <input type="button" class="primary-button-green-v2" value="Continue to Shipping Options" onclick="COSTCO.OrderSummary.checkoutSteps.submitCheckoutStep(2)" automation-id="continueButton" data-manual-submit>
+
+        </div>
+
+        <form name="CheckoutReviewForm" id="CheckoutReviewForm" action="CostcoOrderProcess" method="post">
+            <input type="hidden" name="orderId" value="965788260">
+            <input type="hidden" name="orderItemsCount" value="1">
+            <input type="hidden" name="authToken" value="1581600316%2CSO9KOQW%2BNWzP7VPtIyqDvYPIsA8%3D">
+            <input type="hidden" name="deviceId" value="847-965788260">
+            <input type="hidden" name="innovelReserveCapacityFailed" value="">
+            <input type="hidden" name="innovelReserveCapacityFailedCount" value="">
+
+            <input type="hidden" name="setAsDefaultShippingAddress" id="setAsDefaultShippingAddress" value="">
+            <input type="hidden" name="setAsDefaultBillingAddress" id="setAsDefaultBillingAddress" value="">
+            <input type="hidden" name="estimatedDeliveryDateList" id="estimatedDeliveryDateList" value="">
+            <input type="hidden" id="hasShipChargeChanged" name="hasShipChargeChanged" value="false">
+            <input type="hidden" name="orderItemSpecificErrorCodesOS" value="" id="orderItemSpecificErrorCodesOS">
+
+        </form>
+    </div>
+
+    <script>
+        var orderStatic = {
+        		isTireOnly : false,
+        		isShipToWarehouseOrder: false,
+        		currentOrderHasMembershipNo :false,
+                currentXOrderHasMembershipNo : false,
+        		orderRequireMembership: false,
+        		ordertotal : "69.84000",
+        		totaldiscount : "0",
+        		promoAdjust : "0",
+        		frozenSurcharge: "0.00"
+        	}
+    </script>
+
+    <script type="text/javascript">
+        function loadInline(){
+        		COSTCO.OrderSummary.init('review');
+        	}
+        
+        	if(costcoloadstate.submodules){
+        		loadInline();
+        	}else{
+        		document.addEventListener("CostcoSubModulesLoaded", loadInline, false);
+        	}
+        	
+        	var orderAddress = {
+        		PostalCode : "39021",
+        		City : "Laces",
+        		State : "AZ",
+        		Country : "US"
+        	}
+    </script>
+    <!-- END Redesign/v2/Widgets/Checkout/OrderSummary/OrderSummary.jsp Widget -->
+</div>

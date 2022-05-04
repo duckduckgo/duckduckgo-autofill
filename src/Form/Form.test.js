@@ -1,6 +1,6 @@
-const InterfacePrototype = require('../DeviceInterface/InterfacePrototype')
-const {createScanner} = require('../Scanner')
-const {createGlobalConfig} = require('../config')
+import InterfacePrototype from '../DeviceInterface/InterfacePrototype'
+import { createScanner } from '../Scanner'
+import { createGlobalConfig } from '../config'
 
 afterEach(() => {
     document.body.innerHTML = ''

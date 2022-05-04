@@ -235,8 +235,8 @@ On the real page, the credit card section is an iframe separate from the address
             </ul>
         </dd>
     </dl>
-    <div id="paymentContinue"> <input class="btn" id="paymentContinueBtn" type="button" value="Continue"></div>
-    <div id="paymentSubmit"> <input class="btn enabled" id="paymentSubmitBtn" type="button" value="Donate"></div>
+    <div id="paymentContinue"> <input class="btn" id="paymentContinueBtn" type="button" value="Continue" data-manual-submit></div>
+    <div id="paymentSubmit"> <input class="btn enabled" id="paymentSubmitBtn" type="button" value="Donate" data-manual-submit></div>
     <div class="mw-donate-submessage" id="payment_gateway-donate-submessage">
         <img src="/extensions/DonationInterface/gateway_forms/includes/padlock.gif"> Your credit / debit card will be securely processed.
     </div>
@@ -342,7 +342,7 @@ On the real page, the credit card section is an iframe separate from the address
     </div>
 
     <div class="paymentbuttons" id="paymentButtons">
-        <button id="primaryButton" class="btn btn-block-rpp btn-primary" type="submit" name="doPayment" value="doPayment" >
+        <button id="primaryButton" class="btn btn-block-rpp btn-primary" type="submit" name="doPayment" value="doPayment" data-manual-submit>
         <span id="paymentbuttontext">
             Donate        </span>
     </button>

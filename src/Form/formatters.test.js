@@ -1,4 +1,4 @@
-const {getMMAndYYYYFromString} = require('./formatters')
+import { getMMAndYYYYFromString } from './formatters'
 
 describe('Format year and month from single string', () => {
     const testCases = [
