@@ -186,16 +186,6 @@ export function forwardConsoleMessages (page, opts = {}) {
         })()
 
         console.log(`${icon} [console.${type}]`, msg.text())
-        if (verbose) {
-            const { lineNumber, columnNumber } = msg.location()
-            let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js'
-            if (!(lineNumber === 0 && columnNumber === 0)) {
-                link += ':' + (lineNumber + 1)
-                link += ':' + columnNumber
-                console.log(link)
-                console.log()
-            }
-        }
     })
 }
 
