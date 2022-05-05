@@ -266,7 +266,7 @@ test.describe('macos', () => {
         })
     })
     test.describe('matching performance', () => {
-        test('matching performance v1', async ({page}) => {
+        test.skip('matching performance v1', async ({page}) => {
             await forwardConsoleMessages(page)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()

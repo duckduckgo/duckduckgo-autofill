@@ -9,6 +9,9 @@ class WindowsInterface extends InterfacePrototype {
         const cleanup = this.scanner.init()
         this.addLogoutListener(cleanup)
     }
+    async getAutofillCredentials (id) {
+        return this.runtime.getAutofillCredentials(id)
+    }
     tooltipStyles () {
         return `<style>${CSS_STYLES}</style>`
     }

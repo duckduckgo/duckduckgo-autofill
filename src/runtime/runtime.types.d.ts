@@ -47,6 +47,10 @@ type RuntimeMessages = {
     getAutofillInitData: {
         request: null,
         response: { success: PMData },
+    },
+    getAutofillCredentials: {
+        request: { id: string },
+        response: { success: CredentialsObject },
     }
 }
 

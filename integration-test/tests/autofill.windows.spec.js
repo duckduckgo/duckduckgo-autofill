@@ -49,8 +49,8 @@ test.describe('windows', () => {
 
         await login.selectFirstCredential(personalAddress)
 
-        // todo(Shane): This test is just as far as windows got.
         await page.waitForSelector(`button:has-text("${personalAddress}")`)
+        // todo(Shane): This test is just as far as windows got.
         // await login.assertFirstCredential(personalAddress, password)
     })
     // test.describe('prompting to save data', () => {

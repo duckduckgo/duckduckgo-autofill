@@ -103,9 +103,12 @@ export class WebTooltip {
         case 'input':
             this.removeTooltip()
             break
-        case 'pointerdown':
+        // todo(Shane): Why was this 'click' needed?
+        case 'click':
+        case 'pointerdown': {
             this._pointerDownListener(event)
             break
+        }
         }
     }
 

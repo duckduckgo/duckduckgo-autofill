@@ -142,6 +142,13 @@ class Runtime {
     }
 
     /**
+     * @param {string|number} id
+     */
+    getAutofillCredentials (id) {
+        return this.transport.send('getAutofillCredentials', { id: String(id) })
+    }
+
+    /**
      * @returns {Promise<any>}
      */
     async closeAutofillParent () {

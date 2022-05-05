@@ -4927,6 +4927,10 @@ class WindowsInterface extends _InterfacePrototype.default {
     this.addLogoutListener(cleanup);
   }
 
+  async getAutofillCredentials(id) {
+    return this.runtime.getAutofillCredentials(id);
+  }
+
   tooltipStyles() {
     return "<style>".concat(_styles.CSS_STYLES, "</style>");
   }
@@ -5350,16 +5354,15 @@ class Form {
     };
 
     const handler = e => {
-      if (this.device.getActiveTooltip() || this.isAutofilling) {
-        return;
-      }
-
+      if (this.device.getActiveTooltip() || this.isAutofilling) return;
       const input = e.target;
       let click = null;
 
       const getPosition = () => {
         // In extensions, the tooltip is centered on the Dax icon
-        return this.device.globalConfig.isApp ? input.getBoundingClientRect() : (0, _autofillUtils.getDaxBoundingBox)(input);
+        // todo(Shane): Work this out
+        const alignLeft = this.device.globalConfig.isApp || this.device.globalConfig.isWindows;
+        return alignLeft ? input.getBoundingClientRect() : (0, _autofillUtils.getDaxBoundingBox)(input);
       }; // Checks for mousedown event
 
 
@@ -5418,10 +5421,7 @@ class Form {
     input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
     this.activeInput !== input && // and this is not the active input
     !isEmailAutofill // and we're not auto-filling email
-    ) {
-      return;
-    } // do not overwrite the value
-
+    ) return; // do not overwrite the value
 
     const successful = (0, _autofillUtils.setValue)(input, string, this.device.globalConfig);
     if (!successful) return;
@@ -10332,10 +10332,13 @@ class WebTooltip {
         this.removeTooltip();
         break;
 
+      case 'click':
       case 'pointerdown':
-        this._pointerDownListener(event);
+        {
+          this._pointerDownListener(event);
 
-        break;
+          break;
+        }
     }
   } // Global listener for event delegation
 
@@ -10802,9 +10805,10 @@ const safeExecute = (el, fn) => {
       if (typeof change.isVisible === 'undefined') {
         // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
         change.isVisible = true;
-      }
+      } // todo(Shane): Why is this broken on windows...
 
-      if (change.isIntersecting && change.isVisible) {
+
+      if (change.isIntersecting) {
         fn();
       }
     }
@@ -11311,6 +11315,16 @@ class Runtime {
 
   async getSelectedCredentials() {
     return this.transport.send('getSelectedCredentials');
+  }
+  /**
+   * @param {string|number} id
+   */
+
+
+  getAutofillCredentials(id) {
+    return this.transport.send('getAutofillCredentials', {
+      id: String(id)
+    });
   }
   /**
    * @returns {Promise<any>}
@@ -16920,6 +16934,12 @@ class WindowsTransport {
       case 'storeFormData':
         {
           return windowsTransport('storeFormData', data);
+        }
+
+      case 'getAutofillCredentials':
+        {
+          // todo(Shane): Schema
+          return windowsTransport('getAutofillCredentials', data).withResponse('getAutofillCredentialsResponse');
         }
 
       default:

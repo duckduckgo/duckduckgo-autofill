@@ -24,6 +24,11 @@ class WindowsTransport {
         case 'storeFormData': {
             return windowsTransport('storeFormData', data)
         }
+        case 'getAutofillCredentials': {
+            // todo(Shane): Schema
+            return windowsTransport('getAutofillCredentials', data)
+                .withResponse('getAutofillCredentialsResponse')
+        }
         default: throw new Error('windows: not implemented: ' + name)
         }
     }

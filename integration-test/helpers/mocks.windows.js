@@ -57,7 +57,9 @@ export function createWindowsMocks () {
             creditCards: [],
             identities: [],
             serializedInputContext: '{}'
-        }
+        },
+        /** @type {CredentialsObject | null} */
+        getAutofillCredentials: null
     }
     /** @type {MockBuilder} */
     const builder = {
@@ -126,6 +128,9 @@ export function createWindowsMocks () {
                     },
                     getAutofillInitData () {
                         return respond('getAutofillInitData', null, mocks.getAutofillInitData)
+                    },
+                    getAutofillCredentials () {
+                        return respond('getAutofillCredentials', null, mocks.getAutofillCredentials)
                     }
                 }
 
@@ -154,6 +159,7 @@ export function createWindowsMocks () {
         },
         withCredentials: function (credentials) {
             mocks.getAutofillInitData.credentials.push(credentials)
+            mocks.getAutofillCredentials = credentials
             return this
         }
     }

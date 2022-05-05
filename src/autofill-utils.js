@@ -190,7 +190,8 @@ const safeExecute = (el, fn) => {
                 // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
                 change.isVisible = true
             }
-            if (change.isIntersecting && change.isVisible) {
+            // todo(Shane): Why is this broken on windows...
+            if (change.isIntersecting) {
                 fn()
             }
         }
