@@ -26,27 +26,32 @@ import {constants} from '../constants'
 const {ATTR_AUTOFILL} = constants
 
 class Form {
-    /** @type {import("../Form/matching").Matching} */
-    matching;
+    /** @type {import('../Form/matching').Matching} */
+    matching
     /** @type {HTMLElement} */
-    form;
+    form
     /** @type {HTMLInputElement | null} */
-    activeInput;
+    activeInput
     /** @type {boolean | null} */
-    isSignup;
+    isSignup
+    /** @type {AvailableInputTypes} */
+    availableInputTypes
+
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
-     * @param {import("../Form/matching").Matching} [matching]
+     * @param {AvailableInputTypes} inputTypes
+     * @param {import('../DeviceInterface/InterfacePrototype').default} deviceInterface
+     * @param {import('../Form/matching').Matching} [matching]
      */
-    constructor (form, input, deviceInterface, matching) {
+    constructor (form, input, inputTypes, deviceInterface, matching) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
         this.device = deviceInterface
+        this.availableInputTypes = inputTypes
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {
@@ -143,7 +148,7 @@ class Form {
     }
 
     /**
-     * Determine if the form has values we want to store in the device
+     * Determine if the form has values we want to store in the tooltipHandler
      * @param {DataStorageObject} [values]
      * @return {boolean}
      */
@@ -262,13 +267,15 @@ class Form {
         if (this.inputs.all.has(input)) return this
 
         this.inputs.all.add(input)
-
-        this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
+        const type = this.matching.setInputType(input, this.form, {
+            isLogin: this.isLogin,
+            availableInputTypes: this.availableInputTypes
+        })
 
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)
 
-        this.decorateInput(input)
+        this.decorateInput(input, type)
 
         return this
     }
@@ -291,10 +298,37 @@ class Form {
         addInlineStyles(input, styles)
     }
 
-    decorateInput (input) {
+    decorateInput (input, type) {
         const config = getInputConfig(input)
 
-        if (!config.shouldDecorate(input, this)) return this
+        // todo(Shane): Where should this logic live?
+        const inputTypeSupported = (() => {
+            if (type === 'identities.emailAddress') {
+                if (this.availableInputTypes.email) {
+                    return true
+                }
+            }
+            if (this.isSignup && type === 'credentials.password') {
+                // todo(Shane): Needs runtime polymorphism here
+                if (this.device.autofillSettings.featureToggles.password_generation) {
+                    return true
+                }
+            }
+            if (this.availableInputTypes[config.type] !== true) {
+                // console.warn('not decorating type', config.type)
+                return false
+            }
+            return true
+        })()
+
+        // bail if we cannot decorate
+        if (!inputTypeSupported) {
+            return this
+        }
+
+        if (!config.shouldDecorate(input, this)) {
+            return this
+        }
 
         input.setAttribute(ATTR_AUTOFILL, 'true')
 
@@ -373,7 +407,10 @@ class Form {
 
         if (input.nodeName !== 'SELECT') {
             const events = ['pointerdown']
-            if (!this.device.globalConfig.isMobileApp) events.push('focus')
+            if (!this.device.globalConfig.isMobileApp) {
+                // todo(Shane): Re-enable focus event?
+                // events.push('focus')
+            }
             input.labels.forEach((label) => {
                 this.addListener(label, 'pointerdown', handlerLabel)
             })

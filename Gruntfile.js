@@ -48,7 +48,8 @@ module.exports = function (grunt) {
         },
         exec: {
             copyAssets: 'npm run copy-assets',
-            copyHtml: 'cp src/TopAutofill.html dist/TopAutofill.html'
+            copyHtml: 'cp src/TopAutofill.html dist/TopAutofill.html',
+            schemaCompile: 'npm run schema:compile'
         },
         /**
          * Run predefined tasks whenever watched files are added,
@@ -58,6 +59,10 @@ module.exports = function (grunt) {
             scripts: {
                 files: ['src/**/*.js', 'packages/password/**/*.{json,js}'],
                 tasks: ['browserify', 'exec:copyAssets']
+            },
+            schemas: {
+                files: ['src/**/*.schema.json'],
+                tasks: ['exec:schemaCompile']
             },
             html: {
                 files: ['src/**/*.html'],
@@ -71,6 +76,7 @@ module.exports = function (grunt) {
     })
 
     grunt.registerTask('default', [
+        'exec:schemaCompile',
         'browserify',
         'exec:copyHtml',
         'exec:copyAssets'

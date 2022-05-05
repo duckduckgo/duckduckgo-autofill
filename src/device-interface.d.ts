@@ -47,7 +47,7 @@ interface InboundPMData {
      credentials: CredentialsObject[],
      creditCards: CreditCardObject[],
      identities: IdentityObject[],
-     serializedInputContext: string,
+     serializedInputContext?: string,
 }
 
 interface TopContextData {
@@ -82,23 +82,16 @@ interface EmailAddresses {
      personalAddress?: string
 }
 
-type FeatureToggleNames =
-  | "password.generation"
-
-interface FeatureToggles {
-     supportsFeature(name: FeatureToggleNames): boolean;
-}
-
-interface Transport {
-     send(name: string, data?: any): Promise<any>
-}
-
 interface GlobalConfig {
      isApp: boolean;
      isDDGApp: boolean;
      isAndroid: boolean;
      isFirefox: boolean;
+     /**
+      * @deprecated use platformConfiguration.platform instead
+      */
      isMobileApp: boolean;
+     isWindows: boolean;
      isTopFrame: boolean;
      secret: string;
      supportsTopFrame: boolean;
@@ -108,7 +101,13 @@ interface GlobalConfig {
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
+     /**
+      * @deprecated use {Tooltip} tooltipHandler instead
+      */
+     hasNativeTooltip: boolean;
 }
+
+type PlatformConfig = import("@duckduckgo/content-scope-scripts").RuntimeConfiguration;
 
 interface GlobalConfigImpl {
      globalConfig: GlobalConfig

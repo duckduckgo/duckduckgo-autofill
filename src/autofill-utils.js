@@ -21,9 +21,18 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 
     return new Promise((resolve) => {
         const handler = e => {
-            if (e.origin !== window.origin) return
-            if (!e.data || (e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))) return
-
+            if (e.origin !== window.origin) {
+                console.log(`❌ origin-mismatch e.origin(${e.origin}) !== window.origin(${window.origin})`)
+                return
+            }
+            if (!e.data) {
+                console.log('❌ event.data missing')
+                return
+            }
+            if (!(e.data[expectedResponse] || e.data.type === expectedResponse)) {
+                console.log('❌ event.data or event.data.type mismatch', JSON.stringify(e.data))
+                return
+            }
             resolve(e.data)
             window.removeEventListener('message', handler)
         }

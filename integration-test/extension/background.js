@@ -79,6 +79,8 @@ function init () {
             return sendResponse(getAddresses())
         } else if (message.addUserData) {
             return sendResponse(addUserData(message.addUserData, sender))
+        } else if (message.getAvailableInputTypes) {
+            return sendResponse({email: true})
         }
     })
 

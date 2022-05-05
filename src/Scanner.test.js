@@ -1,6 +1,5 @@
 import { createScanner } from './Scanner'
 import InterfacePrototype from './DeviceInterface/InterfacePrototype'
-import { createGlobalConfig } from './config'
 
 describe('performance', () => {
     beforeEach(() => {
@@ -19,7 +18,7 @@ describe('performance', () => {
         jest.useRealTimers()
     })
     it('should debounce dom lookups', () => {
-        const scanner = createScanner(new InterfacePrototype(createGlobalConfig()))
+        const scanner = createScanner(InterfacePrototype.default())
         const spy = jest.spyOn(scanner, 'findEligibleInputs')
         scanner.enqueue([document])
         scanner.enqueue([document])
@@ -30,7 +29,7 @@ describe('performance', () => {
         expect(spy).toHaveBeenCalledTimes(1)
     })
     it('should constrain the buffer size', () => {
-        const scanner = createScanner(new InterfacePrototype(createGlobalConfig()), {
+        const scanner = createScanner(InterfacePrototype.default(), {
             bufferSize: 2
         })
 
