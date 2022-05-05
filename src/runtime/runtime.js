@@ -1,7 +1,13 @@
 import { tryCreateRuntimeConfiguration } from '@duckduckgo/content-scope-scripts'
+import { getMainTypeFromType, getSubtypeFromType } from '../Form/matching'
 
-import {getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
-import validators from '../schema/validators.cjs'
+import {
+    CloseAutofillParent,
+    GetAutofillCredentials, GetAutofillData, GetAutofillInitData,
+    GetAvailableInputTypes, GetRuntimeConfiguration,
+    GetSelectedCredentials,
+    ShowAutofillParent, StoreFormData
+} from './messages'
 
 /**
  * The Runtime is the centralised place for dealing with messages.
@@ -29,15 +35,7 @@ class Runtime {
      * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
      */
     async getRuntimeConfiguration () {
-        const response = await this.transport.send('getRuntimeConfiguration')
-        const validator = validators['#/definitions/GetRuntimeConfigurationResponse']
-
-        const data = runtimeResponse(
-            response,
-            'getRuntimeConfiguration',
-            // @ts-ignore
-            validator
-        )
+        const data = await new GetRuntimeConfiguration(null, this.transport).send()
         const {config, errors} = tryCreateRuntimeConfiguration(data)
 
         if (errors.length) {
@@ -55,14 +53,7 @@ class Runtime {
      * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes () {
-        const response = await this.transport.send('getAvailableInputTypes')
-        const validator = validators['#/definitions/GetAvailableInputTypesResponse']
-        return runtimeResponse(
-            response,
-            'getAvailableInputTypes',
-            // @ts-ignore
-            validator
-        )
+        return new GetAvailableInputTypes(null, this.transport).send()
     }
 
     /**
@@ -85,27 +76,14 @@ class Runtime {
             subType
         }
 
-        const validator = validators['#/definitions/GetAutofillDataRequest']
-        if (!validator?.(payload)) {
-            throwError(validator?.['errors'], 'getAutofillDataRequest')
-        }
-        const response = await this.transport.send('getAutofillData', payload)
-        const data = runtimeResponse(response, 'getAutofillData',
-            // @ts-ignore
-            validators['#/definitions/GetAutofillDataResponse']
-        )
-        return data
+        return new GetAutofillData(payload, this.transport).send()
     }
 
     /**
      * @returns {Promise<InboundPMData>}
      */
     async getAutofillInitData () {
-        const response = await this.transport.send('getAutofillInitData')
-        return runtimeResponse(response, 'getAutofillInitData',
-            // @ts-ignore
-            validators['#/definitions/GetAutofillInitDataResponse']
-        )
+        return new GetAutofillInitData(null, this.transport).send()
     }
 
     /**
@@ -113,11 +91,7 @@ class Runtime {
      * @param {DataStorageObject} data
      */
     async storeFormData (data) {
-        const validator = validators['#/definitions/StoreFormDataRequest']
-        if (!validator?.(data)) {
-            throwError(validator?.['errors'], 'storeFormData')
-        }
-        return this.transport.send('storeFormData', data)
+        return new StoreFormData(data, this.transport).send()
     }
 
     /**
@@ -125,11 +99,7 @@ class Runtime {
      * @returns {Promise<void>}
      */
     async showAutofillParent (parentArgs) {
-        const validator = validators['#/definitions/ShowAutofillParentRequest']
-        if (!validator?.(parentArgs)) {
-            throwError(validator?.['errors'], 'showAutofillParent')
-        }
-        await this.transport.send('showAutofillParent', parentArgs)
+        await new ShowAutofillParent(parentArgs, this.transport).send()
     }
 
     /**
@@ -138,21 +108,24 @@ class Runtime {
      * @returns {Promise<any>}
      */
     async getSelectedCredentials () {
-        return this.transport.send('getSelectedCredentials')
+        return new GetSelectedCredentials(null, this.transport).send()
     }
 
     /**
      * @param {string|number} id
+     * @returns {APIResponseSingle<CredentialsObject>}
      */
-    getAutofillCredentials (id) {
-        return this.transport.send('getAutofillCredentials', { id: String(id) })
+    async getAutofillCredentials (id) {
+        const response = await new GetAutofillCredentials(id, this.transport).send()
+        // re-wrapping for now.
+        return { success: response }
     }
 
     /**
      * @returns {Promise<any>}
      */
     async closeAutofillParent () {
-        return this.transport.send('closeAutofillParent')
+        await new CloseAutofillParent(null, this.transport).send()
     }
 }
 

@@ -8,6 +8,10 @@ interface BaseTransport<Msgs extends Record<string, any> = Record<string, any>> 
 
 type RuntimeTransport = BaseTransport<RuntimeMessages>;
 
+interface GenericRuntime<T> {
+    send(evt: T, data?: any): Promise<any>
+}
+
 type Names = keyof RuntimeMessages;
 type AvailableInputTypes = Schema.AvailableInputTypes;
 

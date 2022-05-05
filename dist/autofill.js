@@ -3774,7 +3774,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":45,"../autofill-utils":47,"../transports/apple.transport":60,"./InterfacePrototype.js":17}],15:[function(require,module,exports){
+},{"../UI/styles/styles":45,"../autofill-utils":47,"../transports/apple.transport":62,"./InterfacePrototype.js":17}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4019,7 +4019,7 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../UI/styles/styles":45,"../autofill-utils":47,"../transports/apple.transport":60,"./InterfacePrototype.js":17}],16:[function(require,module,exports){
+},{"../UI/styles/styles":45,"../autofill-utils":47,"../transports/apple.transport":62,"./InterfacePrototype.js":17}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4904,7 +4904,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../runtime/runtime":52,"../settings/settings":58,"../transports/transport":63,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
+},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../runtime/runtime":53,"../settings/settings":60,"../transports/transport":65,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11032,7 +11032,7 @@ var _transport = require("./transports/transport");
   }
 })();
 
-},{"./DeviceInterface":12,"./InputTypes/input-types":35,"./UI/tooltips":46,"./config":49,"./requestIdleCallback":51,"./runtime/runtime":52,"./settings/settings":58,"./transports/captureDdgGlobals":61,"./transports/transport":63}],49:[function(require,module,exports){
+},{"./DeviceInterface":12,"./InputTypes/input-types":35,"./UI/tooltips":46,"./config":49,"./requestIdleCallback":51,"./runtime/runtime":53,"./settings/settings":60,"./transports/captureDdgGlobals":63,"./transports/transport":65}],49:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -11161,6 +11161,170 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.StoreFormData = exports.ShowAutofillParent = exports.GetSelectedCredentials = exports.GetRuntimeConfiguration = exports.GetAvailableInputTypes = exports.GetAutofillInitData = exports.GetAutofillData = exports.GetAutofillCredentials = exports.CloseAutofillParent = void 0;
+
+var _testing = require("./testing");
+
+var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @extends {Message<null, AvailableInputTypes>}
+ */
+class GetAvailableInputTypes extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getAvailableInputTypes');
+
+    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAvailableInputTypesResponse']);
+  }
+
+}
+/**
+ * @extends {Message}
+ */
+
+
+exports.GetAvailableInputTypes = GetAvailableInputTypes;
+
+class CloseAutofillParent extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'closeAutofillParent');
+  }
+
+}
+/**
+ * @extends {Message<string|number, CredentialsObject>}
+ */
+
+
+exports.CloseAutofillParent = CloseAutofillParent;
+
+class GetAutofillCredentials extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getAutofillCredentials');
+  }
+
+}
+/**
+ * @extends {Message<Schema.ShowAutofillParentRequest, void>}
+ */
+
+
+exports.GetAutofillCredentials = GetAutofillCredentials;
+
+class ShowAutofillParent extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "reqValidator", _validators.default['#/definitions/ShowAutofillParentRequest']);
+
+    _defineProperty(this, "name", 'showAutofillParent');
+  }
+
+}
+/**
+ * @extends {Message<null, any>}
+ */
+
+
+exports.ShowAutofillParent = ShowAutofillParent;
+
+class GetSelectedCredentials extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getSelectedCredentials');
+  }
+
+}
+/**
+ * @extends {Message<DataStorageObject, void>}
+ */
+
+
+exports.GetSelectedCredentials = GetSelectedCredentials;
+
+class StoreFormData extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'storeFormData');
+
+    _defineProperty(this, "reqValidator", _validators.default['#/definitions/StoreFormDataRequest']);
+  }
+
+}
+/**
+ * @extends {Message<null, InboundPMData>}
+ */
+
+
+exports.StoreFormData = StoreFormData;
+
+class GetAutofillInitData extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getAutofillInitData');
+
+    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAutofillInitDataResponse']);
+  }
+
+}
+/**
+ * @extends {Message<Schema.GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
+ */
+
+
+exports.GetAutofillInitData = GetAutofillInitData;
+
+class GetAutofillData extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getAutofillData');
+
+    _defineProperty(this, "reqValidator", _validators.default['#/definitions/GetAutofillDataRequest']);
+
+    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAutofillDataResponse']);
+  }
+
+}
+/**
+ * @extends {Message<null, import("@duckduckgo/content-scope-scripts").RuntimeConfiguration>}
+ */
+
+
+exports.GetAutofillData = GetAutofillData;
+
+class GetRuntimeConfiguration extends _testing.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getRuntimeConfiguration');
+
+    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetRuntimeConfigurationResponse']);
+  }
+
+}
+
+exports.GetRuntimeConfiguration = GetRuntimeConfiguration;
+
+},{"../schema/validators.cjs":59,"./testing":54}],53:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.Runtime = void 0;
 exports.createRuntime = createRuntime;
 exports.runtimeResponse = runtimeResponse;
@@ -11169,9 +11333,7 @@ var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
 
 var _matching = require("../Form/matching");
 
-var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _messages = require("./messages");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -11203,10 +11365,7 @@ class Runtime {
 
 
   async getRuntimeConfiguration() {
-    const response = await this.transport.send('getRuntimeConfiguration');
-    const validator = _validators.default['#/definitions/GetRuntimeConfigurationResponse'];
-    const data = runtimeResponse(response, 'getRuntimeConfiguration', // @ts-ignore
-    validator);
+    const data = await new _messages.GetRuntimeConfiguration(null, this.transport).send();
     const {
       config,
       errors
@@ -11229,10 +11388,7 @@ class Runtime {
 
 
   async getAvailableInputTypes() {
-    const response = await this.transport.send('getAvailableInputTypes');
-    const validator = _validators.default['#/definitions/GetAvailableInputTypesResponse'];
-    return runtimeResponse(response, 'getAvailableInputTypes', // @ts-ignore
-    validator);
+    return new _messages.GetAvailableInputTypes(null, this.transport).send();
   }
   /**
    * @public
@@ -11256,16 +11412,7 @@ class Runtime {
       mainType,
       subType
     };
-    const validator = _validators.default['#/definitions/GetAutofillDataRequest'];
-
-    if (!(validator !== null && validator !== void 0 && validator(payload))) {
-      throwError(validator === null || validator === void 0 ? void 0 : validator['errors'], 'getAutofillDataRequest');
-    }
-
-    const response = await this.transport.send('getAutofillData', payload);
-    const data = runtimeResponse(response, 'getAutofillData', // @ts-ignore
-    _validators.default['#/definitions/GetAutofillDataResponse']);
-    return data;
+    return new _messages.GetAutofillData(payload, this.transport).send();
   }
   /**
    * @returns {Promise<InboundPMData>}
@@ -11273,9 +11420,7 @@ class Runtime {
 
 
   async getAutofillInitData() {
-    const response = await this.transport.send('getAutofillInitData');
-    return runtimeResponse(response, 'getAutofillInitData', // @ts-ignore
-    _validators.default['#/definitions/GetAutofillInitDataResponse']);
+    return new _messages.GetAutofillInitData(null, this.transport).send();
   }
   /**
    * @public
@@ -11284,13 +11429,7 @@ class Runtime {
 
 
   async storeFormData(data) {
-    const validator = _validators.default['#/definitions/StoreFormDataRequest'];
-
-    if (!(validator !== null && validator !== void 0 && validator(data))) {
-      throwError(validator === null || validator === void 0 ? void 0 : validator['errors'], 'storeFormData');
-    }
-
-    return this.transport.send('storeFormData', data);
+    return new _messages.StoreFormData(data, this.transport).send();
   }
   /**
    * @param {Schema.ShowAutofillParentRequest} parentArgs
@@ -11299,13 +11438,7 @@ class Runtime {
 
 
   async showAutofillParent(parentArgs) {
-    const validator = _validators.default['#/definitions/ShowAutofillParentRequest'];
-
-    if (!(validator !== null && validator !== void 0 && validator(parentArgs))) {
-      throwError(validator === null || validator === void 0 ? void 0 : validator['errors'], 'showAutofillParent');
-    }
-
-    await this.transport.send('showAutofillParent', parentArgs);
+    await new _messages.ShowAutofillParent(parentArgs, this.transport).send();
   }
   /**
    * todo(Shane): Schema for this?
@@ -11315,17 +11448,20 @@ class Runtime {
 
 
   async getSelectedCredentials() {
-    return this.transport.send('getSelectedCredentials');
+    return new _messages.GetSelectedCredentials(null, this.transport).send();
   }
   /**
    * @param {string|number} id
+   * @returns {APIResponseSingle<CredentialsObject>}
    */
 
 
-  getAutofillCredentials(id) {
-    return this.transport.send('getAutofillCredentials', {
-      id: String(id)
-    });
+  async getAutofillCredentials(id) {
+    const response = await new _messages.GetAutofillCredentials(id, this.transport).send(); // re-wrapping for now.
+
+    return {
+      success: response
+    };
   }
   /**
    * @returns {Promise<any>}
@@ -11333,7 +11469,7 @@ class Runtime {
 
 
   async closeAutofillParent() {
-    return this.transport.send('closeAutofillParent');
+    await new _messages.CloseAutofillParent(null, this.transport).send();
   }
 
 }
@@ -11389,7 +11525,129 @@ function throwError(errors, name) {
   throw new Error('Schema validation errors for ' + name);
 }
 
-},{"../Form/matching":29,"../schema/validators.cjs":57,"@duckduckgo/content-scope-scripts":1}],53:[function(require,module,exports){
+},{"../Form/matching":29,"./messages":52,"@duckduckgo/content-scope-scripts":1}],54:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Message = void 0;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @template Req,Res
+ */
+class Message {
+  /**
+   * @type {import("ajv").ValidateFunction | null}
+   */
+
+  /**
+   * @type {import("ajv").ValidateFunction | null}
+   */
+
+  /**
+   * String representation of this message's name
+   * @type {string}
+   */
+
+  /** @type {GenericRuntime} */
+
+  /**
+   * @type {Req}
+   */
+
+  /**
+   * @param {Req} data
+   * @param transport
+   */
+  constructor(data, transport) {
+    _defineProperty(this, "reqValidator", null);
+
+    _defineProperty(this, "resValidator", null);
+
+    _defineProperty(this, "name", 'unknown');
+
+    _defineProperty(this, "transport", void 0);
+
+    _defineProperty(this, "data", void 0);
+
+    this.data = this._validate(data, this.reqValidator);
+    this.transport = transport;
+  }
+  /**
+   * @param {any} payload
+   * @param {import("ajv").ValidateFunction | null} validator
+   */
+
+
+  _validate(payload, validator) {
+    if (validator && !(validator !== null && validator !== void 0 && validator(payload))) {
+      this.throwError(validator === null || validator === void 0 ? void 0 : validator['errors']);
+    }
+
+    return payload;
+  }
+  /**
+   * @param {import("ajv").ValidateFunction['errors']} errors
+   */
+
+
+  throwError(errors) {
+    if (errors) {
+      for (let error of errors) {
+        console.error(error.message);
+        console.error(error);
+      }
+    }
+
+    throw new Error('SSSchema validation errors for ' + this.constructor.name);
+  }
+  /**
+   * @param {any} object
+   * @param {import("ajv").ValidateFunction | null} [validator]
+   */
+
+
+  _runtimeResponse(object, validator) {
+    if (validator && !(validator !== null && validator !== void 0 && validator(object))) {
+      return this.throwError(validator === null || validator === void 0 ? void 0 : validator.errors);
+    }
+
+    if ('data' in object) {
+      console.warn('response had `data` property. Please migrate to `success`');
+      return object.data;
+    }
+
+    if ('success' in object) {
+      return object.success;
+    }
+
+    throw new Error('unreachable. Response did not contain `success` or `data`');
+  }
+  /**
+   * @returns {Promise<Res>}
+   */
+
+
+  async send() {
+    let response;
+
+    if (this.data) {
+      response = await this.transport.send(this.name, this.data);
+    } else {
+      response = await this.transport.send(this.name);
+    }
+
+    return this._runtimeResponse(response, this.resValidator);
+  }
+
+}
+
+exports.Message = Message;
+
+},{}],55:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
@@ -11420,7 +11678,7 @@ module.exports={
   ]
 }
 
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillInitDataResponse",
@@ -11477,7 +11735,7 @@ module.exports={
   ]
 }
 
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
@@ -11521,7 +11779,7 @@ module.exports={
   ]
 }
 
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
@@ -11548,7 +11806,7 @@ module.exports={
   ]
 }
 
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 // @ts-nocheck
 "use strict";
 
@@ -16094,7 +16352,7 @@ function validate33(data) {
   return errors === 0;
 }
 
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16182,7 +16440,7 @@ function fromRuntimeConfig(config) {
   return settings;
 }
 
-},{"../schema/validators.cjs":57}],59:[function(require,module,exports){
+},{"../schema/validators.cjs":59}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16294,7 +16552,7 @@ function waitForResponse(expectedResponse) {
   });
 }
 
-},{"../schema/response.getAutofillData.schema.json":53,"../schema/response.getAvailableInputTypes.schema.json":55,"../schema/response.getRuntimeConfiguration.schema.json":56}],60:[function(require,module,exports){
+},{"../schema/response.getAutofillData.schema.json":55,"../schema/response.getAvailableInputTypes.schema.json":57,"../schema/response.getRuntimeConfiguration.schema.json":58}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16629,7 +16887,7 @@ const decrypt = async (ciphertext, key, iv) => {
   return dec.decode(decrypted);
 };
 
-},{"./captureDdgGlobals":61}],61:[function(require,module,exports){
+},{"./captureDdgGlobals":63}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16660,7 +16918,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16812,7 +17070,7 @@ const interceptions = {
   }
 };
 
-},{}],63:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16893,7 +17151,7 @@ function createLoggingTransport(config) {
   return loggingTransport;
 }
 
-},{"./android.transport":59,"./apple.transport":60,"./extension.transport":62,"./windows.transport":64}],64:[function(require,module,exports){
+},{"./android.transport":61,"./apple.transport":62,"./extension.transport":64,"./windows.transport":66}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17010,4 +17268,4 @@ function windowsTransport(name, data) {
   };
 }
 
-},{"../schema/response.getAutofillInitData.schema.json":54,"../schema/response.getAvailableInputTypes.schema.json":55,"../schema/response.getRuntimeConfiguration.schema.json":56}]},{},[48]);
+},{"../schema/response.getAutofillInitData.schema.json":56,"../schema/response.getAvailableInputTypes.schema.json":57,"../schema/response.getRuntimeConfiguration.schema.json":58}]},{},[48]);
