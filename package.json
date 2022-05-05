@@ -19,15 +19,20 @@
     "test:passwords": "PASSWORD_STRESS_TEST=true jest generate.test.js",
     "test:unit": "jest",
     "test:integration": "npm run build && npm run copy-assets && playwright test",
+    "test:integration:headed": "npm run build && npm run copy-assets && playwright test --headed",
     "test:integration:ci": "xvfb-run --auto-servernum --server-args='-screen 0 1280x960x24' npm run test:integration -- --retries=3",
     "test:report": "jest --testResultsProcessor='./node_modules/jest-html-reporter' --no-colors --verbose=false",
     "test:watch": "jest --watch --verbose=false",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
-    "verify:local": "npm run lint:fix && npm run tsc && npm run test:unit && npm run test:integration"
+    "verify:local": "npm run lint:fix && npm run tsc && npm run test:unit && npm run test:integration",
+    "schema:all": "npm run schema:compile && npm run schema:docs",
+    "schema:compile": "node scripts/schema.js",
+    "schema:docs": "rm -rf docs/schema && npx jsonschema2md -x -d src/schema -o docs/schema"
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "ajv": "^8.11.0",
     "@babel/core": "^7.17.8",
     "@babel/eslint-parser": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
@@ -60,6 +65,6 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#1.3.0"
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#e5e2eb1228bcb15f4ebaf649d0ce1bae4c404711"
   }
 }

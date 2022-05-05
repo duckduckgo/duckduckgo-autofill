@@ -18,6 +18,22 @@ interface Window {
     }
 
 
+    // Used in the Android app
+    BrowserAutofill: {
+        getRuntimeConfiguration(): string;
+        getAvailableInputTypes(): string;
+        getAutofillData(data: string): void;
+        storeFormData(data: string): void;
+    }
+
+    chrome: {
+        webview: {
+            postMessage: Window['postMessage'],
+            addEventListener: Window['addEventListener'],
+            removeEventListener: Window['removeEventListener'],
+        }
+    }
+
     // Used in Apple apps
     webkit: {
         messageHandlers: Record<string, {
@@ -31,4 +47,3 @@ interface Window {
         }
     }
 }
-

@@ -1,5 +1,7 @@
 import { createGlobalConfig } from '../config'
-import { createTransport } from './appleDeviceUtils'
+import {Sender} from './sender'
+import {createLegacyMessage} from '../messages/messages'
+import {wkSendAndWait} from './appleDeviceUtils'
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data
@@ -26,15 +28,32 @@ const webkitMock = jest.fn(async (data) => {
             })
         )
 })
-window.webkit = {messageHandlers: {
-    testMock: {postMessage: webkitMock}
-}}
 
+window.webkit = {
+    messageHandlers: {
+        testMock: {
+            postMessage: webkitMock
+        }
+    }
+}
+
+const mockSender = (config) => {
+    return new class extends Sender {
+        async handle (msg) {
+            const { name, data } = msg
+            return wkSendAndWait(name, data, {
+                secret: config.secret,
+                hasModernWebkitAPI: config.hasModernWebkitAPI
+            })
+        }
+    }()
+}
 describe('wkSendAndWait', () => {
     it('returns the expected unencrypted data', async () => {
         const config = createGlobalConfig()
-        const transport = createTransport(config)
-        const response = await transport.send('testMock', {})
-        expect(response.data).toBe('test')
+        const sender = mockSender(config)
+        const message = createLegacyMessage('testMock', {})
+        const response = await sender.send(message)
+        expect(response).toBe('test')
     })
 })

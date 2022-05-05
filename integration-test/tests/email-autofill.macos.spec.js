@@ -28,11 +28,14 @@ test.describe('macos', () => {
         await createWebkitMocks()
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
+            .withAvailableInputTypes({
+                email: true
+            })
             .applyTo(page)
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
+            .replaceAll(macosContentScopeReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -69,7 +72,7 @@ test.describe('macos', () => {
     test.describe('auto filling a signup form', () => {
         async function applyScript (page) {
             await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
+                .replaceAll(macosContentScopeReplacements({}))
                 .platform('macos')
                 .applyTo(page)
         }
@@ -87,6 +90,9 @@ test.describe('macos', () => {
 
             await createWebkitMocks()
                 .withIdentity(identity)
+                .withAvailableInputTypes({
+                    identities: true
+                })
                 .applyTo(page)
 
             await applyScript(page)
@@ -107,6 +113,21 @@ test.describe('macos', () => {
             // should still allow password generation
             await signup.selectGeneratedPassword()
         })
+        test('password generation is disabled via feature flags', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+            await createWebkitMocks().applyTo(page)
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements({
+                    featureToggles: {
+                        password_generation: false
+                    }
+                }))
+                .platform('macos')
+                .applyTo(page)
+            await signup.navigate()
+            await signup.assertPasswordHasNoIcon()
+        })
     })
     test('autofill a newly added email form (mutation observer test)', async ({page}) => {
         // enable in-terminal exceptions
@@ -117,6 +138,10 @@ test.describe('macos', () => {
         await createWebkitMocks()
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
+            .withAvailableInputTypes({
+                email: true,
+                credentials: true
+            })
             .withIdentity({
                 id: '01',
                 title: 'Main identity',
@@ -127,7 +152,7 @@ test.describe('macos', () => {
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
+            .replaceAll(macosContentScopeReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -151,11 +176,14 @@ test.describe('macos', () => {
                 username: personalAddress,
                 password
             })
+            .withAvailableInputTypes({
+                credentials: true
+            })
             .applyTo(page)
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
+            .replaceAll(macosContentScopeReplacements({}))
             .platform('macos')
             .applyTo(page)
 
@@ -238,11 +266,11 @@ test.describe('macos', () => {
         })
     })
     test.describe('matching performance', () => {
-        test('matching performance v1', async ({page}) => {
+        test.skip('matching performance v1', async ({page}) => {
             await forwardConsoleMessages(page)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
+                .replaceAll(macosContentScopeReplacements({}))
                 .platform('macos')
                 .applyTo(page)
 

@@ -8,7 +8,7 @@ import ddgGlobals from './captureDdgGlobals'
  */
 const wkSend = (handler, data = {}, opts) => {
     if (!(handler in window.webkit.messageHandlers)) {
-        throw new Error(`Missing webkit handler: '${handler}'`)
+        throw new MissingWebkitHandler(`Missing webkit handler: '${handler}'`)
     }
     return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret: opts.secret}})
 }
@@ -39,7 +39,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  * @returns {Promise<*>}
  */
-const wkSendAndWait = async (handler, data = {}, opts = {}) => {
+export const wkSendAndWait = async (handler, data = {}, opts = {}) => {
     if (opts.hasModernWebkitAPI) {
         const response = await wkSend(handler, data, opts)
         return ddgGlobals.JSONparse(response || '{}')
@@ -86,7 +86,7 @@ const createRandIv = () => ddgGlobals.getRandomValues(new ddgGlobals.Uint8Array(
 
 const decrypt = async (ciphertext, key, iv) => {
     const cryptoKey = await ddgGlobals.importKey('raw', key, 'AES-GCM', false, ['decrypt'])
-    const algo = { name: 'AES-GCM', iv }
+    const algo = {name: 'AES-GCM', iv}
 
     let decrypted = await ddgGlobals.decrypt(algo, cryptoKey, ciphertext)
 
@@ -94,24 +94,11 @@ const decrypt = async (ciphertext, key, iv) => {
     return dec.decode(decrypted)
 }
 
-/**
- * Create a wrapper around the webkit messaging that conforms
- * to the Transport interface
- *
- * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {Transport}
- */
-function createTransport (config) {
-    /** @type {Transport} */
-    const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
-        send (name, data) {
-            return wkSendAndWait(name, data, {
-                secret: config.secret,
-                hasModernWebkitAPI: config.hasModernWebkitAPI
-            })
-        }
-    }
-    return transport
-}
+export class MissingWebkitHandler extends Error {
+    handlerName
 
-export { createTransport }
+    constructor (handlerName) {
+        super()
+        this.handlerName = handlerName
+    }
+}

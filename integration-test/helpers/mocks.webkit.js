@@ -1,4 +1,8 @@
-export const iosContentScopeReplacements = () => {
+/**
+ * @param {object} [overrides]
+ * @param {Partial<FeatureToggles>} [overrides.featureToggles]
+ */
+export const iosContentScopeReplacements = (overrides = {}) => {
     return {
         contentScope: {
             features: {
@@ -12,12 +16,30 @@ export const iosContentScopeReplacements = () => {
         userUnprotectedDomains: [],
         userPreferences: {
             debug: true,
-            platform: {name: 'ios'}
+            platform: {name: 'ios'},
+            features: {
+                autofill: {
+                    settings: {
+                        featureToggles: {
+                            'inputType_credentials': true,
+                            'inputType_identities': false,
+                            'inputType_creditCards': false,
+                            'emailProtection': true,
+                            'password_generation': false,
+                            'credentials_saving': true,
+                            ...overrides.featureToggles
+                        }
+                    }
+                }
+            }
         }
     }
 }
-
-export const macosContentScopeReplacements = () => {
+/**
+ * @param {object} [overrides]
+ * @param {Partial<FeatureToggles>} [overrides.featureToggles]
+ */
+export const macosContentScopeReplacements = (overrides = {}) => {
     return {
         isApp: true,
         hasModernWebkitAPI: true,
@@ -33,7 +55,22 @@ export const macosContentScopeReplacements = () => {
         userUnprotectedDomains: [],
         userPreferences: {
             debug: true,
-            platform: {name: 'macos'}
+            platform: {name: 'macos'},
+            features: {
+                autofill: {
+                    settings: {
+                        featureToggles: {
+                            'inputType_credentials': true,
+                            'inputType_identities': true,
+                            'inputType_creditCards': true,
+                            'emailProtection': true,
+                            'password_generation': true,
+                            'credentials_saving': true,
+                            ...overrides.featureToggles
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -67,7 +104,7 @@ export function createWebkitMocks (platform = 'macos') {
             }
         },
         emailHandlerCheckAppSignedInStatus: {
-            isAppSignedIn: false
+            isAppSignedIn: true
         },
         emailHandlerGetAddresses: {
             /** @type {EmailAddresses} */
@@ -76,24 +113,29 @@ export function createWebkitMocks (platform = 'macos') {
                 privateAddress: ''
             }
         },
-        emailHandlerRefreshAlias: null,
+        emailHandlerRefreshAlias: '',
         emailHandlerGetAlias: {
             /** @type {string|null} */
             alias: null
         },
         closeAutofillParent: {},
         getSelectedCredentials: {type: 'none'},
-        pmHandlerStoreData: {},
         pmHandlerGetAutofillCredentials: {
             /** @type {CredentialsObject|null} */
             success: null
         }
     }
 
+    /** @type {MocksObjectWebkit} */
+    const mocksObject = {
+        getAutofillData: null,
+        getAvailableInputTypes: null,
+        storeFormData: null
+    }
+
     /** @type {MockBuilder} */
     const builder = {
         withPrivateEmail (email) {
-            webkitBase.emailHandlerCheckAppSignedInStatus.isAppSignedIn = true
             if (platform === 'ios') {
                 webkitBase.emailHandlerGetAlias.alias = email
             } else {
@@ -102,7 +144,6 @@ export function createWebkitMocks (platform = 'macos') {
             return this
         },
         withPersonalEmail (email) {
-            webkitBase.emailHandlerCheckAppSignedInStatus.isAppSignedIn = true
             if (platform === 'ios') {
                 webkitBase.emailHandlerGetAlias.alias = email
             } else {
@@ -117,6 +158,14 @@ export function createWebkitMocks (platform = 'macos') {
         withCredentials: function (credentials) {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
+            mocksObject.getAutofillData = { success: credentials }
+            return this
+        },
+        withAvailableInputTypes: function (inputTypes) {
+            mocksObject.getAvailableInputTypes = { success: inputTypes }
+            return this
+        },
+        withFeatureToggles: function (_featureToggles) {
             return this
         },
         tap (fn) {
@@ -124,7 +173,10 @@ export function createWebkitMocks (platform = 'macos') {
             return this
         },
         async applyTo (page) {
-            return withMockedWebkit(page, { ...webkitBase })
+            if (mocksObject.getAvailableInputTypes === null) {
+                mocksObject.getAvailableInputTypes = {success: {}}
+            }
+            return withMockedWebkit(page, { ...webkitBase, ...mocksObject })
         }
     }
 

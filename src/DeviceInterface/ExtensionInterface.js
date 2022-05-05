@@ -4,34 +4,33 @@ import {
     SIGN_IN_MSG,
     sendAndWaitForAnswer,
     setValue,
-    formatDuckAddress,
-    isAutofillEnabledFromProcessedConfig
+    formatDuckAddress
 } from '../autofill-utils'
 
 class ExtensionInterface extends InterfacePrototype {
-    async isEnabled () {
-        return new Promise(resolve => {
-            chrome.runtime.sendMessage(
-                {
-                    registeredTempAutofillContentScript: true,
-                    documentUrl: window.location.href
-                },
-                (response) => {
-                    resolve(isAutofillEnabledFromProcessedConfig(response))
-                }
-            )
-        })
-    }
-
     isDeviceSignedIn () {
         return this.hasLocalAddresses
     }
 
-    setupAutofill () {
+    async setupAutofill () {
+        await this._addDeviceListeners()
+
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
+                // todo(Shane): Should we re-evaluate input types now?
+                this.availableInputTypes = {
+                    ...this.availableInputTypes,
+                    email: true
+                }
                 const cleanup = this.scanner.init()
-                this.addLogoutListener(cleanup)
+                // todo(Shane): Should we re-evaluate input types now?
+                this.addLogoutListener(() => {
+                    cleanup()
+                    this.availableInputTypes = {
+                        ...this.availableInputTypes,
+                        email: false
+                    }
+                })
             }
         })
     }
@@ -71,7 +70,7 @@ class ExtensionInterface extends InterfacePrototype {
         return chrome.runtime.sendMessage(data)
     }
 
-    addDeviceListeners () {
+    _addDeviceListeners () {
         // Add contextual menu listeners
         let activeEl = null
         document.addEventListener('contextmenu', e => {
@@ -113,6 +112,11 @@ class ExtensionInterface extends InterfacePrototype {
             }
         })
     }
+
+    /** @override */
+    tooltipStyles () {
+        return `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
+    }
 }
 
-export default ExtensionInterface
+export { ExtensionInterface }

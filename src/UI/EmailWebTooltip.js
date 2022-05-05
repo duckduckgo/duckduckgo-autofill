@@ -2,19 +2,15 @@ import { formatDuckAddress, escapeXML } from '../autofill-utils'
 import Tooltip from './Tooltip'
 import {CSS_STYLES} from './styles/styles'
 
-class EmailAutofill extends Tooltip {
+class EmailWebTooltip extends Tooltip {
     /**
-     * @param config
-     * @param inputType
-     * @param position
-     * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
+     * @param {import("../DeviceInterface/InterfacePrototype").default} device
      */
-    constructor (config, inputType, position, deviceInterface) {
-        super(config, inputType, position, deviceInterface)
+    render (device) {
+        this.device = device
+        this.addresses = device.getLocalAddresses()
 
-        this.addresses = this.interface.getLocalAddresses()
-
-        const includeStyles = deviceInterface.globalConfig.isApp
+        const includeStyles = device.globalConfig.isApp
             ? `<style>${CSS_STYLES}</style>`
             : `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
 
@@ -54,9 +50,10 @@ ${includeStyles}
         })
 
         // Get the alias from the extension
-        this.interface.getAddresses().then(this.updateAddresses)
+        device.getAddresses().then(this.updateAddresses)
 
         this.init()
+        return this
     }
     /**
      * @param {'personalAddress' | 'privateAddress'} id
@@ -64,8 +61,8 @@ ${includeStyles}
     async fillForm (id) {
         const address = this.addresses[id]
         const formattedAddress = formatDuckAddress(address)
-        this.interface.selectedDetail({email: formattedAddress, id}, 'email')
+        this.device?.selectedDetail({email: formattedAddress, id}, 'email')
     }
 }
 
-export default EmailAutofill
+export default EmailWebTooltip

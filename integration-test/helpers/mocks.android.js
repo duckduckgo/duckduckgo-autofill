@@ -30,6 +30,21 @@ export function createAndroidMocks () {
                 debug: false,
                 platform: {
                     name: 'android'
+                },
+                features: {
+                    autofill: {
+                        settings: {
+                            /** @type {FeatureToggles} */
+                            featureToggles: {
+                                inputType_credentials: true,
+                                inputType_identities: false,
+                                inputType_creditCards: false,
+                                emailProtection: true,
+                                password_generation: false,
+                                credentials_saving: true
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -52,8 +67,17 @@ export function createAndroidMocks () {
             mocks.address = email
             return this
         },
+        withAvailableInputTypes (inputTypes) {
+            mocks.inputTypes = inputTypes
+            return this
+        },
         withIdentity: function () {
             throw new Error('Function not implemented.')
+        },
+        withFeatureToggles (featureToggles) {
+            const defaults = mocks.getRuntimeConfigurationResponse.userPreferences.features.autofill.settings.featureToggles
+            Object.assign(defaults, featureToggles)
+            return this
         },
         /**
          * @param credentials
@@ -86,6 +110,39 @@ export function createAndroidMocks () {
                         return ''
                     }
                 }
+                /**
+                 * @param {Names} name
+                 * @param {any} request
+                 * @param {any} response
+                 */
+                function respond (name, request, response) {
+                    const call = [name, request, response]
+                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.postMessage(JSON.stringify({
+                        type: name + 'Response',
+                        success: response
+                    }), window.origin)
+                }
+                // todo(Shane): This is the proposed android API.
+                /** @type {MocksObjectAndroid} */
+                const mocksObject = {
+                    getRuntimeConfiguration () {
+                        return respond('getRuntimeConfiguration', null, mocks.getRuntimeConfigurationResponse)
+                    },
+                    getAvailableInputTypes () {
+                        return respond('getAvailableInputTypes', null, mocks.getAvailableInputTypesResponse)
+                    },
+                    getAutofillData (request) {
+                        return respond('getAutofillData', request, mocks.getAutofillData)
+                    },
+                    storeFormData (request) {
+                        /** @type {MockCall} */
+                        const call = ['storeFormData', request, mocks.getAutofillData]
+                        window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    }
+                }
+                // @ts-ignore
+                window.BrowserAutofill = mocksObject
             }, mocks)
         }
     }

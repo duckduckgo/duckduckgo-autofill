@@ -6,7 +6,7 @@ import * as http from 'http'
 import {tmpdir} from 'os'
 import {devices} from 'playwright'
 import {chromium, firefox} from '@playwright/test'
-import {macosContentScopeReplacements} from './mocks.webkit.js'
+import {iosContentScopeReplacements, macosContentScopeReplacements} from './mocks.webkit.js'
 
 const DATA_DIR_PREFIX = 'ddg-temp-'
 
@@ -165,12 +165,45 @@ export async function defaultMacosScript (page) {
 }
 
 /**
+ * @param {import("playwright").Page} page
+ */
+export async function defaultIOSScript (page) {
+    return createAutofillScript()
+        .replaceAll(iosContentScopeReplacements())
+        .platform('ios')
+        .applyTo(page)
+}
+
+/**
+ * @param {import("playwright").Page} page
+ * @param {Partial<FeatureToggles>} featureToggles
+ */
+export async function withIOSFeatureToggles (page, featureToggles) {
+    return createAutofillScript()
+        .replaceAll(iosContentScopeReplacements({
+            /** @type {FeatureToggles} */
+            featureToggles: {
+                'inputType_credentials': true,
+                'inputType_identities': false,
+                'inputType_creditCards': false,
+                'emailProtection': true,
+                'password_generation': false,
+                'credentials_saving': true,
+                ...featureToggles
+            }
+        }))
+        .platform('ios')
+        .applyTo(page)
+}
+
+/**
  * Relay browser exceptions to the terminal to aid debugging.
  *
  * @param {import("playwright").Page} page
- * @param {{verbose?: boolean}} [_opts]
+ * @param {{verbose?: boolean}} [opts]
  */
-export function forwardConsoleMessages (page, _opts = {}) {
+export function forwardConsoleMessages (page, opts = {}) {
+    const { verbose = false } = opts
     page.on('pageerror', (msg) => {
         console.log('🌍 ❌ [in-page error]', msg)
     })
@@ -185,6 +218,16 @@ export function forwardConsoleMessages (page, _opts = {}) {
         })()
 
         console.log(`${icon} [console.${type}]`, msg.text())
+        if (verbose) {
+            const { lineNumber, columnNumber } = msg.location()
+            let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js'
+            if (!(lineNumber === 0 && columnNumber === 0)) {
+                link += ':' + (lineNumber + 1)
+                link += ':' + columnNumber
+                console.log(link)
+                console.log()
+            }
+        }
     })
 }
 
@@ -222,6 +265,27 @@ export function withAndroidContext (test) {
             const context = await browser.newContext({
                 ...devices.iPhone,
                 userAgent: 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.88 DuckDuckGo/7 Mobile Safari/537.36'
+            })
+
+            await use(context)
+            await context.close()
+        }
+    })
+}
+
+/**
+ * Launch a webkit browser with a user-agent that simulates our iOS application
+ * @param {typeof import("@playwright/test").test} test
+ */
+export function withWindowsContext (test) {
+    return test.extend({
+        context: async ({ browser }, use, testInfo) => {
+            // ensure this test setup cannot be used by anything other than webkit browsers
+            testInfo.skip(testInfo.project.name !== 'windows')
+
+            const context = await browser.newContext({
+                ...devices.iPhone,
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36 Edg/100.0.1185.44'
             })
 
             await use(context)
