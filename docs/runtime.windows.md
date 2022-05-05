@@ -124,6 +124,38 @@ where `event.data` is:
 
 ---
 
+## `getAutofillCredentials()`
+
+- `window.chrome.webview.postMessage({ type: 'getAutofillCredentials', data: { id: "01" } })`
+- Response Message via: `window.chrome.webview.addEventListener({type: "getAutofillCredentialsResponse", success: {...} }')`
+  - See TODO
+
+**request example**
+
+```json
+{
+  "type": "getAutofillCredentials",
+  "data": {
+    "id": "01"
+  }
+}
+```
+
+**response example**
+
+```json
+{
+  "type": "getAutofillCredentialsResponse",
+  "success": {
+    "id": "01",
+    "username": "shane-123@duck.com",
+    "password": "123456"
+  }
+}
+```
+
+---
+
 ## `storeFormData(data)`
 
 - `window.chrome.webview.postMessage({ type: 'storeFormData', data: {...} })` 
