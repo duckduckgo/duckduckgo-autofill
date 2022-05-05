@@ -10331,6 +10331,7 @@ class WebTooltip {
       case 'input':
         this.removeTooltip();
         break;
+      // todo(Shane): Why was this 'click' needed?
 
       case 'click':
       case 'pointerdown':
