@@ -6,6 +6,7 @@ import * as http from 'http'
 import {tmpdir} from 'os'
 import {devices} from 'playwright'
 import {chromium, firefox} from '@playwright/test'
+import {macosContentScopeReplacements} from './mocks.webkit.js'
 
 const DATA_DIR_PREFIX = 'ddg-temp-'
 
@@ -101,7 +102,10 @@ function withStringReplacements (page, replacements, platform = 'macos') {
     const content = readFileSync('./dist/autofill.js', 'utf8')
     let output = content
     for (let [keyName, value] of Object.entries(replacements)) {
-        output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${value};`)
+        let replacement = typeof value === 'boolean' || typeof value === 'string'
+            ? value
+            : JSON.stringify(value)
+        output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${replacement};`)
     }
     if (['macos', 'ios'].includes(platform)) {
         return page.addInitScript(output)
@@ -151,16 +155,47 @@ export function createAutofillScript () {
 }
 
 /**
+ * @param {import("playwright").Page} page
+ */
+export async function defaultMacosScript (page) {
+    return createAutofillScript()
+        .replaceAll(macosContentScopeReplacements())
+        .platform('macos')
+        .applyTo(page)
+}
+
+/**
  * Relay browser exceptions to the terminal to aid debugging.
  *
  * @param {import("playwright").Page} page
+ * @param {{verbose?: boolean}} [opts]
  */
-export function forwardConsoleMessages (page) {
+export function forwardConsoleMessages (page, opts = {}) {
+    const { verbose = false } = opts
     page.on('pageerror', (msg) => {
         console.log('🌍 ❌ [in-page error]', msg)
     })
     page.on('console', (msg) => {
-        console.log(`🌍 [in-page console.${msg.type()}]`, msg.text())
+        const type = msg.type()
+        const icon = (() => {
+            switch (type) {
+            case 'warning': return '☢️'
+            case 'error': return '❌️'
+            default: return '🌍'
+            }
+        })()
+
+        console.log(`${icon} [console.${type}]`, msg.text())
+        if (verbose) {
+            const { lineNumber, columnNumber } = msg.location()
+            let link = '\n\t/Users/shaneosbourne/WebstormProjects/BrowserServicesKit/Sources/BrowserServicesKit/Resources/duckduckgo-autofill/dist/autofill.js'
+            if (!(lineNumber === 0 && columnNumber === 0)) {
+                link += ':' + (lineNumber + 1)
+                link += ':' + columnNumber
+                console.log(link)
+                console.log()
+            }
+        }
     })
 }
 

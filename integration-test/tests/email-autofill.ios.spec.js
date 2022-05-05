@@ -5,11 +5,12 @@ import {
     withIOSContext
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
-import {constants, createWebkitMocks} from '../helpers/mocks.js'
+import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage} from '../helpers/pages.js'
+import {createWebkitMocks, iosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 
 /**
- *  Tests for email autofill on ios device
+ *  Tests for email autofill on ios tooltipHandler
  */
 const test = withIOSContext(base)
 
@@ -23,7 +24,7 @@ test.describe('ios', () => {
     })
     test('should autofill the selected email', async ({page}) => {
         // enable in-terminal exceptions
-        forwardConsoleMessages(page)
+        await forwardConsoleMessages(page)
 
         await createWebkitMocks('ios')
             .withPersonalEmail('0')
@@ -33,6 +34,7 @@ test.describe('ios', () => {
         // Load the autofill.js script with replacements
         // on iOS it's the user-agent that's used as the platform check
         await createAutofillScript()
+            .replaceAll(iosContentScopeReplacements())
             .platform('ios')
             .applyTo(page)
 
