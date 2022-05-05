@@ -79,37 +79,37 @@
                         <input class="visually-hidden" autocomplete="shipping given-name" tabindex="-1"
                             aria-hidden="true" aria-label="no-label" data-autocomplete-field="first_name"
                             data-honeypot="true" aria-required="true" size="30" type="text"
-                            name="checkout[shipping_address][first_name]" data-manual-scoring="unknown">
+                            name="checkout[shipping_address][first_name]" data-manual-scoring="firstName">
                         <input class="visually-hidden" autocomplete="shipping family-name" tabindex="-1"
                             aria-hidden="true" aria-label="no-label" data-autocomplete-field="last_name"
                             data-honeypot="true" aria-required="true" size="30" type="text"
-                            name="checkout[shipping_address][last_name]" data-manual-scoring="unknown">
+                            name="checkout[shipping_address][last_name]" data-manual-scoring="lastName">
                         <input class="visually-hidden" autocomplete="shipping organization" tabindex="-1"
                             aria-hidden="true" aria-label="no-label" data-autocomplete-field="company"
                             data-honeypot="true" size="30" type="text" name="checkout[shipping_address][company]" data-manual-scoring="unknown">
                         <input class="visually-hidden" autocomplete="shipping address-line1" tabindex="-1"
                             aria-hidden="true" aria-label="no-label" data-autocomplete-field="address1"
                             data-honeypot="true" aria-required="true" size="30" type="text"
-                            name="checkout[shipping_address][address1]" data-manual-scoring="unknown">
+                            name="checkout[shipping_address][address1]" data-manual-scoring="addressStreet">
                         <input class="visually-hidden" autocomplete="shipping address-line2" tabindex="-1"
                             aria-hidden="true" aria-label="no-label" data-autocomplete-field="address2"
-                            data-honeypot="true" size="30" type="text" name="checkout[shipping_address][address2]" data-manual-scoring="unknown">
+                            data-honeypot="true" size="30" type="text" name="checkout[shipping_address][address2]" data-manual-scoring="addressStreet2">
                         <input class="visually-hidden" autocomplete="shipping address-level2" tabindex="-1"
                             aria-hidden="true" aria-label="no-label" data-autocomplete-field="city" data-honeypot="true"
-                            aria-required="true" size="30" type="text" name="checkout[shipping_address][city]" data-manual-scoring="unknown">
+                            aria-required="true" size="30" type="text" name="checkout[shipping_address][city]" data-manual-scoring="addressCity">
                         <input class="visually-hidden" autocomplete="shipping country" tabindex="-1" aria-hidden="true"
                             aria-label="no-label" data-autocomplete-field="country" data-honeypot="true"
-                            aria-required="true" size="30" type="text" name="checkout[shipping_address][country]" data-manual-scoring="unknown">
+                            aria-required="true" size="30" type="text" name="checkout[shipping_address][country]" data-manual-scoring="addressCountryCode">
                         <input class="visually-hidden" autocomplete="shipping address-level1" tabindex="-1"
                             aria-hidden="true" aria-label="no-label" data-autocomplete-field="province"
                             data-honeypot="true" aria-required="true" size="30" type="text"
-                            name="checkout[shipping_address][province]" data-manual-scoring="unknown">
+                            name="checkout[shipping_address][province]" data-manual-scoring="addressProvince">
                         <input class="visually-hidden" autocomplete="shipping postal-code" tabindex="-1"
                             aria-hidden="true" aria-label="no-label" data-autocomplete-field="zip" data-honeypot="true"
-                            aria-required="true" size="30" type="text" name="checkout[shipping_address][zip]" data-manual-scoring="unknown">
+                            aria-required="true" size="30" type="text" name="checkout[shipping_address][zip]" data-manual-scoring="addressPostalCode">
                         <input class="visually-hidden" autocomplete="shipping tel" tabindex="-1" aria-hidden="true"
                             aria-label="no-label" data-autocomplete-field="phone" data-honeypot="true"
-                            aria-required="true" size="30" type="text" name="checkout[shipping_address][phone]" data-manual-scoring="unknown">
+                            aria-required="true" size="30" type="text" name="checkout[shipping_address][phone]" data-manual-scoring="phone">
 
 
 
@@ -673,61 +673,61 @@
 <!-- section 3: payment info -->
 
 <div class="fieldset" data-credit-card-fields="" data-slate="" dir="ltr">
-    
+
 
     <input value="false" autocomplete="off" size="30" type="hidden" name="checkout[credit_card][vault]" id="checkout_credit_card_vault">
 
     <div class="field field--required">
 
-      
+
 
       <div class="field__input-wrapper field__input-wrapper--icon-right"><label class="field__label field__label--visible" for="checkout_credit_card_number">Card number</label>
         <div class="field__input field__input--iframe-container" data-card-fields="number" data-card-field-placeholder="Card number" data-card-field-prefix="Field container for:">
 
             <form>
-      
-        
+
+
                 <label for="number" class="visually-hidden">Card number</label>
                 <input required="" autocomplete="cc-number" id="number" name="number" type="text" inputmode="numeric" pattern="[0-9]*" aria-describedby="error-for-number tooltip-for-number" data-current-field="number" class="input-placeholder-color--lvl-22" style="color: rgb(51, 51, 51); font-family: PT Serif, sans-serif; padding: 0.94em 0.8em; transition: padding 0.2s ease-out 0s;" placeholder="Card number" data-manual-scoring="cardNumber">
                 <span id="error-for-number" class="input-error-message visually-hidden"></span>
                 <span id="tooltip-for-number" class="input-tooltip-message visually-hidden"></span>
-              
-            
-              
+
+
+
                 <label for="name" class="visually-hidden" aria-hidden="true">Name on card</label>
-                <input autocomplete="cc-name" id="name" name="name" type="text" inputmode="text" pattern="" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-name" id="name" name="name" type="text" inputmode="text" pattern="" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardName">
+
+
+
                 <label for="expiry_month" class="visually-hidden" aria-hidden="true">Expiry month</label>
-                <input autocomplete="cc-exp-month" id="expiry_month" name="expiry_month" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp-month" id="expiry_month" name="expiry_month" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expirationMonth">
+
+
+
                 <label for="expiry_year" class="visually-hidden" aria-hidden="true">Expiry year</label>
-                <input autocomplete="cc-exp-year" id="expiry_year" name="expiry_year" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp-year" id="expiry_year" name="expiry_year" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expirationYear">
+
+
+
                 <label for="expiry" class="visually-hidden" aria-hidden="true">Expiry date (MM / YY)</label>
-                <input autocomplete="cc-exp" id="expiry" name="expiry" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp" id="expiry" name="expiry" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expiration">
+
+
+
                 <label for="verification_value" class="visually-hidden" aria-hidden="true">Security code</label>
-                <input autocomplete="cc-csc" id="verification_value" name="verification_value" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-csc" id="verification_value" name="verification_value" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardSecurityCode">
+
+
+
                 <label for="issue_date" class="visually-hidden" aria-hidden="true">Issue date (MM / YY)</label>
                 <input autocomplete="off" id="issue_date" name="issue_date" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+
+
+
                 <label for="issue_number" class="visually-hidden" aria-hidden="true">Issue number</label>
                 <input autocomplete="off" id="issue_number" name="issue_number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
+
+
             <button type="submit" class="visually-hidden" aria-hidden="true" tabindex="-1"></button>
           </form>
 
@@ -739,55 +739,55 @@
 </div>
     <div data-credit-card-name="true" class="field field--required">
 
-      
+
 
       <div class="field__input-wrapper"><label class="field__label field__label--visible" for="checkout_credit_card_name">Name on card</label>
         <div class="field__input field__input--iframe-container" data-card-fields="name" data-card-field-placeholder="Name on card" data-card-field-prefix="Field container for:">
 
             <form>
-      
-        
+
+
                 <label for="number" class="visually-hidden" aria-hidden="true">Credit Card Number</label>
-                <input autocomplete="cc-number" id="number" name="number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-number" id="number" name="number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardNumber">
+
+
+
                 <label for="name" class="visually-hidden">Name on card</label>
                 <input required="" autocomplete="cc-name" id="name" name="name" type="text" inputmode="text" pattern="" aria-describedby="error-for-name tooltip-for-name" data-current-field="name" class="input-placeholder-color--lvl-22" style="color: rgb(51, 51, 51); font-family: PT Serif, sans-serif; padding: 0.94em 0.8em; transition: padding 0.2s ease-out 0s;" placeholder="Name on card" data-manual-scoring="cardName">
                 <span id="error-for-name" class="input-error-message visually-hidden"></span>
                 <span id="tooltip-for-name" class="input-tooltip-message visually-hidden"></span>
-              
-            
-              
+
+
+
                 <label for="expiry_month" class="visually-hidden" aria-hidden="true">Expiry month</label>
-                <input autocomplete="cc-exp-month" id="expiry_month" name="expiry_month" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp-month" id="expiry_month" name="expiry_month" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expirationMonth">
+
+
+
                 <label for="expiry_year" class="visually-hidden" aria-hidden="true">Expiry year</label>
-                <input autocomplete="cc-exp-year" id="expiry_year" name="expiry_year" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp-year" id="expiry_year" name="expiry_year" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expirationYear">
+
+
+
                 <label for="expiry" class="visually-hidden" aria-hidden="true">Expiry date (MM / YY)</label>
-                <input autocomplete="cc-exp" id="expiry" name="expiry" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp" id="expiry" name="expiry" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expiration">
+
+
+
                 <label for="verification_value" class="visually-hidden" aria-hidden="true">Security code</label>
-                <input autocomplete="cc-csc" id="verification_value" name="verification_value" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-csc" id="verification_value" name="verification_value" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardSecurityCode">
+
+
+
                 <label for="issue_date" class="visually-hidden" aria-hidden="true">Issue date (MM / YY)</label>
                 <input autocomplete="off" id="issue_date" name="issue_date" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+
+
+
                 <label for="issue_number" class="visually-hidden" aria-hidden="true">Issue number</label>
                 <input autocomplete="off" id="issue_number" name="issue_number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
+
+
             <button type="submit" class="visually-hidden" aria-hidden="true" tabindex="-1"></button>
           </form>
 
@@ -797,55 +797,55 @@
 
     <div class="field--half field field--required" data-credit-card-expiry="true">
 
-      
+
 
       <div class="field__input-wrapper"><label class="field__label field__label--visible" for="checkout_credit_card_expiry">Expiration date (MM / YY)</label>
         <div class="field__input field__input--iframe-container" data-card-fields="expiry" data-card-field-placeholder="Expiration date (MM / YY)" data-card-field-prefix="Field container for:" data-card-field-tooltip="Card expiration date in format: month, month, year, year">
 
             <form>
-      
-        
+
+
                 <label for="number" class="visually-hidden" aria-hidden="true">Credit Card Number</label>
-                <input autocomplete="cc-number" id="number" name="number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-number" id="number" name="number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardNumber">
+
+
+
                 <label for="name" class="visually-hidden" aria-hidden="true">Name on card</label>
-                <input autocomplete="cc-name" id="name" name="name" type="text" inputmode="text" pattern="" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-name" id="name" name="name" type="text" inputmode="text" pattern="" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardName">
+
+
+
                 <label for="expiry_month" class="visually-hidden" aria-hidden="true">Expiry month</label>
-                <input autocomplete="cc-exp-month" id="expiry_month" name="expiry_month" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp-month" id="expiry_month" name="expiry_month" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expirationMonth">
+
+
+
                 <label for="expiry_year" class="visually-hidden" aria-hidden="true">Expiry year</label>
-                <input autocomplete="cc-exp-year" id="expiry_year" name="expiry_year" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp-year" id="expiry_year" name="expiry_year" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expirationYear">
+
+
+
                 <label for="expiry" class="visually-hidden">Expiration date (MM / YY)</label>
                 <input required="" autocomplete="cc-exp" id="expiry" name="expiry" type="text" inputmode="numeric" pattern="[0-9]*" aria-describedby="error-for-expiry tooltip-for-expiry" data-current-field="expiry" class="input-placeholder-color--lvl-22" style="color: rgb(51, 51, 51); font-family: PT Serif, sans-serif; padding: 0.94em 0.8em; transition: padding 0.2s ease-out 0s;" placeholder="Expiration date (MM / YY)" data-manual-scoring="expiration">
                 <span id="error-for-expiry" class="input-error-message visually-hidden"></span>
                 <span id="tooltip-for-expiry" class="input-tooltip-message visually-hidden">Card expiration date in format: month, month, year, year</span>
-              
-            
-              
+
+
+
                 <label for="verification_value" class="visually-hidden" aria-hidden="true">Security code</label>
-                <input autocomplete="cc-csc" id="verification_value" name="verification_value" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-csc" id="verification_value" name="verification_value" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardSecurityCode">
+
+
+
                 <label for="issue_date" class="visually-hidden" aria-hidden="true">Issue date (MM / YY)</label>
                 <input autocomplete="off" id="issue_date" name="issue_date" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+
+
+
                 <label for="issue_number" class="visually-hidden" aria-hidden="true">Issue number</label>
                 <input autocomplete="off" id="issue_number" name="issue_number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
+
+
             <button type="submit" class="visually-hidden" aria-hidden="true" tabindex="-1"></button>
           </form>
 
@@ -854,55 +854,55 @@
 </div>
     <div class="field--half field field--required">
 
-      
+
 
       <div class="field__input-wrapper field__input-wrapper--icon-right"><label class="field__label field__label--visible" for="checkout_credit_card_verification_value">Security code</label>
         <div class="field__input field__input--iframe-container" data-card-fields="verification_value" data-card-field-placeholder="Security code" data-card-field-prefix="Field container for:" data-card-field-tooltip="3-digit security code usually found on the back of your card. American Express cards have a 4-digit code located on the front.">
 
             <form>
-      
-        
+
+
                 <label for="number" class="visually-hidden" aria-hidden="true">Credit Card Number</label>
-                <input autocomplete="cc-number" id="number" name="number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-number" id="number" name="number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardNumber">
+
+
+
                 <label for="name" class="visually-hidden" aria-hidden="true">Name on card</label>
-                <input autocomplete="cc-name" id="name" name="name" type="text" inputmode="text" pattern="" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-name" id="name" name="name" type="text" inputmode="text" pattern="" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="cardName">
+
+
+
                 <label for="expiry_month" class="visually-hidden" aria-hidden="true">Expiry month</label>
-                <input autocomplete="cc-exp-month" id="expiry_month" name="expiry_month" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp-month" id="expiry_month" name="expiry_month" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expirationMonth">
+
+
+
                 <label for="expiry_year" class="visually-hidden" aria-hidden="true">Expiry year</label>
-                <input autocomplete="cc-exp-year" id="expiry_year" name="expiry_year" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp-year" id="expiry_year" name="expiry_year" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expirationYear">
+
+
+
                 <label for="expiry" class="visually-hidden" aria-hidden="true">Expiry date (MM / YY)</label>
-                <input autocomplete="cc-exp" id="expiry" name="expiry" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+                <input autocomplete="cc-exp" id="expiry" name="expiry" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="expiration">
+
+
+
                 <label for="verification_value" class="visually-hidden">Security code</label>
                 <input autocomplete="cc-csc" id="verification_value" name="verification_value" type="text" inputmode="numeric" pattern="[0-9]*" aria-describedby="error-for-verification_value tooltip-for-verification_value" data-current-field="verification_value" class="input-placeholder-color--lvl-22" style="color: rgb(51, 51, 51); font-family: PT Serif, sans-serif; padding: 0.94em 0.8em; transition: padding 0.2s ease-out 0s;" placeholder="Security code" data-manual-scoring="cardSecurityCode">
                 <span id="error-for-verification_value" class="input-error-message visually-hidden"></span>
                 <span id="tooltip-for-verification_value" class="input-tooltip-message visually-hidden">3-digit security code usually found on the back of your card. American Express cards have a 4-digit code located on the front.</span>
-              
-            
-              
+
+
+
                 <label for="issue_date" class="visually-hidden" aria-hidden="true">Issue date (MM / YY)</label>
                 <input autocomplete="off" id="issue_date" name="issue_date" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
-              
+
+
+
                 <label for="issue_number" class="visually-hidden" aria-hidden="true">Issue number</label>
                 <input autocomplete="off" id="issue_number" name="issue_number" type="text" inputmode="numeric" pattern="[0-9]*" class="visually-hidden" aria-hidden="true" data-honeypot-field="" tabindex="-1" data-manual-scoring="unknown">
-              
-            
+
+
             <button type="submit" class="visually-hidden" aria-hidden="true" tabindex="-1"></button>
           </form>
 
@@ -934,7 +934,7 @@
     <div class="shown-if-js">
       <button name="button" type="submit" id="continue_button" class="step__footer__continue-btn btn" aria-busy="false" data-manual-submit=""><span class="btn__content" data-continue-button-content="true">Pay now</span><svg class="icon-svg icon-svg--size-18 btn__spinner icon-svg--spinner-button" aria-hidden="true" focusable="false"> <use xlink:href="#spinner-button"></use> </svg></button>
       <div class="shown-on-mobile">
-        
+
       </div>
     </div>
     <div class="hidden-if-js">
@@ -942,6 +942,6 @@
     </div>
     <a class="step__footer__previous-link" href="/9929092/checkouts/868e36f38a836ea66fd4faa0d5d056bb?step=shipping_method"><svg focusable="false" aria-hidden="true" class="icon-svg icon-svg--color-accent icon-svg--size-10 previous-link__icon" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M8 1L7 0 3 4 2 5l1 1 4 4 1-1-4-4"></path></svg><span class="step__footer__previous-link-content">Return to shipping</span></a>
     <div class="step__footer__review-notice-text hidden-on-mobile">
-      
+
     </div>
 </div>
