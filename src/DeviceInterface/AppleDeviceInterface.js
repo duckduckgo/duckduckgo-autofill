@@ -73,15 +73,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * Gets credentials ready for autofill
-     * @param {Number} id - the credential id
-     * @returns {APIResponseSingle<CredentialsObject>}
-     */
-    getAutofillCredentials (id) {
-        return this.legacyTransport.send('pmHandlerGetAutofillCredentials', {id})
-    }
-
-    /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {

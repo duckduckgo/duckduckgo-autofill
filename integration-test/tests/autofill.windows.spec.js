@@ -21,7 +21,7 @@ test.describe('windows', () => {
     test.afterAll(async () => {
         server.close()
     })
-    test('autofill a login form', async ({page}) => {
+    test.skip('autofill a login form', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 

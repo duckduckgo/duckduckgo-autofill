@@ -1,4 +1,4 @@
-import {getInputType, getMainTypeFromType} from '../Form/matching'
+import {getInputType, getMainTypeFromType, getSubtypeFromType} from '../Form/matching'
 
 /**
  * A 'Native' tooltip means that that autofill is not responsible
@@ -27,7 +27,19 @@ export class NativeTooltip {
         const inputType = getInputType(input)
         const mainType = getMainTypeFromType(inputType)
 
-        this.runtime.getAutofillData({inputType})
+        const subType = getSubtypeFromType(inputType)
+
+        if (mainType === 'unknown') {
+            throw new Error('unreachable, should not be here if (mainType === "unknown")')
+        }
+
+        /** @type {GetAutofillDataRequest} */
+        const payload = {
+            inputType,
+            mainType,
+            subType
+        }
+        this.runtime.getAutofillData(payload)
             .then(resp => {
                 console.log('Autofilling...', resp, mainType)
                 form.autofillData(resp, mainType)

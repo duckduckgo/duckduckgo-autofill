@@ -1,10 +1,9 @@
 import { tryCreateRuntimeConfiguration } from '@duckduckgo/content-scope-scripts'
-import { getMainTypeFromType, getSubtypeFromType } from '../Form/matching'
 
 import {
     CloseAutofillParent,
-    GetAutofillCredentials, GetAutofillData, GetAutofillInitData,
-    GetAvailableInputTypes, GetRuntimeConfiguration,
+    GetAutofillData, GetAutofillInitData,
+    GetRuntimeConfiguration,
     GetSelectedCredentials,
     ShowAutofillParent, StoreFormData
 } from './messages'
@@ -50,33 +49,11 @@ class Runtime {
 
     /**
      * @public
-     * @returns {Promise<AvailableInputTypes>}
-     */
-    async getAvailableInputTypes () {
-        return new GetAvailableInputTypes(null, this.transport).send()
-    }
-
-    /**
-     * @public
-     * @param {GetAutofillDataArgs} input
+     * @param {GetAutofillDataRequest} input
      * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
      */
     async getAutofillData (input) {
-        const mainType = getMainTypeFromType(input.inputType)
-        const subType = getSubtypeFromType(input.inputType)
-
-        if (mainType === 'unknown') {
-            throw new Error('unreachable, should not be here if (mainType === "unknown")')
-        }
-
-        /** @type {Schema.GetAutofillDataRequest} */
-        const payload = {
-            inputType: input.inputType,
-            mainType,
-            subType
-        }
-
-        return new GetAutofillData(payload, this.transport).send()
+        return new GetAutofillData(input, this.transport).send()
     }
 
     /**
@@ -95,7 +72,7 @@ class Runtime {
     }
 
     /**
-     * @param {Schema.ShowAutofillParentRequest} parentArgs
+     * @param {ShowAutofillParentRequest} parentArgs
      * @returns {Promise<void>}
      */
     async showAutofillParent (parentArgs) {
@@ -109,16 +86,6 @@ class Runtime {
      */
     async getSelectedCredentials () {
         return new GetSelectedCredentials(null, this.transport).send()
-    }
-
-    /**
-     * @param {string|number} id
-     * @returns {APIResponseSingle<CredentialsObject>}
-     */
-    async getAutofillCredentials (id) {
-        const response = await new GetAutofillCredentials(id, this.transport).send()
-        // re-wrapping for now.
-        return { success: response }
     }
 
     /**

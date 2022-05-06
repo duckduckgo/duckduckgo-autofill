@@ -8,6 +8,8 @@ import {featureToggleAwareInputTypes} from './InputTypes/input-types'
 import {createTooltip} from './UI/tooltips'
 import {fromRuntimeConfig} from './settings/settings'
 import {createLoggingTransport} from './transports/transport'
+import {GetAvailableInputTypes, GetRuntimeConfiguration} from './runtime/messages'
+import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
 (async () => {
     if (!window.isSecureContext) return false
@@ -27,7 +29,7 @@ import {createLoggingTransport} from './transports/transport'
         const runtime = createRuntime(globalConfig, transport)
 
         // Get runtime configuration - this may include messaging
-        const runtimeConfiguration = await runtime.getRuntimeConfiguration()
+        const runtimeConfiguration = await getRuntimeConfiguration();
 
         // Autofill settings need to be derived from runtime config
         const autofillSettings = fromRuntimeConfig(runtimeConfiguration)
@@ -42,7 +44,7 @@ import {createLoggingTransport} from './transports/transport'
             // Determine the tooltipHandler type
             const tooltip = createTooltip(runtime, globalConfig, runtimeConfiguration, autofillSettings)
 
-            const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes()
+            const runtimeAvailableInputTypes = await new GetAvailableInputTypes(null, transport).send()
             const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles)
 
             const device = createDevice(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
@@ -60,3 +62,21 @@ import {createLoggingTransport} from './transports/transport'
         // Noop, we errored
     }
 })()
+
+/**
+ * @public
+ * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
+ */
+async function getRuntimeConfiguration() {
+    const data = await new GetRuntimeConfiguration(null, this.transport).send()
+    const {config, errors} = tryCreateRuntimeConfiguration(data)
+
+    if (errors.length) {
+        for (let error of errors) {
+            console.log(error.message, error)
+        }
+        throw new Error(`${errors.length} errors prevented global configuration from being created.`)
+    }
+
+    return config
+}

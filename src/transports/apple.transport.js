@@ -14,6 +14,9 @@ class AppleTransport {
 
     async send (name, data) {
         try {
+            if (name === "getAutofillCredentials") {
+                name = "pmHandlerGetAutofillCredentials"
+            }
             const response = await wkSendAndWait(name, data, {
                 secret: this.config.secret,
                 hasModernWebkitAPI: this.config.hasModernWebkitAPI
@@ -56,7 +59,7 @@ export function createLegacyTransport (config) {
         async send (name, data) {
             console.log(`🙈 LegacyTransport: ${JSON.stringify(name)}`, data)
             const res = await transport.send(name, data)
-            console.log(`\t 🙈 LegacyTransport::Response ${JSON.stringify(name)}`, res)
+            console.log(`\t 🙈 LegacyTransport::Response ${JSON.stringify(name)}`, JSON.stringify(res))
             return res
         }
     }
@@ -163,7 +166,7 @@ const interceptions = {
                     features: {
                         autofill: {
                             settings: {
-                                /** @type {Schema.FeatureToggles} */
+                                /** @type {FeatureToggles} */
                                 featureToggles: globalConfig.isApp
                                     ? legacyMacOSToggles
                                     : legacyIOSToggles

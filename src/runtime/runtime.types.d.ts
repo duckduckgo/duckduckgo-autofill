@@ -13,7 +13,6 @@ interface GenericRuntime<T> {
 }
 
 type Names = keyof RuntimeMessages;
-type AvailableInputTypes = Schema.AvailableInputTypes;
 
 type GenericRuntimeResponse<Type> =
     | { success: Type, error?: Schema.GenericError }

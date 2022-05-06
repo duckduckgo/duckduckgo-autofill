@@ -25,7 +25,7 @@ export class GetAutofillCredentials extends Message {
 }
 
 /**
- * @extends {Message<Schema.ShowAutofillParentRequest, void>}
+ * @extends {Message<ShowAutofillParentRequest, void>}
  */
 export class ShowAutofillParent extends Message {
     // @ts-ignore
@@ -65,7 +65,7 @@ export class GetAutofillInitData extends Message {
 }
 
 /**
- * @extends {Message<Schema.GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
+ * @extends {Message<GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
  */
 export class GetAutofillData extends Message {
     name = 'getAutofillData'

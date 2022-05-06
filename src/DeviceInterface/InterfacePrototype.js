@@ -19,6 +19,7 @@ import {createRuntime} from '../runtime/runtime'
 import {WebTooltip} from '../UI/WebTooltip'
 import {createRuntimeTransport} from '../transports/transport'
 import {featureToggleAwareInputTypes} from '../InputTypes/input-types'
+import {GetAutofillCredentials, GetAvailableInputTypes} from '../runtime/messages'
 
 /**
  * @implements {GlobalConfigImpl}
@@ -372,6 +373,8 @@ class InterfacePrototype {
         dataPromise.then(response => {
             if (response.success) {
                 return this.selectedDetail(response.success, config.type)
+            } else if (response) {
+                return this.selectedDetail(response, config.type)
             } else {
                 return Promise.reject(new Error('none-success response'))
             }
@@ -422,7 +425,7 @@ class InterfacePrototype {
      * @returns {Promise<void>}
      */
     async refreshAvailableInputTypes () {
-        const runtimeAvailableInputTypes = await this.runtime.getAvailableInputTypes()
+        const runtimeAvailableInputTypes = await this.getAvailableInputTypes()
         const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, this.autofillSettings.featureToggles)
         this.availableInputTypes = inputTypes
     }
@@ -468,10 +471,21 @@ class InterfacePrototype {
     getAccounts () {}
     /**
      * Gets credentials ready for autofill
-     * @param {number|string} _id - the credential id
-     * @returns {APIResponseSingle<CredentialsObject>}
+     * @param {number|string} id - the credential id
+     * @returns {Promise<CredentialsObject>}
      */
-    getAutofillCredentials (_id) { throw new Error('unimplemented') }
+    async getAutofillCredentials (id) {
+        return new GetAutofillCredentials(id, this.runtime.transport).send()
+    }
+
+    /**
+     * @public
+     * @returns {Promise<AvailableInputTypes>}
+     */
+    async getAvailableInputTypes () {
+        return new GetAvailableInputTypes(null, this.runtime.transport).send()
+    }
+
     /** @returns {APIResponse<CreditCardObject>} */
     async getAutofillCreditCard (_id) { throw new Error('unimplemented') }
     /** @returns {Promise<{success: IdentityObject|undefined}>} */

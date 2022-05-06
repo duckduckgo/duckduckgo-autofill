@@ -3678,18 +3678,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return this.legacyTransport.send('pmHandlerStoreCredentials', credentials);
   }
   /**
-   * Gets credentials ready for autofill
-   * @param {Number} id - the credential id
-   * @returns {APIResponseSingle<CredentialsObject>}
-   */
-
-
-  getAutofillCredentials(id) {
-    return this.legacyTransport.send('pmHandlerGetAutofillCredentials', {
-      id
-    });
-  }
-  /**
    * Opens the native UI for managing passwords
    */
 
@@ -3916,18 +3904,6 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
 
   storeCredentials(credentials) {
     return this.legacyTransport.send('pmHandlerStoreCredentials', credentials);
-  }
-  /**
-   * Gets credentials ready for autofill
-   * @param {Number} id - the credential id
-   * @returns {APIResponseSingle<CredentialsObject>}
-   */
-
-
-  getAutofillCredentials(id) {
-    return this.legacyTransport.send('pmHandlerGetAutofillCredentials', {
-      id
-    });
   }
   /**
    * Opens the native UI for managing passwords
@@ -4180,6 +4156,8 @@ var _WebTooltip = require("../UI/WebTooltip");
 var _transport = require("../transports/transport");
 
 var _inputTypes = require("../InputTypes/input-types");
+
+var _messages = require("../runtime/messages");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4627,6 +4605,8 @@ class InterfacePrototype {
     dataPromise.then(response => {
       if (response.success) {
         return this.selectedDetail(response.success, config.type);
+      } else if (response) {
+        return this.selectedDetail(response, config.type);
       } else {
         return Promise.reject(new Error('none-success response'));
       }
@@ -4753,13 +4733,13 @@ class InterfacePrototype {
   getAccounts() {}
   /**
    * Gets credentials ready for autofill
-   * @param {number|string} _id - the credential id
-   * @returns {APIResponseSingle<CredentialsObject>}
+   * @param {number|string} id - the credential id
+   * @returns {Promise<CredentialsObject>}
    */
 
 
-  getAutofillCredentials(_id) {
-    throw new Error('unimplemented');
+  async getAutofillCredentials(id) {
+    return new _messages.GetAutofillCredentials(id, this.runtime.transport).send();
   }
   /** @returns {APIResponse<CreditCardObject>} */
 
@@ -4904,7 +4884,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../runtime/runtime":53,"../settings/settings":60,"../transports/transport":65,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
+},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../runtime/messages":52,"../runtime/runtime":53,"../settings/settings":60,"../transports/transport":65,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4925,10 +4905,6 @@ class WindowsInterface extends _InterfacePrototype.default {
     this.storeLocalData(initData);
     const cleanup = this.scanner.init();
     this.addLogoutListener(cleanup);
-  }
-
-  async getAutofillCredentials(id) {
-    return this.runtime.getAutofillCredentials(id);
   }
 
   tooltipStyles() {
@@ -9603,9 +9579,20 @@ class NativeTooltip {
     } = args;
     const inputType = (0, _matching.getInputType)(input);
     const mainType = (0, _matching.getMainTypeFromType)(inputType);
-    this.runtime.getAutofillData({
-      inputType
-    }).then(resp => {
+    const subType = (0, _matching.getSubtypeFromType)(inputType);
+
+    if (mainType === 'unknown') {
+      throw new Error('unreachable, should not be here if (mainType === "unknown")');
+    }
+    /** @type {GetAutofillDataRequest} */
+
+
+    const payload = {
+      inputType,
+      mainType,
+      subType
+    };
+    this.runtime.getAutofillData(payload).then(resp => {
       console.log('Autofilling...', resp, mainType);
       form.autofillData(resp, mainType);
     }).catch(e => {
@@ -9772,7 +9759,7 @@ class OverlayControllerTooltip {
       // If the focus event is outside the viewport ignore, we've already tried to scroll to it
       return;
     }
-    /** @type {Schema.ShowAutofillParentRequest} */
+    /** @type {ShowAutofillParentRequest} */
 
 
     const details = {
@@ -11215,7 +11202,7 @@ class GetAutofillCredentials extends _testing.Message {
 
 }
 /**
- * @extends {Message<Schema.ShowAutofillParentRequest, void>}
+ * @extends {Message<ShowAutofillParentRequest, void>}
  */
 
 
@@ -11259,10 +11246,16 @@ class StoreFormData extends _testing.Message {
 
     _defineProperty(this, "name", 'storeFormData');
 
+    _defineProperty(this, "alias", 'storeFormData');
+
     _defineProperty(this, "reqValidator", _validators.default['#/definitions/StoreFormDataRequest']);
   }
 
 }
+/**
+ * @typedef {StoreFormData} Names2
+ */
+
 /**
  * @extends {Message<null, InboundPMData>}
  */
@@ -11281,7 +11274,7 @@ class GetAutofillInitData extends _testing.Message {
 
 }
 /**
- * @extends {Message<Schema.GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
+ * @extends {Message<GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
  */
 
 
@@ -11330,8 +11323,6 @@ exports.createRuntime = createRuntime;
 exports.runtimeResponse = runtimeResponse;
 
 var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
-
-var _matching = require("../Form/matching");
 
 var _messages = require("./messages");
 
@@ -11392,27 +11383,13 @@ class Runtime {
   }
   /**
    * @public
-   * @param {GetAutofillDataArgs} input
+   * @param {GetAutofillDataRequest} input
    * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
    */
 
 
   async getAutofillData(input) {
-    const mainType = (0, _matching.getMainTypeFromType)(input.inputType);
-    const subType = (0, _matching.getSubtypeFromType)(input.inputType);
-
-    if (mainType === 'unknown') {
-      throw new Error('unreachable, should not be here if (mainType === "unknown")');
-    }
-    /** @type {Schema.GetAutofillDataRequest} */
-
-
-    const payload = {
-      inputType: input.inputType,
-      mainType,
-      subType
-    };
-    return new _messages.GetAutofillData(payload, this.transport).send();
+    return new _messages.GetAutofillData(input, this.transport).send();
   }
   /**
    * @returns {Promise<InboundPMData>}
@@ -11432,7 +11409,7 @@ class Runtime {
     return new _messages.StoreFormData(data, this.transport).send();
   }
   /**
-   * @param {Schema.ShowAutofillParentRequest} parentArgs
+   * @param {ShowAutofillParentRequest} parentArgs
    * @returns {Promise<void>}
    */
 
@@ -11449,19 +11426,6 @@ class Runtime {
 
   async getSelectedCredentials() {
     return new _messages.GetSelectedCredentials(null, this.transport).send();
-  }
-  /**
-   * @param {string|number} id
-   * @returns {APIResponseSingle<CredentialsObject>}
-   */
-
-
-  async getAutofillCredentials(id) {
-    const response = await new _messages.GetAutofillCredentials(id, this.transport).send(); // re-wrapping for now.
-
-    return {
-      success: response
-    };
   }
   /**
    * @returns {Promise<any>}
@@ -11525,7 +11489,7 @@ function throwError(errors, name) {
   throw new Error('Schema validation errors for ' + name);
 }
 
-},{"../Form/matching":29,"./messages":52,"@duckduckgo/content-scope-scripts":1}],54:[function(require,module,exports){
+},{"./messages":52,"@duckduckgo/content-scope-scripts":1}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12302,6 +12266,7 @@ const schema14 = {
       "type": "string"
     },
     "title": {
+      "description": "This is the only required field",
       "type": "string"
     },
     "firstName": {
@@ -12917,8 +12882,69 @@ function validate14(data) {
   return errors === 0;
 }
 
-exports["#/definitions/ShowAutofillParentRequest"] = validate15;
+exports["#/definitions/GetAvailableInputTypesRequest"] = validate15;
 const schema16 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetAvailableInputTypesRequest",
+  "type": "object",
+  "title": "GetAvailableInputTypesRequest",
+  "description": "This method does not currently send any data"
+};
+
+function validate15(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetAvailableInputTypesRequest" */
+  ;
+  let vErrors = null;
+  let errors = 0;
+
+  if (!(data && typeof data == "object" && !Array.isArray(data))) {
+    validate15.errors = [{
+      instancePath,
+      schemaPath: "#/type",
+      keyword: "type",
+      params: {
+        type: "object"
+      },
+      message: "must be object"
+    }];
+    return false;
+  }
+
+  validate15.errors = vErrors;
+  return errors === 0;
+}
+
+exports["#/definitions/GetRuntimeConfigurationRequest"] = validate16;
+const schema17 = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "#/definitions/GetRuntimeConfigurationRequest",
+  "title": "GetRuntimeConfigurationRequest",
+  "description": "This method does not currently send any data"
+};
+
+function validate16(data) {
+  let {
+    instancePath = "",
+    parentData,
+    parentDataProperty,
+    rootData = data
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  /*# sourceURL="#/definitions/GetRuntimeConfigurationRequest" */
+  ;
+  validate16.errors = null;
+  return true;
+}
+
+exports["#/definitions/ShowAutofillParentRequest"] = validate17;
+const schema18 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/ShowAutofillParentRequest",
   "title": "ShowAutofillParentRequest Request Object",
@@ -12948,7 +12974,7 @@ const schema16 = {
   "required": ["wasFromClick", "inputTop", "inputLeft", "inputHeight", "inputWidth", "serializedInputContext"]
 };
 
-function validate15(data) {
+function validate17(data) {
   let {
     instancePath = "",
     parentData,
@@ -12966,7 +12992,7 @@ function validate15(data) {
       let missing0;
 
       if (data.wasFromClick === undefined && (missing0 = "wasFromClick") || data.inputTop === undefined && (missing0 = "inputTop") || data.inputLeft === undefined && (missing0 = "inputLeft") || data.inputHeight === undefined && (missing0 = "inputHeight") || data.inputWidth === undefined && (missing0 = "inputWidth") || data.serializedInputContext === undefined && (missing0 = "serializedInputContext")) {
-        validate15.errors = [{
+        validate17.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -12981,7 +13007,7 @@ function validate15(data) {
           const _errs1 = errors;
 
           if (typeof data.wasFromClick !== "boolean") {
-            validate15.errors = [{
+            validate17.errors = [{
               instancePath: instancePath + "/wasFromClick",
               schemaPath: "#/properties/wasFromClick/type",
               keyword: "type",
@@ -13004,7 +13030,7 @@ function validate15(data) {
             const _errs3 = errors;
 
             if (!(typeof data1 == "number" && isFinite(data1))) {
-              validate15.errors = [{
+              validate17.errors = [{
                 instancePath: instancePath + "/inputTop",
                 schemaPath: "#/properties/inputTop/type",
                 keyword: "type",
@@ -13027,7 +13053,7 @@ function validate15(data) {
               const _errs5 = errors;
 
               if (!(typeof data2 == "number" && isFinite(data2))) {
-                validate15.errors = [{
+                validate17.errors = [{
                   instancePath: instancePath + "/inputLeft",
                   schemaPath: "#/properties/inputLeft/type",
                   keyword: "type",
@@ -13050,7 +13076,7 @@ function validate15(data) {
                 const _errs7 = errors;
 
                 if (!(typeof data3 == "number" && isFinite(data3))) {
-                  validate15.errors = [{
+                  validate17.errors = [{
                     instancePath: instancePath + "/inputHeight",
                     schemaPath: "#/properties/inputHeight/type",
                     keyword: "type",
@@ -13073,7 +13099,7 @@ function validate15(data) {
                   const _errs9 = errors;
 
                   if (!(typeof data4 == "number" && isFinite(data4))) {
-                    validate15.errors = [{
+                    validate17.errors = [{
                       instancePath: instancePath + "/inputWidth",
                       schemaPath: "#/properties/inputWidth/type",
                       keyword: "type",
@@ -13095,7 +13121,7 @@ function validate15(data) {
                     const _errs11 = errors;
 
                     if (typeof data.serializedInputContext !== "string") {
-                      validate15.errors = [{
+                      validate17.errors = [{
                         instancePath: instancePath + "/serializedInputContext",
                         schemaPath: "#/properties/serializedInputContext/type",
                         keyword: "type",
@@ -13118,7 +13144,7 @@ function validate15(data) {
         }
       }
     } else {
-      validate15.errors = [{
+      validate17.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -13131,12 +13157,12 @@ function validate15(data) {
     }
   }
 
-  validate15.errors = vErrors;
+  validate17.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/StoreFormDataRequest"] = validate16;
-const schema17 = {
+exports["#/definitions/StoreFormDataRequest"] = validate18;
+const schema19 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/StoreFormDataRequest",
   "title": "StoreFormData Request",
@@ -13168,7 +13194,7 @@ const schema17 = {
   }
 };
 
-function validate16(data) {
+function validate18(data) {
   let {
     instancePath = "",
     parentData,
@@ -13193,7 +13219,7 @@ function validate16(data) {
               const _errs3 = errors;
 
               if (typeof data0.username !== "string") {
-                validate16.errors = [{
+                validate18.errors = [{
                   instancePath: instancePath + "/credentials/username",
                   schemaPath: "#/properties/credentials/properties/username/type",
                   keyword: "type",
@@ -13215,7 +13241,7 @@ function validate16(data) {
                 const _errs5 = errors;
 
                 if (typeof data0.password !== "string") {
-                  validate16.errors = [{
+                  validate18.errors = [{
                     instancePath: instancePath + "/credentials/password",
                     schemaPath: "#/properties/credentials/properties/password/type",
                     keyword: "type",
@@ -13233,7 +13259,7 @@ function validate16(data) {
               }
             }
           } else {
-            validate16.errors = [{
+            validate18.errors = [{
               instancePath: instancePath + "/credentials",
               schemaPath: "#/properties/credentials/type",
               keyword: "type",
@@ -13262,7 +13288,7 @@ function validate16(data) {
               let missing0;
 
               if (data3.title === undefined && (missing0 = "title")) {
-                validate16.errors = [{
+                validate18.errors = [{
                   instancePath: instancePath + "/identities",
                   schemaPath: "#/definitions/Identity/required",
                   keyword: "required",
@@ -13277,7 +13303,7 @@ function validate16(data) {
                   const _errs10 = errors;
 
                   if (typeof data3.id !== "string") {
-                    validate16.errors = [{
+                    validate18.errors = [{
                       instancePath: instancePath + "/identities/id",
                       schemaPath: "#/definitions/Identity/properties/id/type",
                       keyword: "type",
@@ -13299,7 +13325,7 @@ function validate16(data) {
                     const _errs12 = errors;
 
                     if (typeof data3.title !== "string") {
-                      validate16.errors = [{
+                      validate18.errors = [{
                         instancePath: instancePath + "/identities/title",
                         schemaPath: "#/definitions/Identity/properties/title/type",
                         keyword: "type",
@@ -13321,7 +13347,7 @@ function validate16(data) {
                       const _errs14 = errors;
 
                       if (typeof data3.firstName !== "string") {
-                        validate16.errors = [{
+                        validate18.errors = [{
                           instancePath: instancePath + "/identities/firstName",
                           schemaPath: "#/definitions/Identity/properties/firstName/type",
                           keyword: "type",
@@ -13343,7 +13369,7 @@ function validate16(data) {
                         const _errs16 = errors;
 
                         if (typeof data3.middleName !== "string") {
-                          validate16.errors = [{
+                          validate18.errors = [{
                             instancePath: instancePath + "/identities/middleName",
                             schemaPath: "#/definitions/Identity/properties/middleName/type",
                             keyword: "type",
@@ -13365,7 +13391,7 @@ function validate16(data) {
                           const _errs18 = errors;
 
                           if (typeof data3.lastName !== "string") {
-                            validate16.errors = [{
+                            validate18.errors = [{
                               instancePath: instancePath + "/identities/lastName",
                               schemaPath: "#/definitions/Identity/properties/lastName/type",
                               keyword: "type",
@@ -13387,7 +13413,7 @@ function validate16(data) {
                             const _errs20 = errors;
 
                             if (typeof data3.birthdayDay !== "string") {
-                              validate16.errors = [{
+                              validate18.errors = [{
                                 instancePath: instancePath + "/identities/birthdayDay",
                                 schemaPath: "#/definitions/Identity/properties/birthdayDay/type",
                                 keyword: "type",
@@ -13409,7 +13435,7 @@ function validate16(data) {
                               const _errs22 = errors;
 
                               if (typeof data3.birthdayMonth !== "string") {
-                                validate16.errors = [{
+                                validate18.errors = [{
                                   instancePath: instancePath + "/identities/birthdayMonth",
                                   schemaPath: "#/definitions/Identity/properties/birthdayMonth/type",
                                   keyword: "type",
@@ -13431,7 +13457,7 @@ function validate16(data) {
                                 const _errs24 = errors;
 
                                 if (typeof data3.birthdayYear !== "string") {
-                                  validate16.errors = [{
+                                  validate18.errors = [{
                                     instancePath: instancePath + "/identities/birthdayYear",
                                     schemaPath: "#/definitions/Identity/properties/birthdayYear/type",
                                     keyword: "type",
@@ -13453,7 +13479,7 @@ function validate16(data) {
                                   const _errs26 = errors;
 
                                   if (typeof data3.addressStreet !== "string") {
-                                    validate16.errors = [{
+                                    validate18.errors = [{
                                       instancePath: instancePath + "/identities/addressStreet",
                                       schemaPath: "#/definitions/Identity/properties/addressStreet/type",
                                       keyword: "type",
@@ -13475,7 +13501,7 @@ function validate16(data) {
                                     const _errs28 = errors;
 
                                     if (typeof data3.addressStreet2 !== "string") {
-                                      validate16.errors = [{
+                                      validate18.errors = [{
                                         instancePath: instancePath + "/identities/addressStreet2",
                                         schemaPath: "#/definitions/Identity/properties/addressStreet2/type",
                                         keyword: "type",
@@ -13497,7 +13523,7 @@ function validate16(data) {
                                       const _errs30 = errors;
 
                                       if (typeof data3.addressCity !== "string") {
-                                        validate16.errors = [{
+                                        validate18.errors = [{
                                           instancePath: instancePath + "/identities/addressCity",
                                           schemaPath: "#/definitions/Identity/properties/addressCity/type",
                                           keyword: "type",
@@ -13519,7 +13545,7 @@ function validate16(data) {
                                         const _errs32 = errors;
 
                                         if (typeof data3.addressProvince !== "string") {
-                                          validate16.errors = [{
+                                          validate18.errors = [{
                                             instancePath: instancePath + "/identities/addressProvince",
                                             schemaPath: "#/definitions/Identity/properties/addressProvince/type",
                                             keyword: "type",
@@ -13541,7 +13567,7 @@ function validate16(data) {
                                           const _errs34 = errors;
 
                                           if (typeof data3.addressPostalCode !== "string") {
-                                            validate16.errors = [{
+                                            validate18.errors = [{
                                               instancePath: instancePath + "/identities/addressPostalCode",
                                               schemaPath: "#/definitions/Identity/properties/addressPostalCode/type",
                                               keyword: "type",
@@ -13563,7 +13589,7 @@ function validate16(data) {
                                             const _errs36 = errors;
 
                                             if (typeof data3.addressCountryCode !== "string") {
-                                              validate16.errors = [{
+                                              validate18.errors = [{
                                                 instancePath: instancePath + "/identities/addressCountryCode",
                                                 schemaPath: "#/definitions/Identity/properties/addressCountryCode/type",
                                                 keyword: "type",
@@ -13585,7 +13611,7 @@ function validate16(data) {
                                               const _errs38 = errors;
 
                                               if (typeof data3.phone !== "string") {
-                                                validate16.errors = [{
+                                                validate18.errors = [{
                                                   instancePath: instancePath + "/identities/phone",
                                                   schemaPath: "#/definitions/Identity/properties/phone/type",
                                                   keyword: "type",
@@ -13607,7 +13633,7 @@ function validate16(data) {
                                                 const _errs40 = errors;
 
                                                 if (typeof data3.emailAddress !== "string") {
-                                                  validate16.errors = [{
+                                                  validate18.errors = [{
                                                     instancePath: instancePath + "/identities/emailAddress",
                                                     schemaPath: "#/definitions/Identity/properties/emailAddress/type",
                                                     keyword: "type",
@@ -13640,7 +13666,7 @@ function validate16(data) {
                 }
               }
             } else {
-              validate16.errors = [{
+              validate18.errors = [{
                 instancePath: instancePath + "/identities",
                 schemaPath: "#/definitions/Identity/type",
                 keyword: "type",
@@ -13669,7 +13695,7 @@ function validate16(data) {
                 let missing1;
 
                 if (data20.username === undefined && (missing1 = "username")) {
-                  validate16.errors = [{
+                  validate18.errors = [{
                     instancePath: instancePath + "/creditCards",
                     schemaPath: "#/definitions/CreditCard/required",
                     keyword: "required",
@@ -13684,7 +13710,7 @@ function validate16(data) {
                     const _errs45 = errors;
 
                     if (typeof data20.id !== "string") {
-                      validate16.errors = [{
+                      validate18.errors = [{
                         instancePath: instancePath + "/creditCards/id",
                         schemaPath: "#/definitions/CreditCard/properties/id/type",
                         keyword: "type",
@@ -13706,7 +13732,7 @@ function validate16(data) {
                       const _errs47 = errors;
 
                       if (typeof data20.title !== "string") {
-                        validate16.errors = [{
+                        validate18.errors = [{
                           instancePath: instancePath + "/creditCards/title",
                           schemaPath: "#/definitions/CreditCard/properties/title/type",
                           keyword: "type",
@@ -13728,7 +13754,7 @@ function validate16(data) {
                         const _errs49 = errors;
 
                         if (typeof data20.displayNumber !== "string") {
-                          validate16.errors = [{
+                          validate18.errors = [{
                             instancePath: instancePath + "/creditCards/displayNumber",
                             schemaPath: "#/definitions/CreditCard/properties/displayNumber/type",
                             keyword: "type",
@@ -13750,7 +13776,7 @@ function validate16(data) {
                           const _errs51 = errors;
 
                           if (typeof data20.cardName !== "string") {
-                            validate16.errors = [{
+                            validate18.errors = [{
                               instancePath: instancePath + "/creditCards/cardName",
                               schemaPath: "#/definitions/CreditCard/properties/cardName/type",
                               keyword: "type",
@@ -13772,7 +13798,7 @@ function validate16(data) {
                             const _errs53 = errors;
 
                             if (typeof data20.cardSecurityCode !== "string") {
-                              validate16.errors = [{
+                              validate18.errors = [{
                                 instancePath: instancePath + "/creditCards/cardSecurityCode",
                                 schemaPath: "#/definitions/CreditCard/properties/cardSecurityCode/type",
                                 keyword: "type",
@@ -13794,7 +13820,7 @@ function validate16(data) {
                               const _errs55 = errors;
 
                               if (typeof data20.expirationMonth !== "string") {
-                                validate16.errors = [{
+                                validate18.errors = [{
                                   instancePath: instancePath + "/creditCards/expirationMonth",
                                   schemaPath: "#/definitions/CreditCard/properties/expirationMonth/type",
                                   keyword: "type",
@@ -13816,7 +13842,7 @@ function validate16(data) {
                                 const _errs57 = errors;
 
                                 if (typeof data20.expirationYear !== "string") {
-                                  validate16.errors = [{
+                                  validate18.errors = [{
                                     instancePath: instancePath + "/creditCards/expirationYear",
                                     schemaPath: "#/definitions/CreditCard/properties/expirationYear/type",
                                     keyword: "type",
@@ -13838,7 +13864,7 @@ function validate16(data) {
                                   const _errs59 = errors;
 
                                   if (typeof data20.cardNumber !== "string") {
-                                    validate16.errors = [{
+                                    validate18.errors = [{
                                       instancePath: instancePath + "/creditCards/cardNumber",
                                       schemaPath: "#/definitions/CreditCard/properties/cardNumber/type",
                                       keyword: "type",
@@ -13863,7 +13889,7 @@ function validate16(data) {
                   }
                 }
               } else {
-                validate16.errors = [{
+                validate18.errors = [{
                   instancePath: instancePath + "/creditCards",
                   schemaPath: "#/definitions/CreditCard/type",
                   keyword: "type",
@@ -13883,7 +13909,7 @@ function validate16(data) {
         }
       }
     } else {
-      validate16.errors = [{
+      validate18.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -13896,12 +13922,12 @@ function validate16(data) {
     }
   }
 
-  validate16.errors = vErrors;
+  validate18.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/GetAutofillDataResponse"] = validate17;
-const schema20 = {
+exports["#/definitions/GetAutofillDataResponse"] = validate19;
+const schema22 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
   "title": "GetAutofillDataResponse",
@@ -13929,7 +13955,7 @@ const schema20 = {
   "required": ["success"]
 };
 
-function validate17(data) {
+function validate19(data) {
   let {
     instancePath = "",
     parentData,
@@ -13947,7 +13973,7 @@ function validate17(data) {
       let missing0;
 
       if (data.success === undefined && (missing0 = "success")) {
-        validate17.errors = [{
+        validate19.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -13963,7 +13989,7 @@ function validate17(data) {
           const _errs1 = errors;
 
           if (typeof data0 !== "string") {
-            validate17.errors = [{
+            validate19.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/type",
               keyword: "type",
@@ -13976,7 +14002,7 @@ function validate17(data) {
           }
 
           if ("getAutofillDataResponse" !== data0) {
-            validate17.errors = [{
+            validate19.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/const",
               keyword: "const",
@@ -13999,7 +14025,7 @@ function validate17(data) {
             const _errs3 = errors;
 
             if (!(data1 && typeof data1 == "object" && !Array.isArray(data1))) {
-              validate17.errors = [{
+              validate19.errors = [{
                 instancePath: instancePath + "/success",
                 schemaPath: "#/properties/success/type",
                 keyword: "type",
@@ -14174,7 +14200,7 @@ function validate17(data) {
               }
 
               errors++;
-              validate17.errors = vErrors;
+              validate19.errors = vErrors;
               return false;
             } else {
               errors = _errs5;
@@ -14204,7 +14230,7 @@ function validate17(data) {
                   let missing2;
 
                   if (data5.message === undefined && (missing2 = "message")) {
-                    validate17.errors = [{
+                    validate19.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
@@ -14217,7 +14243,7 @@ function validate17(data) {
                   } else {
                     if (data5.message !== undefined) {
                       if (typeof data5.message !== "string") {
-                        validate17.errors = [{
+                        validate19.errors = [{
                           instancePath: instancePath + "/error/message",
                           schemaPath: "#/definitions/GenericError/properties/message/type",
                           keyword: "type",
@@ -14231,7 +14257,7 @@ function validate17(data) {
                     }
                   }
                 } else {
-                  validate17.errors = [{
+                  validate19.errors = [{
                     instancePath: instancePath + "/error",
                     schemaPath: "#/definitions/GenericError/type",
                     keyword: "type",
@@ -14252,7 +14278,7 @@ function validate17(data) {
         }
       }
     } else {
-      validate17.errors = [{
+      validate19.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -14265,12 +14291,12 @@ function validate17(data) {
     }
   }
 
-  validate17.errors = vErrors;
+  validate19.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/GetAutofillInitDataResponse"] = validate18;
-const schema23 = {
+exports["#/definitions/GetAutofillInitDataResponse"] = validate20;
+const schema25 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillInitDataResponse",
   "title": "GetAutofillInitDataResponse",
@@ -14319,7 +14345,7 @@ const schema23 = {
   "required": ["success"]
 };
 
-function validate18(data) {
+function validate20(data) {
   let {
     instancePath = "",
     parentData,
@@ -14337,7 +14363,7 @@ function validate18(data) {
       let missing0;
 
       if (data.success === undefined && (missing0 = "success")) {
-        validate18.errors = [{
+        validate20.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -14353,7 +14379,7 @@ function validate18(data) {
           const _errs1 = errors;
 
           if (typeof data0 !== "string") {
-            validate18.errors = [{
+            validate20.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/type",
               keyword: "type",
@@ -14366,7 +14392,7 @@ function validate18(data) {
           }
 
           if ("getAutofillInitDataResponse" !== data0) {
-            validate18.errors = [{
+            validate20.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/const",
               keyword: "const",
@@ -14393,7 +14419,7 @@ function validate18(data) {
                 let missing1;
 
                 if (data1.serializedInputContext === undefined && (missing1 = "serializedInputContext") || data1.credentials === undefined && (missing1 = "credentials") || data1.creditCards === undefined && (missing1 = "creditCards") || data1.identities === undefined && (missing1 = "identities")) {
-                  validate18.errors = [{
+                  validate20.errors = [{
                     instancePath: instancePath + "/success",
                     schemaPath: "#/properties/success/required",
                     keyword: "required",
@@ -14423,7 +14449,7 @@ function validate18(data) {
                               let missing2;
 
                               if (data3.username === undefined && (missing2 = "username")) {
-                                validate18.errors = [{
+                                validate20.errors = [{
                                   instancePath: instancePath + "/success/credentials/" + i0,
                                   schemaPath: "#/definitions/Credentials/required",
                                   keyword: "required",
@@ -14438,7 +14464,7 @@ function validate18(data) {
                                   const _errs10 = errors;
 
                                   if (typeof data3.id !== "string") {
-                                    validate18.errors = [{
+                                    validate20.errors = [{
                                       instancePath: instancePath + "/success/credentials/" + i0 + "/id",
                                       schemaPath: "#/definitions/Credentials/properties/id/type",
                                       keyword: "type",
@@ -14460,7 +14486,7 @@ function validate18(data) {
                                     const _errs12 = errors;
 
                                     if (typeof data3.username !== "string") {
-                                      validate18.errors = [{
+                                      validate20.errors = [{
                                         instancePath: instancePath + "/success/credentials/" + i0 + "/username",
                                         schemaPath: "#/definitions/Credentials/properties/username/type",
                                         keyword: "type",
@@ -14482,7 +14508,7 @@ function validate18(data) {
                                       const _errs14 = errors;
 
                                       if (typeof data3.password !== "string") {
-                                        validate18.errors = [{
+                                        validate20.errors = [{
                                           instancePath: instancePath + "/success/credentials/" + i0 + "/password",
                                           schemaPath: "#/definitions/Credentials/properties/password/type",
                                           keyword: "type",
@@ -14502,7 +14528,7 @@ function validate18(data) {
                                 }
                               }
                             } else {
-                              validate18.errors = [{
+                              validate20.errors = [{
                                 instancePath: instancePath + "/success/credentials/" + i0,
                                 schemaPath: "#/definitions/Credentials/type",
                                 keyword: "type",
@@ -14522,7 +14548,7 @@ function validate18(data) {
                           }
                         }
                       } else {
-                        validate18.errors = [{
+                        validate20.errors = [{
                           instancePath: instancePath + "/success/credentials",
                           schemaPath: "#/properties/success/properties/credentials/type",
                           keyword: "type",
@@ -14555,7 +14581,7 @@ function validate18(data) {
                             const _errs18 = errors;
 
                             if (!(data8 && typeof data8 == "object" && !Array.isArray(data8))) {
-                              validate18.errors = [{
+                              validate20.errors = [{
                                 instancePath: instancePath + "/success/identities/" + i1,
                                 schemaPath: "#/properties/success/properties/identities/items/type",
                                 keyword: "type",
@@ -14574,7 +14600,7 @@ function validate18(data) {
                             }
                           }
                         } else {
-                          validate18.errors = [{
+                          validate20.errors = [{
                             instancePath: instancePath + "/success/identities",
                             schemaPath: "#/properties/success/properties/identities/type",
                             keyword: "type",
@@ -14607,7 +14633,7 @@ function validate18(data) {
                               const _errs22 = errors;
 
                               if (!(data10 && typeof data10 == "object" && !Array.isArray(data10))) {
-                                validate18.errors = [{
+                                validate20.errors = [{
                                   instancePath: instancePath + "/success/creditCards/" + i2,
                                   schemaPath: "#/properties/success/properties/creditCards/items/type",
                                   keyword: "type",
@@ -14626,7 +14652,7 @@ function validate18(data) {
                               }
                             }
                           } else {
-                            validate18.errors = [{
+                            validate20.errors = [{
                               instancePath: instancePath + "/success/creditCards",
                               schemaPath: "#/properties/success/properties/creditCards/type",
                               keyword: "type",
@@ -14649,7 +14675,7 @@ function validate18(data) {
                           const _errs24 = errors;
 
                           if (typeof data1.serializedInputContext !== "string") {
-                            validate18.errors = [{
+                            validate20.errors = [{
                               instancePath: instancePath + "/success/serializedInputContext",
                               schemaPath: "#/properties/success/properties/serializedInputContext/type",
                               keyword: "type",
@@ -14670,7 +14696,7 @@ function validate18(data) {
                   }
                 }
               } else {
-                validate18.errors = [{
+                validate20.errors = [{
                   instancePath: instancePath + "/success",
                   schemaPath: "#/properties/success/type",
                   keyword: "type",
@@ -14699,7 +14725,7 @@ function validate18(data) {
                   let missing3;
 
                   if (data12.message === undefined && (missing3 = "message")) {
-                    validate18.errors = [{
+                    validate20.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
@@ -14712,7 +14738,7 @@ function validate18(data) {
                   } else {
                     if (data12.message !== undefined) {
                       if (typeof data12.message !== "string") {
-                        validate18.errors = [{
+                        validate20.errors = [{
                           instancePath: instancePath + "/error/message",
                           schemaPath: "#/definitions/GenericError/properties/message/type",
                           keyword: "type",
@@ -14726,7 +14752,7 @@ function validate18(data) {
                     }
                   }
                 } else {
-                  validate18.errors = [{
+                  validate20.errors = [{
                     instancePath: instancePath + "/error",
                     schemaPath: "#/definitions/GenericError/type",
                     keyword: "type",
@@ -14747,7 +14773,7 @@ function validate18(data) {
         }
       }
     } else {
-      validate18.errors = [{
+      validate20.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -14760,12 +14786,12 @@ function validate18(data) {
     }
   }
 
-  validate18.errors = vErrors;
+  validate20.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/GetAvailableInputTypesResponse"] = validate19;
-const schema26 = {
+exports["#/definitions/GetAvailableInputTypesResponse"] = validate21;
+const schema28 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
   "type": "object",
@@ -14806,7 +14832,7 @@ const schema26 = {
   "required": ["success"]
 };
 
-function validate19(data) {
+function validate21(data) {
   let {
     instancePath = "",
     parentData,
@@ -14824,7 +14850,7 @@ function validate19(data) {
       let missing0;
 
       if (data.success === undefined && (missing0 = "success")) {
-        validate19.errors = [{
+        validate21.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -14840,7 +14866,7 @@ function validate19(data) {
           const _errs1 = errors;
 
           if (typeof data0 !== "string") {
-            validate19.errors = [{
+            validate21.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/type",
               keyword: "type",
@@ -14853,7 +14879,7 @@ function validate19(data) {
           }
 
           if ("getAvailableInputTypesResponse" !== data0) {
-            validate19.errors = [{
+            validate21.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/const",
               keyword: "const",
@@ -14881,7 +14907,7 @@ function validate19(data) {
                   const _errs5 = errors;
 
                   if (typeof data1.credentials !== "boolean") {
-                    validate19.errors = [{
+                    validate21.errors = [{
                       instancePath: instancePath + "/success/credentials",
                       schemaPath: "#/properties/success/properties/credentials/type",
                       keyword: "type",
@@ -14903,7 +14929,7 @@ function validate19(data) {
                     const _errs7 = errors;
 
                     if (typeof data1.identities !== "boolean") {
-                      validate19.errors = [{
+                      validate21.errors = [{
                         instancePath: instancePath + "/success/identities",
                         schemaPath: "#/properties/success/properties/identities/type",
                         keyword: "type",
@@ -14925,7 +14951,7 @@ function validate19(data) {
                       const _errs9 = errors;
 
                       if (typeof data1.creditCards !== "boolean") {
-                        validate19.errors = [{
+                        validate21.errors = [{
                           instancePath: instancePath + "/success/creditCards",
                           schemaPath: "#/properties/success/properties/creditCards/type",
                           keyword: "type",
@@ -14947,7 +14973,7 @@ function validate19(data) {
                         const _errs11 = errors;
 
                         if (typeof data1.email !== "boolean") {
-                          validate19.errors = [{
+                          validate21.errors = [{
                             instancePath: instancePath + "/success/email",
                             schemaPath: "#/properties/success/properties/email/type",
                             keyword: "type",
@@ -14967,7 +14993,7 @@ function validate19(data) {
                   }
                 }
               } else {
-                validate19.errors = [{
+                validate21.errors = [{
                   instancePath: instancePath + "/success",
                   schemaPath: "#/properties/success/type",
                   keyword: "type",
@@ -14996,7 +15022,7 @@ function validate19(data) {
                   let missing1;
 
                   if (data6.message === undefined && (missing1 = "message")) {
-                    validate19.errors = [{
+                    validate21.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
@@ -15009,7 +15035,7 @@ function validate19(data) {
                   } else {
                     if (data6.message !== undefined) {
                       if (typeof data6.message !== "string") {
-                        validate19.errors = [{
+                        validate21.errors = [{
                           instancePath: instancePath + "/error/message",
                           schemaPath: "#/definitions/GenericError/properties/message/type",
                           keyword: "type",
@@ -15023,7 +15049,7 @@ function validate19(data) {
                     }
                   }
                 } else {
-                  validate19.errors = [{
+                  validate21.errors = [{
                     instancePath: instancePath + "/error",
                     schemaPath: "#/definitions/GenericError/type",
                     keyword: "type",
@@ -15044,7 +15070,7 @@ function validate19(data) {
         }
       }
     } else {
-      validate19.errors = [{
+      validate21.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -15057,12 +15083,12 @@ function validate19(data) {
     }
   }
 
-  validate19.errors = vErrors;
+  validate21.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/GetRuntimeConfigurationResponse"] = validate20;
-const schema28 = {
+exports["#/definitions/GetRuntimeConfigurationResponse"] = validate22;
+const schema30 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
   "type": "object",
@@ -15085,7 +15111,7 @@ const schema28 = {
   },
   "required": ["success"]
 };
-const schema29 = {
+const schema31 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/RuntimeConfiguration",
   "type": "object",
@@ -15197,7 +15223,7 @@ const schema29 = {
     }
   }
 };
-const schema30 = {
+const schema32 = {
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -15212,14 +15238,14 @@ const schema30 = {
   "required": ["features", "unprotectedTemporary"],
   "title": "ContentScope"
 };
-const schema31 = {
+const schema33 = {
   "type": "object",
   "additionalProperties": {
     "$ref": "#/definitions/ContentScopeFeatureItem"
   },
   "title": "ContentScopeFeatures"
 };
-const schema32 = {
+const schema34 = {
   "type": "object",
   "properties": {
     "exceptions": {
@@ -15237,7 +15263,7 @@ const schema32 = {
   "title": "ContentScopeFeatureItem"
 };
 
-function validate23(data) {
+function validate25(data) {
   let {
     instancePath = "",
     parentData,
@@ -15259,7 +15285,7 @@ function validate23(data) {
             let missing0;
 
             if (data0.exceptions === undefined && (missing0 = "exceptions") || data0.state === undefined && (missing0 = "state")) {
-              validate23.errors = [{
+              validate25.errors = [{
                 instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
                 schemaPath: "#/definitions/ContentScopeFeatureItem/required",
                 keyword: "required",
@@ -15275,7 +15301,7 @@ function validate23(data) {
 
                 if (errors === _errs5) {
                   if (!Array.isArray(data0.exceptions)) {
-                    validate23.errors = [{
+                    validate25.errors = [{
                       instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/exceptions",
                       schemaPath: "#/definitions/ContentScopeFeatureItem/properties/exceptions/type",
                       keyword: "type",
@@ -15298,7 +15324,7 @@ function validate23(data) {
                   const _errs7 = errors;
 
                   if (typeof data0.state !== "string") {
-                    validate23.errors = [{
+                    validate25.errors = [{
                       instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/state",
                       schemaPath: "#/definitions/ContentScopeFeatureItem/properties/state/type",
                       keyword: "type",
@@ -15321,7 +15347,7 @@ function validate23(data) {
                     const _errs9 = errors;
 
                     if (!(data3 && typeof data3 == "object" && !Array.isArray(data3))) {
-                      validate23.errors = [{
+                      validate25.errors = [{
                         instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1") + "/settings",
                         schemaPath: "#/definitions/ContentScopeFeatureItem/properties/settings/type",
                         keyword: "type",
@@ -15341,7 +15367,7 @@ function validate23(data) {
               }
             }
           } else {
-            validate23.errors = [{
+            validate25.errors = [{
               instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
               schemaPath: "#/definitions/ContentScopeFeatureItem/type",
               keyword: "type",
@@ -15361,7 +15387,7 @@ function validate23(data) {
         }
       }
     } else {
-      validate23.errors = [{
+      validate25.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -15374,11 +15400,11 @@ function validate23(data) {
     }
   }
 
-  validate23.errors = vErrors;
+  validate25.errors = vErrors;
   return errors === 0;
 }
 
-function validate22(data) {
+function validate24(data) {
   let {
     instancePath = "",
     parentData,
@@ -15393,7 +15419,7 @@ function validate22(data) {
       let missing0;
 
       if (data.features === undefined && (missing0 = "features") || data.unprotectedTemporary === undefined && (missing0 = "unprotectedTemporary")) {
-        validate22.errors = [{
+        validate24.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -15407,13 +15433,13 @@ function validate22(data) {
         if (data.features !== undefined) {
           const _errs2 = errors;
 
-          if (!validate23(data.features, {
+          if (!validate25(data.features, {
             instancePath: instancePath + "/features",
             parentData: data,
             parentDataProperty: "features",
             rootData
           })) {
-            vErrors = vErrors === null ? validate23.errors : vErrors.concat(validate23.errors);
+            vErrors = vErrors === null ? validate25.errors : vErrors.concat(validate25.errors);
             errors = vErrors.length;
           }
 
@@ -15428,7 +15454,7 @@ function validate22(data) {
 
             if (errors === _errs3) {
               if (!Array.isArray(data.unprotectedTemporary)) {
-                validate22.errors = [{
+                validate24.errors = [{
                   instancePath: instancePath + "/unprotectedTemporary",
                   schemaPath: "#/properties/unprotectedTemporary/type",
                   keyword: "type",
@@ -15448,7 +15474,7 @@ function validate22(data) {
         }
       }
     } else {
-      validate22.errors = [{
+      validate24.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -15461,11 +15487,11 @@ function validate22(data) {
     }
   }
 
-  validate22.errors = vErrors;
+  validate24.errors = vErrors;
   return errors === 0;
 }
 
-const schema33 = {
+const schema35 = {
   "type": "object",
   "properties": {
     "debug": {
@@ -15481,7 +15507,7 @@ const schema33 = {
   "required": ["debug", "features", "platform"],
   "title": "UserPreferences"
 };
-const schema34 = {
+const schema36 = {
   "type": "object",
   "properties": {
     "name": {
@@ -15492,14 +15518,14 @@ const schema34 = {
   "required": ["name"],
   "title": "Platform"
 };
-const schema35 = {
+const schema37 = {
   "type": "object",
   "additionalProperties": {
     "$ref": "#/definitions/UserPreferencesFeatureItem"
   },
   "title": "UserPreferencesFeatures"
 };
-const schema36 = {
+const schema38 = {
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -15510,13 +15536,13 @@ const schema36 = {
   "required": ["settings"],
   "title": "UserPreferencesFeatureItem"
 };
-const schema37 = {
+const schema39 = {
   "type": "object",
   "additionalProperties": true,
   "title": "Settings"
 };
 
-function validate28(data) {
+function validate30(data) {
   let {
     instancePath = "",
     parentData,
@@ -15531,7 +15557,7 @@ function validate28(data) {
       let missing0;
 
       if (data.settings === undefined && (missing0 = "settings")) {
-        validate28.errors = [{
+        validate30.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -15546,7 +15572,7 @@ function validate28(data) {
 
         for (const key0 in data) {
           if (!(key0 === "settings")) {
-            validate28.errors = [{
+            validate30.errors = [{
               instancePath,
               schemaPath: "#/additionalProperties",
               keyword: "additionalProperties",
@@ -15567,7 +15593,7 @@ function validate28(data) {
 
             if (errors === _errs3) {
               if (data0 && typeof data0 == "object" && !Array.isArray(data0)) {} else {
-                validate28.errors = [{
+                validate30.errors = [{
                   instancePath: instancePath + "/settings",
                   schemaPath: "#/definitions/Settings/type",
                   keyword: "type",
@@ -15583,7 +15609,7 @@ function validate28(data) {
         }
       }
     } else {
-      validate28.errors = [{
+      validate30.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -15596,11 +15622,11 @@ function validate28(data) {
     }
   }
 
-  validate28.errors = vErrors;
+  validate30.errors = vErrors;
   return errors === 0;
 }
 
-function validate27(data) {
+function validate29(data) {
   let {
     instancePath = "",
     parentData,
@@ -15615,13 +15641,13 @@ function validate27(data) {
       for (const key0 in data) {
         const _errs2 = errors;
 
-        if (!validate28(data[key0], {
+        if (!validate30(data[key0], {
           instancePath: instancePath + "/" + key0.replace(/~/g, "~0").replace(/\//g, "~1"),
           parentData: data,
           parentDataProperty: key0,
           rootData
         })) {
-          vErrors = vErrors === null ? validate28.errors : vErrors.concat(validate28.errors);
+          vErrors = vErrors === null ? validate30.errors : vErrors.concat(validate30.errors);
           errors = vErrors.length;
         }
 
@@ -15632,7 +15658,7 @@ function validate27(data) {
         }
       }
     } else {
-      validate27.errors = [{
+      validate29.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -15645,11 +15671,11 @@ function validate27(data) {
     }
   }
 
-  validate27.errors = vErrors;
+  validate29.errors = vErrors;
   return errors === 0;
 }
 
-function validate26(data) {
+function validate28(data) {
   let {
     instancePath = "",
     parentData,
@@ -15664,7 +15690,7 @@ function validate26(data) {
       let missing0;
 
       if (data.debug === undefined && (missing0 = "debug") || data.features === undefined && (missing0 = "features") || data.platform === undefined && (missing0 = "platform")) {
-        validate26.errors = [{
+        validate28.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -15679,7 +15705,7 @@ function validate26(data) {
           const _errs1 = errors;
 
           if (typeof data.debug !== "boolean") {
-            validate26.errors = [{
+            validate28.errors = [{
               instancePath: instancePath + "/debug",
               schemaPath: "#/properties/debug/type",
               keyword: "type",
@@ -15707,7 +15733,7 @@ function validate26(data) {
                 let missing1;
 
                 if (data1.name === undefined && (missing1 = "name")) {
-                  validate26.errors = [{
+                  validate28.errors = [{
                     instancePath: instancePath + "/platform",
                     schemaPath: "#/definitions/Platform/required",
                     keyword: "required",
@@ -15722,7 +15748,7 @@ function validate26(data) {
                     let data2 = data1.name;
 
                     if (typeof data2 !== "string") {
-                      validate26.errors = [{
+                      validate28.errors = [{
                         instancePath: instancePath + "/platform/name",
                         schemaPath: "#/definitions/Platform/properties/name/type",
                         keyword: "type",
@@ -15735,12 +15761,12 @@ function validate26(data) {
                     }
 
                     if (!(data2 === "ios" || data2 === "macos" || data2 === "windows" || data2 === "extension" || data2 === "android" || data2 === "unknown")) {
-                      validate26.errors = [{
+                      validate28.errors = [{
                         instancePath: instancePath + "/platform/name",
                         schemaPath: "#/definitions/Platform/properties/name/enum",
                         keyword: "enum",
                         params: {
-                          allowedValues: schema34.properties.name.enum
+                          allowedValues: schema36.properties.name.enum
                         },
                         message: "must be equal to one of the allowed values"
                       }];
@@ -15749,7 +15775,7 @@ function validate26(data) {
                   }
                 }
               } else {
-                validate26.errors = [{
+                validate28.errors = [{
                   instancePath: instancePath + "/platform",
                   schemaPath: "#/definitions/Platform/type",
                   keyword: "type",
@@ -15771,13 +15797,13 @@ function validate26(data) {
             if (data.features !== undefined) {
               const _errs8 = errors;
 
-              if (!validate27(data.features, {
+              if (!validate29(data.features, {
                 instancePath: instancePath + "/features",
                 parentData: data,
                 parentDataProperty: "features",
                 rootData
               })) {
-                vErrors = vErrors === null ? validate27.errors : vErrors.concat(validate27.errors);
+                vErrors = vErrors === null ? validate29.errors : vErrors.concat(validate29.errors);
                 errors = vErrors.length;
               }
 
@@ -15789,7 +15815,7 @@ function validate26(data) {
         }
       }
     } else {
-      validate26.errors = [{
+      validate28.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -15802,11 +15828,11 @@ function validate26(data) {
     }
   }
 
-  validate26.errors = vErrors;
+  validate28.errors = vErrors;
   return errors === 0;
 }
 
-function validate21(data) {
+function validate23(data) {
   let {
     instancePath = "",
     parentData,
@@ -15824,7 +15850,7 @@ function validate21(data) {
       let missing0;
 
       if (data.contentScope === undefined && (missing0 = "contentScope") || data.userPreferences === undefined && (missing0 = "userPreferences") || data.userUnprotectedDomains === undefined && (missing0 = "userUnprotectedDomains")) {
-        validate21.errors = [{
+        validate23.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -15839,7 +15865,7 @@ function validate21(data) {
 
         for (const key0 in data) {
           if (!(key0 === "contentScope" || key0 === "userUnprotectedDomains" || key0 === "userPreferences")) {
-            validate21.errors = [{
+            validate23.errors = [{
               instancePath,
               schemaPath: "#/additionalProperties",
               keyword: "additionalProperties",
@@ -15857,13 +15883,13 @@ function validate21(data) {
           if (data.contentScope !== undefined) {
             const _errs2 = errors;
 
-            if (!validate22(data.contentScope, {
+            if (!validate24(data.contentScope, {
               instancePath: instancePath + "/contentScope",
               parentData: data,
               parentDataProperty: "contentScope",
               rootData
             })) {
-              vErrors = vErrors === null ? validate22.errors : vErrors.concat(validate22.errors);
+              vErrors = vErrors === null ? validate24.errors : vErrors.concat(validate24.errors);
               errors = vErrors.length;
             }
 
@@ -15878,7 +15904,7 @@ function validate21(data) {
 
               if (errors === _errs3) {
                 if (!Array.isArray(data.userUnprotectedDomains)) {
-                  validate21.errors = [{
+                  validate23.errors = [{
                     instancePath: instancePath + "/userUnprotectedDomains",
                     schemaPath: "#/properties/userUnprotectedDomains/type",
                     keyword: "type",
@@ -15900,13 +15926,13 @@ function validate21(data) {
               if (data.userPreferences !== undefined) {
                 const _errs5 = errors;
 
-                if (!validate26(data.userPreferences, {
+                if (!validate28(data.userPreferences, {
                   instancePath: instancePath + "/userPreferences",
                   parentData: data,
                   parentDataProperty: "userPreferences",
                   rootData
                 })) {
-                  vErrors = vErrors === null ? validate26.errors : vErrors.concat(validate26.errors);
+                  vErrors = vErrors === null ? validate28.errors : vErrors.concat(validate28.errors);
                   errors = vErrors.length;
                 }
 
@@ -15919,7 +15945,7 @@ function validate21(data) {
         }
       }
     } else {
-      validate21.errors = [{
+      validate23.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -15932,11 +15958,11 @@ function validate21(data) {
     }
   }
 
-  validate21.errors = vErrors;
+  validate23.errors = vErrors;
   return errors === 0;
 }
 
-function validate20(data) {
+function validate22(data) {
   let {
     instancePath = "",
     parentData,
@@ -15954,7 +15980,7 @@ function validate20(data) {
       let missing0;
 
       if (data.success === undefined && (missing0 = "success")) {
-        validate20.errors = [{
+        validate22.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -15970,7 +15996,7 @@ function validate20(data) {
           const _errs1 = errors;
 
           if (typeof data0 !== "string") {
-            validate20.errors = [{
+            validate22.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/type",
               keyword: "type",
@@ -15983,7 +16009,7 @@ function validate20(data) {
           }
 
           if ("getRuntimeConfigurationResponse" !== data0) {
-            validate20.errors = [{
+            validate22.errors = [{
               instancePath: instancePath + "/type",
               schemaPath: "#/properties/type/const",
               keyword: "const",
@@ -16004,13 +16030,13 @@ function validate20(data) {
           if (data.success !== undefined) {
             const _errs3 = errors;
 
-            if (!validate21(data.success, {
+            if (!validate23(data.success, {
               instancePath: instancePath + "/success",
               parentData: data,
               parentDataProperty: "success",
               rootData
             })) {
-              vErrors = vErrors === null ? validate21.errors : vErrors.concat(validate21.errors);
+              vErrors = vErrors === null ? validate23.errors : vErrors.concat(validate23.errors);
               errors = vErrors.length;
             }
 
@@ -16030,7 +16056,7 @@ function validate20(data) {
                   let missing1;
 
                   if (data2.message === undefined && (missing1 = "message")) {
-                    validate20.errors = [{
+                    validate22.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
@@ -16043,7 +16069,7 @@ function validate20(data) {
                   } else {
                     if (data2.message !== undefined) {
                       if (typeof data2.message !== "string") {
-                        validate20.errors = [{
+                        validate22.errors = [{
                           instancePath: instancePath + "/error/message",
                           schemaPath: "#/definitions/GenericError/properties/message/type",
                           keyword: "type",
@@ -16057,7 +16083,7 @@ function validate20(data) {
                     }
                   }
                 } else {
-                  validate20.errors = [{
+                  validate22.errors = [{
                     instancePath: instancePath + "/error",
                     schemaPath: "#/definitions/GenericError/type",
                     keyword: "type",
@@ -16078,7 +16104,7 @@ function validate20(data) {
         }
       }
     } else {
-      validate20.errors = [{
+      validate22.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -16091,13 +16117,13 @@ function validate20(data) {
     }
   }
 
-  validate20.errors = vErrors;
+  validate22.errors = vErrors;
   return errors === 0;
 }
 
-exports["#/definitions/RuntimeConfiguration"] = validate21;
-exports["#/definitions/AutofillSettings"] = validate33;
-const schema39 = {
+exports["#/definitions/RuntimeConfiguration"] = validate23;
+exports["#/definitions/AutofillSettings"] = validate35;
+const schema41 = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/AutofillSettings",
   "title": "AutofillSettings",
@@ -16134,7 +16160,7 @@ const schema39 = {
   "required": ["featureToggles"]
 };
 
-function validate33(data) {
+function validate35(data) {
   let {
     instancePath = "",
     parentData,
@@ -16152,7 +16178,7 @@ function validate33(data) {
       let missing0;
 
       if (data.featureToggles === undefined && (missing0 = "featureToggles")) {
-        validate33.errors = [{
+        validate35.errors = [{
           instancePath,
           schemaPath: "#/required",
           keyword: "required",
@@ -16172,7 +16198,7 @@ function validate33(data) {
               let missing1;
 
               if (data0.inputType_credentials === undefined && (missing1 = "inputType_credentials") || data0.inputType_identities === undefined && (missing1 = "inputType_identities") || data0.inputType_creditCards === undefined && (missing1 = "inputType_creditCards") || data0.emailProtection === undefined && (missing1 = "emailProtection") || data0.password_generation === undefined && (missing1 = "password_generation") || data0.credentials_saving === undefined && (missing1 = "credentials_saving")) {
-                validate33.errors = [{
+                validate35.errors = [{
                   instancePath: instancePath + "/featureToggles",
                   schemaPath: "#/properties/featureToggles/required",
                   keyword: "required",
@@ -16187,7 +16213,7 @@ function validate33(data) {
                   const _errs3 = errors;
 
                   if (typeof data0.inputType_credentials !== "boolean") {
-                    validate33.errors = [{
+                    validate35.errors = [{
                       instancePath: instancePath + "/featureToggles/inputType_credentials",
                       schemaPath: "#/properties/featureToggles/properties/inputType_credentials/type",
                       keyword: "type",
@@ -16209,7 +16235,7 @@ function validate33(data) {
                     const _errs5 = errors;
 
                     if (typeof data0.inputType_identities !== "boolean") {
-                      validate33.errors = [{
+                      validate35.errors = [{
                         instancePath: instancePath + "/featureToggles/inputType_identities",
                         schemaPath: "#/properties/featureToggles/properties/inputType_identities/type",
                         keyword: "type",
@@ -16231,7 +16257,7 @@ function validate33(data) {
                       const _errs7 = errors;
 
                       if (typeof data0.inputType_creditCards !== "boolean") {
-                        validate33.errors = [{
+                        validate35.errors = [{
                           instancePath: instancePath + "/featureToggles/inputType_creditCards",
                           schemaPath: "#/properties/featureToggles/properties/inputType_creditCards/type",
                           keyword: "type",
@@ -16253,7 +16279,7 @@ function validate33(data) {
                         const _errs9 = errors;
 
                         if (typeof data0.emailProtection !== "boolean") {
-                          validate33.errors = [{
+                          validate35.errors = [{
                             instancePath: instancePath + "/featureToggles/emailProtection",
                             schemaPath: "#/properties/featureToggles/properties/emailProtection/type",
                             keyword: "type",
@@ -16275,7 +16301,7 @@ function validate33(data) {
                           const _errs11 = errors;
 
                           if (typeof data0.password_generation !== "boolean") {
-                            validate33.errors = [{
+                            validate35.errors = [{
                               instancePath: instancePath + "/featureToggles/password_generation",
                               schemaPath: "#/properties/featureToggles/properties/password_generation/type",
                               keyword: "type",
@@ -16297,7 +16323,7 @@ function validate33(data) {
                             const _errs13 = errors;
 
                             if (typeof data0.credentials_saving !== "boolean") {
-                              validate33.errors = [{
+                              validate35.errors = [{
                                 instancePath: instancePath + "/featureToggles/credentials_saving",
                                 schemaPath: "#/properties/featureToggles/properties/credentials_saving/type",
                                 keyword: "type",
@@ -16320,7 +16346,7 @@ function validate33(data) {
                 }
               }
             } else {
-              validate33.errors = [{
+              validate35.errors = [{
                 instancePath: instancePath + "/featureToggles",
                 schemaPath: "#/properties/featureToggles/type",
                 keyword: "type",
@@ -16335,7 +16361,7 @@ function validate33(data) {
         }
       }
     } else {
-      validate33.errors = [{
+      validate35.errors = [{
         instancePath,
         schemaPath: "#/type",
         keyword: "type",
@@ -16348,7 +16374,7 @@ function validate33(data) {
     }
   }
 
-  validate33.errors = vErrors;
+  validate35.errors = vErrors;
   return errors === 0;
 }
 
@@ -16583,6 +16609,10 @@ class AppleTransport {
 
   async send(name, data) {
     try {
+      if (name === "getAutofillCredentials") {
+        name = "pmHandlerGetAutofillCredentials";
+      }
+
       const response = await wkSendAndWait(name, data, {
         secret: this.config.secret,
         hasModernWebkitAPI: this.config.hasModernWebkitAPI
@@ -16634,7 +16664,7 @@ function createLegacyTransport(config) {
     async send(name, data) {
       console.log("\uD83D\uDE48 LegacyTransport: ".concat(JSON.stringify(name)), data);
       const res = await transport.send(name, data);
-      console.log("\t \uD83D\uDE48 LegacyTransport::Response ".concat(JSON.stringify(name)), res);
+      console.log("\t \uD83D\uDE48 LegacyTransport::Response ".concat(JSON.stringify(name)), JSON.stringify(res));
       return res;
     }
 
@@ -16746,7 +16776,7 @@ const interceptions = {
           features: {
             autofill: {
               settings: {
-                /** @type {Schema.FeatureToggles} */
+                /** @type {FeatureToggles} */
                 featureToggles: globalConfig.isApp ? legacyMacOSToggles : legacyIOSToggles
               }
             }

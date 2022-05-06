@@ -98,7 +98,7 @@ export class OverlayControllerTooltip {
             return
         }
 
-        /** @type {Schema.ShowAutofillParentRequest} */
+        /** @type {ShowAutofillParentRequest} */
         const details = {
             wasFromClick: Boolean(click),
             inputTop: Math.floor(diffY),
