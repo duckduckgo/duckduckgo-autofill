@@ -1,12 +1,12 @@
+import {Sender} from './sender'
 // import getAutofillData from '../schema/response.getAutofillData.schema.json'
 import getAutofillInitDataResponse from '../schema/response.getAutofillInitData.schema.json'
 import getAvailableInputTypes from '../schema/response.getAvailableInputTypes.schema.json'
 import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.schema.json'
-import {Sender} from './sender'
 
-export class WindowsSender extends Sender {
+class WindowsSender extends Sender {
     async handle (message) {
-        const { name, data } = message;
+        const { name, data } = message
         switch (name) {
         case 'getRuntimeConfiguration': {
             return windowsTransport(name)
@@ -21,7 +21,8 @@ export class WindowsSender extends Sender {
                 .withResponse(getAutofillInitDataResponse.properties.type.const)
         }
         case 'storeFormData': {
-            return windowsTransport('storeFormData', data)
+            windowsTransport('storeFormData', data)
+            break
         }
         case 'getAutofillCredentials': {
             // todo(Shane): Schema
@@ -31,6 +32,10 @@ export class WindowsSender extends Sender {
         default: throw new Error('windows: not implemented: ' + name)
         }
     }
+}
+
+export function createWindowsSender () {
+    return new WindowsSender()
 }
 
 /**

@@ -8,8 +8,7 @@ import {createTooltip} from './UI/tooltips'
 import {fromRuntimeConfig} from './settings/settings'
 import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 import {GetAvailableInputTypes, GetRuntimeConfiguration} from './messages/messages'
-import {createSender} from './senders/apple.sender'
-import { Sender } from './senders/sender'
+import {createSender} from './senders/create-sender'
 
 (async () => {
     if (!window.isSecureContext) return false
@@ -26,21 +25,21 @@ import { Sender } from './senders/sender'
         const sender = createSender(globalConfig)
 
         // Get runtime configuration - this may include messaging
-        const runtimeConfiguration = await getRuntimeConfiguration(sender);
+        const runtimeConfiguration = await getRuntimeConfiguration(sender)
 
         // Autofill settings need to be derived from runtime config
         const autofillSettings = fromRuntimeConfig(runtimeConfiguration)
 
         // log feature toggles for clarity when testing
         if (globalConfig.isDDGTestMode) {
-            console.log(JSON.stringify(autofillSettings.featureToggles, null, 2))
+            console.log('autofillSettings.featureToggles', JSON.stringify(autofillSettings.featureToggles, null, 2))
         }
 
         // If it was enabled, try to ask for available input types
         if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
             // Determine the tooltipHandler type
             const tooltip = createTooltip(globalConfig, runtimeConfiguration, autofillSettings)
-            const runtimeAvailableInputTypes = await sender.send(new GetAvailableInputTypes(null))
+            const runtimeAvailableInputTypes = await sender.send(new GetAvailableInputTypes(undefined))
             const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles)
 
             const device = createDevice(inputTypes, sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
@@ -61,11 +60,11 @@ import { Sender } from './senders/sender'
 
 /**
  * @public
- * @param {Sender} sender
+ * @param {import("./senders/sender").Sender} sender
  * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
  */
-async function getRuntimeConfiguration(sender) {
-    const data = await sender.send(new GetRuntimeConfiguration(null));
+async function getRuntimeConfiguration (sender) {
+    const data = await sender.send(new GetRuntimeConfiguration(null))
     const {config, errors} = tryCreateRuntimeConfiguration(data)
 
     if (errors.length) {

@@ -7,7 +7,6 @@ import {createLegacyMessage} from '../messages/messages'
  * todo(Shane): Decide which data is/isn't needed when apple is inside overlay
  */
 class AppleOverlayDeviceInterface extends InterfacePrototype {
-
     stripCredentials = false;
 
     async setupAutofill () {

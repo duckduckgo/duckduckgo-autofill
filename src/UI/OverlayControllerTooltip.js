@@ -188,7 +188,7 @@ export class OverlayControllerTooltip {
         if (this.#state === 'removingParent') return
         if (this.#state === 'idle') return
 
-        if (!this._device) throw new Error('unreachable');
+        if (!this._device) throw new Error('unreachable')
 
         this.#state = 'removingParent'
         await this._device?.closeAutofillParent()

@@ -113,7 +113,7 @@ export function createWebkitMocks (platform = 'macos') {
                 privateAddress: ''
             }
         },
-        emailHandlerRefreshAlias: null,
+        emailHandlerRefreshAlias: '',
         emailHandlerGetAlias: {
             /** @type {string|null} */
             alias: null

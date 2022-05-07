@@ -13,7 +13,7 @@ describe('AndroidInterface', function () {
         const config = createGlobalConfig()
         const runtimeConfig = new RuntimeConfiguration()
         const tooltip = new NativeTooltip()
-        const sender = createSender(config);
+        const sender = createSender(config)
         const device = new AndroidInterface({}, sender, tooltip, config, runtimeConfig, Settings.default())
         device.init()
     })

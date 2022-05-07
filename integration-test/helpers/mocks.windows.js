@@ -88,6 +88,10 @@ export function createWindowsMocks () {
                 window.__playwright = { mocks: { calls: [] } }
                 const listeners = []
 
+                function recordCall(name, request, response) {
+                    const call = [name, request, response]
+                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                }
                 /**
                  * @param {Names} name
                  * @param {any} request
@@ -112,24 +116,26 @@ export function createWindowsMocks () {
                 /** @type {MocksObjectAndroid} */
                 const mocksObject = {
                     getRuntimeConfiguration () {
+                        recordCall('getRuntimeConfiguration', null, mocks.getRuntimeConfiguration);
                         return respond('getRuntimeConfiguration', null, mocks.getRuntimeConfiguration)
                     },
                     getAvailableInputTypes () {
+                        recordCall('getAvailableInputTypes', null, mocks.getAvailableInputTypes)
                         return respond('getAvailableInputTypes', null, mocks.getAvailableInputTypes)
                     },
                     getAutofillData (_request) {
+                        recordCall('getRuntimeConfiguration', null, null);
                         throw new Error('unimplemented windows.getAutofillData')
                     },
                     storeFormData (request) {
-                        // /** @type {MockCall} */
-                        const call = ['storeFormData', request, null]
-                        console.log('store', JSON.stringify(call))
-                        window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                        recordCall('storeFormData', request, null)
                     },
                     getAutofillInitData () {
+                        recordCall('getAutofillInitData', null, mocks.getAutofillInitData)
                         return respond('getAutofillInitData', null, mocks.getAutofillInitData)
                     },
                     getAutofillCredentials () {
+                        recordCall('getAutofillCredentials', null, mocks.getAutofillCredentials)
                         return respond('getAutofillCredentials', null, mocks.getAutofillCredentials)
                     }
                 }

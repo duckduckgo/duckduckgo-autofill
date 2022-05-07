@@ -3,11 +3,10 @@ import {ExtensionInterface} from './DeviceInterface/ExtensionInterface'
 import {AppleDeviceInterface} from './DeviceInterface/AppleDeviceInterface'
 import {WindowsInterface} from './DeviceInterface/WindowsInterface'
 import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceInterface'
-import { Sender } from './senders/sender'
 
 /**
  * @param {AvailableInputTypes} availableInputTypes
- * @param {Sender} sender
+ * @param {import("./senders/sender").Sender} sender
  * @param {TooltipInterface} tooltip
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig

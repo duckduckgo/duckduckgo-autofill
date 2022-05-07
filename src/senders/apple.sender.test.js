@@ -37,17 +37,16 @@ window.webkit = {
     }
 }
 
-
 const mockSender = (config) => {
     return new class extends Sender {
         async handle (msg) {
-            const { name, data } = msg;
+            const { name, data } = msg
             return wkSendAndWait(name, data, {
                 secret: config.secret,
                 hasModernWebkitAPI: config.hasModernWebkitAPI
             })
         }
-    }
+    }()
 }
 describe('wkSendAndWait', () => {
     it('returns the expected unencrypted data', async () => {
@@ -55,6 +54,6 @@ describe('wkSendAndWait', () => {
         const sender = mockSender(config)
         const message = createLegacyMessage('testMock', {})
         const response = await sender.send(message)
-        expect(response.data).toBe('test')
+        expect(response).toBe('test')
     })
 })

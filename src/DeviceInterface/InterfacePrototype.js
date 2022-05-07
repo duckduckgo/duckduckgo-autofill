@@ -18,7 +18,6 @@ import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 import {WebTooltip} from '../UI/WebTooltip'
 import {featureToggleAwareInputTypes} from '../InputTypes/input-types'
 import * as messages from '../messages/messages'
-import { Sender } from '../senders/sender'
 import {createSender} from '../senders/apple.sender'
 
 /**
@@ -63,12 +62,12 @@ class InterfacePrototype {
     /** @type {TooltipInterface} */
     tooltip;
 
-    /** @type {Sender} */
+    /** @type {import("../senders/sender").Sender} sender
     sender;
 
     /**
      * @param {AvailableInputTypes} availableInputTypes
-     * @param {Sender} sender
+     * @param {import("../senders/sender").Sender} sender
      * @param {GlobalConfig} globalConfig
      * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
      * @param {import("../settings/settings").Settings} autofillSettings
@@ -79,7 +78,7 @@ class InterfacePrototype {
         this.tooltip = tooltip
         this.runtimeConfiguration = platformConfig
         this.autofillSettings = autofillSettings
-        this.sender = sender;
+        this.sender = sender
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs,
             availableInputTypes: availableInputTypes
@@ -477,7 +476,7 @@ class InterfacePrototype {
      * @returns {Promise<CredentialsObject>}
      */
     async getAutofillCredentials (id) {
-        return this.sender.send(new messages.GetAutofillCredentials(id));
+        return this.sender.send(new messages.GetAutofillCredentials(id))
     }
 
     /**
@@ -485,7 +484,7 @@ class InterfacePrototype {
      * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes () {
-        return this.sender.send(new messages.GetAvailableInputTypes(null))
+        return this.sender.send(new messages.GetAvailableInputTypes())
     }
 
     /**
@@ -494,14 +493,14 @@ class InterfacePrototype {
      * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
      */
     async getAutofillData (input) {
-        return await this.sender.send(new messages.GetAutofillData(input))
+        return this.sender.send(new messages.GetAutofillData(input))
     }
 
     /**
      * @returns {Promise<InboundPMData>}
      */
     async getAutofillInitData () {
-        return await this.sender.send(new messages.GetAutofillInitData(null));
+        return this.sender.send(new messages.GetAutofillInitData())
     }
 
     /**
@@ -509,7 +508,7 @@ class InterfacePrototype {
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        return this.sender.send(new messages.StoreFormData(data));
+        return this.sender.send(new messages.StoreFormData(data))
     }
 
     /**
@@ -517,7 +516,7 @@ class InterfacePrototype {
      * @returns {Promise<void>}
      */
     async showAutofillParent (parentArgs) {
-        await this.sender.send(new messages.ShowAutofillParent(parentArgs));
+        await this.sender.send(new messages.ShowAutofillParent(parentArgs))
     }
 
     /**
@@ -526,9 +525,7 @@ class InterfacePrototype {
      * @returns {Promise<any>}
      */
     async getSelectedCredentials () {
-        const r = await this.sender.send(new messages.Shane(null));
-        const {  } = r;
-        return this.sender.send(new messages.GetSelectedCredentials(null));
+        return this.sender.send(new messages.GetSelectedCredentials(null))
     }
 
     /**
@@ -545,7 +542,6 @@ class InterfacePrototype {
     async getAutofillIdentity (_id) { throw new Error('unimplemented') }
 
     openManagePasswords () {}
-
 
     setSize (_cb) {
         // noop
@@ -572,7 +568,7 @@ class InterfacePrototype {
     static default () {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
-        const sender = createSender(globalConfig);
+        const sender = createSender(globalConfig)
         const tooltip = new WebTooltip({tooltipKind: 'modern'})
         return new InterfacePrototype({}, sender, tooltip, globalConfig, config, Settings.default())
     }

@@ -1,5 +1,8 @@
 import {Message} from './message'
 import validators from '../schema/validators.cjs'
+import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.schema.json'
+import getAvailableInputTypes from '../schema/response.getAvailableInputTypes.schema.json'
+import getAutofillData from '../schema/response.getAutofillData.schema.json'
 
 /**
  * This file contains every message this application can 'send' to
@@ -7,10 +10,11 @@ import validators from '../schema/validators.cjs'
  */
 
 /**
- * @extends {Message<null, AvailableInputTypes>}
+ * @extends {Message<undefined, AvailableInputTypes>}
  */
 export class GetAvailableInputTypes extends Message {
     name = 'getAvailableInputTypes'
+    responseName = getAvailableInputTypes.properties.type.const;
     resValidator = validators['#/definitions/GetAvailableInputTypesResponse']
 }
 
@@ -45,18 +49,10 @@ export class GetSelectedCredentials extends Message {
 }
 
 /**
- * @extends {Message<null, {name: string}>}
- */
-export class Shane extends Message {
-
-}
-
-/**
  * @extends {Message<DataStorageObject, void>}
  */
 export class StoreFormData extends Message {
     name = 'storeFormData'
-    alias = 'storeFormData'
     // @ts-ignore
     reqValidator = validators['#/definitions/StoreFormDataRequest']
 }
@@ -64,7 +60,6 @@ export class StoreFormData extends Message {
 /**
  * @typedef {StoreFormData} Names2
  */
-
 
 /**
  * @extends {Message<null, InboundPMData>}
@@ -84,15 +79,45 @@ export class GetAutofillData extends Message {
     reqValidator = validators['#/definitions/GetAutofillDataRequest']
     // @ts-ignore
     resValidator = validators['#/definitions/GetAutofillDataResponse']
+    responseName = getAutofillData.properties.type.const
+    preResponseValidation (response) {
+        const cloned = JSON.parse(JSON.stringify(response.success))
+        if ('id' in cloned) {
+            if (typeof cloned.id === 'number') {
+                console.warn("updated the credentials' id field as it was a number, but should be a string")
+                cloned.id = String(cloned.id)
+            }
+        }
+        return {
+            success: cloned
+        }
+    }
 }
 
 /**
- * @extends {Message<null, import("@duckduckgo/content-scope-scripts").RuntimeConfiguration>}
+ * @extends {Message<null, RuntimeConfiguration>}
  */
 export class GetRuntimeConfiguration extends Message {
     name = 'getRuntimeConfiguration'
     // @ts-ignore
     resValidator = validators['#/definitions/GetRuntimeConfigurationResponse']
+    responseName = getRuntimeConfiguration.properties.type.const
+}
+
+/**
+ * @extends Message<undefined, {isAppSignedIn: boolean}>
+ */
+export class EmailSignedIn extends Message {
+    name = 'emailHandlerCheckAppSignedInStatus'
+}
+/**
+ * @extends Message<undefined, {isAppSignedIn: boolean}>
+ */
+export class EmailRefreshAlias extends Message {
+    name = 'emailHandlerRefreshAlias'
+    preResponseValidation (response) {
+        return { success: response }
+    }
 }
 
 /**
@@ -106,8 +131,8 @@ export class LegacyMessage extends Message {}
  * @param {Req} [data]
  * @returns {Message<Req, any>}
  */
-export function createLegacyMessage(name, data) {
-    const message = new LegacyMessage(data);
-    message.name = name;
-    return message;
+export function createLegacyMessage (name, data) {
+    const message = new LegacyMessage(data)
+    message.name = name
+    return message
 }

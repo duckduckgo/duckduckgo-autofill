@@ -35,7 +35,7 @@ export class NativeTooltip {
                 form.autofillData(resp, mainType)
             })
             .catch(e => {
-                console.error('this.runtime.getAutofillData')
+                console.error('NativeTooltip::device.getAutofillData(payload)')
                 console.error(e)
             })
     }

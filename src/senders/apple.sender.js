@@ -1,6 +1,6 @@
 import ddgGlobals from './captureDdgGlobals'
 import {Sender} from './sender'
-import {createLegacyMessage} from '../messages/messages'
+import {EmailSignedIn, LegacyMessage} from '../messages/messages'
 
 export class AppleSender extends Sender {
     /** @type {GlobalConfig} */
@@ -13,24 +13,26 @@ export class AppleSender extends Sender {
     }
 
     async handle (msg) {
-        let { name, data } = msg;
+        let { name, data } = msg
         try {
-            if (name === "getAutofillCredentials") {
-                name = "pmHandlerGetAutofillCredentials"
+            if (name === 'getAutofillCredentials') {
+                name = 'pmHandlerGetAutofillCredentials'
             }
-            const response = await wkSendAndWait(name, data, {
+            // todo(Shane): better way to handle this?
+            if (data === null) data = undefined
+            let response = await wkSendAndWait(name, data, {
                 secret: this.config.secret,
                 hasModernWebkitAPI: this.config.hasModernWebkitAPI
             })
-            // todo(Shane): make this applicable in more places, not tied to the apple implementation.
-            if (middlewares[name]) {
-                return middlewares[name](response, data)
+            // todo(Shane): Better way to handle this - per message?
+            if (response && !('success' in response) && !('error' in response)) {
+                return { success: response }
             }
             return response
         } catch (e) {
             if (e instanceof MissingWebkitHandler) {
                 if (name in interceptions) {
-                    console.log('--> faling back to: ', name, data)
+                    console.log('--> falling back to: ', name, data)
                     return interceptions[name]?.(this.config)
                 } else {
                     throw new Error('unimplemented handler: ' + name)
@@ -50,60 +52,23 @@ export class AppleSender extends Sender {
 export function createSender (config) {
     return new AppleSender(config)
 }
-/**
- * @returns {Sender}
- */
-export function createLegacySender (config) {
-    const transport = createSender(config)
-    // class Logging extends Sender {
-    //     async handle(message) {
-    //         console.log(`🙈 LegacyTransport: ${JSON.stringify(name)}`, data)
-    //         const res = await transport.send(name, data)
-    //         console.log(`\t 🙈 LegacyTransport::Response ${JSON.stringify(name)}`, JSON.stringify(res))
-    //     }
-    // }
-    // /** @type {LegacyTransport} */
-    // const loggingTransport = {
-    //     async send (name, data) {
-    //         console.log(`🙈 LegacyTransport: ${JSON.stringify(name)}`, data)
-    //         const res = await transport.send(name, data)
-    //         console.log(`\t 🙈 LegacyTransport::Response ${JSON.stringify(name)}`, JSON.stringify(res))
-    //         return res
-    //     }
-    // }
-    return transport;
-}
-
-/**
- *
- * @type {Middlewares}
- */
-const middlewares = {
-    getAutofillData: async (data) => {
-        const cloned = JSON.parse(JSON.stringify(data.success))
-        if ('id' in cloned) {
-            if (typeof cloned.id === 'number') {
-                console.warn("updated the credentials' id field as it was a number, but should be a string")
-                cloned.id = String(cloned.id)
-            }
-        }
-        return {
-            success: cloned
-        }
-    }
-}
 
 /**
  * @type {Interceptions}
  */
 const interceptions = {
     'getAutofillInitData': async (globalConfig) => {
-        const legacyTransport = createLegacySender(globalConfig)
-        const message = createLegacyMessage('pmHandlerGetAutofillInitData');
-        const data = await legacyTransport.send(message)
+        const sender = createSender(globalConfig)
 
-        // todo(Shane): Fix this problem with ids with native team
-        data.success?.credentials.forEach(cred => {
+        // mimic the old message
+        const msg = new LegacyMessage()
+        msg.name = 'pmHandlerGetAutofillInitData'
+
+        // get the response
+        const response = await sender.send(msg)
+
+        // update items to fix `id` field
+        response.credentials.forEach(cred => {
             cred.id = String(cred.id)
         })
 
@@ -111,7 +76,7 @@ const interceptions = {
             success: {
                 // default, allowing it to be overriden
                 serializedInputContext: '{}',
-                ...data.success
+                ...response
             }
         }
     },
@@ -121,9 +86,9 @@ const interceptions = {
      * @param globalConfig
      */
     'getAvailableInputTypes': async (globalConfig) => {
-        const legacyTransport = createLegacySender(globalConfig)
-        const message = createLegacyMessage('emailHandlerCheckAppSignedInStatus');
-        const { isAppSignedIn } = await legacyTransport.send(message)
+        const legacySender = createSender(globalConfig)
+        const message = new EmailSignedIn()
+        const { isAppSignedIn } = await legacySender.send(message)
 
         /** @type {AvailableInputTypes} */
         const legacyMacOsTypes = {

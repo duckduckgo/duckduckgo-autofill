@@ -78,7 +78,7 @@ function printMember (member) {
 }
 
 function indent (source, indent = '    ') {
-    return (source||"").split('\n').map(x => indent + x).join('\n')
+    return (source || '').split('\n').map(x => indent + x).join('\n')
 }
 
 function printComments (lines) {
@@ -87,7 +87,6 @@ function printComments (lines) {
 ${lines.map(x => ' * ' + x).join('\n')}
  */`
 }
-
 
 /**
  * @typedef {object} NamedEntry
@@ -241,5 +240,5 @@ module.exports = {
     formatArrayMembers,
     formatUnionMembers,
     grouped,
-    indent,
+    indent
 }

@@ -3,7 +3,7 @@ const Ajv = require('ajv').default
 const {writeFileSync, readdirSync} = require('fs')
 const {join, relative, dirname} = require('path')
 const standaloneCode = require('ajv/dist/standalone').default
-const {printJs} = require("./jsdoc");
+const {printJs} = require('./jsdoc')
 const {printGroupsMd, grouped, formatUnionMembers, formatArrayMembers} = require('./shared')
 
 const BASE = join(__dirname, '../src/schema')

@@ -9,7 +9,7 @@ export class ExtensionSender extends Sender {
         this.config = globalConfig
     }
     async handle (msg) {
-        const { name, data } = msg;
+        const { name, data } = msg
         try {
             const result = await sendToExtension(name)
             return result

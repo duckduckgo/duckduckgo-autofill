@@ -1,30 +1,30 @@
-import getAutofillData from '../schema/response.getAutofillData.schema.json'
-import getAvailableInputTypes from '../schema/response.getAvailableInputTypes.schema.json'
-import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.schema.json'
 import {Sender} from './sender'
+import {GetAutofillData, GetAvailableInputTypes, GetRuntimeConfiguration, StoreFormData} from '../messages/messages'
 
 export class AndroidSender extends Sender {
     async handle (msg) {
-        const { data, name } = msg;
-        switch (name) {
-        case 'getRuntimeConfiguration': {
+        const { data } = msg
+
+        if (msg instanceof GetRuntimeConfiguration) {
             window.BrowserAutofill.getRuntimeConfiguration()
-            return waitForResponse(getRuntimeConfiguration.properties.type.const)
+            return waitForResponse(msg.responseName)
         }
-        case 'getAvailableInputTypes': {
+
+        if (msg instanceof GetAvailableInputTypes) {
             window.BrowserAutofill.getAvailableInputTypes()
-            return waitForResponse(getAvailableInputTypes.properties.type.const)
+            return waitForResponse(msg.responseName)
         }
-        case 'getAutofillData': {
+
+        if (msg instanceof GetAutofillData) {
             window.BrowserAutofill.getAutofillData(JSON.stringify(data))
-            return waitForResponse(getAutofillData.properties.type.const)
+            return waitForResponse(msg.responseName)
         }
-        case 'storeFormData': {
+
+        if (msg instanceof StoreFormData) {
             return window.BrowserAutofill.storeFormData(JSON.stringify(data))
         }
-        default:
-            throw new Error('android: not implemented: ' + name)
-        }
+
+        throw new Error('android: not implemented: ' + msg.name)
     }
 }
 

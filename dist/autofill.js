@@ -3475,33 +3475,33 @@ var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDevice
 
 /**
  * @param {AvailableInputTypes} availableInputTypes
- * @param {import("./runtime/runtime").Runtime} runtime
+ * @param {import("./senders/sender").Sender} sender
  * @param {TooltipInterface} tooltip
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
  * @param {import("./settings/settings").Settings} autofillSettings
  * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface}
  */
-function createDevice(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
+function createDevice(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings) {
   switch (platformConfig.platform) {
     case 'macos':
     case 'ios':
       {
         if (globalConfig.isTopFrame) {
-          return new _AppleOverlayDeviceInterface.AppleOverlayDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
+          return new _AppleOverlayDeviceInterface.AppleOverlayDeviceInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
         }
 
-        return new _AppleDeviceInterface.AppleDeviceInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
+        return new _AppleDeviceInterface.AppleDeviceInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
       }
 
     case 'extension':
-      return new _ExtensionInterface.ExtensionInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
+      return new _ExtensionInterface.ExtensionInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'windows':
-      return new _WindowsInterface.WindowsInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
+      return new _WindowsInterface.WindowsInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'android':
-      return new _AndroidInterface.AndroidInterface(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings);
+      return new _AndroidInterface.AndroidInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'unknown':
       throw new Error('unreachable. tooltipHandler platform was "unknown"');
@@ -3591,7 +3591,7 @@ var _autofillUtils = require("../autofill-utils");
 
 var _styles = require("../UI/styles/styles");
 
-var _apple = require("../transports/apple.transport");
+var _messages = require("../messages/messages");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3601,14 +3601,12 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "legacyTransport", (0, _apple.createLegacyTransport)(this.globalConfig));
-
     _defineProperty(this, "initialSetupDelayMs", 300);
   }
 
   async setupAutofill() {
     if (this.globalConfig.isApp) {
-      const response = await this.runtime.getAutofillInitData();
+      const response = await this.getAutofillInitData();
       this.storeLocalData(response);
     }
 
@@ -3631,20 +3629,20 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
 
   getUserData() {
-    return this.legacyTransport.send('emailHandlerGetUserData');
+    return this.sender.send((0, _messages.createLegacyMessage)('emailHandlerGetUserData'));
   }
 
   async getAddresses() {
     if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await this.legacyTransport.send('emailHandlerGetAddresses');
+    } = await this.sender.send((0, _messages.createLegacyMessage)('emailHandlerGetAddresses'));
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await this.legacyTransport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
+    await this.sender.send(new _messages.EmailRefreshAlias()); // On macOS we also update the addresses stored locally
 
     if (this.globalConfig.isApp) this.getAddresses();
   }
@@ -3657,11 +3655,11 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
         cohort
       }
     } = _ref;
-    return this.legacyTransport.send('emailHandlerStoreToken', {
+    return this.sender.send((0, _messages.createLegacyMessage)('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
-    });
+    }));
   }
   /**
    * PM endpoints
@@ -3675,7 +3673,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeCredentials(credentials) {
-    return this.legacyTransport.send('pmHandlerStoreCredentials', credentials);
+    return this.sender.send((0, _messages.createLegacyMessage)('pmHandlerStoreCredentials', credentials));
   }
   /**
    * Opens the native UI for managing passwords
@@ -3683,7 +3681,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManagePasswords() {
-    return this.legacyTransport.send('pmHandlerOpenManagePasswords');
+    return this.sender.send((0, _messages.createLegacyMessage)('pmHandlerOpenManagePasswords'));
   }
   /**
    * Opens the native UI for managing identities
@@ -3691,7 +3689,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageIdentities() {
-    return this.legacyTransport.send('pmHandlerOpenManageIdentities');
+    return this.sender.send((0, _messages.createLegacyMessage)('pmHandlerOpenManageIdentities'));
   }
   /**
    * Opens the native UI for managing credit cards
@@ -3699,7 +3697,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageCreditCards() {
-    return this.legacyTransport.send('pmHandlerOpenManageCreditCards');
+    return this.sender.send((0, _messages.createLegacyMessage)('pmHandlerOpenManageCreditCards'));
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -3727,9 +3725,9 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCreditCard(id) {
-    return this.legacyTransport.send('pmHandlerGetCreditCard', {
+    return this.sender.send((0, _messages.createLegacyMessage)('pmHandlerGetCreditCard', {
       id
-    });
+    }));
   } // Used to encode data to send back to the child autofill
 
 
@@ -3747,10 +3745,10 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   async getAlias() {
     const {
       alias
-    } = await this.legacyTransport.send('emailHandlerGetAlias', {
+    } = await this.sender.send((0, _messages.createLegacyMessage)('emailHandlerGetAlias', {
       requiresUserPermission: !this.globalConfig.isApp,
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
-    });
+    }));
     return (0, _autofillUtils.formatDuckAddress)(alias);
   }
 
@@ -3762,7 +3760,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":45,"../autofill-utils":47,"../transports/apple.transport":62,"./InterfacePrototype.js":17}],15:[function(require,module,exports){
+},{"../UI/styles/styles":45,"../autofill-utils":47,"../messages/messages":52,"./InterfacePrototype.js":17}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3776,7 +3774,7 @@ var _autofillUtils = require("../autofill-utils");
 
 var _styles = require("../UI/styles/styles");
 
-var _apple = require("../transports/apple.transport");
+var _messages = require("../messages/messages");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3789,13 +3787,11 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "legacyTransport", (0, _apple.createLegacyTransport)(this.globalConfig));
-
     _defineProperty(this, "stripCredentials", false);
   }
 
   async setupAutofill() {
-    const response = await this.runtime.getAutofillInitData();
+    const response = await this.getAutofillInitData();
     this.storeLocalData(response);
     const signedIn = this.availableInputTypes.email;
 
@@ -3848,20 +3844,20 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
   }
 
   getUserData() {
-    return this.legacyTransport.send('emailHandlerGetUserData');
+    return this.sender.send((0, _messages.createLegacyMessage)('emailHandlerGetUserData'));
   }
 
   async getAddresses() {
     if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await this.legacyTransport.send('emailHandlerGetAddresses');
+    } = await this.sender.send((0, _messages.createLegacyMessage)('emailHandlerGetAddresses'));
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await this.legacyTransport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
+    await this.sender.send((0, _messages.createLegacyMessage)('emailHandlerRefreshAlias')); // On macOS we also update the addresses stored locally
 
     if (this.globalConfig.isApp) this.getAddresses();
   }
@@ -3869,12 +3865,12 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
   async setSize(cb) {
     const details = cb(); // todo(Shane): Upgrade to new runtime
 
-    await this.legacyTransport.send('setSize', details);
+    await this.sender.send((0, _messages.createLegacyMessage)('setSize', details));
   }
 
   async removeTooltip() {
     console.log('AppleOverlayDeviceInterface', 'closeAutofillParent');
-    await this.runtime.closeAutofillParent();
+    await this.closeAutofillParent();
   }
 
   storeUserData(_ref) {
@@ -3885,11 +3881,11 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
         cohort
       }
     } = _ref;
-    return this.legacyTransport.send('emailHandlerStoreToken', {
+    return this.sender.send((0, _messages.createLegacyMessage)('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
-    });
+    }));
   }
   /**
    * PM endpoints
@@ -3903,7 +3899,7 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
 
 
   storeCredentials(credentials) {
-    return this.legacyTransport.send('pmHandlerStoreCredentials', credentials);
+    return this.sender.send((0, _messages.createLegacyMessage)('pmHandlerStoreCredentials', credentials));
   }
   /**
    * Opens the native UI for managing passwords
@@ -3911,7 +3907,7 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
 
 
   openManagePasswords() {
-    return this.legacyTransport.send('pmHandlerOpenManagePasswords');
+    return this.sender.send((0, _messages.createLegacyMessage)('pmHandlerOpenManagePasswords'));
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -3939,9 +3935,9 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCreditCard(id) {
-    return this.legacyTransport.send('pmHandlerGetCreditCard', {
+    return this.sender.send((0, _messages.createLegacyMessage)('pmHandlerGetCreditCard', {
       id
-    });
+    }));
   } // Used to encode data to send back to the child autofill
 
 
@@ -3952,10 +3948,10 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
     });
     const data = Object.fromEntries(detailsEntries); // todo(Shane): Migrate
 
-    await this.legacyTransport.send('selectedDetail', {
+    await this.sender.send((0, _messages.createLegacyMessage)('selectedDetail', {
       data,
       configType
-    });
+    }));
   }
 
   async getCurrentInputType() {
@@ -3968,10 +3964,10 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
   async getAlias() {
     const {
       alias
-    } = await this.legacyTransport.send('emailHandlerGetAlias', {
+    } = await this.sender.send((0, _messages.createLegacyMessage)('emailHandlerGetAlias', {
       requiresUserPermission: !this.globalConfig.isApp,
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
-    });
+    }));
     return (0, _autofillUtils.formatDuckAddress)(alias);
   }
 
@@ -3995,7 +3991,7 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../UI/styles/styles":45,"../autofill-utils":47,"../transports/apple.transport":62,"./InterfacePrototype.js":17}],16:[function(require,module,exports){
+},{"../UI/styles/styles":45,"../autofill-utils":47,"../messages/messages":52,"./InterfacePrototype.js":17}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4149,15 +4145,17 @@ var _settings = require("../settings/settings");
 
 var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
 
-var _runtime = require("../runtime/runtime");
-
 var _WebTooltip = require("../UI/WebTooltip");
-
-var _transport = require("../transports/transport");
 
 var _inputTypes = require("../InputTypes/input-types");
 
-var _messages = require("../runtime/messages");
+var messages = _interopRequireWildcard(require("../messages/messages"));
+
+var _apple = require("../senders/apple.sender");
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4209,15 +4207,16 @@ class InterfacePrototype {
 
   /** @type {TooltipInterface} */
 
-  /**
+  /** @type {import("../senders/sender").Sender} sender
+  sender;
+   /**
    * @param {AvailableInputTypes} availableInputTypes
-   * @param {import("../runtime/runtime").Runtime} runtime
-   * @param {TooltipInterface} tooltip
+   * @param {import("../senders/sender").Sender} sender
    * @param {GlobalConfig} globalConfig
    * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
    * @param {import("../settings/settings").Settings} autofillSettings
    */
-  constructor(availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
+  constructor(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings) {
     _defineProperty(this, "attempts", 0);
 
     _defineProperty(this, "currentAttached", null);
@@ -4265,7 +4264,7 @@ class InterfacePrototype {
     this.tooltip = tooltip;
     this.runtimeConfiguration = platformConfig;
     this.autofillSettings = autofillSettings;
-    this.runtime = runtime;
+    this.sender = sender;
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs,
       availableInputTypes: availableInputTypes
@@ -4670,7 +4669,7 @@ class InterfacePrototype {
 
 
   async refreshAvailableInputTypes() {
-    const runtimeAvailableInputTypes = await this.runtime.getAvailableInputTypes();
+    const runtimeAvailableInputTypes = await this.getAvailableInputTypes();
     const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, this.autofillSettings.featureToggles);
     this.availableInputTypes = inputTypes;
   }
@@ -4739,7 +4738,70 @@ class InterfacePrototype {
 
 
   async getAutofillCredentials(id) {
-    return new _messages.GetAutofillCredentials(id, this.runtime.transport).send();
+    return this.sender.send(new messages.GetAutofillCredentials(id));
+  }
+  /**
+   * @public
+   * @returns {Promise<AvailableInputTypes>}
+   */
+
+
+  async getAvailableInputTypes() {
+    return this.sender.send(new messages.GetAvailableInputTypes());
+  }
+  /**
+   * @public
+   * @param {GetAutofillDataRequest} input
+   * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
+   */
+
+
+  async getAutofillData(input) {
+    return this.sender.send(new messages.GetAutofillData(input));
+  }
+  /**
+   * @returns {Promise<InboundPMData>}
+   */
+
+
+  async getAutofillInitData() {
+    return this.sender.send(new messages.GetAutofillInitData());
+  }
+  /**
+   * Sends form data to the native layer
+   * @param {DataStorageObject} data
+   */
+
+
+  storeFormData(data) {
+    return this.sender.send(new messages.StoreFormData(data));
+  }
+  /**
+   * @param {ShowAutofillParentRequest} parentArgs
+   * @returns {Promise<void>}
+   */
+
+
+  async showAutofillParent(parentArgs) {
+    await this.sender.send(new messages.ShowAutofillParent(parentArgs));
+  }
+  /**
+   * todo(Shane): Schema for this?
+   * @deprecated This was a port from the macOS implementation so the API may not be suitable for all
+   * @returns {Promise<any>}
+   */
+
+
+  async getSelectedCredentials() {
+    return this.sender.send(new messages.GetSelectedCredentials(null));
+  }
+  /**
+   * @returns {Promise<any>}
+   */
+
+
+  async closeAutofillParent() {
+    await this.sender.send(new messages.CloseAutofillParent(null));
   }
   /** @returns {APIResponse<CreditCardObject>} */
 
@@ -4755,15 +4817,6 @@ class InterfacePrototype {
   }
 
   openManagePasswords() {}
-  /**
-   * Sends form data to the native layer
-   * @param {DataStorageObject} data
-   */
-
-
-  storeFormData(data) {
-    return this.runtime.storeFormData(data);
-  }
 
   setSize(_cb) {// noop
   } // todo(Shane): remove all these things from the InterfacePrototype
@@ -4789,12 +4842,11 @@ class InterfacePrototype {
   static default() {
     const config = new _contentScopeScripts.RuntimeConfiguration();
     const globalConfig = (0, _config.createGlobalConfig)();
-    const transport = (0, _transport.createRuntimeTransport)(globalConfig);
-    const runtime = (0, _runtime.createRuntime)(globalConfig, transport);
+    const sender = (0, _apple.createSender)(globalConfig);
     const tooltip = new _WebTooltip.WebTooltip({
       tooltipKind: 'modern'
     });
-    return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, _settings.Settings.default());
+    return new InterfacePrototype({}, sender, tooltip, globalConfig, config, _settings.Settings.default());
   }
 
   removeTooltip() {
@@ -4884,7 +4936,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../runtime/messages":52,"../runtime/runtime":53,"../settings/settings":60,"../transports/transport":65,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
+},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../messages/messages":52,"../senders/apple.sender":60,"../settings/settings":66,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4901,7 +4953,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class WindowsInterface extends _InterfacePrototype.default {
   async setupAutofill() {
     // todo(Shane): is this is the correct place to determine this?
-    const initData = await this.runtime.getAutofillInitData();
+    const initData = await this.getAutofillInitData();
     this.storeLocalData(initData);
     const cleanup = this.scanner.init();
     this.addLogoutListener(cleanup);
@@ -9012,7 +9064,7 @@ exports.featureToggleAwareInputTypes = featureToggleAwareInputTypes;
  * features.
  *
  * @param {AvailableInputTypes} inputTypes
- * @param {FeatureTogglesSettings} featureToggles
+ * @param {FeatureToggles} featureToggles
  * @return {AvailableInputTypes}
  */
 function featureToggleAwareInputTypes(inputTypes, featureToggles) {
@@ -9546,8 +9598,6 @@ exports.NativeTooltip = void 0;
 
 var _matching = require("../Form/matching");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 /**
  * A 'Native' tooltip means that that autofill is not responsible
  * for rendering **any** UI relating to the selecting of items
@@ -9555,27 +9605,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @implements {TooltipInterface}
  */
 class NativeTooltip {
-  /** @type {import('../runtime/runtime').Runtime} */
-
-  /**
-   * @param {import('../runtime/runtime').Runtime} runtime
-   */
-  constructor(runtime) {
-    _defineProperty(this, "runtime", void 0);
-
-    this.runtime = runtime;
-  }
   /**
    * To 'attach' on iOS/Android is to ask the runtime for autofill data - this
    * will eventually cause the native overlays to show
    * @param args
    */
-
-
   attach(args) {
     const {
       form,
-      input
+      input,
+      device
     } = args;
     const inputType = (0, _matching.getInputType)(input);
     const mainType = (0, _matching.getMainTypeFromType)(inputType);
@@ -9592,11 +9631,11 @@ class NativeTooltip {
       mainType,
       subType
     };
-    this.runtime.getAutofillData(payload).then(resp => {
+    device.getAutofillData(payload).then(resp => {
       console.log('Autofilling...', resp, mainType);
       form.autofillData(resp, mainType);
     }).catch(e => {
-      console.error('this.runtime.getAutofillData');
+      console.error('NativeTooltip::device.getAutofillData(payload)');
       console.error(e);
     });
   }
@@ -9647,26 +9686,10 @@ var _removeListeners = /*#__PURE__*/new WeakSet();
  * @implements {TooltipInterface}
  */
 class OverlayControllerTooltip {
-  /** @type {import('../runtime/runtime').Runtime} */
-
-  /** @type {import('../UI/Tooltip.js').Tooltip | null} */
-
-  /** @type {"idle" | "parentShown" | "removingParent"} */
-
-  /**
-   * @deprecated do not access the tooltipHandler directly here
-   * @type {import('../DeviceInterface/InterfacePrototype').default | null}
-   */
-
-  /**
-   * @param {import('../runtime/runtime').Runtime} runtime
-   */
-  constructor(runtime) {
+  constructor() {
     _classPrivateMethodInitSpec(this, _removeListeners);
 
     _classPrivateMethodInitSpec(this, _attachListeners);
-
-    _defineProperty(this, "runtime", void 0);
 
     _defineProperty(this, "_activeTooltip", null);
 
@@ -9682,8 +9705,6 @@ class OverlayControllerTooltip {
     _defineProperty(this, "_listenerCleanups", []);
 
     _defineProperty(this, "pollingTimeout", null);
-
-    this.runtime = runtime;
   }
 
   attach(args) {
@@ -9770,9 +9791,10 @@ class OverlayControllerTooltip {
       inputWidth: Math.floor(inputDimensions.width),
       serializedInputContext: JSON.stringify(data)
     };
+    if (!this._device) throw new Error('unreachable');
 
     try {
-      await this.runtime.showAutofillParent(details);
+      await this._device.showAutofillParent(details);
 
       _classPrivateFieldSet(this, _state, 'parentShown');
 
@@ -9828,10 +9850,12 @@ class OverlayControllerTooltip {
    * @returns {Promise<void>}
    */
   async listenForSelectedCredential() {
+    var _this$_device;
+
     // Prevent two timeouts from happening
     // @ts-ignore
     clearTimeout(this.pollingTimeout);
-    const response = await this.runtime.getSelectedCredentials();
+    const response = await ((_this$_device = this._device) === null || _this$_device === void 0 ? void 0 : _this$_device.getSelectedCredentials());
 
     switch (response.type) {
       case 'none':
@@ -9844,9 +9868,9 @@ class OverlayControllerTooltip {
 
       case 'ok':
         {
-          var _this$_device;
+          var _this$_device2;
 
-          return (_this$_device = this._device) === null || _this$_device === void 0 ? void 0 : _this$_device.activeFormSelectedDetail(response.data, response.configType);
+          return (_this$_device2 = this._device) === null || _this$_device2 === void 0 ? void 0 : _this$_device2.activeFormSelectedDetail(response.data, response.configType);
         }
 
       case 'stop':
@@ -9856,12 +9880,15 @@ class OverlayControllerTooltip {
   }
 
   async removeTooltip() {
+    var _this$_device3;
+
     if (_classPrivateFieldGet(this, _state) === 'removingParent') return;
     if (_classPrivateFieldGet(this, _state) === 'idle') return;
+    if (!this._device) throw new Error('unreachable');
 
     _classPrivateFieldSet(this, _state, 'removingParent');
 
-    await this.runtime.closeAutofillParent().catch(e => console.error('Could not close parent', e));
+    await ((_this$_device3 = this._device) === null || _this$_device3 === void 0 ? void 0 : _this$_device3.closeAutofillParent().catch(e => console.error('Could not close parent', e)));
 
     _classPrivateFieldSet(this, _state, 'idle');
 
@@ -10516,13 +10543,12 @@ var _WebTooltip = require("./WebTooltip");
 var _OverlayControllerTooltip = require("./OverlayControllerTooltip");
 
 /**
- * @param {import('../runtime/runtime').Runtime} runtime
  * @param {GlobalConfig} globalConfig
  * @param {import('@duckduckgo/content-scope-scripts').RuntimeConfiguration} platformConfig
  * @param {import('../settings/settings').Settings} _autofillSettings
  * @returns {TooltipInterface}
  */
-function createTooltip(runtime, globalConfig, platformConfig, _autofillSettings) {
+function createTooltip(globalConfig, platformConfig, _autofillSettings) {
   switch (platformConfig.platform) {
     case 'macos':
     case 'windows':
@@ -10533,7 +10559,7 @@ function createTooltip(runtime, globalConfig, platformConfig, _autofillSettings)
               tooltipKind: 'modern'
             });
           } else {
-            return new _OverlayControllerTooltip.OverlayControllerTooltip(runtime);
+            return new _OverlayControllerTooltip.OverlayControllerTooltip();
           }
         }
 
@@ -10545,7 +10571,7 @@ function createTooltip(runtime, globalConfig, platformConfig, _autofillSettings)
     case 'android':
     case 'ios':
       {
-        return new _NativeTooltip.NativeTooltip(runtime);
+        return new _NativeTooltip.NativeTooltip();
       }
 
     case 'extension':
@@ -10956,13 +10982,11 @@ exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
 require("./requestIdleCallback");
 
-require("./transports/captureDdgGlobals");
+require("./senders/captureDdgGlobals");
 
 var _DeviceInterface = require("./DeviceInterface");
 
 var _config = require("./config");
-
-var _runtime = require("./runtime/runtime");
 
 var _inputTypes = require("./InputTypes/input-types");
 
@@ -10970,7 +10994,11 @@ var _tooltips = require("./UI/tooltips");
 
 var _settings = require("./settings/settings");
 
-var _transport = require("./transports/transport");
+var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
+
+var _messages = require("./messages/messages");
+
+var _createSender = require("./senders/create-sender");
 
 // Polyfills/shims
 (async () => {
@@ -10986,16 +11014,14 @@ var _transport = require("./transports/transport");
     // autofill logic can run...
 
 
-    const transport = (0, _transport.createLoggingTransport)(globalConfig); // Create the runtime, this does a best-guesses job of determining where we're running.
+    const sender = (0, _createSender.createSender)(globalConfig); // Get runtime configuration - this may include messaging
 
-    const runtime = (0, _runtime.createRuntime)(globalConfig, transport); // Get runtime configuration - this may include messaging
-
-    const runtimeConfiguration = await runtime.getRuntimeConfiguration(); // Autofill settings need to be derived from runtime config
+    const runtimeConfiguration = await getRuntimeConfiguration(sender); // Autofill settings need to be derived from runtime config
 
     const autofillSettings = (0, _settings.fromRuntimeConfig)(runtimeConfiguration); // log feature toggles for clarity when testing
 
     if (globalConfig.isDDGTestMode) {
-      console.log(JSON.stringify(autofillSettings.featureToggles, null, 2));
+      console.log('autofillSettings.featureToggles', JSON.stringify(autofillSettings.featureToggles, null, 2));
     } // If it was enabled, try to ask for available input types
 
 
@@ -11003,10 +11029,10 @@ var _transport = require("./transports/transport");
       var _tooltip$setDevice;
 
       // Determine the tooltipHandler type
-      const tooltip = (0, _tooltips.createTooltip)(runtime, globalConfig, runtimeConfiguration, autofillSettings);
-      const runtimeAvailableInputTypes = await runtime.getAvailableInputTypes();
+      const tooltip = (0, _tooltips.createTooltip)(globalConfig, runtimeConfiguration, autofillSettings);
+      const runtimeAvailableInputTypes = await sender.send(new _messages.GetAvailableInputTypes(undefined));
       const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles);
-      const device = (0, _DeviceInterface.createDevice)(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // This is a workaround for the previous design, we should refactor if possible
+      const device = (0, _DeviceInterface.createDevice)(inputTypes, sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // This is a workaround for the previous design, we should refactor if possible
 
       (_tooltip$setDevice = tooltip.setDevice) === null || _tooltip$setDevice === void 0 ? void 0 : _tooltip$setDevice.call(tooltip, device); // Init services
 
@@ -11018,8 +11044,32 @@ var _transport = require("./transports/transport");
     console.error(e); // Noop, we errored
   }
 })();
+/**
+ * @public
+ * @param {import("./senders/sender").Sender} sender
+ * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
+ */
 
-},{"./DeviceInterface":12,"./InputTypes/input-types":35,"./UI/tooltips":46,"./config":49,"./requestIdleCallback":51,"./runtime/runtime":53,"./settings/settings":60,"./transports/captureDdgGlobals":63,"./transports/transport":65}],49:[function(require,module,exports){
+
+async function getRuntimeConfiguration(sender) {
+  const data = await sender.send(new _messages.GetRuntimeConfiguration(null));
+  const {
+    config,
+    errors
+  } = (0, _contentScopeScripts.tryCreateRuntimeConfiguration)(data);
+
+  if (errors.length) {
+    for (let error of errors) {
+      console.log(error.message, error);
+    }
+
+    throw new Error("".concat(errors.length, " errors prevented global configuration from being created."));
+  }
+
+  return config;
+}
+
+},{"./DeviceInterface":12,"./InputTypes/input-types":35,"./UI/tooltips":46,"./config":49,"./messages/messages":52,"./requestIdleCallback":53,"./senders/captureDdgGlobals":61,"./senders/create-sender":62,"./settings/settings":66,"@duckduckgo/content-scope-scripts":1}],49:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -11100,6 +11150,443 @@ exports.constants = constants;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.SchemaValidationError = exports.Message = void 0;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @template [Request=any],[Response=any]
+ */
+class Message {
+  /**
+   * @type {any}
+   */
+
+  /**
+   * @type {any}
+   */
+
+  /**
+   * String representation of this message's name
+   * @type {string}
+   */
+
+  /**
+   * The name of a response message, if it exists
+   * @type {string}
+   */
+
+  /**
+   * This is the data that will be sent in the message.
+   * @type {Request|undefined}
+   */
+
+  /**
+   * @param {Request} [data]
+   */
+  constructor(data) {
+    _defineProperty(this, "reqValidator", null);
+
+    _defineProperty(this, "resValidator", null);
+
+    _defineProperty(this, "name", 'unknown');
+
+    _defineProperty(this, "responseName", this.name + 'Response');
+
+    _defineProperty(this, "data", void 0);
+
+    this.data = data;
+  }
+  /**
+   * @returns {Request|undefined}
+   */
+
+
+  validateRequest() {
+    var _this$reqValidator;
+
+    if (this.data === undefined) {
+      return undefined;
+    }
+
+    if (this.reqValidator && !((_this$reqValidator = this.reqValidator) !== null && _this$reqValidator !== void 0 && _this$reqValidator.call(this, this.data))) {
+      var _this$reqValidator2;
+
+      this.throwError((_this$reqValidator2 = this.reqValidator) === null || _this$reqValidator2 === void 0 ? void 0 : _this$reqValidator2['errors']);
+    }
+
+    return this.data;
+  }
+  /**
+   * @param {import('ajv').ErrorObject[]} errors
+   */
+
+
+  throwError(errors) {
+    const error = SchemaValidationError.fromErrors(errors, this.constructor.name);
+    throw error;
+  }
+  /**
+   * @param {any|null} incoming
+   * @returns {Response}
+   */
+
+
+  validateResponse(incoming) {
+    var _this$resValidator;
+
+    if (this.resValidator && !((_this$resValidator = this.resValidator) !== null && _this$resValidator !== void 0 && _this$resValidator.call(this, incoming))) {
+      var _this$resValidator2;
+
+      this.throwError((_this$resValidator2 = this.resValidator) === null || _this$resValidator2 === void 0 ? void 0 : _this$resValidator2.errors);
+    }
+
+    if (!incoming) {
+      return incoming;
+    }
+
+    if ('data' in incoming) {
+      console.warn('response had `data` property. Please migrate to `success`');
+      return incoming.data;
+    }
+
+    if ('success' in incoming) {
+      return incoming.success;
+    }
+
+    throw new Error('unreachable. Response did not contain `success` or `data`');
+  }
+  /**
+   * Use this helper for creating stand-in response messages that are typed correctly.
+   *
+   * @examples
+   *
+   * ```js
+   * const msg = new Message();
+   * const response = msg.response({}) // <-- This argument will be typed correctly
+   * ```
+   *
+   * @param {Response} response
+   * @returns {Response}
+   */
+
+
+  response(response) {
+    return response;
+  }
+  /**
+   * @param {any} response
+   * @returns {{success: Response, error?: string}}
+   */
+
+
+  preResponseValidation(response) {
+    return response;
+  }
+
+}
+/**
+ * Check for this error if you'd like to
+ */
+
+
+exports.Message = Message;
+
+class SchemaValidationError extends Error {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "validationErrors", []);
+  }
+
+  /**
+   * @param {import("ajv").ErrorObject[]} errors
+   * @param {string} name
+   * @returns {SchemaValidationError}
+   */
+  static fromErrors(errors, name) {
+    const heading = "".concat(errors.length, " SchemaValidationError(s) errors for ") + name;
+    const lines = [];
+
+    for (let error of errors) {
+      // console.log(JSON.stringify(error, null, 2));
+      lines.push(error.message || 'unknown');
+    }
+
+    const message = [heading, ...lines].join('\n    ');
+    const error = new SchemaValidationError(message);
+    error.validationErrors = errors;
+    return error;
+  }
+
+}
+
+exports.SchemaValidationError = SchemaValidationError;
+
+},{}],52:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.StoreFormData = exports.ShowAutofillParent = exports.LegacyMessage = exports.GetSelectedCredentials = exports.GetRuntimeConfiguration = exports.GetAvailableInputTypes = exports.GetAutofillInitData = exports.GetAutofillData = exports.GetAutofillCredentials = exports.EmailSignedIn = exports.EmailRefreshAlias = exports.CloseAutofillParent = void 0;
+exports.createLegacyMessage = createLegacyMessage;
+
+var _message = require("./message");
+
+var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
+
+var _responseGetRuntimeConfigurationSchema = _interopRequireDefault(require("../schema/response.getRuntimeConfiguration.schema.json"));
+
+var _responseGetAvailableInputTypesSchema = _interopRequireDefault(require("../schema/response.getAvailableInputTypes.schema.json"));
+
+var _responseGetAutofillDataSchema = _interopRequireDefault(require("../schema/response.getAutofillData.schema.json"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * This file contains every message this application can 'send' to
+ * a native side.
+ */
+
+/**
+ * @extends {Message<undefined, AvailableInputTypes>}
+ */
+class GetAvailableInputTypes extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getAvailableInputTypes');
+
+    _defineProperty(this, "responseName", _responseGetAvailableInputTypesSchema.default.properties.type.const);
+
+    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAvailableInputTypesResponse']);
+  }
+
+}
+/**
+ * @extends {Message}
+ */
+
+
+exports.GetAvailableInputTypes = GetAvailableInputTypes;
+
+class CloseAutofillParent extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'closeAutofillParent');
+  }
+
+}
+/**
+ * @extends {Message<string|number, CredentialsObject>}
+ */
+
+
+exports.CloseAutofillParent = CloseAutofillParent;
+
+class GetAutofillCredentials extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getAutofillCredentials');
+  }
+
+}
+/**
+ * @extends {Message<ShowAutofillParentRequest, void>}
+ */
+
+
+exports.GetAutofillCredentials = GetAutofillCredentials;
+
+class ShowAutofillParent extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "reqValidator", _validators.default['#/definitions/ShowAutofillParentRequest']);
+
+    _defineProperty(this, "name", 'showAutofillParent');
+  }
+
+}
+/**
+ * @extends {Message<null, any>}
+ */
+
+
+exports.ShowAutofillParent = ShowAutofillParent;
+
+class GetSelectedCredentials extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getSelectedCredentials');
+  }
+
+}
+/**
+ * @extends {Message<DataStorageObject, void>}
+ */
+
+
+exports.GetSelectedCredentials = GetSelectedCredentials;
+
+class StoreFormData extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'storeFormData');
+
+    _defineProperty(this, "reqValidator", _validators.default['#/definitions/StoreFormDataRequest']);
+  }
+
+}
+/**
+ * @typedef {StoreFormData} Names2
+ */
+
+/**
+ * @extends {Message<null, InboundPMData>}
+ */
+
+
+exports.StoreFormData = StoreFormData;
+
+class GetAutofillInitData extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getAutofillInitData');
+
+    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAutofillInitDataResponse']);
+  }
+
+}
+/**
+ * @extends {Message<GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
+ */
+
+
+exports.GetAutofillInitData = GetAutofillInitData;
+
+class GetAutofillData extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getAutofillData');
+
+    _defineProperty(this, "reqValidator", _validators.default['#/definitions/GetAutofillDataRequest']);
+
+    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAutofillDataResponse']);
+
+    _defineProperty(this, "responseName", _responseGetAutofillDataSchema.default.properties.type.const);
+  }
+
+  preResponseValidation(response) {
+    const cloned = JSON.parse(JSON.stringify(response.success));
+
+    if ('id' in cloned) {
+      if (typeof cloned.id === 'number') {
+        console.warn("updated the credentials' id field as it was a number, but should be a string");
+        cloned.id = String(cloned.id);
+      }
+    }
+
+    return {
+      success: cloned
+    };
+  }
+
+}
+/**
+ * @extends {Message<null, RuntimeConfiguration>}
+ */
+
+
+exports.GetAutofillData = GetAutofillData;
+
+class GetRuntimeConfiguration extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'getRuntimeConfiguration');
+
+    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetRuntimeConfigurationResponse']);
+
+    _defineProperty(this, "responseName", _responseGetRuntimeConfigurationSchema.default.properties.type.const);
+  }
+
+}
+/**
+ * @extends Message<undefined, {isAppSignedIn: boolean}>
+ */
+
+
+exports.GetRuntimeConfiguration = GetRuntimeConfiguration;
+
+class EmailSignedIn extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'emailHandlerCheckAppSignedInStatus');
+  }
+
+}
+/**
+ * @extends Message<undefined, {isAppSignedIn: boolean}>
+ */
+
+
+exports.EmailSignedIn = EmailSignedIn;
+
+class EmailRefreshAlias extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'emailHandlerRefreshAlias');
+  }
+
+  preResponseValidation(response) {
+    return {
+      success: response
+    };
+  }
+
+}
+/**
+ * Use this to wrap legacy messages where schema validation is not available.
+ */
+
+
+exports.EmailRefreshAlias = EmailRefreshAlias;
+
+class LegacyMessage extends _message.Message {}
+/**
+ * @template [Req=any]
+ * @param {string} name
+ * @param {Req} [data]
+ * @returns {Message<Req, any>}
+ */
+
+
+exports.LegacyMessage = LegacyMessage;
+
+function createLegacyMessage(name, data) {
+  const message = new LegacyMessage(data);
+  message.name = name;
+  return message;
+}
+
+},{"../schema/response.getAutofillData.schema.json":54,"../schema/response.getAvailableInputTypes.schema.json":56,"../schema/response.getRuntimeConfiguration.schema.json":57,"../schema/validators.cjs":58,"./message":51}],53:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.default = void 0;
 
 /*!
@@ -11142,476 +11629,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}],52:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.StoreFormData = exports.ShowAutofillParent = exports.GetSelectedCredentials = exports.GetRuntimeConfiguration = exports.GetAvailableInputTypes = exports.GetAutofillInitData = exports.GetAutofillData = exports.GetAutofillCredentials = exports.CloseAutofillParent = void 0;
-
-var _testing = require("./testing");
-
-var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * @extends {Message<null, AvailableInputTypes>}
- */
-class GetAvailableInputTypes extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", 'getAvailableInputTypes');
-
-    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAvailableInputTypesResponse']);
-  }
-
-}
-/**
- * @extends {Message}
- */
-
-
-exports.GetAvailableInputTypes = GetAvailableInputTypes;
-
-class CloseAutofillParent extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", 'closeAutofillParent');
-  }
-
-}
-/**
- * @extends {Message<string|number, CredentialsObject>}
- */
-
-
-exports.CloseAutofillParent = CloseAutofillParent;
-
-class GetAutofillCredentials extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", 'getAutofillCredentials');
-  }
-
-}
-/**
- * @extends {Message<ShowAutofillParentRequest, void>}
- */
-
-
-exports.GetAutofillCredentials = GetAutofillCredentials;
-
-class ShowAutofillParent extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "reqValidator", _validators.default['#/definitions/ShowAutofillParentRequest']);
-
-    _defineProperty(this, "name", 'showAutofillParent');
-  }
-
-}
-/**
- * @extends {Message<null, any>}
- */
-
-
-exports.ShowAutofillParent = ShowAutofillParent;
-
-class GetSelectedCredentials extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", 'getSelectedCredentials');
-  }
-
-}
-/**
- * @extends {Message<DataStorageObject, void>}
- */
-
-
-exports.GetSelectedCredentials = GetSelectedCredentials;
-
-class StoreFormData extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", 'storeFormData');
-
-    _defineProperty(this, "alias", 'storeFormData');
-
-    _defineProperty(this, "reqValidator", _validators.default['#/definitions/StoreFormDataRequest']);
-  }
-
-}
-/**
- * @typedef {StoreFormData} Names2
- */
-
-/**
- * @extends {Message<null, InboundPMData>}
- */
-
-
-exports.StoreFormData = StoreFormData;
-
-class GetAutofillInitData extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", 'getAutofillInitData');
-
-    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAutofillInitDataResponse']);
-  }
-
-}
-/**
- * @extends {Message<GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
- */
-
-
-exports.GetAutofillInitData = GetAutofillInitData;
-
-class GetAutofillData extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", 'getAutofillData');
-
-    _defineProperty(this, "reqValidator", _validators.default['#/definitions/GetAutofillDataRequest']);
-
-    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetAutofillDataResponse']);
-  }
-
-}
-/**
- * @extends {Message<null, import("@duckduckgo/content-scope-scripts").RuntimeConfiguration>}
- */
-
-
-exports.GetAutofillData = GetAutofillData;
-
-class GetRuntimeConfiguration extends _testing.Message {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", 'getRuntimeConfiguration');
-
-    _defineProperty(this, "resValidator", _validators.default['#/definitions/GetRuntimeConfigurationResponse']);
-  }
-
-}
-
-exports.GetRuntimeConfiguration = GetRuntimeConfiguration;
-
-},{"../schema/validators.cjs":59,"./testing":54}],53:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Runtime = void 0;
-exports.createRuntime = createRuntime;
-exports.runtimeResponse = runtimeResponse;
-
-var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
-
-var _messages = require("./messages");
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * The Runtime is the centralised place for dealing with messages.
- *
- * It should validate incoming arguments, as well as outputs.
- *
- * Note: This runtime should not encode information about how to transmit
- * data, that's a job for the provided RuntimeTransport
- */
-class Runtime {
-  /** @type {RuntimeTransport} */
-
-  /**
-   * @param {GlobalConfig} globalConfig
-   * @param {RuntimeTransport} transport
-   */
-  constructor(globalConfig, transport) {
-    _defineProperty(this, "transport", void 0);
-
-    this.globalConfig = globalConfig;
-    this.transport = transport;
-  }
-  /**
-   * @public
-   * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
-   */
-
-
-  async getRuntimeConfiguration() {
-    const data = await new _messages.GetRuntimeConfiguration(null, this.transport).send();
-    const {
-      config,
-      errors
-    } = (0, _contentScopeScripts.tryCreateRuntimeConfiguration)(data);
-
-    if (errors.length) {
-      for (let error of errors) {
-        console.log(error.message, error);
-      }
-
-      throw new Error("".concat(errors.length, " errors prevented global configuration from being created."));
-    }
-
-    return config;
-  }
-  /**
-   * @public
-   * @returns {Promise<AvailableInputTypes>}
-   */
-
-
-  async getAvailableInputTypes() {
-    return new _messages.GetAvailableInputTypes(null, this.transport).send();
-  }
-  /**
-   * @public
-   * @param {GetAutofillDataRequest} input
-   * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
-   */
-
-
-  async getAutofillData(input) {
-    return new _messages.GetAutofillData(input, this.transport).send();
-  }
-  /**
-   * @returns {Promise<InboundPMData>}
-   */
-
-
-  async getAutofillInitData() {
-    return new _messages.GetAutofillInitData(null, this.transport).send();
-  }
-  /**
-   * @public
-   * @param {DataStorageObject} data
-   */
-
-
-  async storeFormData(data) {
-    return new _messages.StoreFormData(data, this.transport).send();
-  }
-  /**
-   * @param {ShowAutofillParentRequest} parentArgs
-   * @returns {Promise<void>}
-   */
-
-
-  async showAutofillParent(parentArgs) {
-    await new _messages.ShowAutofillParent(parentArgs, this.transport).send();
-  }
-  /**
-   * todo(Shane): Schema for this?
-   * @deprecated This was a port from the macOS implementation so the API may not be suitable for all
-   * @returns {Promise<any>}
-   */
-
-
-  async getSelectedCredentials() {
-    return new _messages.GetSelectedCredentials(null, this.transport).send();
-  }
-  /**
-   * @returns {Promise<any>}
-   */
-
-
-  async closeAutofillParent() {
-    await new _messages.CloseAutofillParent(null, this.transport).send();
-  }
-
-}
-/**
- * @param {GlobalConfig} config
- * @param {RuntimeTransport} transport
- * @returns {Runtime}
- */
-
-
-exports.Runtime = Runtime;
-
-function createRuntime(config, transport) {
-  return new Runtime(config, transport);
-}
-/**
- * @param {GenericRuntimeResponse<any>} object
- * @param {string} [name]
- * @param {import("ajv").ValidateFunction} [validator]
- */
-
-
-function runtimeResponse(object, name, validator) {
-  if (!(validator !== null && validator !== void 0 && validator(object))) {
-    return throwError(validator === null || validator === void 0 ? void 0 : validator.errors, name || 'unknown');
-  }
-
-  if ('data' in object) {
-    console.warn('response had `data` property. Please migrate to `success`');
-    return object.data;
-  }
-
-  if ('success' in object) {
-    return object.success;
-  }
-
-  throw new Error('unreachable. Response did not contain `success` or `data`');
-}
-/**
- * @param {import("ajv").ValidateFunction['errors']} errors
- * @param {string} name
- */
-
-
-function throwError(errors, name) {
-  if (errors) {
-    for (let error of errors) {
-      console.error(error.message);
-      console.error(error);
-    }
-  }
-
-  throw new Error('Schema validation errors for ' + name);
-}
-
-},{"./messages":52,"@duckduckgo/content-scope-scripts":1}],54:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Message = void 0;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * @template Req,Res
- */
-class Message {
-  /**
-   * @type {import("ajv").ValidateFunction | null}
-   */
-
-  /**
-   * @type {import("ajv").ValidateFunction | null}
-   */
-
-  /**
-   * String representation of this message's name
-   * @type {string}
-   */
-
-  /** @type {GenericRuntime} */
-
-  /**
-   * @type {Req}
-   */
-
-  /**
-   * @param {Req} data
-   * @param transport
-   */
-  constructor(data, transport) {
-    _defineProperty(this, "reqValidator", null);
-
-    _defineProperty(this, "resValidator", null);
-
-    _defineProperty(this, "name", 'unknown');
-
-    _defineProperty(this, "transport", void 0);
-
-    _defineProperty(this, "data", void 0);
-
-    this.data = this._validate(data, this.reqValidator);
-    this.transport = transport;
-  }
-  /**
-   * @param {any} payload
-   * @param {import("ajv").ValidateFunction | null} validator
-   */
-
-
-  _validate(payload, validator) {
-    if (validator && !(validator !== null && validator !== void 0 && validator(payload))) {
-      this.throwError(validator === null || validator === void 0 ? void 0 : validator['errors']);
-    }
-
-    return payload;
-  }
-  /**
-   * @param {import("ajv").ValidateFunction['errors']} errors
-   */
-
-
-  throwError(errors) {
-    if (errors) {
-      for (let error of errors) {
-        console.error(error.message);
-        console.error(error);
-      }
-    }
-
-    throw new Error('SSSchema validation errors for ' + this.constructor.name);
-  }
-  /**
-   * @param {any} object
-   * @param {import("ajv").ValidateFunction | null} [validator]
-   */
-
-
-  _runtimeResponse(object, validator) {
-    if (validator && !(validator !== null && validator !== void 0 && validator(object))) {
-      return this.throwError(validator === null || validator === void 0 ? void 0 : validator.errors);
-    }
-
-    if ('data' in object) {
-      console.warn('response had `data` property. Please migrate to `success`');
-      return object.data;
-    }
-
-    if ('success' in object) {
-      return object.success;
-    }
-
-    throw new Error('unreachable. Response did not contain `success` or `data`');
-  }
-  /**
-   * @returns {Promise<Res>}
-   */
-
-
-  async send() {
-    let response;
-
-    if (this.data) {
-      response = await this.transport.send(this.name, this.data);
-    } else {
-      response = await this.transport.send(this.name);
-    }
-
-    return this._runtimeResponse(response, this.resValidator);
-  }
-
-}
-
-exports.Message = Message;
-
-},{}],55:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
@@ -11642,7 +11660,7 @@ module.exports={
   ]
 }
 
-},{}],56:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillInitDataResponse",
@@ -11699,7 +11717,7 @@ module.exports={
   ]
 }
 
-},{}],57:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
@@ -11743,7 +11761,7 @@ module.exports={
   ]
 }
 
-},{}],58:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
@@ -11770,7 +11788,7 @@ module.exports={
   ]
 }
 
-},{}],59:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 // @ts-nocheck
 "use strict";
 
@@ -16378,156 +16396,44 @@ function validate35(data) {
   return errors === 0;
 }
 
-},{}],60:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Settings = void 0;
-exports.fromRuntimeConfig = fromRuntimeConfig;
+exports.AndroidSender = void 0;
 
-var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
+var _sender = require("./sender");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _messages = require("../messages/messages");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+class AndroidSender extends _sender.Sender {
+  async handle(msg) {
+    const {
+      data
+    } = msg;
 
-/**
- * A wrapper for Autofill settings
- */
-class Settings {
-  constructor() {
-    _defineProperty(this, "validate", _validators.default['#/definitions/AutofillSettings']);
-
-    _defineProperty(this, "settings", null);
-  }
-
-  /**
-   * Try to convert an object into Autofill Settings.
-   * This will try to validate the keys against the schema
-   *
-   * @throws
-   * @returns {Settings}
-   */
-  from(input) {
-    if (this.validate(input)) {
-      this.settings = input;
-    } else {
-      // @ts-ignore
-      for (const error of this.validate.errors) {
-        console.error(error.message);
-        console.error(error);
-      }
-
-      throw new Error('Could not create settings from global configuration');
+    if (msg instanceof _messages.GetRuntimeConfiguration) {
+      window.BrowserAutofill.getRuntimeConfiguration();
+      return waitForResponse(msg.responseName);
     }
 
-    return this;
-  }
-  /**
-   * @returns {FeatureTogglesSettings}
-   */
-
-
-  get featureToggles() {
-    if (!this.settings) throw new Error('unreachable');
-    return this.settings.featureToggles;
-  }
-  /** @returns {Settings} */
-
-
-  static default() {
-    return new Settings().from({
-      /** @type {FeatureTogglesSettings} */
-      featureToggles: {
-        inputType_credentials: true,
-        inputType_identities: true,
-        inputType_creditCards: true,
-        emailProtection: true,
-        password_generation: true,
-        credentials_saving: true
-      }
-    });
-  }
-
-}
-/**
- * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} config
- * @returns {Settings}
- */
-
-
-exports.Settings = Settings;
-
-function fromRuntimeConfig(config) {
-  const autofillSettings = config.getSettings('autofill');
-  const settings = new Settings().from(autofillSettings);
-  return settings;
-}
-
-},{"../schema/validators.cjs":59}],61:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createTransport = createTransport;
-
-var _responseGetAutofillDataSchema = _interopRequireDefault(require("../schema/response.getAutofillData.schema.json"));
-
-var _responseGetAvailableInputTypesSchema = _interopRequireDefault(require("../schema/response.getAvailableInputTypes.schema.json"));
-
-var _responseGetRuntimeConfigurationSchema = _interopRequireDefault(require("../schema/response.getRuntimeConfiguration.schema.json"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * @param {GlobalConfig} _globalConfig
- * @returns {RuntimeTransport}
- */
-function createTransport(_globalConfig) {
-  return new AndroidTransport();
-}
-/**
- * @implements {RuntimeTransport}
- */
-
-
-class AndroidTransport {
-  /**
-   * @param {keyof RuntimeMessages} name
-   * @param data
-   * @returns {Promise<void|*>}
-   */
-  async send(name, data) {
-    switch (name) {
-      case 'getRuntimeConfiguration':
-        {
-          window.BrowserAutofill.getRuntimeConfiguration();
-          return waitForResponse(_responseGetRuntimeConfigurationSchema.default.properties.type.const);
-        }
-
-      case 'getAvailableInputTypes':
-        {
-          window.BrowserAutofill.getAvailableInputTypes();
-          return waitForResponse(_responseGetAvailableInputTypesSchema.default.properties.type.const);
-        }
-
-      case 'getAutofillData':
-        {
-          window.BrowserAutofill.getAutofillData(JSON.stringify(data));
-          return waitForResponse(_responseGetAutofillDataSchema.default.properties.type.const);
-        }
-
-      case 'storeFormData':
-        {
-          return window.BrowserAutofill.storeFormData(JSON.stringify(data));
-        }
-
-      default:
-        throw new Error('android: not implemented: ' + name);
+    if (msg instanceof _messages.GetAvailableInputTypes) {
+      window.BrowserAutofill.getAvailableInputTypes();
+      return waitForResponse(msg.responseName);
     }
+
+    if (msg instanceof _messages.GetAutofillData) {
+      window.BrowserAutofill.getAutofillData(JSON.stringify(data));
+      return waitForResponse(msg.responseName);
+    }
+
+    if (msg instanceof _messages.StoreFormData) {
+      return window.BrowserAutofill.storeFormData(JSON.stringify(data));
+    }
+
+    throw new Error('android: not implemented: ' + msg.name);
   }
 
 }
@@ -16538,6 +16444,8 @@ class AndroidTransport {
  * @returns {Promise<*>}
  */
 
+
+exports.AndroidSender = AndroidSender;
 
 function waitForResponse(expectedResponse) {
   return new Promise(resolve => {
@@ -16578,48 +16486,60 @@ function waitForResponse(expectedResponse) {
   });
 }
 
-},{"../schema/response.getAutofillData.schema.json":55,"../schema/response.getAvailableInputTypes.schema.json":57,"../schema/response.getRuntimeConfiguration.schema.json":58}],62:[function(require,module,exports){
+},{"../messages/messages":52,"./sender":64}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createLegacyTransport = createLegacyTransport;
-exports.createTransport = createTransport;
+exports.AppleSender = void 0;
+exports.createSender = createSender;
 exports.wkSendAndWait = void 0;
 
 var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
+
+var _sender = require("./sender");
+
+var _messages = require("../messages/messages");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/**
- * @implements {RuntimeTransport}
- */
-class AppleTransport {
+class AppleSender extends _sender.Sender {
   /** @type {GlobalConfig} */
 
   /** @param {GlobalConfig} globalConfig */
   constructor(globalConfig) {
+    super();
+
     _defineProperty(this, "config", void 0);
 
     this.config = globalConfig;
   }
 
-  async send(name, data) {
-    try {
-      if (name === "getAutofillCredentials") {
-        name = "pmHandlerGetAutofillCredentials";
-      }
+  async handle(msg) {
+    let {
+      name,
+      data
+    } = msg;
 
-      const response = await wkSendAndWait(name, data, {
+    try {
+      if (name === 'getAutofillCredentials') {
+        name = 'pmHandlerGetAutofillCredentials';
+      } // todo(Shane): better way to handle this?
+
+
+      if (data === null) data = undefined;
+      let response = await wkSendAndWait(name, data, {
         secret: this.config.secret,
         hasModernWebkitAPI: this.config.hasModernWebkitAPI
-      }); // todo(Shane): make this applicable in more places, not tied to the apple implementation.
+      }); // todo(Shane): Better way to handle this - per message?
 
-      if (middlewares[name]) {
-        return middlewares[name](response, data);
+      if (response && !('success' in response) && !('error' in response)) {
+        return {
+          success: response
+        };
       }
 
       return response;
@@ -16628,7 +16548,7 @@ class AppleTransport {
         if (name in interceptions) {
           var _interceptions$name;
 
-          console.log('--> faling back to: ', name, data);
+          console.log('--> falling back to: ', name, data);
           return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, this.config);
         } else {
           throw new Error('unimplemented handler: ' + name);
@@ -16648,70 +16568,33 @@ class AppleTransport {
  */
 
 
-function createTransport(config) {
-  return new AppleTransport(config);
+exports.AppleSender = AppleSender;
+
+function createSender(config) {
+  return new AppleSender(config);
 }
-/**
- * @returns {LegacyTransport}
- */
-
-
-function createLegacyTransport(config) {
-  const transport = createTransport(config);
-  /** @type {LegacyTransport} */
-
-  const loggingTransport = {
-    async send(name, data) {
-      console.log("\uD83D\uDE48 LegacyTransport: ".concat(JSON.stringify(name)), data);
-      const res = await transport.send(name, data);
-      console.log("\t \uD83D\uDE48 LegacyTransport::Response ".concat(JSON.stringify(name)), JSON.stringify(res));
-      return res;
-    }
-
-  };
-  return loggingTransport;
-}
-/**
- *
- * @type {Middlewares}
- */
-
-
-const middlewares = {
-  getAutofillData: async data => {
-    const cloned = JSON.parse(JSON.stringify(data.success));
-
-    if ('id' in cloned) {
-      if (typeof cloned.id === 'number') {
-        console.warn("updated the credentials' id field as it was a number, but should be a string");
-        cloned.id = String(cloned.id);
-      }
-    }
-
-    return {
-      success: cloned
-    };
-  }
-};
 /**
  * @type {Interceptions}
  */
 
+
 const interceptions = {
   'getAutofillInitData': async globalConfig => {
-    var _data$success;
+    const sender = createSender(globalConfig); // mimic the old message
 
-    const legacyTransport = createLegacyTransport(globalConfig);
-    const data = await legacyTransport.send('pmHandlerGetAutofillInitData'); // todo(Shane): Fix this problem with ids with native team
+    const msg = new _messages.LegacyMessage();
+    msg.name = 'pmHandlerGetAutofillInitData'; // get the response
 
-    (_data$success = data.success) === null || _data$success === void 0 ? void 0 : _data$success.credentials.forEach(cred => {
+    const response = await sender.send(msg); // update items to fix `id` field
+
+    response.credentials.forEach(cred => {
       cred.id = String(cred.id);
     });
     return {
       success: {
         // default, allowing it to be overriden
         serializedInputContext: '{}',
-        ...data.success
+        ...response
       }
     };
   },
@@ -16722,10 +16605,11 @@ const interceptions = {
    * @param globalConfig
    */
   'getAvailableInputTypes': async globalConfig => {
-    const legacyTransport = createLegacyTransport(globalConfig);
+    const legacySender = createSender(globalConfig);
+    const message = new _messages.EmailSignedIn();
     const {
       isAppSignedIn
-    } = await legacyTransport.send('emailHandlerCheckAppSignedInStatus');
+    } = await legacySender.send(message);
     /** @type {AvailableInputTypes} */
 
     const legacyMacOsTypes = {
@@ -16917,7 +16801,7 @@ const decrypt = async (ciphertext, key, iv) => {
   return dec.decode(decrypted);
 };
 
-},{"./captureDdgGlobals":63}],63:[function(require,module,exports){
+},{"../messages/messages":52,"./captureDdgGlobals":61,"./sender":64}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16948,30 +16832,115 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],64:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.createSender = createSender;
+
+var _apple = require("./apple.sender");
+
+var _android = require("./android.sender");
+
+var _windows = require("./windows.sender");
+
+var _extension = require("./extension.sender");
+
+var _sender = require("./sender");
+
+/**
+ * We have to decide on a sender, *before* we have a 'tooltipHandler'.
+ *
+ * This is because an initial message to retrieve the platform configuration might be needed
+ *
+ * @param {GlobalConfig} globalConfig
+ * @returns {import("./sender").Sender}
+ */
+function createSender(globalConfig) {
+  const sender = selectSender(globalConfig);
+
+  if (globalConfig.isDDGTestMode) {
+    return new _sender.LoggingSender(sender);
+  }
+
+  return sender;
+}
+/**
+ * The runtime has to decide on a transport, *before* we have a 'tooltipHandler'.
+ *
+ * This is because an initial message to retrieve the platform configuration might be needed
+ *
+ * @param {GlobalConfig} globalConfig
+ * @returns {import("./sender").Sender}
+ */
+
+
+function selectSender(globalConfig) {
+  var _globalConfig$userPre, _globalConfig$userPre2, _globalConfig$userPre3, _globalConfig$userPre4;
+
+  // On some platforms, things like `platform.name` are embedded into the script
+  // and therefor may be immediately available.
+  if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) === 'string') {
+    switch ((_globalConfig$userPre3 = globalConfig.userPreferences) === null || _globalConfig$userPre3 === void 0 ? void 0 : (_globalConfig$userPre4 = _globalConfig$userPre3.platform) === null || _globalConfig$userPre4 === void 0 ? void 0 : _globalConfig$userPre4.name) {
+      case 'ios':
+      case 'macos':
+        return new _apple.AppleSender(globalConfig);
+
+      default:
+        throw new Error('selectSender unimplemented!');
+    }
+  }
+
+  if (globalConfig.isDDGApp) {
+    if (globalConfig.isAndroid) {
+      return new _android.AndroidSender();
+    }
+
+    console.warn('should never get here...');
+    return new _apple.AppleSender(globalConfig);
+  }
+
+  if (globalConfig.isWindows) {
+    return (0, _windows.createWindowsSender)();
+  } // falls back to extension... is this still the best way to determine this?
+
+
+  return new _extension.ExtensionSender(globalConfig);
+}
+
+},{"./android.sender":59,"./apple.sender":60,"./extension.sender":63,"./sender":64,"./windows.sender":65}],63:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ExtensionSender = void 0;
 exports.createTransport = createTransport;
+
+var _sender = require("./sender");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/**
- * @implements {RuntimeTransport}
- */
-class ExtensionTransport {
+class ExtensionSender extends _sender.Sender {
   /** @type {GlobalConfig} */
 
   /** @param {GlobalConfig} globalConfig */
   constructor(globalConfig) {
+    super();
+
     _defineProperty(this, "config", void 0);
 
     this.config = globalConfig;
   }
 
-  async send(name, data) {
+  async handle(msg) {
+    const {
+      name,
+      data
+    } = msg;
+
     try {
       const result = await sendToExtension(name);
       return result;
@@ -16994,12 +16963,14 @@ class ExtensionTransport {
 }
 /**
  * @param {GlobalConfig} globalConfig
- * @returns {RuntimeTransport}
+ * @returns {Sender}
  */
 
 
+exports.ExtensionSender = ExtensionSender;
+
 function createTransport(globalConfig) {
-  return new ExtensionTransport(globalConfig);
+  return new ExtensionSender(globalConfig);
 }
 
 class MissingExtensionHandler extends Error {
@@ -17056,7 +17027,7 @@ const interceptions = {
    */
   'getRuntimeConfiguration': async globalConfig => {
     /**
-     * @type {FeatureTogglesSettings}
+     * @type {FeatureToggles}
      */
     const featureToggles = {
       'inputType_credentials': false,
@@ -17100,94 +17071,109 @@ const interceptions = {
   }
 };
 
+},{"./sender":64}],64:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Sender = exports.LoggingSender = void 0;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * This is the base Sender class that platforms can will implement.
+ *
+ * Note: The 'handle' method must be implemented, unless you also implement 'send'
+ */
+class Sender {
+  /**
+   * Try to send a message. Throws with validation errors
+   *
+   * @throws {SchemaValidationError}
+   * @template Request,Response
+   * @param {import("../messages/message").Message<Request, Response>} message
+   * @returns {Promise<ReturnType<import("../messages/message").Message<Request, Response>['validateResponse']>>}
+   */
+  async send(message) {
+    message.validateRequest();
+    let response = await this.handle(message);
+    let processed = message.preResponseValidation(response);
+    return message.validateResponse(processed);
+  }
+  /**
+   * @template Request,Response
+   * @param {import("../messages/message").Message<Request, Response>} message
+   * @returns {Promise<Response | undefined>}
+   */
+
+
+  async handle(message) {
+    throw new Error('must implement `.handle`, message: ' + message.name);
+  }
+
+}
+/**
+ *
+ */
+
+
+exports.Sender = Sender;
+
+class LoggingSender extends Sender {
+  constructor(sender) {
+    super();
+
+    _defineProperty(this, "sender", void 0);
+
+    this.sender = sender;
+  }
+
+  async handle(message) {
+    LoggingSender.printOutgoing(message);
+    const value = await this.sender.handle(message);
+    LoggingSender.printIncoming(message, value);
+    return value;
+  }
+  /**
+   * @param {import("../messages/message").Message} message
+   */
+
+
+  static printOutgoing(message) {
+    if (message.data) {
+      if (typeof message.data === 'string') {
+        return console.log('✈️', message.name, message.data);
+      } else {
+        return console.log("\u2708", message.name, JSON.stringify(message.data));
+      }
+    }
+
+    console.log('✈️', message.name);
+  }
+  /**
+   * @param {import("../messages/message").Message} message
+   * @param {any} value
+   */
+
+
+  static printIncoming(message, value) {
+    console.log("\uD83D\uDCE5", message.name, JSON.stringify(value, null, 2));
+  }
+
+}
+
+exports.LoggingSender = LoggingSender;
+
 },{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createLoggingTransport = createLoggingTransport;
-exports.createRuntimeTransport = createRuntimeTransport;
+exports.createWindowsSender = createWindowsSender;
 
-var _apple = require("./apple.transport");
-
-var _android = require("./android.transport");
-
-var _windows = require("./windows.transport");
-
-var _extension = require("./extension.transport");
-
-/**
- * The runtime has to decide on a transport, *before* we have a 'tooltipHandler'.
- *
- * This is because an initial message to retrieve the platform configuration might be needed
- *
- * @param {GlobalConfig} globalConfig
- * @returns {RuntimeTransport}
- */
-function createRuntimeTransport(globalConfig) {
-  var _globalConfig$userPre, _globalConfig$userPre2, _globalConfig$userPre3, _globalConfig$userPre4;
-
-  // On some platforms, things like `platform.name` are embedded into the script
-  // and therefor may be immediately available.
-  if (typeof ((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : (_globalConfig$userPre2 = _globalConfig$userPre.platform) === null || _globalConfig$userPre2 === void 0 ? void 0 : _globalConfig$userPre2.name) === 'string') {
-    switch ((_globalConfig$userPre3 = globalConfig.userPreferences) === null || _globalConfig$userPre3 === void 0 ? void 0 : (_globalConfig$userPre4 = _globalConfig$userPre3.platform) === null || _globalConfig$userPre4 === void 0 ? void 0 : _globalConfig$userPre4.name) {
-      case 'ios':
-        return (0, _apple.createTransport)(globalConfig);
-
-      case 'macos':
-        return (0, _apple.createTransport)(globalConfig);
-
-      default:
-        throw new Error('selectTransport unimplemented!');
-    }
-  }
-
-  if (globalConfig.isDDGApp) {
-    if (globalConfig.isAndroid) {
-      return (0, _android.createTransport)(globalConfig);
-    }
-
-    console.warn('should never get here...');
-    return (0, _apple.createTransport)(globalConfig);
-  }
-
-  if (globalConfig.isWindows) {
-    return (0, _windows.createTransport)(globalConfig);
-  } // falls back to extension... is this still the best way to determine this?
-
-
-  return (0, _extension.createTransport)(globalConfig);
-}
-/**
- * @param {GlobalConfig} config
- * @returns {BaseTransport<any>}
- */
-
-
-function createLoggingTransport(config) {
-  const transport = createRuntimeTransport(config);
-  /** @type {RuntimeTransport} */
-
-  const loggingTransport = {
-    async send(name, data) {
-      console.log("RuntimeTransport: ".concat(name), data);
-      const res = await transport.send(name, data);
-      console.log("\tRuntimeTransport::Response ".concat(name), res);
-      return res;
-    }
-
-  };
-  return loggingTransport;
-}
-
-},{"./android.transport":61,"./apple.transport":62,"./extension.transport":64,"./windows.transport":66}],66:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createTransport = createTransport;
+var _sender = require("./sender");
 
 var _responseGetAutofillInitDataSchema = _interopRequireDefault(require("../schema/response.getAutofillInitData.schema.json"));
 
@@ -17198,12 +17184,13 @@ var _responseGetRuntimeConfigurationSchema = _interopRequireDefault(require("../
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import getAutofillData from '../schema/response.getAutofillData.schema.json'
+class WindowsSender extends _sender.Sender {
+  async handle(message) {
+    const {
+      name,
+      data
+    } = message;
 
-/**
- * @implements {RuntimeTransport}
- */
-class WindowsTransport {
-  async send(name, data) {
     switch (name) {
       case 'getRuntimeConfiguration':
         {
@@ -17222,7 +17209,8 @@ class WindowsTransport {
 
       case 'storeFormData':
         {
-          return windowsTransport('storeFormData', data);
+          windowsTransport('storeFormData', data);
+          break;
         }
 
       case 'getAutofillCredentials':
@@ -17237,14 +17225,9 @@ class WindowsTransport {
   }
 
 }
-/**
- * @param {GlobalConfig} _globalConfig
- * @returns {RuntimeTransport}
- */
 
-
-function createTransport(_globalConfig) {
-  return new WindowsTransport();
+function createWindowsSender() {
+  return new WindowsSender();
 }
 /**
  * @param {Names} name
@@ -17298,4 +17281,92 @@ function windowsTransport(name, data) {
   };
 }
 
-},{"../schema/response.getAutofillInitData.schema.json":56,"../schema/response.getAvailableInputTypes.schema.json":57,"../schema/response.getRuntimeConfiguration.schema.json":58}]},{},[48]);
+},{"../schema/response.getAutofillInitData.schema.json":55,"../schema/response.getAvailableInputTypes.schema.json":56,"../schema/response.getRuntimeConfiguration.schema.json":57,"./sender":64}],66:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Settings = void 0;
+exports.fromRuntimeConfig = fromRuntimeConfig;
+
+var _validators = _interopRequireDefault(require("../schema/validators.cjs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * A wrapper for Autofill settings
+ */
+class Settings {
+  constructor() {
+    _defineProperty(this, "validate", _validators.default['#/definitions/AutofillSettings']);
+
+    _defineProperty(this, "settings", null);
+  }
+
+  /**
+   * Try to convert an object into Autofill Settings.
+   * This will try to validate the keys against the schema
+   *
+   * @throws
+   * @returns {Settings}
+   */
+  from(input) {
+    if (this.validate(input)) {
+      this.settings = input;
+    } else {
+      // @ts-ignore
+      for (const error of this.validate.errors) {
+        console.error(error.message);
+        console.error(error);
+      }
+
+      throw new Error('Could not create settings from global configuration');
+    }
+
+    return this;
+  }
+  /**
+   * @returns {FeatureToggles}
+   */
+
+
+  get featureToggles() {
+    if (!this.settings) throw new Error('unreachable');
+    return this.settings.featureToggles;
+  }
+  /** @returns {Settings} */
+
+
+  static default() {
+    return new Settings().from({
+      /** @type {FeatureToggles} */
+      featureToggles: {
+        inputType_credentials: true,
+        inputType_identities: true,
+        inputType_creditCards: true,
+        emailProtection: true,
+        password_generation: true,
+        credentials_saving: true
+      }
+    });
+  }
+
+}
+/**
+ * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} config
+ * @returns {Settings}
+ */
+
+
+exports.Settings = Settings;
+
+function fromRuntimeConfig(config) {
+  const autofillSettings = config.getSettings('autofill');
+  const settings = new Settings().from(autofillSettings);
+  return settings;
+}
+
+},{"../schema/validators.cjs":58}]},{},[48]);
