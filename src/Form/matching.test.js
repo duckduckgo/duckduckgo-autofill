@@ -71,9 +71,7 @@ describe('matching', () => {
     it('default config', () => {
         const matching = new Matching(Matching.emptyConfig)
         const {formElement, inputs} = setFormHtml(`<input name=email />`)
-        const actual = matching.inferInputType(inputs[0], formElement, {
-            isLogin: false,
-        })
+        const actual = matching.inferInputType(inputs[0], formElement)
         expect(actual).toBe('unknown')
     })
     it.each([
@@ -123,9 +121,7 @@ describe('matching', () => {
         const { formElement, inputs } = setFormHtml(html)
 
         const matching = createMatching()
-        const inferred = matching.inferInputType(inputs[0], formElement, {
-            isLogin: false,
-        })
+        const inferred = matching.inferInputType(inputs[0], formElement)
         expect(inferred).toBe(subtype)
     })
     it('should not continue past a ddg-matcher that has a "not" regex', () => {
@@ -168,9 +164,7 @@ describe('matching', () => {
                 }
             }
         })
-        const asEmail = matching.inferInputType(inputs[0], formElement, {
-            isLogin: false,
-        })
+        const asEmail = matching.inferInputType(inputs[0], formElement)
         /**
          * This should be 'unknown' because the negated 'search' regex in teh ddg-matcher should prevent
          * further strategies like the following vendor one
