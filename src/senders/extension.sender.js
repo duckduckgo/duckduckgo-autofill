@@ -1,14 +1,15 @@
-/**
- * @implements {RuntimeTransport}
- */
-class ExtensionTransport {
+import {Sender} from './sender'
+
+export class ExtensionSender extends Sender {
     /** @type {GlobalConfig} */
     config
     /** @param {GlobalConfig} globalConfig */
     constructor (globalConfig) {
+        super()
         this.config = globalConfig
     }
-    async send (name, data) {
+    async handle (msg) {
+        const { name, data } = msg;
         try {
             const result = await sendToExtension(name)
             return result
@@ -29,10 +30,10 @@ class ExtensionTransport {
 
 /**
  * @param {GlobalConfig} globalConfig
- * @returns {RuntimeTransport}
+ * @returns {Sender}
  */
 export function createTransport (globalConfig) {
-    return new ExtensionTransport(globalConfig)
+    return new ExtensionSender(globalConfig)
 }
 
 class MissingExtensionHandler extends Error {
@@ -84,7 +85,7 @@ const interceptions = {
      */
     'getRuntimeConfiguration': async (globalConfig) => {
         /**
-         * @type {FeatureTogglesSettings}
+         * @type {FeatureToggles}
          */
         const featureToggles = {
             'inputType_credentials': false,

@@ -7,23 +7,13 @@ import {getInputType, getMainTypeFromType, getSubtypeFromType} from '../Form/mat
  * @implements {TooltipInterface}
  */
 export class NativeTooltip {
-    /** @type {import('../runtime/runtime').Runtime} */
-    runtime
-
-    /**
-     * @param {import('../runtime/runtime').Runtime} runtime
-     */
-    constructor (runtime) {
-        this.runtime = runtime
-    }
-
     /**
      * To 'attach' on iOS/Android is to ask the runtime for autofill data - this
      * will eventually cause the native overlays to show
      * @param args
      */
     attach (args) {
-        const {form, input} = args
+        const {form, input, device} = args
         const inputType = getInputType(input)
         const mainType = getMainTypeFromType(inputType)
 
@@ -39,7 +29,7 @@ export class NativeTooltip {
             mainType,
             subType
         }
-        this.runtime.getAutofillData(payload)
+        device.getAutofillData(payload)
             .then(resp => {
                 console.log('Autofilling...', resp, mainType)
                 form.autofillData(resp, mainType)

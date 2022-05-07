@@ -1,23 +1,17 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import {formatDuckAddress} from '../autofill-utils'
-// import {fromPlatformConfig} from '../settings/settings'
 import {CSS_STYLES} from '../UI/styles/styles'
-import {createLegacyTransport} from '../transports/apple.transport'
+import {createLegacyMessage} from '../messages/message'
 
 /**
  * todo(Shane): Decide which data is/isn't needed when apple is inside overlay
  */
 class AppleOverlayDeviceInterface extends InterfacePrototype {
-    /**
-     * @deprecated use the runtime only.
-     * @type {LegacyTransport}
-     */
-    legacyTransport = createLegacyTransport(this.globalConfig)
 
     stripCredentials = false;
 
     async setupAutofill () {
-        const response = await this.runtime.getAutofillInitData()
+        const response = await this.getAutofillInitData()
         this.storeLocalData(response)
 
         const signedIn = this.availableInputTypes.email
@@ -67,19 +61,19 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
     }
 
     getUserData () {
-        return this.legacyTransport.send('emailHandlerGetUserData')
+        return this.sender.send(createLegacyMessage('emailHandlerGetUserData'))
     }
 
     async getAddresses () {
         if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await this.legacyTransport.send('emailHandlerGetAddresses')
+        const {addresses} = await this.sender.send(createLegacyMessage('emailHandlerGetAddresses'))
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
     async refreshAlias () {
-        await this.legacyTransport.send('emailHandlerRefreshAlias')
+        await this.sender.send(createLegacyMessage('emailHandlerRefreshAlias'))
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
@@ -87,16 +81,16 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
     async setSize (cb) {
         const details = cb()
         // todo(Shane): Upgrade to new runtime
-        await this.legacyTransport.send('setSize', details)
+        await this.sender.send(createLegacyMessage('setSize', details))
     }
 
     async removeTooltip () {
         console.log('AppleOverlayDeviceInterface', 'closeAutofillParent')
-        await this.runtime.closeAutofillParent()
+        await this.closeAutofillParent()
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.legacyTransport.send('emailHandlerStoreToken', {token, username: userName, cohort})
+        return this.sender.send(createLegacyMessage('emailHandlerStoreToken', {token, username: userName, cohort}))
     }
 
     /**
@@ -109,14 +103,14 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
      * @deprecated
      */
     storeCredentials (credentials) {
-        return this.legacyTransport.send('pmHandlerStoreCredentials', credentials)
+        return this.sender.send(createLegacyMessage('pmHandlerStoreCredentials', credentials))
     }
 
     /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {
-        return this.legacyTransport.send('pmHandlerOpenManagePasswords')
+        return this.sender.send(createLegacyMessage('pmHandlerOpenManagePasswords'))
     }
 
     /**
@@ -135,7 +129,7 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.legacyTransport.send('pmHandlerGetCreditCard', {id})
+        return this.sender.send(createLegacyMessage('pmHandlerGetCreditCard', {id}))
     }
 
     // Used to encode data to send back to the child autofill
@@ -145,7 +139,7 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
         })
         const data = Object.fromEntries(detailsEntries)
         // todo(Shane): Migrate
-        await this.legacyTransport.send('selectedDetail', {data, configType})
+        await this.sender.send(createLegacyMessage('selectedDetail', {data, configType}))
     }
 
     async getCurrentInputType () {
@@ -154,12 +148,11 @@ class AppleOverlayDeviceInterface extends InterfacePrototype {
     }
 
     async getAlias () {
-        const {alias} = await this.legacyTransport.send(
-            'emailHandlerGetAlias',
+        const {alias} = await this.sender.send(createLegacyMessage('emailHandlerGetAlias',
             {
                 requiresUserPermission: !this.globalConfig.isApp,
                 shouldConsumeAliasIfProvided: !this.globalConfig.isApp
-            }
+            })
         )
         return formatDuckAddress(alias)
     }

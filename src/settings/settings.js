@@ -32,7 +32,7 @@ class Settings {
     }
 
     /**
-     * @returns {FeatureTogglesSettings}
+     * @returns {FeatureToggles}
      */
     get featureToggles () {
         if (!this.settings) throw new Error('unreachable')
@@ -42,7 +42,7 @@ class Settings {
     /** @returns {Settings} */
     static default () {
         return new Settings().from({
-            /** @type {FeatureTogglesSettings} */
+            /** @type {FeatureToggles} */
             featureToggles: {
                 inputType_credentials: true,
                 inputType_identities: true,

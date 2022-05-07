@@ -1,15 +1,15 @@
 // Polyfills/shims
 import './requestIdleCallback'
-import './transports/captureDdgGlobals'
+import './senders/captureDdgGlobals'
 import {createDevice} from './DeviceInterface'
 import {createGlobalConfig} from './config'
-import {createRuntime} from './runtime/runtime'
 import {featureToggleAwareInputTypes} from './InputTypes/input-types'
 import {createTooltip} from './UI/tooltips'
 import {fromRuntimeConfig} from './settings/settings'
-import {createLoggingTransport} from './transports/transport'
-import {GetAvailableInputTypes, GetRuntimeConfiguration} from './runtime/messages'
 import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
+import {GetAvailableInputTypes, GetRuntimeConfiguration} from './messages/messages'
+import {createSender} from './senders/apple.sender'
+import { Sender } from './senders/sender'
 
 (async () => {
     if (!window.isSecureContext) return false
@@ -23,13 +23,10 @@ import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
         // Transport is needed very early because we may need to fetch initial configuration, before any
         // autofill logic can run...
-        const transport = createLoggingTransport(globalConfig)
-
-        // Create the runtime, this does a best-guesses job of determining where we're running.
-        const runtime = createRuntime(globalConfig, transport)
+        const sender = createSender(globalConfig)
 
         // Get runtime configuration - this may include messaging
-        const runtimeConfiguration = await getRuntimeConfiguration();
+        const runtimeConfiguration = await getRuntimeConfiguration(sender);
 
         // Autofill settings need to be derived from runtime config
         const autofillSettings = fromRuntimeConfig(runtimeConfiguration)
@@ -42,12 +39,11 @@ import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
         // If it was enabled, try to ask for available input types
         if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
             // Determine the tooltipHandler type
-            const tooltip = createTooltip(runtime, globalConfig, runtimeConfiguration, autofillSettings)
-
-            const runtimeAvailableInputTypes = await new GetAvailableInputTypes(null, transport).send()
+            const tooltip = createTooltip(globalConfig, runtimeConfiguration, autofillSettings)
+            const runtimeAvailableInputTypes = await sender.send(new GetAvailableInputTypes(null))
             const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles)
 
-            const device = createDevice(inputTypes, runtime, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
+            const device = createDevice(inputTypes, sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
 
             // This is a workaround for the previous design, we should refactor if possible
             tooltip.setDevice?.(device)
@@ -65,10 +61,11 @@ import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 
 /**
  * @public
+ * @param {Sender} sender
  * @returns {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration}
  */
-async function getRuntimeConfiguration() {
-    const data = await new GetRuntimeConfiguration(null, this.transport).send()
+async function getRuntimeConfiguration(sender) {
+    const data = await sender.send(new GetRuntimeConfiguration(null));
     const {config, errors} = tryCreateRuntimeConfiguration(data)
 
     if (errors.length) {

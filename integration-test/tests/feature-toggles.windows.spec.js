@@ -79,7 +79,7 @@ test.describe('windows', () => {
         const pageWrapper = loginAndSignup(page, server)
         await pageWrapper.navigate()
 
-        /** @type {Partial<FeatureTogglesSettings>} */
+        /** @type {Partial<FeatureToggles>} */
         const featureToggles = {
             'inputType_credentials': false
         }

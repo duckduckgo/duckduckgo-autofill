@@ -88,7 +88,7 @@ test.describe('Save prompts', () => {
             const login = loginPage(page, server)
             await login.navigate()
 
-            /** @type {Partial<FeatureTogglesSettings>} */
+            /** @type {Partial<FeatureToggles>} */
             const toggles = {
                 credentials_saving: false
             }

@@ -34,7 +34,7 @@ export function createAndroidMocks () {
                 features: {
                     autofill: {
                         settings: {
-                            /** @type {FeatureTogglesSettings} */
+                            /** @type {FeatureToggles} */
                             featureToggles: {
                                 inputType_credentials: true,
                                 inputType_identities: false,

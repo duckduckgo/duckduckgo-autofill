@@ -1,6 +1,6 @@
 /**
  * @param {object} [overrides]
- * @param {Partial<FeatureTogglesSettings>} [overrides.featureToggles]
+ * @param {Partial<FeatureToggles>} [overrides.featureToggles]
  */
 export const iosContentScopeReplacements = (overrides = {}) => {
     return {
@@ -37,7 +37,7 @@ export const iosContentScopeReplacements = (overrides = {}) => {
 }
 /**
  * @param {object} [overrides]
- * @param {Partial<FeatureTogglesSettings>} [overrides.featureToggles]
+ * @param {Partial<FeatureToggles>} [overrides.featureToggles]
  */
 export const macosContentScopeReplacements = (overrides = {}) => {
     return {

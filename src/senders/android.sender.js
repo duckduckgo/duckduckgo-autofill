@@ -1,24 +1,11 @@
 import getAutofillData from '../schema/response.getAutofillData.schema.json'
 import getAvailableInputTypes from '../schema/response.getAvailableInputTypes.schema.json'
 import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.schema.json'
-/**
- * @param {GlobalConfig} _globalConfig
- * @returns {RuntimeTransport}
- */
-export function createTransport (_globalConfig) {
-    return new AndroidTransport()
-}
+import {Sender} from './sender'
 
-/**
- * @implements {RuntimeTransport}
- */
-class AndroidTransport {
-    /**
-     * @param {keyof RuntimeMessages} name
-     * @param data
-     * @returns {Promise<void|*>}
-     */
-    async send (name, data) {
+export class AndroidSender extends Sender {
+    async handle (msg) {
+        const { data, name } = msg;
         switch (name) {
         case 'getRuntimeConfiguration': {
             window.BrowserAutofill.getRuntimeConfiguration()

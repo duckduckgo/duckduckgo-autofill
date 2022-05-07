@@ -6,9 +6,6 @@
  * @implements {TooltipInterface}
  */
 export class OverlayControllerTooltip {
-    /** @type {import('../runtime/runtime').Runtime} */
-    runtime
-
     /** @type {import('../UI/Tooltip.js').Tooltip | null} */
     _activeTooltip = null
 
@@ -23,13 +20,6 @@ export class OverlayControllerTooltip {
 
     _listenerFactories = []
     _listenerCleanups = []
-
-    /**
-     * @param {import('../runtime/runtime').Runtime} runtime
-     */
-    constructor (runtime) {
-        this.runtime = runtime
-    }
 
     attach (args) {
         if (this.#state !== 'idle') {
@@ -108,8 +98,10 @@ export class OverlayControllerTooltip {
             serializedInputContext: JSON.stringify(data)
         }
 
+        if (!this._device) throw new Error('unreachable')
+
         try {
-            await this.runtime.showAutofillParent(details)
+            await this._device.showAutofillParent(details)
             this.#state = 'parentShown'
             this.#attachListeners()
         } catch (e) {
@@ -174,7 +166,7 @@ export class OverlayControllerTooltip {
         // @ts-ignore
         clearTimeout(this.pollingTimeout)
 
-        const response = await this.runtime.getSelectedCredentials()
+        const response = await this._device?.getSelectedCredentials()
         switch (response.type) {
         case 'none':
             // Parent hasn't got a selected credential yet
@@ -196,8 +188,10 @@ export class OverlayControllerTooltip {
         if (this.#state === 'removingParent') return
         if (this.#state === 'idle') return
 
+        if (!this._device) throw new Error('unreachable');
+
         this.#state = 'removingParent'
-        await this.runtime.closeAutofillParent()
+        await this._device?.closeAutofillParent()
             .catch(e => console.error('Could not close parent', e))
 
         this.#state = 'idle'

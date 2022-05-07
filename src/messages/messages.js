@@ -1,4 +1,4 @@
-import {Message} from './testing'
+import {Message} from './message'
 import validators from '../schema/validators.cjs'
 
 /**
@@ -6,7 +6,6 @@ import validators from '../schema/validators.cjs'
  */
 export class GetAvailableInputTypes extends Message {
     name = 'getAvailableInputTypes'
-    // @ts-ignore
     resValidator = validators['#/definitions/GetAvailableInputTypesResponse']
 }
 
@@ -38,6 +37,13 @@ export class ShowAutofillParent extends Message {
  */
 export class GetSelectedCredentials extends Message {
     name = 'getSelectedCredentials'
+}
+
+/**
+ * @extends {Message<null, {name: string}>}
+ */
+export class Shane extends Message {
+
 }
 
 /**

@@ -74,7 +74,7 @@ export function createWindowsMocks () {
             return this
         },
         /**
-          * @param {FeatureTogglesSettings} featureToggles
+          * @param {FeatureToggles} featureToggles
          */
         withFeatureToggles (featureToggles) {
             Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles)

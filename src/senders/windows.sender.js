@@ -2,12 +2,11 @@
 import getAutofillInitDataResponse from '../schema/response.getAutofillInitData.schema.json'
 import getAvailableInputTypes from '../schema/response.getAvailableInputTypes.schema.json'
 import getRuntimeConfiguration from '../schema/response.getRuntimeConfiguration.schema.json'
+import {Sender} from './sender'
 
-/**
- * @implements {RuntimeTransport}
- */
-class WindowsTransport {
-    async send (name, data) {
+export class WindowsSender extends Sender {
+    async handle (message) {
+        const { name, data } = message;
         switch (name) {
         case 'getRuntimeConfiguration': {
             return windowsTransport(name)
@@ -32,14 +31,6 @@ class WindowsTransport {
         default: throw new Error('windows: not implemented: ' + name)
         }
     }
-}
-
-/**
- * @param {GlobalConfig} _globalConfig
- * @returns {RuntimeTransport}
- */
-export function createTransport (_globalConfig) {
-    return new WindowsTransport()
 }
 
 /**

@@ -1,22 +1,16 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import {formatDuckAddress} from '../autofill-utils'
-// import {fromPlatformConfig} from '../settings/settings'
 import {CSS_STYLES} from '../UI/styles/styles'
-import {createLegacyTransport} from '../transports/apple.transport'
+import {createLegacyMessage} from '../messages/message'
 
 class AppleDeviceInterface extends InterfacePrototype {
-    /**
-     * @deprecated use the runtime only.
-     * @type {LegacyTransport}
-     */
-    legacyTransport = createLegacyTransport(this.globalConfig)
 
     /** @override */
     initialSetupDelayMs = 300
 
     async setupAutofill () {
         if (this.globalConfig.isApp) {
-            const response = await this.runtime.getAutofillInitData()
+            const response = await this.getAutofillInitData()
             this.storeLocalData(response)
         }
 
@@ -38,25 +32,25 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     getUserData () {
-        return this.legacyTransport.send('emailHandlerGetUserData')
+        return this.sender.send(createLegacyMessage('emailHandlerGetUserData'))
     }
 
     async getAddresses () {
         if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await this.legacyTransport.send('emailHandlerGetAddresses')
+        const {addresses} = await this.sender.send(createLegacyMessage('emailHandlerGetAddresses'))
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
     async refreshAlias () {
-        await this.legacyTransport.send('emailHandlerRefreshAlias')
+        await this.sender.send(createLegacyMessage('emailHandlerRefreshAlias'))
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.legacyTransport.send('emailHandlerStoreToken', {token, username: userName, cohort})
+        return this.sender.send(createLegacyMessage('emailHandlerStoreToken', {token, username: userName, cohort}))
     }
 
     /**
@@ -69,28 +63,28 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @deprecated
      */
     storeCredentials (credentials) {
-        return this.legacyTransport.send('pmHandlerStoreCredentials', credentials)
+        return this.sender.send(createLegacyMessage('pmHandlerStoreCredentials', credentials))
     }
 
     /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {
-        return this.legacyTransport.send('pmHandlerOpenManagePasswords')
+        return this.sender.send(createLegacyMessage('pmHandlerOpenManagePasswords'))
     }
 
     /**
      * Opens the native UI for managing identities
      */
     openManageIdentities () {
-        return this.legacyTransport.send('pmHandlerOpenManageIdentities')
+        return this.sender.send(createLegacyMessage('pmHandlerOpenManageIdentities'))
     }
 
     /**
      * Opens the native UI for managing credit cards
      */
     openManageCreditCards () {
-        return this.legacyTransport.send('pmHandlerOpenManageCreditCards')
+        return this.sender.send(createLegacyMessage('pmHandlerOpenManageCreditCards'))
     }
 
     /**
@@ -109,7 +103,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.legacyTransport.send('pmHandlerGetCreditCard', {id})
+        return this.sender.send(createLegacyMessage('pmHandlerGetCreditCard', {id}))
     }
 
     // Used to encode data to send back to the child autofill
@@ -123,13 +117,10 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async getAlias () {
-        const {alias} = await this.legacyTransport.send(
-            'emailHandlerGetAlias',
-            {
-                requiresUserPermission: !this.globalConfig.isApp,
-                shouldConsumeAliasIfProvided: !this.globalConfig.isApp
-            }
-        )
+        const {alias} = await this.sender.send(createLegacyMessage('emailHandlerGetAlias', {
+            requiresUserPermission: !this.globalConfig.isApp,
+            shouldConsumeAliasIfProvided: !this.globalConfig.isApp
+        }))
         return formatDuckAddress(alias)
     }
 
@@ -138,4 +129,4 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 }
 
-export { AppleDeviceInterface }
+export {AppleDeviceInterface}

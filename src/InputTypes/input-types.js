@@ -3,7 +3,7 @@
  * features.
  *
  * @param {AvailableInputTypes} inputTypes
- * @param {FeatureTogglesSettings} featureToggles
+ * @param {FeatureToggles} featureToggles
  * @return {AvailableInputTypes}
  */
 export function featureToggleAwareInputTypes (inputTypes, featureToggles) {

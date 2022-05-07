@@ -28,7 +28,7 @@ test.describe('Save prompts', () => {
             await forwardConsoleMessages(page)
             await createWebkitMocks().applyTo(page)
 
-            /** @type {Partial<FeatureTogglesSettings>} */
+            /** @type {Partial<FeatureToggles>} */
             const toggles = {
                 credentials_saving: false
             }

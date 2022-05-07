@@ -3,11 +3,11 @@
  */
 export class Message {
     /**
-     * @type {import("ajv").ValidateFunction | null}
+     * @type {any}
      */
     reqValidator = null;
     /**
-     * @type {import("ajv").ValidateFunction | null}
+     * @type {any}
      */
     resValidator = null;
 
@@ -17,8 +17,6 @@ export class Message {
      */
     name = 'unknown'
 
-    /** @type {GenericRuntime} */
-    transport
 
     /**
      * @type {Req}
@@ -27,11 +25,9 @@ export class Message {
 
     /**
      * @param {Req} data
-     * @param transport
      */
-    constructor (data, transport) {
+    constructor (data) {
         this.data = this._validate(data, this.reqValidator)
-        this.transport = transport
     }
 
     /**
@@ -60,11 +56,11 @@ export class Message {
 
     /**
      * @param {any} object
-     * @param {import("ajv").ValidateFunction | null} [validator]
+     * @returns {Res}
      */
-    _runtimeResponse (object, validator) {
-        if (validator && !validator?.(object)) {
-            return this.throwError(validator?.errors)
+    runtimeResponse (object) {
+        if (this.resValidator && !this.reqValidator?.(object)) {
+            this.throwError(this.resValidator?.errors)
         }
         if ('data' in object) {
             console.warn('response had `data` property. Please migrate to `success`')
@@ -75,17 +71,18 @@ export class Message {
         }
         throw new Error('unreachable. Response did not contain `success` or `data`')
     }
+}
 
-    /**
-     * @returns {Promise<Res>}
-     */
-    async send () {
-        let response
-        if (this.data) {
-            response = await this.transport.send(this.name, this.data)
-        } else {
-            response = await this.transport.send(this.name)
-        }
-        return this._runtimeResponse(response, this.resValidator)
-    }
+export class LegacyMessage extends Message {}
+
+/**
+ * @template [Req=any]
+ * @param {string} name
+ * @param {Req} [data]
+ * @returns {Message<Req, any>}
+ */
+export function createLegacyMessage(name, data) {
+    const message = new LegacyMessage(data);
+    message.name = name;
+    return message;
 }

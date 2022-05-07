@@ -15,11 +15,11 @@ import { createScanner } from '../Scanner'
 import {createGlobalConfig} from '../config'
 import {Settings} from '../settings/settings'
 import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
-import {createRuntime} from '../runtime/runtime'
 import {WebTooltip} from '../UI/WebTooltip'
-import {createRuntimeTransport} from '../transports/transport'
 import {featureToggleAwareInputTypes} from '../InputTypes/input-types'
-import {GetAutofillCredentials, GetAvailableInputTypes} from '../runtime/messages'
+import * as messages from '../messages/messages'
+import { Sender } from '../senders/sender'
+import {createSender} from '../senders/apple.sender'
 
 /**
  * @implements {GlobalConfigImpl}
@@ -63,21 +63,23 @@ class InterfacePrototype {
     /** @type {TooltipInterface} */
     tooltip;
 
+    /** @type {Sender} */
+    sender;
+
     /**
      * @param {AvailableInputTypes} availableInputTypes
-     * @param {import("../runtime/runtime").Runtime} runtime
-     * @param {TooltipInterface} tooltip
+     * @param {Sender} sender
      * @param {GlobalConfig} globalConfig
      * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
      * @param {import("../settings/settings").Settings} autofillSettings
      */
-    constructor (availableInputTypes, runtime, tooltip, globalConfig, platformConfig, autofillSettings) {
+    constructor (availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings) {
         this.availableInputTypes = availableInputTypes
         this.globalConfig = globalConfig
         this.tooltip = tooltip
         this.runtimeConfiguration = platformConfig
         this.autofillSettings = autofillSettings
-        this.runtime = runtime
+        this.sender = sender;
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs,
             availableInputTypes: availableInputTypes
@@ -475,7 +477,7 @@ class InterfacePrototype {
      * @returns {Promise<CredentialsObject>}
      */
     async getAutofillCredentials (id) {
-        return new GetAutofillCredentials(id, this.runtime.transport).send()
+        return this.sender.send(new messages.GetAutofillCredentials(id));
     }
 
     /**
@@ -483,23 +485,67 @@ class InterfacePrototype {
      * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes () {
-        return new GetAvailableInputTypes(null, this.runtime.transport).send()
+        return this.sender.send(new messages.GetAvailableInputTypes(null))
     }
 
-    /** @returns {APIResponse<CreditCardObject>} */
-    async getAutofillCreditCard (_id) { throw new Error('unimplemented') }
-    /** @returns {Promise<{success: IdentityObject|undefined}>} */
-    async getAutofillIdentity (_id) { throw new Error('unimplemented') }
+    /**
+     * @public
+     * @param {GetAutofillDataRequest} input
+     * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
+     */
+    async getAutofillData (input) {
+        return await this.sender.send(new messages.GetAutofillData(input))
+    }
 
-    openManagePasswords () {}
+    /**
+     * @returns {Promise<InboundPMData>}
+     */
+    async getAutofillInitData () {
+        return await this.sender.send(new messages.GetAutofillInitData(null));
+    }
 
     /**
      * Sends form data to the native layer
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        return this.runtime.storeFormData(data)
+        return this.sender.send(new messages.StoreFormData(data));
     }
+
+    /**
+     * @param {ShowAutofillParentRequest} parentArgs
+     * @returns {Promise<void>}
+     */
+    async showAutofillParent (parentArgs) {
+        await this.sender.send(new messages.ShowAutofillParent(parentArgs));
+    }
+
+    /**
+     * todo(Shane): Schema for this?
+     * @deprecated This was a port from the macOS implementation so the API may not be suitable for all
+     * @returns {Promise<any>}
+     */
+    async getSelectedCredentials () {
+        const r = await this.sender.send(new messages.Shane(null));
+        const {  } = r;
+        return this.sender.send(new messages.GetSelectedCredentials(null));
+    }
+
+    /**
+     * @returns {Promise<any>}
+     */
+    async closeAutofillParent () {
+        await this.sender.send(new messages.CloseAutofillParent(null))
+    }
+
+    /** @returns {APIResponse<CreditCardObject>} */
+    async getAutofillCreditCard (_id) { throw new Error('unimplemented') }
+
+    /** @returns {Promise<{success: IdentityObject|undefined}>} */
+    async getAutofillIdentity (_id) { throw new Error('unimplemented') }
+
+    openManagePasswords () {}
+
 
     setSize (_cb) {
         // noop
@@ -526,10 +572,9 @@ class InterfacePrototype {
     static default () {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
-        const transport = createRuntimeTransport(globalConfig)
-        const runtime = createRuntime(globalConfig, transport)
+        const sender = createSender(globalConfig);
         const tooltip = new WebTooltip({tooltipKind: 'modern'})
-        return new InterfacePrototype({}, runtime, tooltip, globalConfig, config, Settings.default())
+        return new InterfacePrototype({}, sender, tooltip, globalConfig, config, Settings.default())
     }
 
     removeTooltip () {

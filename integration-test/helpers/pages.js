@@ -190,7 +190,7 @@ export function loginPage (page, server) {
             expect(mockCall).toBeDefined()
         },
         /**
-         * @param {Partial<FeatureTogglesSettings>} expected
+         * @param {Partial<FeatureToggles>} expected
          */
         async assertTogglesWereMocked (expected) {
             const calls = await page.evaluate('window.__playwright.mocks.calls')

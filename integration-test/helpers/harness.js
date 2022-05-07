@@ -176,12 +176,12 @@ export async function defaultIOSScript (page) {
 
 /**
  * @param {import("playwright").Page} page
- * @param {Partial<FeatureTogglesSettings>} featureToggles
+ * @param {Partial<FeatureToggles>} featureToggles
  */
 export async function withIOSFeatureToggles (page, featureToggles) {
     return createAutofillScript()
         .replaceAll(iosContentScopeReplacements({
-            /** @type {FeatureTogglesSettings} */
+            /** @type {FeatureToggles} */
             featureToggles: {
                 'inputType_credentials': true,
                 'inputType_identities': false,

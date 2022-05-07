@@ -1,18 +1,19 @@
 import ddgGlobals from './captureDdgGlobals'
+import {createLegacyMessage} from '../messages/message'
+import {Sender} from './sender'
 
-/**
- * @implements {RuntimeTransport}
- */
-class AppleTransport {
+export class AppleSender extends Sender {
     /** @type {GlobalConfig} */
     config
 
     /** @param {GlobalConfig} globalConfig */
     constructor (globalConfig) {
+        super()
         this.config = globalConfig
     }
 
-    async send (name, data) {
+    async handle (msg) {
+        let { name, data } = msg;
         try {
             if (name === "getAutofillCredentials") {
                 name = "pmHandlerGetAutofillCredentials"
@@ -46,24 +47,31 @@ class AppleTransport {
  *
  * @param {GlobalConfig} config
  */
-export function createTransport (config) {
-    return new AppleTransport(config)
+export function createSender (config) {
+    return new AppleSender(config)
 }
 /**
- * @returns {LegacyTransport}
+ * @returns {Sender}
  */
-export function createLegacyTransport (config) {
-    const transport = createTransport(config)
-    /** @type {LegacyTransport} */
-    const loggingTransport = {
-        async send (name, data) {
-            console.log(`🙈 LegacyTransport: ${JSON.stringify(name)}`, data)
-            const res = await transport.send(name, data)
-            console.log(`\t 🙈 LegacyTransport::Response ${JSON.stringify(name)}`, JSON.stringify(res))
-            return res
-        }
-    }
-    return loggingTransport
+export function createLegacySender (config) {
+    const transport = createSender(config)
+    // class Logging extends Sender {
+    //     async handle(message) {
+    //         console.log(`🙈 LegacyTransport: ${JSON.stringify(name)}`, data)
+    //         const res = await transport.send(name, data)
+    //         console.log(`\t 🙈 LegacyTransport::Response ${JSON.stringify(name)}`, JSON.stringify(res))
+    //     }
+    // }
+    // /** @type {LegacyTransport} */
+    // const loggingTransport = {
+    //     async send (name, data) {
+    //         console.log(`🙈 LegacyTransport: ${JSON.stringify(name)}`, data)
+    //         const res = await transport.send(name, data)
+    //         console.log(`\t 🙈 LegacyTransport::Response ${JSON.stringify(name)}`, JSON.stringify(res))
+    //         return res
+    //     }
+    // }
+    return transport;
 }
 
 /**
@@ -90,8 +98,8 @@ const middlewares = {
  */
 const interceptions = {
     'getAutofillInitData': async (globalConfig) => {
-        const legacyTransport = createLegacyTransport(globalConfig)
-        const data = await legacyTransport.send('pmHandlerGetAutofillInitData')
+        const legacyTransport = createLegacySender(globalConfig)
+        const data = await legacyTransport.send(createLegacyMessage('pmHandlerGetAutofillInitData'))
 
         // todo(Shane): Fix this problem with ids with native team
         data.success?.credentials.forEach(cred => {
@@ -112,8 +120,8 @@ const interceptions = {
      * @param globalConfig
      */
     'getAvailableInputTypes': async (globalConfig) => {
-        const legacyTransport = createLegacyTransport(globalConfig)
-        const { isAppSignedIn } = await legacyTransport.send('emailHandlerCheckAppSignedInStatus')
+        const legacyTransport = createLegacySender(globalConfig)
+        const { isAppSignedIn } = await legacyTransport.send(createLegacyMessage('emailHandlerCheckAppSignedInStatus'))
 
         /** @type {AvailableInputTypes} */
         const legacyMacOsTypes = {
