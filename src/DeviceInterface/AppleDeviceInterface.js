@@ -1,7 +1,7 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import {formatDuckAddress} from '../autofill-utils'
 import {CSS_STYLES} from '../UI/styles/styles'
-import {createLegacyMessage} from '../messages/message'
+import {createLegacyMessage} from '../messages/messages'
 
 class AppleDeviceInterface extends InterfacePrototype {
 

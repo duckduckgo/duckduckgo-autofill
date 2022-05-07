@@ -1,7 +1,7 @@
 import { createGlobalConfig } from '../config'
 import { wkSendAndWait } from './apple.sender'
-import {createLegacyMessage} from '../messages/message'
 import {Sender} from './sender'
+import {createLegacyMessage} from '../messages/messages'
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data

@@ -1,7 +1,7 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import {formatDuckAddress} from '../autofill-utils'
 import {CSS_STYLES} from '../UI/styles/styles'
-import {createLegacyMessage} from '../messages/message'
+import {createLegacyMessage} from '../messages/messages'
 
 /**
  * todo(Shane): Decide which data is/isn't needed when apple is inside overlay

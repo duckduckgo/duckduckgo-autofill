@@ -1,6 +1,6 @@
 import ddgGlobals from './captureDdgGlobals'
-import {createLegacyMessage} from '../messages/message'
 import {Sender} from './sender'
+import {createLegacyMessage} from '../messages/messages'
 
 export class AppleSender extends Sender {
     /** @type {GlobalConfig} */
@@ -99,7 +99,8 @@ const middlewares = {
 const interceptions = {
     'getAutofillInitData': async (globalConfig) => {
         const legacyTransport = createLegacySender(globalConfig)
-        const data = await legacyTransport.send(createLegacyMessage('pmHandlerGetAutofillInitData'))
+        const message = createLegacyMessage('pmHandlerGetAutofillInitData');
+        const data = await legacyTransport.send(message)
 
         // todo(Shane): Fix this problem with ids with native team
         data.success?.credentials.forEach(cred => {
@@ -121,7 +122,8 @@ const interceptions = {
      */
     'getAvailableInputTypes': async (globalConfig) => {
         const legacyTransport = createLegacySender(globalConfig)
-        const { isAppSignedIn } = await legacyTransport.send(createLegacyMessage('emailHandlerCheckAppSignedInStatus'))
+        const message = createLegacyMessage('emailHandlerCheckAppSignedInStatus');
+        const { isAppSignedIn } = await legacyTransport.send(message)
 
         /** @type {AvailableInputTypes} */
         const legacyMacOsTypes = {

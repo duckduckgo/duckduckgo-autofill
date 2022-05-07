@@ -1,9 +1,14 @@
-import { Message } from '../messages/message'
+import {Message} from '../messages/message'
 import {WindowsSender} from './windows.sender'
 import {AppleSender} from './apple.sender'
 import {ExtensionSender} from './extension.sender'
 import {AndroidSender} from './android.sender'
 
+/**
+ * This is the base Sender class that platforms can will implement.
+ *
+ * Note: The 'handle' method must be implemented, unless you also implement
+ */
 export class Sender {
     /**
      * @template Req,Res
@@ -20,7 +25,7 @@ export class Sender {
      * @returns {Promise<Res | undefined>}
      */
     async handle(message) {
-        throw new Error('must implement message handler for ' + message);
+        throw new Error('must implement `.handle`, message: ' + message.name);
     }
 }
 

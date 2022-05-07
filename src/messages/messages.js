@@ -2,6 +2,11 @@ import {Message} from './message'
 import validators from '../schema/validators.cjs'
 
 /**
+ * This file contains every message this application can 'send' to
+ * a native side.
+ */
+
+/**
  * @extends {Message<null, AvailableInputTypes>}
  */
 export class GetAvailableInputTypes extends Message {
@@ -88,4 +93,21 @@ export class GetRuntimeConfiguration extends Message {
     name = 'getRuntimeConfiguration'
     // @ts-ignore
     resValidator = validators['#/definitions/GetRuntimeConfigurationResponse']
+}
+
+/**
+ * Use this to wrap legacy messages where schema validation is not available.
+ */
+export class LegacyMessage extends Message {}
+
+/**
+ * @template [Req=any]
+ * @param {string} name
+ * @param {Req} [data]
+ * @returns {Message<Req, any>}
+ */
+export function createLegacyMessage(name, data) {
+    const message = new LegacyMessage(data);
+    message.name = name;
+    return message;
 }

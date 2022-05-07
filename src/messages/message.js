@@ -72,17 +72,3 @@ export class Message {
         throw new Error('unreachable. Response did not contain `success` or `data`')
     }
 }
-
-export class LegacyMessage extends Message {}
-
-/**
- * @template [Req=any]
- * @param {string} name
- * @param {Req} [data]
- * @returns {Message<Req, any>}
- */
-export function createLegacyMessage(name, data) {
-    const message = new LegacyMessage(data);
-    message.name = name;
-    return message;
-}
