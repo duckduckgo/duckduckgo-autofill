@@ -268,7 +268,7 @@ class Form {
 
         this.inputs.all.add(input)
         const type = this.matching.setInputType(input, this.form, {
-            isLogin: this.isLogin,
+            isLogin: this.isLogin
         })
 
         const mainInputType = getInputMainType(input)

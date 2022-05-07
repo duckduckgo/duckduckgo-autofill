@@ -71,7 +71,7 @@
 /**
  * @link {import("./request.storeFormData.schema.json")}
  * @typedef StoreFormDataRequest StoreFormData Request
- * Autofill could send this data at any point.
+ * Autofill could send this data at any point. 
  * It will **not** listen for a response, it's expected that the native side will handle
  * @property {CredentialsOutgoing} [credentials]
  * @property {Identity} [identities]

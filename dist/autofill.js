@@ -4150,7 +4150,7 @@ var _inputTypes = require("../InputTypes/input-types");
 
 var messages = _interopRequireWildcard(require("../messages/messages"));
 
-var _apple = require("../senders/apple.sender");
+var _sender = require("../senders/sender");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -4206,10 +4206,11 @@ class InterfacePrototype {
 
   /** @type {TooltipInterface} */
 
-  /** @type {import("../senders/sender").Sender} sender
-  sender;
-   /**
+  /** @type {import("../senders/sender").Sender} */
+
+  /**
    * @param {import("../senders/sender").Sender} sender
+   * @param {TooltipInterface} tooltip
    * @param {GlobalConfig} globalConfig
    * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
    * @param {import("../settings/settings").Settings} autofillSettings
@@ -4246,6 +4247,8 @@ class InterfacePrototype {
     _defineProperty(this, "scanner", void 0);
 
     _defineProperty(this, "tooltip", void 0);
+
+    _defineProperty(this, "sender", void 0);
 
     _classPrivateFieldInitSpec(this, _data2, {
       writable: true,
@@ -4417,12 +4420,11 @@ class InterfacePrototype {
   }
 
   async _startInit() {
-    await this.refreshAvailableInputTypes();
-
     if (this.autofillSettings.featureToggles.credentials_saving) {
       (0, _listenForFormSubmission.default)(this.scanner.forms);
     }
 
+    await this.refreshAvailableInputTypes();
     await this.setupAutofill();
     await this.setupSettingsPage();
   }
@@ -4839,7 +4841,7 @@ class InterfacePrototype {
   static default() {
     const config = new _contentScopeScripts.RuntimeConfiguration();
     const globalConfig = (0, _config.createGlobalConfig)();
-    const sender = (0, _apple.createSender)(globalConfig);
+    const sender = new _sender.NullSender();
     const tooltip = new _WebTooltip.WebTooltip({
       tooltipKind: 'modern'
     });
@@ -4933,7 +4935,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../messages/messages":52,"../senders/apple.sender":60,"../settings/settings":66,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
+},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../messages/messages":52,"../senders/sender":65,"../settings/settings":67,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5273,8 +5275,7 @@ class Form {
     if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
     const type = this.matching.setInputType(input, this.form, {
-      isLogin: this.isLogin,
-      availableInputTypes: this.availableInputTypes
+      isLogin: this.isLogin
     });
     const mainInputType = (0, _matching.getInputMainType)(input);
     this.inputs[mainInputType].add(input);
@@ -6571,7 +6572,7 @@ const shouldStoreCreditCards = _ref5 => {
   return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
 };
 /**
- * Formats form data into an object to send to the tooltipHandler for storage
+ * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
  * @return {DataStorageObject}
@@ -7955,12 +7956,13 @@ class Matching {
    *
    * @param {HTMLInputElement|HTMLSelectElement} input
    * @param {HTMLElement} formEl
-   * @param {MatchingOpts} opts
+   * @param {{isLogin?: boolean}} [opts]
    * @returns {SupportedTypes}
    */
 
 
-  inferInputType(input, formEl, opts) {
+  inferInputType(input, formEl) {
+    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const presetType = getInputType(input);
 
     if (presetType !== 'unknown') {
@@ -7971,10 +7973,6 @@ class Matching {
     // // run them on actual CC forms to avoid false positives and expensive loops
 
     if (this.isCCForm(formEl)) {
-      if (!opts.availableInputTypes.creditCards) {
-        return 'unknown';
-      }
-
       const subtype = this.subtypeFromMatchers('cc', input);
 
       if (subtype && isValidCreditCardSubtype(subtype)) {
@@ -7994,35 +7992,27 @@ class Matching {
       if (this.subtypeFromMatchers('username', input)) {
         return 'credentials.username';
       }
-    } // only consider identities if they are available
+    }
 
+    const idSubtype = this.subtypeFromMatchers('id', input);
 
-    if (opts.availableInputTypes.identities) {
-      const idSubtype = this.subtypeFromMatchers('id', input);
-
-      if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
-        return "identities.".concat(idSubtype);
-      }
+    if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
+      return "identities.".concat(idSubtype);
     }
 
     return 'unknown';
   }
   /**
-   * @typedef {object} MatchingOpts
-   * @property {boolean} MatchingOpts.isLogin
-   * @property {AvailableInputTypes} MatchingOpts.availableInputTypes
-   */
-
-  /**
    * Sets the input type as a data attribute to the element and returns it
    * @param {HTMLInputElement} input
    * @param {HTMLElement} formEl
-   * @param {MatchingOpts} opts
+   * @param {{isLogin?: boolean}} [opts]
    * @returns {SupportedSubTypes | string}
    */
 
 
-  setInputType(input, formEl, opts) {
+  setInputType(input, formEl) {
+    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const type = this.inferInputType(input, formEl, opts);
     input.setAttribute(ATTR_INPUT_TYPE, type);
     return type;
@@ -11065,7 +11055,7 @@ async function getRuntimeConfiguration(sender) {
   return config;
 }
 
-},{"./DeviceInterface":12,"./UI/tooltips":46,"./config":49,"./messages/messages":52,"./requestIdleCallback":53,"./senders/captureDdgGlobals":61,"./senders/create-sender":62,"./settings/settings":66,"@duckduckgo/content-scope-scripts":1}],49:[function(require,module,exports){
+},{"./DeviceInterface":12,"./UI/tooltips":46,"./config":49,"./messages/messages":52,"./requestIdleCallback":53,"./senders/captureDdgGlobals":62,"./senders/create-sender":63,"./settings/settings":67,"@duckduckgo/content-scope-scripts":1}],49:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -16482,7 +16472,7 @@ function waitForResponse(expectedResponse) {
   });
 }
 
-},{"../messages/messages":52,"./sender":64}],60:[function(require,module,exports){
+},{"../messages/messages":52,"./sender":65}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16490,15 +16480,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AppleSender = void 0;
 exports.createSender = createSender;
-exports.wkSendAndWait = void 0;
-
-var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
 
 var _sender = require("./sender");
 
 var _messages = require("../messages/messages");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _appleDeviceUtils = require("./appleDeviceUtils");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -16527,7 +16514,7 @@ class AppleSender extends _sender.Sender {
 
 
       if (data === null) data = undefined;
-      let response = await wkSendAndWait(name, data, {
+      let response = await (0, _appleDeviceUtils.wkSendAndWait)(name, data, {
         secret: this.config.secret,
         hasModernWebkitAPI: this.config.hasModernWebkitAPI
       }); // todo(Shane): Better way to handle this - per message?
@@ -16540,7 +16527,7 @@ class AppleSender extends _sender.Sender {
 
       return response;
     } catch (e) {
-      if (e instanceof MissingWebkitHandler) {
+      if (e instanceof _appleDeviceUtils.MissingWebkitHandler) {
         if (name in interceptions) {
           var _interceptions$name;
 
@@ -16669,24 +16656,26 @@ const interceptions = {
   }
 };
 
-class MissingWebkitHandler extends Error {
-  constructor(handlerName) {
-    super();
+},{"../messages/messages":52,"./appleDeviceUtils":61,"./sender":65}],61:[function(require,module,exports){
+"use strict";
 
-    _defineProperty(this, "handlerName", void 0);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.wkSendAndWait = exports.MissingWebkitHandler = void 0;
 
-    this.handlerName = handlerName;
-  }
+var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
 
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /**
  * Sends message to the webkit layer (fire and forget)
  * @param {String} handler
  * @param {*} data
  * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  */
-
-
 const wkSend = function (handler) {
   let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   let opts = arguments.length > 2 ? arguments[2] : undefined;
@@ -16797,7 +16786,20 @@ const decrypt = async (ciphertext, key, iv) => {
   return dec.decode(decrypted);
 };
 
-},{"../messages/messages":52,"./captureDdgGlobals":61,"./sender":64}],61:[function(require,module,exports){
+class MissingWebkitHandler extends Error {
+  constructor(handlerName) {
+    super();
+
+    _defineProperty(this, "handlerName", void 0);
+
+    this.handlerName = handlerName;
+  }
+
+}
+
+exports.MissingWebkitHandler = MissingWebkitHandler;
+
+},{"./captureDdgGlobals":62}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16828,7 +16830,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16906,7 +16908,7 @@ function selectSender(globalConfig) {
   return new _extension.ExtensionSender(globalConfig);
 }
 
-},{"./android.sender":59,"./apple.sender":60,"./extension.sender":63,"./sender":64,"./windows.sender":65}],63:[function(require,module,exports){
+},{"./android.sender":59,"./apple.sender":60,"./extension.sender":64,"./sender":65,"./windows.sender":66}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17067,13 +17069,13 @@ const interceptions = {
   }
 };
 
-},{"./sender":64}],64:[function(require,module,exports){
+},{"./sender":65}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Sender = exports.LoggingSender = void 0;
+exports.Sender = exports.NullSender = exports.LoggingSender = void 0;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -17109,12 +17111,25 @@ class Sender {
   }
 
 }
+
+exports.Sender = Sender;
+
+class NullSender extends Sender {
+  /**
+   * @param _message
+   * @returns {Promise<any>}
+   */
+  async send(_message) {
+    return null;
+  }
+
+}
 /**
  *
  */
 
 
-exports.Sender = Sender;
+exports.NullSender = NullSender;
 
 class LoggingSender extends Sender {
   constructor(sender) {
@@ -17161,7 +17176,7 @@ class LoggingSender extends Sender {
 
 exports.LoggingSender = LoggingSender;
 
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17277,7 +17292,7 @@ function windowsTransport(name, data) {
   };
 }
 
-},{"../schema/response.getAutofillInitData.schema.json":55,"../schema/response.getAvailableInputTypes.schema.json":56,"../schema/response.getRuntimeConfiguration.schema.json":57,"./sender":64}],66:[function(require,module,exports){
+},{"../schema/response.getAutofillInitData.schema.json":55,"../schema/response.getAvailableInputTypes.schema.json":56,"../schema/response.getRuntimeConfiguration.schema.json":57,"./sender":65}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

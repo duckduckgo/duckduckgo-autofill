@@ -566,7 +566,7 @@ class InterfacePrototype {
     static default () {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
-        const sender = new NullSender();
+        const sender = new NullSender()
         const tooltip = new WebTooltip({tooltipKind: 'modern'})
         return new InterfacePrototype(sender, tooltip, globalConfig, config, Settings.default())
     }
