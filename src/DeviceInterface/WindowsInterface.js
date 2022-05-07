@@ -6,7 +6,7 @@ class WindowsInterface extends InterfacePrototype {
         // todo(Shane): is this is the correct place to determine this?
         const initData = await this.getAutofillInitData()
         this.storeLocalData(initData)
-        const cleanup = this.scanner.init()
+        const cleanup = this.scanner.init(this.availableInputTypes)
         this.addLogoutListener(cleanup)
     }
     tooltipStyles () {

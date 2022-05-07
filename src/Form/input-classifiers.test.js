@@ -145,12 +145,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         document.body.innerHTML = testContent
         document.title = title
 
-        const scanner = createScanner(InterfacePrototype.default(), {availableInputTypes: {
-            email: true,
-            creditCards: true,
-            credentials: true,
-            identities: true
-        }})
+        const scanner = createScanner(InterfacePrototype.default())
         scanner.findEligibleInputs(document)
 
         const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()

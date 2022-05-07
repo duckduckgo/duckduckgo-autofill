@@ -88,7 +88,7 @@ export function createWindowsMocks () {
                 window.__playwright = { mocks: { calls: [] } }
                 const listeners = []
 
-                function recordCall(name, request, response) {
+                function recordCall (name, request, response) {
                     const call = [name, request, response]
                     window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                 }
@@ -116,7 +116,7 @@ export function createWindowsMocks () {
                 /** @type {MocksObjectAndroid} */
                 const mocksObject = {
                     getRuntimeConfiguration () {
-                        recordCall('getRuntimeConfiguration', null, mocks.getRuntimeConfiguration);
+                        recordCall('getRuntimeConfiguration', null, mocks.getRuntimeConfiguration)
                         return respond('getRuntimeConfiguration', null, mocks.getRuntimeConfiguration)
                     },
                     getAvailableInputTypes () {
@@ -124,7 +124,7 @@ export function createWindowsMocks () {
                         return respond('getAvailableInputTypes', null, mocks.getAvailableInputTypes)
                     },
                     getAutofillData (_request) {
-                        recordCall('getRuntimeConfiguration', null, null);
+                        recordCall('getRuntimeConfiguration', null, null)
                         throw new Error('unimplemented windows.getAutofillData')
                     },
                     storeFormData (request) {

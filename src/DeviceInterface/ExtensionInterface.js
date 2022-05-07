@@ -33,7 +33,7 @@ class ExtensionInterface extends InterfacePrototype {
 
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
-                const cleanup = this.scanner.init()
+                const cleanup = this.scanner.init(this.availableInputTypes)
                 this.addLogoutListener(cleanup)
             }
         })

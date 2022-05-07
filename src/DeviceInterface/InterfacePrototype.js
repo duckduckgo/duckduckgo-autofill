@@ -18,7 +18,7 @@ import {RuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
 import {WebTooltip} from '../UI/WebTooltip'
 import {featureToggleAwareInputTypes} from '../InputTypes/input-types'
 import * as messages from '../messages/messages'
-import {createSender} from '../senders/apple.sender'
+import {NullSender} from '../senders/sender'
 
 /**
  * @implements {GlobalConfigImpl}
@@ -54,7 +54,7 @@ class InterfacePrototype {
     autofillSettings;
 
     /** @type {AvailableInputTypes} */
-    availableInputTypes;
+    availableInputTypes = {};
 
     /** @type {import('../Scanner').Scanner} */
     scanner;
@@ -62,26 +62,24 @@ class InterfacePrototype {
     /** @type {TooltipInterface} */
     tooltip;
 
-    /** @type {import("../senders/sender").Sender} sender
+    /** @type {import("../senders/sender").Sender} */
     sender;
 
     /**
-     * @param {AvailableInputTypes} availableInputTypes
      * @param {import("../senders/sender").Sender} sender
+     * @param {TooltipInterface} tooltip
      * @param {GlobalConfig} globalConfig
      * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
      * @param {import("../settings/settings").Settings} autofillSettings
      */
-    constructor (availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings) {
-        this.availableInputTypes = availableInputTypes
+    constructor (sender, tooltip, globalConfig, platformConfig, autofillSettings) {
         this.globalConfig = globalConfig
         this.tooltip = tooltip
         this.runtimeConfiguration = platformConfig
         this.autofillSettings = autofillSettings
         this.sender = sender
         this.scanner = createScanner(this, {
-            initialDelay: this.initialSetupDelayMs,
-            availableInputTypes: availableInputTypes
+            initialDelay: this.initialSetupDelayMs
         })
     }
 
@@ -222,11 +220,11 @@ class InterfacePrototype {
     }
 
     async _startInit () {
-        // todo(toggles): move to runtime polymorphism
         if (this.autofillSettings.featureToggles.credentials_saving) {
             listenForGlobalFormSubmission(this.scanner.forms)
         }
 
+        await this.refreshAvailableInputTypes()
         await this.setupAutofill()
         await this.setupSettingsPage()
     }
@@ -568,9 +566,9 @@ class InterfacePrototype {
     static default () {
         const config = new RuntimeConfiguration()
         const globalConfig = createGlobalConfig()
-        const sender = createSender(globalConfig)
+        const sender = new NullSender();
         const tooltip = new WebTooltip({tooltipKind: 'modern'})
-        return new InterfacePrototype({}, sender, tooltip, globalConfig, config, Settings.default())
+        return new InterfacePrototype(sender, tooltip, globalConfig, config, Settings.default())
     }
 
     removeTooltip () {

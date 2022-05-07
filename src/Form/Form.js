@@ -269,7 +269,6 @@ class Form {
         this.inputs.all.add(input)
         const type = this.matching.setInputType(input, this.form, {
             isLogin: this.isLogin,
-            availableInputTypes: this.availableInputTypes
         })
 
         const mainInputType = getInputMainType(input)
@@ -315,7 +314,6 @@ class Form {
                 }
             }
             if (this.availableInputTypes[config.type] !== true) {
-                // console.warn('not decorating type', config.type)
                 return false
             }
             return true

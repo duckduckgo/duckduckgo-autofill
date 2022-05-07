@@ -3474,7 +3474,6 @@ var _WindowsInterface = require("./DeviceInterface/WindowsInterface");
 var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDeviceInterface");
 
 /**
- * @param {AvailableInputTypes} availableInputTypes
  * @param {import("./senders/sender").Sender} sender
  * @param {TooltipInterface} tooltip
  * @param {GlobalConfig} globalConfig
@@ -3482,26 +3481,26 @@ var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDevice
  * @param {import("./settings/settings").Settings} autofillSettings
  * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface}
  */
-function createDevice(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings) {
+function createDevice(sender, tooltip, globalConfig, platformConfig, autofillSettings) {
   switch (platformConfig.platform) {
     case 'macos':
     case 'ios':
       {
         if (globalConfig.isTopFrame) {
-          return new _AppleOverlayDeviceInterface.AppleOverlayDeviceInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
+          return new _AppleOverlayDeviceInterface.AppleOverlayDeviceInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
         }
 
-        return new _AppleDeviceInterface.AppleDeviceInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
+        return new _AppleDeviceInterface.AppleDeviceInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
       }
 
     case 'extension':
-      return new _ExtensionInterface.ExtensionInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
+      return new _ExtensionInterface.ExtensionInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'windows':
-      return new _WindowsInterface.WindowsInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
+      return new _WindowsInterface.WindowsInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'android':
-      return new _AndroidInterface.AndroidInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings);
+      return new _AndroidInterface.AndroidInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'unknown':
       throw new Error('unreachable. tooltipHandler platform was "unknown"');
@@ -3543,7 +3542,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
   async setupAutofill() {
     if (this.isDeviceSignedIn()) {
-      const cleanup = this.scanner.init();
+      const cleanup = this.scanner.init(this.availableInputTypes);
       this.addLogoutListener(cleanup);
     }
   }
@@ -3620,7 +3619,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
       this.scanner.forms.forEach(form => form.redecorateAllInputs());
     }
 
-    const cleanup = this.scanner.init();
+    const cleanup = this.scanner.init(this.availableInputTypes);
     this.addLogoutListener(cleanup);
   }
 
@@ -4026,7 +4025,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
     await this._addDeviceListeners();
     return this.getAddresses().then(_addresses => {
       if (this.hasLocalAddresses) {
-        const cleanup = this.scanner.init();
+        const cleanup = this.scanner.init(this.availableInputTypes);
         this.addLogoutListener(cleanup);
       }
     });
@@ -4210,13 +4209,12 @@ class InterfacePrototype {
   /** @type {import("../senders/sender").Sender} sender
   sender;
    /**
-   * @param {AvailableInputTypes} availableInputTypes
    * @param {import("../senders/sender").Sender} sender
    * @param {GlobalConfig} globalConfig
    * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
    * @param {import("../settings/settings").Settings} autofillSettings
    */
-  constructor(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings) {
+  constructor(sender, tooltip, globalConfig, platformConfig, autofillSettings) {
     _defineProperty(this, "attempts", 0);
 
     _defineProperty(this, "currentAttached", null);
@@ -4243,7 +4241,7 @@ class InterfacePrototype {
 
     _defineProperty(this, "autofillSettings", void 0);
 
-    _defineProperty(this, "availableInputTypes", void 0);
+    _defineProperty(this, "availableInputTypes", {});
 
     _defineProperty(this, "scanner", void 0);
 
@@ -4259,15 +4257,13 @@ class InterfacePrototype {
       }
     });
 
-    this.availableInputTypes = availableInputTypes;
     this.globalConfig = globalConfig;
     this.tooltip = tooltip;
     this.runtimeConfiguration = platformConfig;
     this.autofillSettings = autofillSettings;
     this.sender = sender;
     this.scanner = (0, _Scanner.createScanner)(this, {
-      initialDelay: this.initialSetupDelayMs,
-      availableInputTypes: availableInputTypes
+      initialDelay: this.initialSetupDelayMs
     });
   }
 
@@ -4421,7 +4417,8 @@ class InterfacePrototype {
   }
 
   async _startInit() {
-    // todo(toggles): move to runtime polymorphism
+    await this.refreshAvailableInputTypes();
+
     if (this.autofillSettings.featureToggles.credentials_saving) {
       (0, _listenForFormSubmission.default)(this.scanner.forms);
     }
@@ -4846,7 +4843,7 @@ class InterfacePrototype {
     const tooltip = new _WebTooltip.WebTooltip({
       tooltipKind: 'modern'
     });
-    return new InterfacePrototype({}, sender, tooltip, globalConfig, config, _settings.Settings.default());
+    return new InterfacePrototype(sender, tooltip, globalConfig, config, _settings.Settings.default());
   }
 
   removeTooltip() {
@@ -4955,7 +4952,7 @@ class WindowsInterface extends _InterfacePrototype.default {
     // todo(Shane): is this is the correct place to determine this?
     const initData = await this.getAutofillInitData();
     this.storeLocalData(initData);
-    const cleanup = this.scanner.init();
+    const cleanup = this.scanner.init(this.availableInputTypes);
     this.addLogoutListener(cleanup);
   }
 
@@ -5325,7 +5322,6 @@ class Form {
       }
 
       if (this.availableInputTypes[config.type] !== true) {
-        // console.warn('not decorating type', config.type)
         return false;
       }
 
@@ -9179,7 +9175,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * @typedef {{
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
- *     init(): ()=> void;
+ *     init(availableInputTypes: AvailableInputTypes): ()=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
  * }} Scanner
@@ -9188,7 +9184,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
- *     availableInputTypes: AvailableInputTypes,
  * }} ScannerOptions
  */
 
@@ -9201,9 +9196,7 @@ const defaultScannerOptions = {
   // wait for a 500ms window of event silence before performing the scan
   debounceTimePeriod: 500,
   // how long to wait when performing the initial scan
-  initialDelay: 0,
-  // default has no available input types
-  availableInputTypes: {}
+  initialDelay: 0
 };
 /**
  * This allows:
@@ -9224,6 +9217,8 @@ class DefaultScanner {
 
   /** @type {boolean} A flag to indicate the whole page will be re-scanned */
 
+  /** @type {AvailableInputTypes} */
+
   /**
    * @param {import("./DeviceInterface/InterfacePrototype").default} device
    * @param {ScannerOptions} options
@@ -9240,6 +9235,8 @@ class DefaultScanner {
     _defineProperty(this, "activeInput", null);
 
     _defineProperty(this, "rescanAll", false);
+
+    _defineProperty(this, "availableInputTypes", {});
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
       /** @type {HTMLElement[]} */
@@ -9272,11 +9269,13 @@ class DefaultScanner {
    * Call this to scan once and then watch for changes.
    *
    * Call the returned function to remove listeners.
+   * @param {AvailableInputTypes} availableInputTypes
    * @returns {() => void}
    */
 
 
-  init() {
+  init(availableInputTypes) {
+    this.availableInputTypes = availableInputTypes;
     const delay = this.options.initialDelay; // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
 
     if (delay === 0) {
@@ -9390,11 +9389,11 @@ class DefaultScanner {
         this.forms.delete(childForm);
       }
 
-      if (!this.options.availableInputTypes) {
+      if (!this.availableInputTypes) {
         throw new Error('unreachble. availableInputTypes must be set');
       }
 
-      this.forms.set(parentForm, new _Form.Form(parentForm, input, this.options.availableInputTypes, this.device, this.matching));
+      this.forms.set(parentForm, new _Form.Form(parentForm, input, this.availableInputTypes, this.device, this.matching));
     }
   }
   /**
@@ -10988,8 +10987,6 @@ var _DeviceInterface = require("./DeviceInterface");
 
 var _config = require("./config");
 
-var _inputTypes = require("./InputTypes/input-types");
-
 var _tooltips = require("./UI/tooltips");
 
 var _settings = require("./settings/settings");
@@ -11005,6 +11002,8 @@ var _createSender = require("./senders/create-sender");
   if (!window.isSecureContext) return false;
 
   try {
+    var _tooltip$setDevice;
+
     // this is config already present in the script, or derived from the page etc.
     const globalConfig = (0, _config.createGlobalConfig)();
 
@@ -11025,21 +11024,18 @@ var _createSender = require("./senders/create-sender");
     } // If it was enabled, try to ask for available input types
 
 
-    if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
-      var _tooltip$setDevice;
-
-      // Determine the tooltipHandler type
-      const tooltip = (0, _tooltips.createTooltip)(globalConfig, runtimeConfiguration, autofillSettings);
-      const runtimeAvailableInputTypes = await sender.send(new _messages.GetAvailableInputTypes(undefined));
-      const inputTypes = (0, _inputTypes.featureToggleAwareInputTypes)(runtimeAvailableInputTypes, autofillSettings.featureToggles);
-      const device = (0, _DeviceInterface.createDevice)(inputTypes, sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // This is a workaround for the previous design, we should refactor if possible
-
-      (_tooltip$setDevice = tooltip.setDevice) === null || _tooltip$setDevice === void 0 ? void 0 : _tooltip$setDevice.call(tooltip, device); // Init services
-
-      await device.init();
-    } else {
+    if (!runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
       console.log('feature was remotely disabled');
-    }
+      return;
+    } // Determine the tooltipHandler type
+
+
+    const tooltip = (0, _tooltips.createTooltip)(globalConfig, runtimeConfiguration, autofillSettings);
+    const device = (0, _DeviceInterface.createDevice)(sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // This is a workaround for the previous design, we should refactor if possible
+
+    (_tooltip$setDevice = tooltip.setDevice) === null || _tooltip$setDevice === void 0 ? void 0 : _tooltip$setDevice.call(tooltip, device); // Init services
+
+    await device.init();
   } catch (e) {
     console.error(e); // Noop, we errored
   }
@@ -11069,7 +11065,7 @@ async function getRuntimeConfiguration(sender) {
   return config;
 }
 
-},{"./DeviceInterface":12,"./InputTypes/input-types":35,"./UI/tooltips":46,"./config":49,"./messages/messages":52,"./requestIdleCallback":53,"./senders/captureDdgGlobals":61,"./senders/create-sender":62,"./settings/settings":66,"@duckduckgo/content-scope-scripts":1}],49:[function(require,module,exports){
+},{"./DeviceInterface":12,"./UI/tooltips":46,"./config":49,"./messages/messages":52,"./requestIdleCallback":53,"./senders/captureDdgGlobals":61,"./senders/create-sender":62,"./settings/settings":66,"@duckduckgo/content-scope-scripts":1}],49:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);

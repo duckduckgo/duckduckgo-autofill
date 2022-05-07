@@ -5,7 +5,6 @@ import {WindowsInterface} from './DeviceInterface/WindowsInterface'
 import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceInterface'
 
 /**
- * @param {AvailableInputTypes} availableInputTypes
  * @param {import("./senders/sender").Sender} sender
  * @param {TooltipInterface} tooltip
  * @param {GlobalConfig} globalConfig
@@ -13,21 +12,21 @@ import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceI
  * @param {import("./settings/settings").Settings} autofillSettings
  * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface}
  */
-export function createDevice (availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings) {
+export function createDevice (sender, tooltip, globalConfig, platformConfig, autofillSettings) {
     switch (platformConfig.platform) {
     case 'macos':
     case 'ios': {
         if (globalConfig.isTopFrame) {
-            return new AppleOverlayDeviceInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings)
+            return new AppleOverlayDeviceInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
         }
-        return new AppleDeviceInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings)
+        return new AppleDeviceInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
     }
     case 'extension':
-        return new ExtensionInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings)
+        return new ExtensionInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
     case 'windows':
-        return new WindowsInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings)
+        return new WindowsInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
     case 'android':
-        return new AndroidInterface(availableInputTypes, sender, tooltip, globalConfig, platformConfig, autofillSettings)
+        return new AndroidInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
     case 'unknown':
         throw new Error('unreachable. tooltipHandler platform was "unknown"')
     }

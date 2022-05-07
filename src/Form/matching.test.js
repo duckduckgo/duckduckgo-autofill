@@ -73,12 +73,6 @@ describe('matching', () => {
         const {formElement, inputs} = setFormHtml(`<input name=email />`)
         const actual = matching.inferInputType(inputs[0], formElement, {
             isLogin: false,
-            availableInputTypes: {
-                email: true,
-                creditCards: true,
-                credentials: true,
-                identities: true
-            }
         })
         expect(actual).toBe('unknown')
     })
@@ -131,12 +125,6 @@ describe('matching', () => {
         const matching = createMatching()
         const inferred = matching.inferInputType(inputs[0], formElement, {
             isLogin: false,
-            availableInputTypes: {
-                email: true,
-                creditCards: true,
-                credentials: true,
-                identities: true
-            }
         })
         expect(inferred).toBe(subtype)
     })
@@ -182,12 +170,6 @@ describe('matching', () => {
         })
         const asEmail = matching.inferInputType(inputs[0], formElement, {
             isLogin: false,
-            availableInputTypes: {
-                email: true,
-                creditCards: true,
-                credentials: true,
-                identities: true
-            }
         })
         /**
          * This should be 'unknown' because the negated 'search' regex in teh ddg-matcher should prevent

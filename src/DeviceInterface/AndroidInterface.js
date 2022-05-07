@@ -19,7 +19,7 @@ class AndroidInterface extends InterfacePrototype {
 
     async setupAutofill () {
         if (this.isDeviceSignedIn()) {
-            const cleanup = this.scanner.init()
+            const cleanup = this.scanner.init(this.availableInputTypes)
             this.addLogoutListener(cleanup)
         }
     }

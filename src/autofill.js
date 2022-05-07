@@ -3,11 +3,10 @@ import './requestIdleCallback'
 import './senders/captureDdgGlobals'
 import {createDevice} from './DeviceInterface'
 import {createGlobalConfig} from './config'
-import {featureToggleAwareInputTypes} from './InputTypes/input-types'
 import {createTooltip} from './UI/tooltips'
 import {fromRuntimeConfig} from './settings/settings'
 import {tryCreateRuntimeConfiguration} from '@duckduckgo/content-scope-scripts'
-import {GetAvailableInputTypes, GetRuntimeConfiguration} from './messages/messages'
+import {GetRuntimeConfiguration} from './messages/messages'
 import {createSender} from './senders/create-sender'
 
 (async () => {
@@ -36,22 +35,20 @@ import {createSender} from './senders/create-sender'
         }
 
         // If it was enabled, try to ask for available input types
-        if (runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
-            // Determine the tooltipHandler type
-            const tooltip = createTooltip(globalConfig, runtimeConfiguration, autofillSettings)
-            const runtimeAvailableInputTypes = await sender.send(new GetAvailableInputTypes(undefined))
-            const inputTypes = featureToggleAwareInputTypes(runtimeAvailableInputTypes, autofillSettings.featureToggles)
-
-            const device = createDevice(inputTypes, sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
-
-            // This is a workaround for the previous design, we should refactor if possible
-            tooltip.setDevice?.(device)
-
-            // Init services
-            await device.init()
-        } else {
+        if (!runtimeConfiguration.isFeatureRemoteEnabled('autofill')) {
             console.log('feature was remotely disabled')
+            return
         }
+
+        // Determine the tooltipHandler type
+        const tooltip = createTooltip(globalConfig, runtimeConfiguration, autofillSettings)
+        const device = createDevice(sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
+
+        // This is a workaround for the previous design, we should refactor if possible
+        tooltip.setDevice?.(device)
+
+        // Init services
+        await device.init()
     } catch (e) {
         console.error(e)
         // Noop, we errored

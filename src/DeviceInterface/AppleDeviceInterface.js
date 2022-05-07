@@ -22,7 +22,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             this.scanner.forms.forEach(form => form.redecorateAllInputs())
         }
 
-        const cleanup = this.scanner.init()
+        const cleanup = this.scanner.init(this.availableInputTypes)
         this.addLogoutListener(cleanup)
     }
 

@@ -28,6 +28,16 @@ export class Sender {
     }
 }
 
+export class NullSender extends Sender {
+    /**
+     * @param _message
+     * @returns {Promise<any>}
+     */
+    async send (_message) {
+        return null
+    }
+}
+
 /**
  *
  */

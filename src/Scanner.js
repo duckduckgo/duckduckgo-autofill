@@ -6,7 +6,7 @@ import { createMatching } from './Form/matching'
 /**
  * @typedef {{
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
- *     init(): ()=> void;
+ *     init(availableInputTypes: AvailableInputTypes): ()=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
  * }} Scanner
@@ -15,7 +15,6 @@ import { createMatching } from './Form/matching'
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
- *     availableInputTypes: AvailableInputTypes,
  * }} ScannerOptions
  */
 
@@ -28,9 +27,7 @@ const defaultScannerOptions = {
     // wait for a 500ms window of event silence before performing the scan
     debounceTimePeriod: 500,
     // how long to wait when performing the initial scan
-    initialDelay: 0,
-    // default has no available input types
-    availableInputTypes: {}
+    initialDelay: 0
 }
 
 /**
@@ -51,6 +48,8 @@ class DefaultScanner {
     activeInput = null;
     /** @type {boolean} A flag to indicate the whole page will be re-scanned */
     rescanAll = false;
+    /** @type {AvailableInputTypes} */
+    availableInputTypes = {}
 
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -66,9 +65,11 @@ class DefaultScanner {
      * Call this to scan once and then watch for changes.
      *
      * Call the returned function to remove listeners.
+     * @param {AvailableInputTypes} availableInputTypes
      * @returns {() => void}
      */
-    init () {
+    init (availableInputTypes) {
+        this.availableInputTypes = availableInputTypes
         const delay = this.options.initialDelay
         // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
         if (delay === 0) {
@@ -160,10 +161,10 @@ class DefaultScanner {
                 this.forms.delete(childForm)
             }
 
-            if (!this.options.availableInputTypes) {
+            if (!this.availableInputTypes) {
                 throw new Error('unreachble. availableInputTypes must be set')
             }
-            this.forms.set(parentForm, new Form(parentForm, input, this.options.availableInputTypes, this.device, this.matching))
+            this.forms.set(parentForm, new Form(parentForm, input, this.availableInputTypes, this.device, this.matching))
         }
     }
 
