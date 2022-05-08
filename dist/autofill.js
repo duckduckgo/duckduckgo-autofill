@@ -7,19 +7,19 @@ Object.defineProperty(exports, "__esModule", {
 Object.defineProperty(exports, "RuntimeConfiguration", {
   enumerable: true,
   get: function () {
-    return _RuntimeConfiguration.RuntimeConfiguration;
+    return _runtimeConfiguration.RuntimeConfiguration;
   }
 });
 Object.defineProperty(exports, "createRuntimeConfiguration", {
   enumerable: true,
   get: function () {
-    return _RuntimeConfiguration.createRuntimeConfiguration;
+    return _runtimeConfiguration.createRuntimeConfiguration;
   }
 });
 Object.defineProperty(exports, "isFeatureEnabledFromProcessedConfig", {
   enumerable: true,
   get: function () {
-    return _appleUtils.isFeatureEnabledFromProcessedConfig;
+    return _utils.isFeatureEnabledFromProcessedConfig;
   }
 });
 Object.defineProperty(exports, "processConfig", {
@@ -31,21 +31,811 @@ Object.defineProperty(exports, "processConfig", {
 Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
   enumerable: true,
   get: function () {
-    return _RuntimeConfiguration.tryCreateRuntimeConfiguration;
+    return _runtimeConfiguration.tryCreateRuntimeConfiguration;
   }
 });
 
-var _RuntimeConfiguration = require("./src/config/RuntimeConfiguration.js");
+var _runtimeConfiguration = require("./src/config/runtime-configuration.js");
 
 var _appleUtils = require("./src/apple-utils");
 
-},{"./src/apple-utils":2,"./src/config/RuntimeConfiguration.js":3}],2:[function(require,module,exports){
+var _utils = require("./src/utils");
+
+},{"./src/apple-utils":3,"./src/config/runtime-configuration.js":4,"./src/utils":6}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isFeatureEnabledFromProcessedConfig = isFeatureEnabledFromProcessedConfig;
+exports.sjcl = void 0;
+
+const sjcl = (() => {
+  /** @fileOverview Javascript cryptography implementation.
+  *
+  * Crush to remove comments, shorten variable names and
+  * generally reduce transmission size.
+  *
+  * @author Emily Stark
+  * @author Mike Hamburg
+  * @author Dan Boneh
+  */
+  "use strict";
+  /*jslint indent: 2, bitwise: false, nomen: false, plusplus: false, white: false, regexp: false */
+
+  /*global document, window, escape, unescape, module, require, Uint32Array */
+
+  /**
+   * The Stanford Javascript Crypto Library, top-level namespace.
+   * @namespace
+   */
+
+  var sjcl = {
+    /**
+     * Symmetric ciphers.
+     * @namespace
+     */
+    cipher: {},
+
+    /**
+     * Hash functions.  Right now only SHA256 is implemented.
+     * @namespace
+     */
+    hash: {},
+
+    /**
+     * Key exchange functions.  Right now only SRP is implemented.
+     * @namespace
+     */
+    keyexchange: {},
+
+    /**
+     * Cipher modes of operation.
+     * @namespace
+     */
+    mode: {},
+
+    /**
+     * Miscellaneous.  HMAC and PBKDF2.
+     * @namespace
+     */
+    misc: {},
+
+    /**
+     * Bit array encoders and decoders.
+     * @namespace
+     *
+     * @description
+     * The members of this namespace are functions which translate between
+     * SJCL's bitArrays and other objects (usually strings).  Because it
+     * isn't always clear which direction is encoding and which is decoding,
+     * the method names are "fromBits" and "toBits".
+     */
+    codec: {},
+
+    /**
+     * Exceptions.
+     * @namespace
+     */
+    exception: {
+      /**
+       * Ciphertext is corrupt.
+       * @constructor
+       */
+      corrupt: function (message) {
+        this.toString = function () {
+          return "CORRUPT: " + this.message;
+        };
+
+        this.message = message;
+      },
+
+      /**
+       * Invalid parameter.
+       * @constructor
+       */
+      invalid: function (message) {
+        this.toString = function () {
+          return "INVALID: " + this.message;
+        };
+
+        this.message = message;
+      },
+
+      /**
+       * Bug or missing feature in SJCL.
+       * @constructor
+       */
+      bug: function (message) {
+        this.toString = function () {
+          return "BUG: " + this.message;
+        };
+
+        this.message = message;
+      },
+
+      /**
+       * Something isn't ready.
+       * @constructor
+       */
+      notReady: function (message) {
+        this.toString = function () {
+          return "NOT READY: " + this.message;
+        };
+
+        this.message = message;
+      }
+    }
+  };
+  /** @fileOverview Arrays of bits, encoded as arrays of Numbers.
+   *
+   * @author Emily Stark
+   * @author Mike Hamburg
+   * @author Dan Boneh
+   */
+
+  /**
+   * Arrays of bits, encoded as arrays of Numbers.
+   * @namespace
+   * @description
+   * <p>
+   * These objects are the currency accepted by SJCL's crypto functions.
+   * </p>
+   *
+   * <p>
+   * Most of our crypto primitives operate on arrays of 4-byte words internally,
+   * but many of them can take arguments that are not a multiple of 4 bytes.
+   * This library encodes arrays of bits (whose size need not be a multiple of 8
+   * bits) as arrays of 32-bit words.  The bits are packed, big-endian, into an
+   * array of words, 32 bits at a time.  Since the words are double-precision
+   * floating point numbers, they fit some extra data.  We use this (in a private,
+   * possibly-changing manner) to encode the number of bits actually  present
+   * in the last word of the array.
+   * </p>
+   *
+   * <p>
+   * Because bitwise ops clear this out-of-band data, these arrays can be passed
+   * to ciphers like AES which want arrays of words.
+   * </p>
+   */
+
+  sjcl.bitArray = {
+    /**
+     * Array slices in units of bits.
+     * @param {bitArray} a The array to slice.
+     * @param {Number} bstart The offset to the start of the slice, in bits.
+     * @param {Number} bend The offset to the end of the slice, in bits.  If this is undefined,
+     * slice until the end of the array.
+     * @return {bitArray} The requested slice.
+     */
+    bitSlice: function (a, bstart, bend) {
+      a = sjcl.bitArray._shiftRight(a.slice(bstart / 32), 32 - (bstart & 31)).slice(1);
+      return bend === undefined ? a : sjcl.bitArray.clamp(a, bend - bstart);
+    },
+
+    /**
+     * Extract a number packed into a bit array.
+     * @param {bitArray} a The array to slice.
+     * @param {Number} bstart The offset to the start of the slice, in bits.
+     * @param {Number} blength The length of the number to extract.
+     * @return {Number} The requested slice.
+     */
+    extract: function (a, bstart, blength) {
+      // FIXME: this Math.floor is not necessary at all, but for some reason
+      // seems to suppress a bug in the Chromium JIT.
+      var x,
+          sh = Math.floor(-bstart - blength & 31);
+
+      if ((bstart + blength - 1 ^ bstart) & -32) {
+        // it crosses a boundary
+        x = a[bstart / 32 | 0] << 32 - sh ^ a[bstart / 32 + 1 | 0] >>> sh;
+      } else {
+        // within a single word
+        x = a[bstart / 32 | 0] >>> sh;
+      }
+
+      return x & (1 << blength) - 1;
+    },
+
+    /**
+     * Concatenate two bit arrays.
+     * @param {bitArray} a1 The first array.
+     * @param {bitArray} a2 The second array.
+     * @return {bitArray} The concatenation of a1 and a2.
+     */
+    concat: function (a1, a2) {
+      if (a1.length === 0 || a2.length === 0) {
+        return a1.concat(a2);
+      }
+
+      var last = a1[a1.length - 1],
+          shift = sjcl.bitArray.getPartial(last);
+
+      if (shift === 32) {
+        return a1.concat(a2);
+      } else {
+        return sjcl.bitArray._shiftRight(a2, shift, last | 0, a1.slice(0, a1.length - 1));
+      }
+    },
+
+    /**
+     * Find the length of an array of bits.
+     * @param {bitArray} a The array.
+     * @return {Number} The length of a, in bits.
+     */
+    bitLength: function (a) {
+      var l = a.length,
+          x;
+
+      if (l === 0) {
+        return 0;
+      }
+
+      x = a[l - 1];
+      return (l - 1) * 32 + sjcl.bitArray.getPartial(x);
+    },
+
+    /**
+     * Truncate an array.
+     * @param {bitArray} a The array.
+     * @param {Number} len The length to truncate to, in bits.
+     * @return {bitArray} A new array, truncated to len bits.
+     */
+    clamp: function (a, len) {
+      if (a.length * 32 < len) {
+        return a;
+      }
+
+      a = a.slice(0, Math.ceil(len / 32));
+      var l = a.length;
+      len = len & 31;
+
+      if (l > 0 && len) {
+        a[l - 1] = sjcl.bitArray.partial(len, a[l - 1] & 0x80000000 >> len - 1, 1);
+      }
+
+      return a;
+    },
+
+    /**
+     * Make a partial word for a bit array.
+     * @param {Number} len The number of bits in the word.
+     * @param {Number} x The bits.
+     * @param {Number} [_end=0] Pass 1 if x has already been shifted to the high side.
+     * @return {Number} The partial word.
+     */
+    partial: function (len, x, _end) {
+      if (len === 32) {
+        return x;
+      }
+
+      return (_end ? x | 0 : x << 32 - len) + len * 0x10000000000;
+    },
+
+    /**
+     * Get the number of bits used by a partial word.
+     * @param {Number} x The partial word.
+     * @return {Number} The number of bits used by the partial word.
+     */
+    getPartial: function (x) {
+      return Math.round(x / 0x10000000000) || 32;
+    },
+
+    /**
+     * Compare two arrays for equality in a predictable amount of time.
+     * @param {bitArray} a The first array.
+     * @param {bitArray} b The second array.
+     * @return {boolean} true if a == b; false otherwise.
+     */
+    equal: function (a, b) {
+      if (sjcl.bitArray.bitLength(a) !== sjcl.bitArray.bitLength(b)) {
+        return false;
+      }
+
+      var x = 0,
+          i;
+
+      for (i = 0; i < a.length; i++) {
+        x |= a[i] ^ b[i];
+      }
+
+      return x === 0;
+    },
+
+    /** Shift an array right.
+     * @param {bitArray} a The array to shift.
+     * @param {Number} shift The number of bits to shift.
+     * @param {Number} [carry=0] A byte to carry in
+     * @param {bitArray} [out=[]] An array to prepend to the output.
+     * @private
+     */
+    _shiftRight: function (a, shift, carry, out) {
+      var i,
+          last2 = 0,
+          shift2;
+
+      if (out === undefined) {
+        out = [];
+      }
+
+      for (; shift >= 32; shift -= 32) {
+        out.push(carry);
+        carry = 0;
+      }
+
+      if (shift === 0) {
+        return out.concat(a);
+      }
+
+      for (i = 0; i < a.length; i++) {
+        out.push(carry | a[i] >>> shift);
+        carry = a[i] << 32 - shift;
+      }
+
+      last2 = a.length ? a[a.length - 1] : 0;
+      shift2 = sjcl.bitArray.getPartial(last2);
+      out.push(sjcl.bitArray.partial(shift + shift2 & 31, shift + shift2 > 32 ? carry : out.pop(), 1));
+      return out;
+    },
+
+    /** xor a block of 4 words together.
+     * @private
+     */
+    _xor4: function (x, y) {
+      return [x[0] ^ y[0], x[1] ^ y[1], x[2] ^ y[2], x[3] ^ y[3]];
+    },
+
+    /** byteswap a word array inplace.
+     * (does not handle partial words)
+     * @param {sjcl.bitArray} a word array
+     * @return {sjcl.bitArray} byteswapped array
+     */
+    byteswapM: function (a) {
+      var i,
+          v,
+          m = 0xff00;
+
+      for (i = 0; i < a.length; ++i) {
+        v = a[i];
+        a[i] = v >>> 24 | v >>> 8 & m | (v & m) << 8 | v << 24;
+      }
+
+      return a;
+    }
+  };
+  /** @fileOverview Bit array codec implementations.
+   *
+   * @author Emily Stark
+   * @author Mike Hamburg
+   * @author Dan Boneh
+   */
+
+  /**
+   * UTF-8 strings
+   * @namespace
+   */
+
+  sjcl.codec.utf8String = {
+    /** Convert from a bitArray to a UTF-8 string. */
+    fromBits: function (arr) {
+      var out = "",
+          bl = sjcl.bitArray.bitLength(arr),
+          i,
+          tmp;
+
+      for (i = 0; i < bl / 8; i++) {
+        if ((i & 3) === 0) {
+          tmp = arr[i / 4];
+        }
+
+        out += String.fromCharCode(tmp >>> 8 >>> 8 >>> 8);
+        tmp <<= 8;
+      }
+
+      return decodeURIComponent(escape(out));
+    },
+
+    /** Convert from a UTF-8 string to a bitArray. */
+    toBits: function (str) {
+      str = unescape(encodeURIComponent(str));
+      var out = [],
+          i,
+          tmp = 0;
+
+      for (i = 0; i < str.length; i++) {
+        tmp = tmp << 8 | str.charCodeAt(i);
+
+        if ((i & 3) === 3) {
+          out.push(tmp);
+          tmp = 0;
+        }
+      }
+
+      if (i & 3) {
+        out.push(sjcl.bitArray.partial(8 * (i & 3), tmp));
+      }
+
+      return out;
+    }
+  };
+  /** @fileOverview Bit array codec implementations.
+   *
+   * @author Emily Stark
+   * @author Mike Hamburg
+   * @author Dan Boneh
+   */
+
+  /**
+   * Hexadecimal
+   * @namespace
+   */
+
+  sjcl.codec.hex = {
+    /** Convert from a bitArray to a hex string. */
+    fromBits: function (arr) {
+      var out = "",
+          i;
+
+      for (i = 0; i < arr.length; i++) {
+        out += ((arr[i] | 0) + 0xF00000000000).toString(16).substr(4);
+      }
+
+      return out.substr(0, sjcl.bitArray.bitLength(arr) / 4); //.replace(/(.{8})/g, "$1 ");
+    },
+
+    /** Convert from a hex string to a bitArray. */
+    toBits: function (str) {
+      var i,
+          out = [],
+          len;
+      str = str.replace(/\s|0x/g, "");
+      len = str.length;
+      str = str + "00000000";
+
+      for (i = 0; i < str.length; i += 8) {
+        out.push(parseInt(str.substr(i, 8), 16) ^ 0);
+      }
+
+      return sjcl.bitArray.clamp(out, len * 4);
+    }
+  };
+  /** @fileOverview Javascript SHA-256 implementation.
+   *
+   * An older version of this implementation is available in the public
+   * domain, but this one is (c) Emily Stark, Mike Hamburg, Dan Boneh,
+   * Stanford University 2008-2010 and BSD-licensed for liability
+   * reasons.
+   *
+   * Special thanks to Aldo Cortesi for pointing out several bugs in
+   * this code.
+   *
+   * @author Emily Stark
+   * @author Mike Hamburg
+   * @author Dan Boneh
+   */
+
+  /**
+   * Context for a SHA-256 operation in progress.
+   * @constructor
+   */
+
+  sjcl.hash.sha256 = function (hash) {
+    if (!this._key[0]) {
+      this._precompute();
+    }
+
+    if (hash) {
+      this._h = hash._h.slice(0);
+      this._buffer = hash._buffer.slice(0);
+      this._length = hash._length;
+    } else {
+      this.reset();
+    }
+  };
+  /**
+   * Hash a string or an array of words.
+   * @static
+   * @param {bitArray|String} data the data to hash.
+   * @return {bitArray} The hash value, an array of 16 big-endian words.
+   */
+
+
+  sjcl.hash.sha256.hash = function (data) {
+    return new sjcl.hash.sha256().update(data).finalize();
+  };
+
+  sjcl.hash.sha256.prototype = {
+    /**
+     * The hash's block size, in bits.
+     * @constant
+     */
+    blockSize: 512,
+
+    /**
+     * Reset the hash state.
+     * @return this
+     */
+    reset: function () {
+      this._h = this._init.slice(0);
+      this._buffer = [];
+      this._length = 0;
+      return this;
+    },
+
+    /**
+     * Input several words to the hash.
+     * @param {bitArray|String} data the data to hash.
+     * @return this
+     */
+    update: function (data) {
+      if (typeof data === "string") {
+        data = sjcl.codec.utf8String.toBits(data);
+      }
+
+      var i,
+          b = this._buffer = sjcl.bitArray.concat(this._buffer, data),
+          ol = this._length,
+          nl = this._length = ol + sjcl.bitArray.bitLength(data);
+
+      if (nl > 9007199254740991) {
+        throw new sjcl.exception.invalid("Cannot hash more than 2^53 - 1 bits");
+      }
+
+      if (typeof Uint32Array !== 'undefined') {
+        var c = new Uint32Array(b);
+        var j = 0;
+
+        for (i = 512 + ol - (512 + ol & 511); i <= nl; i += 512) {
+          this._block(c.subarray(16 * j, 16 * (j + 1)));
+
+          j += 1;
+        }
+
+        b.splice(0, 16 * j);
+      } else {
+        for (i = 512 + ol - (512 + ol & 511); i <= nl; i += 512) {
+          this._block(b.splice(0, 16));
+        }
+      }
+
+      return this;
+    },
+
+    /**
+     * Complete hashing and output the hash value.
+     * @return {bitArray} The hash value, an array of 8 big-endian words.
+     */
+    finalize: function () {
+      var i,
+          b = this._buffer,
+          h = this._h; // Round out and push the buffer
+
+      b = sjcl.bitArray.concat(b, [sjcl.bitArray.partial(1, 1)]); // Round out the buffer to a multiple of 16 words, less the 2 length words.
+
+      for (i = b.length + 2; i & 15; i++) {
+        b.push(0);
+      } // append the length
+
+
+      b.push(Math.floor(this._length / 0x100000000));
+      b.push(this._length | 0);
+
+      while (b.length) {
+        this._block(b.splice(0, 16));
+      }
+
+      this.reset();
+      return h;
+    },
+
+    /**
+     * The SHA-256 initialization vector, to be precomputed.
+     * @private
+     */
+    _init: [],
+
+    /*
+    _init:[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19],
+    */
+
+    /**
+     * The SHA-256 hash key, to be precomputed.
+     * @private
+     */
+    _key: [],
+
+    /*
+    _key:
+      [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+       0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+       0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+       0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+       0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+       0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+       0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+       0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2],
+    */
+
+    /**
+     * Function to precompute _init and _key.
+     * @private
+     */
+    _precompute: function () {
+      var i = 0,
+          prime = 2,
+          factor,
+          isPrime;
+
+      function frac(x) {
+        return (x - Math.floor(x)) * 0x100000000 | 0;
+      }
+
+      for (; i < 64; prime++) {
+        isPrime = true;
+
+        for (factor = 2; factor * factor <= prime; factor++) {
+          if (prime % factor === 0) {
+            isPrime = false;
+            break;
+          }
+        }
+
+        if (isPrime) {
+          if (i < 8) {
+            this._init[i] = frac(Math.pow(prime, 1 / 2));
+          }
+
+          this._key[i] = frac(Math.pow(prime, 1 / 3));
+          i++;
+        }
+      }
+    },
+
+    /**
+     * Perform one cycle of SHA-256.
+     * @param {Uint32Array|bitArray} w one block of words.
+     * @private
+     */
+    _block: function (w) {
+      var i,
+          tmp,
+          a,
+          b,
+          h = this._h,
+          k = this._key,
+          h0 = h[0],
+          h1 = h[1],
+          h2 = h[2],
+          h3 = h[3],
+          h4 = h[4],
+          h5 = h[5],
+          h6 = h[6],
+          h7 = h[7];
+      /* Rationale for placement of |0 :
+       * If a value can overflow is original 32 bits by a factor of more than a few
+       * million (2^23 ish), there is a possibility that it might overflow the
+       * 53-bit mantissa and lose precision.
+       *
+       * To avoid this, we clamp back to 32 bits by |'ing with 0 on any value that
+       * propagates around the loop, and on the hash state h[].  I don't believe
+       * that the clamps on h4 and on h0 are strictly necessary, but it's close
+       * (for h4 anyway), and better safe than sorry.
+       *
+       * The clamps on h[] are necessary for the output to be correct even in the
+       * common case and for short inputs.
+       */
+
+      for (i = 0; i < 64; i++) {
+        // load up the input word for this round
+        if (i < 16) {
+          tmp = w[i];
+        } else {
+          a = w[i + 1 & 15];
+          b = w[i + 14 & 15];
+          tmp = w[i & 15] = (a >>> 7 ^ a >>> 18 ^ a >>> 3 ^ a << 25 ^ a << 14) + (b >>> 17 ^ b >>> 19 ^ b >>> 10 ^ b << 15 ^ b << 13) + w[i & 15] + w[i + 9 & 15] | 0;
+        }
+
+        tmp = tmp + h7 + (h4 >>> 6 ^ h4 >>> 11 ^ h4 >>> 25 ^ h4 << 26 ^ h4 << 21 ^ h4 << 7) + (h6 ^ h4 & (h5 ^ h6)) + k[i]; // | 0;
+        // shift register
+
+        h7 = h6;
+        h6 = h5;
+        h5 = h4;
+        h4 = h3 + tmp | 0;
+        h3 = h2;
+        h2 = h1;
+        h1 = h0;
+        h0 = tmp + (h1 & h2 ^ h3 & (h1 ^ h2)) + (h1 >>> 2 ^ h1 >>> 13 ^ h1 >>> 22 ^ h1 << 30 ^ h1 << 19 ^ h1 << 10) | 0;
+      }
+
+      h[0] = h[0] + h0 | 0;
+      h[1] = h[1] + h1 | 0;
+      h[2] = h[2] + h2 | 0;
+      h[3] = h[3] + h3 | 0;
+      h[4] = h[4] + h4 | 0;
+      h[5] = h[5] + h5 | 0;
+      h[6] = h[6] + h6 | 0;
+      h[7] = h[7] + h7 | 0;
+    }
+  };
+  /** @fileOverview HMAC implementation.
+   *
+   * @author Emily Stark
+   * @author Mike Hamburg
+   * @author Dan Boneh
+   */
+
+  /** HMAC with the specified hash function.
+   * @constructor
+   * @param {bitArray} key the key for HMAC.
+   * @param {Object} [Hash=sjcl.hash.sha256] The hash function to use.
+   */
+
+  sjcl.misc.hmac = function (key, Hash) {
+    this._hash = Hash = Hash || sjcl.hash.sha256;
+    var exKey = [[], []],
+        i,
+        bs = Hash.prototype.blockSize / 32;
+    this._baseHash = [new Hash(), new Hash()];
+
+    if (key.length > bs) {
+      key = Hash.hash(key);
+    }
+
+    for (i = 0; i < bs; i++) {
+      exKey[0][i] = key[i] ^ 0x36363636;
+      exKey[1][i] = key[i] ^ 0x5C5C5C5C;
+    }
+
+    this._baseHash[0].update(exKey[0]);
+
+    this._baseHash[1].update(exKey[1]);
+
+    this._resultHash = new Hash(this._baseHash[0]);
+  };
+  /** HMAC with the specified hash function.  Also called encrypt since it's a prf.
+   * @param {bitArray|String} data The data to mac.
+   */
+
+
+  sjcl.misc.hmac.prototype.encrypt = sjcl.misc.hmac.prototype.mac = function (data) {
+    if (!this._updated) {
+      this.update(data);
+      return this.digest(data);
+    } else {
+      throw new sjcl.exception.invalid("encrypt on already updated hmac called!");
+    }
+  };
+
+  sjcl.misc.hmac.prototype.reset = function () {
+    this._resultHash = new this._hash(this._baseHash[0]);
+    this._updated = false;
+  };
+
+  sjcl.misc.hmac.prototype.update = function (data) {
+    this._updated = true;
+
+    this._resultHash.update(data);
+  };
+
+  sjcl.misc.hmac.prototype.digest = function () {
+    var w = this._resultHash.finalize(),
+        result = new this._hash(this._baseHash[1]).update(w).finalize();
+
+    this.reset();
+    return result;
+  };
+
+  return sjcl;
+})();
+
+exports.sjcl = sjcl;
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.processConfig = processConfig;
 
 function getTopLevelURL() {
@@ -107,17 +897,7 @@ function processConfig(data, userList, preferences, maybeTopLevelUrl) {
   return prefs;
 }
 
-function isFeatureEnabledFromProcessedConfig(processedConfig, featureName) {
-  const site = processedConfig.site;
-
-  if (site.isBroken || !site.enabledFeatures.includes(featureName)) {
-    return false;
-  }
-
-  return true;
-}
-
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -131,28 +911,12 @@ var _appleUtils = require("../apple-utils.js");
 
 var _validate = _interopRequireDefault(require("./validate.cjs"));
 
+var _utils = require("../utils.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/**
- * @typedef {{
- *     "globalPrivacyControlValue"?: boolean,
- *     "sessionKey"?: string,
- *     "debug"?: boolean,
- *     "platform": {
- *       "name": "macos" | "ios" | "extension" | "android" | "windows" | "unknown"
- *     }
- * }} UserPreferences
- */
-
-/**
- * @typedef {{
- *   contentScope: any,
- *   userUnprotectedDomains: string[],
- *   userPreferences: UserPreferences
- * }} InputConfig
- */
 class RuntimeConfiguration {
   constructor() {
     _defineProperty(this, "validate", _validate.default);
@@ -162,7 +926,7 @@ class RuntimeConfiguration {
 
   /**
    * @throws
-   * @param {InputConfig} config
+   * @param {Input} config
    * @returns {RuntimeConfiguration}
    */
   assign(config) {
@@ -236,13 +1000,13 @@ class RuntimeConfiguration {
 
   isFeatureRemoteEnabled(featureName, url) {
     const privacyConfig = (0, _appleUtils.processConfig)(this.config.contentScope, this.config.userUnprotectedDomains, this.config.userPreferences, url);
-    return (0, _appleUtils.isFeatureEnabledFromProcessedConfig)(privacyConfig, featureName);
+    return (0, _utils.isFeatureEnabledFromProcessedConfig)(privacyConfig, featureName);
   }
 
 }
 /**
  * Factory for creating config instance
- * @param {InputConfig} incoming
+ * @param {Input} incoming
  * @returns {RuntimeConfiguration}
  */
 
@@ -254,7 +1018,7 @@ function createRuntimeConfiguration(incoming) {
 }
 /**
  * Factory for creating config instance
- * @param {InputConfig} incoming
+ * @param {Input} incoming
  * @returns {{errors: import("ajv").ErrorObject[], config: RuntimeConfiguration | null}}
  */
 
@@ -263,7 +1027,7 @@ function tryCreateRuntimeConfiguration(incoming) {
   return new RuntimeConfiguration().tryAssign(incoming);
 }
 
-},{"../apple-utils.js":2,"./validate.cjs":4}],4:[function(require,module,exports){
+},{"../apple-utils.js":3,"../utils.js":6,"./validate.cjs":5}],5:[function(require,module,exports){
 "use strict";
 
 module.exports = validate20;
@@ -1122,7 +1886,283 @@ function validate20(data) {
   return errors === 0;
 }
 
-},{"ajv/dist/runtime/equal":5}],5:[function(require,module,exports){
+},{"ajv/dist/runtime/equal":7}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DDGReflect = exports.DDGProxy = exports.DDGPromise = void 0;
+exports.defineProperty = defineProperty;
+exports.getDataKeySync = getDataKeySync;
+exports.initStringExemptionLists = initStringExemptionLists;
+exports.isFeatureBroken = isFeatureBroken;
+exports.isFeatureEnabledFromProcessedConfig = isFeatureEnabledFromProcessedConfig;
+exports.iterateDataKey = iterateDataKey;
+exports.nextRandom = nextRandom;
+exports.overrideProperty = overrideProperty;
+exports.postDebugMessage = postDebugMessage;
+exports.shouldExemptMethod = shouldExemptMethod;
+exports.shouldExemptUrl = shouldExemptUrl;
+
+var _sjcl = require("../lib/sjcl.js");
+
+/* global cloneInto, exportFunction, mozProxies */
+// Only use globalThis for testing this breaks window.wrappedJSObject code in Firefox
+// eslint-disable-next-line no-global-assign
+const globalObj = typeof window === 'undefined' ? globalThis : window; // Tests don't define this variable so fallback to behave like chrome
+
+const hasMozProxies = typeof mozProxies !== 'undefined' ? mozProxies : false;
+
+function getDataKeySync(sessionKey, domainKey, inputData) {
+  // eslint-disable-next-line new-cap
+  const hmac = new _sjcl.sjcl.misc.hmac(_sjcl.sjcl.codec.utf8String.toBits(sessionKey + domainKey), _sjcl.sjcl.hash.sha256);
+  return _sjcl.sjcl.codec.hex.fromBits(hmac.encrypt(inputData));
+} // linear feedback shift register to find a random approximation
+
+
+function nextRandom(v) {
+  return Math.abs(v >> 1 | (v << 62 ^ v << 61) & ~(~0 << 63) << 62);
+}
+
+const exemptionLists = {};
+
+function shouldExemptUrl(type, url) {
+  for (const regex of exemptionLists[type]) {
+    if (regex.test(url)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+let debug = false;
+
+function initStringExemptionLists(args) {
+  const {
+    stringExemptionLists
+  } = args;
+  debug = args.debug;
+
+  for (const type in stringExemptionLists) {
+    exemptionLists[type] = [];
+
+    for (const stringExemption of stringExemptionLists[type]) {
+      exemptionLists[type].push(new RegExp(stringExemption));
+    }
+  }
+} // Checks the stack trace if there are known libraries that are broken.
+
+
+function shouldExemptMethod(type) {
+  // Short circuit stack tracing if we don't have checks
+  if (!(type in exemptionLists) || exemptionLists[type].length === 0) {
+    return false;
+  }
+
+  try {
+    const errorLines = new Error().stack.split('\n');
+    const errorFiles = new Set(); // Should cater for Chrome and Firefox stacks, we only care about https? resources.
+
+    const lineTest = /(\()?(http[^)]+):[0-9]+:[0-9]+(\))?/;
+
+    for (const line of errorLines) {
+      const res = line.match(lineTest);
+
+      if (res) {
+        const path = res[2]; // checked already
+
+        if (errorFiles.has(path)) {
+          continue;
+        }
+
+        if (shouldExemptUrl(type, path)) {
+          return true;
+        }
+
+        errorFiles.add(res[2]);
+      }
+    }
+  } catch (e) {// Fall through
+  }
+
+  return false;
+} // Iterate through the key, passing an item index and a byte to be modified
+
+
+function iterateDataKey(key, callback) {
+  let item = key.charCodeAt(0);
+
+  for (const i in key) {
+    let byte = key.charCodeAt(i);
+
+    for (let j = 8; j >= 0; j--) {
+      const res = callback(item, byte); // Exit early if callback returns null
+
+      if (res === null) {
+        return;
+      } // find next item to perturb
+
+
+      item = nextRandom(item); // Right shift as we use the least significant bit of it
+
+      byte = byte >> 1;
+    }
+  }
+}
+
+function isFeatureBroken(args, feature) {
+  return args.site.isBroken || args.site.allowlisted || !args.site.enabledFeatures.includes(feature);
+}
+
+function isFeatureEnabledFromProcessedConfig(processedConfig, featureName) {
+  const site = processedConfig.site;
+
+  if (site.isBroken || !site.enabledFeatures.includes(featureName)) {
+    return false;
+  }
+
+  return true;
+}
+/**
+ * For each property defined on the object, update it with the target value.
+ */
+
+
+function overrideProperty(name, prop) {
+  // Don't update if existing value is undefined or null
+  if (!(prop.origValue === undefined)) {
+    /**
+     * When re-defining properties, we bind the overwritten functions to null. This prevents
+     * sites from using toString to see if the function has been overwritten
+     * without this bind call, a site could run something like
+     * `Object.getOwnPropertyDescriptor(Screen.prototype, "availTop").get.toString()` and see
+     * the contents of the function. Appending .bind(null) to the function definition will
+     * have the same toString call return the default [native code]
+     */
+    try {
+      defineProperty(prop.object, name, {
+        // eslint-disable-next-line no-extra-bind
+        get: (() => prop.targetValue).bind(null)
+      });
+    } catch (e) {}
+  }
+
+  return prop.origValue;
+}
+
+function defineProperty(object, propertyName, descriptor) {
+  if (hasMozProxies) {
+    const usedObj = object.wrappedJSObject;
+    const UsedObjectInterface = globalObj.wrappedJSObject.Object;
+    const definedDescriptor = new UsedObjectInterface();
+    ['configurable', 'enumerable', 'value', 'writable'].forEach(propertyName => {
+      if (propertyName in descriptor) {
+        definedDescriptor[propertyName] = cloneInto(descriptor[propertyName], definedDescriptor, {
+          cloneFunctions: true
+        });
+      }
+    });
+    ['get', 'set'].forEach(methodName => {
+      if (methodName in descriptor) {
+        exportFunction(descriptor[methodName], definedDescriptor, {
+          defineAs: methodName
+        });
+      }
+    });
+    UsedObjectInterface.defineProperty(usedObj, propertyName, definedDescriptor);
+  } else {
+    Object.defineProperty(object, propertyName, descriptor);
+  }
+}
+
+function camelcase(dashCaseText) {
+  return dashCaseText.replace(/-(.)/g, (match, letter) => {
+    return letter.toUpperCase();
+  });
+}
+
+class DDGProxy {
+  constructor(featureName, objectScope, property, proxyObject) {
+    var _this = this;
+
+    this.objectScope = objectScope;
+    this.property = property;
+    this.featureName = featureName;
+    this.camelFeatureName = camelcase(this.featureName);
+
+    const outputHandler = function () {
+      const isExempt = shouldExemptMethod(_this.camelFeatureName);
+
+      if (debug) {
+        postDebugMessage(_this.camelFeatureName, {
+          action: isExempt ? 'ignore' : 'restrict',
+          kind: _this.property,
+          documentUrl: document.location.href,
+          stack: new Error().stack,
+          args: JSON.stringify(arguments.length <= 2 ? undefined : arguments[2])
+        });
+      } // The normal return value
+
+
+      if (isExempt) {
+        return DDGReflect.apply(...arguments);
+      }
+
+      return proxyObject.apply(...arguments);
+    };
+
+    if (hasMozProxies) {
+      this._native = objectScope[property];
+      const handler = new globalObj.wrappedJSObject.Object();
+      handler.apply = exportFunction(outputHandler, globalObj);
+      this.internal = new globalObj.wrappedJSObject.Proxy(objectScope.wrappedJSObject[property], handler);
+    } else {
+      this._native = objectScope[property];
+      const handler = {};
+      handler.apply = outputHandler;
+      this.internal = new globalObj.Proxy(objectScope[property], handler);
+    }
+  } // Actually apply the proxy to the native property
+
+
+  overload() {
+    if (hasMozProxies) {
+      exportFunction(this.internal, this.objectScope, {
+        defineAs: this.property
+      });
+    } else {
+      this.objectScope[this.property] = this.internal;
+    }
+  }
+
+}
+
+exports.DDGProxy = DDGProxy;
+
+function postDebugMessage(feature, message) {
+  globalObj.postMessage({
+    action: feature,
+    message
+  });
+}
+
+let DDGReflect;
+exports.DDGReflect = DDGReflect;
+let DDGPromise; // Exports for usage where we have to cross the xray boundary: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
+
+exports.DDGPromise = DDGPromise;
+
+if (hasMozProxies) {
+  exports.DDGPromise = DDGPromise = globalObj.wrappedJSObject.Promise;
+  exports.DDGReflect = DDGReflect = globalObj.wrappedJSObject.Reflect;
+} else {
+  exports.DDGPromise = DDGPromise = globalObj.Promise;
+  exports.DDGReflect = DDGReflect = globalObj.Reflect;
+}
+
+},{"../lib/sjcl.js":2}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1134,7 +2174,7 @@ const equal = require("fast-deep-equal");
 equal.code = 'require("ajv/dist/runtime/equal").default';
 exports.default = equal;
 
-},{"fast-deep-equal":6}],6:[function(require,module,exports){
+},{"fast-deep-equal":8}],8:[function(require,module,exports){
 'use strict'; // do not edit .js files directly - edit src/index.jst
 
 module.exports = function equal(a, b) {
@@ -1174,7 +2214,7 @@ module.exports = function equal(a, b) {
   return a !== a && b !== b;
 };
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1323,7 +2363,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":8,"./lib/constants.js":9,"./lib/rules-parser.js":10}],8:[function(require,module,exports){
+},{"./lib/apple.password.js":10,"./lib/constants.js":11,"./lib/rules-parser.js":12}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1947,7 +2987,7 @@ exports.Password = Password;
 
 _defineProperty(Password, "defaults", defaults);
 
-},{"./constants.js":9,"./rules-parser.js":10}],9:[function(require,module,exports){
+},{"./constants.js":11,"./rules-parser.js":12}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1968,7 +3008,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2701,7 +3741,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -3475,7 +4515,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3529,7 +4569,7 @@ function createDevice(sender, tooltip, globalConfig, platformConfig, autofillSet
   throw new Error('undefined');
 }
 
-},{"./DeviceInterface/AndroidInterface":13,"./DeviceInterface/AppleDeviceInterface":14,"./DeviceInterface/AppleOverlayDeviceInterface":15,"./DeviceInterface/ExtensionInterface":16,"./DeviceInterface/WindowsInterface":18}],13:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":15,"./DeviceInterface/AppleDeviceInterface":16,"./DeviceInterface/AppleOverlayDeviceInterface":17,"./DeviceInterface/ExtensionInterface":18,"./DeviceInterface/WindowsInterface":20}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3596,7 +4636,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../autofill-utils":47,"./InterfacePrototype.js":17}],14:[function(require,module,exports){
+},{"../autofill-utils":49,"./InterfacePrototype.js":19}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3779,7 +4819,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":45,"../autofill-utils":47,"../messages/messages":52,"./InterfacePrototype.js":17}],15:[function(require,module,exports){
+},{"../UI/styles/styles":47,"../autofill-utils":49,"../messages/messages":54,"./InterfacePrototype.js":19}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4010,7 +5050,7 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../UI/styles/styles":45,"../autofill-utils":47,"../messages/messages":52,"./InterfacePrototype.js":17}],16:[function(require,module,exports){
+},{"../UI/styles/styles":47,"../autofill-utils":49,"../messages/messages":54,"./InterfacePrototype.js":19}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4134,7 +5174,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../autofill-utils":47,"./InterfacePrototype.js":17}],17:[function(require,module,exports){
+},{"../autofill-utils":49,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4953,7 +5993,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":22,"../Form/listenForFormSubmission":26,"../Form/matching":29,"../InputTypes/Credentials":32,"../InputTypes/input-types":35,"../PasswordGenerator":36,"../Scanner":37,"../UI/WebTooltip":43,"../autofill-utils":47,"../config":49,"../messages/messages":52,"../senders/sender":65,"../settings/settings":67,"@duckduckgo/content-scope-scripts":1}],18:[function(require,module,exports){
+},{"../Form/formatters":24,"../Form/listenForFormSubmission":28,"../Form/matching":31,"../InputTypes/Credentials":34,"../InputTypes/input-types":37,"../PasswordGenerator":38,"../Scanner":39,"../UI/WebTooltip":45,"../autofill-utils":49,"../config":51,"../messages/messages":54,"../senders/sender":67,"../settings/settings":69,"@duckduckgo/content-scope-scripts":1}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4984,7 +6024,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 exports.WindowsInterface = WindowsInterface;
 
-},{"../UI/styles/styles":45,"./InterfacePrototype":17}],19:[function(require,module,exports){
+},{"../UI/styles/styles":47,"./InterfacePrototype":19}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5522,7 +6562,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":47,"../constants":50,"./FormAnalyzer":20,"./formatters":22,"./inputStyles":23,"./inputTypeConfig.js":24,"./matching":29}],20:[function(require,module,exports){
+},{"../autofill-utils":49,"../constants":52,"./FormAnalyzer":22,"./formatters":24,"./inputStyles":25,"./inputTypeConfig.js":26,"./matching":31}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5774,7 +6814,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":47,"../constants":50,"./matching":29,"./matching-configuration":28}],21:[function(require,module,exports){
+},{"../autofill-utils":49,"../constants":52,"./matching":31,"./matching-configuration":30}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6342,7 +7382,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6684,7 +7724,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames":21,"./matching":29}],23:[function(require,module,exports){
+},{"./countryNames":23,"./matching":31}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6766,7 +7806,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":24}],24:[function(require,module,exports){
+},{"./inputTypeConfig.js":26}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6955,7 +7995,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials":32,"../InputTypes/CreditCard":33,"../InputTypes/Identity":34,"../UI/img/ddgPasswordIcon":44,"./logo-svg":27,"./matching":29}],25:[function(require,module,exports){
+},{"../InputTypes/Credentials":34,"../InputTypes/CreditCard":35,"../InputTypes/Identity":36,"../UI/img/ddgPasswordIcon":46,"./logo-svg":29,"./matching":31}],27:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -7007,7 +8047,7 @@ const extractElementStrings = element => {
 
 module.exports.extractElementStrings = extractElementStrings;
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7050,7 +8090,7 @@ const listenForGlobalFormSubmission = forms => {
 var _default = listenForGlobalFormSubmission;
 exports.default = _default;
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7060,7 +8100,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7686,7 +8726,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":30}],29:[function(require,module,exports){
+},{"./selectors-css":32}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8670,7 +9710,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":50,"./label-util":25,"./matching-configuration":28,"./selectors-css":30,"./vendor-regex":31}],30:[function(require,module,exports){
+},{"../constants":52,"./label-util":27,"./matching-configuration":30,"./selectors-css":32,"./vendor-regex":33}],32:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -8737,7 +9777,7 @@ module.exports.__secret_do_not_use = {
   birthdayYear
 };
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -8794,7 +9834,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 
 module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -8929,7 +9969,7 @@ module.exports.fromPassword = fromPassword;
 module.exports.appendGeneratedId = appendGeneratedId;
 module.exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8981,7 +10021,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9055,7 +10095,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":22}],35:[function(require,module,exports){
+},{"../Form/formatters":24}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9094,7 +10134,7 @@ function featureToggleAwareInputTypes(inputTypes, featureToggles) {
   return local;
 }
 
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9166,7 +10206,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":7,"../packages/password/rules.json":11}],37:[function(require,module,exports){
+},{"../packages/password":9,"../packages/password/rules.json":13}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9473,7 +10513,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":19,"./Form/matching":29,"./Form/selectors-css":30,"./autofill-utils":47}],38:[function(require,module,exports){
+},{"./Form/Form":21,"./Form/matching":31,"./Form/selectors-css":32,"./autofill-utils":49}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9529,7 +10569,7 @@ class DataWebTooltip extends _Tooltip.default {
 var _default = DataWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":47,"./Tooltip":42}],39:[function(require,module,exports){
+},{"../autofill-utils":49,"./Tooltip":44}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9599,7 +10639,7 @@ class EmailWebTooltip extends _Tooltip.default {
 var _default = EmailWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":47,"./Tooltip":42,"./styles/styles":45}],40:[function(require,module,exports){
+},{"../autofill-utils":49,"./Tooltip":44,"./styles/styles":47}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9655,7 +10695,7 @@ class NativeTooltip {
 
 exports.NativeTooltip = NativeTooltip;
 
-},{"../Form/matching":29}],41:[function(require,module,exports){
+},{"../Form/matching":31}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9948,7 +10988,7 @@ function _removeListeners2() {
   window.removeEventListener('pointerdown', this);
 }
 
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10197,7 +11237,7 @@ exports.Tooltip = Tooltip;
 var _default = Tooltip;
 exports.default = _default;
 
-},{"../Form/matching":29,"../autofill-utils":47}],43:[function(require,module,exports){
+},{"../Form/matching":31,"../autofill-utils":49}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10507,7 +11547,7 @@ function _onSelect2(config, data, id) {
   return _classPrivateFieldGet(this, _device).onSelect(config, data, id);
 }
 
-},{"../Form/inputTypeConfig":24,"./DataWebTooltip":38,"./EmailWebTooltip":39}],44:[function(require,module,exports){
+},{"../Form/inputTypeConfig":26,"./DataWebTooltip":40,"./EmailWebTooltip":41}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10529,7 +11569,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10539,7 +11579,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10599,7 +11639,7 @@ function createTooltip(globalConfig, platformConfig, _autofillSettings) {
   throw new Error('undefined');
 }
 
-},{"./NativeTooltip":40,"./OverlayControllerTooltip":41,"./WebTooltip":43}],47:[function(require,module,exports){
+},{"./NativeTooltip":42,"./OverlayControllerTooltip":43,"./WebTooltip":45}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10952,7 +11992,7 @@ const isLikelyASubmitButton = el => {
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":29}],48:[function(require,module,exports){
+},{"./Form/matching":31}],50:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -11041,7 +12081,7 @@ async function getRuntimeConfiguration(sender) {
   return config;
 }
 
-},{"./DeviceInterface":12,"./UI/tooltips":46,"./config":49,"./messages/messages":52,"./requestIdleCallback":53,"./senders/captureDdgGlobals":62,"./senders/create-sender":63,"./settings/settings":67,"@duckduckgo/content-scope-scripts":1}],49:[function(require,module,exports){
+},{"./DeviceInterface":14,"./UI/tooltips":48,"./config":51,"./messages/messages":54,"./requestIdleCallback":55,"./senders/captureDdgGlobals":64,"./senders/create-sender":65,"./settings/settings":69,"@duckduckgo/content-scope-scripts":1}],51:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -11102,7 +12142,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11116,7 +12156,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11295,7 +12335,7 @@ class SchemaValidationError extends Error {
 
 exports.SchemaValidationError = SchemaValidationError;
 
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11553,7 +12593,7 @@ function createLegacyMessage(name, data) {
   return message;
 }
 
-},{"../schema/response.getAutofillData.schema.json":54,"../schema/response.getAvailableInputTypes.schema.json":56,"../schema/response.getRuntimeConfiguration.schema.json":57,"../schema/validators.cjs":58,"./message":51}],53:[function(require,module,exports){
+},{"../schema/response.getAutofillData.schema.json":56,"../schema/response.getAvailableInputTypes.schema.json":58,"../schema/response.getRuntimeConfiguration.schema.json":59,"../schema/validators.cjs":60,"./message":53}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11601,7 +12641,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
@@ -11632,7 +12672,7 @@ module.exports={
   ]
 }
 
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillInitDataResponse",
@@ -11689,7 +12729,7 @@ module.exports={
   ]
 }
 
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
@@ -11733,7 +12773,7 @@ module.exports={
   ]
 }
 
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
@@ -11760,7 +12800,7 @@ module.exports={
   ]
 }
 
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 // @ts-nocheck
 "use strict";
 
@@ -16368,7 +17408,7 @@ function validate35(data) {
   return errors === 0;
 }
 
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16458,7 +17498,7 @@ function waitForResponse(expectedResponse) {
   });
 }
 
-},{"../messages/messages":52,"./sender":65}],60:[function(require,module,exports){
+},{"../messages/messages":54,"./sender":67}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16643,7 +17683,7 @@ const fallbacks = {
   }
 };
 
-},{"../messages/messages":52,"./appleDeviceUtils":61,"./sender":65}],61:[function(require,module,exports){
+},{"../messages/messages":54,"./appleDeviceUtils":63,"./sender":67}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16786,7 +17826,7 @@ class MissingWebkitHandler extends Error {
 
 exports.MissingWebkitHandler = MissingWebkitHandler;
 
-},{"./captureDdgGlobals":62}],62:[function(require,module,exports){
+},{"./captureDdgGlobals":64}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16817,7 +17857,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],63:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16895,7 +17935,7 @@ function selectSender(globalConfig) {
   return new _extension.ExtensionSender();
 }
 
-},{"./android.sender":59,"./apple.sender":60,"./extension.sender":64,"./sender":65,"./windows.sender":66}],64:[function(require,module,exports){
+},{"./android.sender":61,"./apple.sender":62,"./extension.sender":66,"./sender":67,"./windows.sender":68}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17025,7 +18065,7 @@ const handlers = {
   }
 };
 
-},{"../messages/messages":52,"./sender":65,"@duckduckgo/content-scope-scripts":1}],65:[function(require,module,exports){
+},{"../messages/messages":54,"./sender":67,"@duckduckgo/content-scope-scripts":1}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17132,7 +18172,7 @@ class LoggingSender extends Sender {
 
 exports.LoggingSender = LoggingSender;
 
-},{}],66:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17248,7 +18288,7 @@ function windowsTransport(name, data) {
   };
 }
 
-},{"../schema/response.getAutofillInitData.schema.json":55,"../schema/response.getAvailableInputTypes.schema.json":56,"../schema/response.getRuntimeConfiguration.schema.json":57,"./sender":65}],67:[function(require,module,exports){
+},{"../schema/response.getAutofillInitData.schema.json":57,"../schema/response.getAvailableInputTypes.schema.json":58,"../schema/response.getRuntimeConfiguration.schema.json":59,"./sender":67}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17336,4 +18376,4 @@ function fromRuntimeConfig(config) {
   return settings;
 }
 
-},{"../schema/validators.cjs":58}]},{},[48]);
+},{"../schema/validators.cjs":60}]},{},[50]);

@@ -38,13 +38,13 @@ export class AppleSender extends Sender {
         } catch (e) {
             if (e instanceof MissingWebkitHandler) {
                 if (msg instanceof GetRuntimeConfiguration) {
-                    return fallbacks.getRuntimeConfiguration(this.config);
+                    return fallbacks.getRuntimeConfiguration(this.config)
                 }
                 if (msg instanceof GetAvailableInputTypes) {
-                    return fallbacks.getAvailableInputTypes(this.config);
+                    return fallbacks.getAvailableInputTypes(this.config)
                 }
                 if (msg instanceof GetAutofillInitData) {
-                    return fallbacks.getAutofillInitData(this.config);
+                    return fallbacks.getAutofillInitData(this.config)
                 }
                 throw new Error('unimplemented handler: ' + name)
             } else {
