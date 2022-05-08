@@ -16,6 +16,18 @@ Object.defineProperty(exports, "createRuntimeConfiguration", {
     return _RuntimeConfiguration.createRuntimeConfiguration;
   }
 });
+Object.defineProperty(exports, "isFeatureEnabledFromProcessedConfig", {
+  enumerable: true,
+  get: function () {
+    return _appleUtils.isFeatureEnabledFromProcessedConfig;
+  }
+});
+Object.defineProperty(exports, "processConfig", {
+  enumerable: true,
+  get: function () {
+    return _appleUtils.processConfig;
+  }
+});
 Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
   enumerable: true,
   get: function () {
@@ -25,12 +37,15 @@ Object.defineProperty(exports, "tryCreateRuntimeConfiguration", {
 
 var _RuntimeConfiguration = require("./src/config/RuntimeConfiguration.js");
 
-},{"./src/config/RuntimeConfiguration.js":3}],2:[function(require,module,exports){
+var _appleUtils = require("./src/apple-utils");
+
+},{"./src/apple-utils":2,"./src/config/RuntimeConfiguration.js":3}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.isFeatureEnabledFromProcessedConfig = isFeatureEnabledFromProcessedConfig;
 exports.processConfig = processConfig;
 
 function getTopLevelURL() {
@@ -90,6 +105,16 @@ function processConfig(data, userList, preferences, maybeTopLevelUrl) {
     cookie: {}
   };
   return prefs;
+}
+
+function isFeatureEnabledFromProcessedConfig(processedConfig, featureName) {
+  const site = processedConfig.site;
+
+  if (site.isBroken || !site.enabledFeatures.includes(featureName)) {
+    return false;
+  }
+
+  return true;
 }
 
 },{}],3:[function(require,module,exports){
@@ -184,12 +209,13 @@ class RuntimeConfiguration {
 
 
   getSettings(featureName, url) {
-    var _this$config$userPref, _this$config$userPref2, _this$config$contentS, _this$config$contentS2;
+    var _this$config$userPref, _this$config$userPref2;
 
     const isEnabled = this.isFeatureRemoteEnabled(featureName, url);
     if (!isEnabled) return null;
-    const settings = { ...((_this$config$userPref = this.config.userPreferences.features) === null || _this$config$userPref === void 0 ? void 0 : (_this$config$userPref2 = _this$config$userPref[featureName]) === null || _this$config$userPref2 === void 0 ? void 0 : _this$config$userPref2.settings),
-      ...((_this$config$contentS = this.config.contentScope.features) === null || _this$config$contentS === void 0 ? void 0 : (_this$config$contentS2 = _this$config$contentS[featureName]) === null || _this$config$contentS2 === void 0 ? void 0 : _this$config$contentS2.settings)
+    const settings = { ...((_this$config$userPref = this.config.userPreferences.features) === null || _this$config$userPref === void 0 ? void 0 : (_this$config$userPref2 = _this$config$userPref[featureName]) === null || _this$config$userPref2 === void 0 ? void 0 : _this$config$userPref2.settings) // todo: Decide on merge strategy?
+      // ...this.config.contentScope.features?.[featureName]?.settings
+
     };
     return settings;
   }
@@ -210,13 +236,7 @@ class RuntimeConfiguration {
 
   isFeatureRemoteEnabled(featureName, url) {
     const privacyConfig = (0, _appleUtils.processConfig)(this.config.contentScope, this.config.userUnprotectedDomains, this.config.userPreferences, url);
-    const site = privacyConfig.site;
-
-    if (site.isBroken || !site.enabledFeatures.includes(featureName)) {
-      return false;
-    }
-
-    return true;
+    return (0, _appleUtils.isFeatureEnabledFromProcessedConfig)(privacyConfig, featureName);
   }
 
 }
@@ -4005,18 +4025,6 @@ var _autofillUtils = require("../autofill-utils");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class ExtensionInterface extends _InterfacePrototype.default {
-  // todo(Shane): How will this be handled in the new model.
-  async isEnabled() {
-    return new Promise(resolve => {
-      chrome.runtime.sendMessage({
-        registeredTempAutofillContentScript: true,
-        documentUrl: window.location.href
-      }, response => {
-        resolve((0, _autofillUtils.isAutofillEnabledFromProcessedConfig)(response));
-      });
-    });
-  }
-
   isDeviceSignedIn() {
     return this.hasLocalAddresses;
   }
@@ -4025,8 +4033,18 @@ class ExtensionInterface extends _InterfacePrototype.default {
     await this._addDeviceListeners();
     return this.getAddresses().then(_addresses => {
       if (this.hasLocalAddresses) {
-        const cleanup = this.scanner.init(this.availableInputTypes);
-        this.addLogoutListener(cleanup);
+        // todo(Shane): Should we re-evaluate input types now?
+        this.availableInputTypes = { ...this.availableInputTypes,
+          email: true
+        };
+        const cleanup = this.scanner.init(this.availableInputTypes); // todo(Shane): Should we re-evaluate input types now?
+
+        this.addLogoutListener(() => {
+          cleanup();
+          this.availableInputTypes = { ...this.availableInputTypes,
+            email: false
+          };
+        });
       }
     });
   }
@@ -9069,6 +9087,10 @@ function featureToggleAwareInputTypes(inputTypes, featureToggles) {
     local.identities = false;
   }
 
+  if (!featureToggles.emailProtection) {
+    local.email = false;
+  }
+
   return local;
 }
 
@@ -10583,9 +10605,9 @@ function createTooltip(globalConfig, platformConfig, _autofillSettings) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
+exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
-exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = exports.isLikelyASubmitButton = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
+exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = exports.isLikelyASubmitButton = exports.isEventWithinDax = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 
 var _matching = require("./Form/matching");
 
@@ -10638,47 +10660,11 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 
     window.addEventListener('message', handler);
   });
-};
-/**
- * @param {GlobalConfig} globalConfig
- * @param [processConfig]
- * @return {boolean}
- */
-
-
-exports.sendAndWaitForAnswer = sendAndWaitForAnswer;
-
-const autofillEnabled = (globalConfig, processConfig) => {
-  if (!globalConfig.contentScope) {
-    // Return enabled for platforms that haven't implemented the config yet
-    return true;
-  }
-
-  const {
-    contentScope,
-    userUnprotectedDomains,
-    userPreferences
-  } = globalConfig; // Check config on Apple platforms
-
-  const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
-  return isAutofillEnabledFromProcessedConfig(processedConfig);
-};
-
-exports.autofillEnabled = autofillEnabled;
-
-const isAutofillEnabledFromProcessedConfig = processedConfig => {
-  const site = processedConfig.site;
-
-  if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
-    return false;
-  }
-
-  return true;
 }; // Access the original setter (needed to bypass React's implementation on mobile)
 // @ts-ignore
 
 
-exports.isAutofillEnabledFromProcessedConfig = isAutofillEnabledFromProcessedConfig;
+exports.sendAndWaitForAnswer = sendAndWaitForAnswer;
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
 /**
  * Ensures the value is set properly and dispatches events to simulate real user action
@@ -16919,67 +16905,34 @@ exports.createTransport = createTransport;
 
 var _sender = require("./sender");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var _messages = require("../messages/messages");
+
+var _contentScopeScripts = require("@duckduckgo/content-scope-scripts");
 
 class ExtensionSender extends _sender.Sender {
-  /** @type {GlobalConfig} */
-
-  /** @param {GlobalConfig} globalConfig */
-  constructor(globalConfig) {
-    super();
-
-    _defineProperty(this, "config", void 0);
-
-    this.config = globalConfig;
-  }
-
   async handle(msg) {
-    const {
-      name,
-      data
-    } = msg;
-
-    try {
-      const result = await sendToExtension(name);
-      return result;
-    } catch (e) {
-      if (e instanceof MissingExtensionHandler) {
-        if (name in interceptions) {
-          var _interceptions$name;
-
-          console.log('--> falling back to: ', name, data);
-          return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, this.config);
-        } else {
-          throw new Error('unimplemented handler: ' + name);
-        }
-      } else {
-        throw e;
-      }
+    if (msg instanceof _messages.GetRuntimeConfiguration) {
+      return handlers.getRuntimeConfiguration(msg);
     }
+
+    if (msg instanceof _messages.GetAvailableInputTypes) {
+      return handlers.getAvailableInputTypes(msg);
+    }
+
+    throw new Error('not implemented yet');
   }
 
 }
 /**
- * @param {GlobalConfig} globalConfig
+ * @param {GlobalConfig} _globalConfig
  * @returns {Sender}
  */
 
 
 exports.ExtensionSender = ExtensionSender;
 
-function createTransport(globalConfig) {
-  return new ExtensionSender(globalConfig);
-}
-
-class MissingExtensionHandler extends Error {
-  constructor(handlerName) {
-    super();
-
-    _defineProperty(this, "handlerName", void 0);
-
-    this.handlerName = handlerName;
-  }
-
+function createTransport(_globalConfig) {
+  return new ExtensionSender();
 }
 /**
  * Try to send a message to the Extension.
@@ -16989,44 +16942,54 @@ class MissingExtensionHandler extends Error {
  *
  * For example, this can help when implementing new messaging
  *
- * @param {string} name
+ * @param {Record<string, any>} input
  * @returns {Promise<any>}
  */
 
 
-function sendToExtension(name) {
-  return new Promise((resolve, reject) => chrome.runtime.sendMessage({
-    [name]: true
-  }, data => {
+function sendToExtension(input) {
+  return new Promise((resolve, reject) => chrome.runtime.sendMessage(input, data => {
     if (typeof data === 'undefined') {
-      var _chrome$runtime$lastE, _chrome$runtime$lastE2;
-
-      if ((_chrome$runtime$lastE = chrome.runtime.lastError) !== null && _chrome$runtime$lastE !== void 0 && (_chrome$runtime$lastE2 = _chrome$runtime$lastE.message) !== null && _chrome$runtime$lastE2 !== void 0 && _chrome$runtime$lastE2.includes('The message port closed before a response was received')) {
-        console.warn("Missing extension handler: '".concat(name, "'"));
-        reject(new MissingExtensionHandler("Missing extension handler: '".concat(name, "'")));
-      } else {
-        reject(new Error('Unknown extension error for message: ' + name));
-      }
+      reject(new Error('Unknown extension error for message: ' + name));
     } else {
-      return resolve({
-        success: data
-      });
+      return resolve(data);
     }
   }));
 }
-/**
- * @type {Interceptions}
- */
 
-
-const interceptions = {
+const handlers = {
   /**
-   * @param {GlobalConfig} globalConfig
+   * This is a stub for the new message until the extension supports it
+   *
+   * @param {GetAvailableInputTypes} msg
+   * @returns {Promise<any>}
    */
-  'getRuntimeConfiguration': async globalConfig => {
+  'getAvailableInputTypes': async msg => {
+    return {
+      success: msg.response({
+        email: false,
+        identities: false,
+        credentials: false,
+        creditCards: false
+      })
+    };
+  },
+
+  /**
+   * This is a stub for the new message until the extension supports it
+   *
+   * @param {GetRuntimeConfiguration} msg
+   */
+  'getRuntimeConfiguration': async msg => {
+    const extensionResponse = await sendToExtension({
+      registeredTempAutofillContentScript: true,
+      documentUrl: window.location.href
+    });
+    const enabled = (0, _contentScopeScripts.isFeatureEnabledFromProcessedConfig)(extensionResponse, 'autofill');
     /**
      * @type {FeatureToggles}
      */
+
     const featureToggles = {
       'inputType_credentials': false,
       'inputType_identities': false,
@@ -17035,41 +16998,41 @@ const interceptions = {
       'password_generation': false,
       'credentials_saving': false
     };
+    const response = msg.response({
+      contentScope: {
+        features: {
+          autofill: {
+            state: enabled ? 'enabled' : 'disabled',
+            exceptions: []
+          }
+        },
+        unprotectedTemporary: []
+      },
+      userPreferences: {
+        // @ts-ignore
+        sessionKey: '',
+        debug: false,
+        globalPrivacyControlValue: false,
+        platform: {
+          name: 'extension'
+        },
+        features: {
+          autofill: {
+            settings: {
+              featureToggles: featureToggles
+            }
+          }
+        }
+      },
+      userUnprotectedDomains: []
+    });
     return {
-      success: {
-        contentScope: {
-          features: {
-            autofill: {
-              state: 'enabled',
-              exceptions: []
-            }
-          },
-          unprotectedTemporary: [],
-          ...globalConfig.contentScope
-        },
-        userPreferences: {
-          sessionKey: '',
-          debug: false,
-          globalPrivacyControlValue: false,
-          platform: {
-            name: 'extension'
-          },
-          features: {
-            autofill: {
-              settings: {
-                featureToggles: featureToggles
-              }
-            }
-          },
-          ...globalConfig.userPreferences
-        },
-        userUnprotectedDomains: globalConfig.userUnprotectedDomains || []
-      }
+      success: response
     };
   }
 };
 
-},{"./sender":65}],65:[function(require,module,exports){
+},{"../messages/messages":52,"./sender":65,"@duckduckgo/content-scope-scripts":1}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

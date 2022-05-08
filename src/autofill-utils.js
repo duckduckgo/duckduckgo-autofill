@@ -40,33 +40,6 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     })
 }
 
-/**
- * @param {GlobalConfig} globalConfig
- * @param [processConfig]
- * @return {boolean}
- */
-const autofillEnabled = (globalConfig, processConfig) => {
-    if (!globalConfig.contentScope) {
-        // Return enabled for platforms that haven't implemented the config yet
-        return true
-    }
-
-    const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig
-
-    // Check config on Apple platforms
-    const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
-    return isAutofillEnabledFromProcessedConfig(processedConfig)
-}
-
-const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
-    const site = processedConfig.site
-    if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
-        return false
-    }
-
-    return true
-}
-
 // Access the original setter (needed to bypass React's implementation on mobile)
 // @ts-ignore
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
@@ -300,8 +273,6 @@ const isLikelyASubmitButton = (el) => {
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
-    isAutofillEnabledFromProcessedConfig,
-    autofillEnabled,
     setValue,
     safeExecute,
     isVisible,

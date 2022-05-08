@@ -65,6 +65,6 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#f06709f1712ae0a411a610081b1590ab13213c05"
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#28de2785eee274c78452af98e84b8292067525cf"
   }
 }

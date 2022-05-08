@@ -5,24 +5,9 @@ import {
     sendAndWaitForAnswer,
     setValue,
     formatDuckAddress,
-    isAutofillEnabledFromProcessedConfig
 } from '../autofill-utils'
 
 class ExtensionInterface extends InterfacePrototype {
-    // todo(Shane): How will this be handled in the new model.
-    async isEnabled () {
-        return new Promise(resolve => {
-            chrome.runtime.sendMessage(
-                {
-                    registeredTempAutofillContentScript: true,
-                    documentUrl: window.location.href
-                },
-                (response) => {
-                    resolve(isAutofillEnabledFromProcessedConfig(response))
-                }
-            )
-        })
-    }
 
     isDeviceSignedIn () {
         return this.hasLocalAddresses
@@ -33,8 +18,20 @@ class ExtensionInterface extends InterfacePrototype {
 
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
+                // todo(Shane): Should we re-evaluate input types now?
+                this.availableInputTypes = {
+                    ...this.availableInputTypes,
+                    email: true
+                }
                 const cleanup = this.scanner.init(this.availableInputTypes)
-                this.addLogoutListener(cleanup)
+                // todo(Shane): Should we re-evaluate input types now?
+                this.addLogoutListener(() => {
+                    cleanup();
+                    this.availableInputTypes = {
+                        ...this.availableInputTypes,
+                        email: false
+                    }
+                })
             }
         })
     }

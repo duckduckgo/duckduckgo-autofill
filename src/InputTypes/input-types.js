@@ -21,5 +21,9 @@ export function featureToggleAwareInputTypes (inputTypes, featureToggles) {
         local.identities = false
     }
 
+    if (!featureToggles.emailProtection) {
+        local.email = false
+    }
+
     return local
 }
