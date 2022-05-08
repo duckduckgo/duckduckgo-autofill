@@ -91,14 +91,14 @@ describe('config checking', () => {
                 isBroken: false,
                 enabledFeatures: ['autofill']
             }
-        }, "autofill")).toBe(true)
+        }, 'autofill')).toBe(true)
 
         expect(isFeatureEnabledFromProcessedConfig({
             site: {
                 isBroken: false,
                 enabledFeatures: []
             }
-        }, "autofill")).toBe(false)
+        }, 'autofill')).toBe(false)
     })
 
     it('autofill in isBroken should disable', () => {
@@ -107,13 +107,13 @@ describe('config checking', () => {
                 isBroken: false,
                 enabledFeatures: ['autofill']
             }
-        }, "autofill")).toBe(true)
+        }, 'autofill')).toBe(true)
 
         expect(isFeatureEnabledFromProcessedConfig({
             site: {
                 isBroken: true,
                 enabledFeatures: ['autofill']
             }
-        }, "autofill")).toBe(false)
+        }, 'autofill')).toBe(false)
     })
 })

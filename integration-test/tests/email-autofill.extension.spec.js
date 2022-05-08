@@ -18,7 +18,7 @@ test.describe('chrome extension', () => {
     test.afterAll(async () => {
         server.close()
     })
-    test.only('should autofill the selected email', async ({page}) => {
+    test('should autofill the selected email', async ({page}) => {
         const {personalAddress, privateAddress0} = constants.fields.email
 
         forwardConsoleMessages(page)

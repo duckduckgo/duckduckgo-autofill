@@ -16891,7 +16891,7 @@ function selectSender(globalConfig) {
   } // falls back to extension... is this still the best way to determine this?
 
 
-  return new _extension.ExtensionSender(globalConfig);
+  return new _extension.ExtensionSender();
 }
 
 },{"./android.sender":59,"./apple.sender":60,"./extension.sender":64,"./sender":65,"./windows.sender":66}],64:[function(require,module,exports){
@@ -16901,7 +16901,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ExtensionSender = void 0;
-exports.createTransport = createTransport;
 
 var _sender = require("./sender");
 
@@ -16924,17 +16923,6 @@ class ExtensionSender extends _sender.Sender {
 
 }
 /**
- * @param {GlobalConfig} _globalConfig
- * @returns {Sender}
- */
-
-
-exports.ExtensionSender = ExtensionSender;
-
-function createTransport(_globalConfig) {
-  return new ExtensionSender();
-}
-/**
  * Try to send a message to the Extension.
  *
  * This will try to detect if you've called a handler that's not available in the extension,
@@ -16947,14 +16935,18 @@ function createTransport(_globalConfig) {
  */
 
 
+exports.ExtensionSender = ExtensionSender;
+
 function sendToExtension(input) {
-  return new Promise((resolve, reject) => chrome.runtime.sendMessage(input, data => {
-    if (typeof data === 'undefined') {
-      reject(new Error('Unknown extension error for message: ' + name));
-    } else {
-      return resolve(data);
-    }
-  }));
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(input, data => {
+      if (typeof data === 'undefined') {
+        reject(new Error('Unknown extension error for message: ' + name));
+      } else {
+        return resolve(data);
+      }
+    });
+  });
 }
 
 const handlers = {

@@ -10,16 +10,8 @@ export class ExtensionSender extends Sender {
         if (msg instanceof GetAvailableInputTypes) {
             return handlers.getAvailableInputTypes(msg)
         }
-        throw new Error('not implemented yet');
+        throw new Error('not implemented yet')
     }
-}
-
-/**
- * @param {GlobalConfig} _globalConfig
- * @returns {Sender}
- */
-export function createTransport (_globalConfig) {
-    return new ExtensionSender()
 }
 
 /**
@@ -55,13 +47,13 @@ const handlers = {
      * @param {GetAvailableInputTypes} msg
      * @returns {Promise<any>}
      */
-    'getAvailableInputTypes': async (msg, ) => {
+    'getAvailableInputTypes': async (msg) => {
         return {
             success: msg.response({
                 email: false,
                 identities: false,
                 credentials: false,
-                creditCards: false,
+                creditCards: false
             })
         }
     },
@@ -71,7 +63,6 @@ const handlers = {
      * @param {GetRuntimeConfiguration} msg
      */
     'getRuntimeConfiguration': async (msg) => {
-
         const extensionResponse = await sendToExtension({
             registeredTempAutofillContentScript: true,
             documentUrl: window.location.href
@@ -99,7 +90,7 @@ const handlers = {
                         exceptions: []
                     }
                 },
-                unprotectedTemporary: [],
+                unprotectedTemporary: []
             },
             userPreferences: {
                 // @ts-ignore
@@ -113,7 +104,7 @@ const handlers = {
                             featureToggles: featureToggles
                         }
                     }
-                },
+                }
             },
             userUnprotectedDomains: []
         })

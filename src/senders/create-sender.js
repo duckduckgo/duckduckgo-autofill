@@ -56,5 +56,5 @@ function selectSender (globalConfig) {
     }
 
     // falls back to extension... is this still the best way to determine this?
-    return new ExtensionSender(globalConfig)
+    return new ExtensionSender()
 }

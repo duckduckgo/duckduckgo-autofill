@@ -4,11 +4,10 @@ import {
     SIGN_IN_MSG,
     sendAndWaitForAnswer,
     setValue,
-    formatDuckAddress,
+    formatDuckAddress
 } from '../autofill-utils'
 
 class ExtensionInterface extends InterfacePrototype {
-
     isDeviceSignedIn () {
         return this.hasLocalAddresses
     }
@@ -26,7 +25,7 @@ class ExtensionInterface extends InterfacePrototype {
                 const cleanup = this.scanner.init(this.availableInputTypes)
                 // todo(Shane): Should we re-evaluate input types now?
                 this.addLogoutListener(() => {
-                    cleanup();
+                    cleanup()
                     this.availableInputTypes = {
                         ...this.availableInputTypes,
                         email: false
