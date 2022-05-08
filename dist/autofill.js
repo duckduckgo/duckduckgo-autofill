@@ -16514,14 +16514,19 @@ class AppleSender extends _sender.Sender {
       return response;
     } catch (e) {
       if (e instanceof _appleDeviceUtils.MissingWebkitHandler) {
-        if (name in interceptions) {
-          var _interceptions$name;
-
-          console.log('--> falling back to: ', name, data);
-          return (_interceptions$name = interceptions[name]) === null || _interceptions$name === void 0 ? void 0 : _interceptions$name.call(interceptions, this.config);
-        } else {
-          throw new Error('unimplemented handler: ' + name);
+        if (msg instanceof _messages.GetRuntimeConfiguration) {
+          return fallbacks.getRuntimeConfiguration(this.config);
         }
+
+        if (msg instanceof _messages.GetAvailableInputTypes) {
+          return fallbacks.getAvailableInputTypes(this.config);
+        }
+
+        if (msg instanceof _messages.GetAutofillInitData) {
+          return fallbacks.getAutofillInitData(this.config);
+        }
+
+        throw new Error('unimplemented handler: ' + name);
       } else {
         throw e;
       }
@@ -16542,12 +16547,8 @@ exports.AppleSender = AppleSender;
 function createSender(config) {
   return new AppleSender(config);
 }
-/**
- * @type {Interceptions}
- */
 
-
-const interceptions = {
+const fallbacks = {
   'getAutofillInitData': async globalConfig => {
     const sender = createSender(globalConfig); // mimic the old message
 
@@ -16574,11 +16575,11 @@ const interceptions = {
    * @param globalConfig
    */
   'getAvailableInputTypes': async globalConfig => {
-    const legacySender = createSender(globalConfig);
+    const sender = createSender(globalConfig);
     const message = new _messages.EmailSignedIn();
     const {
       isAppSignedIn
-    } = await legacySender.send(message);
+    } = await sender.send(message);
     /** @type {AvailableInputTypes} */
 
     const legacyMacOsTypes = {

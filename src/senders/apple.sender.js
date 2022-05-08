@@ -1,5 +1,11 @@
 import {Sender} from './sender'
-import {EmailSignedIn, LegacyMessage} from '../messages/messages'
+import {
+    EmailSignedIn,
+    GetAutofillInitData,
+    GetAvailableInputTypes,
+    GetRuntimeConfiguration,
+    LegacyMessage
+} from '../messages/messages'
 import {MissingWebkitHandler, wkSendAndWait} from './appleDeviceUtils'
 
 export class AppleSender extends Sender {
@@ -31,12 +37,16 @@ export class AppleSender extends Sender {
             return response
         } catch (e) {
             if (e instanceof MissingWebkitHandler) {
-                if (name in interceptions) {
-                    console.log('--> falling back to: ', name, data)
-                    return interceptions[name]?.(this.config)
-                } else {
-                    throw new Error('unimplemented handler: ' + name)
+                if (msg instanceof GetRuntimeConfiguration) {
+                    return fallbacks.getRuntimeConfiguration(this.config);
                 }
+                if (msg instanceof GetAvailableInputTypes) {
+                    return fallbacks.getAvailableInputTypes(this.config);
+                }
+                if (msg instanceof GetAutofillInitData) {
+                    return fallbacks.getAutofillInitData(this.config);
+                }
+                throw new Error('unimplemented handler: ' + name)
             } else {
                 throw e
             }
@@ -53,10 +63,7 @@ export function createSender (config) {
     return new AppleSender(config)
 }
 
-/**
- * @type {Interceptions}
- */
-const interceptions = {
+const fallbacks = {
     'getAutofillInitData': async (globalConfig) => {
         const sender = createSender(globalConfig)
 
@@ -86,9 +93,9 @@ const interceptions = {
      * @param globalConfig
      */
     'getAvailableInputTypes': async (globalConfig) => {
-        const legacySender = createSender(globalConfig)
+        const sender = createSender(globalConfig)
         const message = new EmailSignedIn()
-        const { isAppSignedIn } = await legacySender.send(message)
+        const { isAppSignedIn } = await sender.send(message)
 
         /** @type {AvailableInputTypes} */
         const legacyMacOsTypes = {
