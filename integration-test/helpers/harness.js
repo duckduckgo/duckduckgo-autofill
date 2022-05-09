@@ -168,10 +168,9 @@ export async function defaultMacosScript (page) {
  * Relay browser exceptions to the terminal to aid debugging.
  *
  * @param {import("playwright").Page} page
- * @param {{verbose?: boolean}} [opts]
+ * @param {{verbose?: boolean}} [_opts]
  */
-export function forwardConsoleMessages (page, opts = {}) {
-    const { verbose = false } = opts
+export function forwardConsoleMessages (page, _opts = {}) {
     page.on('pageerror', (msg) => {
         console.log('🌍 ❌ [in-page error]', msg)
     })
