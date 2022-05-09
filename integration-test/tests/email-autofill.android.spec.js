@@ -4,12 +4,13 @@ import {
     setupServer,
     withAndroidContext
 } from '../helpers/harness.js'
-import { test as base } from '@playwright/test'
-import {constants, createAndroidMocks} from '../helpers/mocks.js'
+import {test as base} from '@playwright/test'
+import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage} from '../helpers/pages.js'
+import {createAndroidMocks} from '../helpers/mocks.android.js'
 
 /**
- *  Tests for email autofill on android device
+ *  Tests for email autofill on android tooltipHandler
  */
 const test = withAndroidContext(base)
 
@@ -23,19 +24,13 @@ test.describe('android', () => {
     })
     test('should autofill the selected email', async ({page}) => {
         // enable in-terminal exceptions
-        forwardConsoleMessages(page)
+        await forwardConsoleMessages(page)
 
         const {personalAddress} = constants.fields.email
-        await page.goto(server.urlForPath(constants.pages['email-autofill']))
 
         // page abstraction
         const emailPage = emailAutofillPage(page, server)
         await emailPage.navigate()
-
-        // create + inject the script
-        await createAutofillScript()
-            .platform('android')
-            .applyTo(page)
 
         // android specific mocks
         await createAndroidMocks()
@@ -43,7 +38,12 @@ test.describe('android', () => {
             .withPrivateEmail(personalAddress)
             .applyTo(page)
 
-        // if this works, the interface must have loaded and added the field decorations
+        // create + inject the script
+        await createAutofillScript()
+            .platform('android')
+            .applyTo(page)
+
+        // if this works, the tooltipHandler must have loaded and added the field decorations
         await emailPage.clickIntoInput()
 
         // Because of the mock above, assume an email was selected and ensure it's autofilled
