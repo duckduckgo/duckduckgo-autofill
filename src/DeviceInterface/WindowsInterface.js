@@ -1,5 +1,6 @@
 import InterfacePrototype from './InterfacePrototype'
 import {CSS_STYLES} from '../UI/styles/styles'
+import {SelectedDetailMessage} from '../messages/messages'
 
 class WindowsInterface extends InterfacePrototype {
     async setupAutofill () {
@@ -70,13 +71,12 @@ class WindowsOverlayDeviceInterface extends InterfacePrototype {
     }
 
     // Used to encode data to send back to the child autofill
-    async selectedDetail (_detailIn, _configType) {
-        // let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
-        //     return [key, String(value)]
-        // })
-        // const _data = Object.fromEntries(detailsEntries)
-        // todo(Shane): Migrate
-        // await this.sender.send(createLegacyMessage('selectedDetail', {data, configType}))
+    async selectedDetail (detailIn, configType) {
+        let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
+            return [key, String(value)]
+        })
+        const data = Object.fromEntries(detailsEntries)
+        await this.sender.send(new SelectedDetailMessage({data, configType}))
     }
 
     async getCurrentInputType () {

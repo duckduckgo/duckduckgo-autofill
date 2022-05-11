@@ -72,6 +72,13 @@ export class GetAutofillInitData extends Message {
 }
 
 /**
+ * @extends {Message<{data: Record<string, any>, configType: string}, InboundPMData>}
+ */
+export class SelectedDetailMessage extends Message {
+    name = 'selectedDetail'
+}
+
+/**
  * @extends {Message<GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
  */
 export class GetAutofillData extends Message {

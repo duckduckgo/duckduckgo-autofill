@@ -6272,6 +6272,8 @@ var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype")
 
 var _styles = require("../UI/styles/styles");
 
+var _messages = require("../messages/messages");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -6354,12 +6356,16 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
   } // Used to encode data to send back to the child autofill
 
 
-  async selectedDetail(_detailIn, _configType) {// let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
-    //     return [key, String(value)]
-    // })
-    // const _data = Object.fromEntries(detailsEntries)
-    // todo(Shane): Migrate
-    // await this.sender.send(createLegacyMessage('selectedDetail', {data, configType}))
+  async selectedDetail(detailIn, configType) {
+    let detailsEntries = Object.entries(detailIn).map(_ref => {
+      let [key, value] = _ref;
+      return [key, String(value)];
+    });
+    const data = Object.fromEntries(detailsEntries);
+    await this.sender.send(new _messages.SelectedDetailMessage({
+      data,
+      configType
+    }));
   }
 
   async getCurrentInputType() {
@@ -6389,7 +6395,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
-},{"../UI/styles/styles":47,"./InterfacePrototype":19}],21:[function(require,module,exports){
+},{"../UI/styles/styles":47,"../messages/messages":54,"./InterfacePrototype":19}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12687,7 +12693,7 @@ exports.SchemaValidationError = SchemaValidationError;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreFormData = exports.ShowAutofillParent = exports.LegacyMessage = exports.GetSelectedCredentials = exports.GetRuntimeConfiguration = exports.GetAvailableInputTypes = exports.GetAutofillInitData = exports.GetAutofillData = exports.GetAutofillCredentialsMsg = exports.EmailSignedIn = exports.EmailRefreshAlias = exports.CloseAutofillParent = void 0;
+exports.StoreFormData = exports.ShowAutofillParent = exports.SelectedDetailMessage = exports.LegacyMessage = exports.GetSelectedCredentials = exports.GetRuntimeConfiguration = exports.GetAvailableInputTypes = exports.GetAutofillInitData = exports.GetAutofillData = exports.GetAutofillCredentialsMsg = exports.EmailSignedIn = exports.EmailRefreshAlias = exports.CloseAutofillParent = void 0;
 exports.createLegacyMessage = createLegacyMessage;
 
 var _message = require("./message");
@@ -12827,11 +12833,26 @@ class GetAutofillInitData extends _message.Message {
 
 }
 /**
- * @extends {Message<GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
+ * @extends {Message<{data: Record<string, any>, configType: string}, InboundPMData>}
  */
 
 
 exports.GetAutofillInitData = GetAutofillInitData;
+
+class SelectedDetailMessage extends _message.Message {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", 'selectedDetail');
+  }
+
+}
+/**
+ * @extends {Message<GetAutofillDataRequest, IdentityObject|CredentialsObject|CreditCardObject>}
+ */
+
+
+exports.SelectedDetailMessage = SelectedDetailMessage;
 
 class GetAutofillData extends _message.Message {
   constructor() {
@@ -18636,7 +18657,7 @@ class WindowsSender extends _sender.Sender {
 
       case 'closeAutofillParent':
         {
-          windowsTransport(name, data);
+          windowsTransport(name);
           break;
         }
 
@@ -18658,6 +18679,12 @@ class WindowsSender extends _sender.Sender {
       case 'storeFormData':
         {
           windowsTransport('storeFormData', data);
+          break;
+        }
+
+      case 'selectedDetail':
+        {
+          windowsTransport(name, data);
           break;
         }
 

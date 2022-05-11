@@ -36,6 +36,10 @@ class WindowsSender extends Sender {
             windowsTransport('storeFormData', data)
             break
         }
+        case 'selectedDetail': {
+            windowsTransport(name, data)
+            break
+        }
         case 'getAutofillCredentials': {
             // todo(Shane): Schema
             return windowsTransport('getAutofillCredentials', data)
