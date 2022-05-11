@@ -27,7 +27,7 @@ class ExtensionInterface extends InterfacePrototype {
         return this.hasLocalAddresses
     }
 
-    setupAutofill () {
+    async setupAutofill () {
         return this.getAddresses().then(_addresses => {
             if (this.hasLocalAddresses) {
                 const cleanup = this.scanner.init()
@@ -113,6 +113,11 @@ class ExtensionInterface extends InterfacePrototype {
             }
         })
     }
+
+    /** @override */
+    tooltipStyles () {
+        return `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossorigin="anonymous">`
+    }
 }
 
-export default ExtensionInterface
+export { ExtensionInterface }

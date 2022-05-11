@@ -68,6 +68,11 @@ export function signupPage (page, server) {
             await page.fill(identity, credentials.username)
             await page.fill('#password' + credential, credentials.password || '')
             await page.fill('#password-2' + credential, credentials.password || '')
+
+            /** NOTE: The next two lines are here to dismiss the auto-generated password prompt */
+            await page.waitForTimeout(200)
+            await page.keyboard.press('Tab')
+
             await page.locator(`button:has-text("Sign up")`).click()
         },
         /**

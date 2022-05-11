@@ -8,6 +8,7 @@ import InterfacePrototype from '../DeviceInterface/InterfacePrototype'
 
 import testCases from './test-cases/index'
 import { createGlobalConfig } from '../config'
+import {WebTooltip} from '../UI/WebTooltip'
 
 /**
  * @param {HTMLInputElement} el
@@ -30,7 +31,7 @@ const renderInputWithLabel = () => {
     const formElement = document.createElement('form')
     formElement.append(input, label)
     document.body.append(formElement)
-    const form = new Form(formElement, input, new InterfacePrototype(createGlobalConfig()))
+    const form = new Form(formElement, input, InterfacePrototype.default())
     return { input, label, formElement: formElement, form }
 }
 
@@ -146,7 +147,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         document.body.innerHTML = testContent
         document.title = title
 
-        const scanner = createScanner(new InterfacePrototype(createGlobalConfig()))
+        const scanner = createScanner(new InterfacePrototype(createGlobalConfig(), new WebTooltip({tooltipKind: 'modern'})))
         scanner.findEligibleInputs(document)
 
         const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()

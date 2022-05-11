@@ -1,7 +1,8 @@
-import AppleDeviceInterface from '../AppleDeviceInterface'
+import {AppleDeviceInterface} from '../AppleDeviceInterface'
 import InterfacePrototype from '../InterfacePrototype'
 import { Form } from '../../Form/Form'
 import { createGlobalConfig } from '../../config'
+import {WebTooltip} from '../../UI/WebTooltip'
 
 function pmHandlerStoreDataSpy () {
     const spy = jest.fn().mockReturnValueOnce(Promise.resolve(null))
@@ -51,7 +52,7 @@ describe('AppleDeviceInterface: preAttachTooltip', () => {
         expect(actual).toStrictEqual(expected)
     })
     it('does NOT add a password when Device does not support password generation', () => {
-        const device = new InterfacePrototype(APPLE_GLOBAL_CONFIG) // the base class does not support password generation
+        const device = new InterfacePrototype(APPLE_GLOBAL_CONFIG, new WebTooltip({tooltipKind: 'modern'})) // the base class does not support password generation
         const input = document.createElement('input')
         /** @type {TopContextData} */
         const inputTopContext = { inputType: 'credentials.password' }

@@ -154,7 +154,7 @@ class Form {
     }
 
     removeTooltip () {
-        const tooltip = this.device.getActiveTooltip()
+        const tooltip = this.device.isTooltipActive()
         if (
             this.isAutofilling ||
             !tooltip
@@ -335,8 +335,22 @@ class Form {
             }, 1000)
         }
 
+        let valid = false
+        let timer
+
         const handler = (e) => {
-            if (this.device.getActiveTooltip() || this.isAutofilling) return
+            clearTimeout(timer)
+            if (this.isAutofilling) {
+                // todo: Can we solve the issue of the double-event?
+                return
+            }
+            if (!valid) {
+                timer = setTimeout(() => {
+                    valid = true
+                    handler(e)
+                }, 50)
+                return
+            }
 
             const input = e.target
             let click = null
@@ -369,10 +383,13 @@ class Form {
                 this.touched.add(input)
                 this.device.attachTooltip(this, input, getPosition, click)
             }
+
+            valid = false
         }
 
         if (input.nodeName !== 'SELECT') {
             const events = ['pointerdown']
+            // todo: Why is this broken
             if (!this.device.globalConfig.isMobileApp) events.push('focus')
             input.labels.forEach((label) => {
                 this.addListener(label, 'pointerdown', handlerLabel)
