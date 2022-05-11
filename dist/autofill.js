@@ -4799,7 +4799,7 @@ var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDevice
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
  * @param {import("./settings/settings").Settings} autofillSettings
- * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface}
+ * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface|WindowsOverlayDeviceInterface}
  */
 function createDevice(sender, tooltip, globalConfig, platformConfig, autofillSettings) {
   switch (platformConfig.platform) {
@@ -4817,7 +4817,13 @@ function createDevice(sender, tooltip, globalConfig, platformConfig, autofillSet
       return new _ExtensionInterface.ExtensionInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
 
     case 'windows':
-      return new _WindowsInterface.WindowsInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
+      {
+        if (globalConfig.isTopFrame) {
+          return new _WindowsInterface.WindowsOverlayDeviceInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
+        } else {
+          return new _WindowsInterface.WindowsInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
+        }
+      }
 
     case 'android':
       return new _AndroidInterface.AndroidInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings);
@@ -6260,13 +6266,15 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WindowsInterface = void 0;
+exports.WindowsOverlayDeviceInterface = exports.WindowsInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype"));
 
 var _styles = require("../UI/styles/styles");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class WindowsInterface extends _InterfacePrototype.default {
   async setupAutofill() {
@@ -6284,6 +6292,102 @@ class WindowsInterface extends _InterfacePrototype.default {
 }
 
 exports.WindowsInterface = WindowsInterface;
+
+/**
+ * todo(Shane): Decide which data is/isn't needed when apple is inside overlay
+ */
+class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "stripCredentials", false);
+  }
+
+  async setupAutofill() {
+    const response = await this.getAutofillInitData();
+    this.storeLocalData(response);
+    await this._setupTopFrame();
+  }
+
+  async _setupTopFrame() {
+    var _this$tooltip$addList, _this$tooltip, _this$tooltip$createT, _this$tooltip3;
+
+    const topContextData = this.getTopContextData();
+    if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
+    // todo(Shane): Is this truly not used?
+
+    const getPosition = () => {
+      return {
+        x: 0,
+        y: 0,
+        height: 50,
+        width: 50
+      };
+    }; // this is the apple specific part about faking the focus etc.
+    // todo(Shane): The fact this 'addListener' could be undefined is a design problem
+
+
+    (_this$tooltip$addList = (_this$tooltip = this.tooltip).addListener) === null || _this$tooltip$addList === void 0 ? void 0 : _this$tooltip$addList.call(_this$tooltip, () => {
+      const handler = event => {
+        var _this$tooltip$getActi, _this$tooltip2;
+
+        const tooltip = (_this$tooltip$getActi = (_this$tooltip2 = this.tooltip).getActiveTooltip) === null || _this$tooltip$getActi === void 0 ? void 0 : _this$tooltip$getActi.call(_this$tooltip2);
+        tooltip === null || tooltip === void 0 ? void 0 : tooltip.focus(event.detail.x, event.detail.y);
+      };
+
+      window.addEventListener('mouseMove', handler);
+      return () => {
+        window.removeEventListener('mouseMove', handler);
+      };
+    });
+    const tooltip = (_this$tooltip$createT = (_this$tooltip3 = this.tooltip).createTooltip) === null || _this$tooltip$createT === void 0 ? void 0 : _this$tooltip$createT.call(_this$tooltip3, getPosition, topContextData);
+    this.setActiveTooltip(tooltip);
+  }
+
+  async setSize(_cb) {// const details = cb()
+    // todo(Shane): Upgrade to new runtime
+    // await this.sender.send(createLegacyMessage('setSize', details))
+  }
+
+  async removeTooltip() {
+    console.warn('no-op in overlay');
+  } // Used to encode data to send back to the child autofill
+
+
+  async selectedDetail(_detailIn, _configType) {// let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
+    //     return [key, String(value)]
+    // })
+    // const _data = Object.fromEntries(detailsEntries)
+    // todo(Shane): Migrate
+    // await this.sender.send(createLegacyMessage('selectedDetail', {data, configType}))
+  }
+
+  async getCurrentInputType() {
+    const {
+      inputType
+    } = this.getTopContextData() || {};
+    return inputType || 'unknown';
+  }
+
+  tooltipStyles() {
+    return "<style>".concat(_styles.CSS_STYLES, "</style>");
+  }
+
+  tooltipWrapperClass() {
+    return 'top-autofill';
+  }
+
+  tooltipPositionClass(_top, _left) {
+    return '.wrapper {transform: none; }';
+  }
+
+  setupSizeListener(cb) {
+    cb();
+  }
+
+}
+
+exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
 },{"../UI/styles/styles":47,"./InterfacePrototype":19}],21:[function(require,module,exports){
 "use strict";

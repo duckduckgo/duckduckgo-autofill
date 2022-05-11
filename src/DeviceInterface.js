@@ -1,7 +1,7 @@
 import {AndroidInterface} from './DeviceInterface/AndroidInterface'
 import {ExtensionInterface} from './DeviceInterface/ExtensionInterface'
 import {AppleDeviceInterface} from './DeviceInterface/AppleDeviceInterface'
-import {WindowsInterface} from './DeviceInterface/WindowsInterface'
+import {WindowsInterface, WindowsOverlayDeviceInterface} from './DeviceInterface/WindowsInterface'
 import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceInterface'
 
 /**
@@ -10,7 +10,7 @@ import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceI
  * @param {GlobalConfig} globalConfig
  * @param {import("@duckduckgo/content-scope-scripts").RuntimeConfiguration} platformConfig
  * @param {import("./settings/settings").Settings} autofillSettings
- * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface}
+ * @returns {AndroidInterface|AppleDeviceInterface|AppleOverlayDeviceInterface|ExtensionInterface|WindowsInterface|WindowsOverlayDeviceInterface}
  */
 export function createDevice (sender, tooltip, globalConfig, platformConfig, autofillSettings) {
     switch (platformConfig.platform) {
@@ -23,8 +23,13 @@ export function createDevice (sender, tooltip, globalConfig, platformConfig, aut
     }
     case 'extension':
         return new ExtensionInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
-    case 'windows':
-        return new WindowsInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
+    case 'windows': {
+        if (globalConfig.isTopFrame) {
+            return new WindowsOverlayDeviceInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
+        } else {
+            return new WindowsInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
+        }
+    }
     case 'android':
         return new AndroidInterface(sender, tooltip, globalConfig, platformConfig, autofillSettings)
     case 'unknown':
