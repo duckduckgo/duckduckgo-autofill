@@ -18634,6 +18634,12 @@ class WindowsSender extends _sender.Sender {
           break;
         }
 
+      case 'closeAutofillParent':
+        {
+          windowsTransport(name, data);
+          break;
+        }
+
       case 'getRuntimeConfiguration':
         {
           return windowsTransport(name).withResponse(_responseGetRuntimeConfigurationSchema.default.properties.type.const);

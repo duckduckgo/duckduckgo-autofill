@@ -16,6 +16,10 @@ class WindowsSender extends Sender {
             windowsTransport(name, data)
             break
         }
+        case 'closeAutofillParent': {
+            windowsTransport(name)
+            break
+        }
         case 'getRuntimeConfiguration': {
             return windowsTransport(name)
                 .withResponse(getRuntimeConfiguration.properties.type.const)
