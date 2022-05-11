@@ -42,7 +42,9 @@ import {createSender} from './senders/create-sender'
 
         // Determine the tooltipHandler type
         const tooltip = createTooltip(globalConfig, runtimeConfiguration, autofillSettings)
+        console.log(tooltip, 'tooltip')
         const device = createDevice(sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings)
+        console.log(device, 'device')
 
         // This is a workaround for the previous design, we should refactor if possible
         tooltip.setDevice?.(device)

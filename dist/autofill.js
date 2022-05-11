@@ -12290,7 +12290,9 @@ var _createSender = require("./senders/create-sender");
 
 
     const tooltip = (0, _tooltips.createTooltip)(globalConfig, runtimeConfiguration, autofillSettings);
-    const device = (0, _DeviceInterface.createDevice)(sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // This is a workaround for the previous design, we should refactor if possible
+    console.log(tooltip, 'tooltip');
+    const device = (0, _DeviceInterface.createDevice)(sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings);
+    console.log(device, 'device'); // This is a workaround for the previous design, we should refactor if possible
 
     (_tooltip$setDevice = tooltip.setDevice) === null || _tooltip$setDevice === void 0 ? void 0 : _tooltip$setDevice.call(tooltip, device); // Init services
 
