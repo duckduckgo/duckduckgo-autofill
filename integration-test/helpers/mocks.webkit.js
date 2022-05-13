@@ -17,7 +17,12 @@ export const iosContentScopeReplacements = () => {
     }
 }
 
-export const macosContentScopeReplacements = () => {
+/**
+ * @param {{overlay?: boolean}} opts
+ * @returns {Partial<Replacements>}
+ */
+export const macosContentScopeReplacements = (opts = {}) => {
+    const { overlay = false } = opts
     return {
         isApp: true,
         hasModernWebkitAPI: true,
@@ -34,7 +39,18 @@ export const macosContentScopeReplacements = () => {
         userPreferences: {
             debug: true,
             platform: {name: 'macos'}
-        }
+        },
+        ...overlay ? macosWithOverlay() : undefined
+    }
+}
+
+/**
+ * @returns {Partial<Replacements>}
+ */
+export const macosWithOverlay = () => {
+    return {
+        isTopFrame: false,
+        supportsTopFrame: true
     }
 }
 /**
@@ -82,12 +98,13 @@ export function createWebkitMocks (platform = 'macos') {
             alias: null
         },
         closeAutofillParent: {},
-        getSelectedCredentials: {type: 'none'},
+        getSelectedCredentials: [{type: 'stop'}],
         pmHandlerStoreData: {},
         pmHandlerGetAutofillCredentials: {
             /** @type {CredentialsObject|null} */
             success: null
-        }
+        },
+        showAutofillParent: {}
     }
 
     /** @type {MockBuilder} */
@@ -117,6 +134,15 @@ export function createWebkitMocks (platform = 'macos') {
         withCredentials: function (credentials) {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
+            webkitBase.getSelectedCredentials = [
+                {type: 'none'},
+                {type: 'none'},
+                {type: 'none'},
+                {type: 'none'},
+                {type: 'none'},
+                {type: 'ok', data: credentials, configType: 'credentials'},
+                {type: 'stop'}
+            ]
             return this
         },
         tap (fn) {
@@ -151,6 +177,18 @@ async function withMockedWebkit (page, mocks) {
                     /** @type {MockCall} */
                     const call = [msgName, data, response]
                     window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+
+                    // This allows mocks to have multiple return values.
+                    // It has to be inline here since it's serialized into the page.
+                    const isMulti = Array.isArray(response)
+                    if (isMulti) {
+                        const prevCount = window.__playwright.mocks.calls.filter(([name]) => name === msgName).length
+                        const next = response[prevCount]
+                        if (next) {
+                            return JSON.stringify(next)
+                        }
+                    }
+
                     return JSON.stringify(response)
                 }
             }

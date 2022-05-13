@@ -7,8 +7,23 @@ import {
     formatDuckAddress,
     isAutofillEnabledFromProcessedConfig
 } from '../autofill-utils'
+import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController'
+import {defaultOptions} from '../UI/HTMLTooltip'
 
 class ExtensionInterface extends InterfacePrototype {
+    /**
+     * @override
+     */
+    createTooltipInterface () {
+        /** @type {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} */
+        const htmlTooltipOptions = {
+            ...defaultOptions,
+            css: `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossOrigin="anonymous">`,
+            testMode: this.isTestMode()
+        }
+        return new HTMLTooltipUIController({ tooltipKind: 'legacy', device: this }, htmlTooltipOptions)
+    }
+
     async isEnabled () {
         return new Promise(resolve => {
             chrome.runtime.sendMessage(
@@ -115,4 +130,4 @@ class ExtensionInterface extends InterfacePrototype {
     }
 }
 
-export default ExtensionInterface
+export { ExtensionInterface }

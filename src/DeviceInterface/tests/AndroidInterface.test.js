@@ -1,4 +1,4 @@
-import AndroidInterface from '../AndroidInterface'
+import {AndroidInterface} from '../AndroidInterface'
 import { createGlobalConfig } from '../../config'
 
 describe('AndroidInterface', function () {

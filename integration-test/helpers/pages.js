@@ -68,6 +68,11 @@ export function signupPage (page, server) {
             await page.fill(identity, credentials.username)
             await page.fill('#password' + credential, credentials.password || '')
             await page.fill('#password-2' + credential, credentials.password || '')
+
+            /** NOTE: The next two lines are here to dismiss the auto-generated password prompt */
+            await page.waitForTimeout(200)
+            await page.keyboard.press('Tab')
+
             await page.locator(`button:has-text("Sign up")`).click()
         },
         /**
@@ -102,8 +107,10 @@ export function signupPage (page, server) {
  *
  * @param {import("playwright").Page} page
  * @param {ServerWrapper} server
+ * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPage (page, server) {
+export function loginPage (page, server, opts = {}) {
+    const { overlay = false, clickLabel = false } = opts
     return {
         async navigate () {
             await page.goto(server.urlForPath(constants.pages['login']))
@@ -113,10 +120,18 @@ export function loginPage (page, server) {
          * @return {Promise<void>}
          */
         async selectFirstCredential (username) {
-            const email = page.locator('#email')
-            await email.click()
-            const button = await page.waitForSelector(`button:has-text("${username}")`)
-            await button.click({ force: true })
+            if (clickLabel) {
+                const label = page.locator('label[for="email"]')
+                await label.click()
+            } else {
+                const email = page.locator('#email')
+                await email.click()
+            }
+
+            if (!overlay) {
+                const button = await page.waitForSelector(`button:has-text("${username}")`)
+                await button.click({ force: true })
+            }
         },
         /**
          * @param {string} username
@@ -128,6 +143,16 @@ export function loginPage (page, server) {
             const passwordField = page.locator('#password')
             await expect(emailField).toHaveValue(username)
             await expect(passwordField).toHaveValue(password)
+        },
+        /**
+         * Note: Checks like this are not ideal, but they exist here to prevent
+         * false positives.
+         * @returns {Promise<void>}
+         */
+        async assertParentOpened () {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const credsCalls = calls.filter(([name]) => name === 'getSelectedCredentials')
+            expect(credsCalls.length).toBe(5)
         },
         /** @param {{password: string}} data */
         async submitPasswordOnlyForm (data) {

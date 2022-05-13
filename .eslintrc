@@ -16,5 +16,5 @@
         "jasmine": true,
         "jest": true
     },
-    "ignorePatterns": ["src/**/*.d.ts", "dist/*", "swift-package/Resources/assets/*", "integration-test/extension/autofill.js"]
+    "ignorePatterns": ["src/**/*.d.ts", "dist/*", "temp-docs","swift-package/Resources/assets/*", "integration-test/extension/autofill.js"]
 }

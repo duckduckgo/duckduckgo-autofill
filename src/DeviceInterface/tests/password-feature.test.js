@@ -1,4 +1,4 @@
-import AppleDeviceInterface from '../AppleDeviceInterface'
+import {AppleDeviceInterface} from '../AppleDeviceInterface'
 import InterfacePrototype from '../InterfacePrototype'
 import { Form } from '../../Form/Form'
 import { createGlobalConfig } from '../../config'

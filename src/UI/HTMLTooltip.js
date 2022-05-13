@@ -1,16 +1,40 @@
 import { safeExecute, addInlineStyles } from '../autofill-utils'
 import { getSubtypeFromType } from '../Form/matching'
+import {CSS_STYLES} from './styles/styles'
 
-class Tooltip {
+/**
+ * @typedef {object} HTMLTooltipOptions
+ * @property {boolean} testMode
+ * @property {string | null} [wrapperClass]
+ * @property {(top: number, left: number) => string} [tooltipPositionClass]
+ * @property {(details: {height: number, width: number}) => void} [setSize]
+ * @property {() => void} remove
+ * @property {string} css
+ */
+
+/** @type {import('./HTMLTooltip.js').HTMLTooltipOptions} */
+export const defaultOptions = {
+    wrapperClass: '',
+    tooltipPositionClass: (top, left) => `.wrapper {transform: translate(${left}px, ${top}px);}`,
+    css: `<style>${CSS_STYLES}</style>`,
+    setSize: () => { /** noop */ },
+    remove: () => { /** noop */ },
+    testMode: false
+}
+
+export class HTMLTooltip {
+    /** @type {HTMLTooltipOptions} */
+    options;
     /**
      * @param config
      * @param inputType
      * @param getPosition
-     * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
+     * @param {HTMLTooltipOptions} options
      */
-    constructor (config, inputType, getPosition, deviceInterface) {
+    constructor (config, inputType, getPosition, options) {
+        this.options = options
         this.shadow = document.createElement('ddg-autofill').attachShadow({
-            mode: deviceInterface.globalConfig.isDDGTestMode
+            mode: options.testMode
                 ? 'open'
                 : 'closed'
         })
@@ -26,8 +50,6 @@ class Tooltip {
         }
         // @ts-ignore how to narrow this.host to HTMLElement?
         addInlineStyles(this.host, forcedVisibilityStyles)
-
-        this.interface = deviceInterface
         this.count = 0
     }
     append () {
@@ -94,11 +116,10 @@ class Tooltip {
             this.transformRuleIndex = shadow.styleSheets[0].rules.length
         }
 
-        let newRule = `.wrapper {transform: translate(${left}px, ${top}px);}`
-        if (this.interface.globalConfig.isTopFrame) {
-            newRule = '.wrapper {transform: none; }'
+        let cssRule = this.options.tooltipPositionClass?.(top, left)
+        if (typeof cssRule === 'string') {
+            shadow.styleSheets[0].insertRule(cssRule, this.transformRuleIndex)
         }
-        shadow.styleSheets[0].insertRule(newRule, this.transformRuleIndex)
     }
     ensureIsLastInDOM () {
         this.count = this.count || 0
@@ -112,7 +133,7 @@ class Tooltip {
                 this.count++
             } else {
                 // Remove the tooltip from the form to cleanup listeners and observers
-                this.interface.removeTooltip()
+                this.options.remove()
                 console.info(`DDG autofill bailing out`)
             }
         }
@@ -151,7 +172,7 @@ class Tooltip {
         }
     }
     setupSizeListener () {
-        if (!this.interface.globalConfig.isTopFrame) return
+        if (typeof this.options.setSize !== 'function') return
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
             this.setSize()
@@ -159,11 +180,11 @@ class Tooltip {
         observer.observe({entryTypes: ['layout-shift', 'paint']})
     }
     setSize () {
-        if (!this.interface.globalConfig.isTopFrame) return
         const innerNode = this.shadow.querySelector('.wrapper--data')
         // Shouldn't be possible
         if (!innerNode) return
-        this.interface.setSize({height: innerNode.clientHeight, width: innerNode.clientWidth})
+        const details = {height: innerNode.clientHeight, width: innerNode.clientWidth}
+        this.options.setSize?.(details)
     }
     init () {
         this.animationFrame = null
@@ -186,4 +207,4 @@ class Tooltip {
     }
 }
 
-export default Tooltip
+export default HTMLTooltip

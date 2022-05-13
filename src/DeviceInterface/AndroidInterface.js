@@ -1,5 +1,6 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import { sendAndWaitForAnswer } from '../autofill-utils'
+import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 
 class AndroidInterface extends InterfacePrototype {
     async getAlias () {
@@ -7,6 +8,13 @@ class AndroidInterface extends InterfacePrototype {
             return window.EmailInterface.showTooltip()
         }, 'getAliasResponse')
         return alias
+    }
+
+    /**
+     * @override
+     */
+    createTooltipInterface () {
+        return new NativeUIController()
     }
 
     isDeviceSignedIn () {
@@ -43,4 +51,4 @@ class AndroidInterface extends InterfacePrototype {
     }
 }
 
-export default AndroidInterface
+export {AndroidInterface}

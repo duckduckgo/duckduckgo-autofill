@@ -154,7 +154,7 @@ class Form {
     }
 
     removeTooltip () {
-        const tooltip = this.device.getActiveTooltip()
+        const tooltip = this.device.isTooltipActive()
         if (
             this.isAutofilling ||
             !tooltip
@@ -336,7 +336,9 @@ class Form {
         }
 
         const handler = (e) => {
-            if (this.device.getActiveTooltip() || this.isAutofilling) return
+            if (this.isAutofilling) {
+                return
+            }
 
             const input = e.target
             let click = null

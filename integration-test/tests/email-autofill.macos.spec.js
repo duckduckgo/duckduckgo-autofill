@@ -45,7 +45,7 @@ test.describe('macos', () => {
         // first click into the field
         await emailPage.clickIntoInput()
 
-        // these are mac specific - different to the extension because they use different tooltips
+        // these are mac specific - different to the extension because they use different tooltips (currently)
         const personalAddressBtn = await page.locator(`button:has-text("${personalAddress} Blocks email trackers")`)
         const privateAddressBtn = await page.locator(`button:has-text("Generated Private Duck Address 0@duck.com")`)
 
@@ -138,31 +138,53 @@ test.describe('macos', () => {
         await signup.assertSecondEmailValue(personalAddress)
         await signup.assertFirstEmailEmpty()
     })
-    test('autofill a login form', async ({page}) => {
-        // enable in-terminal exceptions
-        await forwardConsoleMessages(page)
+    test.describe('autofilling a login form', () => {
+        /**
+         * @param {import('playwright').Page} page
+         * @param {{overlay?: boolean, clickLabel?: boolean}} opts
+         */
+        async function autofillLoginTest (page, opts = {}) {
+            const { overlay = false, clickLabel = false } = opts
 
-        const {personalAddress} = constants.fields.email
-        const password = '123456'
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
 
-        await createWebkitMocks()
-            .withCredentials({
-                id: '01',
-                username: personalAddress,
-                password
-            })
-            .applyTo(page)
+            const {personalAddress} = constants.fields.email
+            const password = '123456'
 
-        // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+            await createWebkitMocks()
+                .withCredentials({
+                    id: '01',
+                    username: personalAddress,
+                    password
+                })
+                .applyTo(page)
 
-        const login = loginPage(page, server)
-        await login.navigate()
-        await login.selectFirstCredential(personalAddress)
-        await login.assertFirstCredential(personalAddress, password)
+            // Load the autofill.js script with replacements
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements({overlay}))
+                .platform('macos')
+                .applyTo(page)
+
+            const login = loginPage(page, server, {overlay, clickLabel})
+            await login.navigate()
+            await login.selectFirstCredential(personalAddress)
+            await login.assertFirstCredential(personalAddress, password)
+            return login
+        }
+        test('with in-page HTMLTooltip', async ({page}) => {
+            await autofillLoginTest(page)
+        })
+        test('with overlay', async ({page}) => {
+            const login = await autofillLoginTest(page, {overlay: true})
+            // this is not ideal as it's checking an implementation detail.
+            // But it's done to ensure we're not getting a false positive
+            // and definitely loading the overlay code paths
+            await login.assertParentOpened()
+        })
+        test('by clicking a label', async ({page}) => {
+            await autofillLoginTest(page, {clickLabel: true})
+        })
     })
     test.describe('prompting to save data', () => {
         test('Prompting to save from a signup form', async ({page}) => {
