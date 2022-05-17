@@ -7,9 +7,6 @@ import {UIController} from './UIController'
 /**
  * @typedef HTMLTooltipControllerOptions
  * @property {"modern" | "legacy"} tooltipKind - A choice between the newer Autofill UI vs the older one used in the extension
- * @property {(controller) => () => void} [listener] - A callback that will be executed when the tooltip is open.
- * This is used on macOS when in the top frame as a way to track mouse movements.
- *
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
  * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback that will be executed for every pointerdown event
  * regardless of whether this Controller has an open tooltip, or not
@@ -105,18 +102,11 @@ export class HTMLTooltipUIController extends UIController {
     _attachListeners () {
         window.addEventListener('input', this)
         window.addEventListener('keydown', this)
-        this._listenerCleanups = []
-        if (this._options.listener) {
-            this._listenerCleanups.push(this._options.listener(this))
-        }
     }
 
     _removeListeners () {
         window.removeEventListener('input', this)
         window.removeEventListener('keydown', this)
-        for (let listenerCleanup of this._listenerCleanups) {
-            listenerCleanup()
-        }
     }
 
     handleEvent (event) {

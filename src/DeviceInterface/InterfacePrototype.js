@@ -58,17 +58,19 @@ class InterfacePrototype {
      */
     constructor (config) {
         this.globalConfig = config
-        this.uiController = this.createTooltipInterface()
+        this.uiController = this.createUIController()
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
     }
 
     /**
+     * Implementors should override this with a UI controller that suits
+     * their platform.
+     *
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
-    createTooltipInterface () {
-        // throw new Error('must implement createTooltipInterface')
+    createUIController () {
         return new NativeUIController()
     }
 
@@ -533,6 +535,11 @@ class InterfacePrototype {
         }
     }
 
+    /**
+     * This serves as a single place to create a default instance
+     * of InterfacePrototype that can be useful in testing scenarios
+     * @returns {InterfacePrototype}
+     */
     static default () {
         const globalConfig = createGlobalConfig()
         return new InterfacePrototype(globalConfig)

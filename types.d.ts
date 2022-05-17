@@ -30,5 +30,11 @@ interface Window {
             calls: MockCall[]
         }
     }
+
+    /**
+     * This adds type support for the custom message that native sides may
+     * send to indicate where a mouseMove event occurred
+     */
+    addEventListener(type: "mouseMove", listener: (this: Document, ev: CustomEvent<{x: number, y: number}>) => void): void;
 }
 

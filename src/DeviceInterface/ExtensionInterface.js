@@ -14,7 +14,7 @@ class ExtensionInterface extends InterfacePrototype {
     /**
      * @override
      */
-    createTooltipInterface () {
+    createUIController () {
         /** @type {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} */
         const htmlTooltipOptions = {
             ...defaultOptions,

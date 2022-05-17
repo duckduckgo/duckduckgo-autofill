@@ -19,6 +19,5 @@ Thumbs.db
 
 test-results/
 playwright-report/
-temp-docs/
 
 .swiftpm/

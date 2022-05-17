@@ -30,10 +30,17 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
+     * The default functionality of this class is to operate as an 'overlay controller' -
+     * which means it's purpose is to message the native layer about when to open/close the overlay.
+     *
+     * There is an additional use-case though, when running on older macOS versions, we just display the
+     * HTMLTooltip in-page (like the extension does). This is why the `!this.globalConfig.supportsTopFrame`
+     * check exists below - if we know we don't support the overlay, we fall back to in-page.
+     *
      * @override
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
-    createTooltipInterface () {
+    createUIController () {
         if (!this.globalConfig.supportsTopFrame) {
             const options = {
                 ...defaultOptions,
@@ -42,7 +49,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             return new HTMLTooltipUIController({
                 device: this,
                 tooltipKind: 'modern',
-                onPointerDown: (e) => this.onPointerDown(e)
+                onPointerDown: (e) => this._onPointerDown(e)
             }, options)
         }
 
@@ -50,15 +57,24 @@ class AppleDeviceInterface extends InterfacePrototype {
          * If we get here, we're just a controller for an overlay
          */
         return new OverlayUIController({
-            remove: async () => this.closeAutofillParent(),
-            show: async (details) => this.show(details),
-            onPointerDown: (e) => this.onPointerDown(e)
+            remove: async () => this._closeAutofillParent(),
+            show: async (details) => this._show(details),
+            onPointerDown: (event) => this._onPointerDown(event)
         })
     }
 
+    /**
+     * For now, this could be running
+     *  1) on iOS
+     *  2) on macOS + Overlay
+     *  3) on macOS + in-page HTMLTooltip
+     *
+     * @override
+     * @returns {Promise<void>}
+     */
     async setupAutofill () {
         if (this.globalConfig.isApp) {
-            await this.getAutofillInitData()
+            await this._getAutofillInitData()
         }
 
         const signedIn = await this._checkDeviceSignedIn()
@@ -85,22 +101,22 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} parentArgs
      * @returns {Promise<void>}
      */
-    async showAutofillParent (parentArgs) {
+    async _showAutofillParent (parentArgs) {
         return this.transport.send('showAutofillParent', parentArgs)
     }
 
     /**
      * @returns {Promise<any>}
      */
-    async closeAutofillParent () {
+    async _closeAutofillParent () {
         return this.transport.send('closeAutofillParent', {})
     }
 
     /**
      * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} details
      */
-    async show (details) {
-        await this.showAutofillParent(details)
+    async _show (details) {
+        await this._showAutofillParent(details)
         this._listenForSelectedCredential()
             .then((response) => {
                 if (!response) {
@@ -144,7 +160,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     /**
      * Sends credentials to the native layer
      * @param {{username: string, password: string}} credentials
-     * @deprecated
      */
     storeCredentials (credentials) {
         return this.transport.send('pmHandlerStoreCredentials', credentials)
@@ -162,7 +177,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Gets the init data from the device
      * @returns {APIResponse<PMData>}
      */
-    async getAutofillInitData () {
+    async _getAutofillInitData () {
         const response = await this.transport.send('pmHandlerGetAutofillInitData')
         this.storeLocalData(response.success)
         return response
@@ -215,11 +230,6 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     getAutofillCreditCard (id) {
         return this.transport.send('pmHandlerGetCreditCard', { id })
-    }
-
-    // Used to encode data to send back to the child autofill
-    async selectedDetail (detailIn, configType) {
-        this.activeFormSelectedDetail(detailIn, configType)
     }
 
     async getCurrentInputType () {
@@ -277,19 +287,26 @@ class AppleDeviceInterface extends InterfacePrototype {
         })
     }
     /**
-     * on macOS we try to detect if a click occurred withing a form
+     * on macOS we try to detect if a click occurred within a form
+     * @param {PointerEvent} event
      */
-    onPointerDown (e) {
-        // note: This conditional will be replaced with feature flagging
+    _onPointerDown (event) {
+        this._detectFormSubmission(event)
+    }
+    /**
+     * @param {PointerEvent} event
+     */
+    _detectFormSubmission (event) {
+        // note: This conditional will be replaced with feature flagging soon
         if (!this.globalConfig.isApp) return
         const matchingForm = [...this.scanner.forms.values()].find(
             (form) => {
                 const btns = [...form.submitButtons]
                 // @ts-ignore
-                if (btns.includes(e.target)) return true
+                if (btns.includes(event.target)) return true
 
                 // @ts-ignore
-                if (btns.find((btn) => btn.contains(e.target))) return true
+                if (btns.find((btn) => btn.contains(event.target))) return true
             }
         )
 

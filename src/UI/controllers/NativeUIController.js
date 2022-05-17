@@ -4,7 +4,7 @@ import {UIController} from './UIController'
  * want any Autofill-controlled user interface.
  *
  * Examples are with iOS/Android, where 'attaching' only means
- * messing a native layer to show a native tooltip.
+ * messaging a native layer to show a native tooltip.
  *
  * @example
  *
@@ -18,9 +18,6 @@ export class NativeUIController extends UIController {
      * @param {import('./UIController').AttachArgs} _args
      */
     attach (_args) {
-        // const {form, input, device} = args
-        // const inputType = getInputType(input)
-        // const mainType = getMainTypeFromType(inputType)
         throw new Error('unreachable, native tooltip handler not supported yet')
     }
 }

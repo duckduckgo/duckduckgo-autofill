@@ -13,7 +13,7 @@ class AndroidInterface extends InterfacePrototype {
     /**
      * @override
      */
-    createTooltipInterface () {
+    createUIController () {
         return new NativeUIController()
     }
 

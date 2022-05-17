@@ -1,4 +1,14 @@
 /**
+ * @typedef AttachArgs The argument required to 'attach' a tooltip
+ * @property {import("../../Form/Form").Form} form the Form that triggered this 'attach' call
+ * @property {HTMLInputElement} input the input field that triggered this 'attach' call
+ * @property {() => { x: number; y: number; height: number; width: number; }} getPosition A function that provides positioning information
+ * @property {{x: number, y: number}|null} click The click positioning
+ * @property {TopContextData} topContextData
+ * @property {import("../../DeviceInterface/InterfacePrototype").default} device
+ */
+
+/**
  * This is the base interface that `UIControllers` should extend/implement
  */
 export class UIController {
@@ -13,6 +23,12 @@ export class UIController {
         throw new Error('must implement attach')
     }
     /**
+     * Implement this if your tooltip can be created from positioning
+     * + topContextData.
+     *
+     * For example, in an 'overlay' on macOS/Windows this is needed since
+     * there's no page information to call 'attach' above.
+     *
      * @param {PosFn} _pos
      * @param {TopContextData} _topContextData
      * @returns {any | null}
@@ -28,6 +44,8 @@ export class UIController {
     }
 
     /**
+     * Set the currently open HTMLTooltip instance
+     *
      * @param {import("../HTMLTooltip.js").HTMLTooltip} _tooltip
      */
     setActiveTooltip (_tooltip) {
@@ -35,6 +53,8 @@ export class UIController {
     }
 
     /**
+     * Get the currently open HTMLTooltip instance, if one exists
+     *
      * @returns {import("../HTMLTooltip.js").HTMLTooltip | null}
      */
     getActiveTooltip () {
@@ -50,13 +70,3 @@ export class UIController {
         return false
     }
 }
-
-/**
- * @typedef AttachArgs The argument required to 'attach' a tooltip
- * @property {import("../../Form/Form").Form} form the Form that triggered this 'attach' call
- * @property {HTMLInputElement} input the input field that triggered this 'attach' call
- * @property {() => { x: number; y: number; height: number; width: number; }} getPosition A function that provides positioning information
- * @property {{x: number, y: number}|null} click The click positioning
- * @property {TopContextData} topContextData
- * @property {import("../../DeviceInterface/InterfacePrototype").default} device
- */

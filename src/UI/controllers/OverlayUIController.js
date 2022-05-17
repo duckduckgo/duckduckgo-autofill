@@ -1,6 +1,24 @@
 import {UIController} from './UIController'
 
 /**
+ * @typedef OverlayControllerOptions
+ * @property {() => Promise<void>} remove - A callback that will be fired when the tooltip should be removed
+ * @property {(details: ShowAutofillParentRequest) => Promise<void>} show - A callback that will be fired when the tooltip should be shown
+ * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback for reacting to all `pointerdown` events.
+ */
+
+/**
+ * @typedef ShowAutofillParentRequest - The argument that's sent to the native side
+ * @property {boolean} wasFromClick - Whether the request originated from a click
+ * @property {number} inputTop
+ * @property {number} inputLeft
+ * @property {number} inputHeight
+ * @property {number} inputWidth
+ * @property {string} serializedInputContext - Serialized JSON that will be picked up once the
+ * 'overlay' requests its initial data
+ */
+
+/**
  * Use this `OverlayController` when you want to control an overlay, but don't have
  * your own UI to display.
  *
@@ -169,21 +187,3 @@ export class OverlayUIController extends UIController {
         this._removeListeners()
     }
 }
-
-/**
- * @typedef OverlayControllerOptions
- * @property {() => Promise<void>} remove - A callback that will be fired when the tooltip should be removed
- * @property {(details: ShowAutofillParentRequest) => Promise<void>} show - A callback that will be fired when the tooltip should be shown
- * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback for reacting to all `pointerdown` events.
- */
-
-/**
- * @typedef ShowAutofillParentRequest - The argument that's sent to the native side
- * @property {boolean} wasFromClick - Whether the request originated from a click
- * @property {number} inputTop
- * @property {number} inputLeft
- * @property {number} inputHeight
- * @property {number} inputWidth
- * @property {string} serializedInputContext - Serialized JSON that will be picked up once the
- * 'overlay' requests its initial data
- */

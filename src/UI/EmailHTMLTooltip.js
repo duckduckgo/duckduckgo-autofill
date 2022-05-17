@@ -45,7 +45,7 @@ ${this.options.css}
         })
 
         // Get the alias from the extension
-        device.getAddresses().then(this.updateAddresses)
+        this.device.getAddresses().then(this.updateAddresses)
 
         this.init()
         return this

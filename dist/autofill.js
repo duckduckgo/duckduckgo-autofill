@@ -2419,7 +2419,7 @@ class AndroidInterface extends _InterfacePrototype.default {
    */
 
 
-  createTooltipInterface() {
+  createUIController() {
     return new _NativeUIController.NativeUIController();
   }
 
@@ -2518,12 +2518,19 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     }
   }
   /**
+   * The default functionality of this class is to operate as an 'overlay controller' -
+   * which means it's purpose is to message the native layer about when to open/close the overlay.
+   *
+   * There is an additional use-case though, when running on older macOS versions, we just display the
+   * HTMLTooltip in-page (like the extension does). This is why the `!this.globalConfig.supportsTopFrame`
+   * check exists below - if we know we don't support the overlay, we fall back to in-page.
+   *
    * @override
    * @returns {import("../UI/controllers/UIController.js").UIController}
    */
 
 
-  createTooltipInterface() {
+  createUIController() {
     if (!this.globalConfig.supportsTopFrame) {
       const options = { ..._HTMLTooltip.defaultOptions,
         testMode: this.isTestMode()
@@ -2531,7 +2538,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
       return new _HTMLTooltipUIController.HTMLTooltipUIController({
         device: this,
         tooltipKind: 'modern',
-        onPointerDown: e => this.onPointerDown(e)
+        onPointerDown: e => this._onPointerDown(e)
       }, options);
     }
     /**
@@ -2540,15 +2547,25 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
     return new _OverlayUIController.OverlayUIController({
-      remove: async () => this.closeAutofillParent(),
-      show: async details => this.show(details),
-      onPointerDown: e => this.onPointerDown(e)
+      remove: async () => this._closeAutofillParent(),
+      show: async details => this._show(details),
+      onPointerDown: event => this._onPointerDown(event)
     });
   }
+  /**
+   * For now, this could be running
+   *  1) on iOS
+   *  2) on macOS + Overlay
+   *  3) on macOS + in-page HTMLTooltip
+   *
+   * @override
+   * @returns {Promise<void>}
+   */
+
 
   async setupAutofill() {
     if (this.globalConfig.isApp) {
-      await this.getAutofillInitData();
+      await this._getAutofillInitData();
     }
 
     const signedIn = await this._checkDeviceSignedIn();
@@ -2578,7 +2595,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
    */
 
 
-  async showAutofillParent(parentArgs) {
+  async _showAutofillParent(parentArgs) {
     return this.transport.send('showAutofillParent', parentArgs);
   }
   /**
@@ -2586,7 +2603,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
    */
 
 
-  async closeAutofillParent() {
+  async _closeAutofillParent() {
     return this.transport.send('closeAutofillParent', {});
   }
   /**
@@ -2594,8 +2611,8 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
    */
 
 
-  async show(details) {
-    await this.showAutofillParent(details);
+  async _show(details) {
+    await this._showAutofillParent(details);
 
     this._listenForSelectedCredential().then(response => {
       if (!response) {
@@ -2654,7 +2671,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   /**
    * Sends credentials to the native layer
    * @param {{username: string, password: string}} credentials
-   * @deprecated
    */
 
 
@@ -2676,7 +2692,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
    */
 
 
-  async getAutofillInitData() {
+  async _getAutofillInitData() {
     const response = await this.transport.send('pmHandlerGetAutofillInitData');
     this.storeLocalData(response.success);
     return response;
@@ -2746,11 +2762,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return this.transport.send('pmHandlerGetCreditCard', {
       id
     });
-  } // Used to encode data to send back to the child autofill
-
-
-  async selectedDetail(detailIn, configType) {
-    this.activeFormSelectedDetail(detailIn, configType);
   }
 
   async getCurrentInputType() {
@@ -2817,19 +2828,28 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     });
   }
   /**
-   * on macOS we try to detect if a click occurred withing a form
+   * on macOS we try to detect if a click occurred within a form
+   * @param {PointerEvent} event
    */
 
 
-  onPointerDown(e) {
-    // note: This conditional will be replaced with feature flagging
+  _onPointerDown(event) {
+    this._detectFormSubmission(event);
+  }
+  /**
+   * @param {PointerEvent} event
+   */
+
+
+  _detectFormSubmission(event) {
+    // note: This conditional will be replaced with feature flagging soon
     if (!this.globalConfig.isApp) return;
     const matchingForm = [...this.scanner.forms.values()].find(form => {
       const btns = [...form.submitButtons]; // @ts-ignore
 
-      if (btns.includes(e.target)) return true; // @ts-ignore
+      if (btns.includes(event.target)) return true; // @ts-ignore
 
-      if (btns.find(btn => btn.contains(e.target))) return true;
+      if (btns.find(btn => btn.contains(event.target))) return true;
     });
     matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
   }
@@ -2855,7 +2875,11 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
- * This is here to encapsulate
+ * This subclass is designed to separate code that *only* runs inside the
+ * Overlay into a single place.
+ *
+ * It will only run inside the macOS overlay, therefor all code here
+ * can be viewed as *not* executing within a regular page context.
  */
 class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInterface {
   constructor() {
@@ -2865,29 +2889,19 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
   }
 
   /**
+   * Because we're running inside the Overlay, we always create the HTML
+   * Tooltip controller.
+   *
    * @override
    * @returns {import("../UI/controllers/UIController.js").UIController}
    */
-  createTooltipInterface() {
+  createUIController() {
     /** @type {import('../UI/controllers/HTMLTooltipUIController').HTMLTooltipControllerOptions} */
     const controllerOptions = {
       tooltipKind:
       /** @type {const} */
       'modern',
-      device: this,
-      listener: tooltipInterface => {
-        const handler = event => {
-          var _tooltipInterface$get;
-
-          const activeTooltip = (_tooltipInterface$get = tooltipInterface.getActiveTooltip) === null || _tooltipInterface$get === void 0 ? void 0 : _tooltipInterface$get.call(tooltipInterface);
-          activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
-        };
-
-        window.addEventListener('mouseMove', handler);
-        return () => {
-          window.removeEventListener('mouseMove', handler);
-        };
-      }
+      device: this
     };
     /** @type {import('../UI/HTMLTooltip').HTMLTooltipOptions} */
 
@@ -2895,30 +2909,35 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
       wrapperClass: 'top-autofill',
       tooltipPositionClass: () => '.wrapper { transform: none; }',
       css: "<style>".concat(_styles.CSS_STYLES, "</style>"),
-      setSize: details => this.setSize(details),
+      setSize: details => this._setSize(details),
       testMode: this.isTestMode(),
-      remove: () => this.closeAutofillParent()
+      remove: () => this._closeAutofillParent()
     };
     return new _HTMLTooltipUIController.HTMLTooltipUIController(controllerOptions, tooltipOptions);
   }
   /**
+   * Since we're running inside the Overlay we can limit what happens here to
+   * be only things that are needed to power the HTML Tooltip
+   *
    * @override
    * @returns {Promise<void>}
    */
 
 
   async setupAutofill() {
-    await this.getAutofillInitData();
+    await this._getAutofillInitData();
     const signedIn = await this._checkDeviceSignedIn();
 
     if (signedIn) {
       await this.getAddresses();
     }
 
-    await this._setupTopFrame();
+    this._setupTopFrame();
+
+    this._listenForCustomMouseEvent();
   }
 
-  async _setupTopFrame() {
+  _setupTopFrame() {
     var _this$uiController$cr, _this$uiController;
 
     const topContextData = this.getTopContextData();
@@ -2931,7 +2950,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
         height: 50,
         width: 50
       };
-    }; // this is the apple top-frame specific parts about faking the focus etc.
+    }; // Create the tooltip, and set it as active
 
 
     const tooltip = (_this$uiController$cr = (_this$uiController = this.uiController).createTooltip) === null || _this$uiController$cr === void 0 ? void 0 : _this$uiController$cr.call(_this$uiController, getPosition, topContextData);
@@ -2943,7 +2962,28 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
     }
   }
   /**
-   * Used to encode data to send back to the child autofill
+   * The native side will send a custom event 'mouseMove' to indicate
+   * that the HTMLTooltip should fake an element being focussed.
+   *
+   * Note: There's no cleanup required here since the Overlay has a fresh
+   * page load every time it's opened.
+   */
+
+
+  _listenForCustomMouseEvent() {
+    window.addEventListener('mouseMove', event => {
+      var _this$uiController$ge, _this$uiController3;
+
+      const activeTooltip = (_this$uiController$ge = (_this$uiController3 = this.uiController).getActiveTooltip) === null || _this$uiController$ge === void 0 ? void 0 : _this$uiController$ge.call(_this$uiController3);
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
+    });
+  }
+  /**
+   * This is overridden in the Overlay, so that instead of trying to fill a form
+   * with the selected credentials, we instead send a message to the native
+   * side. Once received, the native side will store that selection so that a
+   * subsequence call from main webpage can retrieve it via polling.
+   *
    * @override
    * @param detailIn
    * @param configType
@@ -2962,11 +3002,18 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
       configType
     });
   }
-  /** @param {{height: number, width: number}} details */
+  /**
+   * When the HTMLTooltip calls 'setSize', we forward that message to the native layer
+   * so that the window that contains the Autofill UI can be set correctly.
+   *
+   * This is an overlay-only scenario - normally 'setSize' isn't needed (like in the extension)
+   * because the HTML element will grow as needed.
+   *
+   * @param {{height: number, width: number}} details
+   */
 
 
-  async setSize(details) {
-    // /** noop **/
+  async _setSize(details) {
     await this.transport.send('setSize', details);
   }
 
@@ -2996,7 +3043,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
   /**
    * @override
    */
-  createTooltipInterface() {
+  createUIController() {
     /** @type {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} */
     const htmlTooltipOptions = { ..._HTMLTooltip.defaultOptions,
       css: "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossOrigin=\"anonymous\">"),
@@ -3227,18 +3274,20 @@ class InterfacePrototype {
     });
 
     this.globalConfig = config;
-    this.uiController = this.createTooltipInterface();
+    this.uiController = this.createUIController();
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
   }
   /**
+   * Implementors should override this with a UI controller that suits
+   * their platform.
+   *
    * @returns {import("../UI/controllers/UIController.js").UIController}
    */
 
 
-  createTooltipInterface() {
-    // throw new Error('must implement createTooltipInterface')
+  createUIController() {
     return new _NativeUIController.NativeUIController();
   }
 
@@ -3789,6 +3838,12 @@ class InterfacePrototype {
       this.storeFormData(withAutoGeneratedFlag);
     }
   }
+  /**
+   * This serves as a single place to create a default instance
+   * of InterfacePrototype that can be useful in testing scenarios
+   * @returns {InterfacePrototype}
+   */
+
 
   static default() {
     const globalConfig = (0, _config.createGlobalConfig)();
@@ -8281,7 +8336,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
       this.fillForm('privateAddress');
     }); // Get the alias from the extension
 
-    device.getAddresses().then(this.updateAddresses);
+    this.device.getAddresses().then(this.updateAddresses);
     this.init();
     return this;
   }
@@ -8611,9 +8666,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * @typedef HTMLTooltipControllerOptions
  * @property {"modern" | "legacy"} tooltipKind - A choice between the newer Autofill UI vs the older one used in the extension
- * @property {(controller) => () => void} [listener] - A callback that will be executed when the tooltip is open.
- * This is used on macOS when in the top frame as a way to track mouse movements.
- *
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
  * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback that will be executed for every pointerdown event
  * regardless of whether this Controller has an open tooltip, or not
@@ -8721,20 +8773,11 @@ class HTMLTooltipUIController extends _UIController.UIController {
   _attachListeners() {
     window.addEventListener('input', this);
     window.addEventListener('keydown', this);
-    this._listenerCleanups = [];
-
-    if (this._options.listener) {
-      this._listenerCleanups.push(this._options.listener(this));
-    }
   }
 
   _removeListeners() {
     window.removeEventListener('input', this);
     window.removeEventListener('keydown', this);
-
-    for (let listenerCleanup of this._listenerCleanups) {
-      listenerCleanup();
-    }
   }
 
   handleEvent(event) {
@@ -8863,7 +8906,7 @@ var _UIController = require("./UIController");
  * want any Autofill-controlled user interface.
  *
  * Examples are with iOS/Android, where 'attaching' only means
- * messing a native layer to show a native tooltip.
+ * messaging a native layer to show a native tooltip.
  *
  * @example
  *
@@ -8877,9 +8920,6 @@ class NativeUIController extends _UIController.UIController {
    * @param {import('./UIController').AttachArgs} _args
    */
   attach(_args) {
-    // const {form, input, device} = args
-    // const inputType = getInputType(input)
-    // const mainType = getMainTypeFromType(inputType)
     throw new Error('unreachable, native tooltip handler not supported yet');
   }
 
@@ -8914,6 +8954,24 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
 
 var _state = /*#__PURE__*/new WeakMap();
+
+/**
+ * @typedef OverlayControllerOptions
+ * @property {() => Promise<void>} remove - A callback that will be fired when the tooltip should be removed
+ * @property {(details: ShowAutofillParentRequest) => Promise<void>} show - A callback that will be fired when the tooltip should be shown
+ * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback for reacting to all `pointerdown` events.
+ */
+
+/**
+ * @typedef ShowAutofillParentRequest - The argument that's sent to the native side
+ * @property {boolean} wasFromClick - Whether the request originated from a click
+ * @property {number} inputTop
+ * @property {number} inputLeft
+ * @property {number} inputHeight
+ * @property {number} inputWidth
+ * @property {string} serializedInputContext - Serialized JSON that will be picked up once the
+ * 'overlay' requests its initial data
+ */
 
 /**
  * Use this `OverlayController` when you want to control an overlay, but don't have
@@ -9116,24 +9174,6 @@ class OverlayUIController extends _UIController.UIController {
   }
 
 }
-/**
- * @typedef OverlayControllerOptions
- * @property {() => Promise<void>} remove - A callback that will be fired when the tooltip should be removed
- * @property {(details: ShowAutofillParentRequest) => Promise<void>} show - A callback that will be fired when the tooltip should be shown
- * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback for reacting to all `pointerdown` events.
- */
-
-/**
- * @typedef ShowAutofillParentRequest - The argument that's sent to the native side
- * @property {boolean} wasFromClick - Whether the request originated from a click
- * @property {number} inputTop
- * @property {number} inputLeft
- * @property {number} inputHeight
- * @property {number} inputWidth
- * @property {string} serializedInputContext - Serialized JSON that will be picked up once the
- * 'overlay' requests its initial data
- */
-
 
 exports.OverlayUIController = OverlayUIController;
 
@@ -9144,6 +9184,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.UIController = void 0;
+
+/**
+ * @typedef AttachArgs The argument required to 'attach' a tooltip
+ * @property {import("../../Form/Form").Form} form the Form that triggered this 'attach' call
+ * @property {HTMLInputElement} input the input field that triggered this 'attach' call
+ * @property {() => { x: number; y: number; height: number; width: number; }} getPosition A function that provides positioning information
+ * @property {{x: number, y: number}|null} click The click positioning
+ * @property {TopContextData} topContextData
+ * @property {import("../../DeviceInterface/InterfacePrototype").default} device
+ */
 
 /**
  * This is the base interface that `UIControllers` should extend/implement
@@ -9160,6 +9210,12 @@ class UIController {
     throw new Error('must implement attach');
   }
   /**
+   * Implement this if your tooltip can be created from positioning
+   * + topContextData.
+   *
+   * For example, in an 'overlay' on macOS/Windows this is needed since
+   * there's no page information to call 'attach' above.
+   *
    * @param {PosFn} _pos
    * @param {TopContextData} _topContextData
    * @returns {any | null}
@@ -9174,12 +9230,16 @@ class UIController {
 
   removeTooltip(_via) {}
   /**
+   * Set the currently open HTMLTooltip instance
+   *
    * @param {import("../HTMLTooltip.js").HTMLTooltip} _tooltip
    */
 
 
   setActiveTooltip(_tooltip) {}
   /**
+   * Get the currently open HTMLTooltip instance, if one exists
+   *
    * @returns {import("../HTMLTooltip.js").HTMLTooltip | null}
    */
 
@@ -9199,16 +9259,6 @@ class UIController {
   }
 
 }
-/**
- * @typedef AttachArgs The argument required to 'attach' a tooltip
- * @property {import("../../Form/Form").Form} form the Form that triggered this 'attach' call
- * @property {HTMLInputElement} input the input field that triggered this 'attach' call
- * @property {() => { x: number; y: number; height: number; width: number; }} getPosition A function that provides positioning information
- * @property {{x: number, y: number}|null} click The click positioning
- * @property {TopContextData} topContextData
- * @property {import("../../DeviceInterface/InterfacePrototype").default} device
- */
-
 
 exports.UIController = UIController;
 
