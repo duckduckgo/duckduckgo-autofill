@@ -2436,6 +2436,11 @@ class AndroidInterface extends _InterfacePrototype.default {
       this.addLogoutListener(cleanup);
     }
   }
+  /**
+   * Used by the email web app
+   * Settings page displays data of the logged in user data
+   */
+
 
   getUserData() {
     let userData = null;
@@ -2450,6 +2455,25 @@ class AndroidInterface extends _InterfacePrototype.default {
 
     return Promise.resolve(userData);
   }
+  /**
+   * Used by the email web app
+   * Device capabilities determine which functionality is available to the user
+   */
+
+
+  getEmailProtectionCapabilities() {
+    let deviceCapabilities = null;
+
+    try {
+      deviceCapabilities = JSON.parse(window.EmailInterface.getDeviceCapabilities());
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.error(e);
+      }
+    }
+
+    return Promise.resolve(deviceCapabilities);
+  }
 
   storeUserData(_ref) {
     let {
@@ -2460,6 +2484,31 @@ class AndroidInterface extends _InterfacePrototype.default {
       }
     } = _ref;
     return window.EmailInterface.storeCredentials(token, userName, cohort);
+  }
+  /**
+    * Used by the email web app
+    * Provides functionality to log the user out
+    */
+
+
+  removeUserData() {
+    try {
+      return window.EmailInterface.removeCredentials();
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.error(e);
+      }
+    }
+  }
+
+  addLogoutListener(handler) {
+    // Only deal with logging out if we're in the email web app
+    if (!this.globalConfig.isDDGDomain) return;
+    window.addEventListener('message', e => {
+      if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
+        handler();
+      }
+    });
   }
 
 }
@@ -2581,9 +2630,23 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     const cleanup = this.scanner.init();
     this.addLogoutListener(cleanup);
   }
+  /**
+   * Used by the email web app
+   * Settings page displays data of the logged in user data
+   */
+
 
   getUserData() {
     return this.transport.send('emailHandlerGetUserData');
+  }
+  /**
+   * Used by the email web app
+   * Device capabilities determine which functionality is available to the user
+   */
+
+
+  getEmailProtectionCapabilities() {
+    return this.transport.send('emailHandlerGetCapabilities');
   }
 
   async getSelectedCredentials() {
@@ -2663,6 +2726,15 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
       username: userName,
       cohort
     });
+  }
+  /**
+   * Used by the email web app
+   * Provides functionality to log the user out
+   */
+
+
+  removeUserData() {
+    return this.transport.send('emailHandlerRemoveToken');
   }
   /**
    * PM endpoints
@@ -2779,6 +2851,16 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
     });
     return (0, _autofillUtils.formatDuckAddress)(alias);
+  }
+
+  addLogoutListener(handler) {
+    // Only deal with logging out if we're in the email web app
+    if (!this.globalConfig.isDDGDomain) return;
+    window.addEventListener('message', e => {
+      if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
+        handler();
+      }
+    });
   }
   /** @type {any} */
 
@@ -3087,10 +3169,26 @@ class ExtensionInterface extends _InterfacePrototype.default {
       return resolve(data);
     }));
   }
+  /**
+   * Used by the email web app
+   * Settings page displays data of the logged in user data
+   */
+
 
   getUserData() {
     return new Promise(resolve => chrome.runtime.sendMessage({
       getUserData: true
+    }, data => resolve(data)));
+  }
+  /**
+   * Used by the email web app
+   * Device capabilities determine which functionality is available to the user
+   */
+
+
+  getEmailProtectionCapabilities() {
+    return new Promise(resolve => chrome.runtime.sendMessage({
+      getEmailProtectionCapabilities: true
     }, data => resolve(data)));
   }
 
@@ -3106,9 +3204,28 @@ class ExtensionInterface extends _InterfacePrototype.default {
       this.storeUserData(data);
     }
   }
+  /**
+   * @param {object} message
+   * @param {object} message.addUserData
+   * @param {string} message.addUserData.token
+   * @param {string} message.addUserData.userName
+   * @param {string} message.addUserData.cohort
+   */
 
-  storeUserData(data) {
-    return chrome.runtime.sendMessage(data);
+
+  storeUserData(message) {
+    return chrome.runtime.sendMessage(message);
+  }
+  /**
+   * Used by the email web app
+   * Provides functionality to log the user out
+   */
+
+
+  removeUserData() {
+    return chrome.runtime.sendMessage({
+      removeUserData: true
+    });
   }
 
   addDeviceListeners() {
@@ -3664,12 +3781,25 @@ class InterfacePrototype {
         userData = await this.getUserData();
       } catch (e) {}
 
+      let capabilities;
+
+      try {
+        capabilities = await this.getEmailProtectionCapabilities();
+      } catch (e) {} // Set up listener for web app actions
+
+
+      window.addEventListener('message', e => {
+        if (this.globalConfig.isDDGDomain && e.data.removeUserData) {
+          this.removeUserData();
+        }
+      });
       const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
       (0, _autofillUtils.notifyWebApp)({
         deviceSignedIn: {
           value: true,
           shouldLog,
-          userData: hasUserData ? userData : undefined
+          userData: hasUserData ? userData : undefined,
+          capabilities
         }
       });
     } else {
@@ -3689,6 +3819,16 @@ class InterfacePrototype {
 
   getUserData() {
     return Promise.resolve(null);
+  }
+  /** @returns {void} */
+
+
+  removeUserData() {}
+  /** @returns {Promise<null|Record<string,boolean>>} */
+
+
+  getEmailProtectionCapabilities() {
+    throw new Error('unimplemented');
   }
 
   refreshAlias() {}

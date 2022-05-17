@@ -61,9 +61,24 @@ class ExtensionInterface extends InterfacePrototype {
         ))
     }
 
+    /**
+     * Used by the email web app
+     * Settings page displays data of the logged in user data
+     */
     getUserData () {
         return new Promise(resolve => chrome.runtime.sendMessage(
             {getUserData: true},
+            (data) => resolve(data)
+        ))
+    }
+
+    /**
+     * Used by the email web app
+     * Device capabilities determine which functionality is available to the user
+     */
+    getEmailProtectionCapabilities () {
+        return new Promise(resolve => chrome.runtime.sendMessage(
+            {getEmailProtectionCapabilities: true},
             (data) => resolve(data)
         ))
     }
@@ -82,8 +97,23 @@ class ExtensionInterface extends InterfacePrototype {
         }
     }
 
-    storeUserData (data) {
-        return chrome.runtime.sendMessage(data)
+    /**
+     * @param {object} message
+     * @param {object} message.addUserData
+     * @param {string} message.addUserData.token
+     * @param {string} message.addUserData.userName
+     * @param {string} message.addUserData.cohort
+     */
+    storeUserData (message) {
+        return chrome.runtime.sendMessage(message)
+    }
+
+    /**
+     * Used by the email web app
+     * Provides functionality to log the user out
+     */
+    removeUserData () {
+        return chrome.runtime.sendMessage({removeUserData: true})
     }
 
     addDeviceListeners () {
