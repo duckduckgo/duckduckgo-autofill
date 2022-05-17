@@ -2363,35 +2363,45 @@ exports.createDevice = createDevice;
 
 var _config = require("./config");
 
-var _AndroidInterface = _interopRequireDefault(require("./DeviceInterface/AndroidInterface"));
+var _AndroidInterface = require("./DeviceInterface/AndroidInterface");
 
-var _ExtensionInterface = _interopRequireDefault(require("./DeviceInterface/ExtensionInterface"));
+var _ExtensionInterface = require("./DeviceInterface/ExtensionInterface");
 
-var _AppleDeviceInterface = _interopRequireDefault(require("./DeviceInterface/AppleDeviceInterface"));
+var _AppleDeviceInterface = require("./DeviceInterface/AppleDeviceInterface");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDeviceInterface");
 
 function createDevice() {
   const globalConfig = (0, _config.createGlobalConfig)();
 
   if (globalConfig.isDDGApp) {
-    return globalConfig.isAndroid ? new _AndroidInterface.default(globalConfig) : new _AppleDeviceInterface.default(globalConfig);
+    if (globalConfig.isAndroid) {
+      return new _AndroidInterface.AndroidInterface(globalConfig);
+    }
+
+    if (globalConfig.isTopFrame) {
+      return new _AppleOverlayDeviceInterface.AppleOverlayDeviceInterface(globalConfig);
+    }
+
+    return new _AppleDeviceInterface.AppleDeviceInterface(globalConfig);
   }
 
-  return new _ExtensionInterface.default(globalConfig);
+  return new _ExtensionInterface.ExtensionInterface(globalConfig);
 }
 
-},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/ExtensionInterface":10,"./config":39}],8:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/AppleOverlayDeviceInterface":10,"./DeviceInterface/ExtensionInterface":11,"./config":44}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.AndroidInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
 var _autofillUtils = require("../autofill-utils");
+
+var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2403,6 +2413,14 @@ class AndroidInterface extends _InterfacePrototype.default {
       return window.EmailInterface.showTooltip();
     }, 'getAliasResponse');
     return alias;
+  }
+  /**
+   * @override
+   */
+
+
+  createUIController() {
+    return new _NativeUIController.NativeUIController();
   }
 
   isDeviceSignedIn() {
@@ -2446,16 +2464,15 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 }
 
-var _default = AndroidInterface;
-exports.default = _default;
+exports.AndroidInterface = AndroidInterface;
 
-},{"../autofill-utils":37,"./InterfacePrototype.js":11}],9:[function(require,module,exports){
+},{"../UI/controllers/NativeUIController.js":35,"../autofill-utils":42,"./InterfacePrototype.js":12}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.AppleDeviceInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
@@ -2465,14 +2482,18 @@ var _autofillUtils = require("../autofill-utils");
 
 var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 
+var _HTMLTooltip = require("../UI/HTMLTooltip");
+
+var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+
+var _OverlayUIController = require("../UI/controllers/OverlayUIController");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class AppleDeviceInterface extends _InterfacePrototype.default {
   /** @type {FeatureToggleNames[]} */
-
-  /* @type {Timeout | undefined} */
 
   /** @type {Transport} */
 
@@ -2486,105 +2507,65 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
     _defineProperty(this, "supportedFeatures", []);
 
-    _defineProperty(this, "pollingTimeout", void 0);
-
     _defineProperty(this, "transport", (0, _appleDeviceUtils.createTransport)(this.globalConfig));
 
     _defineProperty(this, "initialSetupDelayMs", 300);
 
+    _defineProperty(this, "pollingTimeout", null);
+
     if (this.globalConfig.isApp) {
       this.supportedFeatures.push('password.generation');
     }
-
-    if (this.globalConfig.isTopFrame) {
-      this.stripCredentials = false;
-      window.addEventListener('mouseMove', this);
-    } else if (this.globalConfig.supportsTopFrame) {
-      // This is always added as a child frame needs to be informed of a parent frame scroll
-      window.addEventListener('scroll', this);
-    }
-  }
-
-  postInit() {
-    if (!this.globalConfig.isTopFrame) return;
-    this.setupTopFrame();
-  }
-
-  async setupTopFrame() {
-    const topContextData = this.getTopContextData();
-    if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
-
-    const getPosition = () => {
-      return {
-        x: 0,
-        y: 0,
-        height: 50,
-        width: 50
-      };
-    };
-
-    const tooltip = this.createTooltip(getPosition, topContextData);
-    this.setActiveTooltip(tooltip);
   }
   /**
-   * Poll the native listener until the user has selected a credential.
-   * Message return types are:
-   * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
-   *     - This also is triggered when the close event is called and prevents any edge case continued polling.
-   * - 'ok' is when the user has selected a credential and the value can be injected into the page.
-   * - 'none' is when the tooltip is open in the native window however hasn't been entered.
+   * The default functionality of this class is to operate as an 'overlay controller' -
+   * which means it's purpose is to message the native layer about when to open/close the overlay.
+   *
+   * There is an additional use-case though, when running on older macOS versions, we just display the
+   * HTMLTooltip in-page (like the extension does). This is why the `!this.globalConfig.supportsTopFrame`
+   * check exists below - if we know we don't support the overlay, we fall back to in-page.
+   *
+   * @override
+   * @returns {import("../UI/controllers/UIController.js").UIController}
+   */
+
+
+  createUIController() {
+    if (!this.globalConfig.supportsTopFrame) {
+      const options = { ..._HTMLTooltip.defaultOptions,
+        testMode: this.isTestMode()
+      };
+      return new _HTMLTooltipUIController.HTMLTooltipUIController({
+        device: this,
+        tooltipKind: 'modern',
+        onPointerDown: e => this._onPointerDown(e)
+      }, options);
+    }
+    /**
+     * If we get here, we're just a controller for an overlay
+     */
+
+
+    return new _OverlayUIController.OverlayUIController({
+      remove: async () => this._closeAutofillParent(),
+      show: async details => this._show(details),
+      onPointerDown: event => this._onPointerDown(event)
+    });
+  }
+  /**
+   * For now, this could be running
+   *  1) on iOS
+   *  2) on macOS + Overlay
+   *  3) on macOS + in-page HTMLTooltip
+   *
+   * @override
    * @returns {Promise<void>}
    */
 
 
-  async listenForSelectedCredential() {
-    // Prevent two timeouts from happening
-    clearTimeout(this.pollingTimeout);
-    const response = await this.transport.send('getSelectedCredentials');
-
-    switch (response.type) {
-      case 'none':
-        // Parent hasn't got a selected credential yet
-        this.pollingTimeout = setTimeout(() => {
-          this.listenForSelectedCredential();
-        }, 100);
-        return;
-
-      case 'ok':
-        return this.activeFormSelectedDetail(response.data, response.configType);
-
-      case 'stop':
-        // Parent wants us to stop polling
-        break;
-    }
-  }
-
-  handleEvent(event) {
-    switch (event.type) {
-      case 'mouseMove':
-        this.processMouseMove(event);
-        break;
-
-      case 'scroll':
-        {
-          this.removeTooltip();
-          break;
-        }
-
-      default:
-        super.handleEvent(event);
-    }
-  }
-
-  processMouseMove(event) {
-    var _this$currentTooltip;
-
-    (_this$currentTooltip = this.currentTooltip) === null || _this$currentTooltip === void 0 ? void 0 : _this$currentTooltip.focus(event.detail.x, event.detail.y);
-  }
-
   async setupAutofill() {
     if (this.globalConfig.isApp) {
-      await this.getAutofillInitData();
+      await this._getAutofillInitData();
     }
 
     const signedIn = await this._checkDeviceSignedIn();
@@ -2603,6 +2584,45 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
   getUserData() {
     return this.transport.send('emailHandlerGetUserData');
+  }
+
+  async getSelectedCredentials() {
+    return this.transport.send('getSelectedCredentials');
+  }
+  /**
+   * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} parentArgs
+   * @returns {Promise<void>}
+   */
+
+
+  async _showAutofillParent(parentArgs) {
+    return this.transport.send('showAutofillParent', parentArgs);
+  }
+  /**
+   * @returns {Promise<any>}
+   */
+
+
+  async _closeAutofillParent() {
+    return this.transport.send('closeAutofillParent', {});
+  }
+  /**
+   * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} details
+   */
+
+
+  async _show(details) {
+    await this._showAutofillParent(details);
+
+    this._listenForSelectedCredential().then(response => {
+      if (!response) {
+        return;
+      }
+
+      this.activeFormSelectedDetail(response.data, response.configType);
+    }).catch(e => {
+      console.error('unknown error', e);
+    });
   }
 
   async getAddresses() {
@@ -2630,98 +2650,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return !!isAppSignedIn;
   }
 
-  async setSize(details) {
-    await this.transport.send('setSize', details);
-  }
-  /**
-   * @param {import("../Form/Form").Form} form
-   * @param {HTMLInputElement} input
-   * @param {() => { x: number; y: number; height: number; width: number; }} getPosition
-   * @param {{ x: number; y: number; } | null} click
-   * @param {TopContextData} topContextData
-   */
-
-
-  attachTooltipInner(form, input, getPosition, click, topContextData) {
-    const {
-      isTopFrame,
-      supportsTopFrame
-    } = this.globalConfig;
-
-    if (!isTopFrame && supportsTopFrame) {
-      const showTooltipAtPosition = () => {
-        this.showTopTooltip(click, getPosition(), topContextData);
-      };
-
-      if (!click && !this.elementIsInViewport(getPosition())) {
-        input.scrollIntoView(true);
-        setTimeout(showTooltipAtPosition, 500);
-        return;
-      }
-
-      showTooltipAtPosition();
-      return;
-    }
-
-    super.attachTooltipInner(form, input, getPosition, click, topContextData);
-  }
-  /**
-   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-   * @returns {boolean}
-   */
-
-
-  elementIsInViewport(inputDimensions) {
-    if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
-      return false;
-    }
-
-    const viewport = document.documentElement;
-
-    if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
-      return false;
-    }
-
-    return true;
-  }
-  /**
-   * @param {{ x: number; y: number; } | null} click
-   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-   * @param {TopContextData} [data]
-   */
-
-
-  async showTopTooltip(click, inputDimensions, data) {
-    let diffX = inputDimensions.x;
-    let diffY = inputDimensions.y;
-
-    if (click) {
-      diffX -= click.x;
-      diffY -= click.y;
-    } else if (!this.elementIsInViewport(inputDimensions)) {
-      // If the focus event is outside the viewport ignore, we've already tried to scroll to it
-      return;
-    }
-
-    const details = {
-      wasFromClick: Boolean(click),
-      inputTop: Math.floor(diffY),
-      inputLeft: Math.floor(diffX),
-      inputHeight: Math.floor(inputDimensions.height),
-      inputWidth: Math.floor(inputDimensions.width),
-      serializedInputContext: JSON.stringify(data)
-    };
-    await this.transport.send('showAutofillParent', details); // Start listening for the user initiated credential
-
-    this.listenForSelectedCredential();
-  }
-
-  async removeTooltip() {
-    if (!this.globalConfig.supportsTopFrame) return super.removeTooltip();
-    this.removeCloseListeners();
-    await this.transport.send('closeAutofillParent', {});
-  }
-
   storeUserData(_ref) {
     let {
       addUserData: {
@@ -2743,7 +2671,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   /**
    * Sends credentials to the native layer
    * @param {{username: string, password: string}} credentials
-   * @deprecated
    */
 
 
@@ -2765,7 +2692,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
    */
 
 
-  async getAutofillInitData() {
+  async _getAutofillInitData() {
     const response = await this.transport.send('pmHandlerGetAutofillInitData');
     this.storeLocalData(response.success);
     return response;
@@ -2835,23 +2762,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return this.transport.send('pmHandlerGetCreditCard', {
       id
     });
-  } // Used to encode data to send back to the child autofill
-
-
-  async selectedDetail(detailIn, configType) {
-    if (this.globalConfig.isTopFrame) {
-      let detailsEntries = Object.entries(detailIn).map(_ref3 => {
-        let [key, value] = _ref3;
-        return [key, String(value)];
-      });
-      const data = Object.fromEntries(detailsEntries);
-      this.transport.send('selectedDetail', {
-        data,
-        configType
-      });
-    } else {
-      this.activeFormSelectedDetail(detailIn, configType);
-    }
   }
 
   async getCurrentInputType() {
@@ -2870,27 +2780,281 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     });
     return (0, _autofillUtils.formatDuckAddress)(alias);
   }
+  /** @type {any} */
+
+
+  /**
+   * Poll the native listener until the user has selected a credential.
+   * Message return types are:
+   * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
+   *     - This also is triggered when the close event is called and prevents any edge case continued polling.
+   * - 'ok' is when the user has selected a credential and the value can be injected into the page.
+   * - 'none' is when the tooltip is open in the native window however hasn't been entered.
+   * @returns {Promise<{data:IdentityObject|CreditCardObject|CredentialsObject, configType: string} | null>}
+   */
+  async _listenForSelectedCredential() {
+    return new Promise(resolve => {
+      // Prevent two timeouts from happening
+      // @ts-ignore
+      const poll = async () => {
+        clearTimeout(this.pollingTimeout);
+        const response = await this.getSelectedCredentials();
+
+        switch (response.type) {
+          case 'none':
+            // Parent hasn't got a selected credential yet
+            // @ts-ignore
+            this.pollingTimeout = setTimeout(() => {
+              poll();
+            }, 100);
+            return;
+
+          case 'ok':
+            {
+              return resolve({
+                data: response.data,
+                configType: response.configType
+              });
+            }
+
+          case 'stop':
+            // Parent wants us to stop polling
+            resolve(null);
+            break;
+        }
+      };
+
+      poll();
+    });
+  }
+  /**
+   * on macOS we try to detect if a click occurred within a form
+   * @param {PointerEvent} event
+   */
+
+
+  _onPointerDown(event) {
+    this._detectFormSubmission(event);
+  }
+  /**
+   * @param {PointerEvent} event
+   */
+
+
+  _detectFormSubmission(event) {
+    // note: This conditional will be replaced with feature flagging soon
+    if (!this.globalConfig.isApp) return;
+    const matchingForm = [...this.scanner.forms.values()].find(form => {
+      const btns = [...form.submitButtons]; // @ts-ignore
+
+      if (btns.includes(event.target)) return true; // @ts-ignore
+
+      if (btns.find(btn => btn.contains(event.target))) return true;
+    });
+    matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
+  }
 
 }
 
-var _default = AppleDeviceInterface;
-exports.default = _default;
+exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../appleDeviceUtils/appleDeviceUtils":35,"../autofill-utils":37,"./InterfacePrototype.js":11,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
+},{"../UI/HTMLTooltip":33,"../UI/controllers/HTMLTooltipUIController":34,"../UI/controllers/OverlayUIController":36,"../appleDeviceUtils/appleDeviceUtils":40,"../autofill-utils":42,"./InterfacePrototype.js":12,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.AppleOverlayDeviceInterface = void 0;
+
+var _AppleDeviceInterface = require("./AppleDeviceInterface");
+
+var _styles = require("../UI/styles/styles");
+
+var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * This subclass is designed to separate code that *only* runs inside the
+ * Overlay into a single place.
+ *
+ * It will only run inside the macOS overlay, therefor all code here
+ * can be viewed as *not* executing within a regular page context.
+ */
+class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInterface {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "stripCredentials", false);
+  }
+
+  /**
+   * Because we're running inside the Overlay, we always create the HTML
+   * Tooltip controller.
+   *
+   * @override
+   * @returns {import("../UI/controllers/UIController.js").UIController}
+   */
+  createUIController() {
+    /** @type {import('../UI/controllers/HTMLTooltipUIController').HTMLTooltipControllerOptions} */
+    const controllerOptions = {
+      tooltipKind:
+      /** @type {const} */
+      'modern',
+      device: this
+    };
+    /** @type {import('../UI/HTMLTooltip').HTMLTooltipOptions} */
+
+    const tooltipOptions = {
+      wrapperClass: 'top-autofill',
+      tooltipPositionClass: () => '.wrapper { transform: none; }',
+      css: "<style>".concat(_styles.CSS_STYLES, "</style>"),
+      setSize: details => this._setSize(details),
+      testMode: this.isTestMode(),
+      remove: () => this._closeAutofillParent()
+    };
+    return new _HTMLTooltipUIController.HTMLTooltipUIController(controllerOptions, tooltipOptions);
+  }
+  /**
+   * Since we're running inside the Overlay we can limit what happens here to
+   * be only things that are needed to power the HTML Tooltip
+   *
+   * @override
+   * @returns {Promise<void>}
+   */
+
+
+  async setupAutofill() {
+    await this._getAutofillInitData();
+    const signedIn = await this._checkDeviceSignedIn();
+
+    if (signedIn) {
+      await this.getAddresses();
+    }
+
+    this._setupTopFrame();
+
+    this._listenForCustomMouseEvent();
+  }
+
+  _setupTopFrame() {
+    var _this$uiController$cr, _this$uiController;
+
+    const topContextData = this.getTopContextData();
+    if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
+
+    const getPosition = () => {
+      return {
+        x: 0,
+        y: 0,
+        height: 50,
+        width: 50
+      };
+    }; // Create the tooltip, and set it as active
+
+
+    const tooltip = (_this$uiController$cr = (_this$uiController = this.uiController).createTooltip) === null || _this$uiController$cr === void 0 ? void 0 : _this$uiController$cr.call(_this$uiController, getPosition, topContextData);
+
+    if (tooltip) {
+      var _this$uiController$se, _this$uiController2;
+
+      (_this$uiController$se = (_this$uiController2 = this.uiController).setActiveTooltip) === null || _this$uiController$se === void 0 ? void 0 : _this$uiController$se.call(_this$uiController2, tooltip);
+    }
+  }
+  /**
+   * The native side will send a custom event 'mouseMove' to indicate
+   * that the HTMLTooltip should fake an element being focussed.
+   *
+   * Note: There's no cleanup required here since the Overlay has a fresh
+   * page load every time it's opened.
+   */
+
+
+  _listenForCustomMouseEvent() {
+    window.addEventListener('mouseMove', event => {
+      var _this$uiController$ge, _this$uiController3;
+
+      const activeTooltip = (_this$uiController$ge = (_this$uiController3 = this.uiController).getActiveTooltip) === null || _this$uiController$ge === void 0 ? void 0 : _this$uiController$ge.call(_this$uiController3);
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
+    });
+  }
+  /**
+   * This is overridden in the Overlay, so that instead of trying to fill a form
+   * with the selected credentials, we instead send a message to the native
+   * side. Once received, the native side will store that selection so that a
+   * subsequence call from main webpage can retrieve it via polling.
+   *
+   * @override
+   * @param detailIn
+   * @param configType
+   * @returns {Promise<void>}
+   */
+
+
+  async selectedDetail(detailIn, configType) {
+    let detailsEntries = Object.entries(detailIn).map(_ref => {
+      let [key, value] = _ref;
+      return [key, String(value)];
+    });
+    const data = Object.fromEntries(detailsEntries);
+    await this.transport.send('selectedDetail', {
+      data,
+      configType
+    });
+  }
+  /**
+   * When the HTMLTooltip calls 'setSize', we forward that message to the native layer
+   * so that the window that contains the Autofill UI can be set correctly.
+   *
+   * This is an overlay-only scenario - normally 'setSize' isn't needed (like in the extension)
+   * because the HTML element will grow as needed.
+   *
+   * @param {{height: number, width: number}} details
+   */
+
+
+  async _setSize(details) {
+    await this.transport.send('setSize', details);
+  }
+
+}
+
+exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
+
+},{"../UI/controllers/HTMLTooltipUIController":34,"../UI/styles/styles":39,"./AppleDeviceInterface":9}],11:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ExtensionInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
 var _autofillUtils = require("../autofill-utils");
 
+var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+
+var _HTMLTooltip = require("../UI/HTMLTooltip");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class ExtensionInterface extends _InterfacePrototype.default {
+  /**
+   * @override
+   */
+  createUIController() {
+    /** @type {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} */
+    const htmlTooltipOptions = { ..._HTMLTooltip.defaultOptions,
+      css: "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossOrigin=\"anonymous\">"),
+      testMode: this.isTestMode()
+    };
+    return new _HTMLTooltipUIController.HTMLTooltipUIController({
+      tooltipKind: 'legacy',
+      device: this
+    }, htmlTooltipOptions);
+  }
+
   async isEnabled() {
     return new Promise(resolve => {
       chrome.runtime.sendMessage({
@@ -2992,10 +3156,9 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 }
 
-var _default = ExtensionInterface;
-exports.default = _default;
+exports.ExtensionInterface = ExtensionInterface;
 
-},{"../autofill-utils":37,"./InterfacePrototype.js":11}],11:[function(require,module,exports){
+},{"../UI/HTMLTooltip":33,"../UI/controllers/HTMLTooltipUIController":34,"../autofill-utils":42,"./InterfacePrototype.js":12}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3009,12 +3172,6 @@ var _matching = require("../Form/matching");
 
 var _formatters = require("../Form/formatters");
 
-var _EmailAutofill = _interopRequireDefault(require("../UI/EmailAutofill"));
-
-var _DataAutofill = _interopRequireDefault(require("../UI/DataAutofill"));
-
-var _inputTypeConfig = require("../Form/inputTypeConfig");
-
 var _listenForFormSubmission = _interopRequireDefault(require("../Form/listenForFormSubmission"));
 
 var _Credentials = require("../InputTypes/Credentials");
@@ -3022,6 +3179,10 @@ var _Credentials = require("../InputTypes/Credentials");
 var _PasswordGenerator = require("../PasswordGenerator");
 
 var _Scanner = require("../Scanner");
+
+var _config = require("../config");
+
+var _NativeUIController = require("../UI/controllers/NativeUIController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3054,7 +3215,7 @@ var _data2 = /*#__PURE__*/new WeakMap();
 class InterfacePrototype {
   /** @type {import("../Form/Form").Form | null} */
 
-  /** @type {import("../UI/Tooltip").default | null} */
+  /** @type {import("../UI/HTMLTooltip.js").default | null} */
 
   /** @type {number} */
 
@@ -3068,7 +3229,11 @@ class InterfacePrototype {
 
   /** @type {import('../Scanner').Scanner} */
 
-  /** @param {GlobalConfig} config */
+  /** @type {import("../UI/controllers/UIController.js").UIController} */
+
+  /**
+   * @param {GlobalConfig} config
+   */
   constructor(config) {
     _defineProperty(this, "attempts", 0);
 
@@ -3096,6 +3261,8 @@ class InterfacePrototype {
 
     _defineProperty(this, "scanner", void 0);
 
+    _defineProperty(this, "uiController", void 0);
+
     _classPrivateFieldInitSpec(this, _data2, {
       writable: true,
       value: {
@@ -3107,9 +3274,21 @@ class InterfacePrototype {
     });
 
     this.globalConfig = config;
+    this.uiController = this.createUIController();
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
+  }
+  /**
+   * Implementors should override this with a UI controller that suits
+   * their platform.
+   *
+   * @returns {import("../UI/controllers/UIController.js").UIController}
+   */
+
+
+  createUIController() {
+    return new _NativeUIController.NativeUIController();
   }
 
   get hasLocalAddresses() {
@@ -3185,7 +3364,7 @@ class InterfacePrototype {
     return [...identities, ...newIdentities];
   }
   /**
-   * Stores init data coming from the device
+   * Stores init data coming from the tooltipHandler
    * @param { InboundPMData } data
    */
 
@@ -3252,8 +3431,7 @@ class InterfacePrototype {
   }
 
   async startInit() {
-    window.addEventListener('pointerdown', this, true); // Only setup listeners on macOS
-
+    // Only setup listeners on macOS
     if (this.globalConfig.isApp) {
       (0, _listenForFormSubmission.default)(this.scanner.forms);
     }
@@ -3281,31 +3459,19 @@ class InterfacePrototype {
         this.startInit();
       });
     }
-  } // Global listener for event delegation
+  }
+  /**
+   * @deprecated This was a port from the macOS implementation so the API may not be suitable for all
+   * @returns {Promise<any>}
+   */
 
 
-  pointerDownListener(e) {
-    if (!e.isTrusted) return; // @ts-ignore
+  async getSelectedCredentials() {
+    throw new Error('`getSelectedCredentials` not implemented');
+  }
 
-    if (e.target.nodeName === 'DDG-AUTOFILL') {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const activeTooltip = this.getActiveTooltip();
-      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.dispatchClick();
-    } else {
-      this.removeTooltip();
-    }
-
-    if (!this.globalConfig.isApp) return; // Check for clicks on submit buttons
-
-    const matchingForm = [...this.scanner.forms.values()].find(form => {
-      const btns = [...form.submitButtons]; // @ts-ignore
-
-      if (btns.includes(e.target)) return true; // @ts-ignore
-
-      if (btns.find(btn => btn.contains(e.target))) return true;
-    });
-    matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
+  isTestMode() {
+    return this.globalConfig.isDDGTestMode;
   }
   /**
    * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
@@ -3342,29 +3508,7 @@ class InterfacePrototype {
     this.removeTooltip();
   }
   /**
-   * @param {()=>void} getPosition
-   * @param {TopContextData} topContextData
-   */
-
-
-  createTooltip(getPosition, topContextData) {
-    const config = (0, _inputTypeConfig.getInputConfigFromType)(topContextData.inputType);
-
-    if (this.globalConfig.isApp) {
-      // collect the data for each item to display
-      const data = this.dataForAutofill(config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
-
-      const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
-
-      return new _DataAutofill.default(config, topContextData.inputType, getPosition, this).render(config, asRenderers, {
-        onSelect: id => this.onSelect(config, data, id)
-      });
-    } else {
-      return new _EmailAutofill.default(config, topContextData.inputType, getPosition, this);
-    }
-  }
-  /**
-   * Before the DataAutofill opens, we collect the data based on the config.type
+   * Before the DataWebTooltip opens, we collect the data based on the config.type
    * @param {InputTypeConfigs} config
    * @param {import('../Form/matching').SupportedTypes} inputType
    * @param {TopContextData} [data]
@@ -3425,18 +3569,14 @@ class InterfacePrototype {
     // for example, generated passwords may get appended here
 
     const processedTopContext = this.preAttachTooltip(topContextData, input, form);
-    this.attachCloseListeners();
-    this.attachTooltipInner(form, input, getPosition, click, processedTopContext);
-  }
-
-  attachCloseListeners() {
-    window.addEventListener('input', this);
-    window.addEventListener('keydown', this);
-  }
-
-  removeCloseListeners() {
-    window.removeEventListener('input', this);
-    window.removeEventListener('keydown', this);
+    this.uiController.attach({
+      input,
+      form,
+      click,
+      getPosition,
+      topContextData: processedTopContext,
+      device: this
+    });
   }
   /**
    * When an item was selected, we then call back to the device
@@ -3489,55 +3629,17 @@ class InterfacePrototype {
       return this.removeTooltip();
     });
   }
-  /**
-   * @param {import("../Form/Form").Form} form
-   * @param {any} input
-   * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
-   * @param {{ x: number; y: number; } | null} _click
-   * @param {TopContextData} data
-   */
 
+  isTooltipActive() {
+    var _this$uiController$is, _this$uiController$is2, _this$uiController;
 
-  attachTooltipInner(form, input, getPosition, _click, data) {
-    if (this.currentTooltip) return;
-    this.currentTooltip = this.createTooltip(getPosition, data);
-    form.showingTooltip(input);
+    return (_this$uiController$is = (_this$uiController$is2 = (_this$uiController = this.uiController).isActive) === null || _this$uiController$is2 === void 0 ? void 0 : _this$uiController$is2.call(_this$uiController)) !== null && _this$uiController$is !== void 0 ? _this$uiController$is : false;
   }
 
-  async removeTooltip() {
-    if (this.currentTooltip) {
-      this.removeCloseListeners();
-      this.currentTooltip.remove();
-      this.currentTooltip = null;
-      this.currentAttached = null;
-    }
-  }
+  removeTooltip() {
+    var _this$uiController$re, _this$uiController2;
 
-  getActiveTooltip() {
-    return this.currentTooltip;
-  }
-
-  setActiveTooltip(tooltip) {
-    this.currentTooltip = tooltip;
-  }
-
-  handleEvent(event) {
-    switch (event.type) {
-      case 'keydown':
-        if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
-          this.removeTooltip();
-        }
-
-        break;
-
-      case 'input':
-        this.removeTooltip();
-        break;
-
-      case 'pointerdown':
-        this.pointerDownListener(event);
-        break;
-    }
+    return (_this$uiController$re = (_this$uiController2 = this.uiController).removeTooltip) === null || _this$uiController$re === void 0 ? void 0 : _this$uiController$re.call(_this$uiController2, 'interface');
   }
 
   async setupSettingsPage() {
@@ -3547,29 +3649,31 @@ class InterfacePrototype {
       shouldLog: false
     };
 
-    if (this.globalConfig.isDDGDomain) {
+    if (!this.globalConfig.isDDGDomain) {
+      return;
+    }
+
+    (0, _autofillUtils.notifyWebApp)({
+      isApp: this.globalConfig.isApp
+    });
+
+    if (this.isDeviceSignedIn()) {
+      let userData;
+
+      try {
+        userData = await this.getUserData();
+      } catch (e) {}
+
+      const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
       (0, _autofillUtils.notifyWebApp)({
-        isApp: this.globalConfig.isApp
+        deviceSignedIn: {
+          value: true,
+          shouldLog,
+          userData: hasUserData ? userData : undefined
+        }
       });
-
-      if (this.isDeviceSignedIn()) {
-        let userData;
-
-        try {
-          userData = await this.getUserData();
-        } catch (e) {}
-
-        const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
-        (0, _autofillUtils.notifyWebApp)({
-          deviceSignedIn: {
-            value: true,
-            shouldLog,
-            userData: hasUserData ? userData : undefined
-          }
-        });
-      } else {
-        this.trySigningIn();
-      }
+    } else {
+      this.trySigningIn();
     }
   }
 
@@ -3656,10 +3760,6 @@ class InterfacePrototype {
   openManagePasswords() {}
 
   storeFormData(_values) {}
-  /** @param {{height: number, width: number}} _args */
-
-
-  setSize(_args) {}
   /** @param {FeatureToggleNames} name */
 
 
@@ -3738,13 +3838,24 @@ class InterfacePrototype {
       this.storeFormData(withAutoGeneratedFlag);
     }
   }
+  /**
+   * This serves as a single place to create a default instance
+   * of InterfacePrototype that can be useful in testing scenarios
+   * @returns {InterfacePrototype}
+   */
+
+
+  static default() {
+    const globalConfig = (0, _config.createGlobalConfig)();
+    return new InterfacePrototype(globalConfig);
+  }
 
 }
 
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":15,"../Form/inputTypeConfig":17,"../Form/listenForFormSubmission":19,"../Form/matching":22,"../InputTypes/Credentials":25,"../PasswordGenerator":28,"../Scanner":29,"../UI/DataAutofill":30,"../UI/EmailAutofill":31,"../autofill-utils":37}],12:[function(require,module,exports){
+},{"../Form/formatters":16,"../Form/listenForFormSubmission":20,"../Form/matching":23,"../InputTypes/Credentials":26,"../PasswordGenerator":29,"../Scanner":30,"../UI/controllers/NativeUIController":35,"../autofill-utils":42,"../config":44}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3922,7 +4033,7 @@ class Form {
   removeTooltip() {
     var _this$intObs;
 
-    const tooltip = this.device.getActiveTooltip();
+    const tooltip = this.device.isTooltipActive();
 
     if (this.isAutofilling || !tooltip) {
       return;
@@ -4121,7 +4232,10 @@ class Form {
     };
 
     const handler = e => {
-      if (this.device.getActiveTooltip() || this.isAutofilling) return;
+      if (this.isAutofilling) {
+        return;
+      }
+
       const input = e.target;
       let click = null;
 
@@ -4240,7 +4354,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":37,"../constants":40,"./FormAnalyzer":13,"./formatters":15,"./inputStyles":16,"./inputTypeConfig.js":17,"./matching":22}],13:[function(require,module,exports){
+},{"../autofill-utils":42,"../constants":45,"./FormAnalyzer":14,"./formatters":16,"./inputStyles":17,"./inputTypeConfig.js":18,"./matching":23}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4492,7 +4606,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":37,"../constants":40,"./matching":22,"./matching-configuration":21}],14:[function(require,module,exports){
+},{"../autofill-utils":42,"../constants":45,"./matching":23,"./matching-configuration":22}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5060,7 +5174,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5402,7 +5516,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames":14,"./matching":22}],16:[function(require,module,exports){
+},{"./countryNames":15,"./matching":23}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5484,7 +5598,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":17}],17:[function(require,module,exports){
+},{"./inputTypeConfig.js":18}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5656,7 +5770,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials":25,"../InputTypes/CreditCard":26,"../InputTypes/Identity":27,"../UI/img/ddgPasswordIcon":33,"./logo-svg":20,"./matching":22}],18:[function(require,module,exports){
+},{"../InputTypes/Credentials":26,"../InputTypes/CreditCard":27,"../InputTypes/Identity":28,"../UI/img/ddgPasswordIcon":38,"./logo-svg":21,"./matching":23}],19:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -5708,7 +5822,7 @@ const extractElementStrings = element => {
 
 module.exports.extractElementStrings = extractElementStrings;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5751,7 +5865,7 @@ const listenForGlobalFormSubmission = forms => {
 var _default = listenForGlobalFormSubmission;
 exports.default = _default;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5761,7 +5875,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6387,7 +6501,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":23}],22:[function(require,module,exports){
+},{"./selectors-css":24}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7371,7 +7485,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":40,"./label-util":18,"./matching-configuration":21,"./selectors-css":23,"./vendor-regex":24}],23:[function(require,module,exports){
+},{"../constants":45,"./label-util":19,"./matching-configuration":22,"./selectors-css":24,"./vendor-regex":25}],24:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -7438,7 +7552,7 @@ module.exports.__secret_do_not_use = {
   birthdayYear
 };
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 /**
@@ -7495,7 +7609,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 
 module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -7630,7 +7744,7 @@ module.exports.fromPassword = fromPassword;
 module.exports.appendGeneratedId = appendGeneratedId;
 module.exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7682,7 +7796,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7756,7 +7870,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":15}],28:[function(require,module,exports){
+},{"../Form/formatters":16}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7828,7 +7942,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":2,"../packages/password/rules.json":6}],29:[function(require,module,exports){
+},{"../packages/password":2,"../packages/password/rules.json":6}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8125,7 +8239,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":12,"./Form/matching":22,"./Form/selectors-css":23,"./autofill-utils":37}],30:[function(require,module,exports){
+},{"./Form/Form":13,"./Form/matching":23,"./Form/selectors-css":24,"./autofill-utils":42}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8135,24 +8249,17 @@ exports.default = void 0;
 
 var _autofillUtils = require("../autofill-utils");
 
-var _Tooltip = _interopRequireDefault(require("./Tooltip"));
-
-var _styles = require("./styles/styles.js");
+var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-class DataAutofill extends _Tooltip.default {
+class DataHTMLTooltip extends _HTMLTooltip.default {
   /**
    * @param {InputTypeConfigs} config
    * @param {TooltipItemRenderer[]} items
    * @param {{onSelect(id:string): void}} callbacks
    */
   render(config, items, callbacks) {
-    const {
-      isApp,
-      isTopFrame
-    } = this.interface.globalConfig;
-    const includeStyles = isApp ? "<style>".concat(_styles.CSS_STYLES, "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
     let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
 
     const shouldShowSeparator = dataId => {
@@ -8161,8 +8268,8 @@ class DataAutofill extends _Tooltip.default {
       return shouldShow;
     };
 
-    const topClass = isTopFrame ? 'top-autofill' : '';
-    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
+    const topClass = this.options.wrapperClass || '';
+    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
       var _item$labelSmall, _item$label;
 
       // these 2 are optional
@@ -8184,10 +8291,10 @@ class DataAutofill extends _Tooltip.default {
 
 }
 
-var _default = DataAutofill;
+var _default = DataHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":37,"./Tooltip":32,"./styles/styles.js":34}],31:[function(require,module,exports){
+},{"../autofill-utils":42,"./HTMLTooltip":33}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8197,24 +8304,18 @@ exports.default = void 0;
 
 var _autofillUtils = require("../autofill-utils");
 
-var _Tooltip = _interopRequireDefault(require("./Tooltip"));
-
-var _styles = require("./styles/styles");
+var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-class EmailAutofill extends _Tooltip.default {
+class EmailHTMLTooltip extends _HTMLTooltip.default {
   /**
-   * @param config
-   * @param inputType
-   * @param position
-   * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
    */
-  constructor(config, inputType, position, deviceInterface) {
-    super(config, inputType, position, deviceInterface);
-    this.addresses = this.interface.getLocalAddresses();
-    const includeStyles = deviceInterface.globalConfig.isApp ? "<style>".concat(_styles.CSS_STYLES, "</style>") : "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossorigin=\"anonymous\">");
-    this.shadow.innerHTML = "\n".concat(includeStyles, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
+  render(device) {
+    this.device = device;
+    this.addresses = device.getLocalAddresses();
+    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
@@ -8235,8 +8336,9 @@ class EmailAutofill extends _Tooltip.default {
       this.fillForm('privateAddress');
     }); // Get the alias from the extension
 
-    this.interface.getAddresses().then(this.updateAddresses);
+    this.device.getAddresses().then(this.updateAddresses);
     this.init();
+    return this;
   }
   /**
    * @param {'personalAddress' | 'privateAddress'} id
@@ -8244,9 +8346,11 @@ class EmailAutofill extends _Tooltip.default {
 
 
   async fillForm(id) {
+    var _this$device;
+
     const address = this.addresses[id];
     const formattedAddress = (0, _autofillUtils.formatDuckAddress)(address);
-    this.interface.selectedDetail({
+    (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.selectedDetail({
       email: formattedAddress,
       id
     }, 'email');
@@ -8254,31 +8358,62 @@ class EmailAutofill extends _Tooltip.default {
 
 }
 
-var _default = EmailAutofill;
+var _default = EmailHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":37,"./Tooltip":32,"./styles/styles":34}],32:[function(require,module,exports){
+},{"../autofill-utils":42,"./HTMLTooltip":33}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.defaultOptions = exports.default = exports.HTMLTooltip = void 0;
 
 var _autofillUtils = require("../autofill-utils");
 
 var _matching = require("../Form/matching");
 
+var _styles = require("./styles/styles");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-class Tooltip {
+/**
+ * @typedef {object} HTMLTooltipOptions
+ * @property {boolean} testMode
+ * @property {string | null} [wrapperClass]
+ * @property {(top: number, left: number) => string} [tooltipPositionClass]
+ * @property {(details: {height: number, width: number}) => void} [setSize]
+ * @property {() => void} remove
+ * @property {string} css
+ */
+
+/** @type {import('./HTMLTooltip.js').HTMLTooltipOptions} */
+const defaultOptions = {
+  wrapperClass: '',
+  tooltipPositionClass: (top, left) => ".wrapper {transform: translate(".concat(left, "px, ").concat(top, "px);}"),
+  css: "<style>".concat(_styles.CSS_STYLES, "</style>"),
+  setSize: () => {
+    /** noop */
+  },
+  remove: () => {
+    /** noop */
+  },
+  testMode: false
+};
+exports.defaultOptions = defaultOptions;
+
+class HTMLTooltip {
+  /** @type {HTMLTooltipOptions} */
+
   /**
    * @param config
    * @param inputType
    * @param getPosition
-   * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
+   * @param {HTMLTooltipOptions} options
    */
-  constructor(config, inputType, getPosition, deviceInterface) {
+  constructor(config, inputType, getPosition, options) {
+    _defineProperty(this, "options", void 0);
+
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
@@ -8297,8 +8432,9 @@ class Tooltip {
 
     _defineProperty(this, "clickableButtons", new Map());
 
+    this.options = options;
     this.shadow = document.createElement('ddg-autofill').attachShadow({
-      mode: deviceInterface.globalConfig.isDDGTestMode ? 'open' : 'closed'
+      mode: options.testMode ? 'open' : 'closed'
     });
     this.host = this.shadow.host;
     this.config = config;
@@ -8312,7 +8448,6 @@ class Tooltip {
     }; // @ts-ignore how to narrow this.host to HTMLElement?
 
     (0, _autofillUtils.addInlineStyles)(this.host, forcedVisibilityStyles);
-    this.interface = deviceInterface;
     this.count = 0;
   }
 
@@ -8378,6 +8513,8 @@ class Tooltip {
   }
 
   updatePosition(_ref) {
+    var _this$options$tooltip, _this$options;
+
     let {
       left,
       top
@@ -8402,13 +8539,11 @@ class Tooltip {
       this.transformRuleIndex = shadow.styleSheets[0].rules.length;
     }
 
-    let newRule = ".wrapper {transform: translate(".concat(left, "px, ").concat(top, "px);}");
+    let cssRule = (_this$options$tooltip = (_this$options = this.options).tooltipPositionClass) === null || _this$options$tooltip === void 0 ? void 0 : _this$options$tooltip.call(_this$options, top, left);
 
-    if (this.interface.globalConfig.isTopFrame) {
-      newRule = '.wrapper {transform: none; }';
+    if (typeof cssRule === 'string') {
+      shadow.styleSheets[0].insertRule(cssRule, this.transformRuleIndex);
     }
-
-    shadow.styleSheets[0].insertRule(newRule, this.transformRuleIndex);
   }
 
   ensureIsLastInDOM() {
@@ -8423,7 +8558,7 @@ class Tooltip {
         this.count++;
       } else {
         // Remove the tooltip from the form to cleanup listeners and observers
-        this.interface.removeTooltip();
+        this.options.remove();
         console.info("DDG autofill bailing out");
       }
     }
@@ -8453,7 +8588,7 @@ class Tooltip {
   }
 
   setupSizeListener() {
-    if (!this.interface.globalConfig.isTopFrame) return; // Listen to layout and paint changes to register the size
+    if (typeof this.options.setSize !== 'function') return; // Listen to layout and paint changes to register the size
 
     const observer = new PerformanceObserver(() => {
       this.setSize();
@@ -8464,14 +8599,16 @@ class Tooltip {
   }
 
   setSize() {
-    if (!this.interface.globalConfig.isTopFrame) return;
+    var _this$options$setSize, _this$options2;
+
     const innerNode = this.shadow.querySelector('.wrapper--data'); // Shouldn't be possible
 
     if (!innerNode) return;
-    this.interface.setSize({
+    const details = {
       height: innerNode.clientHeight,
       width: innerNode.clientWidth
-    });
+    };
+    (_this$options$setSize = (_this$options2 = this.options).setSize) === null || _this$options$setSize === void 0 ? void 0 : _this$options$setSize.call(_this$options2, details);
   }
 
   init() {
@@ -8500,10 +8637,632 @@ class Tooltip {
 
 }
 
-var _default = Tooltip;
+exports.HTMLTooltip = HTMLTooltip;
+var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching":22,"../autofill-utils":37}],33:[function(require,module,exports){
+},{"../Form/matching":23,"../autofill-utils":42,"./styles/styles":39}],34:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.HTMLTooltipUIController = void 0;
+
+var _inputTypeConfig = require("../../Form/inputTypeConfig");
+
+var _DataHTMLTooltip = _interopRequireDefault(require("../DataHTMLTooltip"));
+
+var _EmailHTMLTooltip = _interopRequireDefault(require("../EmailHTMLTooltip"));
+
+var _HTMLTooltip = require("../HTMLTooltip");
+
+var _UIController = require("./UIController");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @typedef HTMLTooltipControllerOptions
+ * @property {"modern" | "legacy"} tooltipKind - A choice between the newer Autofill UI vs the older one used in the extension
+ * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
+ * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback that will be executed for every pointerdown event
+ * regardless of whether this Controller has an open tooltip, or not
+ */
+
+/**
+ * This encapsulates all the logic relating to showing/hiding the HTML Tooltip
+ *
+ * Note: This could be displayed in the current webpage (for example, in the extension)
+ * or within a webview overlay (like on macOS & upcoming in windows)
+ */
+class HTMLTooltipUIController extends _UIController.UIController {
+  /** @type {import("../HTMLTooltip.js").HTMLTooltip | null} */
+
+  /** @type {HTMLTooltipControllerOptions} */
+
+  /** @type {import('../HTMLTooltip.js').HTMLTooltipOptions} */
+
+  /** @type {import("../../DeviceInterface/InterfacePrototype").default | null} */
+
+  /**
+   * Store any cleanups that may have been registered
+   * @type {CleanupFn[]}
+   */
+
+  /**
+   * @param {HTMLTooltipControllerOptions} options
+   * @param {import('../HTMLTooltip.js').HTMLTooltipOptions} htmlTooltipOptions
+   */
+  constructor(options) {
+    let htmlTooltipOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _HTMLTooltip.defaultOptions;
+    super();
+
+    _defineProperty(this, "_activeTooltip", null);
+
+    _defineProperty(this, "_options", void 0);
+
+    _defineProperty(this, "_htmlTooltipOptions", void 0);
+
+    _defineProperty(this, "_device", null);
+
+    _defineProperty(this, "_listenerCleanups", []);
+
+    this._options = options;
+    this._htmlTooltipOptions = htmlTooltipOptions;
+    window.addEventListener('pointerdown', this, true);
+  }
+  /**
+   * @param {import('./UIController').AttachArgs} args
+   */
+
+
+  attach(args) {
+    if (this.getActiveTooltip()) {
+      return;
+    }
+
+    const {
+      topContextData,
+      getPosition,
+      input,
+      form
+    } = args;
+    const tooltip = this.createTooltip(getPosition, topContextData);
+    this.setActiveTooltip(tooltip);
+    form.showingTooltip(input);
+  }
+  /**
+   * Actually create the HTML Tooltip
+   * @param {PosFn} getPosition
+   * @param {TopContextData} topContextData
+   * @return {import("../HTMLTooltip").HTMLTooltip}
+   */
+
+
+  createTooltip(getPosition, topContextData) {
+    this._attachListeners();
+
+    const config = (0, _inputTypeConfig.getInputConfigFromType)(topContextData.inputType);
+    /**
+     * @type {import('../HTMLTooltip').HTMLTooltipOptions}
+     */
+
+    const tooltipOptions = { ...this._htmlTooltipOptions,
+      remove: () => this.removeTooltip()
+    };
+
+    if (this._options.tooltipKind === 'legacy') {
+      return new _EmailHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
+    } // collect the data for each item to display
+
+
+    const data = this._dataForAutofill(config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
+
+
+    const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
+
+    return new _DataHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(config, asRenderers, {
+      onSelect: id => {
+        this._onSelect(config, data, id);
+      }
+    });
+  }
+
+  _attachListeners() {
+    window.addEventListener('input', this);
+    window.addEventListener('keydown', this);
+  }
+
+  _removeListeners() {
+    window.removeEventListener('input', this);
+    window.removeEventListener('keydown', this);
+  }
+
+  handleEvent(event) {
+    switch (event.type) {
+      case 'keydown':
+        if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+          this.removeTooltip();
+        }
+
+        break;
+
+      case 'input':
+        this.removeTooltip();
+        break;
+
+      case 'pointerdown':
+        {
+          this._pointerDownListener(event);
+
+          break;
+        }
+    }
+  } // Global listener for event delegation
+
+
+  _pointerDownListener(e) {
+    var _this$_options$onPoin, _this$_options;
+
+    if (!e.isTrusted) return; // @ts-ignore
+
+    if (e.target.nodeName === 'DDG-AUTOFILL') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const activeTooltip = this.getActiveTooltip();
+
+      if (!activeTooltip) {
+        console.warn('Could not get activeTooltip');
+      } else {
+        activeTooltip.dispatchClick();
+      }
+    } else {
+      this.removeTooltip().catch(e => {
+        console.error('error removing tooltip', e);
+      });
+    }
+
+    (_this$_options$onPoin = (_this$_options = this._options).onPointerDown) === null || _this$_options$onPoin === void 0 ? void 0 : _this$_options$onPoin.call(_this$_options, e);
+  }
+
+  async removeTooltip(_via) {
+    this._htmlTooltipOptions.remove();
+
+    if (this._activeTooltip) {
+      this._removeListeners();
+
+      this._activeTooltip.remove();
+
+      this._activeTooltip = null;
+    }
+  }
+  /**
+   * @returns {import("../HTMLTooltip.js").HTMLTooltip|null}
+   */
+
+
+  getActiveTooltip() {
+    return this._activeTooltip;
+  }
+  /**
+   * @param {import("../HTMLTooltip.js").HTMLTooltip} value
+   */
+
+
+  setActiveTooltip(value) {
+    this._activeTooltip = value;
+  }
+  /**
+   * Collect the data that's needed to populate the Autofill UI.
+   *
+   * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
+   *
+   * @param {InputTypeConfigs} config - This is the selected `InputTypeConfig` based on the type of field
+   * @param {import('../../Form/matching').SupportedTypes} inputType - The input type for the current field
+   * @param {TopContextData} topContextData
+   */
+
+
+  _dataForAutofill(config, inputType, topContextData) {
+    return this._options.device.dataForAutofill(config, inputType, topContextData);
+  }
+  /**
+   * When a field is selected, call the `onSelect` method from the device.
+   *
+   * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
+   *
+   * @param {InputTypeConfigs} config
+   * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
+   * @param {string | number} id
+   */
+
+
+  _onSelect(config, data, id) {
+    return this._options.device.onSelect(config, data, id);
+  }
+
+  isActive() {
+    return Boolean(this.getActiveTooltip());
+  }
+
+}
+
+exports.HTMLTooltipUIController = HTMLTooltipUIController;
+
+},{"../../Form/inputTypeConfig":18,"../DataHTMLTooltip":31,"../EmailHTMLTooltip":32,"../HTMLTooltip":33,"./UIController":37}],35:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NativeUIController = void 0;
+
+var _UIController = require("./UIController");
+
+/**
+ * `NativeController` should be used in situations where you DO NOT
+ * want any Autofill-controlled user interface.
+ *
+ * Examples are with iOS/Android, where 'attaching' only means
+ * messaging a native layer to show a native tooltip.
+ *
+ * @example
+ *
+ * ```javascript
+ * const controller = new NativeController();
+ * controller.attach(...);
+ * ```
+ */
+class NativeUIController extends _UIController.UIController {
+  /**
+   * @param {import('./UIController').AttachArgs} _args
+   */
+  attach(_args) {
+    throw new Error('unreachable, native tooltip handler not supported yet');
+  }
+
+}
+
+exports.NativeUIController = NativeUIController;
+
+},{"./UIController":37}],36:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.OverlayUIController = void 0;
+
+var _UIController = require("./UIController");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
+
+var _state = /*#__PURE__*/new WeakMap();
+
+/**
+ * @typedef OverlayControllerOptions
+ * @property {() => Promise<void>} remove - A callback that will be fired when the tooltip should be removed
+ * @property {(details: ShowAutofillParentRequest) => Promise<void>} show - A callback that will be fired when the tooltip should be shown
+ * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback for reacting to all `pointerdown` events.
+ */
+
+/**
+ * @typedef ShowAutofillParentRequest - The argument that's sent to the native side
+ * @property {boolean} wasFromClick - Whether the request originated from a click
+ * @property {number} inputTop
+ * @property {number} inputLeft
+ * @property {number} inputHeight
+ * @property {number} inputWidth
+ * @property {string} serializedInputContext - Serialized JSON that will be picked up once the
+ * 'overlay' requests its initial data
+ */
+
+/**
+ * Use this `OverlayController` when you want to control an overlay, but don't have
+ * your own UI to display.
+ *
+ * For example, on macOS this `OverlayController` would run in the main webpage
+ * and would then signal to its native side when the overlay should show/close
+ *
+ * @example `show` and `remove` can be implemented to match your native side's messaging needs
+ *
+ * ```javascript
+ * const controller = new OverlayController({
+ *     remove: async () => this.closeAutofillParent(),
+ *     show: async (details) => this.show(details),
+ *     onPointerDown: (e) => this.onPointerDown(e)
+ * })
+ *
+ * controller.attach(...)
+ * ```
+ */
+class OverlayUIController extends _UIController.UIController {
+  /** @type {"idle" | "parentShown"} */
+
+  /** @type {import('../HTMLTooltip.js').HTMLTooltip | null} */
+
+  /**
+   * @type {OverlayControllerOptions}
+   */
+
+  /**
+   * @param {OverlayControllerOptions} options
+   */
+  constructor(options) {
+    super();
+
+    _classPrivateFieldInitSpec(this, _state, {
+      writable: true,
+      value: 'idle'
+    });
+
+    _defineProperty(this, "_activeTooltip", null);
+
+    _defineProperty(this, "_options", void 0);
+
+    this._options = options; // We always register this 'pointerdown' event, regardless of
+    // whether we have a tooltip currently open or not. This is to ensure
+    // we can clear out any existing state before opening a new one.
+
+    window.addEventListener('pointerdown', this, true);
+  }
+  /**
+   * @param {import('./UIController').AttachArgs} args
+   */
+
+
+  attach(args) {
+    const {
+      getPosition,
+      topContextData,
+      click,
+      input
+    } = args;
+    let delay = 0;
+
+    if (!click && !this.elementIsInViewport(getPosition())) {
+      input.scrollIntoView(true);
+      delay = 500;
+    }
+
+    setTimeout(() => {
+      this.showTopTooltip(click, getPosition(), topContextData).catch(e => {
+        console.error('error from showTopTooltip', e);
+      });
+    }, delay);
+  }
+  /**
+   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
+   * @returns {boolean}
+   */
+
+
+  elementIsInViewport(inputDimensions) {
+    if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
+      return false;
+    }
+
+    const viewport = document.documentElement;
+
+    if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
+      return false;
+    }
+
+    return true;
+  }
+  /**
+   * @param {{ x: number; y: number; } | null} click
+   * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
+   * @param {TopContextData} [data]
+   */
+
+
+  async showTopTooltip(click, inputDimensions, data) {
+    let diffX = inputDimensions.x;
+    let diffY = inputDimensions.y;
+
+    if (click) {
+      diffX -= click.x;
+      diffY -= click.y;
+    } else if (!this.elementIsInViewport(inputDimensions)) {
+      // If the focus event is outside the viewport ignore, we've already tried to scroll to it
+      return;
+    }
+    /** @type {ShowAutofillParentRequest} */
+
+
+    const details = {
+      wasFromClick: Boolean(click),
+      inputTop: Math.floor(diffY),
+      inputLeft: Math.floor(diffX),
+      inputHeight: Math.floor(inputDimensions.height),
+      inputWidth: Math.floor(inputDimensions.width),
+      serializedInputContext: JSON.stringify(data)
+    };
+
+    try {
+      await this._options.show(details);
+
+      _classPrivateFieldSet(this, _state, 'parentShown');
+
+      this._attachListeners();
+    } catch (e) {
+      console.error('could not show parent', e);
+    }
+  }
+
+  _attachListeners() {
+    window.addEventListener('scroll', this);
+    window.addEventListener('keydown', this);
+    window.addEventListener('input', this);
+  }
+
+  _removeListeners() {
+    window.removeEventListener('scroll', this);
+    window.removeEventListener('keydown', this);
+    window.removeEventListener('input', this);
+  }
+
+  handleEvent(event) {
+    switch (event.type) {
+      case 'scroll':
+        {
+          this.removeTooltip(event.type);
+          break;
+        }
+
+      case 'keydown':
+        {
+          if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+            this.removeTooltip(event.type);
+          }
+
+          break;
+        }
+
+      case 'input':
+        {
+          this.removeTooltip(event.type);
+          break;
+        }
+
+      case 'pointerdown':
+        {
+          var _this$_options$onPoin, _this$_options;
+
+          this.removeTooltip(event.type);
+          (_this$_options$onPoin = (_this$_options = this._options).onPointerDown) === null || _this$_options$onPoin === void 0 ? void 0 : _this$_options$onPoin.call(_this$_options, event);
+          break;
+        }
+    }
+  }
+  /**
+   * @param {string} trigger
+   * @returns {Promise<void>}
+   */
+
+
+  async removeTooltip(trigger) {
+    // for none pointer events, check to see if the tooltip is open before trying to close it
+    if (trigger !== 'pointerdown') {
+      if (_classPrivateFieldGet(this, _state) !== 'parentShown') {
+        return;
+      }
+    }
+
+    this._options.remove().catch(e => console.error('Could not close parent', e));
+
+    _classPrivateFieldSet(this, _state, 'idle');
+
+    this._removeListeners();
+  }
+
+}
+
+exports.OverlayUIController = OverlayUIController;
+
+},{"./UIController":37}],37:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UIController = void 0;
+
+/**
+ * @typedef AttachArgs The argument required to 'attach' a tooltip
+ * @property {import("../../Form/Form").Form} form the Form that triggered this 'attach' call
+ * @property {HTMLInputElement} input the input field that triggered this 'attach' call
+ * @property {() => { x: number; y: number; height: number; width: number; }} getPosition A function that provides positioning information
+ * @property {{x: number, y: number}|null} click The click positioning
+ * @property {TopContextData} topContextData
+ * @property {import("../../DeviceInterface/InterfacePrototype").default} device
+ */
+
+/**
+ * This is the base interface that `UIControllers` should extend/implement
+ */
+class UIController {
+  /**
+   * Implement this method to control what happen when Autofill
+   * has enough information to 'attach' a tooltip.
+   *
+   * @param {AttachArgs} _args
+   * @returns {void}
+   */
+  attach(_args) {
+    throw new Error('must implement attach');
+  }
+  /**
+   * Implement this if your tooltip can be created from positioning
+   * + topContextData.
+   *
+   * For example, in an 'overlay' on macOS/Windows this is needed since
+   * there's no page information to call 'attach' above.
+   *
+   * @param {PosFn} _pos
+   * @param {TopContextData} _topContextData
+   * @returns {any | null}
+   */
+
+
+  createTooltip(_pos, _topContextData) {}
+  /**
+   * @param {string} _via
+   */
+
+
+  removeTooltip(_via) {}
+  /**
+   * Set the currently open HTMLTooltip instance
+   *
+   * @param {import("../HTMLTooltip.js").HTMLTooltip} _tooltip
+   */
+
+
+  setActiveTooltip(_tooltip) {}
+  /**
+   * Get the currently open HTMLTooltip instance, if one exists
+   *
+   * @returns {import("../HTMLTooltip.js").HTMLTooltip | null}
+   */
+
+
+  getActiveTooltip() {
+    return null;
+  }
+  /**
+   * Indicate whether the controller deems itself 'active'
+   *
+   * @returns {boolean}
+   */
+
+
+  isActive() {
+    return false;
+  }
+
+}
+
+exports.UIController = UIController;
+
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8525,7 +9284,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],34:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8535,7 +9294,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],35:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8684,7 +9443,7 @@ function createTransport(config) {
   return transport;
 }
 
-},{"./captureDdgGlobals":36}],36:[function(require,module,exports){
+},{"./captureDdgGlobals":41}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8715,7 +9474,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],37:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9090,7 +9849,7 @@ const isLikelyASubmitButton = el => {
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":22}],38:[function(require,module,exports){
+},{"./Form/matching":23}],43:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -9109,7 +9868,7 @@ var _DeviceInterface = require("./DeviceInterface");
   }
 })();
 
-},{"./DeviceInterface":7,"./requestIdleCallback":41}],39:[function(require,module,exports){
+},{"./DeviceInterface":7,"./requestIdleCallback":46}],44:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -9165,7 +9924,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],40:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9179,7 +9938,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],41:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9227,4 +9986,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}]},{},[38]);
+},{}]},{},[43]);

@@ -30,7 +30,7 @@ const renderInputWithLabel = () => {
     const formElement = document.createElement('form')
     formElement.append(input, label)
     document.body.append(formElement)
-    const form = new Form(formElement, input, new InterfacePrototype(createGlobalConfig()))
+    const form = new Form(formElement, input, InterfacePrototype.default())
     return { input, label, formElement: formElement, form }
 }
 
