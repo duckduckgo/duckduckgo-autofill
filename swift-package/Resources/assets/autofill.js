@@ -2058,6 +2058,9 @@ module.exports={
   "mpv.tickets.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
   },
+  "museumofflight.org": {
+    "password-rules": "minlength: 8; maxlength: 15;"
+  },
   "my.konami.net": {
     "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
   },
