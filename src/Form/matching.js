@@ -252,6 +252,7 @@ class Matching {
          * Loop through each strategy in order
          */
         for (let strategyName of this.#defaultStrategyOrder) {
+            let result
             /**
              * Now loop through each matcher in the list.
              */
@@ -270,7 +271,6 @@ class Matching {
                 /**
                  * Now perform the matching
                  */
-                let result
                 if (strategyName === 'cssSelector') {
                     result = this.execCssSelector(lookup, el)
                 }
@@ -290,6 +290,7 @@ class Matching {
                 if (result?.matched) {
                     return matcher.type
                 }
+
                 /**
                  * If a matcher wants to prevent all future matching on this element,
                  * it would return { matched: false, proceed: false }
@@ -299,6 +300,8 @@ class Matching {
                     return undefined
                 }
             }
+
+            if (result?.skip) break
         }
         return undefined
     }
@@ -369,7 +372,7 @@ class Matching {
                     return { matched: false }
                 }
                 if (skipRegex.test(elementString)) {
-                    continue
+                    return { matched: false, skip: true }
                 }
             }
 
