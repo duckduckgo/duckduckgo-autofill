@@ -2058,6 +2058,9 @@ module.exports={
   "mpv.tickets.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
   },
+  "museumofflight.org": {
+    "password-rules": "minlength: 8; maxlength: 15;"
+  },
   "my.konami.net": {
     "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
   },
@@ -6150,19 +6153,22 @@ const matchingConfiguration = {
       birthdayDay: {
         type: 'birthdayDay',
         strategies: {
-          cssSelector: 'birthdayDay'
+          cssSelector: 'birthdayDay',
+          ddgMatcher: 'birthdayDay'
         }
       },
       birthdayMonth: {
         type: 'birthdayMonth',
         strategies: {
-          cssSelector: 'birthdayMonth'
+          cssSelector: 'birthdayMonth',
+          ddgMatcher: 'birthdayMonth'
         }
       },
       birthdayYear: {
         type: 'birthdayYear',
         strategies: {
-          cssSelector: 'birthdayYear'
+          cssSelector: 'birthdayYear',
+          ddgMatcher: 'birthdayYear'
         }
       },
       cardName: {
@@ -6263,15 +6269,15 @@ const matchingConfiguration = {
       matchers: {
         email: {
           match: '.mail\\b',
-          skip: 'phone',
+          skip: 'phone|name|reservation number',
           forceUnknown: 'search|filter|subject'
         },
         password: {
           match: 'password',
-          forceUnknown: 'captcha'
+          forceUnknown: 'captcha|mfa|2fa|two factor'
         },
         username: {
-          match: '(user|account|apple|login)((.)?(name|id|login).?)?$',
+          match: '(user|account|apple|login)((.)?(name|id|login).?)?(.or.+)?$',
           forceUnknown: 'search'
         },
         // CC
@@ -6341,6 +6347,17 @@ const matchingConfiguration = {
         },
         addressCountryCode: {
           match: 'country'
+        },
+        birthdayDay: {
+          match: '(birth.*day|day.*birth)',
+          skip: 'month|year'
+        },
+        birthdayMonth: {
+          match: '(birth.*month|month.*birth)',
+          skip: 'year'
+        },
+        birthdayYear: {
+          match: '(birth.*year|year.*birth)'
         }
       }
     },
@@ -7005,9 +7022,13 @@ class Matching {
      */
 
     for (let strategyName of _classPrivateFieldGet(this, _defaultStrategyOrder)) {
+      var _result4;
+
+      let result;
       /**
        * Now loop through each matcher in the list.
        */
+
       for (let matcher of matchers) {
         var _result, _result2, _result3;
 
@@ -7025,8 +7046,6 @@ class Matching {
         /**
          * Now perform the matching
          */
-
-        let result;
 
         if (strategyName === 'cssSelector') {
           result = this.execCssSelector(lookup, el);
@@ -7061,6 +7080,8 @@ class Matching {
           return undefined;
         }
       }
+
+      if ((_result4 = result) !== null && _result4 !== void 0 && _result4.skip) break;
     }
 
     return undefined;
@@ -7152,7 +7173,10 @@ class Matching {
         }
 
         if (skipRegex.test(elementString)) {
-          continue;
+          return {
+            matched: false,
+            skip: true
+          };
         }
       } // if the `match` regex fails, moves onto the next string
 
@@ -7633,7 +7657,7 @@ const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutt
 const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
-const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i])";
+const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])";
 const cardName = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
 const cardNumber = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name*=card i][name*=number i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
 const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name*=security i][name*=code i]";
@@ -7652,12 +7676,12 @@ const addressProvince = "\n[name=province], [name=state], [autocomplete=address-
 const addressPostalCode = "\n[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],\n[name*=postalCode i], [name*=zipcode i]";
 const addressCountryCode = ["[name=country], [autocomplete=country],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
 ];
-const birthdayDay = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d]";
-const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m]";
-const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y]";
-const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), "input[name=username]", // fix for `aa.com`
-"input[name=\"loginId\"]", // fix for https://online.mbank.pl/pl/Login
-"input[name=\"userID\"]", "input[id=\"login-id\"]", "input[name=accountname]"]; // todo: these are still used directly right now, mostly in scanForInputs
+const birthdayDay = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
+const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m],\nselect[name=\"mm\"]";
+const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
+const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), "input[name=username i]", // fix for `aa.com`
+"input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
+"input[name=\"userID\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
