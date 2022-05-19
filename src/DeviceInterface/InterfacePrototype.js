@@ -388,12 +388,25 @@ class InterfacePrototype {
             } catch (e) {
             }
 
+            let capabilities
+            try {
+                capabilities = await this.getEmailProtectionCapabilities()
+            } catch (e) {}
+
+            // Set up listener for web app actions
+            window.addEventListener('message', (e) => {
+                if (this.globalConfig.isDDGDomain && e.data.removeUserData) {
+                    this.removeUserData()
+                }
+            })
+
             const hasUserData = userData && !userData.error && Object.entries(userData).length > 0
             notifyWebApp({
                 deviceSignedIn: {
                     value: true,
                     shouldLog,
-                    userData: hasUserData ? userData : undefined
+                    userData: hasUserData ? userData : undefined,
+                    capabilities
                 }
             })
         } else {
@@ -408,6 +421,12 @@ class InterfacePrototype {
 
     /** @returns {Promise<null|Record<any,any>>} */
     getUserData () { return Promise.resolve(null) }
+
+    /** @returns {void} */
+    removeUserData () {}
+
+    /** @returns {Promise<null|Record<string,boolean>>} */
+    getEmailProtectionCapabilities () { throw new Error('unimplemented') }
 
     refreshAlias () {}
     async trySigningIn () {

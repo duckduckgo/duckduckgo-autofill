@@ -89,8 +89,20 @@ class AppleDeviceInterface extends InterfacePrototype {
         this.addLogoutListener(cleanup)
     }
 
+    /**
+     * Used by the email web app
+     * Settings page displays data of the logged in user data
+     */
     getUserData () {
         return this.transport.send('emailHandlerGetUserData')
+    }
+
+    /**
+     * Used by the email web app
+     * Device capabilities determine which functionality is available to the user
+     */
+    getEmailProtectionCapabilities () {
+        return this.transport.send('emailHandlerGetCapabilities')
     }
 
     async getSelectedCredentials () {
@@ -151,6 +163,14 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
         return this.transport.send('emailHandlerStoreToken', { token, username: userName, cohort })
+    }
+
+    /**
+     * Used by the email web app
+     * Provides functionality to log the user out
+     */
+    removeUserData () {
+        return this.transport.send('emailHandlerRemoveToken')
     }
 
     /**
@@ -246,6 +266,17 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
         )
         return formatDuckAddress(alias)
+    }
+
+    addLogoutListener (handler) {
+        // Only deal with logging out if we're in the email web app
+        if (!this.globalConfig.isDDGDomain) return
+
+        window.addEventListener('message', (e) => {
+            if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
+                handler()
+            }
+        })
     }
 
     /** @type {any} */

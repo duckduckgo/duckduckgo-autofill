@@ -15,6 +15,8 @@ interface Window {
         getUserData(): string
         storeCredentials(token: string, username: string, cohort: string): string
         showTooltip()
+        getDeviceCapabilities(): string
+        removeCredentials()
     }
 
 
@@ -37,4 +39,3 @@ interface Window {
      */
     addEventListener(type: "mouseMove", listener: (this: Document, ev: CustomEvent<{x: number, y: number}>) => void): void;
 }
-

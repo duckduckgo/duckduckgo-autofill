@@ -84,6 +84,14 @@ export function createAndroidMocks () {
                     },
                     isSignedIn () {
                         return ''
+                    },
+                    getDeviceCapabilities () {
+                        return ''
+                    },
+                    removeCredentials () {
+                        window.postMessage({
+                            emailProtectionSignedOut: true
+                        }, window.origin)
                     }
                 }
             }, mocks)
