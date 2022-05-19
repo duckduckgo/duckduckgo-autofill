@@ -36,7 +36,9 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
             css: `<style>${CSS_STYLES}</style>`,
             setSize: (details) => this._setSize(details),
             testMode: this.isTestMode(),
-            remove: () => this._closeAutofillParent()
+            remove: () => {
+                /** noop - the overlay does not close itself */
+            }
         }
         return new HTMLTooltipUIController(controllerOptions, tooltipOptions)
     }

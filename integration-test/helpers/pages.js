@@ -228,3 +228,35 @@ export function emailAutofillPage (page, server) {
 
     }
 }
+
+/**
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ */
+export function overlayPage (page, server) {
+    return {
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['overlay']))
+        },
+        /**
+         * @param {string} username
+         * @returns {Promise<void>}
+         */
+        async selectFirstCredential (username) {
+            const button = await page.waitForSelector(`button:has-text("${username}")`)
+            await button.click({ force: true })
+        },
+        /**
+         * When we're in an overlay, 'closeAutofillParent' should not be called.
+         */
+        async doesNotCloseParent () {
+            await page.waitForFunction(() => {
+                const calls = window.__playwright.mocks.calls
+                return calls.some(call => call[0] === 'pmHandlerGetAutofillCredentials')
+            })
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const mockCalls = calls.filter(([name]) => name === 'closeAutofillParent')
+            expect(mockCalls.length).toBe(0)
+        }
+    }
+}
