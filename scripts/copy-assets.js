@@ -38,6 +38,7 @@ function copyFirefoxCSSFile (pathIn, pathOut) {
 
 function copyAutofillScript () {
     const scriptFileName = 'autofill.js'
+    const debugScriptFileName = 'autofill-debug.js'
     const source = '// INJECT isDDGTestMode HERE'
     const replacement = 'isDDGTestMode = true;'
     const autofill = readFileSync(filepath(distPath, scriptFileName), 'utf8')
@@ -45,7 +46,9 @@ function copyAutofillScript () {
         throw new Error('cannot find source for replacement, expected: ' + source)
     }
     writeFileSync(filepath(appleDistPath, scriptFileName), autofill)
+    writeFileSync(filepath(appleDistPath, debugScriptFileName), autofill)
 
     const replaced = autofill.replace(source, replacement)
     writeFileSync(filepath('integration-test', 'extension', scriptFileName), replaced)
+    writeFileSync(filepath('integration-test', 'extension', debugScriptFileName), replaced)
 }

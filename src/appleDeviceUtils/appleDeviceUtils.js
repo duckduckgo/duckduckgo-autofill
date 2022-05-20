@@ -99,13 +99,13 @@ const decrypt = async (ciphertext, key, iv) => {
  * to the Transport interface
  *
  * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {Transport}
+ * @returns {import("../../packages/zod-rpc").RPCTransport}
  */
 function createTransport (config) {
-    /** @type {Transport} */
+    /** @type {import("../../packages/zod-rpc").RPCTransport} */
     const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
-        send (name, data) {
-            return wkSendAndWait(name, data, {
+        async send (rpc) {
+            return wkSendAndWait(rpc.method, rpc.params, {
                 secret: config.secret,
                 hasModernWebkitAPI: config.hasModernWebkitAPI
             })

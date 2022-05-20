@@ -2362,6 +2362,402 @@ module.exports={
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+Object.defineProperty(exports, "IOHandler", {
+  enumerable: true,
+  get: function () {
+    return _ioHandler.IOHandler;
+  }
+});
+Object.defineProperty(exports, "RPCTransport", {
+  enumerable: true,
+  get: function () {
+    return _ioHandler.RPCTransport;
+  }
+});
+Object.defineProperty(exports, "ZodRPC", {
+  enumerable: true,
+  get: function () {
+    return _zodRpc.ZodRPC;
+  }
+});
+Object.defineProperty(exports, "createRpc", {
+  enumerable: true,
+  get: function () {
+    return _zodRpc.createRpc;
+  }
+});
+Object.defineProperty(exports, "validate", {
+  enumerable: true,
+  get: function () {
+    return _zodRpc.validate;
+  }
+});
+
+var _zodRpc = require("./lib/zod-rpc");
+
+var _ioHandler = require("./lib/io-handler");
+
+},{"./lib/io-handler":8,"./lib/zod-rpc":9}],8:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RPCTransport = exports.IOHandler = void 0;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Platforms should only need to implement this `send` method
+ */
+class RPCTransport {
+  /**
+   * @param {import("./zod-rpc").ZodRPC} _rpc
+   * @returns {Promise<any>}
+   */
+  async send(_rpc) {
+    return undefined;
+  }
+
+}
+/**
+ * This is the base Sender class that platforms can will implement.
+ *
+ * Note: The 'handle' method must be implemented, unless you also implement 'send'
+ */
+
+
+exports.RPCTransport = RPCTransport;
+
+class IOHandler {
+  /** @type {RPCTransport} */
+
+  /** @param {RPCTransport} transport */
+  constructor(transport) {
+    _defineProperty(this, "transport", void 0);
+
+    this.transport = transport;
+  }
+  /**
+   * @template {import("./zod-rpc").ZodRPC} P
+   * @param {P} rpc
+   * @returns {Promise<ReturnType<P['validateResult']>['success']>}
+   */
+
+
+  async request(rpc) {
+    rpc.validateParams();
+    let result = await this.transport.send(rpc);
+    let processed = rpc.preResultValidation(result);
+    return rpc.validateResult(processed);
+  }
+  /**
+   * @template {import("./zod-rpc").ZodRPC} P
+   * @param {P} rpc
+   * @returns {Promise<void>}
+   */
+
+
+  async notify(rpc) {
+    rpc.validateParams();
+    await this.transport.send(rpc);
+  }
+
+}
+
+exports.IOHandler = IOHandler;
+
+},{}],9:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ZodRPC = exports.SchemaValidationError = void 0;
+exports.createRpc = createRpc;
+exports.validate = validate;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * This roughly follows https://www.jsonrpc.org/specification
+ * @template {import("zod").ZodType} Params=import("zod").ZodType
+ * @template {import("zod").ZodType} Result=import("zod").ZodType
+ */
+class ZodRPC {
+  /** @type {string} */
+
+  /**
+   * An optional 'id' - used to indicate if a request requires a response.
+   * @type {string|null}
+   */
+
+  /** @type {Params | null | undefined} */
+
+  /** @type {Result | null | undefined} */
+
+  /** @type {import("zod").infer<Params>} */
+
+  /**
+   * This is a carve-out for legacy messages that are not typed yet.
+   * If you set this to 'true', then the response will not be checked to conform
+   * to any shape
+   * @deprecated this is here to aid migration, should be removed ASAP
+   * @type {boolean}
+   */
+
+  /**
+   * New messages should be in a particular format, eg: { success: T },
+   * but you can set this to false if you want to access the result as-is,
+   * without any unwrapping logic
+   * @deprecated this is here to aid migration, should be removed ASAP
+   * @type {boolean}
+   */
+
+  /**
+   * @param {import("zod").infer<Params>} data
+   */
+  constructor(data) {
+    _defineProperty(this, "method", 'unknown');
+
+    _defineProperty(this, "id", null);
+
+    _defineProperty(this, "paramsValidator", null);
+
+    _defineProperty(this, "resultValidator", null);
+
+    _defineProperty(this, "params", void 0);
+
+    _defineProperty(this, "throwOnResultKeysMissing", true);
+
+    _defineProperty(this, "unwrapResult", true);
+
+    this.params = data;
+  }
+  /**
+   * @returns {import("zod").infer<Params>|undefined}
+   */
+
+
+  validateParams() {
+    if (this.params === undefined) {
+      return undefined;
+    }
+
+    this._validate(this.params, this.paramsValidator);
+
+    return this.params;
+  }
+  /**
+   * @param {any|null} incoming
+   * @returns {import("zod").infer<Result>}
+   */
+
+
+  validateResult(incoming) {
+    this._validate(incoming, this.resultValidator);
+
+    if (!incoming) {
+      return incoming;
+    }
+
+    if (!this.unwrapResult) {
+      return incoming;
+    }
+
+    if ('data' in incoming) {
+      console.warn('response had `data` property. Please migrate to `success`');
+      return incoming.data;
+    }
+
+    if ('success' in incoming) {
+      return incoming.success;
+    }
+
+    if (this.throwOnResultKeysMissing) {
+      throw new Error('unreachable. Response did not contain `success` or `data`');
+    }
+
+    return incoming;
+  }
+  /**
+   * @param {any} data
+   * @param {import("zod").ZodType|undefined|null} [validator]
+   * @private
+   */
+
+
+  _validate(data, validator) {
+    if (!validator) return data;
+
+    if (validator) {
+      const result = validator === null || validator === void 0 ? void 0 : validator.safeParse(data);
+
+      if (!result) {
+        throw new Error('unreachable');
+      }
+
+      if (!result.success) {
+        if ('error' in result) {
+          this.throwError(result.error.issues);
+        } else {
+          console.error('unknown error from validate');
+        }
+      }
+    }
+  }
+  /**
+   * @param {import('zod').ZodIssue[]} errors
+   */
+
+
+  throwError(errors) {
+    const error = SchemaValidationError.fromZodErrors(errors, this.constructor.name);
+    throw error;
+  }
+  /**
+   * Use this helper for creating stand-in response messages that are typed correctly.
+   *
+   * @examples
+   *
+   * ```js
+   * const msg = new Message();
+   * const response = msg.response({}) // <-- This argument will be typed correctly
+   * ```
+   *
+   * @param {import("zod").infer<Result>} response
+   * @returns {import("zod").infer<Result>}
+   */
+
+
+  result(response) {
+    return response;
+  }
+  /**
+   * @returns {import("zod").infer<Result>}
+   */
+
+
+  preResultValidation(response) {
+    return response;
+  }
+
+}
+/**
+ * Check for this error if you'd like to
+ */
+
+
+exports.ZodRPC = ZodRPC;
+
+class SchemaValidationError extends Error {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "validationErrors", []);
+  }
+
+  /**
+   * @param {import("zod").ZodIssue[]} errors
+   * @param {string} name
+   * @returns {SchemaValidationError}
+   */
+  static fromZodErrors(errors, name) {
+    const heading = "".concat(errors.length, " SchemaValidationError(s) errors for ") + name;
+
+    function log(issue) {
+      switch (issue.code) {
+        case 'invalid_literal':
+        case 'invalid_type':
+          {
+            console.log("".concat(name, ". Path: '").concat(issue.path.join('.'), "', Error: '").concat(issue.message, "'"));
+            break;
+          }
+
+        case 'invalid_union':
+          {
+            for (let unionError of issue.unionErrors) {
+              for (let issue1 of unionError.issues) {
+                log(issue1);
+              }
+            }
+
+            break;
+          }
+
+        default:
+          {
+            console.log(name, 'other issue:', issue);
+          }
+      }
+    }
+
+    for (let error of errors) {
+      log(error);
+    }
+
+    const message = [heading, 'please see the details above'].join('\n    ');
+    const error = new SchemaValidationError(message);
+    error.validationErrors = errors;
+    return error;
+  }
+
+}
+/**
+ * Creates an instance of `ZodRPC` from only a name and 'params'
+ * and optional validators. Use this to help migrate existing messages.
+ *
+ * @template {import("zod").ZodType} Params
+ * @template {import("zod").ZodType} Result
+ * @param {string} method
+ * @param {import("zod").infer<Params>} [params]
+ * @param {Params|null} [paramsValidator]
+ * @param {Result|null} [resultValidator]
+ * @returns {ZodRPC<Params, Result>}
+ */
+
+
+exports.SchemaValidationError = SchemaValidationError;
+
+function createRpc(method, params) {
+  let paramsValidator = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  let resultValidator = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+  /** @type {ZodRPC<Params, Result>} */
+  const rpc = new ZodRPC(params);
+  rpc.paramsValidator = paramsValidator;
+  rpc.resultValidator = resultValidator;
+  rpc.method = method;
+  rpc.throwOnResultKeysMissing = false;
+  rpc.unwrapResult = false;
+  return rpc;
+}
+/**
+ * Validate any arbitrary data with any Zod validator
+ *
+ * @template {import("zod").ZodType} Validator
+ * @param {import("zod").infer<Validator>} data
+ * @param {Validator | null} [validator]
+ * @returns {import("zod").infer<Validator>}
+ */
+
+
+function validate(data) {
+  let validator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+  if (validator) {
+    return validator.parse(data);
+  }
+
+  return data;
+}
+
+},{}],10:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.createDevice = createDevice;
 
 var _config = require("./config");
@@ -2374,6 +2770,10 @@ var _AppleDeviceInterface = require("./DeviceInterface/AppleDeviceInterface");
 
 var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDeviceInterface");
 
+var _appleDeviceUtils = require("./appleDeviceUtils/appleDeviceUtils");
+
+var _zodRpc = require("../packages/zod-rpc");
+
 function createDevice() {
   const globalConfig = (0, _config.createGlobalConfig)();
 
@@ -2382,17 +2782,19 @@ function createDevice() {
       return new _AndroidInterface.AndroidInterface(globalConfig);
     }
 
+    const handler = new _zodRpc.IOHandler((0, _appleDeviceUtils.createTransport)(globalConfig));
+
     if (globalConfig.isTopFrame) {
-      return new _AppleOverlayDeviceInterface.AppleOverlayDeviceInterface(globalConfig);
+      return new _AppleOverlayDeviceInterface.AppleOverlayDeviceInterface(globalConfig, handler);
     }
 
-    return new _AppleDeviceInterface.AppleDeviceInterface(globalConfig);
+    return new _AppleDeviceInterface.AppleDeviceInterface(globalConfig, handler);
   }
 
   return new _ExtensionInterface.ExtensionInterface(globalConfig);
 }
 
-},{"./DeviceInterface/AndroidInterface":8,"./DeviceInterface/AppleDeviceInterface":9,"./DeviceInterface/AppleOverlayDeviceInterface":10,"./DeviceInterface/ExtensionInterface":11,"./config":44}],8:[function(require,module,exports){
+},{"../packages/zod-rpc":7,"./DeviceInterface/AndroidInterface":11,"./DeviceInterface/AppleDeviceInterface":12,"./DeviceInterface/AppleOverlayDeviceInterface":13,"./DeviceInterface/ExtensionInterface":14,"./appleDeviceUtils/appleDeviceUtils":43,"./config":47}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2518,7 +2920,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../UI/controllers/NativeUIController.js":35,"../autofill-utils":42,"./InterfacePrototype.js":12}],9:[function(require,module,exports){
+},{"../UI/controllers/NativeUIController.js":38,"../autofill-utils":45,"./InterfacePrototype.js":15}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2527,8 +2929,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.AppleDeviceInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
-
-var _appleDeviceUtils = require("../appleDeviceUtils/appleDeviceUtils");
 
 var _autofillUtils = require("../autofill-utils");
 
@@ -2540,6 +2940,10 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 
 var _OverlayUIController = require("../UI/controllers/OverlayUIController");
 
+var _zodRpc = require("../../packages/zod-rpc");
+
+var _rpcCalls = require("../rpc/rpc-calls");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -2547,23 +2951,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 class AppleDeviceInterface extends _InterfacePrototype.default {
   /** @type {FeatureToggleNames[]} */
 
-  /** @type {Transport} */
-
   /** @override */
   async isEnabled() {
     return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
   }
+  /**
+   * @param {GlobalConfig} config
+   * @param {import("../../packages/zod-rpc").IOHandler} ioHandler
+   */
 
-  constructor(config) {
-    super(config); // Only enable 'password.generation' if we're on the macOS app (for now);
+
+  constructor(config, ioHandler) {
+    super(config);
 
     _defineProperty(this, "supportedFeatures", []);
-
-    _defineProperty(this, "transport", (0, _appleDeviceUtils.createTransport)(this.globalConfig));
 
     _defineProperty(this, "initialSetupDelayMs", 300);
 
     _defineProperty(this, "pollingTimeout", null);
+
+    this.io = ioHandler; // Only enable 'password.generation' if we're on the macOS app (for now);
 
     if (this.globalConfig.isApp) {
       this.supportedFeatures.push('password.generation');
@@ -2640,7 +3047,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getUserData() {
-    return this.transport.send('emailHandlerGetUserData');
+    return this.io.request((0, _zodRpc.createRpc)('emailHandlerGetUserData'));
   }
   /**
    * Used by the email web app
@@ -2649,20 +3056,22 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getEmailProtectionCapabilities() {
-    return this.transport.send('emailHandlerGetCapabilities');
+    return this.io.request((0, _zodRpc.createRpc)('emailHandlerGetCapabilities'));
   }
+  /**
+   */
+
 
   async getSelectedCredentials() {
-    return this.transport.send('getSelectedCredentials');
+    return this.io.request((0, _zodRpc.createRpc)('getSelectedCredentials'));
   }
   /**
    * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} parentArgs
-   * @returns {Promise<void>}
    */
 
 
   async _showAutofillParent(parentArgs) {
-    return this.transport.send('showAutofillParent', parentArgs);
+    return this.io.request((0, _zodRpc.createRpc)('showAutofillParent', parentArgs));
   }
   /**
    * @returns {Promise<any>}
@@ -2670,7 +3079,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async _closeAutofillParent() {
-    return this.transport.send('closeAutofillParent', {});
+    return this.io.notify((0, _zodRpc.createRpc)('closeAutofillParent', {}));
   }
   /**
    * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} details
@@ -2695,13 +3104,13 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await this.transport.send('emailHandlerGetAddresses');
+    } = await this.io.request((0, _zodRpc.createRpc)('emailHandlerGetAddresses'));
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await this.transport.send('emailHandlerRefreshAlias'); // On macOS we also update the addresses stored locally
+    await this.io.notify((0, _zodRpc.createRpc)('emailHandlerRefreshAlias')); // On macOS we also update the addresses stored locally
 
     if (this.globalConfig.isApp) this.getAddresses();
   }
@@ -2709,7 +3118,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   async _checkDeviceSignedIn() {
     const {
       isAppSignedIn
-    } = await this.transport.send('emailHandlerCheckAppSignedInStatus');
+    } = await this.io.request((0, _zodRpc.createRpc)('emailHandlerCheckAppSignedInStatus'));
 
     this.isDeviceSignedIn = () => !!isAppSignedIn;
 
@@ -2724,11 +3133,11 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
         cohort
       }
     } = _ref;
-    return this.transport.send('emailHandlerStoreToken', {
+    return this.io.notify((0, _zodRpc.createRpc)('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
-    });
+    }));
   }
   /**
    * Used by the email web app
@@ -2737,7 +3146,9 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   removeUserData() {
-    return this.transport.send('emailHandlerRemoveToken');
+    this.io.notify((0, _zodRpc.createRpc)('emailHandlerRemoveToken')).catch(e => {
+      console.log('could not remove', e);
+    });
   }
   /**
    * PM endpoints
@@ -2750,7 +3161,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeCredentials(credentials) {
-    return this.transport.send('pmHandlerStoreCredentials', credentials);
+    return this.io.notify((0, _zodRpc.createRpc)('pmHandlerStoreCredentials', credentials));
   }
   /**
    * Sends form data to the native layer
@@ -2759,7 +3170,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeFormData(data) {
-    return this.transport.send('pmHandlerStoreData', data);
+    return this.io.notify((0, _zodRpc.createRpc)('pmHandlerStoreData', data));
   }
   /**
    * Gets the init data from the device
@@ -2768,7 +3179,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async _getAutofillInitData() {
-    const response = await this.transport.send('pmHandlerGetAutofillInitData');
+    const response = await this.io.request((0, _zodRpc.createRpc)('pmHandlerGetAutofillInitData'));
     this.storeLocalData(response.success);
     return response;
   }
@@ -2780,9 +3191,9 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCredentials(id) {
-    return this.transport.send('pmHandlerGetAutofillCredentials', {
+    return this.io.request((0, _zodRpc.createRpc)('pmHandlerGetAutofillCredentials', {
       id
-    });
+    }));
   }
   /**
    * Opens the native UI for managing passwords
@@ -2790,7 +3201,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManagePasswords() {
-    return this.transport.send('pmHandlerOpenManagePasswords');
+    return this.io.notify((0, _zodRpc.createRpc)('pmHandlerOpenManagePasswords'));
   }
   /**
    * Opens the native UI for managing identities
@@ -2798,7 +3209,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageIdentities() {
-    return this.transport.send('pmHandlerOpenManageIdentities');
+    return this.io.notify((0, _zodRpc.createRpc)('pmHandlerOpenManageIdentities'));
   }
   /**
    * Opens the native UI for managing credit cards
@@ -2806,7 +3217,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageCreditCards() {
-    return this.transport.send('pmHandlerOpenManageCreditCards');
+    return this.io.notify((0, _zodRpc.createRpc)('pmHandlerOpenManageCreditCards'));
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -2834,9 +3245,9 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCreditCard(id) {
-    return this.transport.send('pmHandlerGetCreditCard', {
+    return this.io.request((0, _zodRpc.createRpc)('pmHandlerGetCreditCard', {
       id
-    });
+    }));
   }
 
   async getCurrentInputType() {
@@ -2845,14 +3256,18 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     } = this.getTopContextData() || {};
     return inputType || 'unknown';
   }
+  /**
+   * @returns {Promise<string>}
+   */
+
 
   async getAlias() {
     const {
       alias
-    } = await this.transport.send('emailHandlerGetAlias', {
+    } = await this.io.request(new _rpcCalls.GetAlias({
       requiresUserPermission: !this.globalConfig.isApp,
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
-    });
+    }));
     return (0, _autofillUtils.formatDuckAddress)(alias);
   }
 
@@ -2943,7 +3358,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/HTMLTooltip":33,"../UI/controllers/HTMLTooltipUIController":34,"../UI/controllers/OverlayUIController":36,"../appleDeviceUtils/appleDeviceUtils":40,"../autofill-utils":42,"./InterfacePrototype.js":12,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],10:[function(require,module,exports){
+},{"../../packages/zod-rpc":7,"../UI/HTMLTooltip":36,"../UI/controllers/HTMLTooltipUIController":37,"../UI/controllers/OverlayUIController":39,"../autofill-utils":45,"../rpc/rpc-calls":50,"./InterfacePrototype.js":15,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2956,6 +3371,8 @@ var _AppleDeviceInterface = require("./AppleDeviceInterface");
 var _styles = require("../UI/styles/styles");
 
 var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+
+var _zodRpc = require("../../packages/zod-rpc");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -3084,10 +3501,10 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
       return [key, String(value)];
     });
     const data = Object.fromEntries(detailsEntries);
-    await this.transport.send('selectedDetail', {
+    await this.io.notify((0, _zodRpc.createRpc)('selectedDetail', {
       data,
       configType
-    });
+    }));
   }
   /**
    * When the HTMLTooltip calls 'setSize', we forward that message to the native layer
@@ -3101,14 +3518,14 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 
 
   async _setSize(details) {
-    await this.transport.send('setSize', details);
+    await this.io.notify((0, _zodRpc.createRpc)('setSize', details));
   }
 
 }
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../UI/controllers/HTMLTooltipUIController":34,"../UI/styles/styles":39,"./AppleDeviceInterface":9}],11:[function(require,module,exports){
+},{"../../packages/zod-rpc":7,"../UI/controllers/HTMLTooltipUIController":37,"../UI/styles/styles":42,"./AppleDeviceInterface":12}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3280,7 +3697,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../UI/HTMLTooltip":33,"../UI/controllers/HTMLTooltipUIController":34,"../autofill-utils":42,"./InterfacePrototype.js":12}],12:[function(require,module,exports){
+},{"../UI/HTMLTooltip":36,"../UI/controllers/HTMLTooltipUIController":37,"../autofill-utils":45,"./InterfacePrototype.js":15}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4000,7 +4417,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":16,"../Form/listenForFormSubmission":20,"../Form/matching":23,"../InputTypes/Credentials":26,"../PasswordGenerator":29,"../Scanner":30,"../UI/controllers/NativeUIController":35,"../autofill-utils":42,"../config":44}],13:[function(require,module,exports){
+},{"../Form/formatters":19,"../Form/listenForFormSubmission":23,"../Form/matching":26,"../InputTypes/Credentials":29,"../PasswordGenerator":32,"../Scanner":33,"../UI/controllers/NativeUIController":38,"../autofill-utils":45,"../config":47}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4499,7 +4916,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":42,"../constants":45,"./FormAnalyzer":14,"./formatters":16,"./inputStyles":17,"./inputTypeConfig.js":18,"./matching":23}],14:[function(require,module,exports){
+},{"../autofill-utils":45,"../constants":48,"./FormAnalyzer":17,"./formatters":19,"./inputStyles":20,"./inputTypeConfig.js":21,"./matching":26}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4751,7 +5168,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":42,"../constants":45,"./matching":23,"./matching-configuration":22}],15:[function(require,module,exports){
+},{"../autofill-utils":45,"../constants":48,"./matching":26,"./matching-configuration":25}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5319,7 +5736,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],16:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5661,7 +6078,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames":15,"./matching":23}],17:[function(require,module,exports){
+},{"./countryNames":18,"./matching":26}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5743,7 +6160,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":18}],18:[function(require,module,exports){
+},{"./inputTypeConfig.js":21}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5915,7 +6332,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials":26,"../InputTypes/CreditCard":27,"../InputTypes/Identity":28,"../UI/img/ddgPasswordIcon":38,"./logo-svg":21,"./matching":23}],19:[function(require,module,exports){
+},{"../InputTypes/Credentials":29,"../InputTypes/CreditCard":30,"../InputTypes/Identity":31,"../UI/img/ddgPasswordIcon":41,"./logo-svg":24,"./matching":26}],22:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -5967,7 +6384,7 @@ const extractElementStrings = element => {
 
 module.exports.extractElementStrings = extractElementStrings;
 
-},{}],20:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6010,7 +6427,7 @@ const listenForGlobalFormSubmission = forms => {
 var _default = listenForGlobalFormSubmission;
 exports.default = _default;
 
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6020,7 +6437,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],22:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6660,7 +7077,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":24}],23:[function(require,module,exports){
+},{"./selectors-css":27}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7651,7 +8068,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":45,"./label-util":19,"./matching-configuration":22,"./selectors-css":24,"./vendor-regex":25}],24:[function(require,module,exports){
+},{"../constants":48,"./label-util":22,"./matching-configuration":25,"./selectors-css":27,"./vendor-regex":28}],27:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -7718,7 +8135,7 @@ module.exports.__secret_do_not_use = {
   birthdayYear
 };
 
-},{}],25:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 /**
@@ -7775,7 +8192,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 
 module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
-},{}],26:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -7910,7 +8327,7 @@ module.exports.fromPassword = fromPassword;
 module.exports.appendGeneratedId = appendGeneratedId;
 module.exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
 
-},{}],27:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7962,7 +8379,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],28:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8036,7 +8453,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":16}],29:[function(require,module,exports){
+},{"../Form/formatters":19}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8108,7 +8525,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":2,"../packages/password/rules.json":6}],30:[function(require,module,exports){
+},{"../packages/password":2,"../packages/password/rules.json":6}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8405,7 +8822,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":13,"./Form/matching":23,"./Form/selectors-css":24,"./autofill-utils":42}],31:[function(require,module,exports){
+},{"./Form/Form":16,"./Form/matching":26,"./Form/selectors-css":27,"./autofill-utils":45}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8460,7 +8877,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
 var _default = DataHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":42,"./HTMLTooltip":33}],32:[function(require,module,exports){
+},{"../autofill-utils":45,"./HTMLTooltip":36}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8527,7 +8944,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
 var _default = EmailHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":42,"./HTMLTooltip":33}],33:[function(require,module,exports){
+},{"../autofill-utils":45,"./HTMLTooltip":36}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8807,7 +9224,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching":23,"../autofill-utils":42,"./styles/styles":39}],34:[function(require,module,exports){
+},{"../Form/matching":26,"../autofill-utils":45,"./styles/styles":42}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9057,7 +9474,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig":18,"../DataHTMLTooltip":31,"../EmailHTMLTooltip":32,"../HTMLTooltip":33,"./UIController":37}],35:[function(require,module,exports){
+},{"../../Form/inputTypeConfig":21,"../DataHTMLTooltip":34,"../EmailHTMLTooltip":35,"../HTMLTooltip":36,"./UIController":40}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9093,7 +9510,7 @@ class NativeUIController extends _UIController.UIController {
 
 exports.NativeUIController = NativeUIController;
 
-},{"./UIController":37}],36:[function(require,module,exports){
+},{"./UIController":40}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9343,7 +9760,7 @@ class OverlayUIController extends _UIController.UIController {
 
 exports.OverlayUIController = OverlayUIController;
 
-},{"./UIController":37}],37:[function(require,module,exports){
+},{"./UIController":40}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9428,7 +9845,7 @@ class UIController {
 
 exports.UIController = UIController;
 
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9450,7 +9867,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9460,7 +9877,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],40:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9590,16 +10007,16 @@ const decrypt = async (ciphertext, key, iv) => {
  * to the Transport interface
  *
  * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {Transport}
+ * @returns {import("../../packages/zod-rpc").RPCTransport}
  */
 
 
 function createTransport(config) {
-  /** @type {Transport} */
+  /** @type {import("../../packages/zod-rpc").RPCTransport} */
   const transport = {
     // this is a separate variable to ensure type-safety is not lost when returning directly
-    send(name, data) {
-      return wkSendAndWait(name, data, {
+    async send(rpc) {
+      return wkSendAndWait(rpc.method, rpc.params, {
         secret: config.secret,
         hasModernWebkitAPI: config.hasModernWebkitAPI
       });
@@ -9609,7 +10026,7 @@ function createTransport(config) {
   return transport;
 }
 
-},{"./captureDdgGlobals":41}],41:[function(require,module,exports){
+},{"./captureDdgGlobals":44}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9640,7 +10057,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],42:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10015,7 +10432,7 @@ const isLikelyASubmitButton = el => {
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":23}],43:[function(require,module,exports){
+},{"./Form/matching":26}],46:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -10034,7 +10451,7 @@ var _DeviceInterface = require("./DeviceInterface");
   }
 })();
 
-},{"./DeviceInterface":7,"./requestIdleCallback":46}],44:[function(require,module,exports){
+},{"./DeviceInterface":10,"./requestIdleCallback":49}],47:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -10090,7 +10507,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],45:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10104,7 +10521,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],46:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10152,4 +10569,54 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}]},{},[43]);
+},{}],50:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.GetAlias = void 0;
+
+var _zodRpc = require("../../packages/zod-rpc");
+
+var _validators = require("./validators.zod");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @extends {ZodRPC<emailHandlerGetAliasParamsSchema, emailHandlerGetAliasResultSchema>}
+ */
+class GetAlias extends _zodRpc.ZodRPC {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", 'emailHandlerGetAlias');
+
+    _defineProperty(this, "paramsValidator", _validators.emailHandlerGetAliasParamsSchema);
+
+    _defineProperty(this, "resultValidator", _validators.emailHandlerGetAliasResultSchema);
+  }
+
+  preResultValidation(response) {
+    return {
+      success: response
+    };
+  }
+
+}
+
+exports.GetAlias = GetAlias;
+
+},{"../../packages/zod-rpc":7,"./validators.zod":51}],51:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.emailHandlerGetAliasResultSchema = exports.emailHandlerGetAliasParamsSchema = void 0;
+const emailHandlerGetAliasParamsSchema = null;
+exports.emailHandlerGetAliasParamsSchema = emailHandlerGetAliasParamsSchema;
+const emailHandlerGetAliasResultSchema = null;
+exports.emailHandlerGetAliasResultSchema = emailHandlerGetAliasResultSchema;
+
+},{}]},{},[46]);
