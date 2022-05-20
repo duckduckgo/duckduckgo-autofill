@@ -3,6 +3,7 @@
  */
 export const constants = {
     pages: {
+        'overlay': 'overlay.html',
         'email-autofill': 'email-autofill.html',
         'signup': 'signup.html',
         'login': 'login.html'

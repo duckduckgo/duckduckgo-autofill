@@ -5,7 +5,7 @@ import {
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage, loginPage, signupPage} from '../helpers/pages.js'
+import {emailAutofillPage, loginPage, overlayPage, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 
 /**
@@ -140,15 +140,9 @@ test.describe('macos', () => {
     })
     test.describe('autofilling a login form', () => {
         /**
-         * @param {import('playwright').Page} page
-         * @param {{overlay?: boolean, clickLabel?: boolean}} opts
+         * @param {import("playwright-core").Page} page
          */
-        async function autofillLoginTest (page, opts = {}) {
-            const { overlay = false, clickLabel = false } = opts
-
-            // enable in-terminal exceptions
-            await forwardConsoleMessages(page)
-
+        async function mocks (page) {
             const {personalAddress} = constants.fields.email
             const password = '123456'
 
@@ -159,6 +153,19 @@ test.describe('macos', () => {
                     password
                 })
                 .applyTo(page)
+            return {personalAddress, password}
+        }
+        /**
+         * @param {import('playwright').Page} page
+         * @param {{overlay?: boolean, clickLabel?: boolean}} opts
+         */
+        async function autofillLoginTest (page, opts = {}) {
+            const { overlay = false, clickLabel = false } = opts
+
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+
+            const {personalAddress, password} = await mocks(page)
 
             // Load the autofill.js script with replacements
             await createAutofillScript()
@@ -184,6 +191,23 @@ test.describe('macos', () => {
         })
         test('by clicking a label', async ({page}) => {
             await autofillLoginTest(page, {clickLabel: true})
+        })
+        test('selecting an item in overlay', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const {personalAddress} = await mocks(page)
+
+            // Pretend we're running in a top-frame scenario
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements())
+                .replace('isTopFrame', true)
+                .replace('supportsTopFrame', true)
+                .platform('macos')
+                .applyTo(page)
+
+            const overlay = overlayPage(page, server)
+            await overlay.navigate()
+            await overlay.selectFirstCredential(personalAddress)
+            await overlay.doesNotCloseParent()
         })
     })
     test.describe('prompting to save data', () => {

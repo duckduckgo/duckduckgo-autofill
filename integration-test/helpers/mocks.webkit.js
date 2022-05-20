@@ -75,11 +75,12 @@ export function createWebkitMocks (platform = 'macos') {
      */
     const webkitBase = {
         pmHandlerGetAutofillInitData: {
-            /** @type {PMData} */
+            /** @type {InboundPMData} */
             success: {
                 identities: [],
                 credentials: [],
-                creditCards: []
+                creditCards: [],
+                serializedInputContext: '{}'
             }
         },
         emailHandlerCheckAppSignedInStatus: {
@@ -104,7 +105,8 @@ export function createWebkitMocks (platform = 'macos') {
             /** @type {CredentialsObject|null} */
             success: null
         },
-        showAutofillParent: {}
+        showAutofillParent: {},
+        setSize: {}
     }
 
     /** @type {MockBuilder} */
@@ -133,6 +135,9 @@ export function createWebkitMocks (platform = 'macos') {
         },
         withCredentials: function (credentials) {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
+            /** @type {TopContextData} */
+            const topContextData = {inputType: 'credentials.username'}
+            webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
             webkitBase.getSelectedCredentials = [
                 {type: 'none'},
