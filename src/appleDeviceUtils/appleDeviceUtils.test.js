@@ -1,5 +1,7 @@
 import { createGlobalConfig } from '../config'
 import { createTransport } from './appleDeviceUtils'
+import {from} from '../../packages/zod-rpc/lib/zod-rpc'
+import {IOHandler} from '../../packages/zod-rpc'
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data
@@ -34,7 +36,8 @@ describe('wkSendAndWait', () => {
     it('returns the expected unencrypted data', async () => {
         const config = createGlobalConfig()
         const transport = createTransport(config)
-        const response = await transport.send('testMock', {})
+        const io = new IOHandler(transport)
+        const response = await io.request(from('testMock', {}))
         expect(response.data).toBe('test')
     })
 })

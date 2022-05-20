@@ -1,17 +1,15 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import { createTransport } from '../appleDeviceUtils/appleDeviceUtils'
 import { formatDuckAddress, autofillEnabled } from '../autofill-utils'
 import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
-import {defaultOptions} from '../UI/HTMLTooltip'
-import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController'
-import {OverlayUIController} from '../UI/controllers/OverlayUIController'
+import { defaultOptions } from '../UI/HTMLTooltip'
+import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController'
+import { OverlayUIController } from '../UI/controllers/OverlayUIController'
+import { from } from '../../packages/zod-rpc'
+import { GetAlias } from '../rpc/rpc-calls'
 
 class AppleDeviceInterface extends InterfacePrototype {
     /** @type {FeatureToggleNames[]} */
     supportedFeatures = [];
-
-    /** @type {Transport} */
-    transport = createTransport(this.globalConfig)
 
     /** @override */
     initialSetupDelayMs = 300
@@ -20,8 +18,13 @@ class AppleDeviceInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
-    constructor (config) {
+    /**
+     * @param {GlobalConfig} config
+     * @param {import("../../packages/zod-rpc").IOHandler} ioHandler
+     */
+    constructor (config, ioHandler) {
         super(config)
+        this.io = ioHandler
 
         // Only enable 'password.generation' if we're on the macOS app (for now);
         if (this.globalConfig.isApp) {
@@ -94,7 +97,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Settings page displays data of the logged in user data
      */
     getUserData () {
-        return this.transport.send('emailHandlerGetUserData')
+        return this.io.request(from('emailHandlerGetUserData'))
     }
 
     /**
@@ -102,26 +105,27 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Device capabilities determine which functionality is available to the user
      */
     getEmailProtectionCapabilities () {
-        return this.transport.send('emailHandlerGetCapabilities')
+        return this.io.request(from('emailHandlerGetCapabilities'))
     }
 
+    /**
+     */
     async getSelectedCredentials () {
-        return this.transport.send('getSelectedCredentials')
+        return this.io.request(from('getSelectedCredentials'))
     }
 
     /**
      * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} parentArgs
-     * @returns {Promise<void>}
      */
     async _showAutofillParent (parentArgs) {
-        return this.transport.send('showAutofillParent', parentArgs)
+        return this.io.request(from('showAutofillParent', parentArgs))
     }
 
     /**
      * @returns {Promise<any>}
      */
     async _closeAutofillParent () {
-        return this.transport.send('closeAutofillParent', {})
+        return this.io.notify(from('closeAutofillParent', {}))
     }
 
     /**
@@ -144,25 +148,25 @@ class AppleDeviceInterface extends InterfacePrototype {
     async getAddresses () {
         if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await this.transport.send('emailHandlerGetAddresses')
+        const {addresses} = await this.io.request(from('emailHandlerGetAddresses'))
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
     async refreshAlias () {
-        await this.transport.send('emailHandlerRefreshAlias')
+        await this.io.notify(from('emailHandlerRefreshAlias'))
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
 
     async _checkDeviceSignedIn () {
-        const {isAppSignedIn} = await this.transport.send('emailHandlerCheckAppSignedInStatus')
+        const {isAppSignedIn} = await this.io.request(from('emailHandlerCheckAppSignedInStatus'))
         this.isDeviceSignedIn = () => !!isAppSignedIn
         return !!isAppSignedIn
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.transport.send('emailHandlerStoreToken', { token, username: userName, cohort })
+        return this.io.notify(from('emailHandlerStoreToken', { token, username: userName, cohort }))
     }
 
     /**
@@ -170,7 +174,9 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Provides functionality to log the user out
      */
     removeUserData () {
-        return this.transport.send('emailHandlerRemoveToken')
+        this.io.notify(from('emailHandlerRemoveToken')).catch((e) => {
+            console.log('could not remove', e)
+        })
     }
 
     /**
@@ -182,7 +188,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {{username: string, password: string}} credentials
      */
     storeCredentials (credentials) {
-        return this.transport.send('pmHandlerStoreCredentials', credentials)
+        return this.io.notify(from('pmHandlerStoreCredentials', credentials))
     }
 
     /**
@@ -190,7 +196,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        return this.transport.send('pmHandlerStoreData', data)
+        return this.io.notify(from('pmHandlerStoreData', data))
     }
 
     /**
@@ -198,7 +204,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<PMData>}
      */
     async _getAutofillInitData () {
-        const response = await this.transport.send('pmHandlerGetAutofillInitData')
+        const response = await this.io.request(from('pmHandlerGetAutofillInitData'))
         this.storeLocalData(response.success)
         return response
     }
@@ -209,28 +215,28 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponseSingle<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return this.transport.send('pmHandlerGetAutofillCredentials', { id })
+        return this.io.request(from('pmHandlerGetAutofillCredentials', { id }))
     }
 
     /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {
-        return this.transport.send('pmHandlerOpenManagePasswords')
+        return this.io.notify(from('pmHandlerOpenManagePasswords'))
     }
 
     /**
      * Opens the native UI for managing identities
      */
     openManageIdentities () {
-        return this.transport.send('pmHandlerOpenManageIdentities')
+        return this.io.notify(from('pmHandlerOpenManageIdentities'))
     }
 
     /**
      * Opens the native UI for managing credit cards
      */
     openManageCreditCards () {
-        return this.transport.send('pmHandlerOpenManageCreditCards')
+        return this.io.notify(from('pmHandlerOpenManageCreditCards'))
     }
 
     /**
@@ -249,7 +255,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.transport.send('pmHandlerGetCreditCard', { id })
+        return this.io.request(from('pmHandlerGetCreditCard', { id }))
     }
 
     async getCurrentInputType () {
@@ -257,14 +263,15 @@ class AppleDeviceInterface extends InterfacePrototype {
         return inputType || 'unknown'
     }
 
+    /**
+     * @returns {Promise<string>}
+     */
     async getAlias () {
-        const {alias} = await this.transport.send(
-            'emailHandlerGetAlias',
-            {
-                requiresUserPermission: !this.globalConfig.isApp,
-                shouldConsumeAliasIfProvided: !this.globalConfig.isApp
-            }
-        )
+        const {alias} = await this.io.request(new GetAlias({
+            requiresUserPermission: !this.globalConfig.isApp,
+            shouldConsumeAliasIfProvided: !this.globalConfig.isApp
+
+        }))
         return formatDuckAddress(alias)
     }
 
