@@ -1,5 +1,7 @@
 import { createGlobalConfig } from '../config'
 import { createTransport } from './appleDeviceUtils'
+import {createDeviceApiCall} from '../../packages/device-api/lib/device-api-call'
+import {DeviceApi} from '../../packages/device-api'
 
 const webkitMock = jest.fn(async (data) => {
     const { messageHandling } = data
@@ -34,7 +36,8 @@ describe('wkSendAndWait', () => {
     it('returns the expected unencrypted data', async () => {
         const config = createGlobalConfig()
         const transport = createTransport(config)
-        const response = await transport.send('testMock', {})
+        const io = new DeviceApi(transport)
+        const response = await io.request(createDeviceApiCall('testMock', {}))
         expect(response.data).toBe('test')
     })
 })
