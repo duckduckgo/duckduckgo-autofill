@@ -236,5 +236,6 @@ export default [
     { html: 'disneyworld_help.html' },
     { html: 'disneyworld_signup.html', expectedFailures: ['birthday'] },
     { html: 'irsgov_refund.html' },
-    { html: 'googlecalendar_eventnotification.html' }
+    { html: 'googlecalendar_eventnotification.html' },
+    { html: 'givesmart_login.html' }
 ]

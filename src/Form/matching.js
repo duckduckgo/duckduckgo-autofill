@@ -719,13 +719,20 @@ const getExplicitLabelsText = (el) => {
  * @return {string}
  */
 const getRelatedText = (el, form, cssSelector) => {
-    const container = getLargestMeaningfulContainer(el, form, cssSelector)
+    let scope = getLargestMeaningfulContainer(el, form, cssSelector)
 
-    // If there is no meaningful container return empty string
-    if (container === el || container.nodeName === 'SELECT') return ''
+    // If we didn't find a container, try looking for an adjacent label
+    if (scope === el) {
+        if (el.previousElementSibling instanceof HTMLLabelElement) {
+            scope = el.previousElementSibling
+        }
+    }
+
+    // If there is still no meaningful container return empty string
+    if (scope === el || scope.nodeName === 'SELECT') return ''
 
     // If the container has a select element, remove its contents to avoid noise
-    const text = removeExcessWhitespace(extractElementStrings(container).join(' '))
+    const text = removeExcessWhitespace(extractElementStrings(scope).join(' '))
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
     if (text.length < TEXT_LENGTH_CUTOFF) return text
     return ''
