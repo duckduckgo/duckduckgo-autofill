@@ -235,5 +235,6 @@ export default [
     { html: 'godaddy_signup.html', expectedSubmitFalsePositives: 1 },
     { html: 'disneyworld_help.html' },
     { html: 'disneyworld_signup.html', expectedFailures: ['birthday'] },
-    { html: 'irsgov_refund.html' }
+    { html: 'irsgov_refund.html' },
+    { html: 'googlecalendar_eventnotification.html' }
 ]

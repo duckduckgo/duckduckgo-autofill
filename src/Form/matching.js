@@ -448,13 +448,16 @@ class Matching {
         if (this._elementStringCache.has(el)) {
             return this._elementStringCache.get(el)
         }
+
+        const explicitLabelsText = getExplicitLabelsText(el)
+
         /** @type {Record<MatchableStrings, string>} */
         const next = {
             nameAttr: el.name,
-            labelText: getExplicitLabelsText(el),
+            labelText: explicitLabelsText,
             placeholderAttr: el.placeholder || '',
             id: el.id,
-            relatedText: getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
+            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
         }
         this._elementStringCache.set(el, next)
         return next
