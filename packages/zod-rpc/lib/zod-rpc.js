@@ -177,12 +177,22 @@ export class SchemaValidationError extends Error {
 }
 
 /**
+ * Creates an instance of `ZodRPC` from only a name and 'params'
+ * and optional validators. Use this to help migrate existing messages.
+ *
+ * @template {import("zod").ZodType} Params
+ * @template {import("zod").ZodType} Result
  * @param {string} method
- * @param {any} [data]
- * @returns {ZodRPC}
+ * @param {import("zod").infer<Params>} [params]
+ * @param {Params|null} [paramsValidator]
+ * @param {Result|null} [resultValidator]
+ * @returns {ZodRPC<Params, Result>}
  */
-export function createRpc (method, data) {
-    const rpc = new ZodRPC(data)
+export function createRpc (method, params, paramsValidator = null, resultValidator = null) {
+    /** @type {ZodRPC<Params, Result>} */
+    const rpc = new ZodRPC(params)
+    rpc.paramsValidator = paramsValidator
+    rpc.resultValidator = resultValidator
     rpc.method = method
     rpc.throwOnResultKeysMissing = false
     rpc.unwrapResult = false
@@ -190,8 +200,10 @@ export function createRpc (method, data) {
 }
 
 /**
+ * Validate any arbitrary data with any Zod validator
+ *
  * @template {import("zod").ZodType} Validator
- * @param {any} data
+ * @param {import("zod").infer<Validator>} data
  * @param {Validator | null} [validator]
  * @returns {import("zod").infer<Validator>}
  */

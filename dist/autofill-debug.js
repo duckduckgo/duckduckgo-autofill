@@ -6062,6 +6062,12 @@ Object.defineProperty(exports, "createRpc", {
     return _zodRpc.createRpc;
   }
 });
+Object.defineProperty(exports, "validate", {
+  enumerable: true,
+  get: function () {
+    return _zodRpc.validate;
+  }
+});
 
 var _zodRpc = require("./lib/zod-rpc");
 
@@ -6375,24 +6381,39 @@ class SchemaValidationError extends Error {
 
 }
 /**
+ * Creates an instance of `ZodRPC` from only a name and 'params'
+ * and optional validators. Use this to help migrate existing messages.
+ *
+ * @template {import("zod").ZodType} Params
+ * @template {import("zod").ZodType} Result
  * @param {string} method
- * @param {any} [data]
- * @returns {ZodRPC}
+ * @param {import("zod").infer<Params>} [params]
+ * @param {Params|null} [paramsValidator]
+ * @param {Result|null} [resultValidator]
+ * @returns {ZodRPC<Params, Result>}
  */
 
 
 exports.SchemaValidationError = SchemaValidationError;
 
-function createRpc(method, data) {
-  const rpc = new ZodRPC(data);
+function createRpc(method, params) {
+  let paramsValidator = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  let resultValidator = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+  /** @type {ZodRPC<Params, Result>} */
+  const rpc = new ZodRPC(params);
+  rpc.paramsValidator = paramsValidator;
+  rpc.resultValidator = resultValidator;
   rpc.method = method;
   rpc.throwOnResultKeysMissing = false;
   rpc.unwrapResult = false;
   return rpc;
 }
 /**
+ * Validate any arbitrary data with any Zod validator
+ *
  * @template {import("zod").ZodType} Validator
- * @param {any} data
+ * @param {import("zod").infer<Validator>} data
  * @param {Validator | null} [validator]
  * @returns {import("zod").infer<Validator>}
  */

@@ -1,5 +1,160 @@
 # zod-rpc
 
+## RPC calls
+
+### 1 Create a new RPC call that **requires** a response
+
+In any file, create a class with the following structure, note that the `validator` here would
+be located in a sibling file with the `.zod.js` extension. This is how we are able to strip validation
+for the production builds.
+
+```js
+import { ZodRPC } from "../packages/zod-rpc";
+
+// These need to be in a separate file with the *.zod.js extension
+const paramsValidator = z.object({name: z.string()});
+const resultValidator = z.object({name: z.string()});
+
+/** @extends {ZodRPC<paramsValidator, resultValidator>} */
+class Login extends ZodRPC {
+    method = "loginUser"
+    id = "loginUserResponse"
+    paramsValidator = paramsValidator
+    resultValidator = resultValidator
+}
+
+const result = await ioHandler.request(new Login({name: "dax"}))
+```
+
+Explanation:
+* `/** @extends {ZodRPC<paramsValidator, resultValidator>} */` is how we can forward generic parameters when using JSDoc with Typescript 
+* `class Login extends ZodRPC` creates a class `Logic` that inherits all the functionality of a ZodRPC call (validation)
+* `method = "loginUser"` depending on the platform in question this may be used in various ways
+*   - For example, on macOS/iOS the `method` is used to lookup a specific named handler that the native side injects
+*   - But on Windows, the `method` is sent via a generic handler such as `postMessage({type: 'Autofill::' + rpc.method})`
+* `paramsValidator` this is the Zod Validator used to validate the `params` (outgoing) data
+* `resultValidator` this is the Zod Validator used to validate the `result` (incoming) data
+ 
+Please see **Send a request** section for details on how to actually send this  
+
+### 2 Create a new RPC call that does NOT require a response
+
+This is the same process as above, except you do not need to specify an `id` or `resultValidator`.
+
+```javascript
+const paramsValidator = z.object({name: z.string()});
+
+/** @extends {ZodRPC<paramsValidator>} */
+class Login extends ZodRPC {
+    method = "loginUser"
+    paramsValidator = paramsValidator
+}
+
+ioHandler.notify(new Login({name: "dax"}))
+```
+
+
+### 3 Create an RPC call from a name + data only 
+
+In situations where you just want to quickly create an RPC call, but you don't care/need to have a 
+class definition (eg: because you're accepting that you won't be able to use `instanceof` checks late, then 
+you can do the following:
+
+```javascript
+// create an RPC call inline for simple, untyped messaging
+const result = await ioHandler.request(createRpc("isSignedIn"));
+
+// or a notification, with optional data
+ioHandler.notify(createRpc("notifyWebApp", { signedIn: true }));
+
+// you can also add validation here
+const paramsValidator = z.object({name: z.string()});
+const rpc = createRpc("signIn", {name: "dax"}, paramsValidator)
+const result = await ioHandler.request(rpc);
+
+// with params + result validation
+const paramsValidator = z.object({name: z.string()});
+const resultValidator = z.object({success: z.string()});
+const rpc = createRpc("signIn", {name: "dax"}, paramsValidator, resultValidator);
+const result = await ioHandler.request(rpc);
+```
+
+### 4 Send a request/notification
+
+To send a request, you need to have 3 things:
+
+- `Transport` - to handle differences in messaging for each platform
+- `IOHandler` - to handle the lifecycle of messaging + validation
+- An RPC Call to make
+
+All device interfaces that inherit from `InterfaceProtype` have direct access to `this.io`, which is 
+an instance of IOHandler. So if you're working within an existing class, like `AppleDeviceInterface` (for example),
+then you can send any RPC calls you like just using `this.io.notify(...)` or `this.io.request(...)`.
+
+```javascript
+// a concrete example of how easy it is to use the new RPC system 
+class AppleDeviceInterface extends InterfaceProtype {
+    // an example of seting a request and waiting for the response
+    async getAlias() {
+        const { alias } = await this.io.request(createRpc("getAlias"));
+    }
+    // an example of sending a fire+forget message
+    storeFormData() {
+        this.io.notify(createRpc("storeFormData", {credentials:{username: ""}}));
+    }
+}
+```
+
+### 6 Use Zod validations without creating an RPC call
+
+If you want to leverage the type safety of Zod outside of RPC calls, you can use the `validate` method,
+just be sure to keep the validator code in a `*.zod.js` file so that it can be stripped for production.
+
+**Note:** this will throw in development, it's specifically designed to be a type-safety tool.
+
+```javascript
+import { myValidator } from "./validators.zod.js";
+
+const valid = validate({name: 2}, myValidator);
+```
+
+## Working with Transports
+
+### 1) Implement a new transport
+
+A `Transport` handles the very last part of browser<->native messaging. The following example is
+a cut-down version to show the concept. 
+
+Implementors just override `send(rpc)` and can do whatever is needed on their platform to respond.
+
+```javascript
+// an example transport 
+class AppleTransport extends Transport {
+    async send (rpc) {
+        return wkSendAndWait(rpc.method, rpc.params, {
+            secret: this.config.secret,
+            hasModernWebkitAPI: this.config.hasModernWebkitAPI
+        })
+    }
+}
+```
+
+If this Transport is chosen for the current platform, then every call to `this.io.request` and `this.io.notify`
+will come through here.
+
+### 2) Debug an existing transport 
+
+Search for anything that `extends Transport` -> there's only a single method implemented, so it should be
+straightforward to incorporate logging to see what's going on.
+
+### 3) Make a change to an existing transport 
+
+Once you know of a required change, you may need to update supporting mocks that live within `integration-test/helpers`
+
+---
+
+## Internals
+
 This library contains:
 
 - `ZodRPC` a class that you can extend to model `rpc` calls with validation via `Zod`
@@ -38,29 +193,7 @@ const data = new Login({name: 2}).validateParams();
 
 ## `Transport` 
 
-Each platform can implement this to customise how requests/notifications are made.
-
-```javascript
-class AppleTransport extends Transport {
-    async send (rpc) {
-        return wkSendAndWait(rpc.method, rpc.params, {
-            secret: this.config.secret,
-            hasModernWebkitAPI: this.config.hasModernWebkitAPI
-        })
-    }
-}
-// create the instance of the transport
-const transport = new AppleTransport(globalConfig);
-
-// create the instance of IOHandler
-const io = new IOHandler(transport);
-
-// notify gives no response
-await io.notify(from('showAutofillParent', {foo: "bar"}));
-
-// request will deliver a response
-const result = io.request(from('showAutofillParent', {foo: "bar"}));
-```
+Please see 'working with transports' above
 
 --- 
 
@@ -80,7 +213,7 @@ const handler = new IOHandler({
 })
 
 // Create an RPC message from a method name only
-const rpc = from("storeFormData");
+const rpc = createRpc("storeFormData");
 
 // send and wait for response
 const result = handler.request(rpc);
@@ -102,7 +235,7 @@ const handler = new IOHandler({
 })
 
 // Create an RPC message from a method name only
-const rpc = from("storeFormData")
+const rpc = createRpc("storeFormData")
 
 // Fire and forget notification 
 handler.notify(rpc)
