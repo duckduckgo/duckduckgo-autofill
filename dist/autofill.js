@@ -2571,7 +2571,6 @@ class ZodRPC {
     }
 
     if ('success' in incoming) {
-      console.log('incoming', incoming);
       return incoming.success;
     }
 

@@ -69,7 +69,6 @@ export class ZodRPC {
             return incoming.data
         }
         if ('success' in incoming) {
-            console.log('incoming', incoming)
             return incoming.success
         }
         if (this.throwOnResultKeysMissing) {
