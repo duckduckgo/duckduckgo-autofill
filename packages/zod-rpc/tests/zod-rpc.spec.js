@@ -1,9 +1,9 @@
 import { IOHandler } from '../lib/io-handler'
-import { from, ZodRPC } from '../lib/zod-rpc'
+import { createRpc, ZodRPC } from '../lib/zod-rpc'
 import { z } from 'zod'
 
 /**
- * @returns {{handler: IOHandler, transport: RPCTransport}}
+ * @returns {{handler: IOHandler, transport: import("../").RPCTransport}}
  */
 function testIo () {
     const transport = {
@@ -16,14 +16,14 @@ function testIo () {
 describe('zod-rpc', () => {
     it('can send notification messages in old format', async () => {
         const { handler, transport } = testIo()
-        await handler.notify(from('hello-world', { id: 1 }))
+        await handler.notify(createRpc('hello-world', { id: 1 }))
         expect(transport.send).toHaveBeenCalledTimes(1)
     })
     it('can perform request->response in old format', async () => {
         expect.assertions(2)
         const params = { id: 1 }
         const result = { a: 'b' }
-        /** @type {RPCTransport} */
+        /** @type {import("../").RPCTransport} */
         const transport = {
             send: async (rpc) => {
                 expect(rpc.params).toBe(params)
@@ -31,7 +31,7 @@ describe('zod-rpc', () => {
             }
         }
         const handler = new IOHandler(transport)
-        const rpc = from('hello-world', params)
+        const rpc = createRpc('hello-world', params)
         const returnedResult = await handler.request(rpc)
         expect(returnedResult).toEqual(result)
     })
@@ -41,7 +41,7 @@ describe('zod-rpc', () => {
         method = 'abc';
             }
             const { handler, transport } = testIo()
-            await handler.notify(new T1())
+            await handler.notify(new T1(null))
             expect(transport.send).toHaveBeenCalledTimes(1)
         })
         it('when there is params validation', async () => {
@@ -53,11 +53,11 @@ describe('zod-rpc', () => {
             const { handler, transport } = testIo()
             try {
                 await handler.notify(new T1(3))
-            } catch (e) {
+            } catch (/** @type {any} */e) {
                 expect(transport.send).toHaveBeenCalledTimes(0)
                 expect(e.message).toMatchInlineSnapshot(`
           "1 SchemaValidationError(s) errors for T1
-              Expected string, received number"
+              please see the details above"
         `)
             }
         })
@@ -70,11 +70,11 @@ describe('zod-rpc', () => {
             const { handler, transport } = testIo()
             try {
                 await handler.request(new T1(3))
-            } catch (e) {
+            } catch (/** @type {any} */e) {
                 expect(transport.send).toHaveBeenCalledTimes(1)
                 expect(e.message).toMatchInlineSnapshot(`
           "1 SchemaValidationError(s) errors for T1
-              Expected string, received object"
+              please see the details above"
         `)
             }
         })

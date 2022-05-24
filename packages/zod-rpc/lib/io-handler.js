@@ -26,12 +26,13 @@ export class IOHandler {
     /**
      * @template {import("./zod-rpc").ZodRPC} P
      * @param {P} rpc
-     * @returns {Promise<ReturnType<P['validateResult']>>}
+     * @returns {Promise<ReturnType<P['validateResult']>['success']>}
      */
     async request (rpc) {
         rpc.validateParams()
         let result = await this.transport.send(rpc)
-        return rpc.validateResult(result)
+        let processed = rpc.preResultValidation(result)
+        return rpc.validateResult(processed)
     }
     /**
      * @template {import("./zod-rpc").ZodRPC} P

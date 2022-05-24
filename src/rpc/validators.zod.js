@@ -11,5 +11,7 @@ export const emailHandlerGetAliasParamsSchema = z.object({
 })
 
 export const emailHandlerGetAliasResultSchema = z.object({
-    alias: z.string()
+    success: z.object({
+        alias: z.string()
+    })
 })

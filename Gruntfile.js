@@ -85,7 +85,7 @@ module.exports = function (grunt) {
          */
         watch: {
             scripts: {
-                files: ['src/**/*.js', 'packages/password/**/*.{json,js}'],
+                files: ['src/**/*.js', 'packages/password/**/*.{json,js}', 'packages/zod-rpc/**/*.{json,js}'],
                 tasks: ['browserify:dist', 'browserify:debug', 'exec:copyAssets']
             },
             html: {

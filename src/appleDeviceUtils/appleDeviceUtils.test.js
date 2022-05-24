@@ -1,6 +1,6 @@
 import { createGlobalConfig } from '../config'
 import { createTransport } from './appleDeviceUtils'
-import {from} from '../../packages/zod-rpc/lib/zod-rpc'
+import {createRpc} from '../../packages/zod-rpc/lib/zod-rpc'
 import {IOHandler} from '../../packages/zod-rpc'
 
 const webkitMock = jest.fn(async (data) => {
@@ -37,7 +37,7 @@ describe('wkSendAndWait', () => {
         const config = createGlobalConfig()
         const transport = createTransport(config)
         const io = new IOHandler(transport)
-        const response = await io.request(from('testMock', {}))
+        const response = await io.request(createRpc('testMock', {}))
         expect(response.data).toBe('test')
     })
 })

@@ -29,6 +29,7 @@
     "src",
     "scripts",
     "packages/password",
+    "packages/zod-rpc",
     "*.js",
     "types.d.ts",
     "integration-test/helpers",

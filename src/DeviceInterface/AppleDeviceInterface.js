@@ -4,7 +4,7 @@ import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils
 import { defaultOptions } from '../UI/HTMLTooltip'
 import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController'
 import { OverlayUIController } from '../UI/controllers/OverlayUIController'
-import { from } from '../../packages/zod-rpc'
+import { createRpc } from '../../packages/zod-rpc'
 import { GetAlias } from '../rpc/rpc-calls'
 
 class AppleDeviceInterface extends InterfacePrototype {
@@ -97,7 +97,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Settings page displays data of the logged in user data
      */
     getUserData () {
-        return this.io.request(from('emailHandlerGetUserData'))
+        return this.io.request(createRpc('emailHandlerGetUserData'))
     }
 
     /**
@@ -105,27 +105,27 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Device capabilities determine which functionality is available to the user
      */
     getEmailProtectionCapabilities () {
-        return this.io.request(from('emailHandlerGetCapabilities'))
+        return this.io.request(createRpc('emailHandlerGetCapabilities'))
     }
 
     /**
      */
     async getSelectedCredentials () {
-        return this.io.request(from('getSelectedCredentials'))
+        return this.io.request(createRpc('getSelectedCredentials'))
     }
 
     /**
      * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} parentArgs
      */
     async _showAutofillParent (parentArgs) {
-        return this.io.request(from('showAutofillParent', parentArgs))
+        return this.io.request(createRpc('showAutofillParent', parentArgs))
     }
 
     /**
      * @returns {Promise<any>}
      */
     async _closeAutofillParent () {
-        return this.io.notify(from('closeAutofillParent', {}))
+        return this.io.notify(createRpc('closeAutofillParent', {}))
     }
 
     /**
@@ -148,25 +148,25 @@ class AppleDeviceInterface extends InterfacePrototype {
     async getAddresses () {
         if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await this.io.request(from('emailHandlerGetAddresses'))
+        const {addresses} = await this.io.request(createRpc('emailHandlerGetAddresses'))
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
     async refreshAlias () {
-        await this.io.notify(from('emailHandlerRefreshAlias'))
+        await this.io.notify(createRpc('emailHandlerRefreshAlias'))
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
 
     async _checkDeviceSignedIn () {
-        const {isAppSignedIn} = await this.io.request(from('emailHandlerCheckAppSignedInStatus'))
+        const {isAppSignedIn} = await this.io.request(createRpc('emailHandlerCheckAppSignedInStatus'))
         this.isDeviceSignedIn = () => !!isAppSignedIn
         return !!isAppSignedIn
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.io.notify(from('emailHandlerStoreToken', { token, username: userName, cohort }))
+        return this.io.notify(createRpc('emailHandlerStoreToken', { token, username: userName, cohort }))
     }
 
     /**
@@ -174,7 +174,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Provides functionality to log the user out
      */
     removeUserData () {
-        this.io.notify(from('emailHandlerRemoveToken')).catch((e) => {
+        this.io.notify(createRpc('emailHandlerRemoveToken')).catch((e) => {
             console.log('could not remove', e)
         })
     }
@@ -188,7 +188,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {{username: string, password: string}} credentials
      */
     storeCredentials (credentials) {
-        return this.io.notify(from('pmHandlerStoreCredentials', credentials))
+        return this.io.notify(createRpc('pmHandlerStoreCredentials', credentials))
     }
 
     /**
@@ -196,7 +196,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        return this.io.notify(from('pmHandlerStoreData', data))
+        return this.io.notify(createRpc('pmHandlerStoreData', data))
     }
 
     /**
@@ -204,7 +204,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<PMData>}
      */
     async _getAutofillInitData () {
-        const response = await this.io.request(from('pmHandlerGetAutofillInitData'))
+        const response = await this.io.request(createRpc('pmHandlerGetAutofillInitData'))
         this.storeLocalData(response.success)
         return response
     }
@@ -215,28 +215,28 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponseSingle<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return this.io.request(from('pmHandlerGetAutofillCredentials', { id }))
+        return this.io.request(createRpc('pmHandlerGetAutofillCredentials', { id }))
     }
 
     /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {
-        return this.io.notify(from('pmHandlerOpenManagePasswords'))
+        return this.io.notify(createRpc('pmHandlerOpenManagePasswords'))
     }
 
     /**
      * Opens the native UI for managing identities
      */
     openManageIdentities () {
-        return this.io.notify(from('pmHandlerOpenManageIdentities'))
+        return this.io.notify(createRpc('pmHandlerOpenManageIdentities'))
     }
 
     /**
      * Opens the native UI for managing credit cards
      */
     openManageCreditCards () {
-        return this.io.notify(from('pmHandlerOpenManageCreditCards'))
+        return this.io.notify(createRpc('pmHandlerOpenManageCreditCards'))
     }
 
     /**
@@ -255,7 +255,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.io.request(from('pmHandlerGetCreditCard', { id }))
+        return this.io.request(createRpc('pmHandlerGetCreditCard', { id }))
     }
 
     async getCurrentInputType () {

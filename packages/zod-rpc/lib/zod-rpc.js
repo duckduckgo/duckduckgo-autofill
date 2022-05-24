@@ -21,6 +21,7 @@ export class ZodRPC {
      * This is a carve-out for legacy messages that are not typed yet.
      * If you set this to 'true', then the response will not be checked to conform
      * to any shape
+     * @deprecated this is here to aid migration, should be removed ASAP
      * @type {boolean}
      */
     throwOnResultKeysMissing = true;
@@ -28,6 +29,7 @@ export class ZodRPC {
      * New messages should be in a particular format, eg: { success: T },
      * but you can set this to false if you want to access the result as-is,
      * without any unwrapping logic
+     * @deprecated this is here to aid migration, should be removed ASAP
      * @type {boolean}
      */
     unwrapResult = true;
@@ -119,7 +121,13 @@ export class ZodRPC {
      * @param {import("zod").infer<Result>} response
      * @returns {import("zod").infer<Result>}
      */
-    response (response) {
+    result (response) {
+        return response
+    }
+    /**
+     * @returns {import("zod").infer<Result>}
+     */
+    preResultValidation (response) {
         return response
     }
 }
@@ -138,12 +146,30 @@ export class SchemaValidationError extends Error {
      */
     static fromZodErrors (errors, name) {
         const heading = `${errors.length} SchemaValidationError(s) errors for ` + name
-        const lines = []
-        for (let error of errors) {
-            // console.log(JSON.stringify(error, null, 2));
-            lines.push(error.message || 'unknown')
+        function log (issue) {
+            switch (issue.code) {
+            case 'invalid_literal':
+            case 'invalid_type': {
+                console.log(`${name}. Path: '${issue.path.join('.')}', Error: '${issue.message}'`)
+                break
+            }
+            case 'invalid_union': {
+                for (let unionError of issue.unionErrors) {
+                    for (let issue1 of unionError.issues) {
+                        log(issue1)
+                    }
+                }
+                break
+            }
+            default: {
+                console.log(name, 'other issue:', issue)
+            }
+            }
         }
-        const message = [heading, ...lines].join('\n    ')
+        for (let error of errors) {
+            log(error)
+        }
+        const message = [heading, 'please see the details above'].join('\n    ')
         const error = new SchemaValidationError(message)
         error.validationErrors = errors
         return error
@@ -155,10 +181,23 @@ export class SchemaValidationError extends Error {
  * @param {any} [data]
  * @returns {ZodRPC}
  */
-export function from (method, data) {
+export function createRpc (method, data) {
     const rpc = new ZodRPC(data)
     rpc.method = method
     rpc.throwOnResultKeysMissing = false
     rpc.unwrapResult = false
     return rpc
+}
+
+/**
+ * @template {import("zod").ZodType} Validator
+ * @param {any} data
+ * @param {Validator | null} [validator]
+ * @returns {import("zod").infer<Validator>}
+ */
+export function validate (data, validator = null) {
+    if (validator) {
+        return validator.parse(data)
+    }
+    return data
 }

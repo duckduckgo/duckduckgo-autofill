@@ -1,7 +1,7 @@
 import {AppleDeviceInterface} from './AppleDeviceInterface'
 import {CSS_STYLES} from '../UI/styles/styles'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController'
-import {from} from '../../packages/zod-rpc'
+import {createRpc} from '../../packages/zod-rpc'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -114,7 +114,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
             return [key, String(value)]
         })
         const data = Object.fromEntries(detailsEntries)
-        await this.io.notify(from('selectedDetail', { data, configType }))
+        await this.io.notify(createRpc('selectedDetail', { data, configType }))
     }
 
     /**
@@ -127,7 +127,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @param {{height: number, width: number}} details
      */
     async _setSize (details) {
-        await this.io.notify(from('setSize', details))
+        await this.io.notify(createRpc('setSize', details))
     }
 }
 
