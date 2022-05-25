@@ -7691,16 +7691,15 @@ class Matching {
     if (this._elementStringCache.has(el)) {
       return this._elementStringCache.get(el);
     }
-
-    const explicitLabelsText = getExplicitLabelsText(el);
     /** @type {Record<MatchableStrings, string>} */
+
 
     const next = {
       nameAttr: el.name,
-      labelText: explicitLabelsText,
+      labelText: getExplicitLabelsText(el),
       placeholderAttr: el.placeholder || '',
       id: el.id,
-      relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
+      relatedText: getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
     };
 
     this._elementStringCache.set(el, next);
@@ -7974,18 +7973,11 @@ const getExplicitLabelsText = el => {
 exports.getExplicitLabelsText = getExplicitLabelsText;
 
 const getRelatedText = (el, form, cssSelector) => {
-  let scope = getLargestMeaningfulContainer(el, form, cssSelector); // If we didn't find a container, try looking for an adjacent label
+  const container = getLargestMeaningfulContainer(el, form, cssSelector); // If there is no meaningful container return empty string
 
-  if (scope === el) {
-    if (el.previousElementSibling instanceof HTMLLabelElement) {
-      scope = el.previousElementSibling;
-    }
-  } // If there is still no meaningful container return empty string
+  if (container === el || container.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
-
-  if (scope === el || scope.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
-
-  const text = removeExcessWhitespace((0, _labelUtil.extractElementStrings)(scope).join(' ')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
+  const text = removeExcessWhitespace((0, _labelUtil.extractElementStrings)(container).join(' ')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
 
   if (text.length < TEXT_LENGTH_CUTOFF) return text;
   return '';
