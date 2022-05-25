@@ -41,14 +41,26 @@ function copyAutofillScript () {
     const debugScriptFileName = 'autofill-debug.js'
     const source = '// INJECT isDDGTestMode HERE'
     const replacement = 'isDDGTestMode = true;'
+
+    // read both source files
     const autofill = readFileSync(filepath(distPath, scriptFileName), 'utf8')
+    const autofillDebug = readFileSync(filepath(distPath, debugScriptFileName), 'utf8')
+
     if (!autofill.includes(source)) {
         throw new Error('cannot find source for replacement, expected: ' + source)
     }
-    writeFileSync(filepath(appleDistPath, scriptFileName), autofill)
-    writeFileSync(filepath(appleDistPath, debugScriptFileName), autofill)
 
+    // replace the variables in both scripts
     const replaced = autofill.replace(source, replacement)
+    const replacedDebug = autofillDebug.replace(source, replacement)
+
+    // regular output inside dist/*
+    writeFileSync(filepath(appleDistPath, scriptFileName), autofill)
+    writeFileSync(filepath(appleDistPath, debugScriptFileName), replacedDebug)
+
+    // extension output of integration-test/extension/autofill.js
     writeFileSync(filepath('integration-test', 'extension', scriptFileName), replaced)
-    writeFileSync(filepath('integration-test', 'extension', debugScriptFileName), replaced)
+
+    // extension output of integration-test/extension/autofill-debug.js
+    writeFileSync(filepath('integration-test', 'extension', debugScriptFileName), replacedDebug)
 }
