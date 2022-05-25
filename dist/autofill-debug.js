@@ -4317,7 +4317,7 @@ const defaults = Object.freeze({
   defaultRequiredCharacterSets: ['abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '0123456789'],
 
   /**
-   * @type {typeof window.crypto.getRandomValues | typeof import("crypto").randomFillSync | null}
+   * @type {typeof window.crypto.getRandomValues | null}
    */
   getRandomValues: null
 });
