@@ -1,5 +1,6 @@
 import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
+import {mockedCalls} from './harness.js'
 
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
@@ -202,13 +203,12 @@ export function loginPage (page, server, opts = {}) {
          * @returns {Promise<void>}
          */
         async assertClickAndFocusMessages () {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
-            const showCalls = calls.filter(([name]) => name === 'showAutofillParent')
-            expect(showCalls.length).toBe(2)
+            const calls = await mockedCalls(page, ['showAutofillParent'])
+            expect(calls.length).toBe(2)
 
             // each call is captured as a tuple like this: [name, params, response], which is why
             // we use `call1[1]` and `call1[2]` - we're accessing the params sent in the request
-            const [call1, call2] = showCalls
+            const [call1, call2] = calls
             expect(call1[1].wasFromClick).toBe(true)
             expect(call2[1].wasFromClick).toBe(false)
         }

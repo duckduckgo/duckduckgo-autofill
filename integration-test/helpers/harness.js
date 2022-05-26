@@ -250,3 +250,25 @@ export async function printPerformanceSummary (name, times) {
     console.log(name, times)
     console.log('➡️ %s average: ', name, average)
 }
+
+/**
+ * @param {import("playwright").Page} page
+ * @param {string[]} [names]
+ * @returns {Promise<MockCall[]>}
+ */
+export async function mockedCalls (page, names = []) {
+    return page.evaluate(({names}) => {
+        if (!Array.isArray(window.__playwright?.mocks?.calls)) {
+            throw new Error('unreachable, window.__playwright.mocks.calls must be defined')
+        }
+
+        // no need to filter if no names were given, assume the caller wants all mocks
+        if (names.length === 0) {
+            return window.__playwright.mocks.calls
+        }
+
+        // otherwise filter on the given names
+        return window.__playwright.mocks.calls
+            .filter(([name]) => names.includes(name))
+    }, {names})
+}
