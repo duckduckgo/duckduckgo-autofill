@@ -1,17 +1,29 @@
 const {readFileSync, writeFileSync, copyFileSync} = require('fs')
 const {join} = require('path')
 const cwd = join(__dirname, '..')
-const filepath = (path) => join(cwd, path)
+const filepath = (...path) => join(cwd, ...path)
+const srcPath = 'src'
+const distPath = 'dist'
+const appleDistPath = join('swift-package', 'Resources', 'assets')
 
 copyAutofillCSS()
-copyAutofillScriptToExtension()
+copyAutofillScript()
+copyAutofillHTML()
 
 function copyAutofillCSS () {
-    copyFileSync(filepath('src/UI/styles/autofill-tooltip-styles.css'), filepath('dist/autofill.css'))
-    copyFileSync(filepath('src/UI/styles/autofill-tooltip-styles.css'), filepath('integration-test/extension/public/css/autofill.css'))
+    const stylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-tooltip-styles.css')
+    copyFileSync(stylesPath, filepath(distPath, 'autofill.css'))
+    copyFileSync(stylesPath, filepath(appleDistPath, 'autofill.css'))
+    copyFileSync(stylesPath, filepath('integration-test', 'extension', 'public', 'css', 'autofill.css'))
 
-    copyFileSync(filepath('src/UI/styles/autofill-host-styles.css'), filepath('dist/autofill-host-styles_chrome.css'))
-    copyFirefoxCSSFile(filepath('src/UI/styles/autofill-host-styles.css'), filepath('dist/autofill-host-styles_firefox.css'))
+    const hostStylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-host-styles.css')
+    copyFileSync(hostStylesPath, filepath(distPath, 'autofill-host-styles_chrome.css'))
+    copyFirefoxCSSFile(hostStylesPath, filepath(distPath, 'autofill-host-styles_firefox.css'))
+}
+
+function copyAutofillHTML () {
+    const htmlFileName = 'TopAutofill.html'
+    copyFileSync(filepath(srcPath, htmlFileName), filepath(appleDistPath, htmlFileName))
 }
 
 function copyFirefoxCSSFile (pathIn, pathOut) {
@@ -24,13 +36,24 @@ function copyFirefoxCSSFile (pathIn, pathOut) {
     writeFileSync(pathOut, css)
 }
 
-function copyAutofillScriptToExtension () {
+function copyAutofillScript () {
+    const scriptFileName = 'autofill.js'
     const source = '// INJECT isDDGTestMode HERE'
     const replacement = 'isDDGTestMode = true;'
-    const autofill = readFileSync(filepath('dist/autofill.js'), 'utf8')
+
+    // read both source files
+    const autofill = readFileSync(filepath(distPath, scriptFileName), 'utf8')
+
     if (!autofill.includes(source)) {
         throw new Error('cannot find source for replacement, expected: ' + source)
     }
+
+    // replace the variables in both scripts
     const replaced = autofill.replace(source, replacement)
-    writeFileSync(filepath('integration-test/extension/autofill.js'), replaced)
+
+    // regular output inside dist/*
+    writeFileSync(filepath(appleDistPath, scriptFileName), autofill)
+
+    // extension output of integration-test/extension/autofill.js
+    writeFileSync(filepath('integration-test', 'extension', scriptFileName), replaced)
 }

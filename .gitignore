@@ -19,4 +19,5 @@ Thumbs.db
 
 test-results/
 playwright-report/
-docs/schema
+
+.swiftpm/
