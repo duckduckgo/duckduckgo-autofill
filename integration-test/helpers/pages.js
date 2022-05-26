@@ -1,5 +1,6 @@
 import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
+import {mockedCalls} from './harness.js'
 
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
@@ -152,6 +153,7 @@ export function loginPage (page, server, opts = {}) {
         async assertParentOpened () {
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const credsCalls = calls.filter(([name]) => name === 'getSelectedCredentials')
+            await this.assertClickAndFocusMessages()
             expect(credsCalls.length).toBe(5)
         },
         /** @param {{password: string}} data */
@@ -194,6 +196,21 @@ export function loginPage (page, server, opts = {}) {
             if (platform === 'android') {
                 expect(JSON.parse(sent)).toEqual(expected)
             }
+        },
+        /**
+         * This is here to capture EXISTING functionality of `macOS` in production and prevent
+         * accidental changes to how `showAutofillParent` messages are sent
+         * @returns {Promise<void>}
+         */
+        async assertClickAndFocusMessages () {
+            const calls = await mockedCalls(page, ['showAutofillParent'])
+            expect(calls.length).toBe(2)
+
+            // each call is captured as a tuple like this: [name, params, response], which is why
+            // we use `call1[1]` and `call1[2]` - we're accessing the params sent in the request
+            const [call1, call2] = calls
+            expect(call1[1].wasFromClick).toBe(true)
+            expect(call2[1].wasFromClick).toBe(false)
         }
     }
 }
