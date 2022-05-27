@@ -52,7 +52,7 @@ export function createAndroidMocks () {
             credentials: true,
             email: true
         },
-        /** @type {IdentityObject|CredentialsObject|CreditCardObject|null} */
+        /** @type {AutofillData|null} */
         getAutofillData: null,
         /** @type {string|null} */
         address: null
@@ -84,7 +84,10 @@ export function createAndroidMocks () {
          * @returns {MockBuilder}
          */
         withCredentials: function (credentials) {
-            mocks.getAutofillData = credentials
+            mocks.getAutofillData = {
+                action: 'fill',
+                credentials
+            }
             return this
         },
         tap () {

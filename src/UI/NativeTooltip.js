@@ -31,8 +31,25 @@ export class NativeTooltip {
         }
         device.getAutofillData(payload)
             .then(resp => {
-                console.log('Autofilling...', resp, mainType)
-                form.autofillData(resp, mainType)
+                switch (resp.action) {
+                case 'fill': {
+                    if (mainType in resp) {
+                        form.autofillData(resp[mainType], mainType)
+                    } else {
+                        throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
+                    }
+                    break
+                }
+                case 'focus': {
+                    form.activeInput?.focus()
+                    break
+                }
+                default: {
+                    if (args.device.isTestMode()) {
+                        console.warn('response not handled', resp)
+                    }
+                }
+                }
             })
             .catch(e => {
                 console.error('NativeTooltip::device.getAutofillData(payload)')

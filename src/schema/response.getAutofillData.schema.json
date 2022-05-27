@@ -15,9 +15,14 @@
       "title": "GetAutofillDataResponse Success Response",
       "description": "The data returned, containing only fields that will be auto-filled",
       "type": "object",
-      "oneOf": [
-        { "$ref": "#/definitions/Credentials" }
-      ]
+      "properties": {
+        "credentials": { "$ref": "#/definitions/Credentials" },
+        "action": {
+          "type": "string",
+          "enum": ["fill", "focus", "none"]
+        }
+      },
+      "required": ["action"]
     },
     "error": {
       "$ref": "#/definitions/GenericError"

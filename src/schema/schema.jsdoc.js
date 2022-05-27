@@ -92,8 +92,14 @@
  * @link {import("./response.getAutofillData.schema.json")}
  * @typedef GetAutofillDataResponse
  * @property {"getAutofillDataResponse"} [type] This is the 'type' field on message that may be sent back to the window Required on Android + Windows devices, optional on iOS
- * @property {Credentials} success The data returned, containing only fields that will be auto-filled
+ * @property {AutofillData} success
  * @property {GenericError} [error]
+ */
+/**
+ * @link {import("./response.getAutofillData.schema.json")}
+ * @typedef AutofillData GetAutofillDataResponse Success Response The data returned, containing only fields that will be auto-filled
+ * @property {Credentials} [credentials]
+ * @property {"fill" | "focus" | "none"} action
  */
 /**
  * @link {import("./response.getAutofillInitData.schema.json")}

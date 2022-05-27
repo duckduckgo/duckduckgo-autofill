@@ -126,9 +126,10 @@ export function createWebkitMocks (platform = 'macos') {
         }
     }
 
-    /** @type {MocksObjectWebkit} */
     const mocksObject = {
+        /** @type {{success: AutofillData}|null} */
         getAutofillData: null,
+        /** @type {{success: AvailableInputTypes}|null} */
         getAvailableInputTypes: null,
         storeFormData: null
     }
@@ -158,7 +159,7 @@ export function createWebkitMocks (platform = 'macos') {
         withCredentials: function (credentials) {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
-            mocksObject.getAutofillData = { success: credentials }
+            mocksObject.getAutofillData = { success: {credentials, action: 'fill'} }
             return this
         },
         withAvailableInputTypes: function (inputTypes) {

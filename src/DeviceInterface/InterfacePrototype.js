@@ -488,7 +488,7 @@ class InterfacePrototype {
     /**
      * @public
      * @param {GetAutofillDataRequest} input
-     * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
+     * @return {Promise<AutofillData>}
      */
     async getAutofillData (input) {
         return this.sender.send(new messages.GetAutofillData(input))

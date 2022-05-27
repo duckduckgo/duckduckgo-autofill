@@ -99,13 +99,40 @@ see:
 }
 ```
 
-**`response`** example
+**`response`** examples
+
+1) autofill a field:
 
 ```json
 {
   "success": {
-    "username": "dax@example.com",
-    "password": "123456"
+    "action": "fill",
+    "credentials": {
+      "username": "dax@example.com",
+      "password": "123456"
+    }
   }
 }
 ```
+
+2) re-focus a field (to present the keyboard)
+
+```json
+{
+  "success": {
+    "action": "focus"
+  }
+}
+```
+
+3) Do nothing:
+
+```json
+{
+  "success": {
+    "action": "none"
+  }
+}
+```
+
+

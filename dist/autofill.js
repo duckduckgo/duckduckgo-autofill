@@ -2479,58 +2479,6 @@ if (hasMozProxies) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
-}); // https://github.com/ajv-validator/ajv/issues/889
-
-const equal = require("fast-deep-equal");
-
-equal.code = 'require("ajv/dist/runtime/equal").default';
-exports.default = equal;
-
-},{"fast-deep-equal":10}],10:[function(require,module,exports){
-'use strict'; // do not edit .js files directly - edit src/index.jst
-
-module.exports = function equal(a, b) {
-  if (a === b) return true;
-
-  if (a && b && typeof a == 'object' && typeof b == 'object') {
-    if (a.constructor !== b.constructor) return false;
-    var length, i, keys;
-
-    if (Array.isArray(a)) {
-      length = a.length;
-      if (length != b.length) return false;
-
-      for (i = length; i-- !== 0;) if (!equal(a[i], b[i])) return false;
-
-      return true;
-    }
-
-    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
-    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
-    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
-    keys = Object.keys(a);
-    length = keys.length;
-    if (length !== Object.keys(b).length) return false;
-
-    for (i = length; i-- !== 0;) if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
-
-    for (i = length; i-- !== 0;) {
-      var key = keys[i];
-      if (!equal(a[key], b[key])) return false;
-    }
-
-    return true;
-  } // true if both NaN, false otherwise
-
-
-  return a !== a && b !== b;
-};
-
-},{}],11:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
 });
 exports.HostnameInputError = void 0;
 Object.defineProperty(exports, "ParserError", {
@@ -2675,7 +2623,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":12,"./lib/constants.js":13,"./lib/rules-parser.js":14}],12:[function(require,module,exports){
+},{"./lib/apple.password.js":10,"./lib/constants.js":11,"./lib/rules-parser.js":12}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3299,7 +3247,7 @@ exports.Password = Password;
 
 _defineProperty(Password, "defaults", defaults);
 
-},{"./constants.js":13,"./rules-parser.js":14}],13:[function(require,module,exports){
+},{"./constants.js":11,"./rules-parser.js":12}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3320,7 +3268,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4053,7 +4001,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],15:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -4827,7 +4775,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],16:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4887,7 +4835,7 @@ function createDevice(sender, tooltip, globalConfig, platformConfig, autofillSet
   throw new Error('undefined');
 }
 
-},{"./DeviceInterface/AndroidInterface":17,"./DeviceInterface/AppleDeviceInterface":18,"./DeviceInterface/AppleOverlayDeviceInterface":19,"./DeviceInterface/ExtensionInterface":20,"./DeviceInterface/WindowsInterface":22}],17:[function(require,module,exports){
+},{"./DeviceInterface/AndroidInterface":15,"./DeviceInterface/AppleDeviceInterface":16,"./DeviceInterface/AppleOverlayDeviceInterface":17,"./DeviceInterface/ExtensionInterface":18,"./DeviceInterface/WindowsInterface":20}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4954,7 +4902,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../autofill-utils":51,"./InterfacePrototype.js":21}],18:[function(require,module,exports){
+},{"../autofill-utils":49,"./InterfacePrototype.js":19}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5137,7 +5085,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../UI/styles/styles":49,"../autofill-utils":51,"../messages/messages":56,"./InterfacePrototype.js":21}],19:[function(require,module,exports){
+},{"../UI/styles/styles":47,"../autofill-utils":49,"../messages/messages":54,"./InterfacePrototype.js":19}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5367,7 +5315,7 @@ class AppleOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../UI/styles/styles":49,"../autofill-utils":51,"../messages/messages":56,"./InterfacePrototype.js":21}],20:[function(require,module,exports){
+},{"../UI/styles/styles":47,"../autofill-utils":49,"../messages/messages":54,"./InterfacePrototype.js":19}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5491,7 +5439,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../autofill-utils":51,"./InterfacePrototype.js":21}],21:[function(require,module,exports){
+},{"../autofill-utils":49,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6128,7 +6076,7 @@ class InterfacePrototype {
   /**
    * @public
    * @param {GetAutofillDataRequest} input
-   * @return {Promise<IdentityObject|CredentialsObject|CreditCardObject>}
+   * @return {Promise<AutofillData>}
    */
 
 
@@ -6312,7 +6260,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../Form/formatters":26,"../Form/listenForFormSubmission":30,"../Form/matching":33,"../InputTypes/Credentials":36,"../InputTypes/input-types":39,"../PasswordGenerator":40,"../Scanner":41,"../UI/WebTooltip":47,"../autofill-utils":51,"../config":53,"../messages/messages":56,"../senders/sender":69,"../settings/settings":71,"@duckduckgo/content-scope-scripts":1}],22:[function(require,module,exports){
+},{"../Form/formatters":24,"../Form/listenForFormSubmission":28,"../Form/matching":31,"../InputTypes/Credentials":34,"../InputTypes/input-types":37,"../PasswordGenerator":38,"../Scanner":39,"../UI/WebTooltip":45,"../autofill-utils":49,"../config":51,"../messages/messages":54,"../senders/sender":67,"../settings/settings":69,"@duckduckgo/content-scope-scripts":1}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6447,7 +6395,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
-},{"../UI/styles/styles":49,"../messages/messages":56,"./InterfacePrototype":21}],23:[function(require,module,exports){
+},{"../UI/styles/styles":47,"../messages/messages":54,"./InterfacePrototype":19}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6979,7 +6927,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":51,"../constants":54,"./FormAnalyzer":24,"./formatters":26,"./inputStyles":27,"./inputTypeConfig.js":28,"./matching":33}],24:[function(require,module,exports){
+},{"../autofill-utils":49,"../constants":52,"./FormAnalyzer":22,"./formatters":24,"./inputStyles":25,"./inputTypeConfig.js":26,"./matching":31}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7231,7 +7179,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":51,"../constants":54,"./matching":33,"./matching-configuration":32}],25:[function(require,module,exports){
+},{"../autofill-utils":49,"../constants":52,"./matching":31,"./matching-configuration":30}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7799,7 +7747,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],26:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8141,7 +8089,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames":25,"./matching":33}],27:[function(require,module,exports){
+},{"./countryNames":23,"./matching":31}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8223,7 +8171,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":28}],28:[function(require,module,exports){
+},{"./inputTypeConfig.js":26}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8412,7 +8360,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials":36,"../InputTypes/CreditCard":37,"../InputTypes/Identity":38,"../UI/img/ddgPasswordIcon":48,"./logo-svg":31,"./matching":33}],29:[function(require,module,exports){
+},{"../InputTypes/Credentials":34,"../InputTypes/CreditCard":35,"../InputTypes/Identity":36,"../UI/img/ddgPasswordIcon":46,"./logo-svg":29,"./matching":31}],27:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -8464,7 +8412,7 @@ const extractElementStrings = element => {
 
 module.exports.extractElementStrings = extractElementStrings;
 
-},{}],30:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8507,7 +8455,7 @@ const listenForGlobalFormSubmission = forms => {
 var _default = listenForGlobalFormSubmission;
 exports.default = _default;
 
-},{}],31:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8517,7 +8465,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],32:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9143,7 +9091,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":34}],33:[function(require,module,exports){
+},{"./selectors-css":32}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10127,7 +10075,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":54,"./label-util":29,"./matching-configuration":32,"./selectors-css":34,"./vendor-regex":35}],34:[function(require,module,exports){
+},{"../constants":52,"./label-util":27,"./matching-configuration":30,"./selectors-css":32,"./vendor-regex":33}],32:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -10194,7 +10142,7 @@ module.exports.__secret_do_not_use = {
   birthdayYear
 };
 
-},{}],35:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -10251,7 +10199,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 
 module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
-},{}],36:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -10386,7 +10334,7 @@ module.exports.fromPassword = fromPassword;
 module.exports.appendGeneratedId = appendGeneratedId;
 module.exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
 
-},{}],37:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10438,7 +10386,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],38:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10512,7 +10460,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":26}],39:[function(require,module,exports){
+},{"../Form/formatters":24}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10551,7 +10499,7 @@ function featureToggleAwareInputTypes(inputTypes, featureToggles) {
   return local;
 }
 
-},{}],40:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10623,7 +10571,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":11,"../packages/password/rules.json":15}],41:[function(require,module,exports){
+},{"../packages/password":9,"../packages/password/rules.json":13}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10920,7 +10868,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":23,"./Form/matching":33,"./Form/selectors-css":34,"./autofill-utils":51}],42:[function(require,module,exports){
+},{"./Form/Form":21,"./Form/matching":31,"./Form/selectors-css":32,"./autofill-utils":49}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10976,7 +10924,7 @@ class DataWebTooltip extends _Tooltip.default {
 var _default = DataWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":51,"./Tooltip":46}],43:[function(require,module,exports){
+},{"../autofill-utils":49,"./Tooltip":44}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11046,7 +10994,7 @@ class EmailWebTooltip extends _Tooltip.default {
 var _default = EmailWebTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":51,"./Tooltip":46,"./styles/styles":49}],44:[function(require,module,exports){
+},{"../autofill-utils":49,"./Tooltip":44,"./styles/styles":47}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11090,8 +11038,33 @@ class NativeTooltip {
       subType
     };
     device.getAutofillData(payload).then(resp => {
-      console.log('Autofilling...', resp, mainType);
-      form.autofillData(resp, mainType);
+      switch (resp.action) {
+        case 'fill':
+          {
+            if (mainType in resp) {
+              form.autofillData(resp[mainType], mainType);
+            } else {
+              throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
+            }
+
+            break;
+          }
+
+        case 'focus':
+          {
+            var _form$activeInput;
+
+            (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
+            break;
+          }
+
+        default:
+          {
+            if (args.device.isTestMode()) {
+              console.warn('response not handled', resp);
+            }
+          }
+      }
     }).catch(e => {
       console.error('NativeTooltip::device.getAutofillData(payload)');
       console.error(e);
@@ -11102,7 +11075,7 @@ class NativeTooltip {
 
 exports.NativeTooltip = NativeTooltip;
 
-},{"../Form/matching":33}],45:[function(require,module,exports){
+},{"../Form/matching":31}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11395,7 +11368,7 @@ function _removeListeners2() {
   window.removeEventListener('pointerdown', this);
 }
 
-},{}],46:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11644,7 +11617,7 @@ exports.Tooltip = Tooltip;
 var _default = Tooltip;
 exports.default = _default;
 
-},{"../Form/matching":33,"../autofill-utils":51}],47:[function(require,module,exports){
+},{"../Form/matching":31,"../autofill-utils":49}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11954,7 +11927,7 @@ function _onSelect2(config, data, id) {
   return _classPrivateFieldGet(this, _device).onSelect(config, data, id);
 }
 
-},{"../Form/inputTypeConfig":28,"./DataWebTooltip":42,"./EmailWebTooltip":43}],48:[function(require,module,exports){
+},{"../Form/inputTypeConfig":26,"./DataWebTooltip":40,"./EmailWebTooltip":41}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11976,7 +11949,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],49:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11986,7 +11959,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],50:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12046,7 +12019,7 @@ function createTooltip(globalConfig, platformConfig, _autofillSettings) {
   throw new Error('undefined');
 }
 
-},{"./NativeTooltip":44,"./OverlayControllerTooltip":45,"./WebTooltip":47}],51:[function(require,module,exports){
+},{"./NativeTooltip":42,"./OverlayControllerTooltip":43,"./WebTooltip":45}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12399,7 +12372,7 @@ const isLikelyASubmitButton = el => {
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":33}],52:[function(require,module,exports){
+},{"./Form/matching":31}],50:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -12488,7 +12461,7 @@ async function getRuntimeConfiguration(sender) {
   return config;
 }
 
-},{"./DeviceInterface":16,"./UI/tooltips":50,"./config":53,"./messages/messages":56,"./requestIdleCallback":57,"./senders/captureDdgGlobals":66,"./senders/create-sender":67,"./settings/settings":71,"@duckduckgo/content-scope-scripts":1}],53:[function(require,module,exports){
+},{"./DeviceInterface":14,"./UI/tooltips":48,"./config":51,"./messages/messages":54,"./requestIdleCallback":55,"./senders/captureDdgGlobals":64,"./senders/create-sender":65,"./settings/settings":69,"@duckduckgo/content-scope-scripts":1}],51:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -12546,7 +12519,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],54:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12560,7 +12533,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],55:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12739,7 +12712,7 @@ class SchemaValidationError extends Error {
 
 exports.SchemaValidationError = SchemaValidationError;
 
-},{}],56:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13014,7 +12987,7 @@ function createLegacyMessage(name, data) {
   return message;
 }
 
-},{"../schema/response.getAutofillData.schema.json":58,"../schema/response.getAvailableInputTypes.schema.json":60,"../schema/response.getRuntimeConfiguration.schema.json":61,"../schema/validators.cjs":62,"./message":55}],57:[function(require,module,exports){
+},{"../schema/response.getAutofillData.schema.json":56,"../schema/response.getAvailableInputTypes.schema.json":58,"../schema/response.getRuntimeConfiguration.schema.json":59,"../schema/validators.cjs":60,"./message":53}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13062,7 +13035,7 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}],58:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillDataResponse",
@@ -13080,9 +13053,14 @@ module.exports={
       "title": "GetAutofillDataResponse Success Response",
       "description": "The data returned, containing only fields that will be auto-filled",
       "type": "object",
-      "oneOf": [
-        { "$ref": "#/definitions/Credentials" }
-      ]
+      "properties": {
+        "credentials": { "$ref": "#/definitions/Credentials" },
+        "action": {
+          "type": "string",
+          "enum": ["fill", "focus", "none"]
+        }
+      },
+      "required": ["action"]
     },
     "error": {
       "$ref": "#/definitions/GenericError"
@@ -13093,7 +13071,7 @@ module.exports={
   ]
 }
 
-},{}],59:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAutofillInitDataResponse",
@@ -13150,7 +13128,7 @@ module.exports={
   ]
 }
 
-},{}],60:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetAvailableInputTypesResponse",
@@ -13194,7 +13172,7 @@ module.exports={
   ]
 }
 
-},{}],61:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "#/definitions/GetRuntimeConfigurationResponse",
@@ -13221,7 +13199,7 @@ module.exports={
   ]
 }
 
-},{}],62:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 // @ts-nocheck
 "use strict";
 
@@ -14281,8 +14259,6 @@ const schema16 = {
   },
   "required": ["inputType", "mainType", "subType"]
 };
-
-const func0 = require("ajv/dist/runtime/equal").default;
 
 function validate15(data) {
   let {
@@ -15474,9 +15450,16 @@ const schema23 = {
       "title": "GetAutofillDataResponse Success Response",
       "description": "The data returned, containing only fields that will be auto-filled",
       "type": "object",
-      "oneOf": [{
-        "$ref": "#/definitions/Credentials"
-      }]
+      "properties": {
+        "credentials": {
+          "$ref": "#/definitions/Credentials"
+        },
+        "action": {
+          "type": "string",
+          "enum": ["fill", "focus", "none"]
+        }
+      },
+      "required": ["action"]
     },
     "error": {
       "$ref": "#/definitions/GenericError"
@@ -15554,193 +15537,177 @@ function validate20(data) {
             let data1 = data.success;
             const _errs3 = errors;
 
-            if (!(data1 && typeof data1 == "object" && !Array.isArray(data1))) {
-              validate20.errors = [{
-                instancePath: instancePath + "/success",
-                schemaPath: "#/properties/success/type",
-                keyword: "type",
-                params: {
-                  type: "object"
-                },
-                message: "must be object"
-              }];
-              return false;
-            }
-
-            const _errs5 = errors;
-            let valid1 = false;
-            let passing0 = null;
-            const _errs6 = errors;
-            const _errs7 = errors;
-
-            if (errors === _errs7) {
+            if (errors === _errs3) {
               if (data1 && typeof data1 == "object" && !Array.isArray(data1)) {
                 let missing1;
 
-                if (data1.username === undefined && (missing1 = "username")) {
-                  const err0 = {
+                if (data1.action === undefined && (missing1 = "action")) {
+                  validate20.errors = [{
                     instancePath: instancePath + "/success",
-                    schemaPath: "#/definitions/Credentials/required",
+                    schemaPath: "#/properties/success/required",
                     keyword: "required",
                     params: {
                       missingProperty: missing1
                     },
                     message: "must have required property '" + missing1 + "'"
-                  };
-
-                  if (vErrors === null) {
-                    vErrors = [err0];
-                  } else {
-                    vErrors.push(err0);
-                  }
-
-                  errors++;
+                  }];
+                  return false;
                 } else {
-                  if (data1.id !== undefined) {
-                    const _errs9 = errors;
+                  if (data1.credentials !== undefined) {
+                    let data2 = data1.credentials;
+                    const _errs5 = errors;
+                    const _errs6 = errors;
 
-                    if (typeof data1.id !== "string") {
-                      const err1 = {
-                        instancePath: instancePath + "/success/id",
-                        schemaPath: "#/definitions/Credentials/properties/id/type",
-                        keyword: "type",
-                        params: {
-                          type: "string"
-                        },
-                        message: "must be string"
-                      };
+                    if (errors === _errs6) {
+                      if (data2 && typeof data2 == "object" && !Array.isArray(data2)) {
+                        let missing2;
 
-                      if (vErrors === null) {
-                        vErrors = [err1];
+                        if (data2.username === undefined && (missing2 = "username")) {
+                          validate20.errors = [{
+                            instancePath: instancePath + "/success/credentials",
+                            schemaPath: "#/definitions/Credentials/required",
+                            keyword: "required",
+                            params: {
+                              missingProperty: missing2
+                            },
+                            message: "must have required property '" + missing2 + "'"
+                          }];
+                          return false;
+                        } else {
+                          if (data2.id !== undefined) {
+                            const _errs8 = errors;
+
+                            if (typeof data2.id !== "string") {
+                              validate20.errors = [{
+                                instancePath: instancePath + "/success/credentials/id",
+                                schemaPath: "#/definitions/Credentials/properties/id/type",
+                                keyword: "type",
+                                params: {
+                                  type: "string"
+                                },
+                                message: "must be string"
+                              }];
+                              return false;
+                            }
+
+                            var valid3 = _errs8 === errors;
+                          } else {
+                            var valid3 = true;
+                          }
+
+                          if (valid3) {
+                            if (data2.username !== undefined) {
+                              const _errs10 = errors;
+
+                              if (typeof data2.username !== "string") {
+                                validate20.errors = [{
+                                  instancePath: instancePath + "/success/credentials/username",
+                                  schemaPath: "#/definitions/Credentials/properties/username/type",
+                                  keyword: "type",
+                                  params: {
+                                    type: "string"
+                                  },
+                                  message: "must be string"
+                                }];
+                                return false;
+                              }
+
+                              var valid3 = _errs10 === errors;
+                            } else {
+                              var valid3 = true;
+                            }
+
+                            if (valid3) {
+                              if (data2.password !== undefined) {
+                                const _errs12 = errors;
+
+                                if (typeof data2.password !== "string") {
+                                  validate20.errors = [{
+                                    instancePath: instancePath + "/success/credentials/password",
+                                    schemaPath: "#/definitions/Credentials/properties/password/type",
+                                    keyword: "type",
+                                    params: {
+                                      type: "string"
+                                    },
+                                    message: "must be string"
+                                  }];
+                                  return false;
+                                }
+
+                                var valid3 = _errs12 === errors;
+                              } else {
+                                var valid3 = true;
+                              }
+                            }
+                          }
+                        }
                       } else {
-                        vErrors.push(err1);
+                        validate20.errors = [{
+                          instancePath: instancePath + "/success/credentials",
+                          schemaPath: "#/definitions/Credentials/type",
+                          keyword: "type",
+                          params: {
+                            type: "object"
+                          },
+                          message: "must be object"
+                        }];
+                        return false;
                       }
-
-                      errors++;
                     }
 
-                    var valid3 = _errs9 === errors;
+                    var valid1 = _errs5 === errors;
                   } else {
-                    var valid3 = true;
+                    var valid1 = true;
                   }
 
-                  if (valid3) {
-                    if (data1.username !== undefined) {
-                      const _errs11 = errors;
+                  if (valid1) {
+                    if (data1.action !== undefined) {
+                      let data6 = data1.action;
+                      const _errs14 = errors;
 
-                      if (typeof data1.username !== "string") {
-                        const err2 = {
-                          instancePath: instancePath + "/success/username",
-                          schemaPath: "#/definitions/Credentials/properties/username/type",
+                      if (typeof data6 !== "string") {
+                        validate20.errors = [{
+                          instancePath: instancePath + "/success/action",
+                          schemaPath: "#/properties/success/properties/action/type",
                           keyword: "type",
                           params: {
                             type: "string"
                           },
                           message: "must be string"
-                        };
-
-                        if (vErrors === null) {
-                          vErrors = [err2];
-                        } else {
-                          vErrors.push(err2);
-                        }
-
-                        errors++;
+                        }];
+                        return false;
                       }
 
-                      var valid3 = _errs11 === errors;
+                      if (!(data6 === "fill" || data6 === "focus" || data6 === "none")) {
+                        validate20.errors = [{
+                          instancePath: instancePath + "/success/action",
+                          schemaPath: "#/properties/success/properties/action/enum",
+                          keyword: "enum",
+                          params: {
+                            allowedValues: schema23.properties.success.properties.action.enum
+                          },
+                          message: "must be equal to one of the allowed values"
+                        }];
+                        return false;
+                      }
+
+                      var valid1 = _errs14 === errors;
                     } else {
-                      var valid3 = true;
-                    }
-
-                    if (valid3) {
-                      if (data1.password !== undefined) {
-                        const _errs13 = errors;
-
-                        if (typeof data1.password !== "string") {
-                          const err3 = {
-                            instancePath: instancePath + "/success/password",
-                            schemaPath: "#/definitions/Credentials/properties/password/type",
-                            keyword: "type",
-                            params: {
-                              type: "string"
-                            },
-                            message: "must be string"
-                          };
-
-                          if (vErrors === null) {
-                            vErrors = [err3];
-                          } else {
-                            vErrors.push(err3);
-                          }
-
-                          errors++;
-                        }
-
-                        var valid3 = _errs13 === errors;
-                      } else {
-                        var valid3 = true;
-                      }
+                      var valid1 = true;
                     }
                   }
                 }
               } else {
-                const err4 = {
+                validate20.errors = [{
                   instancePath: instancePath + "/success",
-                  schemaPath: "#/definitions/Credentials/type",
+                  schemaPath: "#/properties/success/type",
                   keyword: "type",
                   params: {
                     type: "object"
                   },
                   message: "must be object"
-                };
-
-                if (vErrors === null) {
-                  vErrors = [err4];
-                } else {
-                  vErrors.push(err4);
-                }
-
-                errors++;
-              }
-            }
-
-            var _valid0 = _errs6 === errors;
-
-            if (_valid0) {
-              valid1 = true;
-              passing0 = 0;
-            }
-
-            if (!valid1) {
-              const err5 = {
-                instancePath: instancePath + "/success",
-                schemaPath: "#/properties/success/oneOf",
-                keyword: "oneOf",
-                params: {
-                  passingSchemas: passing0
-                },
-                message: "must match exactly one schema in oneOf"
-              };
-
-              if (vErrors === null) {
-                vErrors = [err5];
-              } else {
-                vErrors.push(err5);
-              }
-
-              errors++;
-              validate20.errors = vErrors;
-              return false;
-            } else {
-              errors = _errs5;
-
-              if (vErrors !== null) {
-                if (_errs5) {
-                  vErrors.length = _errs5;
-                } else {
-                  vErrors = null;
-                }
+                }];
+                return false;
               }
             }
 
@@ -15751,28 +15718,28 @@ function validate20(data) {
 
           if (valid0) {
             if (data.error !== undefined) {
-              let data5 = data.error;
-              const _errs15 = errors;
+              let data7 = data.error;
               const _errs16 = errors;
+              const _errs17 = errors;
 
-              if (errors === _errs16) {
-                if (data5 && typeof data5 == "object" && !Array.isArray(data5)) {
-                  let missing2;
+              if (errors === _errs17) {
+                if (data7 && typeof data7 == "object" && !Array.isArray(data7)) {
+                  let missing3;
 
-                  if (data5.message === undefined && (missing2 = "message")) {
+                  if (data7.message === undefined && (missing3 = "message")) {
                     validate20.errors = [{
                       instancePath: instancePath + "/error",
                       schemaPath: "#/definitions/GenericError/required",
                       keyword: "required",
                       params: {
-                        missingProperty: missing2
+                        missingProperty: missing3
                       },
-                      message: "must have required property '" + missing2 + "'"
+                      message: "must have required property '" + missing3 + "'"
                     }];
                     return false;
                   } else {
-                    if (data5.message !== undefined) {
-                      if (typeof data5.message !== "string") {
+                    if (data7.message !== undefined) {
+                      if (typeof data7.message !== "string") {
                         validate20.errors = [{
                           instancePath: instancePath + "/error/message",
                           schemaPath: "#/definitions/GenericError/properties/message/type",
@@ -15800,7 +15767,7 @@ function validate20(data) {
                 }
               }
 
-              var valid0 = _errs15 === errors;
+              var valid0 = _errs16 === errors;
             } else {
               var valid0 = true;
             }
@@ -17908,7 +17875,7 @@ function validate36(data) {
   return errors === 0;
 }
 
-},{"ajv/dist/runtime/equal":9}],63:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17998,7 +17965,7 @@ function waitForResponse(expectedResponse) {
   });
 }
 
-},{"../messages/messages":56,"./sender":69}],64:[function(require,module,exports){
+},{"../messages/messages":54,"./sender":67}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18183,7 +18150,7 @@ const fallbacks = {
   }
 };
 
-},{"../messages/messages":56,"./appleDeviceUtils":65,"./sender":69}],65:[function(require,module,exports){
+},{"../messages/messages":54,"./appleDeviceUtils":63,"./sender":67}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18326,7 +18293,7 @@ class MissingWebkitHandler extends Error {
 
 exports.MissingWebkitHandler = MissingWebkitHandler;
 
-},{"./captureDdgGlobals":66}],66:[function(require,module,exports){
+},{"./captureDdgGlobals":64}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18357,7 +18324,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],67:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18433,7 +18400,7 @@ function selectSender(globalConfig) {
   return new _extension.ExtensionSender();
 }
 
-},{"./android.sender":63,"./apple.sender":64,"./extension.sender":68,"./sender":69,"./windows.sender":70}],68:[function(require,module,exports){
+},{"./android.sender":61,"./apple.sender":62,"./extension.sender":66,"./sender":67,"./windows.sender":68}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18563,7 +18530,7 @@ const handlers = {
   }
 };
 
-},{"../messages/messages":56,"./sender":69,"@duckduckgo/content-scope-scripts":1}],69:[function(require,module,exports){
+},{"../messages/messages":54,"./sender":67,"@duckduckgo/content-scope-scripts":1}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18670,7 +18637,7 @@ class LoggingSender extends Sender {
 
 exports.LoggingSender = LoggingSender;
 
-},{}],70:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18810,7 +18777,7 @@ function windowsTransport(name, data) {
   };
 }
 
-},{"../schema/response.getAutofillInitData.schema.json":59,"../schema/response.getAvailableInputTypes.schema.json":60,"../schema/response.getRuntimeConfiguration.schema.json":61,"./sender":69}],71:[function(require,module,exports){
+},{"../schema/response.getAutofillInitData.schema.json":57,"../schema/response.getAvailableInputTypes.schema.json":58,"../schema/response.getRuntimeConfiguration.schema.json":59,"./sender":67}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18898,4 +18865,4 @@ function fromRuntimeConfig(config) {
   return settings;
 }
 
-},{"../schema/validators.cjs":62}]},{},[52]);
+},{"../schema/validators.cjs":60}]},{},[50]);
