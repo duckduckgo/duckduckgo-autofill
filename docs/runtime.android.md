@@ -16,7 +16,7 @@ Directly replace the lines above in the following way:
 
 `str.replace('// INJECT contentScope HERE', 'contentScope = {JSON_HERE}') + ';'`
 
-For example, the 3 variables should look like this:
+For example, the 3 variables should look like this (don't forget the semicolon at the end of each!)
 
 ```javascript
 // INJECT contentScope HERE
