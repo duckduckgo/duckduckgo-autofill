@@ -50,8 +50,7 @@ function selectSender (globalConfig) {
     }
 
     if (globalConfig.isDDGApp) {
-        console.warn('should never get here...')
-        return new AppleSender(globalConfig)
+        throw new Error('unreachable! if this occurs, `isDDGApp` was `true`, but `userPreferences.platform.name` was not set correctly')
     }
 
     // falls back to extension... is this still the best way to determine this?
