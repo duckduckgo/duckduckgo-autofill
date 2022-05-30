@@ -1,43 +1,58 @@
-## `window.BrowserAutofill.getRuntimeConfiguration()`
+## ~`getRuntimeConfiguration()`~
 
-- Response Message via: `window.postMessage(response)`
-  - See [Response Schema](../src/schema/response.getRuntimeConfiguration.schema.json)
-- Autofill will `JSON.parse(string)` this response.
-- [Runtime Configuration Schema (linked from above, but in a separate repo)](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
+on android devices, this data is retrieved from the following string-replacements:
 
-**`response`** example
+Internally, we force it into the following shape in order to conform to the following schema definition:
+- [Runtime Configuration Schema](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
 
-```json
-{
-  "type": "getRuntimeConfigurationResponse",
-  "success": {
-    "contentScope": {
-      "features": {
-        "autofill": {
-          "state": "enabled",
-          "exceptions": []
-        }
-      },
-      "unprotectedTemporary": []
-    },
-    "userUnprotectedDomains": [],
-    "userPreferences": {
-      "debug": false,
-      "platform": {
-        "name": "android"
-      },
-      "features": {
-        "autofill": {
-          "settings": {
-            "featureToggles": {
-              "inputType_credentials": true,
-              "inputType_identities": false,
-              "inputType_creditCards": false,
-              "emailProtection": true,
-              "password_generation": false,
-              "credentials_saving": true
-            }
-          }
+**strings to replace**
+```
+// INJECT contentScope HERE
+// INJECT userUnprotectedDomains HERE
+// INJECT userPreferences HERE
+```
+
+Directly replace the lines above in the following way:
+
+`str.replace('// INJECT contentScope HERE', 'contentScope = {JSON_HERE}') + ';'`
+
+For example, the 3 variables should look like this:
+
+```javascript
+// INJECT contentScope HERE
+contentScope = {
+  "features": {
+    "autofill": {
+      "state": "enabled",
+      "exceptions": []
+    }
+  },
+  "unprotectedTemporary": []
+};
+```
+
+```javascript
+// INJECT userUnprotectedDomains HERE
+userUnprotectedDomains = [];
+```
+
+```javascript
+// INJECT userPreferences HERE
+userPreferences = {
+  "debug": false,
+  "platform": {
+    "name": "android"
+  },
+  "features": {
+    "autofill": {
+      "settings": {
+        "featureToggles": {
+          "inputType_credentials": true,
+          "inputType_identities": false,
+          "inputType_creditCards": false,
+          "emailProtection": true,
+          "password_generation": false,
+          "credentials_saving": true
         }
       }
     }
@@ -47,23 +62,25 @@
 
 --- 
 
-## `window.BrowserAutofill.getAvailableInputTypes()`
+## `getAvailableInputTypes()`
 
 This represents which input types we can autofill for the current user.
 
-- Response Message via: `window.postMessage(response)`
-  - See [Response Schema](../src/schema/response.getAvailableInputTypes.schema.json)
-- Autofill will `JSON.parse(string)` the response.
 
-**`response`** example
+**strings to replace**
+```
+// INJECT availableInputTypes HERE
+```
 
-```json
-{
-  "type": "getAvailableInputTypesResponse",
-  "success": {
-    "email": true,
-    "credentials": true
-  }
+Directly replace the line above in the following way:
+
+`str.replace('// INJECT availableInputTypes HERE', 'contentScope = {JSON_HERE}') + ';'`
+
+```javascript
+// INJECT availableInputTypes HERE
+availableInputTypes = {
+  "email": true,
+  "credentials": true
 }
 ```
 
@@ -125,7 +142,6 @@ window.BrowserAutofill.storeFormData(data)
 
 ```json
 {
-  "type": "getAutofillDataResponse",
   "success": {
     "action": "fill",
     "credentials": {
@@ -140,7 +156,6 @@ window.BrowserAutofill.storeFormData(data)
 
 ```json
 {
-  "type": "getAutofillDataResponse",
   "success": {
     "action": "focus"
   }
@@ -151,7 +166,6 @@ window.BrowserAutofill.storeFormData(data)
 
 ```json
 {
-  "type": "getAutofillDataResponse",
   "success": {
     "action": "none"
   }
