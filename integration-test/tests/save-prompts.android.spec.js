@@ -5,7 +5,7 @@ import {
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {loginPage, signupPage} from '../helpers/pages.js'
-import {createAndroidMocks} from '../helpers/mocks.android.js'
+import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {constants} from '../helpers/mocks.js'
 
 /**
@@ -39,6 +39,11 @@ test.describe('Save prompts', () => {
             await createAndroidMocks().applyTo(page)
 
             await createAutofillScript()
+                .replaceAll(androidStringReplacements({
+                    featureToggles: {
+                        credentials_saving: true
+                    }
+                }))
                 .platform('android')
                 .applyTo(page)
 
@@ -52,8 +57,14 @@ test.describe('Save prompts', () => {
                 const login = loginPage(page, server)
                 await login.navigate()
 
-                await createAndroidMocks().applyTo(page)
+                await createAndroidMocks()
+                    .applyTo(page)
                 await createAutofillScript()
+                    .replaceAll(androidStringReplacements({
+                        featureToggles: {
+                            credentials_saving: true
+                        }
+                    }))
                     .platform('android')
                     .applyTo(page)
                 return { login }
@@ -94,11 +105,13 @@ test.describe('Save prompts', () => {
             }
 
             await createAndroidMocks()
-                .withFeatureToggles(toggles)
                 .applyTo(page)
 
             // create + inject the script
             await createAutofillScript()
+                .replaceAll(androidStringReplacements({
+                    featureToggles: toggles
+                }))
                 .platform('android')
                 .applyTo(page)
 
@@ -109,16 +122,6 @@ test.describe('Save prompts', () => {
 
             await login.submitLoginForm(credentials)
             await login.assertWasNotPromptedToSave()
-
-            /**
-             * NOTE: This is here as a sanity check because this test is a negative check
-             * and there are lots of ways this test could pass, but be broken.
-             *
-             * For example if our script fails to load, then this test would normally pass,
-             * but by having this mock check here, it confirms that scripts ran, messages
-             * were sent etc.
-             */
-            await login.assertTogglesWereMocked(toggles)
         })
     })
 })

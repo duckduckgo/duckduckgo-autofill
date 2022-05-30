@@ -26,6 +26,10 @@ function createGlobalConfig () {
     // INJECT userUnprotectedDomains HERE
     // INJECT userPreferences HERE
 
+    /** @type {Record<string, any>} */
+    let availableInputTypes = {}
+    // INJECT availableInputTypes HERE
+
     // The native layer will inject a randomised secret here and use it to verify the origin
     let secret = 'PLACEHOLDER_SECRET'
 
@@ -54,7 +58,8 @@ function createGlobalConfig () {
         userUnprotectedDomains,
         userPreferences,
         isDDGTestMode,
-        isDDGDomain
+        isDDGDomain,
+        availableInputTypes
     }
 }
 

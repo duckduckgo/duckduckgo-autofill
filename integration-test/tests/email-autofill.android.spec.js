@@ -7,7 +7,7 @@ import {
 import {test as base} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage, loginPage} from '../helpers/pages.js'
-import {createAndroidMocks} from '../helpers/mocks.android.js'
+import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 
 /**
  *  Tests for email autofill on android tooltipHandler
@@ -36,14 +36,16 @@ test.describe('android', () => {
         await createAndroidMocks()
             .withPersonalEmail(personalAddress)
             .withPrivateEmail(personalAddress)
-            .withAvailableInputTypes({
-                credentials: true,
-                email: true
-            })
             .applyTo(page)
 
         // create + inject the script
         await createAutofillScript()
+            .replaceAll(androidStringReplacements({
+                availableInputTypes: {
+                    credentials: true,
+                    email: true
+                }
+            }))
             .platform('android')
             .applyTo(page)
 
@@ -70,13 +72,16 @@ test.describe('android', () => {
                 username: personalAddress,
                 password
             })
-            .withAvailableInputTypes({
-                credentials: true
-            })
             .applyTo(page)
 
         // create + inject the script
         await createAutofillScript()
+            .replaceAll(androidStringReplacements({
+                availableInputTypes: {
+                    credentials: true,
+                    email: true
+                }
+            }))
             .platform('android')
             .applyTo(page)
 

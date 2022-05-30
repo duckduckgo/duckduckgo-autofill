@@ -101,6 +101,7 @@ interface GlobalConfig {
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
+     availableInputTypes: Record<string, boolean>;
 }
 
 interface GlobalConfigImpl {

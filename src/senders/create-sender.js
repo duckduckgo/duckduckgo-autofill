@@ -42,15 +42,14 @@ function selectSender (globalConfig) {
         case 'ios':
         case 'macos':
             return new AppleSender(globalConfig)
+        case 'android':
+            return new AndroidSender(globalConfig)
         default:
             throw new Error('selectSender unimplemented!')
         }
     }
 
     if (globalConfig.isDDGApp) {
-        if (globalConfig.isAndroid) {
-            return new AndroidSender()
-        }
         console.warn('should never get here...')
         return new AppleSender(globalConfig)
     }

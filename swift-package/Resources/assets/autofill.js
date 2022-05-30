@@ -12425,9 +12425,7 @@ var _createSender = require("./senders/create-sender");
 
 
     const tooltip = (0, _tooltips.createTooltip)(globalConfig, runtimeConfiguration, autofillSettings);
-    console.log(tooltip, 'tooltip');
-    const device = (0, _DeviceInterface.createDevice)(sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings);
-    console.log(device, 'device'); // This is a workaround for the previous design, we should refactor if possible
+    const device = (0, _DeviceInterface.createDevice)(sender, tooltip, globalConfig, runtimeConfiguration, autofillSettings); // This is a workaround for the previous design, we should refactor if possible
 
     (_tooltip$setDevice = tooltip.setDevice) === null || _tooltip$setDevice === void 0 ? void 0 : _tooltip$setDevice.call(tooltip, device); // Init services
 
@@ -12488,6 +12486,10 @@ function createGlobalConfig() {
   let userPreferences = null; // INJECT contentScope HERE
   // INJECT userUnprotectedDomains HERE
   // INJECT userPreferences HERE
+
+  /** @type {Record<string, any>} */
+
+  let availableInputTypes = {}; // INJECT availableInputTypes HERE
   // The native layer will inject a randomised secret here and use it to verify the origin
 
   let secret = 'PLACEHOLDER_SECRET';
@@ -12512,7 +12514,8 @@ function createGlobalConfig() {
     userUnprotectedDomains,
     userPreferences,
     isDDGTestMode,
-    isDDGDomain
+    isDDGDomain,
+    availableInputTypes
   };
 }
 
@@ -17887,20 +17890,31 @@ var _sender = require("./sender");
 
 var _messages = require("../messages/messages");
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 class AndroidSender extends _sender.Sender {
+  /** @type {GlobalConfig} */
+
+  /** @param {GlobalConfig} globalConfig */
+  constructor(globalConfig) {
+    super();
+
+    _defineProperty(this, "config", void 0);
+
+    this.config = globalConfig;
+  }
+
   async handle(msg) {
     const {
       data
     } = msg;
 
     if (msg instanceof _messages.GetRuntimeConfiguration) {
-      window.BrowserAutofill.getRuntimeConfiguration();
-      return waitForResponse(msg.responseName);
+      return androidSpecificRuntimeConfiguration(this.config);
     }
 
     if (msg instanceof _messages.GetAvailableInputTypes) {
-      window.BrowserAutofill.getAvailableInputTypes();
-      return waitForResponse(msg.responseName);
+      return androidSpecificAvailableInputTypes(this.config);
     }
 
     if (msg instanceof _messages.GetAutofillData) {
@@ -17963,6 +17977,35 @@ function waitForResponse(expectedResponse) {
 
     window.addEventListener('message', handler);
   });
+}
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {{success: RuntimeConfiguration}}
+ */
+
+
+function androidSpecificRuntimeConfiguration(globalConfig) {
+  return {
+    success: {
+      // @ts-ignore
+      contentScope: globalConfig.contentScope,
+      // @ts-ignore
+      userPreferences: globalConfig.userPreferences,
+      // @ts-ignore
+      userUnprotectedDomains: globalConfig.userUnprotectedDomains
+    }
+  };
+}
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {{success: AvailableInputTypes}}
+ */
+
+
+function androidSpecificAvailableInputTypes(globalConfig) {
+  return {
+    success: globalConfig.availableInputTypes
+  };
 }
 
 },{"../messages/messages":54,"./sender":67}],62:[function(require,module,exports){
@@ -18382,16 +18425,15 @@ function selectSender(globalConfig) {
       case 'macos':
         return new _apple.AppleSender(globalConfig);
 
+      case 'android':
+        return new _android.AndroidSender(globalConfig);
+
       default:
         throw new Error('selectSender unimplemented!');
     }
   }
 
   if (globalConfig.isDDGApp) {
-    if (globalConfig.isAndroid) {
-      return new _android.AndroidSender();
-    }
-
     console.warn('should never get here...');
     return new _apple.AppleSender(globalConfig);
   } // falls back to extension... is this still the best way to determine this?

@@ -1,4 +1,50 @@
 /**
+ * @param {object} [overrides]
+ * @param {Partial<FeatureToggles>} [overrides.featureToggles]
+ * @param {Partial<AvailableInputTypes>} [overrides.availableInputTypes]
+ */
+export function androidStringReplacements (overrides = {}) {
+    return {
+        /** @type {AvailableInputTypes} */
+        availableInputTypes: {
+            ...overrides.availableInputTypes
+        },
+        contentScope: {
+            features: {
+                autofill: {
+                    state: 'enabled',
+                    exceptions: []
+                }
+            },
+            unprotectedTemporary: []
+        },
+        userUnprotectedDomains: [],
+        userPreferences: {
+            debug: false,
+            platform: {
+                name: 'android'
+            },
+            features: {
+                autofill: {
+                    settings: {
+                        /** @type {FeatureToggles} */
+                        featureToggles: {
+                            inputType_credentials: true,
+                            inputType_identities: false,
+                            inputType_creditCards: false,
+                            emailProtection: true,
+                            password_generation: false,
+                            credentials_saving: true,
+                            ...overrides.featureToggles
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
  * Use this to mock android message handlers.
  *
  * For example, the following would mock interactions with window.postMessage
@@ -15,43 +61,6 @@
  */
 export function createAndroidMocks () {
     const mocks = {
-        getRuntimeConfigurationResponse: {
-            contentScope: {
-                features: {
-                    autofill: {
-                        state: 'enabled',
-                        exceptions: []
-                    }
-                },
-                unprotectedTemporary: []
-            },
-            userUnprotectedDomains: [],
-            userPreferences: {
-                debug: false,
-                platform: {
-                    name: 'android'
-                },
-                features: {
-                    autofill: {
-                        settings: {
-                            /** @type {FeatureToggles} */
-                            featureToggles: {
-                                inputType_credentials: true,
-                                inputType_identities: false,
-                                inputType_creditCards: false,
-                                emailProtection: true,
-                                password_generation: false,
-                                credentials_saving: true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        getAvailableInputTypesResponse: {
-            credentials: true,
-            email: true
-        },
         /** @type {AutofillData|null} */
         getAutofillData: null,
         /** @type {string|null} */
@@ -67,17 +76,14 @@ export function createAndroidMocks () {
             mocks.address = email
             return this
         },
-        withAvailableInputTypes (inputTypes) {
-            mocks.inputTypes = inputTypes
-            return this
+        withAvailableInputTypes (_inputTypes) {
+            throw new Error('cannot set mock withAvailableInputTypes on Android, use string replacements instead')
         },
         withIdentity: function () {
             throw new Error('Function not implemented.')
         },
-        withFeatureToggles (featureToggles) {
-            const defaults = mocks.getRuntimeConfigurationResponse.userPreferences.features.autofill.settings.featureToggles
-            Object.assign(defaults, featureToggles)
-            return this
+        withFeatureToggles (_featureToggles) {
+            throw new Error('cannot set mock withFeatureToggles on Android, use string replacements instead')
         },
         /**
          * @param credentials
@@ -95,7 +101,7 @@ export function createAndroidMocks () {
         },
         async applyTo (page) {
             return page.evaluate(mocks => {
-                window.__playwright = { mocks: { calls: [] } }
+                window.__playwright = {mocks: {calls: []}}
                 window.EmailInterface = {
                     showTooltip () {
                         window.postMessage({

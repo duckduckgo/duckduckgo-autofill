@@ -2,17 +2,23 @@ import {Sender} from './sender'
 import {GetAutofillData, GetAvailableInputTypes, GetRuntimeConfiguration, StoreFormData} from '../messages/messages'
 
 export class AndroidSender extends Sender {
+    /** @type {GlobalConfig} */
+    config
+
+    /** @param {GlobalConfig} globalConfig */
+    constructor (globalConfig) {
+        super()
+        this.config = globalConfig
+    }
     async handle (msg) {
         const { data } = msg
 
         if (msg instanceof GetRuntimeConfiguration) {
-            window.BrowserAutofill.getRuntimeConfiguration()
-            return waitForResponse(msg.responseName)
+            return androidSpecificRuntimeConfiguration(this.config)
         }
 
         if (msg instanceof GetAvailableInputTypes) {
-            window.BrowserAutofill.getAvailableInputTypes()
-            return waitForResponse(msg.responseName)
+            return androidSpecificAvailableInputTypes(this.config)
         }
 
         if (msg instanceof GetAutofillData) {
@@ -65,4 +71,31 @@ function waitForResponse (expectedResponse) {
         }
         window.addEventListener('message', handler)
     })
+}
+
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {{success: RuntimeConfiguration}}
+ */
+function androidSpecificRuntimeConfiguration (globalConfig) {
+    return {
+        success: {
+            // @ts-ignore
+            contentScope: globalConfig.contentScope,
+            // @ts-ignore
+            userPreferences: globalConfig.userPreferences,
+            // @ts-ignore
+            userUnprotectedDomains: globalConfig.userUnprotectedDomains
+        }
+    }
+}
+
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {{success: AvailableInputTypes}}
+ */
+function androidSpecificAvailableInputTypes (globalConfig) {
+    return {
+        success: globalConfig.availableInputTypes
+    }
 }
