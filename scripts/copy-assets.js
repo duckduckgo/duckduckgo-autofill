@@ -58,6 +58,9 @@ function copyAutofillScript () {
     writeFileSync(filepath(appleDistPath, scriptFileName), autofill)
     writeFileSync(filepath(appleDistPath, debugScriptFileName), replacedDebug)
 
+    // also overwrite the regular dist/autofill-debug.js to ensure all consumers of 'debug' also get isDDGTestMode=true
+    writeFileSync(filepath(distPath, debugScriptFileName), replacedDebug)
+
     // extension output of integration-test/extension/autofill.js
     writeFileSync(filepath('integration-test', 'extension', scriptFileName), replaced)
 

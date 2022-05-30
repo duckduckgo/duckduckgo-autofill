@@ -77,7 +77,8 @@ module.exports = function (grunt) {
             target: 'src/**/*.js'
         },
         exec: {
-            copyAssets: 'npm run copy-assets'
+            copyAssets: 'npm run copy-assets',
+            schemaCompile: 'npm run schema:generate'
         },
         /**
          * Run predefined tasks whenever watched files are added,
@@ -85,8 +86,8 @@ module.exports = function (grunt) {
          */
         watch: {
             scripts: {
-                files: ['src/**/*.js', 'packages/password/**/*.{json,js}', 'packages/zod-rpc/**/*.{json,js}'],
-                tasks: ['browserify:dist', 'browserify:debug', 'exec:copyAssets']
+                files: ['src/**/*.{json,js}', 'packages/password/**/*.{json,js}', 'packages/device-api/**/*.{json,js}'],
+                tasks: ['exec:schemaCompile', 'browserify:dist', 'browserify:debug', 'exec:copyAssets']
             },
             html: {
                 files: ['src/**/*.html'],
@@ -100,6 +101,7 @@ module.exports = function (grunt) {
     })
 
     grunt.registerTask('default', [
+        'exec:schemaCompile',
         'browserify:dist',
         'browserify:debug',
         'exec:copyAssets'
