@@ -120,7 +120,7 @@ export class SchemaValidationError extends Error {
         const heading = `${errors.length} SchemaValidationError(s) errors for ` + name
         const lines = []
         for (let error of errors) {
-            // console.log(JSON.stringify(error, null, 2));
+            console.log(error)
             lines.push(error.message || 'unknown')
         }
         const message = [heading, ...lines].join('\n    ')
