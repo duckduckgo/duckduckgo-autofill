@@ -2118,6 +2118,9 @@ module.exports={
   "cb2.com": {
     "password-rules": "minlength: 7; maxlength: 18; required: lower, upper; required: digit;"
   },
+  "ccs-grp.com": {
+    "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower; allowed: [-!#$%&'+./=?\\^_`{|}~];"
+  },
   "cecredentialtrust.com": {
     "password-rules": "minlength: 12; required: lower; required: upper; required: digit; required: [!#$%&*@^];"
   },
