@@ -1,11 +1,11 @@
 import {
-    createAutofillScript, defaultMacosScript,
+    createAutofillScript,
     forwardConsoleMessages, performanceEntries,
     setupServer
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage, loginPage, overlayPage, signupPage} from '../helpers/pages.js'
+import {emailAutofillPage, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 
 /**
@@ -137,151 +137,6 @@ test.describe('macos', () => {
         await signup.selectSecondEmailField(`${personalAddress} Main identity`)
         await signup.assertSecondEmailValue(personalAddress)
         await signup.assertFirstEmailEmpty()
-    })
-    test.describe('autofilling a login form', () => {
-        /**
-         * @param {import("playwright-core").Page} page
-         */
-        async function mocks (page) {
-            const {personalAddress} = constants.fields.email
-            const password = '123456'
-
-            await createWebkitMocks()
-                .withCredentials({
-                    id: '01',
-                    username: personalAddress,
-                    password
-                })
-                .applyTo(page)
-            return {personalAddress, password}
-        }
-        /**
-         * @param {import('playwright').Page} page
-         * @param {{overlay?: boolean, clickLabel?: boolean}} opts
-         */
-        async function autofillLoginTest (page, opts = {}) {
-            const { overlay = false, clickLabel = false } = opts
-
-            // enable in-terminal exceptions
-            await forwardConsoleMessages(page)
-
-            const {personalAddress, password} = await mocks(page)
-
-            // Load the autofill.js script with replacements
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements({overlay}))
-                .platform('macos')
-                .applyTo(page)
-
-            const login = loginPage(page, server, {overlay, clickLabel})
-            await login.navigate()
-            await login.selectFirstCredential(personalAddress)
-            await login.assertFirstCredential(personalAddress, password)
-            return login
-        }
-        test('with in-page HTMLTooltip', async ({page}) => {
-            await autofillLoginTest(page)
-        })
-        test('with overlay', async ({page}) => {
-            const login = await autofillLoginTest(page, {overlay: true})
-            // this is not ideal as it's checking an implementation detail.
-            // But it's done to ensure we're not getting a false positive
-            // and definitely loading the overlay code paths
-            await login.assertParentOpened()
-        })
-        test('by clicking a label', async ({page}) => {
-            await autofillLoginTest(page, {clickLabel: true})
-        })
-        test('selecting an item in overlay', async ({page}) => {
-            await forwardConsoleMessages(page)
-            const {personalAddress} = await mocks(page)
-
-            // Pretend we're running in a top-frame scenario
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
-                .replace('isTopFrame', true)
-                .replace('supportsTopFrame', true)
-                .platform('macos')
-                .applyTo(page)
-
-            const overlay = overlayPage(page, server)
-            await overlay.navigate()
-            await overlay.selectFirstCredential(personalAddress)
-            await overlay.doesNotCloseParent()
-        })
-    })
-    test.describe('prompting to save data', () => {
-        test('Prompting to save from a signup form', async ({page}) => {
-            // enable in-terminal exceptions
-            await forwardConsoleMessages(page)
-
-            const {personalAddress} = constants.fields.email
-
-            const credentials = {
-                username: personalAddress,
-                password: '123456'
-            }
-
-            await createWebkitMocks()
-                .applyTo(page)
-
-            // Load the autofill.js script with replacements
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
-                .platform('macos')
-                .applyTo(page)
-
-            const signup = signupPage(page, server)
-            await signup.navigate()
-            await signup.enterCredentials(credentials)
-            await signup.assertWasPromptedToSave(credentials)
-        })
-        test.describe('Prompting to save from a login form', () => {
-            test('username+password (should prompt)', async ({page}) => {
-                // enable in-terminal exceptions
-                await forwardConsoleMessages(page)
-
-                const credentials = {
-                    username: 'dax@wearejh.com',
-                    password: '123456'
-                }
-
-                await createWebkitMocks().applyTo(page)
-                await defaultMacosScript(page)
-
-                const login = loginPage(page, server)
-                await login.navigate()
-                await login.submitLoginForm(credentials)
-                await login.assertWasPromptedToSave(credentials)
-            })
-            test('password only (should prompt)', async ({page}) => {
-                // enable in-terminal exceptions
-                await forwardConsoleMessages(page)
-                await createWebkitMocks().applyTo(page)
-                await defaultMacosScript(page)
-
-                const login = loginPage(page, server)
-
-                const credentials = { password: '123456' }
-                await login.navigate()
-                await login.submitPasswordOnlyForm(credentials)
-                await login.assertWasPromptedToSave(credentials)
-            })
-            test('username only (should NOT prompt)', async ({page}) => {
-                // enable in-terminal exceptions
-                await forwardConsoleMessages(page)
-
-                const credentials = { username: '123456' }
-
-                await createWebkitMocks().applyTo(page)
-                await defaultMacosScript(page)
-
-                const login = loginPage(page, server)
-                await login.navigate()
-                await login.submitUsernameOnlyForm(credentials.username)
-                await login.assertWasNotPromptedToSave()
-            })
-        })
     })
     test.describe('matching performance', () => {
         test('matching performance v1', async ({page}) => {

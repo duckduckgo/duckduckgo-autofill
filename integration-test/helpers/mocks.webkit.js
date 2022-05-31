@@ -1,4 +1,13 @@
-export const iosContentScopeReplacements = () => {
+/**
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
+ */
+
+/**
+ * @param {object} [overrides]
+ * @param {Partial<AutofillFeatureToggles>} [overrides.featureToggles]
+ */
+export const iosContentScopeReplacements = (overrides = {}) => {
     return {
         contentScope: {
             features: {
@@ -12,17 +21,26 @@ export const iosContentScopeReplacements = () => {
         userUnprotectedDomains: [],
         userPreferences: {
             debug: true,
-            platform: {name: 'ios'}
+            platform: { name: 'ios' },
+            features: {
+                autofill: {
+                    settings: {
+                        featureToggles: {
+                            ...overrides.featureToggles
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 /**
- * @param {{overlay?: boolean}} opts
+ * @param {{overlay?: boolean, featureToggles?: AutofillFeatureToggles}} opts
  * @returns {Partial<Replacements>}
  */
 export const macosContentScopeReplacements = (opts = {}) => {
-    const { overlay = false } = opts
+    const { overlay = false, featureToggles } = opts
     return {
         isApp: true,
         hasModernWebkitAPI: true,
@@ -38,7 +56,23 @@ export const macosContentScopeReplacements = (opts = {}) => {
         userUnprotectedDomains: [],
         userPreferences: {
             debug: true,
-            platform: {name: 'macos'}
+            platform: { name: 'macos' },
+            features: {
+                autofill: {
+                    settings: {
+                        /** @type {AutofillFeatureToggles} */
+                        featureToggles: {
+                            inputType_credentials: true,
+                            inputType_identities: true,
+                            inputType_creditCards: true,
+                            emailProtection: true,
+                            password_generation: true,
+                            credentials_saving: true,
+                            ...featureToggles
+                        }
+                    }
+                }
+            }
         },
         ...overlay ? macosWithOverlay() : undefined
     }
@@ -67,7 +101,6 @@ export const macosWithOverlay = () => {
  * ```
  * @public
  * @param {"macos" | "ios"} platform
- * @returns {MockBuilder}
  */
 export function createWebkitMocks (platform = 'macos') {
     /**
@@ -106,10 +139,16 @@ export function createWebkitMocks (platform = 'macos') {
             success: null
         },
         showAutofillParent: {},
-        setSize: {}
+        setSize: {},
+        // newer ones
+        /** @type {null | GetAutofillDataResponse} */
+        getAutofillData: null,
+        /** @type {null | Record<string, any>} */
+        getAvailableInputTypes: null,
+        storeFormData: null
     }
 
-    /** @type {MockBuilder} */
+    /** @type {MockBuilder<any, webkitBase>} */
     const builder = {
         withPrivateEmail (email) {
             webkitBase.emailHandlerCheckAppSignedInStatus.isAppSignedIn = true
@@ -139,6 +178,7 @@ export function createWebkitMocks (platform = 'macos') {
             const topContextData = {inputType: 'credentials.username'}
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
+            webkitBase.getAutofillData = { success: { credentials, action: 'fill' } }
             webkitBase.getSelectedCredentials = [
                 {type: 'none'},
                 {type: 'none'},
@@ -150,12 +190,36 @@ export function createWebkitMocks (platform = 'macos') {
             ]
             return this
         },
+        withAvailableInputTypes: function (inputTypes) {
+            webkitBase.getAvailableInputTypes = {success: inputTypes}
+            return this
+        },
+        withFeatureToggles: function (_featureToggles) {
+            throw new Error('unreachable - webkit cannot mock feature toggles this way. Use script replacements')
+        },
         tap (fn) {
             fn(webkitBase)
             return this
         },
         async applyTo (page) {
-            return withMockedWebkit(page, { ...webkitBase })
+            if (webkitBase.getAvailableInputTypes === null) {
+                webkitBase.getAvailableInputTypes = {success: {}}
+            }
+            return withMockedWebkit(page, {...webkitBase})
+        },
+        /**
+         * @param {(keyof webkitBase)[]} handlers
+         * @returns {builder}
+         */
+        removeHandlers: function (handlers) {
+            const keys = Object.keys(webkitBase)
+            for (let handler of handlers) {
+                if (!keys.includes(handler)) {
+                    throw new Error('webkit mock did not exist for ' + handler)
+                }
+                delete webkitBase[handler]
+            }
+            return this
         }
     }
 
@@ -166,7 +230,7 @@ export function createWebkitMocks (platform = 'macos') {
  * This will mock webkit handlers based on the key-values you provide
  *
  * @private
- * @param {import('playwright').Page} page
+ * @param {import("playwright").Page} page
  * @param {Record<string, any>} mocks
  */
 async function withMockedWebkit (page, mocks) {
