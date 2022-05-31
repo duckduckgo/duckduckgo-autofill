@@ -5,7 +5,7 @@ import { defaultOptions } from '../UI/HTMLTooltip'
 import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController'
 import { OverlayUIController } from '../UI/controllers/OverlayUIController'
 import { createDeviceApiCall } from '../../packages/device-api'
-import {GetAlias} from '../deviceApiCalls/deviceApiCalls'
+import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls'
 
 class AppleDeviceInterface extends InterfacePrototype {
     /** @type {FeatureToggleNames[]} */
