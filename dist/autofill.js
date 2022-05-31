@@ -3378,7 +3378,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   _onPointerDown(event) {
-    // todo(Shane): `credentials_saving` is not the correct name here..
     if (this.settings.featureToggles.credentials_saving) {
       this._detectFormSubmission(event);
     }
