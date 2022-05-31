@@ -1,8 +1,13 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import { sendAndWaitForAnswer } from '../autofill-utils'
+import {autofillEnabled, sendAndWaitForAnswer} from '../autofill-utils'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
+import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
 class AndroidInterface extends InterfacePrototype {
+    async isEnabled () {
+        return autofillEnabled(this.globalConfig, processConfig)
+    }
+
     async getAlias () {
         const { alias } = await sendAndWaitForAnswer(() => {
             return window.EmailInterface.showTooltip()
@@ -17,7 +22,15 @@ class AndroidInterface extends InterfacePrototype {
         return new NativeUIController()
     }
 
+    /**
+     * @deprecated use `this.settings.availableInputTypes.email` in the future
+     * @returns {boolean}
+     */
     isDeviceSignedIn () {
+        // if availableInputTypes are available, use .email first, whether true or false
+        if (typeof this.globalConfig.availableInputTypes?.email === 'boolean') {
+            return this.globalConfig.availableInputTypes.email
+        }
         // isDeviceSignedIn is only available on DDG domains...
         if (this.globalConfig.isDDGDomain) return window.EmailInterface.isSignedIn() === 'true'
 
@@ -26,10 +39,12 @@ class AndroidInterface extends InterfacePrototype {
     }
 
     async setupAutofill () {
-        if (this.isDeviceSignedIn()) {
-            const cleanup = this.scanner.init()
-            this.addLogoutListener(cleanup)
-        }
+
+    }
+
+    postInit () {
+        const cleanup = this.scanner.init()
+        this.addLogoutListener(cleanup)
     }
 
     /**

@@ -6,30 +6,14 @@ import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIControll
 import { OverlayUIController } from '../UI/controllers/OverlayUIController'
 import { createDeviceApiCall } from '../../packages/device-api'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls'
+import { NativeUIController } from '../UI/controllers/NativeUIController'
 
 class AppleDeviceInterface extends InterfacePrototype {
-    /** @type {FeatureToggleNames[]} */
-    supportedFeatures = [];
-
     /** @override */
     initialSetupDelayMs = 300
 
     async isEnabled () {
         return autofillEnabled(this.globalConfig, processConfig)
-    }
-
-    /**
-     * @param {GlobalConfig} config
-     * @param {import("../../packages/device-api").DeviceApi} deviceApi
-     */
-    constructor (config, deviceApi) {
-        super(config)
-        this.deviceApi = deviceApi
-
-        // Only enable 'password.generation' if we're on the macOS app (for now);
-        if (this.globalConfig.isApp) {
-            this.supportedFeatures.push('password.generation')
-        }
     }
 
     /**
@@ -44,6 +28,10 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
     createUIController () {
+        if (this.globalConfig.userPreferences?.platform?.name === 'ios') {
+            return new NativeUIController()
+        }
+
         if (!this.globalConfig.supportsTopFrame) {
             const options = {
                 ...defaultOptions,
@@ -85,9 +73,13 @@ class AppleDeviceInterface extends InterfacePrototype {
             if (this.globalConfig.isApp) {
                 await this.getAddresses()
             }
+        }
+    }
+
+    async postInit () {
+        if (this.isDeviceSignedIn()) {
             this.scanner.forms.forEach(form => form.redecorateAllInputs())
         }
-
         const cleanup = this.scanner.init()
         this.addLogoutListener(cleanup)
     }
@@ -174,9 +166,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Provides functionality to log the user out
      */
     removeUserData () {
-        this.deviceApi.notify(createDeviceApiCall('emailHandlerRemoveToken')).catch((e) => {
-            console.log('could not remove', e)
-        })
+        this.deviceApi.notify(createDeviceApiCall('emailHandlerRemoveToken'))
     }
 
     /**
@@ -193,10 +183,11 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * Sends form data to the native layer
+     * @deprecated should use the base implementation once available on Apple devices (instead of this override)
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        return this.deviceApi.notify(createDeviceApiCall('pmHandlerStoreData', data))
+        this.deviceApi.notify(createDeviceApiCall('pmHandlerStoreData', data))
     }
 
     /**
@@ -270,7 +261,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         const {alias} = await this.deviceApi.request(new GetAlias({
             requiresUserPermission: !this.globalConfig.isApp,
             shouldConsumeAliasIfProvided: !this.globalConfig.isApp
-
         }))
         return formatDuckAddress(alias)
     }
@@ -329,14 +319,15 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {PointerEvent} event
      */
     _onPointerDown (event) {
-        this._detectFormSubmission(event)
+        if (this.settings.featureToggles.credentials_saving) {
+            this._detectFormSubmission(event)
+        }
     }
     /**
      * @param {PointerEvent} event
      */
     _detectFormSubmission (event) {
         // note: This conditional will be replaced with feature flagging soon
-        if (!this.globalConfig.isApp) return
         const matchingForm = [...this.scanner.forms.values()].find(
             (form) => {
                 const btns = [...form.submitButtons]

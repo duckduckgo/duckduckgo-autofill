@@ -32,7 +32,9 @@ class ExtensionInterface extends InterfacePrototype {
                     documentUrl: window.location.href
                 },
                 (response) => {
-                    resolve(isAutofillEnabledFromProcessedConfig(response))
+                    if (response && 'site' in response) {
+                        resolve(isAutofillEnabledFromProcessedConfig(response))
+                    }
                 }
             )
         })
@@ -43,12 +45,14 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     setupAutofill () {
-        return this.getAddresses().then(_addresses => {
-            if (this.hasLocalAddresses) {
-                const cleanup = this.scanner.init()
-                this.addLogoutListener(cleanup)
-            }
-        })
+        return this.getAddresses()
+    }
+
+    postInit () {
+        if (this.hasLocalAddresses) {
+            const cleanup = this.scanner.init()
+            this.addLogoutListener(cleanup)
+        }
     }
 
     getAddresses () {
@@ -129,7 +133,11 @@ class ExtensionInterface extends InterfacePrototype {
             switch (message.type) {
             case 'ddgUserReady':
                 this.setupAutofill().then(() => {
-                    this.setupSettingsPage({shouldLog: true})
+                    this.refreshSettings().then(() => {
+                        this.setupSettingsPage({shouldLog: true}).then(() => {
+                            return this.postInit()
+                        })
+                    })
                 })
                 break
             case 'contextualAutofill':

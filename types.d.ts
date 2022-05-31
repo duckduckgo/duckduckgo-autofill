@@ -19,6 +19,11 @@ interface Window {
         removeCredentials()
     }
 
+    // Used in the Android app
+    BrowserAutofill: {
+        getAutofillData(data: string): void;
+        storeFormData(data: string): void;
+    }
 
     // Used in Apple apps
     webkit: {

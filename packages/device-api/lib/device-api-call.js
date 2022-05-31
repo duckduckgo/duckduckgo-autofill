@@ -33,7 +33,6 @@ export class DeviceApiCall {
      * @type {boolean}
      */
     unwrapResult = true;
-
     /**
      * @param {import("zod").infer<Params>} data
      */
@@ -70,6 +69,11 @@ export class DeviceApiCall {
         }
         if ('success' in incoming) {
             return incoming.success
+        }
+        if ('error' in incoming) {
+            if (typeof incoming.error.message === 'string') {
+                throw new DeviceApiCallError(`${this.method}: ${incoming.error.message}`)
+            }
         }
         if (this.throwOnResultKeysMissing) {
             throw new Error('unreachable. Response did not contain `success` or `data`')
@@ -130,6 +134,8 @@ export class DeviceApiCall {
         return response
     }
 }
+
+export class DeviceApiCallError extends Error {}
 
 /**
  * Check for this error if you'd like to
@@ -202,7 +208,7 @@ export function createDeviceApiCall (method, params, paramsValidator = null, res
  * Validate any arbitrary data with any Zod validator
  *
  * @template {import("zod").ZodType} Validator
- * @param {import("zod").infer<Validator>} data
+ * @param {any} data
  * @param {Validator | null} [validator]
  * @returns {import("zod").infer<Validator>}
  */
