@@ -2942,7 +2942,7 @@ var _OverlayUIController = require("../UI/controllers/OverlayUIController");
 
 var _deviceApi = require("../../packages/device-api");
 
-var _deviceApiCalls = require("../deviceApiCalls/deviceApiCalls");
+var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCalls");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3264,7 +3264,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   async getAlias() {
     const {
       alias
-    } = await this.deviceApi.request(new _deviceApiCalls.GetAlias({
+    } = await this.deviceApi.request(new _additionalDeviceApiCalls.GetAlias({
       requiresUserPermission: !this.globalConfig.isApp,
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp
     }));
@@ -3358,7 +3358,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api":2,"../UI/HTMLTooltip":36,"../UI/controllers/HTMLTooltipUIController":37,"../UI/controllers/OverlayUIController":39,"../autofill-utils":45,"../deviceApiCalls/deviceApiCalls":49,"./InterfacePrototype.js":15,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],13:[function(require,module,exports){
+},{"../../packages/device-api":2,"../UI/HTMLTooltip":36,"../UI/controllers/HTMLTooltipUIController":37,"../UI/controllers/OverlayUIController":39,"../autofill-utils":45,"../deviceApiCalls/additionalDeviceApiCalls":50,"./InterfacePrototype.js":15,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10535,16 +10535,28 @@ exports.constants = constants;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getAliasResultSchema = exports.getAliasParamsSchema = void 0;
+const getAliasParamsSchema = null;
+exports.getAliasParamsSchema = getAliasParamsSchema;
+const getAliasResultSchema = null;
+exports.getAliasResultSchema = getAliasResultSchema;
+
+},{}],50:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.GetAlias = void 0;
 
 var _deviceApi = require("../../packages/device-api");
 
-var _validators = require("./validators.zod");
+var _validators = require("./__generated__/validators.zod");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
- * @extends {DeviceApiCall<emailHandlerGetAliasParamsSchema, emailHandlerGetAliasResultSchema>}
+ * @extends {DeviceApiCall<getAliasParamsSchema, getAliasResultSchema>}
  */
 class GetAlias extends _deviceApi.DeviceApiCall {
   constructor() {
@@ -10552,12 +10564,13 @@ class GetAlias extends _deviceApi.DeviceApiCall {
 
     _defineProperty(this, "method", 'emailHandlerGetAlias');
 
-    _defineProperty(this, "paramsValidator", _validators.emailHandlerGetAliasParamsSchema);
+    _defineProperty(this, "paramsValidator", _validators.getAliasParamsSchema);
 
-    _defineProperty(this, "resultValidator", _validators.emailHandlerGetAliasResultSchema);
+    _defineProperty(this, "resultValidator", _validators.getAliasResultSchema);
   }
 
   preResultValidation(response) {
+    // convert to the correct format, because this is a legacy API
     return {
       success: response
     };
@@ -10567,19 +10580,7 @@ class GetAlias extends _deviceApi.DeviceApiCall {
 
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api":2,"./validators.zod":50}],50:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.emailHandlerGetAliasResultSchema = exports.emailHandlerGetAliasParamsSchema = void 0;
-const emailHandlerGetAliasParamsSchema = null;
-exports.emailHandlerGetAliasParamsSchema = emailHandlerGetAliasParamsSchema;
-const emailHandlerGetAliasResultSchema = null;
-exports.emailHandlerGetAliasResultSchema = emailHandlerGetAliasResultSchema;
-
-},{}],51:[function(require,module,exports){
+},{"../../packages/device-api":2,"./__generated__/validators.zod":49}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
