@@ -1,9 +1,9 @@
-import { DeviceApi } from "../../../packages/device-api";
-import {createGlobalConfig} from "../../config";
-import {AppleTransport} from "../../deviceApiCalls/transports/apple.transport";
-import {AppleDeviceInterface} from "../AppleDeviceInterface";
-import {Settings} from "../../Settings";
-import {Form} from "../../Form/Form";
+import { DeviceApi } from '../../../packages/device-api'
+import {createGlobalConfig} from '../../config'
+import {AppleTransport} from '../../deviceApiCalls/transports/apple.transport'
+import {AppleDeviceInterface} from '../AppleDeviceInterface'
+import {Settings} from '../../Settings'
+import {Form} from '../../Form/Form'
 
 describe('test stub', () => {
     it('prevents a failure', () => {
@@ -35,8 +35,8 @@ function createDeviceApi () {
     return new DeviceApi(transport)
 }
 
-function createDevice() {
-    const deviceApi = createDeviceApi();
+function createDevice () {
+    const deviceApi = createDeviceApi()
     const settings = Settings.default(APPLE_GLOBAL_CONFIG, deviceApi)
     settings.setFeatureToggles({
         password_generation: true
@@ -73,7 +73,7 @@ describe('AppleDeviceInterface: preAttachTooltip', () => {
         expect(actual).toStrictEqual(expected)
     })
     it('does NOT add a password when Device does **not** support password generation', () => {
-        const deviceApi = createDeviceApi();
+        const deviceApi = createDeviceApi()
         const settings = Settings.default(APPLE_GLOBAL_CONFIG, deviceApi)
         const device = new AppleDeviceInterface(APPLE_GLOBAL_CONFIG, deviceApi, settings)
         const input = document.createElement('input')
