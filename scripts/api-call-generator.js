@@ -227,9 +227,8 @@ function createClassDefinition (methodName, instanceName, cd) {
     return lines.join('\n')
 }
 
-// the validator for the incoming JSON files
-
 /**
+ * The validator for the incoming JSON files
  * @param {ApiCallDefinitions} deviceApiCalls
  * @returns {ApiCallDefinitions}
  */
