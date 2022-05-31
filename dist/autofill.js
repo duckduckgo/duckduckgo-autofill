@@ -6840,7 +6840,7 @@ class Form {
       const events = ['pointerdown'];
 
       if (!this.device.globalConfig.isMobileApp) {// todo(Shane): Re-enable focus event?
-        // events.push('focus')
+        events.push('focus')
       }
 
       input.labels.forEach(label => {
@@ -18721,14 +18721,17 @@ function createWindowsSender() {
 
 
 function windowsTransport(name, data) {
+  console.log("TRANSPORT...." + name);
   if (data) {
     window.chrome.webview.postMessage({
-      type: name,
-      data: data
+      Feature: "Autofill",
+      Name: name,
+      Data: data
     });
   } else {
     window.chrome.webview.postMessage({
-      type: name
+      Feature: "Autofill",
+      Name: name
     });
   }
 
