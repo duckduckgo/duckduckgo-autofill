@@ -39,13 +39,24 @@ export class HTMLTooltipUIController extends UIController {
 
     /**
      * @param {HTMLTooltipControllerOptions} options
-     * @param {import('../HTMLTooltip.js').HTMLTooltipOptions} htmlTooltipOptions
+     * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
      */
     constructor (options, htmlTooltipOptions = defaultOptions) {
         super()
         this._options = options
-        this._htmlTooltipOptions = htmlTooltipOptions
+        this._htmlTooltipOptions = Object.assign({}, defaultOptions, htmlTooltipOptions)
         window.addEventListener('pointerdown', this, true)
+        /**
+         * The native side will send a custom event 'mouseMove' to indicate
+         * that the HTMLTooltip should fake an element being focussed.
+         *
+         * Note: There's no cleanup required here since the Overlay has a fresh
+         * page load every time it's opened.
+         */
+        window.addEventListener('mouseMove', (event) => {
+            const activeTooltip = this.getActiveTooltip?.()
+            activeTooltip?.focus(event.detail.x, event.detail.y)
+        })
     }
 
     /**

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GetAutofillInitDataResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "description": "Required on Android + Windows devices, optional on iOS",
+      "type": "string",
+      "const": "getAutofillInitDataResponse"
+    },
+    "success": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "credentials": {
+          "type": "array",
+          "items": {
+            "$ref": "./credentials.json"
+          }
+        },
+        "identities": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "creditCards": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "serializedInputContext": {
+          "description": "A clone of the `serializedInputContext` that was sent in the request",
+          "type": "string"
+        }
+      },
+      "required": [
+        "serializedInputContext",
+        "credentials",
+        "creditCards",
+        "identities"
+      ]
+    },
+    "error": {
+      "$ref": "./error.json"
+    }
+  },
+  "required": [
+    "success"
+  ]
+}

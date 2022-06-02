@@ -147,6 +147,7 @@ export class OverlayUIController extends UIController {
     }
 
     handleEvent (event) {
+        console.log('OverlayControllerUI event', event)
         switch (event.type) {
         case 'scroll': {
             this.removeTooltip(event.type)

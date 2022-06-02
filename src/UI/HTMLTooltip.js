@@ -10,6 +10,7 @@ import {CSS_STYLES} from './styles/styles'
  * @property {(details: {height: number, width: number}) => void} [setSize]
  * @property {() => void} remove
  * @property {string} css
+ * @property {boolean} checkVisibility
  */
 
 /** @type {import('./HTMLTooltip.js').HTMLTooltipOptions} */
@@ -19,7 +20,8 @@ export const defaultOptions = {
     css: `<style>${CSS_STYLES}</style>`,
     setSize: () => { /** noop */ },
     remove: () => { /** noop */ },
-    testMode: false
+    testMode: false,
+    checkVisibility: true
 }
 
 export class HTMLTooltip {
@@ -168,7 +170,9 @@ export class HTMLTooltip {
     dispatchClick () {
         const handler = this.clickableButtons.get(this.activeButton)
         if (handler) {
-            safeExecute(this.activeButton, handler)
+            safeExecute(this.activeButton, handler, {
+                checkVisibility: this.options.checkVisibility
+            })
         }
     }
     setupSizeListener () {

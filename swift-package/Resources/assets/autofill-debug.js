@@ -6465,6 +6465,10 @@ var _deviceApi = require("../packages/device-api");
 
 var _Settings = require("./Settings");
 
+var _WindowsInterface = require("./DeviceInterface/WindowsInterface");
+
+var _WindowsOverlayDeviceInterface = require("./DeviceInterface/WindowsOverlayDeviceInterface");
+
 function createDevice() {
   const globalConfig = (0, _config.createGlobalConfig)();
   const transport = (0, _transports.createTransport)(globalConfig);
@@ -6475,9 +6479,9 @@ function createDevice() {
 
   const loggingTransport = {
     async send(deviceApiCall) {
-      console.log('[outgoing]', deviceApiCall.method, JSON.stringify(deviceApiCall.params || null));
+      console.log('[->outgoing]', deviceApiCall.method, JSON.stringify(deviceApiCall.params || null));
       const result = await transport.send(deviceApiCall);
-      console.log('[incoming]', deviceApiCall.method, JSON.stringify(result || null));
+      console.log('[<-incoming]', deviceApiCall.method, JSON.stringify(result || null));
       return result;
     }
 
@@ -6485,6 +6489,14 @@ function createDevice() {
 
   let deviceApi = new _deviceApi.DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport);
   const settings = new _Settings.Settings(globalConfig, deviceApi);
+
+  if (globalConfig.isWindows) {
+    if (globalConfig.isTopFrame) {
+      return new _WindowsOverlayDeviceInterface.WindowsOverlayDeviceInterface(globalConfig, deviceApi, settings);
+    }
+
+    return new _WindowsInterface.WindowsInterface(globalConfig, deviceApi, settings);
+  }
 
   if (globalConfig.isDDGApp) {
     if (globalConfig.isAndroid) {
@@ -6501,7 +6513,7 @@ function createDevice() {
   return new _ExtensionInterface.ExtensionInterface(globalConfig, deviceApi, settings);
 }
 
-},{"../packages/device-api":10,"./DeviceInterface/AndroidInterface":19,"./DeviceInterface/AppleDeviceInterface":20,"./DeviceInterface/AppleOverlayDeviceInterface":21,"./DeviceInterface/ExtensionInterface":22,"./Settings":42,"./config":56,"./deviceApiCalls/transports/transports":64}],19:[function(require,module,exports){
+},{"../packages/device-api":10,"./DeviceInterface/AndroidInterface":19,"./DeviceInterface/AppleDeviceInterface":20,"./DeviceInterface/AppleOverlayDeviceInterface":21,"./DeviceInterface/ExtensionInterface":22,"./DeviceInterface/WindowsInterface":24,"./DeviceInterface/WindowsOverlayDeviceInterface":25,"./Settings":45,"./config":59,"./deviceApiCalls/transports/transports":67}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6645,7 +6657,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../UI/controllers/NativeUIController.js":47,"../autofill-utils":54,"./InterfacePrototype.js":23,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],20:[function(require,module,exports){
+},{"../UI/controllers/NativeUIController.js":50,"../autofill-utils":57,"./InterfacePrototype.js":23,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7079,7 +7091,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api":10,"../UI/HTMLTooltip":45,"../UI/controllers/HTMLTooltipUIController":46,"../UI/controllers/NativeUIController":47,"../UI/controllers/OverlayUIController":48,"../autofill-utils":54,"../deviceApiCalls/additionalDeviceApiCalls":60,"./InterfacePrototype.js":23,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],21:[function(require,module,exports){
+},{"../../packages/device-api":10,"../UI/HTMLTooltip":48,"../UI/controllers/HTMLTooltipUIController":49,"../UI/controllers/NativeUIController":50,"../UI/controllers/OverlayUIController":51,"../autofill-utils":57,"../deviceApiCalls/additionalDeviceApiCalls":63,"./InterfacePrototype.js":23,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7089,11 +7101,11 @@ exports.AppleOverlayDeviceInterface = void 0;
 
 var _AppleDeviceInterface = require("./AppleDeviceInterface");
 
-var _styles = require("../UI/styles/styles");
-
 var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
 
 var _deviceApi = require("../../packages/device-api");
+
+var _overlayApi = require("./overlayApi");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -7119,26 +7131,17 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
    * @returns {import("../UI/controllers/UIController.js").UIController}
    */
   createUIController() {
-    /** @type {import('../UI/controllers/HTMLTooltipUIController').HTMLTooltipControllerOptions} */
-    const controllerOptions = {
+    return new _HTMLTooltipUIController.HTMLTooltipUIController({
       tooltipKind:
       /** @type {const} */
       'modern',
       device: this
-    };
-    /** @type {import('../UI/HTMLTooltip').HTMLTooltipOptions} */
-
-    const tooltipOptions = {
+    }, {
       wrapperClass: 'top-autofill',
       tooltipPositionClass: () => '.wrapper { transform: none; }',
-      css: "<style>".concat(_styles.CSS_STYLES, "</style>"),
-      setSize: details => this._setSize(details),
-      testMode: this.isTestMode(),
-      remove: () => {
-        /** noop - the overlay does not close itself */
-      }
-    };
-    return new _HTMLTooltipUIController.HTMLTooltipUIController(controllerOptions, tooltipOptions);
+      setSize: details => this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('setSize', details)),
+      testMode: this.isTestMode()
+    });
   }
   /**
    * Since we're running inside the Overlay we can limit what happens here to
@@ -7155,98 +7158,21 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 
     if (signedIn) {
       await this.getAddresses();
-    }
-
-    this._setupTopFrame();
-
-    this._listenForCustomMouseEvent();
-  }
-
-  _setupTopFrame() {
-    var _this$uiController$cr, _this$uiController;
-
-    const topContextData = this.getTopContextData();
-    if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
-
-    const getPosition = () => {
-      return {
-        x: 0,
-        y: 0,
-        height: 50,
-        width: 50
-      };
-    }; // Create the tooltip, and set it as active
+    } // setup overlay API pieces
 
 
-    const tooltip = (_this$uiController$cr = (_this$uiController = this.uiController).createTooltip) === null || _this$uiController$cr === void 0 ? void 0 : _this$uiController$cr.call(_this$uiController, getPosition, topContextData);
+    const overlay = (0, _overlayApi.overlayApi)(this);
 
-    if (tooltip) {
-      var _this$uiController$se, _this$uiController2;
+    overlay._setupTopFrame();
 
-      (_this$uiController$se = (_this$uiController2 = this.uiController).setActiveTooltip) === null || _this$uiController$se === void 0 ? void 0 : _this$uiController$se.call(_this$uiController2, tooltip);
-    }
-  }
-  /**
-   * The native side will send a custom event 'mouseMove' to indicate
-   * that the HTMLTooltip should fake an element being focussed.
-   *
-   * Note: There's no cleanup required here since the Overlay has a fresh
-   * page load every time it's opened.
-   */
-
-
-  _listenForCustomMouseEvent() {
-    window.addEventListener('mouseMove', event => {
-      var _this$uiController$ge, _this$uiController3;
-
-      const activeTooltip = (_this$uiController$ge = (_this$uiController3 = this.uiController).getActiveTooltip) === null || _this$uiController$ge === void 0 ? void 0 : _this$uiController$ge.call(_this$uiController3);
-      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
-    });
-  }
-  /**
-   * This is overridden in the Overlay, so that instead of trying to fill a form
-   * with the selected credentials, we instead send a message to the native
-   * side. Once received, the native side will store that selection so that a
-   * subsequence call from main webpage can retrieve it via polling.
-   *
-   * @override
-   * @param detailIn
-   * @param configType
-   * @returns {Promise<void>}
-   */
-
-
-  async selectedDetail(detailIn, configType) {
-    let detailsEntries = Object.entries(detailIn).map(_ref => {
-      let [key, value] = _ref;
-      return [key, String(value)];
-    });
-    const data = Object.fromEntries(detailsEntries);
-    await this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('selectedDetail', {
-      data,
-      configType
-    }));
-  }
-  /**
-   * When the HTMLTooltip calls 'setSize', we forward that message to the native layer
-   * so that the window that contains the Autofill UI can be set correctly.
-   *
-   * This is an overlay-only scenario - normally 'setSize' isn't needed (like in the extension)
-   * because the HTML element will grow as needed.
-   *
-   * @param {{height: number, width: number}} details
-   */
-
-
-  async _setSize(details) {
-    await this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('setSize', details));
+    this.selectedDetail = overlay.selectedDetail.bind(this);
   }
 
 }
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api":10,"../UI/controllers/HTMLTooltipUIController":46,"../UI/styles/styles":51,"./AppleDeviceInterface":20}],22:[function(require,module,exports){
+},{"../../packages/device-api":10,"../UI/controllers/HTMLTooltipUIController":49,"./AppleDeviceInterface":20,"./overlayApi":26}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7426,7 +7352,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../UI/HTMLTooltip":45,"../UI/controllers/HTMLTooltipUIController":46,"../autofill-utils":54,"./InterfacePrototype.js":23}],23:[function(require,module,exports){
+},{"../UI/HTMLTooltip":48,"../UI/controllers/HTMLTooltipUIController":49,"../autofill-utils":57,"./InterfacePrototype.js":23}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7731,13 +7657,28 @@ class InterfacePrototype {
   async startInit() {
     this.addDeviceListeners();
     await this.setupAutofill();
-    await this.refreshSettings();
+    await this.refreshSettings(); // this is the temporary measure to support windows whilst we still have 'setupAutofill'
+    // eventually all interfaces will use this
+
+    if (!this.isEnabledViaSettings()) {
+      return;
+    }
+
     await this.setupSettingsPage();
     await this.postInit();
 
     if (this.settings.featureToggles.credentials_saving) {
       (0, _listenForFormSubmission.default)(this.scanner.forms);
     }
+  }
+  /**
+   * All interfaces should migrate to this, when they can.
+   * @returns {boolean}
+   */
+
+
+  isEnabledViaSettings() {
+    return true;
   }
   /**
    * This is a fall-back situation for macOS since it was the only
@@ -7940,6 +7881,8 @@ class InterfacePrototype {
     dataPromise.then(response => {
       if (response.success) {
         return this.selectedDetail(response.success, config.type);
+      } else if (response) {
+        return this.selectedDetail(response, config.type);
       } else {
         return Promise.reject(new Error('none-success response'));
       }
@@ -8080,25 +8023,27 @@ class InterfacePrototype {
   getAccounts() {}
   /**
    * Gets credentials ready for autofill
-   * @param {number|string} _id - the credential id
-   * @returns {APIResponseSingle<CredentialsObject>}
+   * @param {number|string} id - the credential id
+   * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
    */
 
 
-  getAutofillCredentials(_id) {
-    throw new Error('unimplemented');
+  async getAutofillCredentials(id) {
+    return this.deviceApi.request(new _deviceApiCalls.GetAutofillCredentialsCall({
+      id: String(id)
+    }));
   }
   /** @returns {APIResponse<CreditCardObject>} */
 
 
   async getAutofillCreditCard(_id) {
-    throw new Error('unimplemented');
+    throw new Error('getAutofillCreditCard unimplemented');
   }
   /** @returns {Promise<{success: IdentityObject|undefined}>} */
 
 
   async getAutofillIdentity(_id) {
-    throw new Error('unimplemented');
+    throw new Error('getAutofillCreditCard unimplemented');
   }
 
   openManagePasswords() {}
@@ -8202,7 +8147,287 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api":10,"../Form/formatters":27,"../Form/listenForFormSubmission":31,"../Form/matching":34,"../InputTypes/Credentials":37,"../PasswordGenerator":40,"../Scanner":41,"../Settings":42,"../UI/controllers/NativeUIController":47,"../autofill-utils":54,"../config":56,"../deviceApiCalls/__generated__/deviceApiCalls":58,"../deviceApiCalls/transports/transports":64}],24:[function(require,module,exports){
+},{"../../packages/device-api":10,"../Form/formatters":30,"../Form/listenForFormSubmission":34,"../Form/matching":37,"../InputTypes/Credentials":40,"../PasswordGenerator":43,"../Scanner":44,"../Settings":45,"../UI/controllers/NativeUIController":50,"../autofill-utils":57,"../config":59,"../deviceApiCalls/__generated__/deviceApiCalls":61,"../deviceApiCalls/transports/transports":67}],24:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WindowsInterface = void 0;
+
+var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype"));
+
+var _OverlayUIController = require("../UI/controllers/OverlayUIController");
+
+var _windows = require("../deviceApiCalls/transports/windows.transport");
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @typedef {import('../UI/controllers/OverlayUIController').ShowAutofillParentRequest} ShowAutofillParentRequest
+ */
+class WindowsInterface extends _InterfacePrototype.default {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "ready", false);
+  }
+
+  /**
+   * @deprecated This is too early, and will be removed eventually.
+   * @returns {Promise<boolean>}
+   */
+  async isEnabled() {
+    return true;
+  }
+
+  isEnabledViaSettings() {
+    return Boolean(this.settings.enabled);
+  }
+
+  postInit() {
+    const cleanup = this.scanner.init();
+    this.addLogoutListener(cleanup);
+    this.ready = true;
+  }
+
+  createUIController() {
+    /**
+     * If we get here, we're just a controller for an overlay
+     */
+    return new _OverlayUIController.OverlayUIController({
+      remove: async () => this._closeAutofillParent(),
+      show: async details => this._show(details),
+      onPointerDown: event => this._onPointerDown(event)
+    });
+  }
+  /**
+   * @param {ShowAutofillParentRequest} details
+   */
+
+
+  async _show(details) {
+    await this.deviceApi.notify(new _deviceApiCalls.ShowAutofillParentCall(details));
+    const {
+      success
+    } = await (0, _windows.waitForWindowsResponse)('selectedDetailResponse');
+    this.activeFormSelectedDetail(success.data, success.configType);
+
+    this._closeAutofillParent().then(e => {
+      if (this.globalConfig.isDDGTestMode) {
+        console.error('Could not close', e);
+      }
+    });
+  }
+  /**
+   * @returns {Promise<any>}
+   */
+
+
+  async _closeAutofillParent() {
+    return this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
+  }
+  /**
+   * on macOS we try to detect if a click occurred within a form
+   * @param {PointerEvent} event
+   */
+
+
+  _onPointerDown(event) {
+    if (this.ready) {
+      if (this.settings.featureToggles.credentials_saving) {
+        this._detectFormSubmission(event);
+      }
+    } else {
+      console.log('prevented featureToggles access');
+    }
+  }
+  /**
+   * @param {PointerEvent} event
+   */
+
+
+  _detectFormSubmission(event) {
+    // note: This conditional will be replaced with feature flagging soon
+    const matchingForm = [...this.scanner.forms.values()].find(form => {
+      const btns = [...form.submitButtons]; // @ts-ignore
+
+      if (btns.includes(event.target)) return true; // @ts-ignore
+
+      if (btns.find(btn => btn.contains(event.target))) return true;
+    });
+    matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
+  }
+
+}
+
+exports.WindowsInterface = WindowsInterface;
+
+},{"../UI/controllers/OverlayUIController":51,"../deviceApiCalls/__generated__/deviceApiCalls":61,"../deviceApiCalls/transports/windows.transport":68,"./InterfacePrototype":23}],25:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WindowsOverlayDeviceInterface = void 0;
+
+var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype"));
+
+var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+
+var _overlayApi = require("./overlayApi");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * This subclass is designed to separate code that *only* runs inside the
+ * Windows Overlay into a single place.
+ *
+ * It has some subtle differences to the macOS version, which is why
+ * this is another DeviceInterface
+ */
+class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "stripCredentials", false);
+  }
+
+  /**
+   * Because we're running inside the Overlay, we always create the HTML
+   * Tooltip controller.
+   *
+   * @override
+   * @returns {import("../UI/controllers/UIController.js").UIController}
+   */
+  createUIController() {
+    return new _HTMLTooltipUIController.HTMLTooltipUIController({
+      tooltipKind:
+      /** @type {const} */
+      'modern',
+      device: this
+    }, {
+      wrapperClass: 'top-autofill',
+      tooltipPositionClass: () => '.wrapper { transform: none; }',
+      setSize: details => this.deviceApi.notify(new _deviceApiCalls.SetSizeCall(details)),
+      testMode: this.isTestMode(),
+      checkVisibility: false
+    });
+  }
+  /**
+   * Since we're running inside the Overlay we can limit what happens here to
+   * be only things that are needed to power the HTML Tooltip
+   *
+   * @override
+   * @returns {Promise<void>}
+   */
+
+
+  async setupAutofill() {
+    const response = await this.deviceApi.request(new _deviceApiCalls.GetAutofillInitDataCall(null)); // @ts-ignore
+
+    this.storeLocalData(response); // setup overlay API pieces
+
+    const overlay = (0, _overlayApi.overlayApi)(this);
+
+    overlay._setupTopFrame();
+
+    this.selectedDetail = overlay.selectedDetail.bind(this);
+  }
+
+}
+
+exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
+
+},{"../UI/controllers/HTMLTooltipUIController":49,"../deviceApiCalls/__generated__/deviceApiCalls":61,"./InterfacePrototype":23,"./overlayApi":26}],26:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.overlayApi = overlayApi;
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+
+/**
+ * These are the re-usable parts from the overlay code
+ * @param {import("./InterfacePrototype").default} device
+ */
+function overlayApi(device) {
+  return {
+    _setupTopFrame() {
+      var _device$uiController$, _device$uiController;
+
+      const topContextData = device.getTopContextData();
+      if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values, they're not used
+
+      const getPosition = () => {
+        return {
+          x: 0,
+          y: 0,
+          height: 50,
+          width: 50
+        };
+      }; // Create the tooltip, and set it as active
+
+
+      const tooltip = (_device$uiController$ = (_device$uiController = device.uiController).createTooltip) === null || _device$uiController$ === void 0 ? void 0 : _device$uiController$.call(_device$uiController, getPosition, topContextData);
+
+      if (tooltip) {
+        var _device$uiController$2, _device$uiController2;
+
+        (_device$uiController$2 = (_device$uiController2 = device.uiController).setActiveTooltip) === null || _device$uiController$2 === void 0 ? void 0 : _device$uiController$2.call(_device$uiController2, tooltip);
+      }
+    },
+
+    /**
+     * This is overridden in the Overlay, so that instead of trying to fill a form
+     * with the selected credentials, we instead send a message to the native
+     * side. Once received, the native side will store that selection so that a
+     * subsequence call from main webpage can retrieve it via polling.
+     *
+     * @override
+     * @param detailIn
+     * @param configType
+     * @returns {Promise<void>}
+     */
+    async selectedDetail(detailIn, configType) {
+      let detailsEntries = Object.entries(detailIn).map(_ref => {
+        let [key, value] = _ref;
+        return [key, String(value)];
+      });
+      const data = Object.fromEntries(detailsEntries);
+      await device.deviceApi.notify(new _deviceApiCalls.SelectedDetailCall({
+        data,
+        configType
+      }));
+    },
+
+    /**
+     * When the HTMLTooltip calls 'setSize', we forward that message to the native layer
+     * so that the window that contains the Autofill UI can be set correctly.
+     *
+     * This is an overlay-only scenario - normally 'setSize' isn't needed (like in the extension)
+     * because the HTML element will grow as needed.
+     *
+     * @param {{height: number, width: number}} details
+     */
+    async setSize(details) {
+      await device.deviceApi.notify(new _deviceApiCalls.SetSizeCall(details));
+    }
+
+  };
+}
+
+},{"../deviceApiCalls/__generated__/deviceApiCalls":61}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8588,7 +8813,9 @@ class Form {
 
       const getPosition = () => {
         // In extensions, the tooltip is centered on the Dax icon
-        return this.device.globalConfig.isApp ? input.getBoundingClientRect() : (0, _autofillUtils.getDaxBoundingBox)(input);
+        // todo(Shane): Where should this logic live?
+        const alignLeft = this.device.globalConfig.isApp || this.device.globalConfig.isWindows;
+        return alignLeft ? input.getBoundingClientRect() : (0, _autofillUtils.getDaxBoundingBox)(input);
       }; // Checks for mousedown event
 
 
@@ -8701,7 +8928,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":54,"../constants":57,"./FormAnalyzer":25,"./formatters":27,"./inputStyles":28,"./inputTypeConfig.js":29,"./matching":34}],25:[function(require,module,exports){
+},{"../autofill-utils":57,"../constants":60,"./FormAnalyzer":28,"./formatters":30,"./inputStyles":31,"./inputTypeConfig.js":32,"./matching":37}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8953,7 +9180,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":54,"../constants":57,"./matching":34,"./matching-configuration":33}],26:[function(require,module,exports){
+},{"../autofill-utils":57,"../constants":60,"./matching":37,"./matching-configuration":36}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9521,7 +9748,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],27:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9863,7 +10090,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames":26,"./matching":34}],28:[function(require,module,exports){
+},{"./countryNames":29,"./matching":37}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9945,7 +10172,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":29}],29:[function(require,module,exports){
+},{"./inputTypeConfig.js":32}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10117,7 +10344,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials":37,"../InputTypes/CreditCard":38,"../InputTypes/Identity":39,"../UI/img/ddgPasswordIcon":50,"./logo-svg":32,"./matching":34}],30:[function(require,module,exports){
+},{"../InputTypes/Credentials":40,"../InputTypes/CreditCard":41,"../InputTypes/Identity":42,"../UI/img/ddgPasswordIcon":53,"./logo-svg":35,"./matching":37}],33:[function(require,module,exports){
 "use strict";
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
@@ -10169,7 +10396,7 @@ const extractElementStrings = element => {
 
 module.exports.extractElementStrings = extractElementStrings;
 
-},{}],31:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10212,7 +10439,7 @@ const listenForGlobalFormSubmission = forms => {
 var _default = listenForGlobalFormSubmission;
 exports.default = _default;
 
-},{}],32:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10222,7 +10449,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],33:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10862,7 +11089,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":35}],34:[function(require,module,exports){
+},{"./selectors-css":38}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11861,7 +12088,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":57,"./label-util":30,"./matching-configuration":33,"./selectors-css":35,"./vendor-regex":36}],35:[function(require,module,exports){
+},{"../constants":60,"./label-util":33,"./matching-configuration":36,"./selectors-css":38,"./vendor-regex":39}],38:[function(require,module,exports){
 "use strict";
 
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]),\nselect";
@@ -11928,7 +12155,7 @@ module.exports.__secret_do_not_use = {
   birthdayYear
 };
 
-},{}],36:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 /**
@@ -11985,7 +12212,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 
 module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
-},{}],37:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -12120,7 +12347,7 @@ module.exports.fromPassword = fromPassword;
 module.exports.appendGeneratedId = appendGeneratedId;
 module.exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
 
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12172,7 +12399,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12246,7 +12473,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":27}],40:[function(require,module,exports){
+},{"../Form/formatters":30}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12318,7 +12545,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":13,"../packages/password/rules.json":17}],41:[function(require,module,exports){
+},{"../packages/password":13,"../packages/password/rules.json":17}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12615,7 +12842,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":24,"./Form/matching":34,"./Form/selectors-css":35,"./autofill-utils":54}],42:[function(require,module,exports){
+},{"./Form/Form":27,"./Form/matching":37,"./Form/selectors-css":38,"./autofill-utils":57}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12629,12 +12856,17 @@ var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls");
 
 var _validators = require("./deviceApiCalls/__generated__/validators.zod");
 
+var _autofillUtils = require("./autofill-utils");
+
+var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * Some Type helpers to prevent duplication
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} AvailableInputTypes
+ * @typedef {import("./deviceApiCalls/__generated__/validators-ts").RuntimeConfiguration} RuntimeConfiguration
  * @typedef {import("../packages/device-api").DeviceApi} DeviceApi
  */
 
@@ -12657,6 +12889,10 @@ class Settings {
 
   /** @type {AvailableInputTypes | null} */
 
+  /** @type {RuntimeConfiguration | null} */
+
+  /** @type {boolean | null} */
+
   /**
    * @param {GlobalConfig} config
    * @param {DeviceApi} deviceApi
@@ -12669,6 +12905,10 @@ class Settings {
     _defineProperty(this, "_featureToggles", null);
 
     _defineProperty(this, "_availableInputTypes", null);
+
+    _defineProperty(this, "_runtimeConfiguration", null);
+
+    _defineProperty(this, "_enabled", null);
 
     this.deviceApi = deviceApi;
     this.globalConfig = config;
@@ -12691,7 +12931,7 @@ class Settings {
     try {
       var _runtimeConfig$userPr, _runtimeConfig$userPr2, _runtimeConfig$userPr3;
 
-      const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
+      const runtimeConfig = await this._getRuntimeConfiguration();
       const autofillSettings = (0, _deviceApi.validate)((_runtimeConfig$userPr = runtimeConfig.userPreferences) === null || _runtimeConfig$userPr === void 0 ? void 0 : (_runtimeConfig$userPr2 = _runtimeConfig$userPr.features) === null || _runtimeConfig$userPr2 === void 0 ? void 0 : (_runtimeConfig$userPr3 = _runtimeConfig$userPr2.autofill) === null || _runtimeConfig$userPr3 === void 0 ? void 0 : _runtimeConfig$userPr3.settings, _validators.autofillSettingsSchema);
       return autofillSettings.featureToggles;
     } catch (e) {
@@ -12702,6 +12942,37 @@ class Settings {
 
       return Settings.defaults.featureToggles;
     }
+  }
+  /**
+   * @returns {Promise<boolean|null>}
+   */
+
+
+  async getEnabled() {
+    try {
+      const runtimeConfig = await this._getRuntimeConfiguration();
+      const enabled = (0, _autofillUtils.autofillEnabled)(runtimeConfig, _appleUtils.processConfig);
+      return enabled;
+    } catch (e) {
+      // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
+      if (this.globalConfig.isDDGTestMode) {
+        console.log('isDDGTestMode: getFeatureToggles: ❌', e);
+      }
+
+      return null;
+    }
+  }
+  /**
+   * Get runtime configuration, but only once.
+   * @returns {Promise<RuntimeConfiguration>}
+   * @private
+   */
+
+
+  async _getRuntimeConfiguration() {
+    if (this._runtimeConfiguration) return this._runtimeConfiguration;
+    this._runtimeConfiguration = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
+    return this._runtimeConfiguration;
   }
   /**
    * Available Input Types are boolean indicators to represent which input types the
@@ -12728,13 +12999,22 @@ class Settings {
    *
    * @returns {Promise<{
    *      availableInputTypes: AvailableInputTypes,
-   *      featureToggles: AutofillFeatureToggles
+   *      featureToggles: AutofillFeatureToggles,
+   *      enabled: boolean | null
    * }>}
    * @param {AvailableInputTypes} [availableInputTypesOverrides] a migration aid so that macOS can provide data in its old way initially
    */
 
 
   async refresh(availableInputTypesOverrides) {
+    this.setEnabled(await this.getEnabled());
+
+    if (typeof this.enabled === 'boolean') {
+      if (!this.enabled) {
+        return Settings.defaults;
+      }
+    }
+
     this.setFeatureToggles(await this.getFeatureToggles());
     const availableInputTypesFromRemote = await this.getAvailableInputTypes();
     /** @type {AvailableInputTypes} */
@@ -12762,7 +13042,8 @@ class Settings {
     this.setAvailableInputTypes(availableInputTypes);
     return {
       featureToggles: this.featureToggles,
-      availableInputTypes: this.availableInputTypes
+      availableInputTypes: this.availableInputTypes,
+      enabled: this.enabled
     };
   }
   /** @returns {AutofillFeatureToggles} */
@@ -12798,6 +13079,24 @@ class Settings {
     settings.setAvailableInputTypes(Settings.defaults.availableInputTypes);
     return settings;
   }
+  /** @returns {boolean|null} */
+
+
+  get enabled() {
+    if (this._runtimeConfiguration === null) {
+      console.warn('settings.enabled cannot be accessed until RuntimeConfiguration has been retrieved');
+    }
+
+    return this._enabled;
+  }
+  /**
+   * @param {boolean|null} enabled
+   */
+
+
+  setEnabled(enabled) {
+    this._enabled = enabled;
+  }
 
 }
 
@@ -12820,10 +13119,13 @@ _defineProperty(Settings, "defaults", {
     identities: false,
     creditCards: false,
     email: false
-  }
+  },
+
+  /** @type {boolean | null} */
+  enabled: null
 });
 
-},{"../packages/device-api":10,"./deviceApiCalls/__generated__/deviceApiCalls":58,"./deviceApiCalls/__generated__/validators.zod":59}],43:[function(require,module,exports){
+},{"../packages/device-api":10,"./autofill-utils":57,"./deviceApiCalls/__generated__/deviceApiCalls":61,"./deviceApiCalls/__generated__/validators.zod":62,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12878,7 +13180,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
 var _default = DataHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":54,"./HTMLTooltip":45}],44:[function(require,module,exports){
+},{"../autofill-utils":57,"./HTMLTooltip":48}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12945,7 +13247,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
 var _default = EmailHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":54,"./HTMLTooltip":45}],45:[function(require,module,exports){
+},{"../autofill-utils":57,"./HTMLTooltip":48}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12969,6 +13271,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {(details: {height: number, width: number}) => void} [setSize]
  * @property {() => void} remove
  * @property {string} css
+ * @property {boolean} checkVisibility
  */
 
 /** @type {import('./HTMLTooltip.js').HTMLTooltipOptions} */
@@ -12982,7 +13285,8 @@ const defaultOptions = {
   remove: () => {
     /** noop */
   },
-  testMode: false
+  testMode: false,
+  checkVisibility: true
 };
 exports.defaultOptions = defaultOptions;
 
@@ -13167,7 +13471,9 @@ class HTMLTooltip {
     const handler = this.clickableButtons.get(this.activeButton);
 
     if (handler) {
-      (0, _autofillUtils.safeExecute)(this.activeButton, handler);
+      (0, _autofillUtils.safeExecute)(this.activeButton, handler, {
+        checkVisibility: this.options.checkVisibility
+      });
     }
   }
 
@@ -13225,7 +13531,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching":34,"../autofill-utils":54,"./styles/styles":51}],46:[function(require,module,exports){
+},{"../Form/matching":37,"../autofill-utils":57,"./styles/styles":54}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13277,7 +13583,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
   /**
    * @param {HTMLTooltipControllerOptions} options
-   * @param {import('../HTMLTooltip.js').HTMLTooltipOptions} htmlTooltipOptions
+   * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
    */
   constructor(options) {
     let htmlTooltipOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _HTMLTooltip.defaultOptions;
@@ -13294,8 +13600,22 @@ class HTMLTooltipUIController extends _UIController.UIController {
     _defineProperty(this, "_listenerCleanups", []);
 
     this._options = options;
-    this._htmlTooltipOptions = htmlTooltipOptions;
+    this._htmlTooltipOptions = Object.assign({}, _HTMLTooltip.defaultOptions, htmlTooltipOptions);
     window.addEventListener('pointerdown', this, true);
+    /**
+     * The native side will send a custom event 'mouseMove' to indicate
+     * that the HTMLTooltip should fake an element being focussed.
+     *
+     * Note: There's no cleanup required here since the Overlay has a fresh
+     * page load every time it's opened.
+     */
+
+    window.addEventListener('mouseMove', event => {
+      var _this$getActiveToolti;
+
+      const activeTooltip = (_this$getActiveToolti = this.getActiveTooltip) === null || _this$getActiveToolti === void 0 ? void 0 : _this$getActiveToolti.call(this);
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
+    });
   }
   /**
    * @param {import('./UIController').AttachArgs} args
@@ -13475,7 +13795,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig":29,"../DataHTMLTooltip":43,"../EmailHTMLTooltip":44,"../HTMLTooltip":45,"./UIController":49}],47:[function(require,module,exports){
+},{"../../Form/inputTypeConfig":32,"../DataHTMLTooltip":46,"../EmailHTMLTooltip":47,"../HTMLTooltip":48,"./UIController":52}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13567,7 +13887,7 @@ class NativeUIController extends _UIController.UIController {
 
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching":34,"../../deviceApiCalls/__generated__/deviceApiCalls":58,"./UIController":49}],48:[function(require,module,exports){
+},{"../../Form/matching":37,"../../deviceApiCalls/__generated__/deviceApiCalls":61,"./UIController":52}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13760,6 +14080,8 @@ class OverlayUIController extends _UIController.UIController {
   }
 
   handleEvent(event) {
+    console.log('OverlayControllerUI event', event);
+
     switch (event.type) {
       case 'scroll':
         {
@@ -13817,7 +14139,7 @@ class OverlayUIController extends _UIController.UIController {
 
 exports.OverlayUIController = OverlayUIController;
 
-},{"./UIController":49}],49:[function(require,module,exports){
+},{"./UIController":52}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13902,7 +14224,7 @@ class UIController {
 
 exports.UIController = UIController;
 
-},{}],50:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13924,7 +14246,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],51:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13934,7 +14256,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],52:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14077,7 +14399,7 @@ class MissingWebkitHandler extends Error {
 
 exports.MissingWebkitHandler = MissingWebkitHandler;
 
-},{"./captureDdgGlobals":53}],53:[function(require,module,exports){
+},{"./captureDdgGlobals":56}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14108,7 +14430,7 @@ const secretGlobals = {
 var _default = secretGlobals;
 exports.default = _default;
 
-},{}],54:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14158,7 +14480,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
   });
 };
 /**
- * @param {GlobalConfig} globalConfig
+ * @param {Pick<GlobalConfig, 'contentScope' | 'userUnprotectedDomains' | 'userPreferences'>} globalConfig
  * @param [processConfig]
  * @return {boolean}
  */
@@ -14319,7 +14641,11 @@ const setValue = (el, val, config) => {
 
 exports.setValue = setValue;
 
-const safeExecute = (el, fn) => {
+const safeExecute = function (el, fn) {
+  let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  const {
+    checkVisibility = true
+  } = opts;
   const intObs = new IntersectionObserver(changes => {
     for (const change of changes) {
       // Feature detection
@@ -14328,8 +14654,10 @@ const safeExecute = (el, fn) => {
         change.isVisible = true;
       }
 
-      if (change.isIntersecting && change.isVisible) {
-        fn();
+      if (change.isIntersecting) {
+        if (!checkVisibility || change.isVisible) {
+          fn();
+        }
       }
     }
 
@@ -14483,7 +14811,7 @@ const isLikelyASubmitButton = el => {
 
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
-},{"./Form/matching":34}],55:[function(require,module,exports){
+},{"./Form/matching":37}],58:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback");
@@ -14502,7 +14830,7 @@ var _DeviceInterface = require("./DeviceInterface");
   }
 })();
 
-},{"./DeviceInterface":18,"./requestIdleCallback":65}],56:[function(require,module,exports){
+},{"./DeviceInterface":18,"./requestIdleCallback":69}],59:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -14540,6 +14868,7 @@ function createGlobalConfig() {
   const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent);
   const isMobileApp = isDDGApp && !isApp;
   const isFirefox = navigator.userAgent.includes('Firefox');
+  const isWindows = navigator.userAgent.includes('Edg/');
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
   return {
     isApp,
@@ -14548,6 +14877,7 @@ function createGlobalConfig() {
     isFirefox,
     isMobileApp,
     isTopFrame,
+    isWindows,
     secret,
     supportsTopFrame,
     hasModernWebkitAPI,
@@ -14563,7 +14893,7 @@ function createGlobalConfig() {
 module.exports.createGlobalConfig = createGlobalConfig;
 module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
-},{}],57:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14577,13 +14907,13 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],58:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreFormDataCall = exports.GetRuntimeConfigurationCall = exports.GetAvailableInputTypesCall = exports.GetAutofillDataCall = void 0;
+exports.StoreFormDataCall = exports.ShowAutofillParentCall = exports.SetSizeCall = exports.SelectedDetailCall = exports.GetRuntimeConfigurationCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.CloseAutofillParentCall = void 0;
 
 var _validatorsZod = require("./validators.zod.js");
 
@@ -14663,16 +14993,118 @@ class GetAvailableInputTypesCall extends _deviceApi.DeviceApiCall {
   }
 
 }
+/**
+ * @extends {DeviceApiCall<any, getAutofillInitDataResponseSchema>} 
+ */
+
 
 exports.GetAvailableInputTypesCall = GetAvailableInputTypesCall;
 
-},{"../../../packages/device-api":10,"./validators.zod.js":59}],59:[function(require,module,exports){
+class GetAutofillInitDataCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "getAutofillInitData");
+
+    _defineProperty(this, "id", "getAutofillInitDataResponse");
+
+    _defineProperty(this, "resultValidator", _validatorsZod.getAutofillInitDataResponseSchema);
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<getAutofillCredentialsParamsSchema, any>} 
+ */
+
+
+exports.GetAutofillInitDataCall = GetAutofillInitDataCall;
+
+class GetAutofillCredentialsCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "getAutofillCredentials");
+
+    _defineProperty(this, "id", "getAutofillCredentialsResponse");
+
+    _defineProperty(this, "paramsValidator", _validatorsZod.getAutofillCredentialsParamsSchema);
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<setSizeParamsSchema, any>} 
+ */
+
+
+exports.GetAutofillCredentialsCall = GetAutofillCredentialsCall;
+
+class SetSizeCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "setSize");
+
+    _defineProperty(this, "paramsValidator", _validatorsZod.setSizeParamsSchema);
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<selectedDetailParamsSchema, any>} 
+ */
+
+
+exports.SetSizeCall = SetSizeCall;
+
+class SelectedDetailCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "selectedDetail");
+
+    _defineProperty(this, "paramsValidator", _validatorsZod.selectedDetailParamsSchema);
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+
+
+exports.SelectedDetailCall = SelectedDetailCall;
+
+class CloseAutofillParentCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "closeAutofillParent");
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+
+
+exports.CloseAutofillParentCall = CloseAutofillParentCall;
+
+class ShowAutofillParentCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "showAutofillParent");
+  }
+
+}
+
+exports.ShowAutofillParentCall = ShowAutofillParentCall;
+
+},{"../../../packages/device-api":10,"./validators.zod.js":62}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.storeFormDataSchema = exports.runtimeConfigurationSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = void 0;
+exports.userPreferencesSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = void 0;
 
 var _zod = require("zod");
 
@@ -14718,6 +15150,12 @@ const getAliasResultSchema = _zod.z.object({
 
 exports.getAliasResultSchema = getAliasResultSchema;
 
+const getAutofillCredentialsParamsSchema = _zod.z.object({
+  id: _zod.z.string()
+});
+
+exports.getAutofillCredentialsParamsSchema = getAutofillCredentialsParamsSchema;
+
 const getAutofillDataRequestSchema = _zod.z.object({
   inputType: _zod.z.string(),
   mainType: _zod.z.union([_zod.z.literal("credentials"), _zod.z.literal("identities"), _zod.z.literal("creditCards")]),
@@ -14736,6 +15174,19 @@ const getAutofillDataResponseSchema = _zod.z.object({
 });
 
 exports.getAutofillDataResponseSchema = getAutofillDataResponseSchema;
+
+const getAutofillInitDataResponseSchema = _zod.z.object({
+  type: _zod.z.literal("getAutofillInitDataResponse").optional(),
+  success: _zod.z.object({
+    credentials: _zod.z.array(credentialsSchema),
+    identities: _zod.z.array(_zod.z.record(_zod.z.any())),
+    creditCards: _zod.z.array(_zod.z.record(_zod.z.any())),
+    serializedInputContext: _zod.z.string()
+  }),
+  error: genericErrorSchema.optional()
+});
+
+exports.getAutofillInitDataResponseSchema = getAutofillInitDataResponseSchema;
 
 const availableInputTypesSchema = _zod.z.object({
   credentials: _zod.z.boolean().optional(),
@@ -14772,6 +15223,20 @@ const contentScopeFeaturesSchema = _zod.z.record(_zod.z.object({
 
 exports.contentScopeFeaturesSchema = contentScopeFeaturesSchema;
 
+const selectedDetailParamsSchema = _zod.z.object({
+  data: _zod.z.record(_zod.z.any()),
+  configType: _zod.z.string()
+});
+
+exports.selectedDetailParamsSchema = selectedDetailParamsSchema;
+
+const setSizeParamsSchema = _zod.z.object({
+  height: _zod.z.number(),
+  width: _zod.z.number()
+});
+
+exports.setSizeParamsSchema = setSizeParamsSchema;
+
 const outgoingCredentialsSchema = _zod.z.object({
   username: _zod.z.string().optional(),
   password: _zod.z.string().optional()
@@ -14802,9 +15267,7 @@ exports.contentScopeSchema = contentScopeSchema;
 
 const runtimeConfigurationSchema = _zod.z.object({
   contentScope: contentScopeSchema,
-  userUnprotectedDomains: _zod.z.array(_zod.z.object({
-    name: _zod.z.string().optional()
-  })),
+  userUnprotectedDomains: _zod.z.array(_zod.z.string()),
   userPreferences: userPreferencesSchema
 });
 
@@ -14824,7 +15287,7 @@ const getRuntimeConfigurationResponseSchema = _zod.z.object({
 
 exports.getRuntimeConfigurationResponseSchema = getRuntimeConfigurationResponseSchema;
 
-},{"zod":8}],60:[function(require,module,exports){
+},{"zod":8}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14863,7 +15326,7 @@ class GetAlias extends _deviceApi.DeviceApiCall {
 
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api":10,"./__generated__/validators.zod":59}],61:[function(require,module,exports){
+},{"../../packages/device-api":10,"./__generated__/validators.zod":62}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15009,7 +15472,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api":10,"../__generated__/deviceApiCalls":58}],62:[function(require,module,exports){
+},{"../../../packages/device-api":10,"../__generated__/deviceApiCalls":61}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15082,7 +15545,7 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api":10,"../../appleDeviceUtils/appleDeviceUtils":52,"../__generated__/deviceApiCalls":58}],63:[function(require,module,exports){
+},{"../../../packages/device-api":10,"../../appleDeviceUtils/appleDeviceUtils":55,"../__generated__/deviceApiCalls":61}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15101,7 +15564,7 @@ class ExtensionTransport extends _deviceApi.DeviceApiTransport {
 
 exports.ExtensionTransport = ExtensionTransport;
 
-},{"../../../packages/device-api":10}],64:[function(require,module,exports){
+},{"../../../packages/device-api":10}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15114,6 +15577,8 @@ var _apple = require("./apple.transport");
 var _android = require("./android.transport");
 
 var _extension = require("./extension.transport");
+
+var _windows = require("./windows.transport");
 
 /**
  * @param {GlobalConfig} globalConfig
@@ -15134,6 +15599,10 @@ function createTransport(globalConfig) {
       default:
         throw new Error('selectSender unimplemented!');
     }
+  }
+
+  if (globalConfig.isWindows) {
+    return new _windows.WindowsTransport();
   } // fallback for when `globalConfig.userPreferences.platform.name` is absent
 
 
@@ -15149,7 +15618,89 @@ function createTransport(globalConfig) {
   return new _extension.ExtensionTransport();
 }
 
-},{"./android.transport":61,"./apple.transport":62,"./extension.transport":63}],65:[function(require,module,exports){
+},{"./android.transport":64,"./apple.transport":65,"./extension.transport":66,"./windows.transport":68}],68:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WindowsTransport = void 0;
+exports.waitForWindowsResponse = waitForWindowsResponse;
+
+var _deviceApi = require("../../../packages/device-api");
+
+class WindowsTransport extends _deviceApi.DeviceApiTransport {
+  async send(deviceApiCall) {
+    if (deviceApiCall.id) {
+      return windowsTransport(deviceApiCall).withResponse(deviceApiCall.id);
+    }
+
+    return windowsTransport(deviceApiCall);
+  }
+
+}
+/**
+ * @param {import("../../../packages/device-api").DeviceApiCall} deviceApiCall
+ */
+
+
+exports.WindowsTransport = WindowsTransport;
+
+function windowsTransport(deviceApiCall) {
+  if (deviceApiCall.params) {
+    window.chrome.webview.postMessage({
+      Feature: 'Autofill',
+      Name: deviceApiCall.method,
+      Data: deviceApiCall.params
+    });
+  } else {
+    window.chrome.webview.postMessage({
+      Feature: 'Autofill',
+      Name: deviceApiCall.method,
+      Data: deviceApiCall.params
+    });
+  }
+
+  return {
+    /**
+     * Sends a message and returns a Promise that resolves with the response
+     * @param responseId
+     * @returns {Promise<*>}
+     */
+    withResponse(responseId) {
+      return waitForWindowsResponse(responseId);
+    }
+
+  };
+}
+/**
+ * @param {string} responseId
+ * @returns {Promise<any>}
+ */
+
+
+function waitForWindowsResponse(responseId) {
+  console.log('Windows.waitForWindowsResponse', responseId);
+  return new Promise(resolve => {
+    const handler = event => {
+      console.log('📩 windows, event.origin', [event.origin, JSON.stringify(event.data)]);
+
+      if (!event.data) {
+        console.warn('data absent from message');
+        return;
+      }
+
+      if (event.data.type === responseId) {
+        resolve(event.data);
+        window.chrome.webview.removeEventListener('message', handler);
+      }
+    };
+
+    window.chrome.webview.addEventListener('message', handler);
+  });
+}
+
+},{"../../../packages/device-api":10}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15197,4 +15748,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}]},{},[55]);
+},{}]},{},[58]);

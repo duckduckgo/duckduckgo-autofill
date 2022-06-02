@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SelectedDetailParams",
+  "type": "object",
+  "description": "The data sent when an item is selected",
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "type": "object"
+    },
+    "configType": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "data",
+    "configType"
+  ]
+}

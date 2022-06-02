@@ -1,6 +1,7 @@
 import {AppleTransport} from './apple.transport'
 import {AndroidTransport} from './android.transport'
 import {ExtensionTransport} from './extension.transport'
+import {WindowsTransport} from './windows.transport'
 
 /**
  * @param {GlobalConfig} globalConfig
@@ -18,6 +19,10 @@ export function createTransport (globalConfig) {
         default:
             throw new Error('selectSender unimplemented!')
         }
+    }
+
+    if (globalConfig.isWindows) {
+        return new WindowsTransport()
     }
 
     // fallback for when `globalConfig.userPreferences.platform.name` is absent

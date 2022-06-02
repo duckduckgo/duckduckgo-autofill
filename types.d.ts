@@ -8,6 +8,17 @@ interface IntersectionObserverInit {
     delay?: number
 }
 
+interface WindowsMessageFormat {
+    Feature: "Autofill"
+    Name: string
+    Data: any
+}
+
+interface WindowsResponseFormat {
+    type: string
+    [index: string]: any
+}
+
 interface Window {
     // Used in the Android app
     EmailInterface: {
@@ -23,6 +34,14 @@ interface Window {
     BrowserAutofill: {
         getAutofillData(data: string): void;
         storeFormData(data: string): void;
+    }
+
+    chrome: {
+        webview: {
+            postMessage: (message: WindowsMessageFormat|WindowsResponseFormat, origin?: string) => void,
+            addEventListener: Window['addEventListener'],
+            removeEventListener: Window['removeEventListener'],
+        }
     }
 
     // Used in Apple apps

@@ -1,11 +1,14 @@
-import { validate } from '../packages/device-api'
+import {validate} from '../packages/device-api'
 import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls'
 import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod'
+import {autofillEnabled} from './autofill-utils'
+import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
 /**
  * Some Type helpers to prevent duplication
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} AvailableInputTypes
+ * @typedef {import("./deviceApiCalls/__generated__/validators-ts").RuntimeConfiguration} RuntimeConfiguration
  * @typedef {import("../packages/device-api").DeviceApi} DeviceApi
  */
 
@@ -28,6 +31,10 @@ export class Settings {
     _featureToggles = null
     /** @type {AvailableInputTypes | null} */
     _availableInputTypes = null
+    /** @type {RuntimeConfiguration | null} */
+    _runtimeConfiguration = null
+    /** @type {boolean | null} */
+    _enabled = null
 
     /**
      * @param {GlobalConfig} config
@@ -52,7 +59,7 @@ export class Settings {
      */
     async getFeatureToggles () {
         try {
-            const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
+            const runtimeConfig = await this._getRuntimeConfiguration()
             const autofillSettings = validate(runtimeConfig.userPreferences?.features?.autofill?.settings, autofillSettingsSchema)
             return autofillSettings.featureToggles
         } catch (e) {
@@ -62,6 +69,34 @@ export class Settings {
             }
             return Settings.defaults.featureToggles
         }
+    }
+
+    /**
+     * @returns {Promise<boolean|null>}
+     */
+    async getEnabled () {
+        try {
+            const runtimeConfig = await this._getRuntimeConfiguration()
+            const enabled = autofillEnabled(runtimeConfig, processConfig)
+            return enabled
+        } catch (e) {
+            // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getFeatureToggles: ❌', e)
+            }
+            return null
+        }
+    }
+
+    /**
+     * Get runtime configuration, but only once.
+     * @returns {Promise<RuntimeConfiguration>}
+     * @private
+     */
+    async _getRuntimeConfiguration () {
+        if (this._runtimeConfiguration) return this._runtimeConfiguration
+        this._runtimeConfiguration = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
+        return this._runtimeConfiguration
     }
 
     /**
@@ -87,11 +122,20 @@ export class Settings {
      *
      * @returns {Promise<{
      *      availableInputTypes: AvailableInputTypes,
-     *      featureToggles: AutofillFeatureToggles
+     *      featureToggles: AutofillFeatureToggles,
+     *      enabled: boolean | null
      * }>}
      * @param {AvailableInputTypes} [availableInputTypesOverrides] a migration aid so that macOS can provide data in its old way initially
      */
     async refresh (availableInputTypesOverrides) {
+        this.setEnabled(await this.getEnabled())
+
+        if (typeof this.enabled === 'boolean') {
+            if (!this.enabled) {
+                return Settings.defaults
+            }
+        }
+
         this.setFeatureToggles(await this.getFeatureToggles())
         const availableInputTypesFromRemote = await this.getAvailableInputTypes()
 
@@ -118,7 +162,8 @@ export class Settings {
 
         return {
             featureToggles: this.featureToggles,
-            availableInputTypes: this.availableInputTypes
+            availableInputTypes: this.availableInputTypes,
+            enabled: this.enabled
         }
     }
 
@@ -160,7 +205,9 @@ export class Settings {
             identities: false,
             creditCards: false,
             email: false
-        }
+        },
+        /** @type {boolean | null} */
+        enabled: null
     }
 
     static default (globalConfig, deviceApi) {
@@ -168,5 +215,20 @@ export class Settings {
         settings.setFeatureToggles(Settings.defaults.featureToggles)
         settings.setAvailableInputTypes(Settings.defaults.availableInputTypes)
         return settings
+    }
+
+    /** @returns {boolean|null} */
+    get enabled () {
+        if (this._runtimeConfiguration === null) {
+            console.warn('settings.enabled cannot be accessed until RuntimeConfiguration has been retrieved')
+        }
+        return this._enabled
+    }
+
+    /**
+     * @param {boolean|null} enabled
+     */
+    setEnabled (enabled) {
+        this._enabled = enabled
     }
 }

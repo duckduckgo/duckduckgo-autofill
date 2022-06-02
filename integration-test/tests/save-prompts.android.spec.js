@@ -47,7 +47,7 @@ test.describe('Android Save prompts', () => {
                 .platform('android')
                 .applyTo(page)
 
-            await signup.enterCredentials(credentials)
+            await signup.enterCredentialsAndSubmit(credentials)
             await signup.assertWasPromptedToSave(credentials, 'android')
         })
         test.describe('Prompting to save from a login form', () => {

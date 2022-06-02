@@ -69,7 +69,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             // this is not ideal as it's checking an implementation detail.
             // But it's done to ensure we're not getting a false positive
             // and definitely loading the overlay code paths
-            await login.assertParentOpened()
+            await login.assertParentPolledForCredentials()
         })
         test('by clicking a label', async ({page}) => {
             await testLoginPage(page, server, {clickLabel: true})

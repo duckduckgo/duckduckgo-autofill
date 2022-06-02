@@ -344,7 +344,9 @@ class Form {
             let click = null
             const getPosition = () => {
                 // In extensions, the tooltip is centered on the Dax icon
-                return this.device.globalConfig.isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
+                // todo(Shane): Where should this logic live?
+                const alignLeft = this.device.globalConfig.isApp || this.device.globalConfig.isWindows
+                return alignLeft ? input.getBoundingClientRect() : getDaxBoundingBox(input)
             }
 
             // Checks for mousedown event

@@ -6,6 +6,8 @@ import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceI
 import {createTransport} from './deviceApiCalls/transports/transports'
 import {DeviceApi} from '../packages/device-api'
 import {Settings} from './Settings'
+import {WindowsInterface} from './DeviceInterface/WindowsInterface'
+import {WindowsOverlayDeviceInterface} from './DeviceInterface/WindowsOverlayDeviceInterface'
 
 function createDevice () {
     const globalConfig = createGlobalConfig()
@@ -17,9 +19,9 @@ function createDevice () {
      */
     const loggingTransport = {
         async send (deviceApiCall) {
-            console.log('[outgoing]', deviceApiCall.method, JSON.stringify(deviceApiCall.params || null))
+            console.log('[->outgoing]', deviceApiCall.method, JSON.stringify(deviceApiCall.params || null))
             const result = await transport.send(deviceApiCall)
-            console.log('[incoming]', deviceApiCall.method, JSON.stringify(result || null))
+            console.log('[<-incoming]', deviceApiCall.method, JSON.stringify(result || null))
             return result
         }
     }
@@ -28,6 +30,12 @@ function createDevice () {
     let deviceApi = new DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport)
     const settings = new Settings(globalConfig, deviceApi)
 
+    if (globalConfig.isWindows) {
+        if (globalConfig.isTopFrame) {
+            return new WindowsOverlayDeviceInterface(globalConfig, deviceApi, settings)
+        }
+        return new WindowsInterface(globalConfig, deviceApi, settings)
+    }
     if (globalConfig.isDDGApp) {
         if (globalConfig.isAndroid) {
             return new AndroidInterface(globalConfig, deviceApi, settings)

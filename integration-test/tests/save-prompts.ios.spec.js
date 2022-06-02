@@ -79,7 +79,7 @@ test.describe('iOS Save prompts', () => {
 
             const signup = signupPage(page, server)
             await signup.navigate()
-            await signup.enterCredentials(credentials)
+            await signup.enterCredentialsAndSubmit(credentials)
             await signup.assertWasPromptedToSave(credentials, 'ios')
         })
         test.describe('Prompting to save from a login form', () => {

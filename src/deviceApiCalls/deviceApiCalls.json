@@ -14,5 +14,23 @@
   "getAvailableInputTypes": {
     "id": "getAvailableInputTypesResponse",
     "resultValidator": "./schemas/getAvailableInputTypes.result.json"
+  },
+  "getAutofillInitData": {
+    "id": "getAutofillInitDataResponse",
+    "resultValidator": "./schemas/getAutofillInitData.result.json"
+  },
+  "getAutofillCredentials": {
+    "id": "getAutofillCredentialsResponse",
+    "paramsValidator": "./schemas/getAutofillCredentials.params.json"
+  },
+  "setSize": {
+    "paramsValidator": "./schemas/setSize.params.json"
+  },
+  "selectedDetail": {
+    "paramsValidator": "./schemas/selectedDetail.params.json"
+  },
+  "closeAutofillParent": {
+  },
+  "showAutofillParent": {
   }
 }

@@ -18,7 +18,7 @@ import { NativeUIController } from '../UI/controllers/NativeUIController'
 import {createTransport} from '../deviceApiCalls/transports/transports'
 import {Settings} from '../Settings'
 import {DeviceApi} from '../../packages/device-api'
-import {StoreFormDataCall} from '../deviceApiCalls/__generated__/deviceApiCalls'
+import {GetAutofillCredentialsCall, StoreFormDataCall} from '../deviceApiCalls/__generated__/deviceApiCalls'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -228,12 +228,27 @@ class InterfacePrototype {
 
         await this.setupAutofill()
         await this.refreshSettings()
+
+        // this is the temporary measure to support windows whilst we still have 'setupAutofill'
+        // eventually all interfaces will use this
+        if (!this.isEnabledViaSettings()) {
+            return
+        }
+
         await this.setupSettingsPage()
         await this.postInit()
 
         if (this.settings.featureToggles.credentials_saving) {
             listenForGlobalFormSubmission(this.scanner.forms)
         }
+    }
+
+    /**
+     * All interfaces should migrate to this, when they can.
+     * @returns {boolean}
+     */
+    isEnabledViaSettings () {
+        return true
     }
 
     /**
@@ -405,6 +420,8 @@ class InterfacePrototype {
         dataPromise.then(response => {
             if (response.success) {
                 return this.selectedDetail(response.success, config.type)
+            } else if (response) {
+                return this.selectedDetail(response, config.type)
             } else {
                 return Promise.reject(new Error('none-success response'))
             }
@@ -511,14 +528,16 @@ class InterfacePrototype {
     getAccounts () {}
     /**
      * Gets credentials ready for autofill
-     * @param {number|string} _id - the credential id
-     * @returns {APIResponseSingle<CredentialsObject>}
+     * @param {number|string} id - the credential id
+     * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
      */
-    getAutofillCredentials (_id) { throw new Error('unimplemented') }
+    async getAutofillCredentials (id) {
+        return this.deviceApi.request(new GetAutofillCredentialsCall({id: String(id)}))
+    }
     /** @returns {APIResponse<CreditCardObject>} */
-    async getAutofillCreditCard (_id) { throw new Error('unimplemented') }
+    async getAutofillCreditCard (_id) { throw new Error('getAutofillCreditCard unimplemented') }
     /** @returns {Promise<{success: IdentityObject|undefined}>} */
-    async getAutofillIdentity (_id) { throw new Error('unimplemented') }
+    async getAutofillIdentity (_id) { throw new Error('getAutofillCreditCard unimplemented') }
 
     openManagePasswords () {}
 
