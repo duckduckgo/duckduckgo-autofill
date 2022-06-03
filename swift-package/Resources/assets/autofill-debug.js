@@ -14930,40 +14930,41 @@ exports.AndroidTransport = AndroidTransport;
 function waitForResponse(expectedResponse, config) {
   return new Promise(resolve => {
     const handler = e => {
-      console.log('config.isDDGTestMode', config.isDDGTestMode);
-
       if (!config.isDDGTestMode) {
         if (e.origin !== '') {
-          console.log("\u274C origin-mismatch e.origin(".concat(e.origin, ") !== ''"));
           return;
         }
       }
 
-      console.warn('event.origin check was disabled on Android.', [e.origin]);
-
       if (!e.data) {
-        console.log('❌ event.data missing');
         return;
       }
 
       if (typeof e.data !== 'string') {
-        console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed');
+        if (config.isDDGTestMode) {
+          console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed');
+        }
+
         return;
       }
 
       try {
         let data = JSON.parse(e.data);
-        console.log(JSON.stringify(data, null, 2));
 
         if (data.type === expectedResponse) {
           window.removeEventListener('message', handler);
           return resolve(data);
         }
 
-        console.log("\u274C event.data.type was '".concat(data.type, "', which didnt match '").concat(expectedResponse, "'"), JSON.stringify(data));
+        if (config.isDDGTestMode) {
+          console.log("\u274C event.data.type was '".concat(data.type, "', which didnt match '").concat(expectedResponse, "'"), JSON.stringify(data));
+        }
       } catch (e) {
         window.removeEventListener('message', handler);
-        console.log('❌ Could not JSON.parse the response');
+
+        if (config.isDDGTestMode) {
+          console.log('❌ Could not JSON.parse the response');
+        }
       }
     };
 
@@ -15038,11 +15039,10 @@ class AppleTransport extends _deviceApi.DeviceApiTransport {
 
   async send(rpc) {
     try {
-      let response = await (0, _appleDeviceUtils.wkSendAndWait)(rpc.method, rpc.params || undefined, {
+      return await (0, _appleDeviceUtils.wkSendAndWait)(rpc.method, rpc.params || undefined, {
         secret: this.config.secret,
         hasModernWebkitAPI: this.config.hasModernWebkitAPI
       });
-      return response;
     } catch (e) {
       if (e instanceof _appleDeviceUtils.MissingWebkitHandler) {
         if (this.config.isDDGTestMode) {

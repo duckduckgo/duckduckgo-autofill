@@ -14,11 +14,10 @@ export class AppleTransport extends DeviceApiTransport {
 
     async send (rpc) {
         try {
-            let response = await wkSendAndWait(rpc.method, rpc.params || undefined, {
+            return await wkSendAndWait(rpc.method, rpc.params || undefined, {
                 secret: this.config.secret,
                 hasModernWebkitAPI: this.config.hasModernWebkitAPI
             })
-            return response
         } catch (e) {
             if (e instanceof MissingWebkitHandler) {
                 if (this.config.isDDGTestMode) {

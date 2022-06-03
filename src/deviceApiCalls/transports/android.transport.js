@@ -49,33 +49,34 @@ export class AndroidTransport extends DeviceApiTransport {
 function waitForResponse (expectedResponse, config) {
     return new Promise((resolve) => {
         const handler = e => {
-            console.log('config.isDDGTestMode', config.isDDGTestMode)
             if (!config.isDDGTestMode) {
                 if (e.origin !== '') {
-                    console.log(`❌ origin-mismatch e.origin(${e.origin}) !== ''`)
                     return
                 }
             }
-            console.warn('event.origin check was disabled on Android.', [e.origin])
             if (!e.data) {
-                console.log('❌ event.data missing')
                 return
             }
             if (typeof e.data !== 'string') {
-                console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
+                if (config.isDDGTestMode) {
+                    console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
+                }
                 return
             }
             try {
                 let data = JSON.parse(e.data)
-                console.log(JSON.stringify(data, null, 2))
                 if (data.type === expectedResponse) {
                     window.removeEventListener('message', handler)
                     return resolve(data)
                 }
-                console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
+                if (config.isDDGTestMode) {
+                    console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
+                }
             } catch (e) {
                 window.removeEventListener('message', handler)
-                console.log('❌ Could not JSON.parse the response')
+                if (config.isDDGTestMode) {
+                    console.log('❌ Could not JSON.parse the response')
+                }
             }
         }
         window.addEventListener('message', handler)
