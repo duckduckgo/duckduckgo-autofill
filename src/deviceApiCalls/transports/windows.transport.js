@@ -38,14 +38,15 @@ function windowsTransport (deviceApiCall) {
         }
     }
 }
-
+let listeners = 0;
 /**
  * @param {string} responseId
  * @returns {Promise<any>}
  */
 export function waitForWindowsResponse (responseId) {
-    console.log('Windows.waitForWindowsResponse', responseId)
-    return new Promise((resolve) => {
+    console.log('listener count', listeners);
+    let teardown;
+    const promise = new Promise((resolve) => {
         const handler = event => {
             console.log('📩 windows, event.origin', [event.origin, JSON.stringify(event.data)])
             if (!event.data) {
@@ -53,10 +54,32 @@ export function waitForWindowsResponse (responseId) {
                 return
             }
             if (event.data.type === responseId) {
+                teardown()
                 resolve(event.data)
-                window.chrome.webview.removeEventListener('message', handler)
             }
         }
+        console.log('+Windows.waitForWindowsResponse', responseId)
         window.chrome.webview.addEventListener('message', handler)
+        listeners++;
+        teardown = () => {
+            console.log('-Windows.waitForWindowsResponse', responseId)
+            window.chrome.webview.removeEventListener('message', handler)
+            listeners--;
+        }
+    }).catch(e => {
+        if (typeof teardown === "function") {
+            console.log('stopping listening following an exception');
+            teardown.call(null)
+        }
+        // rethrow
+        throw e;
     })
+    promise.cancel = () => {
+        if (typeof teardown === "function") {
+            console.log('promise cancelled');
+            teardown.call(null)
+        }
+    }
+
+    return promise;
 }

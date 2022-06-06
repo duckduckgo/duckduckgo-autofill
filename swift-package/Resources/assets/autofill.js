@@ -4536,7 +4536,15 @@ class WindowsInterface extends _InterfacePrototype.default {
 
   async _show(details) {
     await this.deviceApi.notify(new _deviceApiCalls.ShowAutofillParentCall(details));
-    (0, _windows.waitForWindowsResponse)('selectedDetailResponse').then(resp => {
+
+    if (this.selectionPromise) {
+      // @ts-ignore
+      this.selectionPromise.cancel();
+    }
+
+    this.selectionPromise = (0, _windows.waitForWindowsResponse)('selectedDetailResponse');
+    this.selectionPromise.then(resp => {
+      this._prom = null;
       const {
         success
       } = resp;
@@ -4546,6 +4554,8 @@ class WindowsInterface extends _InterfacePrototype.default {
           console.error('Could not close', e);
         }
       });
+    }).catch(e => {
+      console.error(e);
     });
   }
   /**
@@ -11862,15 +11872,17 @@ function windowsTransport(deviceApiCall) {
 
   };
 }
+
+let listeners = 0;
 /**
  * @param {string} responseId
  * @returns {Promise<any>}
  */
 
-
 function waitForWindowsResponse(responseId) {
-  console.log('Windows.waitForWindowsResponse', responseId);
-  return new Promise(resolve => {
+  console.log('listener count', listeners);
+  let teardown;
+  const promise = new Promise(resolve => {
     const handler = event => {
       console.log('📩 windows, event.origin', [event.origin, JSON.stringify(event.data)]);
 
@@ -11880,13 +11892,38 @@ function waitForWindowsResponse(responseId) {
       }
 
       if (event.data.type === responseId) {
+        teardown();
         resolve(event.data);
-        window.chrome.webview.removeEventListener('message', handler);
       }
     };
 
+    console.log('+Windows.waitForWindowsResponse', responseId);
     window.chrome.webview.addEventListener('message', handler);
+    listeners++;
+
+    teardown = () => {
+      console.log('-Windows.waitForWindowsResponse', responseId);
+      window.chrome.webview.removeEventListener('message', handler);
+      listeners--;
+    };
+  }).catch(e => {
+    if (typeof teardown === "function") {
+      console.log('stopping listening following an exception');
+      teardown.call(null);
+    } // rethrow
+
+
+    throw e;
   });
+
+  promise.cancel = () => {
+    if (typeof teardown === "function") {
+      console.log('promise cancelled');
+      teardown.call(null);
+    }
+  };
+
+  return promise;
 }
 
 },{"../../../packages/device-api":2}],61:[function(require,module,exports){
