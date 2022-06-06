@@ -145,7 +145,8 @@ export function createWebkitMocks (platform = 'macos') {
         getAutofillData: null,
         /** @type {null | Record<string, any>} */
         getAvailableInputTypes: null,
-        storeFormData: null
+        storeFormData: null,
+        selectedDetail: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */

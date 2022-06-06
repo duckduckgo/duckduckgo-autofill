@@ -90,6 +90,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             await overlay.navigate()
             await overlay.selectFirstCredential(personalAddress)
             await overlay.doesNotCloseParent()
+            await page.waitForTimeout(500);
         })
     })
     test.describe('When availableInputTypes API is available', () => {

@@ -46,14 +46,13 @@ export class WindowsInterface extends InterfacePrototype {
     async _show (details) {
         await this.deviceApi.notify(new ShowAutofillParentCall(details))
 
-        if (this._abortController) {
+        // prevent overlapping listeners
+        if (this._abortController && !this._abortController.signal.aborted) {
             this._abortController.abort();
         }
-
         this._abortController = new AbortController();
-        this.selectionPromise = waitForWindowsResponse('selectedDetailResponse', this._abortController.signal);
-        this.selectionPromise.then(resp => {
-            this._prom = null;
+
+        waitForWindowsResponse('selectedDetailResponse', this._abortController.signal).then(resp => {
             const { success } = resp
             this.activeFormSelectedDetail(success.data, success.configType)
             return this._closeAutofillParent()

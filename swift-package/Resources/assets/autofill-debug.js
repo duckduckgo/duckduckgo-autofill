@@ -8213,16 +8213,14 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 
   async _show(details) {
-    await this.deviceApi.notify(new _deviceApiCalls.ShowAutofillParentCall(details));
+    await this.deviceApi.notify(new _deviceApiCalls.ShowAutofillParentCall(details)); // prevent overlapping listeners
 
-    if (this._abortController) {
+    if (this._abortController && !this._abortController.signal.aborted) {
       this._abortController.abort();
     }
 
     this._abortController = new AbortController();
-    this.selectionPromise = (0, _windows.waitForWindowsResponse)('selectedDetailResponse', this._abortController.signal);
-    this.selectionPromise.then(resp => {
-      this._prom = null;
+    (0, _windows.waitForWindowsResponse)('selectedDetailResponse', this._abortController.signal).then(resp => {
       const {
         success
       } = resp;
@@ -8423,7 +8421,11 @@ function overlayApi(device) {
         let [key, value] = _ref;
         return [key, String(value)];
       });
-      const data = Object.fromEntries(detailsEntries);
+      const data = Object.fromEntries(detailsEntries); // todo: Make this part conform to the new getAutofillData format, so that filling can occur in a uniform manner.
+      // This hasn't been done yet here since it will involve changes to to macOS
+
+      /** @link {import("../deviceApiCalls/schemas/getAutofillData.result.json")} */
+
       await device.deviceApi.notify(new _deviceApiCalls.SelectedDetailCall({
         data,
         configType

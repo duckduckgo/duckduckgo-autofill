@@ -42,6 +42,9 @@ export function overlayApi (device) {
                 return [key, String(value)]
             })
             const data = Object.fromEntries(detailsEntries)
+            // todo: Make this part conform to the new getAutofillData format, so that filling can occur in a uniform manner.
+            // This hasn't been done yet here since it will involve changes to to macOS
+            /** @link {import("../deviceApiCalls/schemas/getAutofillData.result.json")} */
             await device.deviceApi.notify(new SelectedDetailCall({data, configType}))
         },
         /**
