@@ -8175,6 +8175,8 @@ class WindowsInterface extends _InterfacePrototype.default {
     super(...arguments);
 
     _defineProperty(this, "ready", false);
+
+    _defineProperty(this, "_abortController", null);
   }
 
   /**
@@ -8213,12 +8215,12 @@ class WindowsInterface extends _InterfacePrototype.default {
   async _show(details) {
     await this.deviceApi.notify(new _deviceApiCalls.ShowAutofillParentCall(details));
 
-    if (this.selectionPromise) {
-      // @ts-ignore
-      this.selectionPromise.cancel();
+    if (this._abortController) {
+      this._abortController.abort();
     }
 
-    this.selectionPromise = (0, _windows.waitForWindowsResponse)('selectedDetailResponse');
+    this._abortController = new AbortController();
+    this.selectionPromise = (0, _windows.waitForWindowsResponse)('selectedDetailResponse', this._abortController.signal);
     this.selectionPromise.then(resp => {
       this._prom = null;
       const {
@@ -8231,7 +8233,11 @@ class WindowsInterface extends _InterfacePrototype.default {
         }
       });
     }).catch(e => {
-      console.error(e);
+      if (e.name === 'AbortError') {
+        console.log('Promise Aborted');
+      } else {
+        console.log('Promise Rejected');
+      }
     });
   }
   /**
@@ -15685,17 +15691,22 @@ function windowsTransport(deviceApiCall) {
 
   };
 }
-
-let listeners = 0;
 /**
  * @param {string} responseId
+ * @param {AbortSignal} [signal] - optional abort signal for cancelling the current request
  * @returns {Promise<any>}
  */
 
-function waitForWindowsResponse(responseId) {
-  console.log('listener count', listeners);
-  let teardown;
-  const promise = new Promise(resolve => {
+
+function waitForWindowsResponse(responseId, signal) {
+  return new Promise((resolve, reject) => {
+    // if already aborted, reject immediately
+    if (signal !== null && signal !== void 0 && signal.aborted) {
+      return reject(new DOMException('Aborted', 'AbortError'));
+    }
+
+    let teardown; // The event handler
+
     const handler = event => {
       console.log('📩 windows, event.origin', [event.origin, JSON.stringify(event.data)]);
 
@@ -15708,35 +15719,23 @@ function waitForWindowsResponse(responseId) {
         teardown();
         resolve(event.data);
       }
-    };
+    }; // what to do if this promise is aborted
 
-    console.log('+Windows.waitForWindowsResponse', responseId);
+
+    const abortHandler = () => {
+      teardown();
+      reject(new DOMException('Aborted', 'AbortError'));
+    }; // setup
+
+
     window.chrome.webview.addEventListener('message', handler);
-    listeners++;
+    signal === null || signal === void 0 ? void 0 : signal.addEventListener('abort', abortHandler);
 
     teardown = () => {
-      console.log('-Windows.waitForWindowsResponse', responseId);
       window.chrome.webview.removeEventListener('message', handler);
-      listeners--;
+      signal === null || signal === void 0 ? void 0 : signal.removeEventListener('abort', abortHandler);
     };
-  }).catch(e => {
-    if (typeof teardown === "function") {
-      console.log('stopping listening following an exception');
-      teardown.call(null);
-    } // rethrow
-
-
-    throw e;
   });
-
-  promise.cancel = () => {
-    if (typeof teardown === "function") {
-      console.log('promise cancelled');
-      teardown.call(null);
-    }
-  };
-
-  return promise;
 }
 
 },{"../../../packages/device-api":10}],69:[function(require,module,exports){

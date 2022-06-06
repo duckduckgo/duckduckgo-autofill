@@ -9,6 +9,8 @@ import {CloseAutofillParentCall, ShowAutofillParentCall} from '../deviceApiCalls
 
 export class WindowsInterface extends InterfacePrototype {
     ready = false;
+    /** @type {AbortController|null} */
+    _abortController = null;
     /**
      * @deprecated This is too early, and will be removed eventually.
      * @returns {Promise<boolean>}
@@ -43,11 +45,13 @@ export class WindowsInterface extends InterfacePrototype {
      */
     async _show (details) {
         await this.deviceApi.notify(new ShowAutofillParentCall(details))
-        if (this.selectionPromise) {
-            // @ts-ignore
-            this.selectionPromise.cancel();
+
+        if (this._abortController) {
+            this._abortController.abort();
         }
-        this.selectionPromise = waitForWindowsResponse('selectedDetailResponse');
+
+        this._abortController = new AbortController();
+        this.selectionPromise = waitForWindowsResponse('selectedDetailResponse', this._abortController.signal);
         this.selectionPromise.then(resp => {
             this._prom = null;
             const { success } = resp
@@ -59,7 +63,11 @@ export class WindowsInterface extends InterfacePrototype {
                     }
                 })
         }).catch(e => {
-            console.error(e);
+            if (e.name === 'AbortError') {
+                console.log('Promise Aborted');
+            } else {
+                console.log('Promise Rejected');
+            }
         })
     }
 

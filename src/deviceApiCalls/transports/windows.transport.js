@@ -38,15 +38,20 @@ function windowsTransport (deviceApiCall) {
         }
     }
 }
-let listeners = 0;
 /**
  * @param {string} responseId
+ * @param {AbortSignal} [signal] - optional abort signal for cancelling the current request
  * @returns {Promise<any>}
  */
-export function waitForWindowsResponse (responseId) {
-    console.log('listener count', listeners);
-    let teardown;
-    const promise = new Promise((resolve) => {
+export function waitForWindowsResponse (responseId, signal) {
+    return new Promise((resolve, reject) => {
+        // if already aborted, reject immediately
+        if (signal?.aborted) {
+            return reject(new DOMException('Aborted', 'AbortError'));
+        }
+        let teardown;
+
+        // The event handler
         const handler = event => {
             console.log('📩 windows, event.origin', [event.origin, JSON.stringify(event.data)])
             if (!event.data) {
@@ -58,28 +63,20 @@ export function waitForWindowsResponse (responseId) {
                 resolve(event.data)
             }
         }
-        console.log('+Windows.waitForWindowsResponse', responseId)
-        window.chrome.webview.addEventListener('message', handler)
-        listeners++;
-        teardown = () => {
-            console.log('-Windows.waitForWindowsResponse', responseId)
-            window.chrome.webview.removeEventListener('message', handler)
-            listeners--;
-        }
-    }).catch(e => {
-        if (typeof teardown === "function") {
-            console.log('stopping listening following an exception');
-            teardown.call(null)
-        }
-        // rethrow
-        throw e;
-    })
-    promise.cancel = () => {
-        if (typeof teardown === "function") {
-            console.log('promise cancelled');
-            teardown.call(null)
-        }
-    }
 
-    return promise;
+        // what to do if this promise is aborted
+        const abortHandler = () => {
+            teardown();
+            reject(new DOMException('Aborted', 'AbortError'));
+        };
+
+        // setup
+        window.chrome.webview.addEventListener('message', handler)
+        signal?.addEventListener('abort', abortHandler)
+
+        teardown = () => {
+            window.chrome.webview.removeEventListener('message', handler)
+            signal?.removeEventListener('abort', abortHandler)
+        }
+    })
 }
