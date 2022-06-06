@@ -269,6 +269,9 @@ export function withWindowsContext (test) {
             })
 
             await use(context)
+            for (let page of context.pages()) {
+                await addMocksAsAttachments(page, test)
+            }
             await context.close()
         }
     })
@@ -315,4 +318,21 @@ export async function mockedCalls (page, names = []) {
         return window.__playwright.mocks.calls
             .filter(([name]) => names.includes(name))
     }, {names})
+}
+
+async function addMocksAsAttachments(page, test) {
+    const calls = await mockedCalls(page)
+    let index = 0;
+    for (let call of calls) {
+        index += 1;
+        const [name, params, response] = call
+        const lines = [`name: ${name}`]
+        lines.push(`params: \n\n`  + JSON.stringify(params, null, 2))
+        lines.push(`response: \n\n`  + JSON.stringify(response, null, 2))
+        test.info().attachments.push({
+            name: `mock ${index} ${name} params`,
+            contentType: "text/plain",
+            body: Buffer.from(lines.join('\n'))
+        })
+    }
 }

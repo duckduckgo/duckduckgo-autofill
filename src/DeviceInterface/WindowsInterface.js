@@ -63,10 +63,12 @@ export class WindowsInterface extends InterfacePrototype {
                     }
                 })
         }).catch(e => {
-            if (e.name === 'AbortError') {
-                console.log('Promise Aborted');
-            } else {
-                console.log('Promise Rejected');
+            if (this.globalConfig.isDDGTestMode) {
+                if (e.name === 'AbortError') {
+                    console.log('Promise Aborted');
+                } else {
+                    console.error('Promise Rejected', e);
+                }
             }
         })
     }
