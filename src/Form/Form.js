@@ -388,7 +388,7 @@ class Form {
 
     shouldOpenTooltip (e, input) {
         if (this.device.globalConfig.isApp) return true
-        if (this.device.globalConfig.isWindows) return true
+        // if (this.device.globalConfig.isWindows) return true
 
         const inputType = getInputMainType(input)
         return (!this.touched.has(input) && this.areAllInputsEmpty(inputType)) || isEventWithinDax(e, input)

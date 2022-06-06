@@ -8854,8 +8854,8 @@ class Form {
   }
 
   shouldOpenTooltip(e, input) {
-    if (this.device.globalConfig.isApp) return true;
-    if (this.device.globalConfig.isWindows) return true;
+    if (this.device.globalConfig.isApp) return true; // if (this.device.globalConfig.isWindows) return true
+
     const inputType = (0, _matching.getInputMainType)(input);
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || (0, _autofillUtils.isEventWithinDax)(e, input);
   }
@@ -14082,6 +14082,8 @@ class OverlayUIController extends _UIController.UIController {
   }
 
   handleEvent(event) {
+    console.log('OverlayControllerUI event', event);
+
     switch (event.type) {
       case 'scroll':
         {
