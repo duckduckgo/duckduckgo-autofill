@@ -4536,15 +4536,16 @@ class WindowsInterface extends _InterfacePrototype.default {
 
   async _show(details) {
     await this.deviceApi.notify(new _deviceApiCalls.ShowAutofillParentCall(details));
-    const {
-      success
-    } = await (0, _windows.waitForWindowsResponse)('selectedDetailResponse');
-    this.activeFormSelectedDetail(success.data, success.configType);
-
-    this._closeAutofillParent().then(e => {
-      if (this.globalConfig.isDDGTestMode) {
-        console.error('Could not close', e);
-      }
+    (0, _windows.waitForWindowsResponse)('selectedDetailResponse').then(resp => {
+      const {
+        success
+      } = resp;
+      this.activeFormSelectedDetail(success.data, success.configType);
+      return this._closeAutofillParent().catch(e => {
+        if (this.globalConfig.isDDGTestMode) {
+          console.error('Could not close', e);
+        }
+      });
     });
   }
   /**
@@ -5178,6 +5179,7 @@ class Form {
 
   shouldOpenTooltip(e, input) {
     if (this.device.globalConfig.isApp) return true;
+    if (this.device.globalConfig.isWindows) return true;
     const inputType = (0, _matching.getInputMainType)(input);
     return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || (0, _autofillUtils.isEventWithinDax)(e, input);
   }
@@ -10404,8 +10406,6 @@ class OverlayUIController extends _UIController.UIController {
   }
 
   handleEvent(event) {
-    console.log('OverlayControllerUI event', event);
-
     switch (event.type) {
       case 'scroll':
         {

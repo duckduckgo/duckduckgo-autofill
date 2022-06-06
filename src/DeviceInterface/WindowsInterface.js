@@ -43,14 +43,16 @@ export class WindowsInterface extends InterfacePrototype {
      */
     async _show (details) {
         await this.deviceApi.notify(new ShowAutofillParentCall(details))
-        const { success } = await waitForWindowsResponse('selectedDetailResponse')
-        this.activeFormSelectedDetail(success.data, success.configType)
-        this._closeAutofillParent()
-            .then(e => {
-                if (this.globalConfig.isDDGTestMode) {
-                    console.error('Could not close', e)
-                }
-            })
+        waitForWindowsResponse('selectedDetailResponse').then(resp => {
+            const { success } = resp
+            this.activeFormSelectedDetail(success.data, success.configType)
+            return this._closeAutofillParent()
+                .catch(e => {
+                    if (this.globalConfig.isDDGTestMode) {
+                        console.error('Could not close', e)
+                    }
+                })
+        })
     }
 
     /**

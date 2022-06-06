@@ -50,8 +50,7 @@ test.describe('Auto-fill a login form on windows', () => {
                     .applyTo(page)
 
                 await login.selectFirstCredential(personalAddress)
-                await login.assertParentOpenedOnce()
-
+                await login.assertClickAndFocusMessages()
                 await login.simulateWindowsPostMessageWithSelection(personalAddress, password)
                 await login.assertFirstCredential(personalAddress, password)
             })

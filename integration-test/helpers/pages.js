@@ -218,15 +218,6 @@ export function loginPage (page, server, opts = {}) {
             await this.assertClickAndFocusMessages()
             expect(credsCalls.length).toBe(5)
         },
-        async assertParentOpenedOnce () {
-            const calls = await mockedCalls(page, ['showAutofillParent'])
-            expect(calls).toHaveLength(1)
-            const [, sent] = calls[0]
-            // this is the only way I could think to test this logic
-            // we are asserting that when opening an overlay, we send the input width and
-            // not the width of the dax icon.
-            expect(sent.inputWidth).not.toBe(30)
-        },
         /**
          * @param {string} username
          * @param {string} password
