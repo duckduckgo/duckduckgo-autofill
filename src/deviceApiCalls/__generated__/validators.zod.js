@@ -8,7 +8,8 @@ export const autofillFeatureTogglesSchema = z.object({
     inputType_creditCards: z.boolean().optional(),
     emailProtection: z.boolean().optional(),
     password_generation: z.boolean().optional(),
-    credentials_saving: z.boolean().optional()
+    credentials_saving: z.boolean().optional(),
+    inlineIcon_credentials: z.boolean().optional()
 });
 
 export const credentialsSchema = z.object({

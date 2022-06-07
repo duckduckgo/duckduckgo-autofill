@@ -72,6 +72,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                 })
                 await login.promptWasShown('ios')
                 await login.assertFirstCredential(personalAddress, password)
+                await login.fieldsDoNotContainIcons()
             })
         })
         test.describe('but I dont have saved credentials', () => {

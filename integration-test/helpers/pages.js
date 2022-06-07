@@ -145,8 +145,14 @@ export function loginPage (page, server, opts = {}) {
         async fieldsDoNotContainIcons () {
             const styles1 = await page.locator('#email').getAttribute('style')
             const styles2 = await page.locator('#password').getAttribute('style')
-            expect(styles1).toBeNull()
-            expect(styles2).toBeNull()
+            expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
+            expect(styles2 || '').not.toContain('data:image/svg+xml;base64,')
+        },
+        async fieldsContainIcons () {
+            const styles1 = await page.locator('#email').getAttribute('style')
+            const styles2 = await page.locator('#password').getAttribute('style')
+            expect(styles1).toContain('data:image/svg+xml;base64,')
+            expect(styles2).toContain('data:image/svg+xml;base64,')
         },
         /**
          * @param {string} username

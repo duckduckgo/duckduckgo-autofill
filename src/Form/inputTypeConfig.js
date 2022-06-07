@@ -36,8 +36,18 @@ const inputTypeConfig = {
     /** @type {CredentialsInputTypeConfig} */
     credentials: {
         type: 'credentials',
-        getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
-        getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
+        getIconBase: (_input, {device}) => {
+            if (device.settings.featureToggles.inlineIcon_credentials) {
+                return ddgPasswordIcons.ddgPasswordIconBase
+            }
+            return ''
+        },
+        getIconFilled: (_input, {device}) => {
+            if (device.settings.featureToggles.inlineIcon_credentials) {
+                return ddgPasswordIcons.ddgPasswordIconFilled
+            }
+            return ''
+        },
         shouldDecorate: (input, {isLogin, device}) => {
             // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
             // saved password

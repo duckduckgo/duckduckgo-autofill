@@ -17,6 +17,7 @@ export interface AutofillFeatureToggles {
   emailProtection?: boolean;
   password_generation?: boolean;
   credentials_saving?: boolean;
+  inlineIcon_credentials?: boolean;
 }
 
 // credentials.json
