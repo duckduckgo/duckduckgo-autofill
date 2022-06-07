@@ -116,6 +116,7 @@ test.describe('Auto-fill a login form on macOS', () => {
 
                 const login = loginPage(page, server)
                 await login.navigate()
+                await login.fieldsContainIcons()
                 await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)
             })

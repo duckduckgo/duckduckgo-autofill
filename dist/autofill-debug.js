@@ -10043,13 +10043,33 @@ const inputTypeConfig = {
   /** @type {CredentialsInputTypeConfig} */
   credentials: {
     type: 'credentials',
-    getIconBase: () => ddgPasswordIcons.ddgPasswordIconBase,
-    getIconFilled: () => ddgPasswordIcons.ddgPasswordIconFilled,
-    shouldDecorate: (input, _ref2) => {
+    getIconBase: (_input, _ref2) => {
+      let {
+        device
+      } = _ref2;
+
+      if (device.settings.featureToggles.inlineIcon_credentials) {
+        return ddgPasswordIcons.ddgPasswordIconBase;
+      }
+
+      return '';
+    },
+    getIconFilled: (_input, _ref3) => {
+      let {
+        device
+      } = _ref3;
+
+      if (device.settings.featureToggles.inlineIcon_credentials) {
+        return ddgPasswordIcons.ddgPasswordIconFilled;
+      }
+
+      return '';
+    },
+    shouldDecorate: (input, _ref4) => {
       let {
         isLogin,
         device
-      } = _ref2;
+      } = _ref4;
 
       // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
       // saved password
@@ -10077,10 +10097,10 @@ const inputTypeConfig = {
     type: 'creditCards',
     getIconBase: () => '',
     getIconFilled: () => '',
-    shouldDecorate: (_input, _ref3) => {
+    shouldDecorate: (_input, _ref5) => {
       let {
         device
-      } = _ref3;
+      } = _ref5;
       return canBeDecorated(_input) && Boolean(device.settings.availableInputTypes.creditCards);
     },
     dataType: 'CreditCards',
@@ -10092,10 +10112,10 @@ const inputTypeConfig = {
     type: 'identities',
     getIconBase: getIdentitiesIcon,
     getIconFilled: getIdentitiesIcon,
-    shouldDecorate: (input, _ref4) => {
+    shouldDecorate: (input, _ref6) => {
       let {
         device
-      } = _ref4;
+      } = _ref6;
       if (!canBeDecorated(input)) return false;
       const subtype = (0, _matching.getInputSubtype)(input);
 
@@ -12847,7 +12867,8 @@ _defineProperty(Settings, "defaults", {
     emailProtection: false,
     inputType_identities: false,
     inputType_credentials: false,
-    inputType_creditCards: false
+    inputType_creditCards: false,
+    inlineIcon_credentials: false
   },
 
   /** @type {AvailableInputTypes} */
@@ -14722,7 +14743,8 @@ const autofillFeatureTogglesSchema = _zod.z.object({
   inputType_creditCards: _zod.z.boolean().optional(),
   emailProtection: _zod.z.boolean().optional(),
   password_generation: _zod.z.boolean().optional(),
-  credentials_saving: _zod.z.boolean().optional()
+  credentials_saving: _zod.z.boolean().optional(),
+  inlineIcon_credentials: _zod.z.boolean().optional()
 });
 
 exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;

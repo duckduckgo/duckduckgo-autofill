@@ -26,6 +26,7 @@ export const iosContentScopeReplacements = (overrides = {}) => {
                 autofill: {
                     settings: {
                         featureToggles: {
+                            inlineIcon_credentials: false,
                             ...overrides.featureToggles
                         }
                     }
@@ -68,6 +69,7 @@ export const macosContentScopeReplacements = (opts = {}) => {
                             emailProtection: true,
                             password_generation: true,
                             credentials_saving: true,
+                            inlineIcon_credentials: true,
                             ...featureToggles
                         }
                     }

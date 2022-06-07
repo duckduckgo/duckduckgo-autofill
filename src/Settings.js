@@ -152,7 +152,8 @@ export class Settings {
             emailProtection: false,
             inputType_identities: false,
             inputType_credentials: false,
-            inputType_creditCards: false
+            inputType_creditCards: false,
+            inlineIcon_credentials: false
         },
         /** @type {AvailableInputTypes} */
         availableInputTypes: {

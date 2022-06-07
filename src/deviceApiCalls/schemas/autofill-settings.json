@@ -28,6 +28,9 @@
         },
         "credentials_saving": {
           "type": "boolean"
+        },
+        "inlineIcon_credentials": {
+          "type": "boolean"
         }
       },
       "required": []
