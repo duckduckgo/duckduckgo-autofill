@@ -3752,10 +3752,16 @@ Object.defineProperty(exports, "DeviceApiTransport", {
     return _deviceApi.DeviceApiTransport;
   }
 });
-Object.defineProperty(exports, "createDeviceApiCall", {
+Object.defineProperty(exports, "createNotification", {
   enumerable: true,
   get: function () {
-    return _deviceApiCall.createDeviceApiCall;
+    return _deviceApiCall.createNotification;
+  }
+});
+Object.defineProperty(exports, "createRequest", {
+  enumerable: true,
+  get: function () {
+    return _deviceApiCall.createRequest;
   }
 });
 Object.defineProperty(exports, "validate", {
@@ -3777,6 +3783,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.SchemaValidationError = exports.DeviceApiCallError = exports.DeviceApiCall = void 0;
 exports.createDeviceApiCall = createDeviceApiCall;
+exports.createNotification = void 0;
+exports.createRequest = createRequest;
 exports.validate = validate;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -4045,6 +4053,34 @@ function createDeviceApiCall(method, params) {
   return deviceApiCall;
 }
 /**
+ * Creates an instance of `DeviceApiCall` from only a name and 'params'
+ * and optional validators. Use this to help migrate existing messages.
+ *
+ * Note: This creates a regular DeviceApiCall, but adds the 'id' as a string
+ * so that transports know that it expects a response.
+ *
+ * @template {import("zod").ZodType} Params
+ * @template {import("zod").ZodType} Result
+ * @param {string} method
+ * @param {import("zod").infer<Params>} [params]
+ * @param {string} [id]
+ * @param {Params|null} [paramsValidator]
+ * @param {Result|null} [resultValidator]
+ * @returns {DeviceApiCall<Params, Result>}
+ */
+
+
+function createRequest(method, params) {
+  let id = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'n/a';
+  let paramsValidator = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  let resultValidator = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+  const call = createDeviceApiCall(method, params, paramsValidator, resultValidator);
+  call.id = id;
+  return call;
+}
+
+const createNotification = createDeviceApiCall;
+/**
  * Validate any arbitrary data with any Zod validator
  *
  * @template {import("zod").ZodType} Validator
@@ -4053,6 +4089,7 @@ function createDeviceApiCall(method, params) {
  * @returns {import("zod").infer<Validator>}
  */
 
+exports.createNotification = createNotification;
 
 function validate(data) {
   let validator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
@@ -6475,9 +6512,9 @@ function createDevice() {
 
   const loggingTransport = {
     async send(deviceApiCall) {
-      console.log('[outgoing]', deviceApiCall.method, JSON.stringify(deviceApiCall.params || null));
+      console.log('[outgoing]', deviceApiCall.method, 'id:', deviceApiCall.id, JSON.stringify(deviceApiCall.params || null));
       const result = await transport.send(deviceApiCall);
-      console.log('[incoming]', deviceApiCall.method, JSON.stringify(result || null));
+      console.log('[incoming]', deviceApiCall.method, 'id:', deviceApiCall.id, JSON.stringify(result || null));
       return result;
     }
 
@@ -6768,7 +6805,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getUserData() {
-    return this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('emailHandlerGetUserData'));
+    return this.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetUserData'));
   }
   /**
    * Used by the email web app
@@ -6777,14 +6814,14 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getEmailProtectionCapabilities() {
-    return this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('emailHandlerGetCapabilities'));
+    return this.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetCapabilities'));
   }
   /**
    */
 
 
   async getSelectedCredentials() {
-    return this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('getSelectedCredentials'));
+    return this.deviceApi.request((0, _deviceApi.createRequest)('getSelectedCredentials'));
   }
   /**
    * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} parentArgs
@@ -6792,7 +6829,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async _showAutofillParent(parentArgs) {
-    return this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('showAutofillParent', parentArgs));
+    return this.deviceApi.notify((0, _deviceApi.createNotification)('showAutofillParent', parentArgs));
   }
   /**
    * @returns {Promise<any>}
@@ -6800,7 +6837,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async _closeAutofillParent() {
-    return this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('closeAutofillParent', {}));
+    return this.deviceApi.notify((0, _deviceApi.createNotification)('closeAutofillParent', {}));
   }
   /**
    * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} details
@@ -6825,13 +6862,13 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('emailHandlerGetAddresses'));
+    } = await this.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetAddresses'));
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('emailHandlerRefreshAlias')); // On macOS we also update the addresses stored locally
+    await this.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerRefreshAlias')); // On macOS we also update the addresses stored locally
 
     if (this.globalConfig.isApp) this.getAddresses();
   }
@@ -6839,7 +6876,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   async _checkDeviceSignedIn() {
     const {
       isAppSignedIn
-    } = await this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('emailHandlerCheckAppSignedInStatus'));
+    } = await this.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerCheckAppSignedInStatus'));
 
     this.isDeviceSignedIn = () => !!isAppSignedIn;
 
@@ -6854,7 +6891,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
         cohort
       }
     } = _ref;
-    return this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('emailHandlerStoreToken', {
+    return this.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
@@ -6867,7 +6904,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   removeUserData() {
-    this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('emailHandlerRemoveToken'));
+    this.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerRemoveToken'));
   }
   /**
    * PM endpoints
@@ -6880,7 +6917,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeCredentials(credentials) {
-    return this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('pmHandlerStoreCredentials', credentials));
+    return this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerStoreCredentials', credentials));
   }
   /**
    * Sends form data to the native layer
@@ -6890,7 +6927,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeFormData(data) {
-    this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('pmHandlerStoreData', data));
+    this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerStoreData', data));
   }
   /**
    * Gets the init data from the device
@@ -6899,7 +6936,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async _getAutofillInitData() {
-    const response = await this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('pmHandlerGetAutofillInitData'));
+    const response = await this.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetAutofillInitData'));
     this.storeLocalData(response.success);
     return response;
   }
@@ -6911,7 +6948,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCredentials(id) {
-    return this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('pmHandlerGetAutofillCredentials', {
+    return this.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetAutofillCredentials', {
       id
     }));
   }
@@ -6921,7 +6958,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManagePasswords() {
-    return this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('pmHandlerOpenManagePasswords'));
+    return this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerOpenManagePasswords'));
   }
   /**
    * Opens the native UI for managing identities
@@ -6929,7 +6966,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageIdentities() {
-    return this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('pmHandlerOpenManageIdentities'));
+    return this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerOpenManageIdentities'));
   }
   /**
    * Opens the native UI for managing credit cards
@@ -6937,7 +6974,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageCreditCards() {
-    return this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('pmHandlerOpenManageCreditCards'));
+    return this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerOpenManageCreditCards'));
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -6965,7 +7002,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCreditCard(id) {
-    return this.deviceApi.request((0, _deviceApi.createDeviceApiCall)('pmHandlerGetCreditCard', {
+    return this.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetCreditCard', {
       id
     }));
   }
@@ -7221,7 +7258,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
       return [key, String(value)];
     });
     const data = Object.fromEntries(detailsEntries);
-    await this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('selectedDetail', {
+    await this.deviceApi.notify((0, _deviceApi.createNotification)('selectedDetail', {
       data,
       configType
     }));
@@ -7238,7 +7275,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 
 
   async _setSize(details) {
-    await this.deviceApi.notify((0, _deviceApi.createDeviceApiCall)('setSize', details));
+    await this.deviceApi.notify((0, _deviceApi.createNotification)('setSize', details));
   }
 
 }
@@ -13939,7 +13976,7 @@ exports.CSS_STYLES = CSS_STYLES;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.wkSendAndWait = exports.MissingWebkitHandler = void 0;
+exports.wkSendAndWait = exports.wkSend = exports.MissingWebkitHandler = void 0;
 
 var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
 
@@ -13974,6 +14011,8 @@ const wkSend = function (handler) {
  * @param {Function} callback
  */
 
+
+exports.wkSend = wkSend;
 
 const generateRandomMethod = (randomMethodName, callback) => {
   _captureDdgGlobals.default.ObjectDefineProperty(_captureDdgGlobals.default.window, randomMethodName, {
@@ -14846,6 +14885,8 @@ class GetAlias extends _deviceApi.DeviceApiCall {
 
     _defineProperty(this, "method", 'emailHandlerGetAlias');
 
+    _defineProperty(this, "id", 'n/a');
+
     _defineProperty(this, "paramsValidator", _validators.getAliasParamsSchema);
 
     _defineProperty(this, "resultValidator", _validators.getAliasResultSchema);
@@ -15023,34 +15064,40 @@ var _deviceApiCalls = require("../__generated__/deviceApiCalls");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class AppleTransport extends _deviceApi.DeviceApiTransport {
-  /** @type {GlobalConfig} */
+  /** @type {{hasModernWebkitAPI?: boolean, secret?: string}} */
 
   /** @param {GlobalConfig} globalConfig */
   constructor(globalConfig) {
     super();
 
-    _defineProperty(this, "config", void 0);
+    _defineProperty(this, "sendOptions", void 0);
 
     this.config = globalConfig;
+    this.sendOptions = {
+      secret: this.config.secret,
+      hasModernWebkitAPI: this.config.hasModernWebkitAPI
+    };
   }
 
-  async send(rpc) {
+  async send(deviceApiCall) {
     try {
-      return await (0, _appleDeviceUtils.wkSendAndWait)(rpc.method, rpc.params || undefined, {
-        secret: this.config.secret,
-        hasModernWebkitAPI: this.config.hasModernWebkitAPI
-      });
+      // if the call has an `id`, it means that it expects a response
+      if (deviceApiCall.id) {
+        return await (0, _appleDeviceUtils.wkSendAndWait)(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions);
+      } else {
+        return await (0, _appleDeviceUtils.wkSend)(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions);
+      }
     } catch (e) {
       if (e instanceof _appleDeviceUtils.MissingWebkitHandler) {
         if (this.config.isDDGTestMode) {
-          console.log('MissingWebkitHandler error for:', rpc.method);
+          console.log('MissingWebkitHandler error for:', deviceApiCall.method);
         }
 
-        if (rpc instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
-          return rpc.result(appleSpecificRuntimeConfiguration(this.config));
+        if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
+          return deviceApiCall.result(appleSpecificRuntimeConfiguration(this.config));
         }
 
-        throw new Error('unimplemented handler: ' + rpc.method);
+        throw new Error('unimplemented handler: ' + deviceApiCall.method);
       } else {
         throw e;
       }

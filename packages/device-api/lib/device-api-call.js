@@ -205,6 +205,30 @@ export function createDeviceApiCall (method, params, paramsValidator = null, res
 }
 
 /**
+ * Creates an instance of `DeviceApiCall` from only a name and 'params'
+ * and optional validators. Use this to help migrate existing messages.
+ *
+ * Note: This creates a regular DeviceApiCall, but adds the 'id' as a string
+ * so that transports know that it expects a response.
+ *
+ * @template {import("zod").ZodType} Params
+ * @template {import("zod").ZodType} Result
+ * @param {string} method
+ * @param {import("zod").infer<Params>} [params]
+ * @param {string} [id]
+ * @param {Params|null} [paramsValidator]
+ * @param {Result|null} [resultValidator]
+ * @returns {DeviceApiCall<Params, Result>}
+ */
+export function createRequest (method, params, id = 'n/a', paramsValidator = null, resultValidator = null) {
+    const call = createDeviceApiCall(method, params, paramsValidator, resultValidator)
+    call.id = id
+    return call
+}
+
+export const createNotification = createDeviceApiCall
+
+/**
  * Validate any arbitrary data with any Zod validator
  *
  * @template {import("zod").ZodType} Validator

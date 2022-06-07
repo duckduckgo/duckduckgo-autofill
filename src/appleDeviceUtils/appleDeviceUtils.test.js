@@ -1,5 +1,5 @@
 import { createGlobalConfig } from '../config'
-import { createDeviceApiCall, DeviceApi } from '../../packages/device-api'
+import { createRequest, DeviceApi } from '../../packages/device-api'
 import { AppleTransport } from '../deviceApiCalls/transports/apple.transport'
 
 const webkitMock = jest.fn(async (data) => {
@@ -36,7 +36,7 @@ describe('wkSendAndWait', () => {
         const config = createGlobalConfig()
         const transport = new AppleTransport(config)
         const io = new DeviceApi(transport)
-        const response = await io.request(createDeviceApiCall('testMock', {}))
+        const response = await io.request(createRequest('testMock', {}))
         expect(response.data).toBe('test')
     })
 })

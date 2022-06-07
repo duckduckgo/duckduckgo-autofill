@@ -1,32 +1,38 @@
-import {MissingWebkitHandler, wkSendAndWait} from '../../appleDeviceUtils/appleDeviceUtils'
+import {MissingWebkitHandler, wkSend, wkSendAndWait} from '../../appleDeviceUtils/appleDeviceUtils'
 import {DeviceApiTransport} from '../../../packages/device-api'
 import {GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls'
 
 export class AppleTransport extends DeviceApiTransport {
-    /** @type {GlobalConfig} */
-    config
+    /** @type {{hasModernWebkitAPI?: boolean, secret?: string}} */
+    sendOptions;
 
     /** @param {GlobalConfig} globalConfig */
     constructor (globalConfig) {
         super()
         this.config = globalConfig
+        this.sendOptions = {
+            secret: this.config.secret,
+            hasModernWebkitAPI: this.config.hasModernWebkitAPI
+        }
     }
 
-    async send (rpc) {
+    async send (deviceApiCall) {
         try {
-            return await wkSendAndWait(rpc.method, rpc.params || undefined, {
-                secret: this.config.secret,
-                hasModernWebkitAPI: this.config.hasModernWebkitAPI
-            })
+            // if the call has an `id`, it means that it expects a response
+            if (deviceApiCall.id) {
+                return await wkSendAndWait(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions)
+            } else {
+                return await wkSend(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions)
+            }
         } catch (e) {
             if (e instanceof MissingWebkitHandler) {
                 if (this.config.isDDGTestMode) {
-                    console.log('MissingWebkitHandler error for:', rpc.method)
+                    console.log('MissingWebkitHandler error for:', deviceApiCall.method)
                 }
-                if (rpc instanceof GetRuntimeConfigurationCall) {
-                    return rpc.result(appleSpecificRuntimeConfiguration(this.config))
+                if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
+                    return deviceApiCall.result(appleSpecificRuntimeConfiguration(this.config))
                 }
-                throw new Error('unimplemented handler: ' + rpc.method)
+                throw new Error('unimplemented handler: ' + deviceApiCall.method)
             } else {
                 throw e
             }

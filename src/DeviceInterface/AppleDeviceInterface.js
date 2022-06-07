@@ -4,7 +4,7 @@ import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils
 import { defaultOptions } from '../UI/HTMLTooltip'
 import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController'
 import { OverlayUIController } from '../UI/controllers/OverlayUIController'
-import { createDeviceApiCall } from '../../packages/device-api'
+import { createNotification, createRequest } from '../../packages/device-api'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls'
 import { NativeUIController } from '../UI/controllers/NativeUIController'
 
@@ -89,7 +89,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Settings page displays data of the logged in user data
      */
     getUserData () {
-        return this.deviceApi.request(createDeviceApiCall('emailHandlerGetUserData'))
+        return this.deviceApi.request(createRequest('emailHandlerGetUserData'))
     }
 
     /**
@@ -97,27 +97,27 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Device capabilities determine which functionality is available to the user
      */
     getEmailProtectionCapabilities () {
-        return this.deviceApi.request(createDeviceApiCall('emailHandlerGetCapabilities'))
+        return this.deviceApi.request(createRequest('emailHandlerGetCapabilities'))
     }
 
     /**
      */
     async getSelectedCredentials () {
-        return this.deviceApi.request(createDeviceApiCall('getSelectedCredentials'))
+        return this.deviceApi.request(createRequest('getSelectedCredentials'))
     }
 
     /**
      * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} parentArgs
      */
     async _showAutofillParent (parentArgs) {
-        return this.deviceApi.request(createDeviceApiCall('showAutofillParent', parentArgs))
+        return this.deviceApi.notify(createNotification('showAutofillParent', parentArgs))
     }
 
     /**
      * @returns {Promise<any>}
      */
     async _closeAutofillParent () {
-        return this.deviceApi.notify(createDeviceApiCall('closeAutofillParent', {}))
+        return this.deviceApi.notify(createNotification('closeAutofillParent', {}))
     }
 
     /**
@@ -140,25 +140,25 @@ class AppleDeviceInterface extends InterfacePrototype {
     async getAddresses () {
         if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await this.deviceApi.request(createDeviceApiCall('emailHandlerGetAddresses'))
+        const {addresses} = await this.deviceApi.request(createRequest('emailHandlerGetAddresses'))
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
     async refreshAlias () {
-        await this.deviceApi.notify(createDeviceApiCall('emailHandlerRefreshAlias'))
+        await this.deviceApi.notify(createNotification('emailHandlerRefreshAlias'))
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
 
     async _checkDeviceSignedIn () {
-        const {isAppSignedIn} = await this.deviceApi.request(createDeviceApiCall('emailHandlerCheckAppSignedInStatus'))
+        const {isAppSignedIn} = await this.deviceApi.request(createRequest('emailHandlerCheckAppSignedInStatus'))
         this.isDeviceSignedIn = () => !!isAppSignedIn
         return !!isAppSignedIn
     }
 
     storeUserData ({addUserData: {token, userName, cohort}}) {
-        return this.deviceApi.notify(createDeviceApiCall('emailHandlerStoreToken', { token, username: userName, cohort }))
+        return this.deviceApi.notify(createNotification('emailHandlerStoreToken', { token, username: userName, cohort }))
     }
 
     /**
@@ -166,7 +166,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Provides functionality to log the user out
      */
     removeUserData () {
-        this.deviceApi.notify(createDeviceApiCall('emailHandlerRemoveToken'))
+        this.deviceApi.notify(createNotification('emailHandlerRemoveToken'))
     }
 
     /**
@@ -178,7 +178,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {{username: string, password: string}} credentials
      */
     storeCredentials (credentials) {
-        return this.deviceApi.notify(createDeviceApiCall('pmHandlerStoreCredentials', credentials))
+        return this.deviceApi.notify(createNotification('pmHandlerStoreCredentials', credentials))
     }
 
     /**
@@ -187,7 +187,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {DataStorageObject} data
      */
     storeFormData (data) {
-        this.deviceApi.notify(createDeviceApiCall('pmHandlerStoreData', data))
+        this.deviceApi.notify(createNotification('pmHandlerStoreData', data))
     }
 
     /**
@@ -195,7 +195,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<PMData>}
      */
     async _getAutofillInitData () {
-        const response = await this.deviceApi.request(createDeviceApiCall('pmHandlerGetAutofillInitData'))
+        const response = await this.deviceApi.request(createRequest('pmHandlerGetAutofillInitData'))
         this.storeLocalData(response.success)
         return response
     }
@@ -206,28 +206,28 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponseSingle<CredentialsObject>}
      */
     getAutofillCredentials (id) {
-        return this.deviceApi.request(createDeviceApiCall('pmHandlerGetAutofillCredentials', { id }))
+        return this.deviceApi.request(createRequest('pmHandlerGetAutofillCredentials', { id }))
     }
 
     /**
      * Opens the native UI for managing passwords
      */
     openManagePasswords () {
-        return this.deviceApi.notify(createDeviceApiCall('pmHandlerOpenManagePasswords'))
+        return this.deviceApi.notify(createNotification('pmHandlerOpenManagePasswords'))
     }
 
     /**
      * Opens the native UI for managing identities
      */
     openManageIdentities () {
-        return this.deviceApi.notify(createDeviceApiCall('pmHandlerOpenManageIdentities'))
+        return this.deviceApi.notify(createNotification('pmHandlerOpenManageIdentities'))
     }
 
     /**
      * Opens the native UI for managing credit cards
      */
     openManageCreditCards () {
-        return this.deviceApi.notify(createDeviceApiCall('pmHandlerOpenManageCreditCards'))
+        return this.deviceApi.notify(createNotification('pmHandlerOpenManageCreditCards'))
     }
 
     /**
@@ -246,7 +246,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
-        return this.deviceApi.request(createDeviceApiCall('pmHandlerGetCreditCard', { id }))
+        return this.deviceApi.request(createRequest('pmHandlerGetCreditCard', { id }))
     }
 
     async getCurrentInputType () {
