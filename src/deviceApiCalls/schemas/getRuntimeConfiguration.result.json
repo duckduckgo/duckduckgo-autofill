@@ -17,8 +17,5 @@
     "error": {
       "$ref": "error.json"
     }
-  },
-  "required": [
-    "success"
-  ]
+  }
 }

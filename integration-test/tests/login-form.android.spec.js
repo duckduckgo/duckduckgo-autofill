@@ -21,7 +21,7 @@ const test = withAndroidContext(base)
  * @param {object} opts
  * @param {Partial<AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<AvailableInputTypes>} opts.availableInputTypes
- * @param {CredentialsObject} [opts.credentials]
+ * @param {CredentialsMock} [opts.credentials]
  */
 async function testLoginPage (page, server, opts) {
     // enable in-terminal exceptions

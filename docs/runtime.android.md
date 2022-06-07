@@ -57,7 +57,7 @@ userPreferences = {
       }
     }
   }
-}
+};
 ```
 
 --- 
@@ -152,7 +152,7 @@ window.BrowserAutofill.storeFormData(data)
 }
 ```
 
-2) re-focus a field (to present the keyboard)
+2) re-focus a field (to present the keyboard where possible)
 
 ```json
 {
@@ -162,7 +162,7 @@ window.BrowserAutofill.storeFormData(data)
 }
 ```
 
-3) Do nothing:
+3) do nothing
 
 ```json
 {

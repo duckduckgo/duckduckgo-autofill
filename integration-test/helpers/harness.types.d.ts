@@ -2,6 +2,12 @@ type Platform = "ios" | "macos" | "android" | "extension" | "windows";
 type Replacements = Record<keyof GlobalConfig, any>;
 type MockCall = [name: string, input: any, output: any];
 
+interface CredentialsMock {
+    username: string,
+    password: string,
+    id: string
+}
+
 /**
  * This is an API Abstraction for mock user data.
  *
@@ -24,7 +30,7 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     // Add an identity
     withIdentity(identity: IdentityObject): MockBuilder<State, Mocks>
     // Add a credential
-    withCredentials(credentials: CredentialsObject): MockBuilder<State, Mocks>
+    withCredentials(credentials: CredentialsMock): MockBuilder<State, Mocks>
     // Add available input types
     withAvailableInputTypes(inputTypes: import("../../src/deviceApiCalls/__generated__/validators-ts").AvailableInputTypes): MockBuilder<State, Mocks>
     // Add any number of feature toggle overrides

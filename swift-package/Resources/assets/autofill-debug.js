@@ -7064,7 +7064,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   _detectFormSubmission(event) {
-    // note: This conditional will be replaced with feature flagging soon
     const matchingForm = [...this.scanner.forms.values()].find(form => {
       const btns = [...form.submitButtons]; // @ts-ignore
 
@@ -12692,7 +12691,7 @@ class Settings {
       var _runtimeConfig$userPr, _runtimeConfig$userPr2, _runtimeConfig$userPr3;
 
       const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
-      const autofillSettings = (0, _deviceApi.validate)((_runtimeConfig$userPr = runtimeConfig.userPreferences) === null || _runtimeConfig$userPr === void 0 ? void 0 : (_runtimeConfig$userPr2 = _runtimeConfig$userPr.features) === null || _runtimeConfig$userPr2 === void 0 ? void 0 : (_runtimeConfig$userPr3 = _runtimeConfig$userPr2.autofill) === null || _runtimeConfig$userPr3 === void 0 ? void 0 : _runtimeConfig$userPr3.settings, _validators.autofillSettingsSchema);
+      const autofillSettings = (0, _deviceApi.validate)(runtimeConfig === null || runtimeConfig === void 0 ? void 0 : (_runtimeConfig$userPr = runtimeConfig.userPreferences) === null || _runtimeConfig$userPr === void 0 ? void 0 : (_runtimeConfig$userPr2 = _runtimeConfig$userPr.features) === null || _runtimeConfig$userPr2 === void 0 ? void 0 : (_runtimeConfig$userPr3 = _runtimeConfig$userPr2.autofill) === null || _runtimeConfig$userPr3 === void 0 ? void 0 : _runtimeConfig$userPr3.settings, _validators.autofillSettingsSchema);
       return autofillSettings.featureToggles;
     } catch (e) {
       // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
@@ -14692,7 +14691,7 @@ exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
 const credentialsSchema = _zod.z.object({
   id: _zod.z.string().optional(),
   username: _zod.z.string(),
-  password: _zod.z.string().optional()
+  password: _zod.z.string()
 });
 
 exports.credentialsSchema = credentialsSchema;
@@ -14818,7 +14817,7 @@ exports.storeFormDataSchema = storeFormDataSchema;
 
 const getRuntimeConfigurationResponseSchema = _zod.z.object({
   type: _zod.z.literal("getRuntimeConfigurationResponse").optional(),
-  success: runtimeConfigurationSchema,
+  success: runtimeConfigurationSchema.optional(),
   error: genericErrorSchema.optional()
 });
 
@@ -14917,9 +14916,7 @@ class AndroidTransport extends _deviceApi.DeviceApiTransport {
 
 }
 /**
- * Sends a message and returns a Promise that resolves with the response
- *
- * @param {string} expectedResponse - the name of the response
+ * @param {string} expectedResponse - the name/id of the response
  * @param {GlobalConfig} config
  * @returns {Promise<*>}
  */
@@ -15143,8 +15140,7 @@ function createTransport(globalConfig) {
     }
 
     throw new Error('unreachable, createTransport');
-  } // falls back to extension... is this still the best way to determine this?
-
+  }
 
   return new _extension.ExtensionTransport();
 }

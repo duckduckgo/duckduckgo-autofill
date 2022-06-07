@@ -39,7 +39,6 @@ function createGlobalConfig () {
     const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent)
     const isMobileApp = isDDGApp && !isApp
     const isFirefox = navigator.userAgent.includes('Firefox')
-
     const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX))
 
     return {

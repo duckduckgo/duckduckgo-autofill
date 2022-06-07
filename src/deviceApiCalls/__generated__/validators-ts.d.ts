@@ -30,10 +30,7 @@ export interface Credentials {
    * This field is always present, but sometimes it could be an empty string
    */
   username: string;
-  /**
-   * This field may be empty or absent altogether, which is why it's not marked as 'required'
-   */
-  password?: string;
+  password: string;
 }
 
 // error.json
@@ -102,10 +99,7 @@ export interface Credentials {
    * This field is always present, but sometimes it could be an empty string
    */
   username: string;
-  /**
-   * This field may be empty or absent altogether, which is why it's not marked as 'required'
-   */
-  password?: string;
+  password: string;
 }
 export interface GenericError {
   message: string;
@@ -153,7 +147,7 @@ export interface GetRuntimeConfigurationResponse {
    * Required on Android + Windows devices, optional on iOS
    */
   type?: "getRuntimeConfigurationResponse";
-  success: RuntimeConfiguration;
+  success?: RuntimeConfiguration;
   error?: GenericError;
 }
 /**

@@ -28,6 +28,5 @@ export function createTransport (globalConfig) {
         throw new Error('unreachable, createTransport')
     }
 
-    // falls back to extension... is this still the best way to determine this?
     return new ExtensionTransport()
 }

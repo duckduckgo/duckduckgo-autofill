@@ -14,7 +14,7 @@ export const autofillFeatureTogglesSchema = z.object({
 export const credentialsSchema = z.object({
     id: z.string().optional(),
     username: z.string(),
-    password: z.string().optional()
+    password: z.string()
 });
 
 export const genericErrorSchema = z.object({
@@ -108,6 +108,6 @@ export const storeFormDataSchema = z.object({
 
 export const getRuntimeConfigurationResponseSchema = z.object({
     type: z.literal("getRuntimeConfigurationResponse").optional(),
-    success: runtimeConfigurationSchema,
+    success: runtimeConfigurationSchema.optional(),
     error: genericErrorSchema.optional()
 });

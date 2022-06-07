@@ -25,9 +25,9 @@ Another set of boolean flags, this time indicating which data types the
 current user can autofill. This is domain specific.
 
 - `credentials` - true if the user has credentials stored for the current domain
-- `identities` - true if the user has identities stored for the current domain
-- `creditCards` - true if the user has creditCards stored for the current domain
-- `email` - true if the user has logged into email protection - this one is *not* domain specific.
+- `identities` - true if the user has identities stored (not domain specific)
+- `creditCards` - true if the user has creditCards stored (not domain specific)
+- `email` - true if the user has logged into email protection (not domain specific)
   - note: `availableInputTypes.email` is only current used on android. In the future all platforms will migrate to this.
 
 ## Methods

@@ -327,7 +327,6 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {PointerEvent} event
      */
     _detectFormSubmission (event) {
-        // note: This conditional will be replaced with feature flagging soon
         const matchingForm = [...this.scanner.forms.values()].find(
             (form) => {
                 const btns = [...form.submitButtons]

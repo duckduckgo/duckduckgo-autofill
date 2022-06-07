@@ -5,12 +5,6 @@ import {AppleDeviceInterface} from '../AppleDeviceInterface'
 import {Settings} from '../../Settings'
 import {Form} from '../../Form/Form'
 
-describe('test stub', () => {
-    it('prevents a failure', () => {
-        expect(1).toBe(1)
-    })
-})
-
 function pmHandlerStoreDataSpy () {
     const spy = jest.fn().mockReturnValueOnce(Promise.resolve(null))
     window.webkit = {

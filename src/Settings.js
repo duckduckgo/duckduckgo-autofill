@@ -53,7 +53,7 @@ export class Settings {
     async getFeatureToggles () {
         try {
             const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
-            const autofillSettings = validate(runtimeConfig.userPreferences?.features?.autofill?.settings, autofillSettingsSchema)
+            const autofillSettings = validate(runtimeConfig?.userPreferences?.features?.autofill?.settings, autofillSettingsSchema)
             return autofillSettings.featureToggles
         } catch (e) {
             // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)

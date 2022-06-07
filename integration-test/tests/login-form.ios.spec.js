@@ -19,7 +19,7 @@ const test = withIOSContext(base)
  * @param {object} opts
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} opts.availableInputTypes
- * @param {CredentialsObject} [opts.credentials]
+ * @param {CredentialsMock} [opts.credentials]
  */
 async function testLoginPage (page, server, opts) {
     // enable in-terminal exceptions

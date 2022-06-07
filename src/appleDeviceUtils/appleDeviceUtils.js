@@ -39,7 +39,7 @@ const generateRandomMethod = (randomMethodName, callback) => {
  * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  * @returns {Promise<*>}
  */
-export const wkSendAndWait = async (handler, data = {}, opts = {}) => {
+const wkSendAndWait = async (handler, data = {}, opts = {}) => {
     if (opts.hasModernWebkitAPI) {
         const response = await wkSend(handler, data, opts)
         return ddgGlobals.JSONparse(response || '{}')
@@ -94,7 +94,7 @@ const decrypt = async (ciphertext, key, iv) => {
     return dec.decode(decrypted)
 }
 
-export class MissingWebkitHandler extends Error {
+class MissingWebkitHandler extends Error {
     handlerName
 
     constructor (handlerName) {
@@ -102,3 +102,5 @@ export class MissingWebkitHandler extends Error {
         this.handlerName = handlerName
     }
 }
+
+export { wkSendAndWait, MissingWebkitHandler }

@@ -40,9 +40,7 @@ export class AndroidTransport extends DeviceApiTransport {
 }
 
 /**
- * Sends a message and returns a Promise that resolves with the response
- *
- * @param {string} expectedResponse - the name of the response
+ * @param {string} expectedResponse - the name/id of the response
  * @param {GlobalConfig} config
  * @returns {Promise<*>}
  */
