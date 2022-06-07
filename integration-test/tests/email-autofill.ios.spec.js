@@ -22,7 +22,7 @@ test.describe('ios', () => {
     test.afterAll(async () => {
         server.close()
     })
-    test('should autofill the selected email', async ({page}) => {
+    test('should autofill the selected email without feature flagging', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 

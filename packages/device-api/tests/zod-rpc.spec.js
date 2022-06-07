@@ -78,5 +78,24 @@ describe('device-api', () => {
         `)
             }
         })
+        it('when there is an error in a result', async () => {
+            expect.assertions(1)
+            const transport = {
+                send: jest.fn().mockReturnValue({ error: { message: 'hello world' } })
+            }
+            const handler = new DeviceApi(transport)
+            class T1 extends DeviceApiCall {
+                method = 'abc';
+                resultValidator = z.object({
+                    success: z.string().optional(),
+                    error: z.object({ message: z.string() })
+                })
+            }
+            try {
+                await handler.request(new T1(null))
+            } catch (/** @type {any} */e) {
+                expect(e).toBeDefined()
+            }
+        })
     })
 })

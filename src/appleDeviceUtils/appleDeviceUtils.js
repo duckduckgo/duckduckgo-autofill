@@ -8,7 +8,7 @@ import ddgGlobals from './captureDdgGlobals'
  */
 const wkSend = (handler, data = {}, opts) => {
     if (!(handler in window.webkit.messageHandlers)) {
-        throw new Error(`Missing webkit handler: '${handler}'`)
+        throw new MissingWebkitHandler(`Missing webkit handler: '${handler}'`)
     }
     return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret: opts.secret}})
 }
@@ -94,24 +94,13 @@ const decrypt = async (ciphertext, key, iv) => {
     return dec.decode(decrypted)
 }
 
-/**
- * Create a wrapper around the webkit messaging that conforms
- * to the Transport interface
- *
- * @param {{secret: GlobalConfig['secret'], hasModernWebkitAPI: GlobalConfig['hasModernWebkitAPI']}} config
- * @returns {import("../../packages/device-api").DeviceApiTransport}
- */
-function createTransport (config) {
-    /** @type {import("../../packages/device-api").DeviceApiTransport} */
-    const transport = { // this is a separate variable to ensure type-safety is not lost when returning directly
-        async send (rpc) {
-            return wkSendAndWait(rpc.method, rpc.params, {
-                secret: config.secret,
-                hasModernWebkitAPI: config.hasModernWebkitAPI
-            })
-        }
+class MissingWebkitHandler extends Error {
+    handlerName
+
+    constructor (handlerName) {
+        super()
+        this.handlerName = handlerName
     }
-    return transport
 }
 
-export { createTransport }
+export { wkSendAndWait, wkSend, MissingWebkitHandler }

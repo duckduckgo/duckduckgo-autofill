@@ -6,6 +6,7 @@ import {getAliasParamsSchema, getAliasResultSchema} from './__generated__/valida
  */
 export class GetAlias extends DeviceApiCall {
     method = 'emailHandlerGetAlias'
+    id = 'n/a'
     paramsValidator = getAliasParamsSchema
     resultValidator = getAliasResultSchema
     preResultValidation (response) {

@@ -33,7 +33,6 @@ export class DeviceApiCall {
      * @type {boolean}
      */
     unwrapResult = true;
-
     /**
      * @param {import("zod").infer<Params>} data
      */
@@ -70,6 +69,11 @@ export class DeviceApiCall {
         }
         if ('success' in incoming) {
             return incoming.success
+        }
+        if ('error' in incoming) {
+            if (typeof incoming.error.message === 'string') {
+                throw new DeviceApiCallError(`${this.method}: ${incoming.error.message}`)
+            }
         }
         if (this.throwOnResultKeysMissing) {
             throw new Error('unreachable. Response did not contain `success` or `data`')
@@ -130,6 +134,8 @@ export class DeviceApiCall {
         return response
     }
 }
+
+export class DeviceApiCallError extends Error {}
 
 /**
  * Check for this error if you'd like to
@@ -199,10 +205,34 @@ export function createDeviceApiCall (method, params, paramsValidator = null, res
 }
 
 /**
+ * Creates an instance of `DeviceApiCall` from only a name and 'params'
+ * and optional validators. Use this to help migrate existing messages.
+ *
+ * Note: This creates a regular DeviceApiCall, but adds the 'id' as a string
+ * so that transports know that it expects a response.
+ *
+ * @template {import("zod").ZodType} Params
+ * @template {import("zod").ZodType} Result
+ * @param {string} method
+ * @param {import("zod").infer<Params>} [params]
+ * @param {string} [id]
+ * @param {Params|null} [paramsValidator]
+ * @param {Result|null} [resultValidator]
+ * @returns {DeviceApiCall<Params, Result>}
+ */
+export function createRequest (method, params, id = 'n/a', paramsValidator = null, resultValidator = null) {
+    const call = createDeviceApiCall(method, params, paramsValidator, resultValidator)
+    call.id = id
+    return call
+}
+
+export const createNotification = createDeviceApiCall
+
+/**
  * Validate any arbitrary data with any Zod validator
  *
  * @template {import("zod").ZodType} Validator
- * @param {import("zod").infer<Validator>} data
+ * @param {any} data
  * @param {Validator | null} [validator]
  * @returns {import("zod").infer<Validator>}
  */

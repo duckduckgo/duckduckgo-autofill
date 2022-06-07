@@ -1,7 +1,7 @@
 import {AppleDeviceInterface} from './AppleDeviceInterface'
 import {CSS_STYLES} from '../UI/styles/styles'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController'
-import {createDeviceApiCall} from '../../packages/device-api'
+import {createNotification} from '../../packages/device-api'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -114,7 +114,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
             return [key, String(value)]
         })
         const data = Object.fromEntries(detailsEntries)
-        await this.deviceApi.notify(createDeviceApiCall('selectedDetail', { data, configType }))
+        await this.deviceApi.notify(createNotification('selectedDetail', { data, configType }))
     }
 
     /**
@@ -127,7 +127,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @param {{height: number, width: number}} details
      */
     async _setSize (details) {
-        await this.deviceApi.notify(createDeviceApiCall('setSize', details))
+        await this.deviceApi.notify(createNotification('setSize', details))
     }
 }
 

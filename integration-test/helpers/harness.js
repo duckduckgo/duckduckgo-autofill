@@ -6,7 +6,7 @@ import * as http from 'http'
 import {tmpdir} from 'os'
 import {devices} from 'playwright'
 import {chromium, firefox} from '@playwright/test'
-import {macosContentScopeReplacements} from './mocks.webkit.js'
+import {macosContentScopeReplacements, iosContentScopeReplacements} from './mocks.webkit.js'
 
 const DATA_DIR_PREFIX = 'ddg-temp-'
 
@@ -161,6 +161,29 @@ export async function defaultMacosScript (page) {
     return createAutofillScript()
         .replaceAll(macosContentScopeReplacements())
         .platform('macos')
+        .applyTo(page)
+}
+
+/**
+ * @param {import("playwright").Page} page
+ */
+export async function defaultIOSScript (page) {
+    return createAutofillScript()
+        .replaceAll(iosContentScopeReplacements())
+        .platform('ios')
+        .applyTo(page)
+}
+
+/**
+ * @param {import("playwright").Page} page
+ * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} featureToggles
+ */
+export async function withIOSFeatureToggles (page, featureToggles) {
+    return createAutofillScript()
+        .replaceAll(iosContentScopeReplacements({
+            featureToggles: featureToggles
+        }))
+        .platform('ios')
         .applyTo(page)
 }
 

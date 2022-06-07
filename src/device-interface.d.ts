@@ -82,17 +82,6 @@ interface EmailAddresses {
      personalAddress?: string
 }
 
-type FeatureToggleNames =
-  | "password.generation"
-
-interface FeatureToggles {
-     supportsFeature(name: FeatureToggleNames): boolean;
-}
-
-interface Transport {
-     send(name: string, data?: any): Promise<any>
-}
-
 interface GlobalConfig {
      isApp: boolean;
      isDDGApp: boolean;
@@ -108,6 +97,7 @@ interface GlobalConfig {
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
+     availableInputTypes: Record<string, boolean> | null;
 }
 
 interface GlobalConfigImpl {

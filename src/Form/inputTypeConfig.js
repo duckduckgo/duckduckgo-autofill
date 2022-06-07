@@ -42,11 +42,11 @@ const inputTypeConfig = {
             // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
             // saved password
             if (isLogin) {
-                return device.hasLocalCredentials
+                return Boolean(device.settings.availableInputTypes.credentials)
             }
 
             // at this point, it's not a 'login' attempt, so we could offer to provide a password?
-            if (device.supportsFeature('password.generation')) {
+            if (device.settings.featureToggles.password_generation) {
                 const subtype = getInputSubtype(input)
                 if (subtype === 'password') {
                     return true
@@ -63,8 +63,9 @@ const inputTypeConfig = {
         type: 'creditCards',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (_input, {device}) =>
-            canBeDecorated(_input) && device.hasLocalCreditCards,
+        shouldDecorate: (_input, {device}) => {
+            return canBeDecorated(_input) && Boolean(device.settings.availableInputTypes.creditCards)
+        },
         dataType: 'CreditCards',
         tooltipItem: (data) => new CreditCardTooltipItem(data)
     },
@@ -73,12 +74,12 @@ const inputTypeConfig = {
         type: 'identities',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
-        shouldDecorate: (_input, {device}) => {
-            if (!canBeDecorated(_input)) return false
+        shouldDecorate: (input, {device}) => {
+            if (!canBeDecorated(input)) return false
 
-            const subtype = getInputSubtype(_input)
+            const subtype = getInputSubtype(input)
 
-            if (device.globalConfig.isApp) {
+            if (device.settings.availableInputTypes.identities) {
                 return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))
             }
 

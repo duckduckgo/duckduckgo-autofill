@@ -15,9 +15,16 @@ import { PasswordGenerator } from '../PasswordGenerator'
 import { createScanner } from '../Scanner'
 import { createGlobalConfig } from '../config'
 import { NativeUIController } from '../UI/controllers/NativeUIController'
+import {createTransport} from '../deviceApiCalls/transports/transports'
+import {Settings} from '../Settings'
+import {DeviceApi} from '../../packages/device-api'
+import {StoreFormDataCall} from '../deviceApiCalls/__generated__/deviceApiCalls'
 
 /**
- * @implements {FeatureToggles}
+ * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
+ */
+
+/**
  * @implements {GlobalConfigImpl}
  * @implements {FormExtensionPoints}
  * @implements {DeviceExtensionPoints}
@@ -31,9 +38,6 @@ class InterfacePrototype {
     stripCredentials = true
     /** @type {number} */
     initialSetupDelayMs = 0
-
-    /** @type {FeatureToggleNames[]} */
-    supportedFeatures = [];
 
     /** @type {PasswordGenerator} */
     passwordGenerator = new PasswordGenerator();
@@ -53,12 +57,19 @@ class InterfacePrototype {
     /** @type {import("../UI/controllers/UIController.js").UIController} */
     uiController;
 
+    /** @type {import("../../packages/device-api").DeviceApi} */
+    deviceApi;
+
     /**
      * @param {GlobalConfig} config
+     * @param {import("../../packages/device-api").DeviceApi} deviceApi
+     * @param {Settings} settings
      */
-    constructor (config) {
+    constructor (config, deviceApi, settings) {
         this.globalConfig = config
+        this.deviceApi = deviceApi
         this.uiController = this.createUIController()
+        this.settings = settings
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
@@ -175,6 +186,11 @@ class InterfacePrototype {
     getTopContextData () {
         return this.#data.topContextData
     }
+
+    /**
+     * @deprecated use `availableInputTypes.credentials` directly instead
+     * @returns {boolean}
+     */
     get hasLocalCredentials () {
         return this.#data.credentials.length > 0
     }
@@ -184,12 +200,21 @@ class InterfacePrototype {
             return rest
         })
     }
+    /**
+     * @deprecated use `availableInputTypes.identities` directly instead
+     * @returns {boolean}
+     */
     get hasLocalIdentities () {
         return this.#data.identities.length > 0
     }
     getLocalIdentities () {
         return this.#data.identities
     }
+
+    /**
+     * @deprecated use `availableInputTypes.creditCards` directly instead
+     * @returns {boolean}
+     */
     get hasLocalCreditCards () {
         return this.#data.creditCards.length > 0
     }
@@ -199,15 +224,37 @@ class InterfacePrototype {
     }
 
     async startInit () {
-        // Only setup listeners on macOS
-        if (this.globalConfig.isApp) {
+        this.addDeviceListeners()
+
+        await this.setupAutofill()
+        await this.refreshSettings()
+        await this.setupSettingsPage()
+        await this.postInit()
+
+        if (this.settings.featureToggles.credentials_saving) {
             listenForGlobalFormSubmission(this.scanner.forms)
         }
+    }
 
-        this.addDeviceListeners()
-        await this.setupAutofill()
-        await this.setupSettingsPage()
-        this.postInit()
+    /**
+     * This is a fall-back situation for macOS since it was the only
+     * platform to support anything none-email based in the past.
+     *
+     * Once macOS fully supports 'getAvailableInputTypes' this can be removed
+     *
+     * @returns {Promise<void>}
+     */
+    async refreshSettings () {
+        const defaults = this.globalConfig.userPreferences?.platform?.name === 'macos'
+            ? {
+                identities: this.hasLocalIdentities,
+                credentials: this.hasLocalCredentials,
+                creditCards: this.hasLocalCreditCards,
+                email: this.isDeviceSignedIn()
+            }
+            : undefined
+
+        await this.settings.refresh(defaults)
     }
 
     postInit () {}
@@ -298,7 +345,7 @@ class InterfacePrototype {
     /**
      * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
-     * @param {{ (): { x: number; y: number; height: number; width: number; }; (): void; }} getPosition
+     * @param {{ (): { x: number; y: number; height: number; width: number; } }} getPosition
      * @param {{ x: number; y: number; } | null} click
      */
     attachTooltip (form, input, getPosition, click) {
@@ -306,7 +353,8 @@ class InterfacePrototype {
         this.currentAttached = form
         const inputType = getInputType(input)
 
-        if (this.globalConfig.isMobileApp) {
+        // todo: this will be migrated to use NativeUIController soon
+        if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
             this.getAlias().then((alias) => {
                 if (alias) form.autofillEmail(alias)
                 else form.activeInput?.focus()
@@ -436,8 +484,11 @@ class InterfacePrototype {
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
+
                 await this.setupAutofill()
+                await this.refreshSettings()
                 await this.setupSettingsPage({shouldLog: true})
+                await this.postInit()
             } else {
                 console.warn('max attempts reached, bailing')
             }
@@ -470,11 +521,10 @@ class InterfacePrototype {
     async getAutofillIdentity (_id) { throw new Error('unimplemented') }
 
     openManagePasswords () {}
-    storeFormData (_values) {}
 
-    /** @param {FeatureToggleNames} name */
-    supportsFeature (name) {
-        return this.supportedFeatures.includes(name)
+    /** @param {StoreFormData} values */
+    storeFormData (values) {
+        this.deviceApi.notify(new StoreFormDataCall(values))
     }
 
     /**
@@ -492,7 +542,7 @@ class InterfacePrototype {
         // A list of checks to determine if we need to generate a password
         const checks = [
             topContextData.inputType === 'credentials.password',
-            this.supportsFeature('password.generation'),
+            this.settings.featureToggles.password_generation,
             form.isSignup
         ]
 
@@ -542,7 +592,6 @@ class InterfacePrototype {
     postSubmit (values, form) {
         if (!form.form) return
         if (!form.hasValues(values)) return
-
         const checks = [
             form.shouldPromptToStoreData,
             this.passwordGenerator.generated
@@ -561,7 +610,10 @@ class InterfacePrototype {
      */
     static default () {
         const globalConfig = createGlobalConfig()
-        return new InterfacePrototype(globalConfig)
+        const transport = createTransport(globalConfig)
+        const deviceApi = new DeviceApi(transport)
+        const settings = Settings.default(globalConfig, deviceApi)
+        return new InterfacePrototype(globalConfig, deviceApi, settings)
     }
 }
 

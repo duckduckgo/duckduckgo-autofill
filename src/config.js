@@ -26,6 +26,10 @@ function createGlobalConfig () {
     // INJECT userUnprotectedDomains HERE
     // INJECT userPreferences HERE
 
+    /** @type {Record<string, any> | null} */
+    let availableInputTypes = null
+    // INJECT availableInputTypes HERE
+
     // The native layer will inject a randomised secret here and use it to verify the origin
     let secret = 'PLACEHOLDER_SECRET'
 
@@ -35,7 +39,6 @@ function createGlobalConfig () {
     const isAndroid = isDDGApp && /Android/i.test(window.navigator.userAgent)
     const isMobileApp = isDDGApp && !isApp
     const isFirefox = navigator.userAgent.includes('Firefox')
-
     const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX))
 
     return {
@@ -52,7 +55,8 @@ function createGlobalConfig () {
         userUnprotectedDomains,
         userPreferences,
         isDDGTestMode,
-        isDDGDomain
+        isDDGDomain,
+        availableInputTypes
     }
 }
 
