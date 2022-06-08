@@ -65,8 +65,14 @@ const wkSendAndWait = async (handler, data = {}, opts = {}) => {
         const decrypted = await decrypt(cipher, key, iv)
         return ddgGlobals.JSONparse(decrypted || '{}')
     } catch (e) {
-        console.error('decryption failed', e)
-        return {error: e}
+        // re-throw when the error is a 'MissingWebkitHandler'
+        if (e instanceof MissingWebkitHandler) {
+            throw e
+        } else {
+            console.error('decryption failed', e)
+            console.error(e)
+            return { error: e }
+        }
     }
 }
 
