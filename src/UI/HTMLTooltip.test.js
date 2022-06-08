@@ -2,6 +2,22 @@ import HTMLTooltip, {defaultOptions} from './HTMLTooltip'
 import {getInputConfigFromType} from '../Form/inputTypeConfig'
 
 describe('HTMLTooltip', () => {
+    let o1 = global.ResizeObserver
+    let o2 = global.MutationObserver
+    beforeEach(() => {
+        // @ts-ignore
+        global.ResizeObserver = class ResizeObserver {
+            observe () {}
+        }
+        // @ts-ignore
+        global.MutationObserver = class MutationObserver {
+            observe () {}
+        }
+    })
+    afterEach(() => {
+        global.ResizeObserver = o1
+        global.MutationObserver = o2
+    })
     /**
      * This test ensures that `setupSizeListener` is not called if the platform
      * in question cannot use PerformanceObserver with {entryTypes: ['layout-shift', 'paint']}
