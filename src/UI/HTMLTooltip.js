@@ -7,7 +7,7 @@ import {CSS_STYLES} from './styles/styles'
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
- * @property {(details: {height: number, width: number}) => void} [setSize]
+ * @property {(details: {height: number, width: number}) => void} [setSize] - if this is set, it will be called initially once + every times the size changes
  * @property {() => void} remove
  * @property {string} css
  */
@@ -17,7 +17,7 @@ export const defaultOptions = {
     wrapperClass: '',
     tooltipPositionClass: (top, left) => `.wrapper {transform: translate(${left}px, ${top}px);}`,
     css: `<style>${CSS_STYLES}</style>`,
-    setSize: () => { /** noop */ },
+    setSize: undefined,
     remove: () => { /** noop */ },
     testMode: false
 }
@@ -172,7 +172,6 @@ export class HTMLTooltip {
         }
     }
     setupSizeListener () {
-        if (typeof this.options.setSize !== 'function') return
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
             this.setSize()
@@ -203,7 +202,9 @@ export class HTMLTooltip {
         window.addEventListener('scroll', this, {capture: true})
         this.setSize()
 
-        this.setupSizeListener()
+        if (typeof this.options.setSize === 'function') {
+            this.setupSizeListener()
+        }
     }
 }
 

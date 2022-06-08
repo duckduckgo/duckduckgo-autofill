@@ -68,5 +68,13 @@ function setupIntersectionObserverMock ({
         configurable: true,
         value: MockIntersectionObserver
     })
+
+    Object.defineProperty(global, 'ResizeObserver', {
+        writable: true,
+        configurable: true,
+        value: class MockResizeObserver {
+            observe () {}
+        }
+    })
 }
 setupIntersectionObserverMock()

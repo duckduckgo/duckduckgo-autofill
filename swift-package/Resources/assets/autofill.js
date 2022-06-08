@@ -9347,7 +9347,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
- * @property {(details: {height: number, width: number}) => void} [setSize]
+ * @property {(details: {height: number, width: number}) => void} [setSize] - if this is set, it will be called initially once + every times the size changes
  * @property {() => void} remove
  * @property {string} css
  */
@@ -9357,9 +9357,7 @@ const defaultOptions = {
   wrapperClass: '',
   tooltipPositionClass: (top, left) => ".wrapper {transform: translate(".concat(left, "px, ").concat(top, "px);}"),
   css: "<style>".concat(_styles.CSS_STYLES, "</style>"),
-  setSize: () => {
-    /** noop */
-  },
+  setSize: undefined,
   remove: () => {
     /** noop */
   },
@@ -9553,8 +9551,7 @@ class HTMLTooltip {
   }
 
   setupSizeListener() {
-    if (typeof this.options.setSize !== 'function') return; // Listen to layout and paint changes to register the size
-
+    // Listen to layout and paint changes to register the size
     const observer = new PerformanceObserver(() => {
       this.setSize();
     });
@@ -9597,7 +9594,10 @@ class HTMLTooltip {
       capture: true
     });
     this.setSize();
-    this.setupSizeListener();
+
+    if (typeof this.options.setSize === 'function') {
+      this.setupSizeListener();
+    }
   }
 
 }
