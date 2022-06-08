@@ -14086,10 +14086,16 @@ const wkSendAndWait = async function (handler) {
     const decrypted = await decrypt(cipher, key, iv);
     return _captureDdgGlobals.default.JSONparse(decrypted || '{}');
   } catch (e) {
-    console.error('decryption failed', e);
-    return {
-      error: e
-    };
+    // re-throw when the error is a 'MissingWebkitHandler'
+    if (e instanceof MissingWebkitHandler) {
+      throw e;
+    } else {
+      console.error('decryption failed', e);
+      console.error(e);
+      return {
+        error: e
+      };
+    }
   }
 };
 
