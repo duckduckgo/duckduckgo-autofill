@@ -5,6 +5,7 @@
  * @property {() => { x: number; y: number; height: number; width: number; }} getPosition A function that provides positioning information
  * @property {{x: number, y: number}|null} click The click positioning
  * @property {TopContextData} topContextData
+ * @property {"user-initiated" | "auto-prompt"} trigger
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
  */
 

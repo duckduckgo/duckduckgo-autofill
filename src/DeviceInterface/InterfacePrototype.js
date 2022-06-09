@@ -347,8 +347,9 @@ class InterfacePrototype {
      * @param {HTMLInputElement} input
      * @param {{ (): { x: number; y: number; height: number; width: number; } }} getPosition
      * @param {{ x: number; y: number; } | null} click
+     * @param {"user-initiated" | "auto-prompt"} trigger
      */
-    attachTooltip (form, input, getPosition, click) {
+    attachTooltip (form, input, getPosition, click, trigger) {
         form.activeInput = input
         this.currentAttached = form
         const inputType = getInputType(input)
@@ -371,7 +372,7 @@ class InterfacePrototype {
         // for example, generated passwords may get appended here
         const processedTopContext = this.preAttachTooltip(topContextData, input, form)
 
-        this.uiController.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this})
+        this.uiController.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this, trigger})
     }
 
     /**

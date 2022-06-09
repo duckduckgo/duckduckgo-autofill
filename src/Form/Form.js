@@ -369,7 +369,7 @@ class Form {
                 }
 
                 this.touched.add(input)
-                this.device.attachTooltip(this, input, getPosition, click)
+                this.device.attachTooltip(this, input, getPosition, click, "user-initiated")
             }
         }
 
