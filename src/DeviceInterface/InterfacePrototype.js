@@ -348,6 +348,7 @@ class InterfacePrototype {
      * @param {{ x: number; y: number; } | null} click
      */
     attachTooltip (form, input, click) {
+        // Avoid flashing tooltip from background tabs on macOS
         if (document.visibilityState !== 'visible') return
 
         form.activeInput = input

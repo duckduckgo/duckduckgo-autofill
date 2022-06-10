@@ -7902,6 +7902,7 @@ class InterfacePrototype {
 
 
   attachTooltip(form, input, click) {
+    // Avoid flashing tooltip from background tabs on macOS
     if (document.visibilityState !== 'visible') return;
     form.activeInput = input;
     this.currentAttached = form;
