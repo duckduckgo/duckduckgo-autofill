@@ -348,6 +348,8 @@ class InterfacePrototype {
      * @param {{ x: number; y: number; } | null} click
      */
     attachTooltip (form, input, click) {
+        if (document.visibilityState !== 'visible') return
+
         form.activeInput = input
         this.currentAttached = form
         const inputType = getInputType(input)
