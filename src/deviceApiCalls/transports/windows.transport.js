@@ -15,13 +15,13 @@ export class WindowsTransport extends DeviceApiTransport {
  */
 function windowsTransport (deviceApiCall) {
     if (deviceApiCall.params) {
-        window.chrome.webview.postMessage({
+        windowsInteropPostMessage({
             Feature: 'Autofill',
             Name: deviceApiCall.method,
             Data: deviceApiCall.params
         })
     } else {
-        window.chrome.webview.postMessage({
+        windowsInteropPostMessage({
             Feature: 'Autofill',
             Name: deviceApiCall.method,
             Data: deviceApiCall.params
@@ -71,11 +71,11 @@ export function waitForWindowsResponse (responseId, signal) {
         };
 
         // setup
-        window.chrome.webview.addEventListener('message', handler)
+        windowsInteropAddEventListener('message', handler)
         signal?.addEventListener('abort', abortHandler)
 
         teardown = () => {
-            window.chrome.webview.removeEventListener('message', handler)
+            windowsInteropRemoveEventListener('message', handler)
             signal?.removeEventListener('abort', abortHandler)
         }
     })

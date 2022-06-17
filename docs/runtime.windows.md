@@ -4,21 +4,21 @@
 
 ## `getRuntimeConfiguration()`
 
-- `window.chrome.webview.postMessage({ Feature: 'Autofill', Name: 'getRuntimeConfiguration' })`
-- Response Message via: `window.chrome.webview.addEventListener({type: "getRuntimeConfigurationResponse", success: {...} }')`
+- `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getRuntimeConfiguration' })`
+- Response Message via: `windowsInteropAddEventListener({type: "getRuntimeConfigurationResponse", success: {...} }')`
   - See [Response Schema](../src/schema/response.getRuntimeConfiguration.schema.json)
 - [Runtime Configuration Schema (linked from above, but in a separate repo)](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
 
 **request example**
 
 ```js
-window.chrome.webview.postMessage({ Feature: 'Autofill', Name: 'getRuntimeConfiguration' })
+windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getRuntimeConfiguration' })
 ```
 
 **`response`** example, via:
 
 ```js
-window.chrome.webview.addEventListener('message', (event) => {...})
+windowsInteropAddEventListener('message', (event) => {...})
 ```
 
 Where `event.data` is:
@@ -67,20 +67,20 @@ Where `event.data` is:
 
 This represents which input types we can autofill for the current user.
 
-- `window.chrome.webview.postMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })`
-- Response Message via: `window.chrome.webview.addEventListener({type: "getAvailableInputTypesResponse", success: {...} }')`
+- `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })`
+- Response Message via: `windowsInteropAddEventListener({type: "getAvailableInputTypesResponse", success: {...} }')`
   - See [Response Schema](../src/schema/response.getAvailableInputTypes.schema.json)
 
 **request example**
 
 ```js
-window.chrome.webview.postMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })
+windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })
 ```
 
 **`response`** example, via: 
 
 ```js
-window.chrome.webview.addEventListener('message', (event) => {...})
+windowsInteropAddEventListener('message', (event) => {...})
 ```
 
 where `event.data` is:
@@ -128,8 +128,8 @@ where `event.data` is:
 
 ## `overlay -> getAutofillInitData()`
 
-- `window.chrome.webview.postMessage({ Feature: 'Autofill', Name: 'getAutofillInitData' })`
-- Response Message via: `window.chrome.webview.addEventListener({type: "getAutofillInitDataResponse", success: {...} }')`
+- `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAutofillInitData' })`
+- Response Message via: `windowsInteropAddEventListener({type: "getAutofillInitDataResponse", success: {...} }')`
   - See [Response Schema](../src/schema/response.getAutofillInitData.schema.json)
 
 **response example**
@@ -165,8 +165,8 @@ where `event.data` is:
 
 ## `getAutofillCredentials({id: 01})`
 
-- `window.chrome.webview.postMessage({ Feature: 'Autofill', Name: 'getAutofillCredentials', Data: { id: "01" } })`
-- Response Message via: `window.chrome.webview.addEventListener({type: "getAutofillCredentialsResponse", success: {...} }')`
+- `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAutofillCredentials', Data: { id: "01" } })`
+- Response Message via: `windowsInteropAddEventListener({type: "getAutofillCredentialsResponse", success: {...} }')`
   - See TODO
 
 **request example**
@@ -198,7 +198,7 @@ where `event.data` is:
 
 ## `storeFormData(data)`
 
-- `window.chrome.webview.postMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: {...} })` 
+- `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: {...} })` 
 - Currently, autofill doesn't care/listen for any response to this, but may do later.
 - TODO: Schema for the 'data' argument above
 
@@ -211,7 +211,7 @@ const data = {
     "password": "123456"
   }
 }
-window.chrome.webview.postMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: data })
+windowsInteropPostMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: data })
 ```
 
 ---

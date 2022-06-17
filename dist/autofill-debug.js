@@ -15670,13 +15670,13 @@ exports.WindowsTransport = WindowsTransport;
 
 function windowsTransport(deviceApiCall) {
   if (deviceApiCall.params) {
-    window.chrome.webview.postMessage({
+    windowsInteropPostMessage({
       Feature: 'Autofill',
       Name: deviceApiCall.method,
       Data: deviceApiCall.params
     });
   } else {
-    window.chrome.webview.postMessage({
+    windowsInteropPostMessage({
       Feature: 'Autofill',
       Name: deviceApiCall.method,
       Data: deviceApiCall.params
@@ -15732,11 +15732,11 @@ function waitForWindowsResponse(responseId, signal) {
     }; // setup
 
 
-    window.chrome.webview.addEventListener('message', handler);
+    windowsInteropAddEventListener('message', handler);
     signal === null || signal === void 0 ? void 0 : signal.addEventListener('abort', abortHandler);
 
     teardown = () => {
-      window.chrome.webview.removeEventListener('message', handler);
+      windowsInteropRemoveEventListener('message', handler);
       signal === null || signal === void 0 ? void 0 : signal.removeEventListener('abort', abortHandler);
     };
   });

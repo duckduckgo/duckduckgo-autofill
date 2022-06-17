@@ -235,7 +235,7 @@ export function loginPage (page, server, opts = {}) {
                 }
             }
             await page.evaluate((message) => {
-                window.chrome.webview.postMessage(message, window.location.origin)
+                windowsInteropPostMessage(message, window.location.origin)
             }, message)
         },
         /** @param {{password: string}} data */
