@@ -222,7 +222,7 @@ export function withIOSContext (test) {
             testInfo.skip(testInfo.project.name !== 'webkit')
 
             const context = await browser.newContext({
-                ...devices.iPhone,
+                ...devices['iPhone 13'],
                 userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 DuckDuckGo/7 Safari/605.1.15'
             })
 
