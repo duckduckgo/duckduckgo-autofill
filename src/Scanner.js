@@ -93,19 +93,20 @@ class DefaultScanner {
      */
     scanAndObserve () {
         window.performance?.mark?.('scanner:init:start')
-        this.findEligibleInputs(document)
+        this.findEligibleInputs(document, true)
         window.performance?.mark?.('scanner:init:end')
         this.mutObs.observe(document.body, { childList: true, subtree: true })
     }
 
     /**
      * @param context
+     * @param {Boolean} shouldAutoprompt
      */
-    findEligibleInputs (context) {
+    findEligibleInputs (context, shouldAutoprompt = false) {
         if ('matches' in context && context.matches?.(FORM_INPUTS_SELECTOR)) {
-            this.addInput(context)
+            this.addInput(context, shouldAutoprompt)
         } else {
-            context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach((input) => this.addInput(input))
+            context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach((input) => this.addInput(input, shouldAutoprompt))
         }
         return this
     }
@@ -138,8 +139,9 @@ class DefaultScanner {
 
     /**
      * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {Boolean} shouldAutoprompt
      */
-    addInput (input) {
+    addInput (input, shouldAutoprompt) {
         const parentForm = this.getParentForm(input)
 
         // Note that el.contains returns true for el itself
@@ -161,7 +163,7 @@ class DefaultScanner {
                 this.forms.delete(childForm)
             }
 
-            this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching))
+            this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, shouldAutoprompt))
         }
     }
 

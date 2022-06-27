@@ -39,8 +39,9 @@ class Form {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
+     * @param {Boolean} shouldAutoprompt
      */
-    constructor (form, input, deviceInterface, matching) {
+    constructor (form, input, deviceInterface, matching, shouldAutoprompt) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
@@ -84,7 +85,9 @@ class Form {
 
         this.categorizeInputs()
 
-        this.promptLoginIfNeeded()
+        if (shouldAutoprompt) {
+            this.promptLoginIfNeeded()
+        }
     }
 
     /**
