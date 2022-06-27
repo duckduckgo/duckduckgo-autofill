@@ -1,6 +1,6 @@
 import {constants} from '../helpers/mocks.js'
 import {createAutofillScript, forwardConsoleMessages, setupServer, withAndroidContext} from '../helpers/harness.js'
-import {loginPage} from '../helpers/pages.js'
+import {loginPage, loginPageWithText} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {test as base} from '@playwright/test'
 
@@ -22,12 +22,18 @@ const test = withAndroidContext(base)
  * @param {Partial<AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<AvailableInputTypes>} opts.availableInputTypes
  * @param {CredentialsMock} [opts.credentials]
+ * @param {Boolean} [opts.hasExtraText]
  */
 async function testLoginPage (page, server, opts) {
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
 
-    const login = loginPage(page, server)
+    let login
+    if (opts.hasExtraText) {
+        login = loginPageWithText(page, server)
+    } else {
+        login = loginPage(page, server)
+    }
     await login.navigate()
 
     // android specific mocks
@@ -48,11 +54,10 @@ async function testLoginPage (page, server, opts) {
         .platform('android')
         .applyTo(page)
 
-    await login.clickIntoUsernameInput()
     return {login}
 }
 
-test.describe('Feature: auto-filling a login forms on Android', () => {
+test.describe('Feature: auto-filling a login form on Android', () => {
     const {personalAddress} = constants.fields.email
     const password = '123456'
     const credentials = {
@@ -69,7 +74,7 @@ test.describe('Feature: auto-filling a login forms on Android', () => {
     })
     test.describe('when `inputType_credentials` is true', () => {
         test.describe('and I have saved credentials', () => {
-            test('I should be prompted to use my saved credentials', async ({page}) => {
+            test('I should be prompted to use my saved credentials with autoprompt', async ({page}) => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
@@ -79,7 +84,41 @@ test.describe('Feature: auto-filling a login forms on Android', () => {
                     },
                     credentials
                 })
+                // TODO: investigate why this must run before promptWasShown()
+                await login.fieldsDoNotContainIcons()
                 await login.promptWasShown()
+                await login.assertFirstCredential(personalAddress, password)
+            })
+            test('I should be prompted to use my saved credentials when clicking the field even if the form was below the fold', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    hasExtraText: true
+                })
+                await login.fieldsDoNotContainIcons()
+                await login.clickIntoUsernameInput()
+                await login.promptWasShown()
+                await login.assertFirstCredential(personalAddress, password)
+            })
+            test('I should not be prompted automatically to use my saved credentials if the form is below the fold', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    hasExtraText: true
+                })
+                await login.fieldsDoNotContainIcons()
+                await login.promptWasNotShown()
+                await login.clickIntoUsernameInput()
                 await login.assertFirstCredential(personalAddress, password)
             })
         })
