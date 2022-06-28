@@ -7,6 +7,39 @@
  * @param {object} [overrides]
  * @param {Partial<AutofillFeatureToggles>} [overrides.featureToggles]
  */
+export const androidContentScopeReplacements = (overrides = {}) => {
+    return {
+        contentScope: {
+            features: {
+                'autofill': {
+                    exceptions: [],
+                    state: 'enabled'
+                }
+            },
+            unprotectedTemporary: []
+        },
+        userUnprotectedDomains: [],
+        userPreferences: {
+            debug: true,
+            platform: { name: 'android' },
+            features: {
+                autofill: {
+                    settings: {
+                        featureToggles: {
+                            inlineIcon_credentials: false,
+                            ...overrides.featureToggles
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @param {object} [overrides]
+ * @param {Partial<AutofillFeatureToggles>} [overrides.featureToggles]
+ */
 export const iosContentScopeReplacements = (overrides = {}) => {
     return {
         contentScope: {
