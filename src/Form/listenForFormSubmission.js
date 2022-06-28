@@ -13,7 +13,7 @@ const listenForGlobalFormSubmission = (forms) => {
                 const focusedForm = [...forms.values()].find((form) => form.hasFocus())
                 focusedForm?.submitHandler()
             }
-        })
+        }, true)
 
         const observer = new PerformanceObserver((list) => {
             const entries = list.getEntries().filter((entry) =>
