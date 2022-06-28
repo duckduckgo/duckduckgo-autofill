@@ -314,32 +314,6 @@ class AppleDeviceInterface extends InterfacePrototype {
             poll()
         })
     }
-    /**
-     * on macOS we try to detect if a click occurred within a form
-     * @param {PointerEvent} event
-     */
-    _onPointerDown (event) {
-        if (this.settings.featureToggles.credentials_saving) {
-            this._detectFormSubmission(event)
-        }
-    }
-    /**
-     * @param {PointerEvent} event
-     */
-    _detectFormSubmission (event) {
-        const matchingForm = [...this.scanner.forms.values()].find(
-            (form) => {
-                const btns = [...form.submitButtons]
-                // @ts-ignore
-                if (btns.includes(event.target)) return true
-
-                // @ts-ignore
-                if (btns.find((btn) => btn.contains(event.target))) return true
-            }
-        )
-
-        matchingForm?.submitHandler()
-    }
 }
 
 export {AppleDeviceInterface}
