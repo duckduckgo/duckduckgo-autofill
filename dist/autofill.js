@@ -2913,13 +2913,16 @@ class AndroidInterface extends _InterfacePrototype.default {
   isDeviceSignedIn() {
     var _this$globalConfig$av;
 
-    // if availableInputTypes are available, use .email first, whether true or false
+    // on DDG domains, always check via `window.EmailInterface.isSignedIn()`
+    if (this.globalConfig.isDDGDomain) {
+      return window.EmailInterface.isSignedIn() === 'true';
+    } // on none-DDG domains, where `availableInputTypes.email` is present, use it
+
+
     if (typeof ((_this$globalConfig$av = this.globalConfig.availableInputTypes) === null || _this$globalConfig$av === void 0 ? void 0 : _this$globalConfig$av.email) === 'boolean') {
       return this.globalConfig.availableInputTypes.email;
-    } // isDeviceSignedIn is only available on DDG domains...
+    } // ...on other domains we assume true because the script wouldn't exist otherwise
 
-
-    if (this.globalConfig.isDDGDomain) return window.EmailInterface.isSignedIn() === 'true'; // ...on other domains we assume true because the script wouldn't exist otherwise
 
     return true;
   }
@@ -11180,6 +11183,18 @@ class AndroidTransport extends _deviceApi.DeviceApiTransport {
     _defineProperty(this, "config", void 0);
 
     this.config = globalConfig;
+
+    if (this.config.isDDGTestMode) {
+      var _window$BrowserAutofi, _window$BrowserAutofi2;
+
+      if (typeof ((_window$BrowserAutofi = window.BrowserAutofill) === null || _window$BrowserAutofi === void 0 ? void 0 : _window$BrowserAutofi.getAutofillData) !== 'function') {
+        throw new Error('window.BrowserAutofill.getAutofillData missing');
+      }
+
+      if (typeof ((_window$BrowserAutofi2 = window.BrowserAutofill) === null || _window$BrowserAutofi2 === void 0 ? void 0 : _window$BrowserAutofi2.storeFormData) !== 'function') {
+        throw new Error('window.BrowserAutofill.storeFormData missing');
+      }
+    }
   }
   /**
    * @param {import("../../../packages/device-api").DeviceApiCall} deviceApiCall
