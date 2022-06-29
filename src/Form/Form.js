@@ -6,7 +6,7 @@ import {
     setValue,
     isEventWithinDax,
     isLikelyASubmitButton,
-    isVisible
+    isVisible, buttonMatchesFormType
 } from '../autofill-utils'
 
 import { getInputSubtype, getInputMainType, createMatching } from './matching'
@@ -225,17 +225,9 @@ class Form {
         const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
 
         return allButtons
-            .filter(isLikelyASubmitButton)
-            // filter out buttons of the wrong type - login buttons on a signup form, signup buttons on a login form
-            .filter((button) => {
-                if (this.isLogin) {
-                    return !/sign.?up/i.test(button.textContent || '')
-                } else if (this.isSignup) {
-                    return !/(log|sign).?([io])n/i.test(button.textContent || '')
-                } else {
-                    return true
-                }
-            })
+            .filter((btn) =>
+                isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
+            )
     }
 
     /**
