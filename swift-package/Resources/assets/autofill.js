@@ -2561,6 +2561,9 @@ module.exports={
   "planetary.org": {
     "password-rules": "minlength: 5; maxlength: 20; required: lower; required: upper; required: digit; allowed: ascii-printable;"
   },
+  "plazapremiumlounge.com": {
+    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!#$%&*,@^];"
+  },
   "portal.edd.ca.gov": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&()*@^];"
   },
