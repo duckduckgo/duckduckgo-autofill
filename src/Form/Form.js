@@ -85,11 +85,12 @@ class Form {
     }
 
     /**
-     * Checks if the form element contains the activeElement
+     * Checks if the form element contains the activeElement or the event target
      * @return {boolean}
+     * @param {KeyboardEvent | null} [e]
      */
-    hasFocus () {
-        return this.form.contains(document.activeElement)
+    hasFocus (e) {
+        return this.form.contains(document.activeElement) || this.form.contains(/** @type HTMLElement */(e?.target))
     }
 
     /**
