@@ -29,7 +29,9 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     createUIController () {
         if (this.globalConfig.userPreferences?.platform?.name === 'ios') {
-            return new NativeUIController()
+            return new NativeUIController({
+                onPointerDown: (event) => this._onPointerDown(event)
+            })
         }
 
         if (!this.globalConfig.supportsTopFrame) {
