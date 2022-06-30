@@ -32,7 +32,7 @@ class AndroidInterface extends InterfacePrototype {
             return window.EmailInterface.isSignedIn() === 'true'
         }
 
-        // on none-DDG domains, where `availableInputTypes.email` is present, use it
+        // on non-DDG domains, where `availableInputTypes.email` is present, use it
         if (typeof this.globalConfig.availableInputTypes?.email === 'boolean') {
             return this.globalConfig.availableInputTypes.email
         }
