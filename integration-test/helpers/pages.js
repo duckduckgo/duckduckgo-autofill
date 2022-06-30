@@ -233,10 +233,10 @@ export function loginPage (page, server, opts = {}) {
             await page.type('#email', data.username)
             await page.click('#login button[type="submit"]')
         },
+        /** @param {Platform} platform */
         async shouldNotPromptToSave (platform = 'ios') {
             let mockCalls = []
             if (['ios', 'macos'].includes(platform)) {
-                // todo(Shane): is it too apple specific?
                 mockCalls = await mockedCalls(page, ['pmHandlerStoreData'])
             }
             if (platform === 'android') {
