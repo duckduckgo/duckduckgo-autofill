@@ -6592,7 +6592,7 @@ class AndroidInterface extends _InterfacePrototype.default {
     // on DDG domains, always check via `window.EmailInterface.isSignedIn()`
     if (this.globalConfig.isDDGDomain) {
       return window.EmailInterface.isSignedIn() === 'true';
-    } // on none-DDG domains, where `availableInputTypes.email` is present, use it
+    } // on non-DDG domains, where `availableInputTypes.email` is present, use it
 
 
     if (typeof ((_this$globalConfig$av = this.globalConfig.availableInputTypes) === null || _this$globalConfig$av === void 0 ? void 0 : _this$globalConfig$av.email) === 'boolean') {
