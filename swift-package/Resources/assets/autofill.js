@@ -2902,7 +2902,9 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 
   createUIController() {
-    return new _NativeUIController.NativeUIController();
+    return new _NativeUIController.NativeUIController({
+      onPointerDown: event => this._onPointerDown(event)
+    });
   }
   /**
    * @deprecated use `this.settings.availableInputTypes.email` in the future
