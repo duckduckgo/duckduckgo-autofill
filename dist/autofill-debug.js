@@ -14694,13 +14694,17 @@ function createGlobalConfig() {
   let availableInputTypes = null; // INJECT availableInputTypes HERE
   // The native layer will inject a randomised secret here and use it to verify the origin
 
-  let secret = 'PLACEHOLDER_SECRET'; // @ts-ignore
+  let secret = 'PLACEHOLDER_SECRET';
+  /**
+   * The user agent check will not be needed here once `android` supports `userPreferences?.platform.name`
+   */
+  // @ts-ignore
 
-  const isDDGApp = ['ios', 'android', 'macos', 'windows'].includes(userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name); // @ts-ignore
+  const isAndroid = (userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) === 'android' || /Android.*DuckDuckGo\/\d/i.test(window.navigator.userAgent); // @ts-ignore
 
-  const isAndroid = (userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) === 'android'; // @ts-ignore
+  const isDDGApp = ['ios', 'android', 'macos', 'windows'].includes(userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) || isAndroid; // @ts-ignore
 
-  const isMobileApp = ['ios', 'android'].includes(userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name);
+  const isMobileApp = ['ios', 'android'].includes(userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) || isAndroid;
   const isFirefox = navigator.userAgent.includes('Firefox');
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
   return {
