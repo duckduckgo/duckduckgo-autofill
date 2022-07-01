@@ -4765,6 +4765,25 @@ class Form {
       creditCards: {},
       identities: {}
     });
+
+    if (formValues.credentials.password && !formValues.credentials.username && !formValues.identities.emailAddress) {
+      // If we have a password but no username, let's search further
+      const hiddenFields =
+      /** @type [HTMLInputElement] */
+      [...this.form.querySelectorAll('input[type=hidden]')];
+      const probableField = hiddenFields.find(field => {
+        var _this$matching$ddgMat;
+
+        const regex = (0, _matching.safeRegex)('email|' + ((_this$matching$ddgMat = this.matching.ddgMatcher('username')) === null || _this$matching$ddgMat === void 0 ? void 0 : _this$matching$ddgMat.match));
+        const attributeText = field.id + ' ' + field.name;
+        return regex === null || regex === void 0 ? void 0 : regex.test(attributeText);
+      });
+
+      if (probableField !== null && probableField !== void 0 && probableField.value) {
+        formValues.credentials.username = probableField.value;
+      }
+    }
+
     return (0, _formatters.prepareFormValuesForStorage)(formValues);
   }
   /**
