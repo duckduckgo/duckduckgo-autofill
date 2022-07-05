@@ -6123,6 +6123,9 @@ module.exports={
   "leetchi.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&()*+,./:;<>?@\"_];"
   },
+  "lepida.it": {
+    "password-rules": "minlength: 8; maxlength: 16; max-consecutive: 2; required: lower; required: upper; required: digit; required: [-!\"#$%&'()*+,.:;<=>?@[^_`{|}~]];"
+  },
   "lg.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-!#$%&'()*+,.:;=?@[^_{|}~]];"
   },
@@ -6395,6 +6398,9 @@ module.exports={
   },
   "training.confluent.io": {
     "password-rules": "minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%*@^_~];"
+  },
+  "twitch.tv": {
+    "password-rules": "minlength: 8; maxlength: 71;"
   },
   "twitter.com": {
     "password-rules": "minlength: 8;"
