@@ -14736,6 +14736,7 @@ function createGlobalConfig() {
 
   const isMobileApp = ['ios', 'android'].includes(userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) || isAndroid;
   const isFirefox = navigator.userAgent.includes('Firefox');
+  const isWindows = navigator.userAgent.includes('Edg/');
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
   return {
     isApp,
@@ -14744,6 +14745,7 @@ function createGlobalConfig() {
     isFirefox,
     isMobileApp,
     isTopFrame,
+    isWindows,
     secret,
     supportsTopFrame,
     hasModernWebkitAPI,

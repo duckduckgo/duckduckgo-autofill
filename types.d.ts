@@ -8,7 +8,23 @@ interface IntersectionObserverInit {
     delay?: number
 }
 
+interface WindowsMessageFormat {
+    Feature: "Autofill"
+    Name: string
+    Data: any
+}
+
+interface WindowsResponseFormat {
+    type: string
+    [index: string]: any
+}
+
+declare const windowsInteropPostMessage: (message: WindowsMessageFormat|WindowsResponseFormat, origin?: string) => void;
+declare const windowsInteropAddEventListener: Window['addEventListener'];
+declare const windowsInteropRemoveEventListener: Window['removeEventListener'];
+
 interface Window {
+
     // Used in the Android app
     EmailInterface: {
         isSignedIn(): string
@@ -30,6 +46,14 @@ interface Window {
         messageHandlers: Record<string, {
             postMessage(data: any): Promise<any>
         }>
+    }
+
+    chrome: {
+        webview: {
+            postMessage: (message: WindowsMessageFormat|WindowsResponseFormat, origin?: string) => void,
+            addEventListener: Window['addEventListener'],
+            removeEventListener: Window['removeEventListener'],
+        }
     }
 
     __playwright: {
