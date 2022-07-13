@@ -88,12 +88,13 @@ interface GlobalConfig {
      isAndroid: boolean;
      isFirefox: boolean;
      isMobileApp: boolean;
+     isWindows: boolean;
      isTopFrame: boolean;
      secret: string;
      supportsTopFrame: boolean;
      hasModernWebkitAPI: boolean;
      contentScope: Record<string, any> | null;
-     userUnprotectedDomains: string[] | null;
+     userUnprotectedDomains: {name: string}[] | null;
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
      isDDGDomain: boolean;

@@ -24,6 +24,7 @@ function copyAutofillCSS () {
 function copyAutofillHTML () {
     const htmlFileName = 'TopAutofill.html'
     copyFileSync(filepath(srcPath, htmlFileName), filepath(appleDistPath, htmlFileName))
+    copyFileSync(filepath(srcPath, htmlFileName), filepath(distPath, htmlFileName))
 }
 
 function copyFirefoxCSSFile (pathIn, pathOut) {

@@ -8,7 +8,13 @@
     },
     "rules": {
         "indent": ["error", 4],
-        "standard/no-callback-literal": "off"
+        "standard/no-callback-literal": "off",
+        "no-restricted-globals": [2, "name"]
+    },
+    "globals": {
+        "windowsInteropPostMessage": "readonly",
+        "windowsInteropAddEventListener": "readonly",
+        "windowsInteropRemoveEventListener": "readonly"
     },
     "env": {
         "webextensions": true,
