@@ -99,7 +99,6 @@ test.describe('Auto-fill a login form on iOS', () => {
                     credentials
                 })
                 await login.promptWasShown('ios')
-                await page.pause()
 
                 await login.clickIntoPasswordInput()
                 const calls = await page.evaluate('window.__playwright.mocks.calls')
