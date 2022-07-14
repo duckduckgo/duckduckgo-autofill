@@ -256,6 +256,15 @@ export function loginPage (page, server, opts = {}) {
             expect(mockCall).toBeDefined()
         },
         /**
+         * @param {string} mockCallName
+         * @param {number} times
+         */
+        async assertMockCallOccurredTimes (mockCallName, times) {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const mockCalls = calls.filter(([name]) => name === mockCallName)
+            expect(mockCalls).toHaveLength(times)
+        },
+        /**
          * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} expected
          */
         async assertTogglesWereMocked (expected) {

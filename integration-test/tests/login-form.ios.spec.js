@@ -5,7 +5,7 @@ import {
     withIOSContext, withIOSFeatureToggles
 } from '../helpers/harness.js'
 import {loginPage} from '../helpers/pages.js'
-import {test as base, expect} from '@playwright/test'
+import {test as base} from '@playwright/test'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
 
 /**
@@ -101,9 +101,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.promptWasShown('ios')
 
                 await login.clickIntoPasswordInput()
-                const calls = await page.evaluate('window.__playwright.mocks.calls')
-                const mockCalls = calls.filter(([name]) => name === 'getAutofillData')
-                expect(mockCalls).toHaveLength(1)
+                await login.assertMockCallOccurredTimes('getAutofillData', 1)
             })
         })
     })
