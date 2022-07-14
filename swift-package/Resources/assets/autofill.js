@@ -5006,7 +5006,7 @@ class Form {
       }
 
       const input = e.target;
-      let click = null; // Checks for mousedown event
+      let click = null; // Checks for pointerdown event
 
       if (e.type === 'pointerdown') {
         click = getMainClickCoords(e);
@@ -5043,8 +5043,7 @@ class Form {
 
   shouldOpenTooltip(e, input) {
     if (this.device.globalConfig.isApp) return true;
-    const inputType = (0, _matching.getInputMainType)(input);
-    return !this.touched.has(input) && this.areAllInputsEmpty(inputType) || (0, _autofillUtils.isEventWithinDax)(e, input);
+    return !this.touched.has(input) && !input.classList.contains('ddg-autofilled') || (0, _autofillUtils.isEventWithinDax)(e, input);
   }
 
   autofillInput(input, string, dataType) {
@@ -7980,7 +7979,7 @@ class Matching {
     });
     if (hasCCAttribute) return true; // Match form textContent against common cc fields (includes hidden labels)
 
-    const textMatches = (_formEl$textContent = formEl.textContent) === null || _formEl$textContent === void 0 ? void 0 : _formEl$textContent.match(/(credit)?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
+    const textMatches = (_formEl$textContent = formEl.textContent) === null || _formEl$textContent === void 0 ? void 0 : _formEl$textContent.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
 
     return Boolean(textMatches && textMatches.length > 1);
   }
