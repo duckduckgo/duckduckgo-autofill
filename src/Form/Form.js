@@ -352,7 +352,7 @@ class Form {
             const input = e.target
             let click = null
 
-            // Checks for mousedown event
+            // Checks for pointerdown event
             if (e.type === 'pointerdown') {
                 click = getMainClickCoords(e)
                 if (!click) return
@@ -392,8 +392,7 @@ class Form {
     shouldOpenTooltip (e, input) {
         if (this.device.globalConfig.isApp) return true
 
-        const inputType = getInputMainType(input)
-        return (!this.touched.has(input) && this.areAllInputsEmpty(inputType)) || isEventWithinDax(e, input)
+        return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled')) || isEventWithinDax(e, input)
     }
 
     autofillInput (input, string, dataType) {
