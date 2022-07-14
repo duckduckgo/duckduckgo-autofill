@@ -138,9 +138,13 @@ export function loginPage (page, server, opts = {}) {
         },
         async clickIntoUsernameInput () {
             const usernameField = page.locator('#email').first()
-            // const input = page.locator(selectors.identity)
             // click the input field (not within Dax icon)
             await usernameField.click()
+        },
+        async clickIntoPasswordInput () {
+            const passwordField = page.locator('#password').first()
+            // click the input field (not within Dax icon)
+            await passwordField.click()
         },
         async fieldsDoNotContainIcons () {
             const styles1 = await page.locator('#email').getAttribute('style')
