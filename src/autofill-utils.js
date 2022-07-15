@@ -283,7 +283,7 @@ const isLikelyASubmitButton = (el) => {
     return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
     /primary|submit/i.test(el.className) || // has high-signal submit classes
     SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
-    el.offsetHeight * el.offsetWidth >= 10000) && // it's a large element, at least 250x40px
+    (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className))) && // it's a large element 250x40px
     !SUBMIT_BUTTON_UNLIKELY_REGEX.test(contentExcludingLabel + ' ' + ariaLabel)
 }
 
