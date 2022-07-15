@@ -295,14 +295,6 @@ class Form {
         return this
     }
 
-    areAllInputsEmpty (inputType) {
-        let allEmpty = true
-        this.execOnInputs((input) => {
-            if (input.value) allEmpty = false
-        }, inputType)
-        return allEmpty
-    }
-
     addListener (el, type, fn) {
         el.addEventListener(type, fn)
         this.listeners.add({el, type, fn})
