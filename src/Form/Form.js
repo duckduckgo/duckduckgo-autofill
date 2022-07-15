@@ -160,7 +160,7 @@ class Form {
                     const elText = getText(el)
                     const emailOrUsername = elText.match(
                         // https://www.emailregex.com/
-                        /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]*@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/
+                        /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/
                     )?.[0]
                     if (emailOrUsername) {
                         formValues.credentials.username = emailOrUsername
