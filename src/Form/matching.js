@@ -1,8 +1,8 @@
-import { createCacheableVendorRegexes } from './vendor-regex'
-import { constants } from '../constants'
-import { extractElementStrings } from './label-util'
-import { FORM_INPUTS_SELECTOR } from './selectors-css'
-import { matchingConfiguration } from './matching-configuration'
+import { createCacheableVendorRegexes } from './vendor-regex.js'
+import { constants } from '../constants.js'
+import { extractElementStrings } from './label-util.js'
+import { FORM_INPUTS_SELECTOR } from './selectors-css.js'
+import { matchingConfiguration } from './matching-configuration.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 

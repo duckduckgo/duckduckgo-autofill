@@ -1,9 +1,9 @@
-import { daxBase64 } from './logo-svg'
-import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon'
-import { getInputType, getMainTypeFromType, getInputSubtype } from './matching'
-import { createCredentialsTooltipItem } from '../InputTypes/Credentials'
-import { CreditCardTooltipItem } from '../InputTypes/CreditCard'
-import { IdentityTooltipItem } from '../InputTypes/Identity'
+import { daxBase64 } from './logo-svg.js'
+import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js'
+import { getInputType, getMainTypeFromType, getInputSubtype } from './matching.js'
+import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
+import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js'
+import { IdentityTooltipItem } from '../InputTypes/Identity.js'
 
 /**
  * Get the icon for the identities (currently only Dax for emails)
@@ -14,9 +14,15 @@ import { IdentityTooltipItem } from '../InputTypes/Identity'
 const getIdentitiesIcon = (input, {device}) => {
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
     const { isDDGApp, isFirefox } = device.globalConfig
-    const getDaxImg = isDDGApp || isFirefox ? daxBase64 : chrome.runtime.getURL('img/logo-small.svg')
     const subtype = getInputSubtype(input)
-    if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg
+
+    if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
+        if (isDDGApp || isFirefox) {
+            return daxBase64
+        } else if (typeof window.chrome?.runtime !== 'undefined') {
+            return chrome.runtime.getURL('img/logo-small.svg')
+        }
+    }
 
     return ''
 }
@@ -90,7 +96,7 @@ const inputTypeConfig = {
             const subtype = getInputSubtype(input)
 
             if (device.settings.availableInputTypes.identities) {
-                return Boolean(device.getLocalIdentities()?.some((identity) => !!identity[subtype]))
+                return Boolean(device.getLocalIdentities?.().some((identity) => !!identity[subtype]))
             }
 
             if (subtype === 'emailAddress') {

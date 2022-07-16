@@ -1,6 +1,6 @@
-import {UIController} from './UIController'
-import {getInputType, getMainTypeFromType, getSubtypeFromType} from '../../Form/matching'
-import {GetAutofillDataCall} from '../../deviceApiCalls/__generated__/deviceApiCalls'
+import {UIController} from './UIController.js'
+import {getInputType, getMainTypeFromType, getSubtypeFromType} from '../../Form/matching.js'
+import {GetAutofillDataCall} from '../../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**
  * `NativeController` should be used in situations where you DO NOT

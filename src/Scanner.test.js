@@ -1,9 +1,9 @@
-import { createScanner } from './Scanner'
-import InterfacePrototype from './DeviceInterface/InterfacePrototype'
+import { createScanner } from './Scanner.js'
+import InterfacePrototype from './DeviceInterface/InterfacePrototype.js'
 
 describe('performance', () => {
     beforeEach(() => {
-        require('./requestIdleCallback')
+        require('./requestIdleCallback.js')
         document.body.innerHTML = `
             <form action="">
                 <label for="input-01"><input type="text" id="input-01"></label>

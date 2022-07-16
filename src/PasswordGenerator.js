@@ -1,4 +1,4 @@
-import { generate } from '../packages/password'
+import { generate } from '../packages/password/index.js'
 import rules from '../packages/password/rules.json'
 
 /**

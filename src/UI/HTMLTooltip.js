@@ -1,6 +1,6 @@
-import { safeExecute, addInlineStyles } from '../autofill-utils'
-import { getSubtypeFromType } from '../Form/matching'
-import {CSS_STYLES} from './styles/styles'
+import { safeExecute, addInlineStyles } from '../autofill-utils.js'
+import { getSubtypeFromType } from '../Form/matching.js'
+import { CSS_STYLES } from './styles/styles.js'
 
 /**
  * @typedef {object} HTMLTooltipOptions

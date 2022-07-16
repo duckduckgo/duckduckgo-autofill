@@ -42,4 +42,4 @@ function createCacheableVendorRegexes (rules, ruleSets) {
     return vendorRegExp
 }
 
-module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes
+export { createCacheableVendorRegexes }

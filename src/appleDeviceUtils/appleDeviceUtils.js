@@ -1,4 +1,4 @@
-import ddgGlobals from './captureDdgGlobals'
+import ddgGlobals from './captureDdgGlobals.js'
 
 /**
  * Sends message to the webkit layer (fire and forget)

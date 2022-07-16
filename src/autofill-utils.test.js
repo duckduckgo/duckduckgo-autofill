@@ -1,4 +1,4 @@
-import { setValue, isAutofillEnabledFromProcessedConfig } from './autofill-utils'
+import { setValue, isAutofillEnabledFromProcessedConfig } from './autofill-utils.js'
 
 const renderInputWithEvents = () => {
     const input = document.createElement('input')

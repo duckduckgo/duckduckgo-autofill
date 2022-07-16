@@ -1,7 +1,7 @@
-import { removeExcessWhitespace, Matching } from './matching'
-import { constants } from '../constants'
-import { matchingConfiguration } from './matching-configuration'
-import { isLikelyASubmitButton } from '../autofill-utils'
+import { removeExcessWhitespace, Matching } from './matching.js'
+import { constants } from '../constants.js'
+import { matchingConfiguration } from './matching-configuration.js'
+import { isLikelyASubmitButton } from '../autofill-utils.js'
 
 class FormAnalyzer {
     /** @type HTMLElement */

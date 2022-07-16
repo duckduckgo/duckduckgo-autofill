@@ -11,7 +11,7 @@ const {join} = require('path')
 const rules = require('../rules.json')
 const filePath = join(__dirname, 'index.html')
 const html = readFileSync(filePath, 'utf8')
-const {Password} = require('../lib/apple.password')
+const {Password} = require('../lib/apple.password.js')
 
 let s = ''
 

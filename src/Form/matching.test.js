@@ -1,4 +1,4 @@
-import { Matching, createMatching } from './matching'
+import { Matching, createMatching } from './matching.js'
 
 const setFormHtml = (html) => {
     document.body.innerHTML = `

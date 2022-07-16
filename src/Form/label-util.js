@@ -1,4 +1,4 @@
-import {removeExcessWhitespace} from './matching'
+import {removeExcessWhitespace} from './matching.js'
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
 
 /**

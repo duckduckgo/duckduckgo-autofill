@@ -1,5 +1,5 @@
-import {DeviceApiCall} from '../../packages/device-api'
-import {getAliasParamsSchema, getAliasResultSchema} from './__generated__/validators.zod'
+import {DeviceApiCall} from '../../packages/device-api/index.js'
+import {getAliasParamsSchema, getAliasResultSchema} from './__generated__/validators.zod.js'
 
 /**
  * @extends {DeviceApiCall<getAliasParamsSchema, getAliasResultSchema>}

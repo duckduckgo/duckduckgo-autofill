@@ -1,4 +1,4 @@
-import { getExplicitLabelsText } from './matching'
+import { getExplicitLabelsText } from './matching.js'
 
 const setFormHtml = (html) => {
     document.body.innerHTML = `<form>${html}</form>`

@@ -188,11 +188,11 @@ const username = [
 
 // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
-module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR
-module.exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR
+export { FORM_INPUTS_SELECTOR, SUBMIT_BUTTON_SELECTOR }
 
 // Exported here for now, to be moved to configuration later
-module.exports.__secret_do_not_use = {
+// eslint-disable-next-line camelcase
+export const __secret_do_not_use = {
     GENERIC_TEXT_FIELD,
     SUBMIT_BUTTON_SELECTOR,
     FORM_INPUTS_SELECTOR,

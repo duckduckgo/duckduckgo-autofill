@@ -1,10 +1,10 @@
-import { DeviceApi } from '../packages/device-api'
-import { createGlobalConfig } from './config'
-import { Settings } from './Settings'
+import { DeviceApi } from '../packages/device-api/index.js'
+import { createGlobalConfig } from './config.js'
+import { Settings } from './Settings.js'
 import {
     GetAvailableInputTypesCall,
     GetRuntimeConfigurationCall
-} from './deviceApiCalls/__generated__/deviceApiCalls'
+} from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 describe('Settings', () => {
     it('feature toggles + input types combinations ', async () => {

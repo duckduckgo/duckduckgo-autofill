@@ -1,8 +1,8 @@
-import {getInputConfigFromType} from '../../Form/inputTypeConfig'
-import DataHTMLTooltip from '../DataHTMLTooltip'
-import EmailHTMLTooltip from '../EmailHTMLTooltip'
-import {defaultOptions} from '../HTMLTooltip'
-import {UIController} from './UIController'
+import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
+import DataHTMLTooltip from '../DataHTMLTooltip.js'
+import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
+import {defaultOptions} from '../HTMLTooltip.js'
+import {UIController} from './UIController.js'
 
 /**
  * @typedef HTMLTooltipControllerOptions

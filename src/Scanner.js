@@ -1,7 +1,7 @@
-import { Form } from './Form/Form'
-import { notifyWebApp } from './autofill-utils'
-import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css'
-import { createMatching } from './Form/matching'
+import { Form } from './Form/Form.js'
+import { notifyWebApp } from './autofill-utils.js'
+import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
+import { createMatching } from './Form/matching.js'
 
 /**
  * @typedef {{

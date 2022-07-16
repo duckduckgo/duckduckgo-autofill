@@ -3771,11 +3771,11 @@ Object.defineProperty(exports, "validate", {
   }
 });
 
-var _deviceApiCall = require("./lib/device-api-call");
+var _deviceApiCall = require("./lib/device-api-call.js");
 
-var _deviceApi = require("./lib/device-api");
+var _deviceApi = require("./lib/device-api.js");
 
-},{"./lib/device-api":12,"./lib/device-api-call":11}],11:[function(require,module,exports){
+},{"./lib/device-api-call.js":11,"./lib/device-api.js":12}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6495,21 +6495,21 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createDevice = createDevice;
 
-var _config = require("./config");
+var _config = require("./config.js");
 
-var _AndroidInterface = require("./DeviceInterface/AndroidInterface");
+var _AndroidInterface = require("./DeviceInterface/AndroidInterface.js");
 
-var _ExtensionInterface = require("./DeviceInterface/ExtensionInterface");
+var _ExtensionInterface = require("./DeviceInterface/ExtensionInterface.js");
 
-var _AppleDeviceInterface = require("./DeviceInterface/AppleDeviceInterface");
+var _AppleDeviceInterface = require("./DeviceInterface/AppleDeviceInterface.js");
 
-var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDeviceInterface");
+var _AppleOverlayDeviceInterface = require("./DeviceInterface/AppleOverlayDeviceInterface.js");
 
-var _transports = require("./deviceApiCalls/transports/transports");
+var _transports = require("./deviceApiCalls/transports/transports.js");
 
-var _deviceApi = require("../packages/device-api");
+var _index = require("../packages/device-api/index.js");
 
-var _Settings = require("./Settings");
+var _Settings = require("./Settings.js");
 
 function createDevice() {
   const globalConfig = (0, _config.createGlobalConfig)();
@@ -6529,7 +6529,7 @@ function createDevice() {
 
   }; // Create the DeviceAPI + Setting
 
-  let deviceApi = new _deviceApi.DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport);
+  let deviceApi = new _index.DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport);
   const settings = new _Settings.Settings(globalConfig, deviceApi);
 
   if (globalConfig.isDDGApp) {
@@ -6547,7 +6547,7 @@ function createDevice() {
   return new _ExtensionInterface.ExtensionInterface(globalConfig, deviceApi, settings);
 }
 
-},{"../packages/device-api":10,"./DeviceInterface/AndroidInterface":19,"./DeviceInterface/AppleDeviceInterface":20,"./DeviceInterface/AppleOverlayDeviceInterface":21,"./DeviceInterface/ExtensionInterface":22,"./Settings":42,"./config":56,"./deviceApiCalls/transports/transports":64}],19:[function(require,module,exports){
+},{"../packages/device-api/index.js":10,"./DeviceInterface/AndroidInterface.js":19,"./DeviceInterface/AppleDeviceInterface.js":20,"./DeviceInterface/AppleOverlayDeviceInterface.js":21,"./DeviceInterface/ExtensionInterface.js":22,"./Settings.js":42,"./config.js":56,"./deviceApiCalls/transports/transports.js":64}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6557,7 +6557,7 @@ exports.AndroidInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
 var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 
@@ -6696,7 +6696,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../UI/controllers/NativeUIController.js":47,"../autofill-utils":54,"./InterfacePrototype.js":23,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],20:[function(require,module,exports){
+},{"../UI/controllers/NativeUIController.js":47,"../autofill-utils.js":54,"./InterfacePrototype.js":23,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6706,21 +6706,21 @@ exports.AppleDeviceInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
 var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 
-var _HTMLTooltip = require("../UI/HTMLTooltip");
+var _HTMLTooltip = require("../UI/HTMLTooltip.js");
 
-var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController.js");
 
-var _OverlayUIController = require("../UI/controllers/OverlayUIController");
+var _OverlayUIController = require("../UI/controllers/OverlayUIController.js");
 
-var _deviceApi = require("../../packages/device-api");
+var _index = require("../../packages/device-api/index.js");
 
-var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCalls");
+var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCalls.js");
 
-var _NativeUIController = require("../UI/controllers/NativeUIController");
+var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6821,7 +6821,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getUserData() {
-    return this.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetUserData'));
+    return this.deviceApi.request((0, _index.createRequest)('emailHandlerGetUserData'));
   }
   /**
    * Used by the email web app
@@ -6830,14 +6830,14 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getEmailProtectionCapabilities() {
-    return this.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetCapabilities'));
+    return this.deviceApi.request((0, _index.createRequest)('emailHandlerGetCapabilities'));
   }
   /**
    */
 
 
   async getSelectedCredentials() {
-    return this.deviceApi.request((0, _deviceApi.createRequest)('getSelectedCredentials'));
+    return this.deviceApi.request((0, _index.createRequest)('getSelectedCredentials'));
   }
   /**
    * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} parentArgs
@@ -6845,7 +6845,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async _showAutofillParent(parentArgs) {
-    return this.deviceApi.notify((0, _deviceApi.createNotification)('showAutofillParent', parentArgs));
+    return this.deviceApi.notify((0, _index.createNotification)('showAutofillParent', parentArgs));
   }
   /**
    * @returns {Promise<any>}
@@ -6853,7 +6853,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async _closeAutofillParent() {
-    return this.deviceApi.notify((0, _deviceApi.createNotification)('closeAutofillParent', {}));
+    return this.deviceApi.notify((0, _index.createNotification)('closeAutofillParent', {}));
   }
   /**
    * @param {import('../UI/controllers/OverlayUIController.js').ShowAutofillParentRequest} details
@@ -6878,13 +6878,13 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     if (!this.globalConfig.isApp) return this.getAlias();
     const {
       addresses
-    } = await this.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetAddresses'));
+    } = await this.deviceApi.request((0, _index.createRequest)('emailHandlerGetAddresses'));
     this.storeLocalAddresses(addresses);
     return addresses;
   }
 
   async refreshAlias() {
-    await this.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerRefreshAlias')); // On macOS we also update the addresses stored locally
+    await this.deviceApi.notify((0, _index.createNotification)('emailHandlerRefreshAlias')); // On macOS we also update the addresses stored locally
 
     if (this.globalConfig.isApp) this.getAddresses();
   }
@@ -6892,7 +6892,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   async _checkDeviceSignedIn() {
     const {
       isAppSignedIn
-    } = await this.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerCheckAppSignedInStatus'));
+    } = await this.deviceApi.request((0, _index.createRequest)('emailHandlerCheckAppSignedInStatus'));
 
     this.isDeviceSignedIn = () => !!isAppSignedIn;
 
@@ -6907,7 +6907,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
         cohort
       }
     } = _ref;
-    return this.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerStoreToken', {
+    return this.deviceApi.notify((0, _index.createNotification)('emailHandlerStoreToken', {
       token,
       username: userName,
       cohort
@@ -6920,7 +6920,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   removeUserData() {
-    this.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerRemoveToken'));
+    this.deviceApi.notify((0, _index.createNotification)('emailHandlerRemoveToken'));
   }
   /**
    * PM endpoints
@@ -6933,7 +6933,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeCredentials(credentials) {
-    return this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerStoreCredentials', credentials));
+    return this.deviceApi.notify((0, _index.createNotification)('pmHandlerStoreCredentials', credentials));
   }
   /**
    * Sends form data to the native layer
@@ -6943,7 +6943,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   storeFormData(data) {
-    this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerStoreData', data));
+    this.deviceApi.notify((0, _index.createNotification)('pmHandlerStoreData', data));
   }
   /**
    * Gets the init data from the device
@@ -6952,7 +6952,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async _getAutofillInitData() {
-    const response = await this.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetAutofillInitData'));
+    const response = await this.deviceApi.request((0, _index.createRequest)('pmHandlerGetAutofillInitData'));
     this.storeLocalData(response.success);
     return response;
   }
@@ -6964,7 +6964,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCredentials(id) {
-    return this.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetAutofillCredentials', {
+    return this.deviceApi.request((0, _index.createRequest)('pmHandlerGetAutofillCredentials', {
       id
     }));
   }
@@ -6974,7 +6974,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManagePasswords() {
-    return this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerOpenManagePasswords'));
+    return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManagePasswords'));
   }
   /**
    * Opens the native UI for managing identities
@@ -6982,7 +6982,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageIdentities() {
-    return this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerOpenManageIdentities'));
+    return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManageIdentities'));
   }
   /**
    * Opens the native UI for managing credit cards
@@ -6990,7 +6990,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   openManageCreditCards() {
-    return this.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerOpenManageCreditCards'));
+    return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManageCreditCards'));
   }
   /**
    * Gets a single identity obj once the user requests it
@@ -7018,7 +7018,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   getAutofillCreditCard(id) {
-    return this.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetCreditCard', {
+    return this.deviceApi.request((0, _index.createRequest)('pmHandlerGetCreditCard', {
       id
     }));
   }
@@ -7105,7 +7105,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api":10,"../UI/HTMLTooltip":45,"../UI/controllers/HTMLTooltipUIController":46,"../UI/controllers/NativeUIController":47,"../UI/controllers/OverlayUIController":48,"../autofill-utils":54,"../deviceApiCalls/additionalDeviceApiCalls":60,"./InterfacePrototype.js":23,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],21:[function(require,module,exports){
+},{"../../packages/device-api/index.js":10,"../UI/HTMLTooltip.js":45,"../UI/controllers/HTMLTooltipUIController.js":46,"../UI/controllers/NativeUIController.js":47,"../UI/controllers/OverlayUIController.js":48,"../autofill-utils.js":54,"../deviceApiCalls/additionalDeviceApiCalls.js":60,"./InterfacePrototype.js":23,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7113,13 +7113,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AppleOverlayDeviceInterface = void 0;
 
-var _AppleDeviceInterface = require("./AppleDeviceInterface");
+var _AppleDeviceInterface = require("./AppleDeviceInterface.js");
 
-var _styles = require("../UI/styles/styles");
+var _styles = require("../UI/styles/styles.js");
 
-var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController.js");
 
-var _deviceApi = require("../../packages/device-api");
+var _index = require("../../packages/device-api/index.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -7248,7 +7248,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
       return [key, String(value)];
     });
     const data = Object.fromEntries(detailsEntries);
-    await this.deviceApi.notify((0, _deviceApi.createNotification)('selectedDetail', {
+    await this.deviceApi.notify((0, _index.createNotification)('selectedDetail', {
       data,
       configType
     }));
@@ -7265,14 +7265,14 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 
 
   async _setSize(details) {
-    await this.deviceApi.notify((0, _deviceApi.createNotification)('setSize', details));
+    await this.deviceApi.notify((0, _index.createNotification)('setSize', details));
   }
 
 }
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api":10,"../UI/controllers/HTMLTooltipUIController":46,"../UI/styles/styles":51,"./AppleDeviceInterface":20}],22:[function(require,module,exports){
+},{"../../packages/device-api/index.js":10,"../UI/controllers/HTMLTooltipUIController.js":46,"../UI/styles/styles.js":51,"./AppleDeviceInterface.js":20}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7282,11 +7282,11 @@ exports.ExtensionInterface = void 0;
 
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
-var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController.js");
 
-var _HTMLTooltip = require("../UI/HTMLTooltip");
+var _HTMLTooltip = require("../UI/HTMLTooltip.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7452,7 +7452,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../UI/HTMLTooltip":45,"../UI/controllers/HTMLTooltipUIController":46,"../autofill-utils":54,"./InterfacePrototype.js":23}],23:[function(require,module,exports){
+},{"../UI/HTMLTooltip.js":45,"../UI/controllers/HTMLTooltipUIController.js":46,"../autofill-utils.js":54,"./InterfacePrototype.js":23}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7460,33 +7460,33 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
-var _matching = require("../Form/matching");
+var _matching = require("../Form/matching.js");
 
-var _formatters = require("../Form/formatters");
+var _formatters = require("../Form/formatters.js");
 
-var _listenForFormSubmission = _interopRequireDefault(require("../Form/listenForFormSubmission"));
+var _listenForFormSubmission = _interopRequireDefault(require("../Form/listenForFormSubmission.js"));
 
-var _Credentials = require("../InputTypes/Credentials");
+var _Credentials = require("../InputTypes/Credentials.js");
 
-var _PasswordGenerator = require("../PasswordGenerator");
+var _PasswordGenerator = require("../PasswordGenerator.js");
 
-var _Scanner = require("../Scanner");
+var _Scanner = require("../Scanner.js");
 
-var _config = require("../config");
+var _config = require("../config.js");
 
-var _NativeUIController = require("../UI/controllers/NativeUIController");
+var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 
-var _transports = require("../deviceApiCalls/transports/transports");
+var _transports = require("../deviceApiCalls/transports/transports.js");
 
-var _Settings = require("../Settings");
+var _Settings = require("../Settings.js");
 
-var _deviceApi = require("../../packages/device-api");
+var _index = require("../../packages/device-api/index.js");
 
-var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 
-var _selectorsCss = require("../Form/selectors-css");
+var _selectorsCss = require("../Form/selectors-css.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8275,7 +8275,7 @@ class InterfacePrototype {
   static default() {
     const globalConfig = (0, _config.createGlobalConfig)();
     const transport = (0, _transports.createTransport)(globalConfig);
-    const deviceApi = new _deviceApi.DeviceApi(transport);
+    const deviceApi = new _index.DeviceApi(transport);
 
     const settings = _Settings.Settings.default(globalConfig, deviceApi);
 
@@ -8287,7 +8287,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api":10,"../Form/formatters":27,"../Form/listenForFormSubmission":31,"../Form/matching":34,"../Form/selectors-css":35,"../InputTypes/Credentials":37,"../PasswordGenerator":40,"../Scanner":41,"../Settings":42,"../UI/controllers/NativeUIController":47,"../autofill-utils":54,"../config":56,"../deviceApiCalls/__generated__/deviceApiCalls":58,"../deviceApiCalls/transports/transports":64}],24:[function(require,module,exports){
+},{"../../packages/device-api/index.js":10,"../Form/formatters.js":27,"../Form/listenForFormSubmission.js":31,"../Form/matching.js":34,"../Form/selectors-css.js":35,"../InputTypes/Credentials.js":37,"../PasswordGenerator.js":40,"../Scanner.js":41,"../Settings.js":42,"../UI/controllers/NativeUIController.js":47,"../autofill-utils.js":54,"../config.js":56,"../deviceApiCalls/__generated__/deviceApiCalls.js":58,"../deviceApiCalls/transports/transports.js":64}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8295,19 +8295,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Form = void 0;
 
-var _FormAnalyzer = _interopRequireDefault(require("./FormAnalyzer"));
+var _FormAnalyzer = _interopRequireDefault(require("./FormAnalyzer.js"));
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
-var _matching = require("./matching");
+var _matching = require("./matching.js");
 
-var _inputStyles = require("./inputStyles");
+var _inputStyles = require("./inputStyles.js");
 
 var _inputTypeConfig = require("./inputTypeConfig.js");
 
-var _formatters = require("./formatters");
+var _formatters = require("./formatters.js");
 
-var _constants = require("../constants");
+var _constants = require("../constants.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8792,7 +8792,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils":54,"../constants":57,"./FormAnalyzer":25,"./formatters":27,"./inputStyles":28,"./inputTypeConfig.js":29,"./matching":34}],25:[function(require,module,exports){
+},{"../autofill-utils.js":54,"../constants.js":57,"./FormAnalyzer.js":25,"./formatters.js":27,"./inputStyles.js":28,"./inputTypeConfig.js":29,"./matching.js":34}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8800,13 +8800,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _matching = require("./matching");
+var _matching = require("./matching.js");
 
-var _constants = require("../constants");
+var _constants = require("../constants.js");
 
-var _matchingConfiguration = require("./matching-configuration");
+var _matchingConfiguration = require("./matching-configuration.js");
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -8985,6 +8985,7 @@ class FormAnalyzer {
 
     if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
       // If we're sure this is a submit button, it's a stronger signal
+      console.log(el, (0, _autofillUtils.isLikelyASubmitButton)(el));
       const strength = (0, _autofillUtils.isLikelyASubmitButton)(el) ? 20 : 2;
       this.updateSignal({
         string,
@@ -9044,7 +9045,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils":54,"../constants":57,"./matching":34,"./matching-configuration":33}],26:[function(require,module,exports){
+},{"../autofill-utils.js":54,"../constants.js":57,"./matching-configuration.js":33,"./matching.js":34}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9620,9 +9621,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.prepareFormValuesForStorage = exports.inferCountryCodeFromElement = exports.getUnifiedExpiryDate = exports.getMMAndYYYYFromString = exports.getCountryName = exports.getCountryDisplayName = exports.formatFullName = exports.formatCCYear = void 0;
 
-var _matching = require("./matching");
+var _matching = require("./matching.js");
 
-var _countryNames = require("./countryNames");
+var _countryNames = require("./countryNames.js");
 
 var _templateObject, _templateObject2;
 
@@ -9954,7 +9955,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames":26,"./matching":34}],28:[function(require,module,exports){
+},{"./countryNames.js":26,"./matching.js":34}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10044,17 +10045,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getInputConfigFromType = exports.getInputConfig = void 0;
 
-var _logoSvg = require("./logo-svg");
+var _logoSvg = require("./logo-svg.js");
 
-var ddgPasswordIcons = _interopRequireWildcard(require("../UI/img/ddgPasswordIcon"));
+var ddgPasswordIcons = _interopRequireWildcard(require("../UI/img/ddgPasswordIcon.js"));
 
-var _matching = require("./matching");
+var _matching = require("./matching.js");
 
-var _Credentials = require("../InputTypes/Credentials");
+var _Credentials = require("../InputTypes/Credentials.js");
 
-var _CreditCard = require("../InputTypes/CreditCard");
+var _CreditCard = require("../InputTypes/CreditCard.js");
 
-var _Identity = require("../InputTypes/Identity");
+var _Identity = require("../InputTypes/Identity.js");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -10075,9 +10076,18 @@ const getIdentitiesIcon = (input, _ref) => {
     isDDGApp,
     isFirefox
   } = device.globalConfig;
-  const getDaxImg = isDDGApp || isFirefox ? _logoSvg.daxBase64 : chrome.runtime.getURL('img/logo-small.svg');
   const subtype = (0, _matching.getInputSubtype)(input);
-  if (subtype === 'emailAddress' && device.isDeviceSignedIn()) return getDaxImg;
+
+  if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
+    var _window$chrome;
+
+    if (isDDGApp || isFirefox) {
+      return _logoSvg.daxBase64;
+    } else if (typeof ((_window$chrome = window.chrome) === null || _window$chrome === void 0 ? void 0 : _window$chrome.runtime) !== 'undefined') {
+      return chrome.runtime.getURL('img/logo-small.svg');
+    }
+  }
+
   return '';
 };
 /**
@@ -10177,7 +10187,7 @@ const inputTypeConfig = {
       if (device.settings.availableInputTypes.identities) {
         var _device$getLocalIdent;
 
-        return Boolean((_device$getLocalIdent = device.getLocalIdentities()) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.some(identity => !!identity[subtype]));
+        return Boolean((_device$getLocalIdent = device.getLocalIdentities) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.call(device).some(identity => !!identity[subtype]));
       }
 
       if (subtype === 'emailAddress') {
@@ -10228,7 +10238,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials":37,"../InputTypes/CreditCard":38,"../InputTypes/Identity":39,"../UI/img/ddgPasswordIcon":50,"./logo-svg":32,"./matching":34}],30:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":50,"./logo-svg.js":32,"./matching.js":34}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10236,7 +10246,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.extractElementStrings = void 0;
 
-var _matching = require("./matching");
+var _matching = require("./matching.js");
 
 const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
 /**
@@ -10287,7 +10297,7 @@ const extractElementStrings = element => {
 
 exports.extractElementStrings = extractElementStrings;
 
-},{"./matching":34}],31:[function(require,module,exports){
+},{"./matching.js":34}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10348,9 +10358,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.matchingConfiguration = void 0;
 
-var _selectorsCss = _interopRequireDefault(require("./selectors-css"));
+var css = _interopRequireWildcard(require("./selectors-css.js"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 /**
  * This is here to mimic what Remote Configuration might look like
@@ -10554,35 +10566,35 @@ const matchingConfiguration = {
     cssSelector: {
       selectors: {
         // Generic
-        FORM_INPUTS_SELECTOR: _selectorsCss.default.__secret_do_not_use.FORM_INPUTS_SELECTOR,
-        SUBMIT_BUTTON_SELECTOR: _selectorsCss.default.__secret_do_not_use.SUBMIT_BUTTON_SELECTOR,
-        GENERIC_TEXT_FIELD: _selectorsCss.default.__secret_do_not_use.GENERIC_TEXT_FIELD,
+        FORM_INPUTS_SELECTOR: css.__secret_do_not_use.FORM_INPUTS_SELECTOR,
+        SUBMIT_BUTTON_SELECTOR: css.__secret_do_not_use.SUBMIT_BUTTON_SELECTOR,
+        GENERIC_TEXT_FIELD: css.__secret_do_not_use.GENERIC_TEXT_FIELD,
         // user
-        email: _selectorsCss.default.__secret_do_not_use.email,
-        password: _selectorsCss.default.__secret_do_not_use.password,
-        username: _selectorsCss.default.__secret_do_not_use.username,
+        email: css.__secret_do_not_use.email,
+        password: css.__secret_do_not_use.password,
+        username: css.__secret_do_not_use.username,
         // CC
-        cardName: _selectorsCss.default.__secret_do_not_use.cardName,
-        cardNumber: _selectorsCss.default.__secret_do_not_use.cardNumber,
-        cardSecurityCode: _selectorsCss.default.__secret_do_not_use.cardSecurityCode,
-        expirationMonth: _selectorsCss.default.__secret_do_not_use.expirationMonth,
-        expirationYear: _selectorsCss.default.__secret_do_not_use.expirationYear,
-        expiration: _selectorsCss.default.__secret_do_not_use.expiration,
+        cardName: css.__secret_do_not_use.cardName,
+        cardNumber: css.__secret_do_not_use.cardNumber,
+        cardSecurityCode: css.__secret_do_not_use.cardSecurityCode,
+        expirationMonth: css.__secret_do_not_use.expirationMonth,
+        expirationYear: css.__secret_do_not_use.expirationYear,
+        expiration: css.__secret_do_not_use.expiration,
         // Identities
-        firstName: _selectorsCss.default.__secret_do_not_use.firstName,
-        middleName: _selectorsCss.default.__secret_do_not_use.middleName,
-        lastName: _selectorsCss.default.__secret_do_not_use.lastName,
-        fullName: _selectorsCss.default.__secret_do_not_use.fullName,
-        phone: _selectorsCss.default.__secret_do_not_use.phone,
-        addressStreet: _selectorsCss.default.__secret_do_not_use.addressStreet1,
-        addressStreet2: _selectorsCss.default.__secret_do_not_use.addressStreet2,
-        addressCity: _selectorsCss.default.__secret_do_not_use.addressCity,
-        addressProvince: _selectorsCss.default.__secret_do_not_use.addressProvince,
-        addressPostalCode: _selectorsCss.default.__secret_do_not_use.addressPostalCode,
-        addressCountryCode: _selectorsCss.default.__secret_do_not_use.addressCountryCode,
-        birthdayDay: _selectorsCss.default.__secret_do_not_use.birthdayDay,
-        birthdayMonth: _selectorsCss.default.__secret_do_not_use.birthdayMonth,
-        birthdayYear: _selectorsCss.default.__secret_do_not_use.birthdayYear
+        firstName: css.__secret_do_not_use.firstName,
+        middleName: css.__secret_do_not_use.middleName,
+        lastName: css.__secret_do_not_use.lastName,
+        fullName: css.__secret_do_not_use.fullName,
+        phone: css.__secret_do_not_use.phone,
+        addressStreet: css.__secret_do_not_use.addressStreet1,
+        addressStreet2: css.__secret_do_not_use.addressStreet2,
+        addressCity: css.__secret_do_not_use.addressCity,
+        addressProvince: css.__secret_do_not_use.addressProvince,
+        addressPostalCode: css.__secret_do_not_use.addressPostalCode,
+        addressCountryCode: css.__secret_do_not_use.addressCountryCode,
+        birthdayDay: css.__secret_do_not_use.birthdayDay,
+        birthdayMonth: css.__secret_do_not_use.birthdayMonth,
+        birthdayYear: css.__secret_do_not_use.birthdayYear
       }
     },
 
@@ -10981,7 +10993,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css":35}],34:[function(require,module,exports){
+},{"./selectors-css.js":35}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10997,15 +11009,15 @@ exports.getRelatedText = void 0;
 exports.getSubtypeFromType = getSubtypeFromType;
 exports.safeRegex = exports.removeExcessWhitespace = exports.matchInPlaceholderAndLabels = void 0;
 
-var _vendorRegex = require("./vendor-regex");
+var _vendorRegex = require("./vendor-regex.js");
 
-var _constants = require("../constants");
+var _constants = require("../constants.js");
 
-var _labelUtil = require("./label-util");
+var _labelUtil = require("./label-util.js");
 
-var _selectorsCss = require("./selectors-css");
+var _selectorsCss = require("./selectors-css.js");
 
-var _matchingConfiguration = require("./matching-configuration");
+var _matchingConfiguration = require("./matching-configuration.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -11983,11 +11995,17 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants":57,"./label-util":30,"./matching-configuration":33,"./selectors-css":35,"./vendor-regex":36}],35:[function(require,module,exports){
+},{"../constants.js":57,"./label-util.js":30,"./matching-configuration.js":33,"./selectors-css.js":35,"./vendor-regex.js":36}],35:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.__secret_do_not_use = exports.SUBMIT_BUTTON_SELECTOR = exports.FORM_INPUTS_SELECTOR = void 0;
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]),\nselect";
+exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
+exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
 const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
@@ -12018,10 +12036,9 @@ const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), "input[
 "input[name=\"userID\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]", "input[autocomplete=username]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
-module.exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
-module.exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR; // Exported here for now, to be moved to configuration later
-
-module.exports.__secret_do_not_use = {
+// Exported here for now, to be moved to configuration later
+// eslint-disable-next-line camelcase
+const __secret_do_not_use = {
   GENERIC_TEXT_FIELD,
   SUBMIT_BUTTON_SELECTOR,
   FORM_INPUTS_SELECTOR,
@@ -12049,9 +12066,15 @@ module.exports.__secret_do_not_use = {
   birthdayMonth,
   birthdayYear
 };
+exports.__secret_do_not_use = __secret_do_not_use;
 
 },{}],36:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
 
 /**
  * Given some ruleSets, create an efficient
@@ -12105,10 +12128,16 @@ function createCacheableVendorRegexes(rules, ruleSets) {
   return vendorRegExp;
 }
 
-module.exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
-
 },{}],37:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AUTOGENERATED_KEY = void 0;
+exports.appendGeneratedId = appendGeneratedId;
+exports.createCredentialsTooltipItem = createCredentialsTooltipItem;
+exports.fromPassword = fromPassword;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -12130,6 +12159,8 @@ const AUTOGENERATED_KEY = 'autogenerated';
 /**
  * @implements {TooltipItemRenderer}
  */
+
+exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
 
 var _data = /*#__PURE__*/new WeakMap();
 
@@ -12237,11 +12268,6 @@ function createCredentialsTooltipItem(data) {
   return new CredentialsTooltipItem(data);
 }
 
-module.exports.createCredentialsTooltipItem = createCredentialsTooltipItem;
-module.exports.fromPassword = fromPassword;
-module.exports.appendGeneratedId = appendGeneratedId;
-module.exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
-
 },{}],38:[function(require,module,exports){
 "use strict";
 
@@ -12302,7 +12328,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.IdentityTooltipItem = void 0;
 
-var _formatters = require("../Form/formatters");
+var _formatters = require("../Form/formatters.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -12368,7 +12394,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters":27}],40:[function(require,module,exports){
+},{"../Form/formatters.js":27}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12376,7 +12402,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.PasswordGenerator = void 0;
 
-var _password = require("../packages/password");
+var _index = require("../packages/password/index.js");
 
 var _rules = _interopRequireDefault(require("../packages/password/rules.json"));
 
@@ -12429,7 +12455,7 @@ class PasswordGenerator {
       return _classPrivateFieldGet(this, _previous);
     }
 
-    _classPrivateFieldSet(this, _previous, (0, _password.generate)({ ...params,
+    _classPrivateFieldSet(this, _previous, (0, _index.generate)({ ...params,
       rules: _rules.default
     }));
 
@@ -12440,7 +12466,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password":13,"../packages/password/rules.json":17}],41:[function(require,module,exports){
+},{"../packages/password/index.js":13,"../packages/password/rules.json":17}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12448,13 +12474,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createScanner = createScanner;
 
-var _Form = require("./Form/Form");
+var _Form = require("./Form/Form.js");
 
-var _autofillUtils = require("./autofill-utils");
+var _autofillUtils = require("./autofill-utils.js");
 
-var _selectorsCss = require("./Form/selectors-css");
+var _selectorsCss = require("./Form/selectors-css.js");
 
-var _matching = require("./Form/matching");
+var _matching = require("./Form/matching.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -12742,7 +12768,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form":24,"./Form/matching":34,"./Form/selectors-css":35,"./autofill-utils":54}],42:[function(require,module,exports){
+},{"./Form/Form.js":24,"./Form/matching.js":34,"./Form/selectors-css.js":35,"./autofill-utils.js":54}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12750,11 +12776,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Settings = void 0;
 
-var _deviceApi = require("../packages/device-api");
+var _index = require("../packages/device-api/index.js");
 
-var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls");
+var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls.js");
 
-var _validators = require("./deviceApiCalls/__generated__/validators.zod");
+var _validatorsZod = require("./deviceApiCalls/__generated__/validators.zod.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -12819,7 +12845,7 @@ class Settings {
       var _runtimeConfig$userPr, _runtimeConfig$userPr2, _runtimeConfig$userPr3;
 
       const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
-      const autofillSettings = (0, _deviceApi.validate)(runtimeConfig === null || runtimeConfig === void 0 ? void 0 : (_runtimeConfig$userPr = runtimeConfig.userPreferences) === null || _runtimeConfig$userPr === void 0 ? void 0 : (_runtimeConfig$userPr2 = _runtimeConfig$userPr.features) === null || _runtimeConfig$userPr2 === void 0 ? void 0 : (_runtimeConfig$userPr3 = _runtimeConfig$userPr2.autofill) === null || _runtimeConfig$userPr3 === void 0 ? void 0 : _runtimeConfig$userPr3.settings, _validators.autofillSettingsSchema);
+      const autofillSettings = (0, _index.validate)(runtimeConfig === null || runtimeConfig === void 0 ? void 0 : (_runtimeConfig$userPr = runtimeConfig.userPreferences) === null || _runtimeConfig$userPr === void 0 ? void 0 : (_runtimeConfig$userPr2 = _runtimeConfig$userPr.features) === null || _runtimeConfig$userPr2 === void 0 ? void 0 : (_runtimeConfig$userPr3 = _runtimeConfig$userPr2.autofill) === null || _runtimeConfig$userPr3 === void 0 ? void 0 : _runtimeConfig$userPr3.settings, _validatorsZod.autofillSettingsSchema);
       return autofillSettings.featureToggles;
     } catch (e) {
       // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
@@ -12951,7 +12977,7 @@ _defineProperty(Settings, "defaults", {
   }
 });
 
-},{"../packages/device-api":10,"./deviceApiCalls/__generated__/deviceApiCalls":58,"./deviceApiCalls/__generated__/validators.zod":59}],43:[function(require,module,exports){
+},{"../packages/device-api/index.js":10,"./deviceApiCalls/__generated__/deviceApiCalls.js":58,"./deviceApiCalls/__generated__/validators.zod.js":59}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12959,9 +12985,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
-var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip"));
+var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -13006,7 +13032,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
 var _default = DataHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":54,"./HTMLTooltip":45}],44:[function(require,module,exports){
+},{"../autofill-utils.js":54,"./HTMLTooltip.js":45}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13014,9 +13040,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
-var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip"));
+var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -13073,7 +13099,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
 var _default = EmailHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils":54,"./HTMLTooltip":45}],45:[function(require,module,exports){
+},{"../autofill-utils.js":54,"./HTMLTooltip.js":45}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13081,11 +13107,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.defaultOptions = exports.default = exports.HTMLTooltip = void 0;
 
-var _autofillUtils = require("../autofill-utils");
+var _autofillUtils = require("../autofill-utils.js");
 
-var _matching = require("../Form/matching");
+var _matching = require("../Form/matching.js");
 
-var _styles = require("./styles/styles");
+var _styles = require("./styles/styles.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -13353,7 +13379,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching":34,"../autofill-utils":54,"./styles/styles":51}],46:[function(require,module,exports){
+},{"../Form/matching.js":34,"../autofill-utils.js":54,"./styles/styles.js":51}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13361,15 +13387,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.HTMLTooltipUIController = void 0;
 
-var _inputTypeConfig = require("../../Form/inputTypeConfig");
+var _inputTypeConfig = require("../../Form/inputTypeConfig.js");
 
-var _DataHTMLTooltip = _interopRequireDefault(require("../DataHTMLTooltip"));
+var _DataHTMLTooltip = _interopRequireDefault(require("../DataHTMLTooltip.js"));
 
-var _EmailHTMLTooltip = _interopRequireDefault(require("../EmailHTMLTooltip"));
+var _EmailHTMLTooltip = _interopRequireDefault(require("../EmailHTMLTooltip.js"));
 
-var _HTMLTooltip = require("../HTMLTooltip");
+var _HTMLTooltip = require("../HTMLTooltip.js");
 
-var _UIController = require("./UIController");
+var _UIController = require("./UIController.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -13603,7 +13629,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig":29,"../DataHTMLTooltip":43,"../EmailHTMLTooltip":44,"../HTMLTooltip":45,"./UIController":49}],47:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":29,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../HTMLTooltip.js":45,"./UIController.js":49}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13611,11 +13637,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.NativeUIController = void 0;
 
-var _UIController = require("./UIController");
+var _UIController = require("./UIController.js");
 
-var _matching = require("../../Form/matching");
+var _matching = require("../../Form/matching.js");
 
-var _deviceApiCalls = require("../../deviceApiCalls/__generated__/deviceApiCalls");
+var _deviceApiCalls = require("../../deviceApiCalls/__generated__/deviceApiCalls.js");
 
 /**
  * `NativeController` should be used in situations where you DO NOT
@@ -13695,7 +13721,7 @@ class NativeUIController extends _UIController.UIController {
 
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching":34,"../../deviceApiCalls/__generated__/deviceApiCalls":58,"./UIController":49}],48:[function(require,module,exports){
+},{"../../Form/matching.js":34,"../../deviceApiCalls/__generated__/deviceApiCalls.js":58,"./UIController.js":49}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13703,7 +13729,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.OverlayUIController = void 0;
 
-var _UIController = require("./UIController");
+var _UIController = require("./UIController.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -13937,7 +13963,7 @@ class OverlayUIController extends _UIController.UIController {
 
 exports.OverlayUIController = OverlayUIController;
 
-},{"./UIController":49}],49:[function(require,module,exports){
+},{"./UIController.js":49}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14094,7 +14120,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.wkSendAndWait = exports.wkSend = exports.MissingWebkitHandler = void 0;
 
-var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals"));
+var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -14237,7 +14263,7 @@ class MissingWebkitHandler extends Error {
 
 exports.MissingWebkitHandler = MissingWebkitHandler;
 
-},{"./captureDdgGlobals":53}],53:[function(require,module,exports){
+},{"./captureDdgGlobals.js":53}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14278,7 +14304,7 @@ exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyle
 exports.escapeXML = escapeXML;
 exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = exports.isLikelyASubmitButton = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 
-var _matching = require("./Form/matching");
+var _matching = require("./Form/matching.js");
 
 const SIGN_IN_MSG = {
   signMeIn: true
@@ -14661,12 +14687,12 @@ const buttonMatchesFormType = (el, formObj) => {
 
 exports.buttonMatchesFormType = buttonMatchesFormType;
 
-},{"./Form/matching":34}],55:[function(require,module,exports){
+},{"./Form/matching.js":34}],55:[function(require,module,exports){
 "use strict";
 
-require("./requestIdleCallback");
+require("./requestIdleCallback.js");
 
-var _DeviceInterface = require("./DeviceInterface");
+var _DeviceInterface = require("./DeviceInterface.js");
 
 // Polyfills/shims
 (() => {
@@ -14690,7 +14716,7 @@ var _DeviceInterface = require("./DeviceInterface");
   }
 })();
 
-},{"./DeviceInterface":18,"./requestIdleCallback":65}],56:[function(require,module,exports){
+},{"./DeviceInterface.js":18,"./requestIdleCallback.js":65}],56:[function(require,module,exports){
 "use strict";
 
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
@@ -15028,16 +15054,16 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.GetAlias = void 0;
 
-var _deviceApi = require("../../packages/device-api");
+var _index = require("../../packages/device-api/index.js");
 
-var _validators = require("./__generated__/validators.zod");
+var _validatorsZod = require("./__generated__/validators.zod.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * @extends {DeviceApiCall<getAliasParamsSchema, getAliasResultSchema>}
  */
-class GetAlias extends _deviceApi.DeviceApiCall {
+class GetAlias extends _index.DeviceApiCall {
   constructor() {
     super(...arguments);
 
@@ -15045,9 +15071,9 @@ class GetAlias extends _deviceApi.DeviceApiCall {
 
     _defineProperty(this, "id", 'n/a');
 
-    _defineProperty(this, "paramsValidator", _validators.getAliasParamsSchema);
+    _defineProperty(this, "paramsValidator", _validatorsZod.getAliasParamsSchema);
 
-    _defineProperty(this, "resultValidator", _validators.getAliasResultSchema);
+    _defineProperty(this, "resultValidator", _validatorsZod.getAliasResultSchema);
   }
 
   preResultValidation(response) {
@@ -15061,7 +15087,7 @@ class GetAlias extends _deviceApi.DeviceApiCall {
 
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api":10,"./__generated__/validators.zod":59}],61:[function(require,module,exports){
+},{"../../packages/device-api/index.js":10,"./__generated__/validators.zod.js":59}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15069,13 +15095,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AndroidTransport = void 0;
 
-var _deviceApi = require("../../../packages/device-api");
+var _index = require("../../../packages/device-api/index.js");
 
-var _deviceApiCalls = require("../__generated__/deviceApiCalls");
+var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-class AndroidTransport extends _deviceApi.DeviceApiTransport {
+class AndroidTransport extends _index.DeviceApiTransport {
   /** @type {GlobalConfig} */
 
   /** @param {GlobalConfig} globalConfig */
@@ -15217,7 +15243,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api":10,"../__generated__/deviceApiCalls":58}],62:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":10,"../__generated__/deviceApiCalls.js":58}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15225,15 +15251,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AppleTransport = void 0;
 
-var _appleDeviceUtils = require("../../appleDeviceUtils/appleDeviceUtils");
+var _appleDeviceUtils = require("../../appleDeviceUtils/appleDeviceUtils.js");
 
-var _deviceApi = require("../../../packages/device-api");
+var _index = require("../../../packages/device-api/index.js");
 
-var _deviceApiCalls = require("../__generated__/deviceApiCalls");
+var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-class AppleTransport extends _deviceApi.DeviceApiTransport {
+class AppleTransport extends _index.DeviceApiTransport {
   /** @type {{hasModernWebkitAPI?: boolean, secret?: string}} */
 
   /** @param {GlobalConfig} globalConfig */
@@ -15296,7 +15322,7 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api":10,"../../appleDeviceUtils/appleDeviceUtils":52,"../__generated__/deviceApiCalls":58}],63:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":10,"../../appleDeviceUtils/appleDeviceUtils.js":52,"../__generated__/deviceApiCalls.js":58}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15304,9 +15330,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ExtensionTransport = void 0;
 
-var _deviceApi = require("../../../packages/device-api");
+var _index = require("../../../packages/device-api/index.js");
 
-class ExtensionTransport extends _deviceApi.DeviceApiTransport {
+class ExtensionTransport extends _index.DeviceApiTransport {
   async send(deviceApiCall) {
     throw new Error('not implemented yet for ' + deviceApiCall.method);
   }
@@ -15315,7 +15341,7 @@ class ExtensionTransport extends _deviceApi.DeviceApiTransport {
 
 exports.ExtensionTransport = ExtensionTransport;
 
-},{"../../../packages/device-api":10}],64:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":10}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15323,11 +15349,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createTransport = createTransport;
 
-var _apple = require("./apple.transport");
+var _appleTransport = require("./apple.transport.js");
 
-var _android = require("./android.transport");
+var _androidTransport = require("./android.transport.js");
 
-var _extension = require("./extension.transport");
+var _extensionTransport = require("./extension.transport.js");
 
 /**
  * @param {GlobalConfig} globalConfig
@@ -15340,10 +15366,10 @@ function createTransport(globalConfig) {
     switch ((_globalConfig$userPre3 = globalConfig.userPreferences) === null || _globalConfig$userPre3 === void 0 ? void 0 : (_globalConfig$userPre4 = _globalConfig$userPre3.platform) === null || _globalConfig$userPre4 === void 0 ? void 0 : _globalConfig$userPre4.name) {
       case 'ios':
       case 'macos':
-        return new _apple.AppleTransport(globalConfig);
+        return new _appleTransport.AppleTransport(globalConfig);
 
       case 'android':
-        return new _android.AndroidTransport(globalConfig);
+        return new _androidTransport.AndroidTransport(globalConfig);
 
       default:
         throw new Error('selectSender unimplemented!');
@@ -15353,16 +15379,16 @@ function createTransport(globalConfig) {
 
   if (globalConfig.isDDGApp) {
     if (globalConfig.isAndroid) {
-      return new _android.AndroidTransport(globalConfig);
+      return new _androidTransport.AndroidTransport(globalConfig);
     }
 
     throw new Error('unreachable, createTransport');
   }
 
-  return new _extension.ExtensionTransport();
+  return new _extensionTransport.ExtensionTransport();
 }
 
-},{"./android.transport":61,"./apple.transport":62,"./extension.transport":63}],65:[function(require,module,exports){
+},{"./android.transport.js":61,"./apple.transport.js":62,"./extension.transport.js":63}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

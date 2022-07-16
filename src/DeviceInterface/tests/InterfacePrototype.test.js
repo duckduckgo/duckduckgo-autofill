@@ -1,10 +1,10 @@
-import {attachAndReturnGenericForm} from '../../test-utils'
-import {Form} from '../../Form/Form'
-import InterfacePrototype from '../InterfacePrototype'
+import {attachAndReturnGenericForm} from '../../test-utils.js'
+import {Form} from '../../Form/Form.js'
+import InterfacePrototype from '../InterfacePrototype.js'
 
 describe('InterfacePrototype', function () {
     beforeEach(() => {
-        require('../../requestIdleCallback')
+        require('../../requestIdleCallback.js')
     })
 
     /**

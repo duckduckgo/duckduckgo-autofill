@@ -1,6 +1,6 @@
-import {AppleTransport} from './apple.transport'
-import {AndroidTransport} from './android.transport'
-import {ExtensionTransport} from './extension.transport'
+import {AppleTransport} from './apple.transport.js'
+import {AndroidTransport} from './android.transport.js'
+import {ExtensionTransport} from './extension.transport.js'
 
 /**
  * @param {GlobalConfig} globalConfig

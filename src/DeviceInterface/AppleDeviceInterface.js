@@ -1,12 +1,12 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import { formatDuckAddress, autofillEnabled } from '../autofill-utils'
+import { formatDuckAddress, autofillEnabled } from '../autofill-utils.js'
 import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
-import { defaultOptions } from '../UI/HTMLTooltip'
-import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController'
-import { OverlayUIController } from '../UI/controllers/OverlayUIController'
-import { createNotification, createRequest } from '../../packages/device-api'
-import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls'
-import { NativeUIController } from '../UI/controllers/NativeUIController'
+import { defaultOptions } from '../UI/HTMLTooltip.js'
+import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
+import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
+import { createNotification, createRequest } from '../../packages/device-api/index.js'
+import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
+import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 
 class AppleDeviceInterface extends InterfacePrototype {
     /** @override */

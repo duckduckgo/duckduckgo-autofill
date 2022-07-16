@@ -1,5 +1,5 @@
-import { DeviceApi } from '../lib/device-api'
-import { createDeviceApiCall, DeviceApiCall } from '../lib/device-api-call'
+import { DeviceApi } from '../lib/device-api.js'
+import { createDeviceApiCall, DeviceApiCall } from '../lib/device-api-call.js'
 import { z } from 'zod'
 
 /**

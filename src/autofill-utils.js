@@ -1,4 +1,4 @@
-import { getInputSubtype } from './Form/matching'
+import { getInputSubtype } from './Form/matching.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 

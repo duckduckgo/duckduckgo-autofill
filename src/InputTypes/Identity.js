@@ -1,4 +1,4 @@
-import { getCountryDisplayName } from '../Form/formatters'
+import { getCountryDisplayName } from '../Form/formatters.js'
 
 /**
  * @implements {TooltipItemRenderer}
