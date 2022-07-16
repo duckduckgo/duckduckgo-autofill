@@ -5309,7 +5309,6 @@ class FormAnalyzer {
 
     if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
       // If we're sure this is a submit button, it's a stronger signal
-      console.log(el, (0, _autofillUtils.isLikelyASubmitButton)(el));
       const strength = (0, _autofillUtils.isLikelyASubmitButton)(el) ? 20 : 2;
       this.updateSignal({
         string,
