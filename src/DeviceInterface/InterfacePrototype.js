@@ -39,6 +39,7 @@ class InterfacePrototype {
     stripCredentials = true
     /** @type {number} */
     initialSetupDelayMs = 0
+    autopromptFired = false
 
     /** @type {PasswordGenerator} */
     passwordGenerator = new PasswordGenerator();
@@ -352,6 +353,7 @@ class InterfacePrototype {
     attachTooltip (form, input, click, trigger = 'user-initiated') {
         // Avoid flashing tooltip from background tabs on macOS
         if (document.visibilityState !== 'visible') return
+        if (trigger === 'auto-prompt' && this.autopromptFired) return
 
         form.activeInput = input
         this.currentAttached = form
@@ -382,6 +384,10 @@ class InterfacePrototype {
         const processedTopContext = this.preAttachTooltip(topContextData, input, form)
 
         this.uiController.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this, trigger})
+
+        if (trigger === 'auto-prompt') {
+            this.autopromptFired = true
+        }
     }
 
     /**
