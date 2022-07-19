@@ -55,7 +55,10 @@ export class HTMLTooltipUIController extends UIController {
         if (this.getActiveTooltip()) {
             return
         }
-        const { topContextData, getPosition, input, form } = args
+        const { topContextData, getPosition, input, form, trigger } = args
+
+        if (trigger === 'auto-prompt') return
+
         const tooltip = this.createTooltip(getPosition, topContextData)
         this.setActiveTooltip(tooltip)
         form.showingTooltip(input)

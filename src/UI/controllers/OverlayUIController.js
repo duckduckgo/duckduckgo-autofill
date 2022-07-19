@@ -60,7 +60,8 @@ export class OverlayUIController extends UIController {
      * @param {import('./UIController').AttachArgs} args
      */
     attach (args) {
-        const {getPosition, topContextData, click, input} = args
+        const {getPosition, topContextData, click, input, trigger} = args
+
         let delay = 0
         if (!click && !this.elementIsInViewport(getPosition())) {
             input.scrollIntoView(true)

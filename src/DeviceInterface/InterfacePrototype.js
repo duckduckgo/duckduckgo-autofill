@@ -347,8 +347,9 @@ class InterfacePrototype {
      * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
      * @param {{ x: number; y: number; } | null} click
+     * @param {'user-initiated' | 'auto-prompt'} trigger
      */
-    attachTooltip (form, input, click) {
+    attachTooltip (form, input, click, trigger = 'user-initiated') {
         // Avoid flashing tooltip from background tabs on macOS
         if (document.visibilityState !== 'visible') return
 
@@ -380,7 +381,7 @@ class InterfacePrototype {
         // for example, generated passwords may get appended here
         const processedTopContext = this.preAttachTooltip(topContextData, input, form)
 
-        this.uiController.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this})
+        this.uiController.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this, trigger})
     }
 
     /**

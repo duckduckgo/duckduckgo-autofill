@@ -7,7 +7,7 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isVisible, buttonMatchesFormType,
-    getText
+    safeExecute, getText
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
@@ -83,6 +83,8 @@ class Form {
         })
 
         this.categorizeInputs()
+
+        this.promptLoginIfNeeded()
     }
 
     /**
@@ -471,6 +473,26 @@ class Form {
         this.device.postAutofill?.(data, this.getValues())
 
         this.removeTooltip()
+    }
+
+    promptLoginIfNeeded () {
+        if (document.visibilityState !== 'visible' || !this.isLogin) return
+
+        if (this.device.settings.availableInputTypes.credentials) {
+            const [firstCredentialInput] = this.inputs.credentials
+            const input = this.activeInput || firstCredentialInput
+            if (input) {
+                safeExecute(this.form, () => {
+                    const {x, y, width, height} = this.form.getBoundingClientRect()
+                    const elHCenter = x + (width / 2)
+                    const elVCenter = y + (height / 2)
+                    const elStack = document.elementsFromPoint(elHCenter, elVCenter)
+                    if (elStack.some(elInStack => elInStack === this.form)) {
+                        this.device.attachTooltip(this, input, null, 'auto-prompt')
+                    }
+                })
+            }
+        }
     }
 }
 
