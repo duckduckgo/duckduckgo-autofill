@@ -1,7 +1,7 @@
 import {constants} from '../helpers/mocks.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {createAutofillScript, forwardConsoleMessages, setupServer} from '../helpers/harness.js'
-import {loginPage, loginPageWithFormInModal, overlayPage} from '../helpers/pages.js'
+import {loginPage, loginPageWithFormInModal, loginPageWithText, overlayPage} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 
 /**
@@ -29,10 +29,10 @@ async function mocks (page) {
 /**
  * @param {import("playwright").Page} page
  * @param {ServerWrapper} server
- * @param {{overlay?: boolean, clickLabel?: boolean}} opts
+ * @param {{overlay?: boolean, clickLabel?: boolean, hasExtraText?: boolean}} opts
  */
 async function testLoginPage (page, server, opts = {}) {
-    const {overlay = false, clickLabel = false} = opts
+    const {overlay = false, clickLabel = false, hasExtraText = false} = opts
 
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
@@ -45,8 +45,15 @@ async function testLoginPage (page, server, opts = {}) {
         .platform('macos')
         .applyTo(page)
 
-    const login = loginPage(page, server, {overlay, clickLabel})
+    let login
+    if (hasExtraText) {
+        login = loginPageWithText(page, server, {overlay, clickLabel})
+    } else {
+        login = loginPage(page, server, {overlay, clickLabel})
+    }
+
     await login.navigate()
+
     await login.selectFirstCredential(personalAddress)
     await login.assertFirstCredential(personalAddress, password)
     return login
@@ -100,7 +107,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             await login.assertParentOpened()
         })
         test('by clicking a label', async ({page}) => {
-            await testLoginPage(page, server, {clickLabel: true})
+            await testLoginPage(page, server, {clickLabel: true, hasExtraText: true})
         })
         test('selecting an item in overlay', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -122,7 +129,7 @@ test.describe('Auto-fill a login form on macOS', () => {
     })
     test.describe('When availableInputTypes API is available', () => {
         test.describe('and I have saved credentials', () => {
-            test('I should be able to use my saved credentials', async ({page}) => {
+            test('I should be able to use my saved credentials by clicking', async ({page}) => {
                 await forwardConsoleMessages(page)
                 const {personalAddress} = constants.fields.email
                 const password = '123456'
@@ -142,10 +149,39 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
+                const login = loginPageWithText(page, server)
+                await login.navigate()
+                await login.fieldsContainIcons()
+
+                await login.assertTooltipNotOpen(personalAddress)
+
+                await login.selectFirstCredential(personalAddress)
+                await login.assertFirstCredential(personalAddress, password)
+            })
+            test('I should be able to use my saved credentials with autoprompt', async ({page}) => {
+                await forwardConsoleMessages(page)
+                const {personalAddress} = constants.fields.email
+                const password = '123456'
+
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: '01',
+                        username: personalAddress,
+                        password
+                    })
+                    .withAvailableInputTypes({ credentials: true })
+                    .applyTo(page)
+
+                // Pretend we're running in a top-frame scenario
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements())
+                    .replace('supportsTopFrame', true)
+                    .platform('macos')
+                    .applyTo(page)
+
                 const login = loginPage(page, server)
                 await login.navigate()
                 await login.fieldsContainIcons()
-                await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)
             })
         })

@@ -4,7 +4,7 @@ import {
     setupServer,
     withIOSContext, withIOSFeatureToggles
 } from '../helpers/harness.js'
-import {loginPage} from '../helpers/pages.js'
+import {loginPage, loginPageWithText} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
 
@@ -20,6 +20,7 @@ const test = withIOSContext(base)
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} opts.availableInputTypes
  * @param {CredentialsMock} [opts.credentials]
+ * @param {Boolean} [opts.hasExtraText]
  */
 async function testLoginPage (page, server, opts) {
     // enable in-terminal exceptions
@@ -37,9 +38,14 @@ async function testLoginPage (page, server, opts) {
 
     await withIOSFeatureToggles(page, opts.featureToggles)
 
-    const login = loginPage(page, server)
+    let login
+    if (opts.hasExtraText) {
+        login = loginPageWithText(page, server)
+    } else {
+        login = loginPage(page, server)
+    }
+
     await login.navigate()
-    await login.clickIntoUsernameInput()
     return {login}
 }
 
@@ -60,7 +66,7 @@ test.describe('Auto-fill a login form on iOS', () => {
     })
     test.describe('when `inputType_credentials` is true', () => {
         test.describe('and I have saved credentials', () => {
-            test('I should be prompted to use my saved credentials', async ({page}) => {
+            test('I should be prompted to use my saved credentials with autoprompt', async ({page}) => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
@@ -73,6 +79,23 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.promptWasShown('ios')
                 await login.assertFirstCredential(personalAddress, password)
                 await login.fieldsDoNotContainIcons()
+            })
+            test('I should not be prompted automatically to use my saved credentials if the form is below the fold', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    hasExtraText: true
+                })
+                await login.promptWasNotShown()
+                await login.fieldsDoNotContainIcons()
+
+                await login.clickIntoUsernameInput()
+                await login.assertFirstCredential(personalAddress, password)
             })
         })
         test.describe('but I dont have saved credentials', () => {

@@ -24,6 +24,8 @@
       <button type="submit">Log in</button>
     </fieldset>
   </form>
+  <p><b>These paragraphs ensure the other forms are below the fold (not on screen) on page load.</b></p>
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
   <form action="/login" id="login-2">
     <h2>Log in (without password)</h2>
     <fieldset>
@@ -32,6 +34,7 @@
       <button type="submit">Log in</button>
     </fieldset>
   </form>
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
   <form action="/login" id="login-3">
     <h2>Log in (without username)</h2>
     <fieldset>
@@ -42,17 +45,10 @@
   </form>
 </div>
 <script type="module">
-  const form = document.forms.login;
-  const form2 = document.forms['login-2'];
-  const form3 = document.forms['login-3'];
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-  })
-  form2.addEventListener("submit", (e) => {
-    e.preventDefault();
-  })
-  form3.addEventListener("submit", (e) => {
-    e.preventDefault();
+  [...document.forms].forEach((form) => {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+    })
   })
 </script>
 </body>

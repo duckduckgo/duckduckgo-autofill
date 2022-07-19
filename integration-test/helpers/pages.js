@@ -162,6 +162,13 @@ export function loginPage (page, server, opts = {}) {
          * @param {string} username
          * @return {Promise<void>}
          */
+        async assertTooltipNotOpen (username) {
+            await expect(page.locator(`button:has-text("${username}")`)).not.toBeVisible()
+        },
+        /**
+         * @param {string} username
+         * @return {Promise<void>}
+         */
         async selectFirstCredential (username) {
             if (clickLabel) {
                 const label = page.locator('label[for="email"]')
@@ -309,13 +316,31 @@ export function loginPage (page, server, opts = {}) {
          */
         async assertClickAndFocusMessages () {
             const calls = await mockedCalls(page, ['showAutofillParent'])
-            expect(calls.length).toBe(2)
+            expect(calls.length).toBe(3)
 
             // each call is captured as a tuple like this: [name, params, response], which is why
             // we use `call1[1]` and `call1[2]` - we're accessing the params sent in the request
-            const [call1, call2] = calls
-            expect(call1[1].wasFromClick).toBe(true)
-            expect(call2[1].wasFromClick).toBe(false)
+            const [call1, call2, call3] = calls
+            expect(call1[1].wasFromClick).toBe(false)
+            expect(call2[1].wasFromClick).toBe(true)
+            expect(call3[1].wasFromClick).toBe(false)
+        }
+    }
+}
+
+/**
+ * A wrapper around interactions for `integration-test/pages/login.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
+ */
+export function loginPageWithText (page, server, opts) {
+    const originalLoginPage = loginPage(page, server, opts)
+    return {
+        ...originalLoginPage,
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['loginWithText']))
         }
     }
 }
