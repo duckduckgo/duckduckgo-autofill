@@ -30,8 +30,8 @@ const mockInterface = {
     isDeviceSignedIn () {
         return false
     },
-    attachTooltip(...args) {
-        console.log("device.attachTooltip", args)
+    attachTooltip (...args) {
+        console.log('device.attachTooltip', args)
     }
 }
 
@@ -52,7 +52,7 @@ setTimeout(() => {
             isSignup,
             submitButtons,
             autofillSignal: formAnalyzer.autofillSignal,
-            signals: formAnalyzer.signals,
+            signals: formAnalyzer.signals
         })
         console.group('inputs')
         for (let input of inputs.all) {
