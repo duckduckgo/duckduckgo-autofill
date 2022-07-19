@@ -6,7 +6,8 @@ import {
     setValue,
     isEventWithinDax,
     isLikelyASubmitButton,
-    isVisible, buttonMatchesFormType
+    isVisible, buttonMatchesFormType,
+    getText
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
@@ -153,6 +154,18 @@ class Form {
             })
             if (probableField?.value) {
                 formValues.credentials.username = probableField.value
+            } else {
+                // If we still don't have a username, try scanning the form's text for an email address
+                this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+                    const elText = getText(el)
+                    const emailOrUsername = elText.match(
+                        // https://www.emailregex.com/
+                        /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]*@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/
+                    )?.[0]
+                    if (emailOrUsername) {
+                        formValues.credentials.username = emailOrUsername
+                    }
+                })
             }
         }
 
