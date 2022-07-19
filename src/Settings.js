@@ -1,6 +1,6 @@
-import { validate } from '../packages/device-api'
-import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls'
-import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod'
+import { validate } from '../packages/device-api/index.js'
+import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
+import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
 
 /**
  * Some Type helpers to prevent duplication

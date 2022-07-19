@@ -1,10 +1,10 @@
-import {DeviceApiTransport} from '../../../packages/device-api'
+import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {
     GetAutofillDataCall,
     GetAvailableInputTypesCall,
     GetRuntimeConfigurationCall,
     StoreFormDataCall
-} from '../__generated__/deviceApiCalls'
+} from '../__generated__/deviceApiCalls.js'
 
 export class AndroidTransport extends DeviceApiTransport {
     /** @type {GlobalConfig} */

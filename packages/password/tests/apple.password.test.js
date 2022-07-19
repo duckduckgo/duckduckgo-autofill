@@ -1,6 +1,6 @@
-import {Password} from '../lib/apple.password'
+import {Password} from '../lib/apple.password.js'
 import {assert, property, integer, string, array} from 'fast-check'
-import {ParserError} from '../lib/rules-parser'
+import {ParserError} from '../lib/rules-parser.js'
 
 describe('password implementation, internal API', () => {
     it('should expose generateOrThrow', () => {

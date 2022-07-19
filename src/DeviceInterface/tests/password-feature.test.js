@@ -1,9 +1,9 @@
-import { DeviceApi } from '../../../packages/device-api'
-import {createGlobalConfig} from '../../config'
-import {AppleTransport} from '../../deviceApiCalls/transports/apple.transport'
-import {AppleDeviceInterface} from '../AppleDeviceInterface'
-import {Settings} from '../../Settings'
-import {Form} from '../../Form/Form'
+import { DeviceApi } from '../../../packages/device-api/index.js'
+import {createGlobalConfig} from '../../config.js'
+import {AppleTransport} from '../../deviceApiCalls/transports/apple.transport.js'
+import {AppleDeviceInterface} from '../AppleDeviceInterface.js'
+import {Settings} from '../../Settings.js'
+import {Form} from '../../Form/Form.js'
 
 function pmHandlerStoreDataSpy () {
     const spy = jest.fn().mockReturnValueOnce(Promise.resolve(null))

@@ -1,6 +1,6 @@
-import InterfacePrototype from '../DeviceInterface/InterfacePrototype'
-import { createScanner } from '../Scanner'
-import {attachAndReturnGenericForm} from '../test-utils'
+import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
+import { createScanner } from '../Scanner.js'
+import {attachAndReturnGenericForm} from '../test-utils.js'
 
 afterEach(() => {
     document.body.innerHTML = ''

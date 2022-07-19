@@ -1,4 +1,4 @@
-import css from './selectors-css'
+import * as css from './selectors-css.js'
 
 /**
  * This is here to mimic what Remote Configuration might look like

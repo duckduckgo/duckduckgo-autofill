@@ -1,11 +1,11 @@
-import { createGlobalConfig } from './config'
-import {AndroidInterface} from './DeviceInterface/AndroidInterface'
-import {ExtensionInterface} from './DeviceInterface/ExtensionInterface'
-import {AppleDeviceInterface} from './DeviceInterface/AppleDeviceInterface'
-import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceInterface'
-import {createTransport} from './deviceApiCalls/transports/transports'
-import {DeviceApi} from '../packages/device-api'
-import {Settings} from './Settings'
+import { createGlobalConfig } from './config.js'
+import {AndroidInterface} from './DeviceInterface/AndroidInterface.js'
+import {ExtensionInterface} from './DeviceInterface/ExtensionInterface.js'
+import {AppleDeviceInterface} from './DeviceInterface/AppleDeviceInterface.js'
+import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceInterface.js'
+import {createTransport} from './deviceApiCalls/transports/transports.js'
+import {DeviceApi} from '../packages/device-api/index.js'
+import {Settings} from './Settings.js'
 
 function createDevice () {
     const globalConfig = createGlobalConfig()

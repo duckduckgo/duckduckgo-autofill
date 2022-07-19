@@ -6,9 +6,9 @@ import {
     setValue,
     formatDuckAddress,
     isAutofillEnabledFromProcessedConfig
-} from '../autofill-utils'
-import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController'
-import {defaultOptions} from '../UI/HTMLTooltip'
+} from '../autofill-utils.js'
+import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
+import {defaultOptions} from '../UI/HTMLTooltip.js'
 
 class ExtensionInterface extends InterfacePrototype {
     /**

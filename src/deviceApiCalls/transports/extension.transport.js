@@ -1,4 +1,4 @@
-import {DeviceApiTransport} from '../../../packages/device-api'
+import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 
 export class ExtensionTransport extends DeviceApiTransport {
     async send (deviceApiCall) {

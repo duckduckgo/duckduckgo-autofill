@@ -1,4 +1,4 @@
-import { getMMAndYYYYFromString } from './formatters'
+import { getMMAndYYYYFromString } from './formatters.js'
 
 describe('Format year and month from single string', () => {
     const testCases = [

@@ -1,12 +1,12 @@
 import fs from 'fs'
 import path from 'path'
-import { getUnifiedExpiryDate } from './formatters'
-import { createScanner } from '../Scanner'
-import { getInputSubtype, createMatching } from './matching'
-import { Form } from './Form'
-import InterfacePrototype from '../DeviceInterface/InterfacePrototype'
+import { getUnifiedExpiryDate } from './formatters.js'
+import { createScanner } from '../Scanner.js'
+import { getInputSubtype, createMatching } from './matching.js'
+import { Form } from './Form.js'
+import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
-import testCases from './test-cases/index'
+import testCases from './test-cases/index.js'
 
 /**
  * @param {HTMLInputElement} el

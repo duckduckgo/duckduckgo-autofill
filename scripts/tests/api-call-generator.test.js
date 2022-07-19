@@ -1,4 +1,4 @@
-import { generateFiles } from '../api-call-generator'
+import { generateFiles } from '../api-call-generator.js'
 import { join } from 'path'
 
 describe('api call generator', () => {

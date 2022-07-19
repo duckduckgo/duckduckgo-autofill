@@ -1,7 +1,7 @@
-const { constants, _selectPasswordRules, HostnameInputError, ParserError, generate } = require('../')
+const { constants, _selectPasswordRules, HostnameInputError, ParserError, generate } = require('../index.js')
 const vendorRules = require('../rules.json')
 const fc = require('fast-check')
-const {Password} = require('../lib/apple.password')
+const {Password} = require('../lib/apple.password.js')
 
 function testUniqueTimes (domain, passwordRules, num = 10) {
     const pws = []

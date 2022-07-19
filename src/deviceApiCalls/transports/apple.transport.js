@@ -1,6 +1,6 @@
-import {MissingWebkitHandler, wkSend, wkSendAndWait} from '../../appleDeviceUtils/appleDeviceUtils'
-import {DeviceApiTransport} from '../../../packages/device-api'
-import {GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls'
+import {MissingWebkitHandler, wkSend, wkSendAndWait} from '../../appleDeviceUtils/appleDeviceUtils.js'
+import {DeviceApiTransport} from '../../../packages/device-api/index.js'
+import {GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls.js'
 
 export class AppleTransport extends DeviceApiTransport {
     /** @type {{hasModernWebkitAPI?: boolean, secret?: string}} */

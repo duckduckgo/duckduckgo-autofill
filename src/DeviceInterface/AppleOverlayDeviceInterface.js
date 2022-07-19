@@ -1,7 +1,7 @@
-import {AppleDeviceInterface} from './AppleDeviceInterface'
-import {CSS_STYLES} from '../UI/styles/styles'
-import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController'
-import {createNotification} from '../../packages/device-api'
+import {AppleDeviceInterface} from './AppleDeviceInterface.js'
+import {CSS_STYLES} from '../UI/styles/styles.js'
+import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
+import {createNotification} from '../../packages/device-api/index.js'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the

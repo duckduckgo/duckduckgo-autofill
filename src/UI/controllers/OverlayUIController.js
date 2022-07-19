@@ -1,4 +1,4 @@
-import {UIController} from './UIController'
+import {UIController} from './UIController.js'
 
 /**
  * @typedef OverlayControllerOptions

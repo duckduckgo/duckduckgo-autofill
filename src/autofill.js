@@ -1,6 +1,6 @@
 // Polyfills/shims
-import './requestIdleCallback'
-import {createDevice} from './DeviceInterface'
+import './requestIdleCallback.js'
+import {createDevice} from './DeviceInterface.js'
 
 (() => {
     if (!window.isSecureContext) return false

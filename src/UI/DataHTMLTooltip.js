@@ -1,5 +1,5 @@
-import { escapeXML } from '../autofill-utils'
-import HTMLTooltip from './HTMLTooltip'
+import { escapeXML } from '../autofill-utils.js'
+import HTMLTooltip from './HTMLTooltip.js'
 
 class DataHTMLTooltip extends HTMLTooltip {
     /**

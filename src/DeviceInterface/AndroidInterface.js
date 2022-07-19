@@ -1,5 +1,5 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import {autofillEnabled, sendAndWaitForAnswer} from '../autofill-utils'
+import {autofillEnabled, sendAndWaitForAnswer} from '../autofill-utils.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 

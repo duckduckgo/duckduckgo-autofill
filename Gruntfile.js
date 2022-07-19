@@ -1,5 +1,5 @@
 const {readFileSync} = require('fs')
-const {replaceConstExports} = require('./scripts/zod-file-replacer')
+const {replaceConstExports} = require('./scripts/zod-file-replacer.js')
 
 module.exports = function (grunt) {
     'use strict'

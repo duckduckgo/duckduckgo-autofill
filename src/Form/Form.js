@@ -1,4 +1,4 @@
-import FormAnalyzer from './FormAnalyzer'
+import FormAnalyzer from './FormAnalyzer.js'
 
 import {
     addInlineStyles,
@@ -7,10 +7,10 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isVisible, buttonMatchesFormType
-} from '../autofill-utils'
+} from '../autofill-utils.js'
 
-import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching'
-import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles'
+import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
+import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
 import { getInputConfig } from './inputTypeConfig.js'
 
 import {
@@ -19,9 +19,9 @@ import {
     getCountryName,
     prepareFormValuesForStorage,
     inferCountryCodeFromElement
-} from './formatters'
+} from './formatters.js'
 
-import {constants} from '../constants'
+import {constants} from '../constants.js'
 const {ATTR_AUTOFILL} = constants
 
 class Form {

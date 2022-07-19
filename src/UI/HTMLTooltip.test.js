@@ -1,5 +1,5 @@
-import HTMLTooltip, {defaultOptions} from './HTMLTooltip'
-import {getInputConfigFromType} from '../Form/inputTypeConfig'
+import HTMLTooltip, {defaultOptions} from './HTMLTooltip.js'
+import {getInputConfigFromType} from '../Form/inputTypeConfig.js'
 
 describe('HTMLTooltip', () => {
     let o1 = global.ResizeObserver
