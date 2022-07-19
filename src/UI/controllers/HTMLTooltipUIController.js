@@ -101,18 +101,22 @@ export class HTMLTooltipUIController extends UIController {
 
     _attachListeners () {
         window.addEventListener('input', this)
-        window.addEventListener('keydown', this)
+        window.addEventListener('keydown', this, true)
     }
 
     _removeListeners () {
         window.removeEventListener('input', this)
-        window.removeEventListener('keydown', this)
+        window.removeEventListener('keydown', this, true)
     }
 
     handleEvent (event) {
         switch (event.type) {
         case 'keydown':
             if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+                if (event.code === 'Escape') {
+                    event.preventDefault()
+                    event.stopImmediatePropagation()
+                }
                 this.removeTooltip()
             }
             break
