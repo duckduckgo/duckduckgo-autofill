@@ -25,6 +25,8 @@ import {
 import {constants} from '../constants.js'
 const {ATTR_AUTOFILL} = constants
 
+let autopromptFired = false
+
 class Form {
     /** @type {import("../Form/matching").Matching} */
     matching;
@@ -485,7 +487,7 @@ class Form {
     }
 
     promptLoginIfNeeded () {
-        if (document.visibilityState !== 'visible' || !this.isLogin) return
+        if (document.visibilityState !== 'visible' || !this.isLogin || autopromptFired) return
 
         if (this.device.settings.availableInputTypes.credentials) {
             const [firstCredentialInput] = this.inputs.credentials
@@ -499,6 +501,7 @@ class Form {
                     if (elStack.some(elInStack => elInStack === this.form)) {
                         this.execOnInputs(this.touched.add, 'credentials')
                         this.device.attachTooltip(this, input, null, 'auto-prompt')
+                        autopromptFired = true
                     }
                 })
             }
