@@ -499,7 +499,7 @@ class Form {
                     const elVCenter = y + (height / 2)
                     const elStack = document.elementsFromPoint(elHCenter, elVCenter)
                     if (elStack.some(elInStack => elInStack === this.form)) {
-                        this.execOnInputs(this.touched.add, 'credentials')
+                        this.execOnInputs((input) => this.touched.add(input), 'credentials')
                         this.device.attachTooltip(this, input, null, 'auto-prompt')
                         autopromptFired = true
                     }
