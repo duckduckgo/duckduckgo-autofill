@@ -182,7 +182,7 @@ class FormAnalyzer {
         this.evaluateElAttributes(this.form)
 
         // Check form contents (skip select and option because they contain too much noise)
-        this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+        this.form.querySelectorAll('*:not(select):not(option):not(script)').forEach(el => {
             // Check if element is not hidden. Note that we can't use offsetHeight
             // nor intersectionObserver, because the element could be outside the
             // viewport or its parent hidden
