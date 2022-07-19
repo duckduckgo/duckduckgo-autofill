@@ -7,7 +7,8 @@ export const constants = {
         'email-autofill': 'email-autofill.html',
         'signup': 'signup.html',
         'login': 'login.html',
-        'loginWithPoorForm': 'login-poor-form.html'
+        'loginWithPoorForm': 'login-poor-form.html',
+        'loginWithFormInModal': 'login-in-modal.html'
     },
     fields: {
         email: {

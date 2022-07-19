@@ -1,7 +1,7 @@
 import {constants} from '../helpers/mocks.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {createAutofillScript, forwardConsoleMessages, setupServer} from '../helpers/harness.js'
-import {loginPage, overlayPage} from '../helpers/pages.js'
+import {loginPage, loginPageWithFormInModal, overlayPage} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 
 /**
@@ -9,13 +9,13 @@ import {test as base} from '@playwright/test'
  */
 const test = base.extend({})
 
+const {personalAddress} = constants.fields.email
+const password = '123456'
+
 /**
  * @param {import("playwright-core").Page} page
  */
 async function mocks (page) {
-    const {personalAddress} = constants.fields.email
-    const password = '123456'
-
     await createWebkitMocks()
         .withCredentials({
             id: '01',
@@ -49,6 +49,34 @@ async function testLoginPage (page, server, opts = {}) {
     await login.navigate()
     await login.selectFirstCredential(personalAddress)
     await login.assertFirstCredential(personalAddress, password)
+    return login
+}
+
+/**
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ */
+async function createLoginFormInModalPage (page, server) {
+    await forwardConsoleMessages(page)
+    const {personalAddress} = constants.fields.email
+    const password = '123456'
+
+    await createWebkitMocks()
+        .withCredentials({
+            id: '01',
+            username: personalAddress,
+            password
+        })
+        .withAvailableInputTypes({ credentials: true })
+        .applyTo(page)
+
+    // Pretend we're running in a top-frame scenario
+    await createAutofillScript()
+        .replaceAll(macosContentScopeReplacements())
+        .platform('macos')
+        .applyTo(page)
+
+    const login = loginPageWithFormInModal(page, server)
     return login
 }
 
@@ -138,6 +166,37 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.clickIntoUsernameInput()
                 await login.fieldsDoNotContainIcons()
             })
+        })
+    })
+
+    test.describe('When the form is in a modal', () => {
+        test('Filling the form should not close the modal', async ({page}) => {
+            const login = await createLoginFormInModalPage(page, server)
+            await login.navigate()
+            await login.assertDialogClose()
+            await login.openDialog()
+            await login.clickOutsideTheDialog()
+            await login.assertDialogClose()
+            await login.openDialog()
+            await login.fieldsContainIcons()
+            await login.selectFirstCredential(personalAddress)
+            await login.assertFirstCredential(personalAddress, password)
+            await login.assertDialogOpen()
+        })
+        test('Escape key should only close the dialog if our tooltip is not showing', async ({page}) => {
+            const login = await createLoginFormInModalPage(page, server)
+            await login.navigate()
+            await page.pause()
+            await login.assertDialogClose()
+            await login.openDialog()
+            await login.hitEscapeKey()
+            await login.assertDialogClose()
+            await login.openDialog()
+            await login.clickIntoUsernameInput()
+            await login.hitEscapeKey()
+            await login.assertDialogOpen()
+            await login.hitEscapeKey()
+            await login.assertDialogClose()
         })
     })
 })
