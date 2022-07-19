@@ -1,4 +1,4 @@
-import { getInputSubtype } from './Form/matching.js'
+import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -283,7 +283,7 @@ const isLikelyASubmitButton = (el) => {
     return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
     /primary|submit/i.test(el.className) || // has high-signal submit classes
     SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
-    el.offsetHeight * el.offsetWidth >= 10000) && // it's a large element, at least 250x40px
+    (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className))) && // it's a large element 250x40px
     !SUBMIT_BUTTON_UNLIKELY_REGEX.test(contentExcludingLabel + ' ' + ariaLabel)
 }
 
@@ -300,6 +300,24 @@ const buttonMatchesFormType = (el, formObj) => {
     } else {
         return true
     }
+}
+
+/**
+ * Get the text of an element
+ * @param {Element} el
+ * @returns {string}
+ */
+const getText = (el) => {
+    // for buttons, we don't care about descendants, just get the whole text as is
+    // this is important in order to give proper attribution of the text to the button
+    if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
+
+    if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value
+
+    return removeExcessWhitespace(
+        Array.from(el.childNodes).reduce((text, child) =>
+            child instanceof Text ? text + ' ' + child.textContent : text, '')
+    )
 }
 
 export {
@@ -319,5 +337,6 @@ export {
     formatDuckAddress,
     escapeXML,
     isLikelyASubmitButton,
-    buttonMatchesFormType
+    buttonMatchesFormType,
+    getText
 }

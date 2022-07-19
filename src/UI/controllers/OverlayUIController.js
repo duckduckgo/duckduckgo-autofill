@@ -130,13 +130,13 @@ export class OverlayUIController extends UIController {
 
     _attachListeners () {
         window.addEventListener('scroll', this)
-        window.addEventListener('keydown', this)
+        window.addEventListener('keydown', this, true)
         window.addEventListener('input', this)
     }
 
     _removeListeners () {
         window.removeEventListener('scroll', this)
-        window.removeEventListener('keydown', this)
+        window.removeEventListener('keydown', this, true)
         window.removeEventListener('input', this)
     }
 
@@ -148,6 +148,10 @@ export class OverlayUIController extends UIController {
         }
         case 'keydown': {
             if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+                if (event.code === 'Escape') {
+                    event.preventDefault()
+                    event.stopImmediatePropagation()
+                }
                 this.removeTooltip(event.type)
             }
             break

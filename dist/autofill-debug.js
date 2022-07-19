@@ -8245,10 +8245,11 @@ class InterfacePrototype {
     if (!matchingForm) {
       var _event$target;
 
-      // check if the click happened on a button
+      const selector = _selectorsCss.SUBMIT_BUTTON_SELECTOR + ', a[href="#"], a[href^=javascript], *[onclick]'; // check if the click happened on a button
+
       const button =
       /** @type HTMLElement */
-      (_event$target = event.target) === null || _event$target === void 0 ? void 0 : _event$target.closest(_selectorsCss.SUBMIT_BUTTON_SELECTOR);
+      (_event$target = event.target) === null || _event$target === void 0 ? void 0 : _event$target.closest(selector);
       if (!button) return;
       const text = (0, _matching.removeExcessWhitespace)(button === null || button === void 0 ? void 0 : button.textContent);
       const hasRelevantText = /(log|sign).?(in|up)|continue|next|submit/i.test(text);
@@ -8463,6 +8464,19 @@ class Form {
 
       if (probableField !== null && probableField !== void 0 && probableField.value) {
         formValues.credentials.username = probableField.value;
+      } else {
+        // If we still don't have a username, try scanning the form's text for an email address
+        this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+          var _elText$match;
+
+          const elText = (0, _autofillUtils.getText)(el);
+          const emailOrUsername = (_elText$match = elText.match( // https://www.emailregex.com/
+          /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/)) === null || _elText$match === void 0 ? void 0 : _elText$match[0];
+
+          if (emailOrUsername) {
+            formValues.credentials.username = emailOrUsername;
+          }
+        });
       }
     }
 
@@ -8609,14 +8623,6 @@ class Form {
     this.inputs[mainInputType].add(input);
     this.decorateInput(input);
     return this;
-  }
-
-  areAllInputsEmpty(inputType) {
-    let allEmpty = true;
-    this.execOnInputs(input => {
-      if (input.value) allEmpty = false;
-    }, inputType);
-    return allEmpty;
   }
 
   addListener(el, type, fn) {
@@ -8958,20 +8964,8 @@ class FormAnalyzer {
     });
   }
 
-  elementIs(el, type) {
-    return el.nodeName.toLowerCase() === type.toLowerCase();
-  }
-
-  getText(el) {
-    // for buttons, we don't care about descendants, just get the whole text as is
-    // this is important in order to give proper attribution of the text to the button
-    if (this.elementIs(el, 'BUTTON')) return (0, _matching.removeExcessWhitespace)(el.textContent);
-    if (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) return el.value;
-    return (0, _matching.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, ''));
-  }
-
   evaluateElement(el) {
-    const string = this.getText(el);
+    const string = (0, _autofillUtils.getText)(el);
 
     if (el.matches(this.matching.cssSelector('password'))) {
       // These are explicit signals by the web author, so we weigh them heavily
@@ -8994,7 +8988,7 @@ class FormAnalyzer {
     } // if a link points to relevant urls or contain contents outside the page…
 
 
-    if (this.elementIs(el, 'A') && el.href && el.href !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
+    if (el instanceof HTMLAnchorElement && el.href && el.href !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
       // …and matches one of the regexes, we assume the match is not pertinent to the current form
       this.updateSignal({
         string,
@@ -9024,7 +9018,7 @@ class FormAnalyzer {
 
     this.evaluateElAttributes(this.form); // Check form contents (skip select and option because they contain too much noise)
 
-    this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+    this.form.querySelectorAll('*:not(select):not(option):not(script)').forEach(el => {
       // Check if element is not hidden. Note that we can't use offsetHeight
       // nor intersectionObserver, because the element could be outside the
       // viewport or its parent hidden
@@ -13509,18 +13503,23 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
   _attachListeners() {
     window.addEventListener('input', this);
-    window.addEventListener('keydown', this);
+    window.addEventListener('keydown', this, true);
   }
 
   _removeListeners() {
     window.removeEventListener('input', this);
-    window.removeEventListener('keydown', this);
+    window.removeEventListener('keydown', this, true);
   }
 
   handleEvent(event) {
     switch (event.type) {
       case 'keydown':
         if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+          if (event.code === 'Escape') {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }
+
           this.removeTooltip();
         }
 
@@ -13894,13 +13893,13 @@ class OverlayUIController extends _UIController.UIController {
 
   _attachListeners() {
     window.addEventListener('scroll', this);
-    window.addEventListener('keydown', this);
+    window.addEventListener('keydown', this, true);
     window.addEventListener('input', this);
   }
 
   _removeListeners() {
     window.removeEventListener('scroll', this);
-    window.removeEventListener('keydown', this);
+    window.removeEventListener('keydown', this, true);
     window.removeEventListener('input', this);
   }
 
@@ -13915,6 +13914,11 @@ class OverlayUIController extends _UIController.UIController {
       case 'keydown':
         {
           if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+            if (event.code === 'Escape') {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+            }
+
             this.removeTooltip(event.type);
           }
 
@@ -14301,7 +14305,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
-exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = exports.isLikelyASubmitButton = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
+exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = exports.isLikelyASubmitButton = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 
 var _matching = require("./Form/matching.js");
 
@@ -14662,7 +14666,7 @@ const isLikelyASubmitButton = el => {
   return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
   /primary|submit/i.test(el.className) || // has high-signal submit classes
   SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
-  el.offsetHeight * el.offsetWidth >= 10000) && // it's a large element, at least 250x40px
+  el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) && // it's a large element 250x40px
   !SUBMIT_BUTTON_UNLIKELY_REGEX.test(contentExcludingLabel + ' ' + ariaLabel);
 };
 /**
@@ -14683,8 +14687,24 @@ const buttonMatchesFormType = (el, formObj) => {
     return true;
   }
 };
+/**
+ * Get the text of an element
+ * @param {Element} el
+ * @returns {string}
+ */
+
 
 exports.buttonMatchesFormType = buttonMatchesFormType;
+
+const getText = el => {
+  // for buttons, we don't care about descendants, just get the whole text as is
+  // this is important in order to give proper attribution of the text to the button
+  if (el instanceof HTMLButtonElement) return (0, _matching.removeExcessWhitespace)(el.textContent);
+  if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value;
+  return (0, _matching.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => child instanceof Text ? text + ' ' + child.textContent : text, ''));
+};
+
+exports.getText = getText;
 
 },{"./Form/matching.js":34}],55:[function(require,module,exports){
 "use strict";

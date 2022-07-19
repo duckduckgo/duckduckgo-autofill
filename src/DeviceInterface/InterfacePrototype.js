@@ -638,8 +638,9 @@ class InterfacePrototype {
         matchingForm?.submitHandler()
 
         if (!matchingForm) {
+            const selector = SUBMIT_BUTTON_SELECTOR + ', a[href="#"], a[href^=javascript], *[onclick]'
             // check if the click happened on a button
-            const button = /** @type HTMLElement */(event.target)?.closest(SUBMIT_BUTTON_SELECTOR)
+            const button = /** @type HTMLElement */(event.target)?.closest(selector)
             if (!button) return
 
             const text = removeExcessWhitespace(button?.textContent)

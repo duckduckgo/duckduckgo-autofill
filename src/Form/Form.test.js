@@ -109,6 +109,17 @@ describe('Test the form class reading values correctly', () => {
             expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
         },
         {
+            testCase: 'form with email in plain text',
+            form: `
+<form>
+    <span>Email: name@email.com</span>
+    <input type="password" value="testPassword" autocomplete="new-password" />
+    <button type="submit">Sign up</button>
+</form>`,
+            expHasValues: true,
+            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+        },
+        {
             testCase: 'complete checkout form',
             form: `
 <form method="post" id="usrForm">

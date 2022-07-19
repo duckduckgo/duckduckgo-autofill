@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Login form</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+<p><a href="../index.html">[Home]</a></p>
+
+<p id="demo"><button type="button" id="open-modal">Click here to login</button></p>
+
+<p id="random-text">Some random text to use as "something outside the dialog element". Clicking here should close the dialog (if open).</p>
+
+<div class="dialog" hidden>
+  <form action="/login" id="login">
+    <h2>Log in</h2>
+    <fieldset>
+      <label for="email">Email</label>
+      <input id="email" type="email">
+      <label for="password">Password</label>
+      <input id="password" type="password">
+      <button type="submit">Log in</button>
+    </fieldset>
+  </form>
+</div>
+<script type="module">
+  const openModalBtn = document.getElementById('open-modal')
+  const dialogEl = document.querySelector('.dialog')
+  openModalBtn.addEventListener('click', () => {
+    dialogEl.removeAttribute('hidden')
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {dialogEl.setAttribute('hidden', ''), {once: true}}
+    })
+    window.addEventListener('pointerdown', (e) => {
+      if (!dialogEl.contains(e.target)) {dialogEl.setAttribute('hidden', ''), {once: true}}
+    })
+  })
+
+  const form = document.forms.login;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+  })
+</script>
+</body>
+
+</html>

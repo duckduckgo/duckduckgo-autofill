@@ -338,6 +338,42 @@ export function loginPageWithPoorForm (page, server, opts) {
 }
 
 /**
+ * A wrapper around interactions for `integration-test/pages/login-in-modal.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
+ */
+export function loginPageWithFormInModal (page, server, opts) {
+    const originalLoginPage = loginPage(page, server, opts)
+    return {
+        ...originalLoginPage,
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['loginWithFormInModal']))
+        },
+        async openDialog () {
+            const button = await page.waitForSelector(`button:has-text("Click here to Login")`)
+            await button.click({ force: true })
+            await this.assertDialogOpen()
+        },
+        async assertDialogClose () {
+            const form = await page.locator('#login')
+            await expect(form).toBeHidden()
+        },
+        async assertDialogOpen () {
+            const form = await page.locator('#login')
+            await expect(form).toBeVisible()
+        },
+        async hitEscapeKey () {
+            await page.press('#login', 'Escape')
+        },
+        async clickOutsideTheDialog () {
+            await page.click('#random-text')
+        }
+    }
+}
+
+/**
  * A wrapper around interactions for `integration-test/pages/email-autofill.html`
  *
  * @param {import("playwright").Page} page

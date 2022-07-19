@@ -1,7 +1,7 @@
 import { removeExcessWhitespace, Matching } from './matching.js'
 import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-configuration.js'
-import { isLikelyASubmitButton } from '../autofill-utils.js'
+import { getText, isLikelyASubmitButton } from '../autofill-utils.js'
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -139,25 +139,8 @@ class FormAnalyzer {
         })
     }
 
-    elementIs (el, type) {
-        return el.nodeName.toLowerCase() === type.toLowerCase()
-    }
-
-    getText (el) {
-        // for buttons, we don't care about descendants, just get the whole text as is
-        // this is important in order to give proper attribution of the text to the button
-        if (this.elementIs(el, 'BUTTON')) return removeExcessWhitespace(el.textContent)
-
-        if (this.elementIs(el, 'INPUT') && ['submit', 'button'].includes(el.type)) return el.value
-
-        return removeExcessWhitespace(
-            Array.from(el.childNodes).reduce((text, child) =>
-                this.elementIs(child, '#text') ? text + ' ' + child.textContent : text, '')
-        )
-    }
-
     evaluateElement (el) {
-        const string = this.getText(el)
+        const string = getText(el)
 
         if (el.matches(this.matching.cssSelector('password'))) {
             // These are explicit signals by the web author, so we weigh them heavily
@@ -176,7 +159,7 @@ class FormAnalyzer {
         }
         // if a link points to relevant urls or contain contents outside the page…
         if (
-            (this.elementIs(el, 'A') && el.href && el.href !== '#') ||
+            (el instanceof HTMLAnchorElement && el.href && el.href !== '#') ||
             (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
             el.matches('button[class*=secondary]')
         ) {
@@ -199,7 +182,7 @@ class FormAnalyzer {
         this.evaluateElAttributes(this.form)
 
         // Check form contents (skip select and option because they contain too much noise)
-        this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+        this.form.querySelectorAll('*:not(select):not(option):not(script)').forEach(el => {
             // Check if element is not hidden. Note that we can't use offsetHeight
             // nor intersectionObserver, because the element could be outside the
             // viewport or its parent hidden
