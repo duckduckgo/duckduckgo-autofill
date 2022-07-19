@@ -29,6 +29,9 @@ const mockInterface = {
     },
     isDeviceSignedIn () {
         return false
+    },
+    attachTooltip(...args) {
+        console.log("device.attachTooltip", args)
     }
 }
 
@@ -41,13 +44,15 @@ scanner.init()
 
 setTimeout(() => {
     console.group('forms')
-    for (const [formElement, { isLogin, isSignup, formAnalyzer, inputs }] of scanner.forms) {
+    for (const [formElement, formInstance] of scanner.forms) {
+        const { isLogin, isSignup, formAnalyzer, inputs, submitButtons } = formInstance
         console.log(formElement)
         console.log({
             isLogin,
             isSignup,
+            submitButtons,
             autofillSignal: formAnalyzer.autofillSignal,
-            signals: formAnalyzer.signals
+            signals: formAnalyzer.signals,
         })
         console.group('inputs')
         for (let input of inputs.all) {
