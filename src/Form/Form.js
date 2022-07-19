@@ -473,6 +473,15 @@ class Form {
         this.device.postAutofill?.(data, this.getValues())
 
         this.removeTooltip()
+
+        if (dataType === 'credentials' && this.isLogin) {
+            if (this.form instanceof HTMLFormElement && this.form.requestSubmit !== undefined) {
+                // Not supported in Safari 15 and lower
+                return this.form.requestSubmit()
+            }
+            // We're not using .submit() to minimise breakage with client-side forms
+            this.submitButtons.forEach(button => button.click())
+        }
     }
 
     promptLoginIfNeeded () {
@@ -488,6 +497,7 @@ class Form {
                     const elVCenter = y + (height / 2)
                     const elStack = document.elementsFromPoint(elHCenter, elVCenter)
                     if (elStack.some(elInStack => elInStack === this.form)) {
+                        this.touched.add(input)
                         this.device.attachTooltip(this, input, null, 'auto-prompt')
                     }
                 })
