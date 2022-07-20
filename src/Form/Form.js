@@ -41,7 +41,7 @@ class Form {
      * @param {import("../Form/matching").Matching} [matching]
      * @param {Boolean} [shouldAutoprompt]
      */
-    constructor (form, input, deviceInterface, matching, shouldAutoprompt = true) {
+    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)

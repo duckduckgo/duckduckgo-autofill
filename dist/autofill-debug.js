@@ -8358,7 +8358,7 @@ class Form {
    * @param {Boolean} [shouldAutoprompt]
    */
   constructor(form, input, deviceInterface, matching) {
-    let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
+    let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
     _defineProperty(this, "matching", void 0);
 
