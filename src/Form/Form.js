@@ -39,9 +39,9 @@ class Form {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
-     * @param {Boolean} shouldAutoprompt
+     * @param {Boolean} [shouldAutoprompt]
      */
-    constructor (form, input, deviceInterface, matching, shouldAutoprompt) {
+    constructor (form, input, deviceInterface, matching, shouldAutoprompt = true) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
@@ -473,18 +473,9 @@ class Form {
 
         this.isAutofilling = false
 
-        this.device.postAutofill?.(data, this.getValues())
+        this.device.postAutofill?.(data, dataType, this)
 
         this.removeTooltip()
-
-        if (dataType === 'credentials' && this.isLogin) {
-            if (this.form instanceof HTMLFormElement && this.form.requestSubmit !== undefined) {
-                // Not supported in Safari 15 and lower
-                return this.form.requestSubmit()
-            }
-            // We're not using .submit() to minimise breakage with client-side forms
-            this.submitButtons.forEach(button => button.click())
-        }
     }
 
     promptLoginIfNeeded () {

@@ -110,7 +110,7 @@ interface PreRequest<T, U> {
 
 interface FormExtensionPoints {
      postSubmit?(values: DataStorageObject, form: import("./Form/Form").Form): void
-     postAutofill?(data, formValues: DataStorageObject): void
+     postAutofill?(data, dataType: SupportedMainTypes, formObj: import("./Form/Form").Form): void
 }
 
 interface DeviceExtensionPoints {
