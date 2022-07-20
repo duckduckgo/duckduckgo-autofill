@@ -29,10 +29,10 @@ async function mocks (page) {
 /**
  * @param {import("playwright").Page} page
  * @param {ServerWrapper} server
- * @param {{overlay?: boolean, clickLabel?: boolean, hasExtraText?: boolean}} opts
+ * @param {{overlay?: boolean, clickLabel?: boolean, pageType?: 'standard' | 'withExtraText' | 'withModal'}} opts
  */
 async function testLoginPage (page, server, opts = {}) {
-    const {overlay = false, clickLabel = false, hasExtraText = false} = opts
+    const {overlay = false, clickLabel = false, pageType = 'standard'} = opts
 
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
@@ -46,10 +46,16 @@ async function testLoginPage (page, server, opts = {}) {
         .applyTo(page)
 
     let login
-    if (hasExtraText) {
+    switch (pageType) {
+    case 'withExtraText':
         login = loginPageWithText(page, server, {overlay, clickLabel})
-    } else {
+        break
+    case 'withModal':
+        login = loginPageWithFormInModal(page, server, {overlay, clickLabel})
+        break
+    default:
         login = loginPage(page, server, {overlay, clickLabel})
+        break
     }
 
     await login.navigate()
@@ -84,6 +90,11 @@ async function createLoginFormInModalPage (page, server) {
         .applyTo(page)
 
     const login = loginPageWithFormInModal(page, server)
+    await login.navigate()
+    await login.assertDialogClose()
+    await login.openDialog()
+    await login.hitEscapeKey()
+    await login.assertDialogClose()
     return login
 }
 
@@ -107,7 +118,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             await login.assertParentOpened()
         })
         test('by clicking a label', async ({page}) => {
-            await testLoginPage(page, server, {clickLabel: true, hasExtraText: true})
+            await testLoginPage(page, server, {clickLabel: true, pageType: 'withExtraText'})
         })
         test('selecting an item in overlay', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -208,11 +219,6 @@ test.describe('Auto-fill a login form on macOS', () => {
     test.describe('When the form is in a modal', () => {
         test('Filling the form should not close the modal', async ({page}) => {
             const login = await createLoginFormInModalPage(page, server)
-            await login.navigate()
-            await login.assertDialogClose()
-            await login.openDialog()
-            await login.clickOutsideTheDialog()
-            await login.assertDialogClose()
             await login.openDialog()
             await login.fieldsContainIcons()
             await login.selectFirstCredential(personalAddress)
@@ -221,12 +227,6 @@ test.describe('Auto-fill a login form on macOS', () => {
         })
         test('Escape key should only close the dialog if our tooltip is not showing', async ({page}) => {
             const login = await createLoginFormInModalPage(page, server)
-            await login.navigate()
-            await page.pause()
-            await login.assertDialogClose()
-            await login.openDialog()
-            await login.hitEscapeKey()
-            await login.assertDialogClose()
             await login.openDialog()
             await login.clickIntoUsernameInput()
             await login.hitEscapeKey()

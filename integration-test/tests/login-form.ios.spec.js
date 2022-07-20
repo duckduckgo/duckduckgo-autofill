@@ -4,7 +4,7 @@ import {
     setupServer,
     withIOSContext, withIOSFeatureToggles
 } from '../helpers/harness.js'
-import {loginPage, loginPageWithText} from '../helpers/pages.js'
+import {loginPage, loginPageWithFormInModal, loginPageWithText} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
 
@@ -20,7 +20,7 @@ const test = withIOSContext(base)
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} opts.availableInputTypes
  * @param {CredentialsMock} [opts.credentials]
- * @param {Boolean} [opts.hasExtraText]
+ * @param {'standard' | 'withExtraText' | 'withModal'} [opts.pageType]
  */
 async function testLoginPage (page, server, opts) {
     // enable in-terminal exceptions
@@ -39,10 +39,16 @@ async function testLoginPage (page, server, opts) {
     await withIOSFeatureToggles(page, opts.featureToggles)
 
     let login
-    if (opts.hasExtraText) {
+    switch (opts.pageType) {
+    case 'withExtraText':
         login = loginPageWithText(page, server)
-    } else {
+        break
+    case 'withModal':
+        login = loginPageWithFormInModal(page, server)
+        break
+    default:
         login = loginPage(page, server)
+        break
     }
 
     await login.navigate()
@@ -89,7 +95,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         credentials: true
                     },
                     credentials,
-                    hasExtraText: true
+                    pageType: 'withExtraText'
                 })
                 await login.promptWasNotShown()
                 await login.fieldsDoNotContainIcons()

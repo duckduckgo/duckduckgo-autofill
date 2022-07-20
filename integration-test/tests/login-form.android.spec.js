@@ -1,6 +1,6 @@
 import {constants} from '../helpers/mocks.js'
 import {createAutofillScript, forwardConsoleMessages, setupServer, withAndroidContext} from '../helpers/harness.js'
-import {loginPage, loginPageWithText} from '../helpers/pages.js'
+import {loginPage, loginPageWithFormInModal, loginPageWithText} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {test as base} from '@playwright/test'
 
@@ -22,17 +22,23 @@ const test = withAndroidContext(base)
  * @param {Partial<AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<AvailableInputTypes>} opts.availableInputTypes
  * @param {CredentialsMock} [opts.credentials]
- * @param {Boolean} [opts.hasExtraText]
+ * @param {'standard' | 'withExtraText' | 'withModal'} [opts.pageType]
  */
 async function testLoginPage (page, server, opts) {
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
 
     let login
-    if (opts.hasExtraText) {
+    switch (opts.pageType) {
+    case 'withExtraText':
         login = loginPageWithText(page, server)
-    } else {
+        break
+    case 'withModal':
+        login = loginPageWithFormInModal(page, server)
+        break
+    default:
         login = loginPage(page, server)
+        break
     }
     await login.navigate()
 
@@ -98,7 +104,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         credentials: true
                     },
                     credentials,
-                    hasExtraText: true
+                    pageType: 'withExtraText'
                 })
                 await login.fieldsDoNotContainIcons()
                 await login.clickIntoUsernameInput()
@@ -114,7 +120,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         credentials: true
                     },
                     credentials,
-                    hasExtraText: true
+                    pageType: 'withExtraText'
                 })
                 await login.fieldsDoNotContainIcons()
                 await login.promptWasNotShown()
