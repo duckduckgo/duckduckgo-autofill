@@ -22,6 +22,7 @@ async function mocks (page) {
             username: personalAddress,
             password
         })
+        .withAvailableInputTypes({ credentials: true })
         .applyTo(page)
     return {personalAddress, password}
 }
@@ -71,17 +72,7 @@ async function testLoginPage (page, server, opts = {}) {
  */
 async function createLoginFormInModalPage (page, server) {
     await forwardConsoleMessages(page)
-    const {personalAddress} = constants.fields.email
-    const password = '123456'
-
-    await createWebkitMocks()
-        .withCredentials({
-            id: '01',
-            username: personalAddress,
-            password
-        })
-        .withAvailableInputTypes({ credentials: true })
-        .applyTo(page)
+    await mocks(page)
 
     // Pretend we're running in a top-frame scenario
     await createAutofillScript()
@@ -142,17 +133,7 @@ test.describe('Auto-fill a login form on macOS', () => {
         test.describe('and I have saved credentials', () => {
             test('I should be able to use my saved credentials by clicking', async ({page}) => {
                 await forwardConsoleMessages(page)
-                const {personalAddress} = constants.fields.email
-                const password = '123456'
-
-                await createWebkitMocks()
-                    .withCredentials({
-                        id: '01',
-                        username: personalAddress,
-                        password
-                    })
-                    .withAvailableInputTypes({ credentials: true })
-                    .applyTo(page)
+                const {personalAddress, password} = await mocks(page)
 
                 // Pretend we're running in a top-frame scenario
                 await createAutofillScript()
@@ -171,17 +152,8 @@ test.describe('Auto-fill a login form on macOS', () => {
             })
             test('I should be able to use my saved credentials with autoprompt', async ({page}) => {
                 await forwardConsoleMessages(page)
-                const {personalAddress} = constants.fields.email
-                const password = '123456'
 
-                await createWebkitMocks()
-                    .withCredentials({
-                        id: '01',
-                        username: personalAddress,
-                        password
-                    })
-                    .withAvailableInputTypes({ credentials: true })
-                    .applyTo(page)
+                const {personalAddress, password} = await mocks(page)
 
                 // Pretend we're running in a top-frame scenario
                 await createAutofillScript()
@@ -194,6 +166,16 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.navigate()
                 await login.fieldsContainIcons()
                 await login.assertFirstCredential(personalAddress, password)
+            })
+            test('autofill should not submit the form automatically', async ({page}) => {
+                const login = await createLoginFormInModalPage(page, server)
+                await login.promptWasNotShown()
+                await login.assertDialogClose()
+                await login.openDialog()
+
+                await login.selectFirstCredential(personalAddress)
+                await login.assertFirstCredential(personalAddress, password)
+                await login.assertFormNotSubmittedAutomatically()
             })
         })
         test.describe('but I dont have saved credentials', () => {

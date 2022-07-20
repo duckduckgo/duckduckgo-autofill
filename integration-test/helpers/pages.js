@@ -394,6 +394,16 @@ export function loginPageWithFormInModal (page, server, opts) {
         },
         async clickOutsideTheDialog () {
             await page.click('#random-text')
+        },
+        async assertFormSubmitted () {
+            const submittedMsg = await page.locator('h1:has-text("Submitted!")')
+            await expect(submittedMsg).toBeVisible()
+        },
+        async assertFormNotSubmittedAutomatically () {
+            const submitButton = await page.locator('button:has-text("Log in")')
+            await expect(submitButton).toBeVisible()
+            await submitButton.click()
+            await this.assertFormSubmitted()
         }
     }
 }

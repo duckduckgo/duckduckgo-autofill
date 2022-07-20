@@ -33,16 +33,17 @@
   openModalBtn.addEventListener('click', () => {
     dialogEl.removeAttribute('hidden')
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {dialogEl.setAttribute('hidden', ''), {once: true}}
-    })
+      if (e.key === 'Escape') {dialogEl.setAttribute('hidden', '')}
+    }, {once: true})
     window.addEventListener('pointerdown', (e) => {
-      if (!dialogEl.contains(e.target)) {dialogEl.setAttribute('hidden', ''), {once: true}}
-    })
+      if (!dialogEl.contains(e.target)) {dialogEl.setAttribute('hidden', '')}
+    }, {once: true})
   })
 
   const form = document.forms.login;
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+    setTimeout(() => dialogEl.innerHTML = '<h1>Submitted!</h1>', 100)
   })
 </script>
 </body>

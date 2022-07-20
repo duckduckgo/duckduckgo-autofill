@@ -103,6 +103,25 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.clickIntoUsernameInput()
                 await login.assertFirstCredential(personalAddress, password)
             })
+            test('the form should be submitted after autofill', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    pageType: 'withModal'
+                })
+                await login.promptWasNotShown()
+                await login.assertDialogClose()
+                await login.openDialog()
+                await login.fieldsDoNotContainIcons()
+
+                await login.clickIntoUsernameInput()
+                await login.assertFormSubmitted()
+            })
         })
         test.describe('but I dont have saved credentials', () => {
             test('I should not be prompted', async ({page}) => {
