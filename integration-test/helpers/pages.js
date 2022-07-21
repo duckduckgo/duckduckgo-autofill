@@ -248,10 +248,10 @@ export function loginPage (page, server, opts = {}) {
         async shouldNotPromptToSave (platform = 'ios') {
             let mockCalls = []
             if (['ios', 'macos'].includes(platform)) {
-                mockCalls = await mockedCalls(page, ['pmHandlerStoreData'])
+                mockCalls = await mockedCalls(page, ['pmHandlerStoreData'], false)
             }
             if (platform === 'android') {
-                mockCalls = await mockedCalls(page, ['storeFormData'])
+                mockCalls = await mockedCalls(page, ['storeFormData'], false)
             }
 
             expect(mockCalls.length).toBe(0)

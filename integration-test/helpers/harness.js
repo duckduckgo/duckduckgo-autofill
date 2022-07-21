@@ -279,7 +279,18 @@ export async function printPerformanceSummary (name, times) {
  * @param {string[]} [names]
  * @returns {Promise<MockCall[]>}
  */
-export async function mockedCalls (page, names = []) {
+export async function mockedCalls (page, names = [], mustExist = true) {
+    if (names.length > 0 && mustExist) {
+        await page.waitForFunction(({names}) => {
+            const calls = window.__playwright.mocks.calls
+            return calls.some(([name]) => names.includes(name))
+        }, {names})
+    }
+
+    if (!mustExist) {
+        await page.waitForTimeout(500)
+    }
+
     return page.evaluate(({names}) => {
         if (!Array.isArray(window.__playwright?.mocks?.calls)) {
             throw new Error('unreachable, window.__playwright.mocks.calls must be defined')
