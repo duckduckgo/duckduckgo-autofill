@@ -82,7 +82,6 @@ export function signupPage (page, server) {
          * @returns {Promise<void>}
          */
         async assertWasPromptedToSave (credentials, platform) {
-            await page.waitForTimeout(1000)
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const mockNames = {
                 ios: 'pmHandlerStoreData',
@@ -200,7 +199,6 @@ export function loginPage (page, server, opts = {}) {
          * @returns {Promise<void>}
          */
         async promptWasShown (platform = 'android') {
-            await page.waitForTimeout(1000)
             const calls = await mockedCalls(page, ['getAutofillData'])
             expect(calls.length).toBe(1)
             const [, sent] = calls[0]
@@ -215,7 +213,6 @@ export function loginPage (page, server, opts = {}) {
             expect(params.inputType).toBe('credentials.username')
         },
         async promptWasNotShown () {
-            await page.waitForTimeout(1000)
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const mockCalls = calls.filter(([name]) => name === 'getAutofillData')
             expect(mockCalls.length).toBe(0)
@@ -226,7 +223,6 @@ export function loginPage (page, server, opts = {}) {
          * @returns {Promise<void>}
          */
         async assertParentOpened () {
-            await page.waitForTimeout(1000)
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const credsCalls = calls.filter(([name]) => name === 'getSelectedCredentials')
             await this.assertClickAndFocusMessages()
@@ -262,7 +258,6 @@ export function loginPage (page, server, opts = {}) {
         },
         /** @param {string} mockCallName */
         async assertMockCallOccurred (mockCallName) {
-            await page.waitForTimeout(1000)
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const mockCall = calls.find(([name]) => name === mockCallName)
             expect(mockCall).toBeDefined()
@@ -272,7 +267,6 @@ export function loginPage (page, server, opts = {}) {
          * @param {number} times
          */
         async assertMockCallOccurredTimes (mockCallName, times) {
-            await page.waitForTimeout(1000)
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const mockCalls = calls.filter(([name]) => name === mockCallName)
             expect(mockCalls).toHaveLength(times)
@@ -294,7 +288,6 @@ export function loginPage (page, server, opts = {}) {
          * @param {Platform} [platform]
          */
         async assertWasPromptedToSave (data, platform = 'ios') {
-            await page.waitForTimeout(1000)
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             // todo(Shane): is it too apple specific?
             const mockNames = {
