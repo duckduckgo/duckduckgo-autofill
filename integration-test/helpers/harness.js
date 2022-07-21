@@ -280,6 +280,7 @@ export async function printPerformanceSummary (name, times) {
  * @returns {Promise<MockCall[]>}
  */
 export async function mockedCalls (page, names = []) {
+    await page.waitForTimeout(1000)
     return page.evaluate(({names}) => {
         if (!Array.isArray(window.__playwright?.mocks?.calls)) {
             throw new Error('unreachable, window.__playwright.mocks.calls must be defined')
