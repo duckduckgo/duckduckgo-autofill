@@ -90,9 +90,8 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     },
                     credentials
                 })
-                // TODO: investigate why this must run before promptWasShown()
-                await login.fieldsDoNotContainIcons()
                 await login.promptWasShown()
+                await login.fieldsDoNotContainIcons()
                 await login.assertFirstCredential(personalAddress, password)
             })
             test('I should be prompted to use my saved credentials when clicking the field even if the form was below the fold', async ({page}) => {
