@@ -146,6 +146,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                     },
                     credentials
                 })
+                await page.waitForTimeout(1000)
                 await login.promptWasShown('ios')
 
                 await login.clickIntoPasswordInput()
