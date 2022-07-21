@@ -56,7 +56,6 @@ export class HTMLTooltipUIController extends UIController {
             return
         }
         const { topContextData, getPosition, input, form } = args
-
         const tooltip = this.createTooltip(getPosition, topContextData)
         this.setActiveTooltip(tooltip)
         form.showingTooltip(input)
