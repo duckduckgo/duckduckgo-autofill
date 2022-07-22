@@ -595,13 +595,11 @@ class InterfacePrototype {
             }
         }
 
-        if (dataType === 'credentials' && this.settings.globalConfig.isMobileApp && formObj.isLogin) {
-            if (formObj.form instanceof HTMLFormElement && formObj.form.requestSubmit !== undefined) {
-                // Not supported in Safari/webview 15 and lower
-                return formObj.form.requestSubmit()
-            }
-            // We're not using .submit() to minimise breakage with client-side forms
-            formObj.submitButtons.forEach(button => button.click())
+        if (
+            dataType === 'credentials'
+            && this.settings.globalConfig.isMobileApp
+        ) {
+            formObj.attemptSubmissionIfNeeded()
         }
     }
 
