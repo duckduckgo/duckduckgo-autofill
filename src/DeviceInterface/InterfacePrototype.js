@@ -595,10 +595,7 @@ class InterfacePrototype {
             }
         }
 
-        if (
-            dataType === 'credentials'
-            && this.settings.globalConfig.isMobileApp
-        ) {
+        if (dataType === 'credentials' && this.settings.globalConfig.isMobileApp) {
             formObj.attemptSubmissionIfNeeded()
         }
     }

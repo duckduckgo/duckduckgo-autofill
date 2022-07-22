@@ -195,10 +195,16 @@ const safeExecute = (el, fn) => {
  * @param {HTMLElement} el
  * @return {boolean}
  */
-const isVisible = (el) =>
-    el.clientWidth !== 0 &&
-    el.clientHeight !== 0 &&
-    (el.style.opacity !== '' ? parseFloat(el.style.opacity) > 0 : true)
+const isVisible = (el) => {
+    const computedStyle = window.getComputedStyle(el)
+    const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1')
+    const visibility = computedStyle.getPropertyValue('visibility')
+
+    return el.clientWidth !== 0 &&
+        el.clientHeight !== 0 &&
+        opacity > 0 &&
+        visibility !== 'hidden'
+}
 
 /**
  * Gets the bounding box of the icon
