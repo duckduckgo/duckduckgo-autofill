@@ -143,5 +143,6 @@ const getInputConfigFromType = (inputType) => {
 
 export {
     getInputConfig,
-    getInputConfigFromType
+    getInputConfigFromType,
+    canBeDecorated
 }

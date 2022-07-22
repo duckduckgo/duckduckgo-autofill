@@ -12,7 +12,7 @@ import {
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
 import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
-import { getInputConfig } from './inputTypeConfig.js'
+import {canBeDecorated, getInputConfig} from './inputTypeConfig.js'
 
 import {
     getUnifiedExpiryDate,
@@ -422,6 +422,9 @@ class Form {
             !isEmailAutofill // and we're not auto-filling email
         ) return // do not overwrite the value
 
+        // If the value is already there, just return
+        if (input.value === string) return
+
         const successful = setValue(input, string, this.device.globalConfig)
 
         if (!successful) return
@@ -478,20 +481,30 @@ class Form {
         this.removeTooltip()
     }
 
+    getFirstViableCredentialsInput () {
+        return [...this.inputs.credentials].find((input) => canBeDecorated(input) && isVisible(input))
+    }
+
     promptLoginIfNeeded () {
         if (document.visibilityState !== 'visible' || !this.isLogin) return
 
         if (this.device.settings.availableInputTypes.credentials) {
-            const [firstCredentialInput] = this.inputs.credentials
+            const firstCredentialInput = this.getFirstViableCredentialsInput()
             const input = this.activeInput || firstCredentialInput
             if (input) {
+                // safeExecute checks that the element is on screen according to IntersectionObserver
                 safeExecute(this.form, () => {
                     const {x, y, width, height} = this.form.getBoundingClientRect()
                     const elHCenter = x + (width / 2)
                     const elVCenter = y + (height / 2)
-                    const elStack = document.elementsFromPoint(elHCenter, elVCenter)
-                    if (elStack.some(elInStack => elInStack === this.form)) {
-                        this.execOnInputs((input) => this.touched.add(input), 'credentials')
+                    // This checks that the form is not covered by anything else
+                    const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
+                    if (this.form.contains(topMostElementFromPoint)) {
+                        this.execOnInputs((input) => {
+                            if (isVisible(input)) {
+                                this.touched.add(input)
+                            }
+                        }, 'credentials')
                         this.device.attachTooltip(this, input, null, 'auto-prompt')
                     }
                 })
