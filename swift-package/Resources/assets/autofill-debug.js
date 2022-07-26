@@ -8206,14 +8206,8 @@ class InterfacePrototype {
       }
     }
 
-    if (dataType === 'credentials' && this.settings.globalConfig.isMobileApp && formObj.isLogin) {
-      if (formObj.form instanceof HTMLFormElement && formObj.form.requestSubmit !== undefined) {
-        // Not supported in Safari/webview 15 and lower
-        return formObj.form.requestSubmit();
-      } // We're not using .submit() to minimise breakage with client-side forms
-
-
-      formObj.submitButtons.forEach(button => button.click());
+    if (dataType === 'credentials' && this.settings.globalConfig.isMobileApp) {
+      formObj.attemptSubmissionIfNeeded();
     }
   }
   /**
@@ -8616,6 +8610,28 @@ class Form {
     [...this.form.querySelectorAll(selector)];
     return allButtons.filter(btn => (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
+
+  attemptSubmissionIfNeeded() {
+    if (!this.isLogin || !this.isValid()) return;
+    let isThereAnEmptyVisibleField = false;
+    this.execOnInputs(input => {
+      if (input.value === '' && (0, _autofillUtils.isVisible)(input)) isThereAnEmptyVisibleField = true;
+    }, 'all', false);
+    if (isThereAnEmptyVisibleField) return;
+
+    if (this.form instanceof HTMLFormElement && this.form.requestSubmit !== undefined) {
+      // Not supported in Safari/webview 15 and lower
+      this.form.requestSubmit();
+      return;
+    } // We're not using .submit() to minimise breakage with client-side forms
+
+
+    this.submitButtons.forEach(button => {
+      if ((0, _autofillUtils.isVisible)(button)) {
+        button.click();
+      }
+    });
+  }
   /**
    * Executes a function on input elements. Can be limited to certain element types
    * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
@@ -8771,7 +8787,9 @@ class Form {
     this.activeInput !== input && // and this is not the active input
     !isEmailAutofill // and we're not auto-filling email
     ) return; // do not overwrite the value
+    // If the value is already there, just return
 
+    if (input.value === string) return;
     const successful = (0, _autofillUtils.setValue)(input, string, this.device.globalConfig);
     if (!successful) return;
     input.classList.add('ddg-autofilled');
@@ -8824,30 +8842,43 @@ class Form {
     this.removeTooltip();
   }
 
+  getFirstViableCredentialsInput() {
+    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeDecorated)(input) && (0, _autofillUtils.isVisible)(input));
+  }
+
   promptLoginIfNeeded() {
     if (document.visibilityState !== 'visible' || !this.isLogin) return;
 
     if (this.device.settings.availableInputTypes.credentials) {
-      const [firstCredentialInput] = this.inputs.credentials;
+      const firstCredentialInput = this.getFirstViableCredentialsInput();
       const input = this.activeInput || firstCredentialInput;
 
       if (input) {
-        (0, _autofillUtils.safeExecute)(this.form, () => {
-          const {
-            x,
-            y,
-            width,
-            height
-          } = this.form.getBoundingClientRect();
-          const elHCenter = x + width / 2;
-          const elVCenter = y + height / 2;
-          const elStack = document.elementsFromPoint(elHCenter, elVCenter);
+        // The timeout is needed in case the page shows a cookie prompt with a slight delay
+        setTimeout(() => {
+          // safeExecute checks that the element is on screen according to IntersectionObserver
+          (0, _autofillUtils.safeExecute)(this.form, () => {
+            const {
+              x,
+              y,
+              width,
+              height
+            } = this.form.getBoundingClientRect();
+            const elHCenter = x + width / 2;
+            const elVCenter = y + height / 2; // This checks that the form is not covered by anything else
 
-          if (elStack.some(elInStack => elInStack === this.form)) {
-            this.execOnInputs(input => this.touched.add(input), 'credentials');
-            this.device.attachTooltip(this, input, null, 'auto-prompt');
-          }
-        });
+            const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
+
+            if (this.form.contains(topMostElementFromPoint)) {
+              this.execOnInputs(input => {
+                if ((0, _autofillUtils.isVisible)(input)) {
+                  this.touched.add(input);
+                }
+              }, 'credentials');
+              this.device.attachTooltip(this, input, null, 'auto-prompt');
+            }
+          });
+        }, 200);
       }
     }
   }
@@ -10094,7 +10125,7 @@ exports.getIconStylesAutofilled = getIconStylesAutofilled;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getInputConfigFromType = exports.getInputConfig = void 0;
+exports.getInputConfigFromType = exports.getInputConfig = exports.canBeDecorated = void 0;
 
 var _logoSvg = require("./logo-svg.js");
 
@@ -10155,6 +10186,7 @@ const canBeDecorated = input => !input.readOnly && !input.disabled;
  */
 
 
+exports.canBeDecorated = canBeDecorated;
 const inputTypeConfig = {
   /** @type {CredentialsInputTypeConfig} */
   credentials: {
@@ -14609,7 +14641,12 @@ const safeExecute = (el, fn) => {
 
 exports.safeExecute = safeExecute;
 
-const isVisible = el => el.clientWidth !== 0 && el.clientHeight !== 0 && (el.style.opacity !== '' ? parseFloat(el.style.opacity) > 0 : true);
+const isVisible = el => {
+  const computedStyle = window.getComputedStyle(el);
+  const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1');
+  const visibility = computedStyle.getPropertyValue('visibility');
+  return el.clientWidth !== 0 && el.clientHeight !== 0 && opacity > 0 && visibility !== 'hidden';
+};
 /**
  * Gets the bounding box of the icon
  * @param {HTMLInputElement} input
