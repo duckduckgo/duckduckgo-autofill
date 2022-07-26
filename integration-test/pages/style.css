@@ -15,6 +15,12 @@ body {
     text-align: center;
 }
 
+.dialog--cookie-dialog {
+    position: fixed;
+    top: 1em;
+    left: 1em;
+}
+
 hr {
     margin: 2em auto;
 }
@@ -54,6 +60,10 @@ button,
     border: none;
     appearance: none;
     box-shadow: none;
+}
+
+*[hidden] {
+    display: none;
 }
 
 .button-with-child {

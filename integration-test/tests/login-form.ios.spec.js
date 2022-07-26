@@ -4,7 +4,13 @@ import {
     setupServer,
     withIOSContext, withIOSFeatureToggles
 } from '../helpers/harness.js'
-import {loginPage, loginPageWithFormInModal, loginPageWithText} from '../helpers/pages.js'
+import {
+    loginPage,
+    loginPageCovered,
+    loginPageMultistep,
+    loginPageWithFormInModal,
+    loginPageWithText
+} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
 
@@ -20,7 +26,7 @@ const test = withIOSContext(base)
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} opts.availableInputTypes
  * @param {CredentialsMock} [opts.credentials]
- * @param {'standard' | 'withExtraText' | 'withModal'} [opts.pageType]
+ * @param {'standard' | 'withExtraText' | 'withModal' | 'covered' | 'multistep'} [opts.pageType]
  */
 async function testLoginPage (page, server, opts) {
     // enable in-terminal exceptions
@@ -45,6 +51,12 @@ async function testLoginPage (page, server, opts) {
         break
     case 'withModal':
         login = loginPageWithFormInModal(page, server)
+        break
+    case 'covered':
+        login = loginPageCovered(page, server)
+        break
+    case 'multistep':
+        login = loginPageMultistep(page, server)
         break
     default:
         login = loginPage(page, server)
@@ -102,6 +114,43 @@ test.describe('Auto-fill a login form on iOS', () => {
 
                 await login.clickIntoUsernameInput()
                 await login.assertFirstCredential(personalAddress, password)
+            })
+            test('I should not be prompted automatically to use my saved credentials if the form is covered by something else', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    pageType: 'covered'
+                })
+                await login.fieldsDoNotContainIcons()
+                await login.promptWasNotShown()
+                await login.closeCookieDialog()
+
+                await login.clickIntoUsernameInput()
+                await login.assertFormSubmitted()
+            })
+            test('should work fine with multistep forms', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    pageType: 'multistep'
+                })
+                await login.promptWasShown('ios')
+                await login.assertUsernameFilled(personalAddress)
+                await login.assertPasswordEmpty()
+                await login.clickContinue()
+                await login.clickIntoPasswordInput()
+                await login.assertPasswordFilled(password)
+                await login.assertFormSubmitted()
             })
             test('the form should be submitted after autofill', async ({page}) => {
                 const {login} = await testLoginPage(page, server, {

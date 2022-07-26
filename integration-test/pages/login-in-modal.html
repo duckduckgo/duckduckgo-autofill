@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>Login form</title>
+  <title>Login form within a modal</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 
@@ -43,7 +43,9 @@
   const form = document.forms.login;
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    setTimeout(() => dialogEl.innerHTML = '<h1>Submitted!</h1>', 100)
+    if (form.checkValidity()) {
+      setTimeout(() => dialogEl.innerHTML = '<h1>Submitted!</h1>', 100)
+    }
   })
 </script>
 </body>

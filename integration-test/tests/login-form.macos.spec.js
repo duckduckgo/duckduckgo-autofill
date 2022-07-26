@@ -61,7 +61,10 @@ async function testLoginPage (page, server, opts = {}) {
 
     await login.navigate()
 
-    await login.selectFirstCredential(personalAddress)
+    if (!overlay) {
+        // with overlay mocks the calls return immediately so we don't need to select because of autoprompt
+        await login.selectFirstCredential(personalAddress)
+    }
     await login.assertFirstCredential(personalAddress, password)
     return login
 }
