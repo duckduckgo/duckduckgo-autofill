@@ -180,7 +180,7 @@ export function loginPage (page, server, opts = {}) {
 
             if (!overlay) {
                 const button = await page.waitForSelector(`button:has-text("${username}")`)
-                await button.click({ force: true })
+                await button.click()
             }
         },
         /**

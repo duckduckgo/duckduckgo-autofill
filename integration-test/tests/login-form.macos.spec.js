@@ -60,6 +60,7 @@ async function testLoginPage (page, server, opts = {}) {
     }
 
     await login.navigate()
+    await page.waitForTimeout(200)
 
     if (!overlay) {
         // with overlay mocks the calls return immediately so we don't need to select because of autoprompt
