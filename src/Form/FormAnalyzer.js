@@ -57,7 +57,7 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false, // Should check for login/signup forms
         shouldBeConservative = false // Should use the conservative signup regex
     }) {
-        const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri/i)
+        const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot|reset) password/i)
         const positiveRegex = new RegExp(
             /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i
         )
@@ -159,7 +159,7 @@ class FormAnalyzer {
         }
         // if a link points to relevant urls or contain contents outside the page…
         if (
-            (el instanceof HTMLAnchorElement && el.href && el.href !== '#') ||
+            (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
             (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
             el.matches('button[class*=secondary]')
         ) {

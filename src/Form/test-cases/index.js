@@ -78,7 +78,7 @@ export default [
     { html: 'steam_login.html', expectedSubmitFalseNegatives: 1, expectedSubmitFalsePositives: 1 },
     { html: 'steam_signup.html' },
     { html: 'steam_checkout.html', expectedFailures: ['unknown'], expectedSubmitFalseNegatives: 2 },
-    { html: 'mapquest_login.html', expectedSubmitFalseNegatives: 1 },
+    { html: 'mapquest_login.html' },
     { html: 'mapquest_signup.html' },
     { html: 'fox_login.html', expectedSubmitFalsePositives: 1 },
     { html: 'fox_signup.html', expectedFailures: ['birthdayMonth', 'birthdayDay', 'birthdayYear'] },
@@ -127,7 +127,7 @@ export default [
     { html: 'stackoverflow_signup.html' },
     { html: 'stackoverflow_talent_login.html' },
     { html: 'stackoverflow_talent_contact.html' },
-    { html: 'techradar_newsletter.html', title: 'AccessSubscription', expectedSubmitFalsePositives: 1 },
+    { html: 'techradar_newsletter.html', title: 'AccessSubscription' },
     { html: 'github_login.html' },
     { html: 'github_signup.html', expectedSubmitFalsePositives: 4 },
     { html: 'imdb_login.html' },
@@ -238,5 +238,6 @@ export default [
     { html: 'irsgov_refund.html' },
     { html: 'googlecalendar_eventnotification.html' },
     { html: 'givesmart_login.html' },
-    { html: 'vancity_login.html' }
+    { html: 'vancity_login.html' },
+    { html: 'expensify.html' }
 ]

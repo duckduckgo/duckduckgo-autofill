@@ -8969,7 +8969,7 @@ class FormAnalyzer {
       shouldBeConservative = false // Should use the conservative signup regex
 
     } = _ref;
-    const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri/i);
+    const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot|reset) password/i);
     const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i);
     const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
     const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
@@ -9077,7 +9077,7 @@ class FormAnalyzer {
     } // if a link points to relevant urls or contain contents outside the page…
 
 
-    if (el instanceof HTMLAnchorElement && el.href && el.href !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
+    if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
       // …and matches one of the regexes, we assume the match is not pertinent to the current form
       this.updateSignal({
         string,
@@ -14757,7 +14757,7 @@ function escapeXML(str) {
   return String(str).replace(/[&"'<>/]/g, m => replacements[m]);
 }
 
-const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i;
+const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i;
 const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i;
 /**
  * Determines if an element is likely to be a submit button
