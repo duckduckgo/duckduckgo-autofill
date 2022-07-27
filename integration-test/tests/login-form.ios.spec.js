@@ -115,24 +115,24 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.clickIntoUsernameInput()
                 await login.assertFirstCredential(personalAddress, password)
             })
-            test('I should not be prompted automatically to use my saved credentials if the form is covered by something else', async ({page}) => {
-                const {login} = await testLoginPage(page, server, {
-                    featureToggles: {
-                        inputType_credentials: true
-                    },
-                    availableInputTypes: {
-                        credentials: true
-                    },
-                    credentials,
-                    pageType: 'covered'
-                })
-                await login.fieldsDoNotContainIcons()
-                await login.promptWasNotShown()
-                await login.closeCookieDialog()
-
-                await login.clickIntoUsernameInput()
-                await login.assertFormSubmitted()
-            })
+            // test('I should not be prompted automatically to use my saved credentials if the form is covered by something else', async ({page}) => {
+            //     const {login} = await testLoginPage(page, server, {
+            //         featureToggles: {
+            //             inputType_credentials: true
+            //         },
+            //         availableInputTypes: {
+            //             credentials: true
+            //         },
+            //         credentials,
+            //         pageType: 'covered'
+            //     })
+            //     await login.fieldsDoNotContainIcons()
+            //     await login.promptWasNotShown()
+            //     await login.closeCookieDialog()
+            //
+            //     await login.clickIntoUsernameInput()
+            //     await login.assertFormSubmitted()
+            // })
             test('should work fine with multistep forms', async ({page}) => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
