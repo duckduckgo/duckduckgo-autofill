@@ -102,7 +102,7 @@ test.describe('Auto-fill a login form on macOS', () => {
         server.close()
     })
     test.describe('without getAvailableInputTypes API', () => {
-        test('with in-page HTMLTooltip', async ({page}) => {
+        test.skip('with in-page HTMLTooltip', async ({page}) => {
             await testLoginPage(page, server)
         })
         test('with overlay', async ({page}) => {
