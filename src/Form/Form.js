@@ -514,22 +514,25 @@ class Form {
             const firstCredentialInput = this.getFirstViableCredentialsInput()
             const input = this.activeInput || firstCredentialInput
             if (input) {
-                // safeExecute checks that the element is on screen according to IntersectionObserver
-                safeExecute(this.form, () => {
-                    const {x, y, width, height} = this.form.getBoundingClientRect()
-                    const elHCenter = x + (width / 2)
-                    const elVCenter = y + (height / 2)
-                    // This checks that the form is not covered by anything else
-                    const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
-                    if (this.form.contains(topMostElementFromPoint)) {
-                        this.execOnInputs((input) => {
-                            if (isVisible(input)) {
-                                this.touched.add(input)
-                            }
-                        }, 'credentials')
-                        this.device.attachTooltip(this, input, null, 'auto-prompt')
-                    }
-                })
+                // The timeout is needed in case the page shows a cookie prompt with a slight delay
+                setTimeout(() => {
+                    // safeExecute checks that the element is on screen according to IntersectionObserver
+                    safeExecute(this.form, () => {
+                        const {x, y, width, height} = this.form.getBoundingClientRect()
+                        const elHCenter = x + (width / 2)
+                        const elVCenter = y + (height / 2)
+                        // This checks that the form is not covered by anything else
+                        const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
+                        if (this.form.contains(topMostElementFromPoint)) {
+                            this.execOnInputs((input) => {
+                                if (isVisible(input)) {
+                                    this.touched.add(input)
+                                }
+                            }, 'credentials')
+                            this.device.attachTooltip(this, input, null, 'auto-prompt')
+                        }
+                    })
+                }, 200)
             }
         }
     }

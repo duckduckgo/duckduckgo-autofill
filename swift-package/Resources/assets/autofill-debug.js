@@ -8854,28 +8854,31 @@ class Form {
       const input = this.activeInput || firstCredentialInput;
 
       if (input) {
-        // safeExecute checks that the element is on screen according to IntersectionObserver
-        (0, _autofillUtils.safeExecute)(this.form, () => {
-          const {
-            x,
-            y,
-            width,
-            height
-          } = this.form.getBoundingClientRect();
-          const elHCenter = x + width / 2;
-          const elVCenter = y + height / 2; // This checks that the form is not covered by anything else
+        // The timeout is needed in case the page shows a cookie prompt with a slight delay
+        setTimeout(() => {
+          // safeExecute checks that the element is on screen according to IntersectionObserver
+          (0, _autofillUtils.safeExecute)(this.form, () => {
+            const {
+              x,
+              y,
+              width,
+              height
+            } = this.form.getBoundingClientRect();
+            const elHCenter = x + width / 2;
+            const elVCenter = y + height / 2; // This checks that the form is not covered by anything else
 
-          const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
+            const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
 
-          if (this.form.contains(topMostElementFromPoint)) {
-            this.execOnInputs(input => {
-              if ((0, _autofillUtils.isVisible)(input)) {
-                this.touched.add(input);
-              }
-            }, 'credentials');
-            this.device.attachTooltip(this, input, null, 'auto-prompt');
-          }
-        });
+            if (this.form.contains(topMostElementFromPoint)) {
+              this.execOnInputs(input => {
+                if ((0, _autofillUtils.isVisible)(input)) {
+                  this.touched.add(input);
+                }
+              }, 'credentials');
+              this.device.attachTooltip(this, input, null, 'auto-prompt');
+            }
+          });
+        }, 200);
       }
     }
   }
