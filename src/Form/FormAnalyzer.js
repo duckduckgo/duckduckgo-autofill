@@ -57,10 +57,6 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false, // Should check for login/signup forms
         shouldBeConservative = false // Should use the conservative signup regex
     }) {
-        if (shouldFlip && /(forgot(ten)?|reset) (your )?password|password forgotten/i.test(string)) {
-            shouldFlip = false
-        }
-
         const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i)
         const positiveRegex = new RegExp(
             /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i
@@ -162,14 +158,18 @@ class FormAnalyzer {
             const strength = isLikelyASubmitButton(el) ? 20 : 2
             this.updateSignal({string, strength, signalType: `submit: ${string}`})
         }
-        // if a link points to relevant urls or contain contents outside the page…
+        // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
         if (
             (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
             (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
             el.matches('button[class*=secondary]')
         ) {
-            // …and matches one of the regexes, we assume the match is not pertinent to the current form
-            this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip: true})
+            // Unless it's a forgotten password link, we don't flip those links
+            let shouldFlip = true
+            if (/(forgot(ten)?|reset) (your )?password|password forgotten/i.test(string)) {
+                shouldFlip = false
+            }
+            this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip})
         } else {
             // any other case
             // only consider the el if it's a small text to avoid noisy disclaimers

@@ -5295,11 +5295,6 @@ class FormAnalyzer {
       shouldBeConservative = false // Should use the conservative signup regex
 
     } = _ref;
-
-    if (shouldFlip && /(forgot(ten)?|reset) (your )?password|password forgotten/i.test(string)) {
-      shouldFlip = false;
-    }
-
     const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i);
     const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i);
     const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
@@ -5406,16 +5401,22 @@ class FormAnalyzer {
         strength,
         signalType: "submit: ".concat(string)
       });
-    } // if a link points to relevant urls or contain contents outside the page…
+    } // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
 
 
     if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
-      // …and matches one of the regexes, we assume the match is not pertinent to the current form
+      // Unless it's a forgotten password link, we don't flip those links
+      let shouldFlip = true;
+
+      if (/(forgot(ten)?|reset) (your )?password|password forgotten/i.test(string)) {
+        shouldFlip = false;
+      }
+
       this.updateSignal({
         string,
         strength: 1,
         signalType: "external link: ".concat(string),
-        shouldFlip: true
+        shouldFlip
       });
     } else {
       var _removeExcessWhitespa;
