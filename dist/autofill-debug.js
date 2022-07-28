@@ -8612,7 +8612,9 @@ class Form {
   }
 
   attemptSubmissionIfNeeded() {
-    if (!this.isLogin || !this.isValid()) return;
+    if (!this.isLogin || !this.isValid()) return; // check for visible empty fields before attemtping submission
+    // this is to avoid loops where a captcha keeps failing for the user
+
     let isThereAnEmptyVisibleField = false;
     this.execOnInputs(input => {
       if (input.value === '' && (0, _autofillUtils.isVisible)(input)) isThereAnEmptyVisibleField = true;
