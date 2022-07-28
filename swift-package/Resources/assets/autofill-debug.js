@@ -8971,18 +8971,24 @@ class FormAnalyzer {
       shouldBeConservative = false // Should use the conservative signup regex
 
     } = _ref;
-    const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot|reset) password/i);
+
+    if (shouldFlip && /(forgot(ten)?|reset) (your )?password|password forgotten/i.test(string)) {
+      shouldFlip = false;
+    }
+
+    const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i);
     const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i);
     const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
     const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
-    const matchesNegative = string === 'current-password' || string.match(negativeRegex); // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
+    const matchesNegative = string === 'current-password' || negativeRegex.test(string); // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
 
-    if (shouldCheckUnifiedForm && matchesNegative && string.match(strictPositiveRegex)) {
+    if (shouldCheckUnifiedForm && matchesNegative && strictPositiveRegex.test(string)) {
       this.decreaseSignalBy(strength + 2, "Unified detected ".concat(signalType));
       return this;
     }
 
-    const matchesPositive = string === 'new-password' || string.match(shouldBeConservative ? conservativePositiveRegex : positiveRegex); // In some cases a login match means the login is somewhere else, i.e. when a link points outside
+    const positiveRegexToUse = shouldBeConservative ? conservativePositiveRegex : positiveRegex;
+    const matchesPositive = string === 'new-password' || positiveRegexToUse.test(string); // In some cases a login match means the login is somewhere else, i.e. when a link points outside
 
     if (shouldFlip) {
       if (matchesNegative) this.increaseSignalBy(strength, signalType);
@@ -9062,7 +9068,7 @@ class FormAnalyzer {
       // These are explicit signals by the web author, so we weigh them heavily
       this.updateSignal({
         string: el.getAttribute('autocomplete') || '',
-        strength: 20,
+        strength: 10,
         signalType: "explicit: ".concat(el.getAttribute('autocomplete'))
       });
     } // check button contents
