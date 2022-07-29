@@ -62,10 +62,7 @@ async function testLoginPage (page, server, opts = {}) {
     await login.navigate()
     await page.waitForTimeout(200)
 
-    if (!overlay) {
-        // with overlay mocks the calls return immediately so we don't need to select because of autoprompt
-        await login.selectFirstCredential(personalAddress)
-    }
+    await login.selectFirstCredential(personalAddress)
     await login.assertFirstCredential(personalAddress, password)
     return login
 }
@@ -102,15 +99,25 @@ test.describe('Auto-fill a login form on macOS', () => {
         server.close()
     })
     test.describe('without getAvailableInputTypes API', () => {
-        test.skip('with in-page HTMLTooltip', async ({page}) => {
+        test('with in-page HTMLTooltip', async ({page}) => {
             await testLoginPage(page, server)
         })
-        test('with overlay', async ({page}) => {
-            const login = await testLoginPage(page, server, {overlay: true})
-            // this is not ideal as it's checking an implementation detail.
-            // But it's done to ensure we're not getting a false positive
-            // and definitely loading the overlay code paths
-            await login.assertParentOpened()
+        test.describe('with overlay', () => {
+            test('with autoprompt', async ({page}) => {
+                const login = await testLoginPage(page, server, {overlay: true})
+                // this is not ideal as it's checking an implementation detail.
+                // But it's done to ensure we're not getting a false positive
+                // and definitely loading the overlay code paths
+                await login.assertParentOpened()
+            })
+            test('with click and focus', async ({page}) => {
+                const login = await testLoginPage(page, server, {overlay: true, pageType: 'withExtraText'})
+                // this is not ideal as it's checking an implementation detail.
+                // But it's done to ensure we're not getting a false positive
+                // and definitely loading the overlay code paths
+                await login.assertParentOpened()
+                await login.assertClickAndFocusMessages()
+            })
         })
         test('by clicking a label', async ({page}) => {
             await testLoginPage(page, server, {clickLabel: true, pageType: 'withExtraText'})
