@@ -100,7 +100,7 @@ Because tests run in parallel (for speed), failures can be tricky to isolate, fo
     })
     ```
 3) now you can re-run this single test in isolation
-4) if you want to click around the page, and open devtools etc, add a `await page.pause()` at a place in the test script where you'd like it to pause
+4) if you want to click around the page, and open devtools etc add a `await page.pause()` at a place in the test script where you'd like it to pause and run the `test:integration:showui` command.
    ```javascript
    await emailPage.navigate();
    await page.pause() // <-- add this

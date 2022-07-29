@@ -8,7 +8,10 @@ export const constants = {
         'signup': 'signup.html',
         'login': 'login.html',
         'loginWithPoorForm': 'login-poor-form.html',
-        'loginWithFormInModal': 'login-in-modal.html'
+        'loginWithText': 'login-with-text.html',
+        'loginWithFormInModal': 'login-in-modal.html',
+        'loginCovered': 'login-covered.html',
+        'loginMultistep': 'login-multistep.html'
     },
     fields: {
         email: {

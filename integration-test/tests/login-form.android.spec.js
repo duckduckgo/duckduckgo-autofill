@@ -1,6 +1,6 @@
 import {constants} from '../helpers/mocks.js'
 import {createAutofillScript, forwardConsoleMessages, setupServer, withAndroidContext} from '../helpers/harness.js'
-import {loginPage} from '../helpers/pages.js'
+import {loginPage, loginPageWithFormInModal, loginPageWithText} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {test as base} from '@playwright/test'
 
@@ -22,12 +22,24 @@ const test = withAndroidContext(base)
  * @param {Partial<AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<AvailableInputTypes>} opts.availableInputTypes
  * @param {CredentialsMock} [opts.credentials]
+ * @param {'standard' | 'withExtraText' | 'withModal'} [opts.pageType]
  */
 async function testLoginPage (page, server, opts) {
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
 
-    const login = loginPage(page, server)
+    let login
+    switch (opts.pageType) {
+    case 'withExtraText':
+        login = loginPageWithText(page, server)
+        break
+    case 'withModal':
+        login = loginPageWithFormInModal(page, server)
+        break
+    default:
+        login = loginPage(page, server)
+        break
+    }
     await login.navigate()
 
     // android specific mocks
@@ -48,11 +60,10 @@ async function testLoginPage (page, server, opts) {
         .platform('android')
         .applyTo(page)
 
-    await login.clickIntoUsernameInput()
     return {login}
 }
 
-test.describe('Feature: auto-filling a login forms on Android', () => {
+test.describe('Feature: auto-filling a login form on Android', () => {
     const {personalAddress} = constants.fields.email
     const password = '123456'
     const credentials = {
@@ -69,7 +80,7 @@ test.describe('Feature: auto-filling a login forms on Android', () => {
     })
     test.describe('when `inputType_credentials` is true', () => {
         test.describe('and I have saved credentials', () => {
-            test('I should be prompted to use my saved credentials', async ({page}) => {
+            test('I should be prompted to use my saved credentials with autoprompt', async ({page}) => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
@@ -80,7 +91,59 @@ test.describe('Feature: auto-filling a login forms on Android', () => {
                     credentials
                 })
                 await login.promptWasShown()
+                await login.fieldsDoNotContainIcons()
                 await login.assertFirstCredential(personalAddress, password)
+            })
+            test('I should be prompted to use my saved credentials when clicking the field even if the form was below the fold', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    pageType: 'withExtraText'
+                })
+                await login.fieldsDoNotContainIcons()
+                await login.clickIntoUsernameInput()
+                await login.promptWasShown()
+                await login.assertFirstCredential(personalAddress, password)
+            })
+            test('I should not be prompted automatically to use my saved credentials if the form is below the fold', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    pageType: 'withExtraText'
+                })
+                await login.fieldsDoNotContainIcons()
+                await login.promptWasNotShown()
+                await login.clickIntoUsernameInput()
+                await login.assertFirstCredential(personalAddress, password)
+            })
+            test('the form should be submitted after autofill', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true
+                    },
+                    availableInputTypes: {
+                        credentials: true
+                    },
+                    credentials,
+                    pageType: 'withModal'
+                })
+                await login.promptWasNotShown()
+                await login.assertDialogClose()
+                await login.openDialog()
+                await login.fieldsDoNotContainIcons()
+
+                await login.clickIntoUsernameInput()
+                await login.assertFormSubmitted()
             })
         })
         test.describe('but I dont have saved credentials', () => {

@@ -182,6 +182,8 @@ export function createWebkitMocks (platform = 'macos') {
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
             webkitBase.getAutofillData = { success: { credentials, action: 'fill' } }
             webkitBase.getSelectedCredentials = [
+                // Simulates macOS overlay polling. This means the user hasn't
+                // selected anything for 5 polls, then selects.
                 {type: 'none'},
                 {type: 'none'},
                 {type: 'none'},

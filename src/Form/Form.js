@@ -7,12 +7,12 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isVisible, buttonMatchesFormType,
-    getText
+    safeExecute, getText
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
 import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
-import { getInputConfig } from './inputTypeConfig.js'
+import {canBeDecorated, getInputConfig} from './inputTypeConfig.js'
 
 import {
     getUnifiedExpiryDate,
@@ -39,8 +39,9 @@ class Form {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
+     * @param {Boolean} [shouldAutoprompt]
      */
-    constructor (form, input, deviceInterface, matching) {
+    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
@@ -83,6 +84,10 @@ class Form {
         })
 
         this.categorizeInputs()
+
+        if (shouldAutoprompt) {
+            this.promptLoginIfNeeded()
+        }
     }
 
     /**
@@ -261,6 +266,30 @@ class Form {
             )
     }
 
+    attemptSubmissionIfNeeded () {
+        if (!this.isLogin || !this.isValid()) return
+
+        // check for visible empty fields before attemtping submission
+        // this is to avoid loops where a captcha keeps failing for the user
+        let isThereAnEmptyVisibleField = false
+        this.execOnInputs((input) => {
+            if (input.value === '' && isVisible(input)) isThereAnEmptyVisibleField = true
+        }, 'all', false)
+        if (isThereAnEmptyVisibleField) return
+
+        if (this.form instanceof HTMLFormElement && this.form.requestSubmit !== undefined) {
+            // Not supported in Safari/webview 15 and lower
+            this.form.requestSubmit()
+            return
+        }
+        // We're not using .submit() to minimise breakage with client-side forms
+        this.submitButtons.forEach((button) => {
+            if (isVisible(button)) {
+                button.click()
+            }
+        })
+    }
+
     /**
      * Executes a function on input elements. Can be limited to certain element types
      * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
@@ -417,6 +446,9 @@ class Form {
             !isEmailAutofill // and we're not auto-filling email
         ) return // do not overwrite the value
 
+        // If the value is already there, just return
+        if (input.value === string) return
+
         const successful = setValue(input, string, this.device.globalConfig)
 
         if (!successful) return
@@ -468,9 +500,43 @@ class Form {
 
         this.isAutofilling = false
 
-        this.device.postAutofill?.(data, this.getValues())
+        this.device.postAutofill?.(data, dataType, this)
 
         this.removeTooltip()
+    }
+
+    getFirstViableCredentialsInput () {
+        return [...this.inputs.credentials].find((input) => canBeDecorated(input) && isVisible(input))
+    }
+
+    promptLoginIfNeeded () {
+        if (document.visibilityState !== 'visible' || !this.isLogin) return
+
+        if (this.device.settings.availableInputTypes.credentials) {
+            const firstCredentialInput = this.getFirstViableCredentialsInput()
+            const input = this.activeInput || firstCredentialInput
+            if (input) {
+                // The timeout is needed in case the page shows a cookie prompt with a slight delay
+                setTimeout(() => {
+                    // safeExecute checks that the element is on screen according to IntersectionObserver
+                    safeExecute(this.form, () => {
+                        const {x, y, width, height} = this.form.getBoundingClientRect()
+                        const elHCenter = x + (width / 2)
+                        const elVCenter = y + (height / 2)
+                        // This checks that the form is not covered by anything else
+                        const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
+                        if (this.form.contains(topMostElementFromPoint)) {
+                            this.execOnInputs((input) => {
+                                if (isVisible(input)) {
+                                    this.touched.add(input)
+                                }
+                            }, 'credentials')
+                            this.device.attachTooltip(this, input, null, 'auto-prompt')
+                        }
+                    })
+                }, 200)
+            }
+        }
     }
 }
 

@@ -195,10 +195,16 @@ const safeExecute = (el, fn) => {
  * @param {HTMLElement} el
  * @return {boolean}
  */
-const isVisible = (el) =>
-    el.clientWidth !== 0 &&
-    el.clientHeight !== 0 &&
-    (el.style.opacity !== '' ? parseFloat(el.style.opacity) > 0 : true)
+const isVisible = (el) => {
+    const computedStyle = window.getComputedStyle(el)
+    const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1')
+    const visibility = computedStyle.getPropertyValue('visibility')
+
+    return el.clientWidth !== 0 &&
+        el.clientHeight !== 0 &&
+        opacity > 0 &&
+        visibility !== 'hidden'
+}
 
 /**
  * Gets the bounding box of the icon
@@ -266,7 +272,7 @@ function escapeXML (str) {
     return String(str).replace(/[&"'<>/]/g, m => replacements[m])
 }
 
-const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i
+const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i
 const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i
 /**
  * Determines if an element is likely to be a submit button

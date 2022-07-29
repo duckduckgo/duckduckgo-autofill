@@ -222,7 +222,7 @@ export function withIOSContext (test) {
             testInfo.skip(testInfo.project.name !== 'webkit')
 
             const context = await browser.newContext({
-                ...devices.iPhone,
+                ...devices['iPhone 13'],
                 userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 DuckDuckGo/7 Safari/605.1.15'
             })
 
@@ -279,7 +279,18 @@ export async function printPerformanceSummary (name, times) {
  * @param {string[]} [names]
  * @returns {Promise<MockCall[]>}
  */
-export async function mockedCalls (page, names = []) {
+export async function mockedCalls (page, names = [], mustExist = true) {
+    if (names.length > 0 && mustExist) {
+        await page.waitForFunction(({names}) => {
+            const calls = window.__playwright.mocks.calls
+            return calls.some(([name]) => names.includes(name))
+        }, {names})
+    }
+
+    if (!mustExist) {
+        await page.waitForTimeout(500)
+    }
+
     return page.evaluate(({names}) => {
         if (!Array.isArray(window.__playwright?.mocks?.calls)) {
             throw new Error('unreachable, window.__playwright.mocks.calls must be defined')

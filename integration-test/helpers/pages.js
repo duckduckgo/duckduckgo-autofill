@@ -162,6 +162,13 @@ export function loginPage (page, server, opts = {}) {
          * @param {string} username
          * @return {Promise<void>}
          */
+        async assertTooltipNotOpen (username) {
+            await expect(page.locator(`button:has-text("${username}")`)).not.toBeVisible()
+        },
+        /**
+         * @param {string} username
+         * @return {Promise<void>}
+         */
         async selectFirstCredential (username) {
             if (clickLabel) {
                 const label = page.locator('label[for="email"]')
@@ -173,8 +180,24 @@ export function loginPage (page, server, opts = {}) {
 
             if (!overlay) {
                 const button = await page.waitForSelector(`button:has-text("${username}")`)
-                await button.click({ force: true })
+                await button.click()
             }
+        },
+        /**
+         * @param {string} username
+         * @return {Promise<void>}
+         */
+        async assertUsernameFilled (username) {
+            const emailField = page.locator('#email')
+            await expect(emailField).toHaveValue(username)
+        },
+        /**
+         * @param {string} password
+         * @return {Promise<void>}
+         */
+        async assertPasswordFilled (password) {
+            const passwordField = page.locator('#password')
+            await expect(passwordField).toHaveValue(password)
         },
         /**
          * @param {string} username
@@ -182,10 +205,12 @@ export function loginPage (page, server, opts = {}) {
          * @return {Promise<void>}
          */
         async assertFirstCredential (username, password) {
-            const emailField = page.locator('#email')
+            await this.assertUsernameFilled(username)
+            await this.assertPasswordFilled((password))
+        },
+        async assertPasswordEmpty () {
             const passwordField = page.locator('#password')
-            await expect(emailField).toHaveValue(username)
-            await expect(passwordField).toHaveValue(password)
+            await expect(passwordField).toHaveValue('')
         },
         /**
          * @param {Platform} platform
@@ -216,9 +241,7 @@ export function loginPage (page, server, opts = {}) {
          * @returns {Promise<void>}
          */
         async assertParentOpened () {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
-            const credsCalls = calls.filter(([name]) => name === 'getSelectedCredentials')
-            await this.assertClickAndFocusMessages()
+            const credsCalls = await mockedCalls(page, ['getSelectedCredentials'], true)
             expect(credsCalls.length).toBe(5)
         },
         /** @param {{password: string}} data */
@@ -241,10 +264,10 @@ export function loginPage (page, server, opts = {}) {
         async shouldNotPromptToSave (platform = 'ios') {
             let mockCalls = []
             if (['ios', 'macos'].includes(platform)) {
-                mockCalls = await mockedCalls(page, ['pmHandlerStoreData'])
+                mockCalls = await mockedCalls(page, ['pmHandlerStoreData'], false)
             }
             if (platform === 'android') {
-                mockCalls = await mockedCalls(page, ['storeFormData'])
+                mockCalls = await mockedCalls(page, ['storeFormData'], false)
             }
 
             expect(mockCalls.length).toBe(0)
@@ -316,6 +339,33 @@ export function loginPage (page, server, opts = {}) {
             const [call1, call2] = calls
             expect(call1[1].wasFromClick).toBe(true)
             expect(call2[1].wasFromClick).toBe(false)
+        },
+        async assertFormSubmitted () {
+            const submittedMsg = await page.locator('h1:has-text("Submitted!")')
+            await expect(submittedMsg).toBeVisible()
+        },
+        async assertFormNotSubmittedAutomatically () {
+            const submitButton = await page.locator('button:has-text("Log in")')
+            await expect(submitButton).toBeVisible()
+            await submitButton.click()
+            await this.assertFormSubmitted()
+        }
+    }
+}
+
+/**
+ * A wrapper around interactions for `integration-test/pages/login.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
+ */
+export function loginPageWithText (page, server, opts) {
+    const originalLoginPage = loginPage(page, server, opts)
+    return {
+        ...originalLoginPage,
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['loginWithText']))
         }
     }
 }
@@ -369,6 +419,46 @@ export function loginPageWithFormInModal (page, server, opts) {
         },
         async clickOutsideTheDialog () {
             await page.click('#random-text')
+        }
+    }
+}
+
+/**
+ * A wrapper around interactions for `integration-test/pages/login-covered.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
+ */
+export function loginPageCovered (page, server, opts) {
+    const originalLoginPage = loginPage(page, server, opts)
+    return {
+        ...originalLoginPage,
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['loginCovered']))
+        },
+        async closeCookieDialog () {
+            await page.click('button:has-text("Accept all cookies")')
+        }
+    }
+}
+
+/**
+ * A wrapper around interactions for `integration-test/pages/login-multistep.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
+ */
+export function loginPageMultistep (page, server, opts) {
+    const originalLoginPage = loginPage(page, server, opts)
+    return {
+        ...originalLoginPage,
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['loginMultistep']))
+        },
+        async clickContinue () {
+            await page.click('button:has-text("Continue")')
         }
     }
 }

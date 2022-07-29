@@ -21,13 +21,20 @@ export class NativeUIController extends UIController {
      * @param {import('./UIController').AttachArgs} args
      */
     attach (args) {
-        const {form, input, device} = args
+        const {form, input, device, trigger} = args
         const inputType = getInputType(input)
         const mainType = getMainTypeFromType(inputType)
         const subType = getSubtypeFromType(inputType)
 
         if (mainType === 'unknown') {
             throw new Error('unreachable, should not be here if (mainType === "unknown")')
+        }
+
+        if (trigger === 'auto-prompt') {
+            window.scrollTo({
+                behavior: 'smooth',
+                top: form.form.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 50
+            })
         }
 
         // /** @type {GetAutofillDataRequest} */

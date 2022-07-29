@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Login form covered by a cookie prompt</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+<p><a href="../index.html">[Home]</a></p>
+
+<p id="demo"></p>
+
+<form action="/login" id="login">
+  <h2>Log in</h2>
+  <fieldset>
+    <label for="email">Email</label>
+    <input id="email" type="email">
+    <label for="password">Password</label>
+    <input id="password" type="password">
+    <button type="submit">Log in</button>
+  </fieldset>
+</form>
+
+<div class="dialog dialog--cookie-dialog" hidden>
+  <h2>Annoying cookie prompt</h2>
+  <h3>This cookie prompt will appear with a slight delay after page load. It will cover our beloved login form thus preventing autoprompt.</h3>
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
+  <p><button type="button" class="close-cookie-dialog">Accept all cookies, you have no choice</button></p>
+</div>
+<script type="module">
+  const cookieDialog = document.querySelector('.dialog--cookie-dialog')
+  const closeCookieDialogBtn = document.querySelector('.close-cookie-dialog')
+  closeCookieDialogBtn.addEventListener('click', () => cookieDialog.setAttribute('hidden', ''))
+
+  // show the cookie prompt after page load
+  setTimeout(() => cookieDialog.removeAttribute('hidden'), 100)
+
+  const form = document.forms.login;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (form.checkValidity()) {
+      setTimeout(() => form.outerHTML = '<h1>Submitted!</h1>', 100)
+    }
+  })
+</script>
+</body>
+
+</html>
