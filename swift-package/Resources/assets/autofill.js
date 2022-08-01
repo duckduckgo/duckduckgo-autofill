@@ -10096,12 +10096,13 @@ class NativeUIController extends _UIController.UIController {
     const inputType = (0, _matching.getInputType)(input);
     const mainType = (0, _matching.getMainTypeFromType)(inputType);
     const subType = (0, _matching.getSubtypeFromType)(inputType);
+    let isAutoprompt = trigger === 'auto-prompt';
 
     if (mainType === 'unknown') {
       throw new Error('unreachable, should not be here if (mainType === "unknown")');
     }
 
-    if (trigger === 'auto-prompt') {
+    if (isAutoprompt) {
       window.scrollTo({
         behavior: 'smooth',
         top: form.form.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 50
@@ -10112,7 +10113,8 @@ class NativeUIController extends _UIController.UIController {
     const payload = {
       inputType,
       mainType,
-      subType
+      subType,
+      isAutoprompt
     };
     device.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(payload)).then(resp => {
       if (!resp) throw new Error('unreachable');

@@ -25,12 +25,13 @@ export class NativeUIController extends UIController {
         const inputType = getInputType(input)
         const mainType = getMainTypeFromType(inputType)
         const subType = getSubtypeFromType(inputType)
+        let isAutoprompt = trigger === 'auto-prompt'
 
         if (mainType === 'unknown') {
             throw new Error('unreachable, should not be here if (mainType === "unknown")')
         }
 
-        if (trigger === 'auto-prompt') {
+        if (isAutoprompt) {
             window.scrollTo({
                 behavior: 'smooth',
                 top: form.form.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 50
@@ -41,7 +42,8 @@ export class NativeUIController extends UIController {
         const payload = {
             inputType,
             mainType,
-            subType
+            subType,
+            isAutoprompt
         }
 
         device.deviceApi.request(new GetAutofillDataCall(payload))
