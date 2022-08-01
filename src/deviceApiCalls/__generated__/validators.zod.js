@@ -36,7 +36,8 @@ export const getAliasResultSchema = z.object({
 export const getAutofillDataRequestSchema = z.object({
     inputType: z.string(),
     mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")]),
-    subType: z.string()
+    subType: z.string(),
+    isAutoprompt: z.boolean().optional()
 });
 
 export const getAutofillDataResponseSchema = z.object({

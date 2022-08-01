@@ -21,6 +21,10 @@
     "subType": {
       "description": "Just the subtype, such as `password` or `username`",
       "type": "string"
+    },
+    "isAutoprompt": {
+      "description": "Signals that the prompt was triggered automatically rather than by user action",
+      "type": "boolean"
     }
   },
   "required": [
