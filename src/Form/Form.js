@@ -277,11 +277,6 @@ class Form {
         }, 'all', false)
         if (isThereAnEmptyVisibleField) return
 
-        if (this.form instanceof HTMLFormElement && this.form.requestSubmit !== undefined) {
-            // Not supported in Safari/webview 15 and lower
-            this.form.requestSubmit()
-            return
-        }
         // We're not using .submit() to minimise breakage with client-side forms
         this.submitButtons.forEach((button) => {
             if (isVisible(button)) {
