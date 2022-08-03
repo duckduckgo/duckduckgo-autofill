@@ -99,7 +99,7 @@ module.exports = function (grunt) {
             },
             styles: {
                 files: ['src/**/*.css', 'src/UI/styles/*'],
-                tasks: ['exec:copyAssets']
+                tasks: ['exec:copyAssets', 'browserify:dist', 'browserify:debug']
             }
         }
     })
