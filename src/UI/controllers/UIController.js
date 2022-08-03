@@ -6,7 +6,7 @@
  * @property {{x: number, y: number}|null} click The click positioning
  * @property {TopContextData} topContextData
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
- * @property {'user-initiated' | 'auto-prompt'} trigger
+ * @property {'userInitiated' | 'autoprompt'} trigger
  */
 
 /**

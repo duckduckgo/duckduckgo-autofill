@@ -7892,15 +7892,15 @@ class InterfacePrototype {
    * @param {import("../Form/Form").Form} form
    * @param {HTMLInputElement} input
    * @param {{ x: number; y: number; } | null} click
-   * @param {'user-initiated' | 'auto-prompt'} trigger
+   * @param {'userInitiated' | 'autoprompt'} trigger
    */
 
 
   attachTooltip(form, input, click) {
-    let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'user-initiated';
+    let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
     // Avoid flashing tooltip from background tabs on macOS
     if (document.visibilityState !== 'visible') return;
-    if (trigger === 'auto-prompt' && this.autopromptFired) return;
+    if (trigger === 'autoprompt' && this.autopromptFired) return;
     form.activeInput = input;
     this.currentAttached = form;
     const inputType = (0, _matching.getInputType)(input);
@@ -7939,7 +7939,7 @@ class InterfacePrototype {
       trigger
     });
 
-    if (trigger === 'auto-prompt') {
+    if (trigger === 'autoprompt') {
       this.autopromptFired = true;
     }
   }
@@ -8877,7 +8877,7 @@ class Form {
                   this.touched.add(input);
                 }
               }, 'credentials');
-              this.device.attachTooltip(this, input, null, 'auto-prompt');
+              this.device.attachTooltip(this, input, null, 'autoprompt');
             }
           });
         }, 200);
@@ -13777,7 +13777,7 @@ class NativeUIController extends _UIController.UIController {
       throw new Error('unreachable, should not be here if (mainType === "unknown")');
     }
 
-    if (trigger === 'auto-prompt') {
+    if (trigger === 'autoprompt') {
       window.scrollTo({
         behavior: 'smooth',
         top: form.form.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 50
@@ -13788,7 +13788,8 @@ class NativeUIController extends _UIController.UIController {
     const payload = {
       inputType,
       mainType,
-      subType
+      subType,
+      trigger
     };
     device.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(payload)).then(resp => {
       if (!resp) throw new Error('unreachable');
@@ -14095,7 +14096,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {{x: number, y: number}|null} click The click positioning
  * @property {TopContextData} topContextData
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
- * @property {'user-initiated' | 'auto-prompt'} trigger
+ * @property {'userInitiated' | 'autoprompt'} trigger
  */
 
 /**
@@ -15079,7 +15080,8 @@ exports.getAliasResultSchema = getAliasResultSchema;
 const getAutofillDataRequestSchema = _zod.z.object({
   inputType: _zod.z.string(),
   mainType: _zod.z.union([_zod.z.literal("credentials"), _zod.z.literal("identities"), _zod.z.literal("creditCards")]),
-  subType: _zod.z.string()
+  subType: _zod.z.string(),
+  trigger: _zod.z.union([_zod.z.literal("userInitiated"), _zod.z.literal("autoprompt")]).optional()
 });
 
 exports.getAutofillDataRequestSchema = getAutofillDataRequestSchema;

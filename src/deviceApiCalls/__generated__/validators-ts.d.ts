@@ -73,6 +73,10 @@ export interface GetAutofillDataRequest {
    * Just the subtype, such as `password` or `username`
    */
   subType: string;
+  /**
+   * Signals that the prompt was triggered automatically rather than by user action
+   */
+  trigger?: "userInitiated" | "autoprompt";
 }
 
 // getAutofillData.result.json
