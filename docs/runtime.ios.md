@@ -68,7 +68,7 @@ userPreferences = {
 
 see:
 
-- [../src/schema/response.getAvailableInputTypes.schema.json](../src/schema/response.getAvailableInputTypes.schema.json)
+- [../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json](../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json)
 
 This represents which input types we can autofill for the current user.
 
@@ -85,14 +85,24 @@ This represents which input types we can autofill for the current user.
 
 ## `storeFormData(data)`
 
-see:
+- See: [../src/deviceApiCalls/schemas/storeFormData.params.json](../src/deviceApiCalls/schemas/storeFormData.params.json)
+- Note: Currently, autofill doesn't care/listen for any response.
 
-- TODO: Schema for the 'data' argument above
+**request example 1**
 
 ```json
 {
   "credentials": {
     "username": "dax@duck.com",
+    "password": "123456"
+  }
+}
+```
+
+**request example 2**
+```json
+{
+  "credentials": {
     "password": "123456"
   }
 }
@@ -104,8 +114,8 @@ see:
 
 see: 
  
-- [../src/schema/request.getAutofillData.schema.json](../src/schema/request.getAutofillData.schema.json)
-- [../src/schema/response.getAutofillData.schema.json](../src/schema/response.getAutofillData.schema.json)
+- [../src/deviceApiCalls/schemas/getAutofillData.params.json](../src/deviceApiCalls/schemas/getAutofillData.params.json)
+- [src/deviceApiCalls/schemas/getAutofillData.result.json](src/deviceApiCalls/schemas/getAutofillData.result.json)
 
 **`request`** example
 
