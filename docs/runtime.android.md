@@ -90,12 +90,12 @@ availableInputTypes = {
 
 **data** type: `string`
 
-Autofill will send a *string* of JSON data, conforming to the following schema: (TODO: Add schema)
+Autofill will send a *string* of JSON data, conforming to the following schema:
 
-- Currently, autofill doesn't care/listen for any response.
-- TODO: Schema for the 'data' argument above
+- See: [../src/deviceApiCalls/schemas/storeFormData.params.json](../src/deviceApiCalls/schemas/storeFormData.params.json)
+- Note: Currently, autofill doesn't care/listen for any response.
 
-**request example**
+**request example 1**
 
 ```js
 const data = {
@@ -104,7 +104,18 @@ const data = {
     "password": "123456"
   }
 }
-window.BrowserAutofill.storeFormData(data)
+window.BrowserAutofill.storeFormData(JSON.stringify(data))
+
+```
+**request example 2**
+
+```js
+const data = {
+  "credentials": {
+    "password": "123456"
+  }
+}
+window.BrowserAutofill.storeFormData(JSON.stringify(data))
 ```
 
 
@@ -122,9 +133,9 @@ window.BrowserAutofill.storeFormData(data)
 ## `window.BrowserAutofill.getAutofillData(request)`
 
 - Autofill will send `request` as a string of JSON 
-- See: [../src/schema/request.getAutofillData.schema.json](../src/schema/request.getAutofillData.schema.json)
+- See: [../src/schema/request.getAutofillData.schema.json](../src/deviceApiCalls/schemas/getAutofillData.params.json)
 - Response Message via: `window.postMessage(response)`
-  - See: [../src/schema/response.getAutofillData.schema.json](../src/schema/response.getAutofillData.schema.json)
+  - See: [../src/schema/response.getAutofillData.schema.json](../src/deviceApiCalls/schemas/getAutofillData.result.json)
 
 **`request`** example
 
