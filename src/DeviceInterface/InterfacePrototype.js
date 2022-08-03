@@ -348,12 +348,12 @@ class InterfacePrototype {
      * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
      * @param {{ x: number; y: number; } | null} click
-     * @param {'user-initiated' | 'auto-prompt'} trigger
+     * @param {'userInitiated' | 'autoprompt'} trigger
      */
-    attachTooltip (form, input, click, trigger = 'user-initiated') {
+    attachTooltip (form, input, click, trigger = 'userInitiated') {
         // Avoid flashing tooltip from background tabs on macOS
         if (document.visibilityState !== 'visible') return
-        if (trigger === 'auto-prompt' && this.autopromptFired) return
+        if (trigger === 'autoprompt' && this.autopromptFired) return
 
         form.activeInput = input
         this.currentAttached = form
@@ -385,7 +385,7 @@ class InterfacePrototype {
 
         this.uiController.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this, trigger})
 
-        if (trigger === 'auto-prompt') {
+        if (trigger === 'autoprompt') {
             this.autopromptFired = true
         }
     }

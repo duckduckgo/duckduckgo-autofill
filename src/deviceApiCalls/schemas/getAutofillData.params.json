@@ -22,9 +22,10 @@
       "description": "Just the subtype, such as `password` or `username`",
       "type": "string"
     },
-    "isAutoprompt": {
+    "trigger": {
       "description": "Signals that the prompt was triggered automatically rather than by user action",
-      "type": "boolean"
+      "type": "string",
+      "enum": ["userInitiated", "autoprompt"]
     }
   },
   "required": [

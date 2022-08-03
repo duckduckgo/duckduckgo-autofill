@@ -76,7 +76,7 @@ export interface GetAutofillDataRequest {
   /**
    * Signals that the prompt was triggered automatically rather than by user action
    */
-  isAutoprompt?: boolean;
+  trigger?: "userInitiated" | "autoprompt";
 }
 
 // getAutofillData.result.json
