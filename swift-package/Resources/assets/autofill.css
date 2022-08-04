@@ -1,3 +1,7 @@
+:root {
+    color-scheme: light dark;
+}
+
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
 }
@@ -32,8 +36,7 @@
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data, #topAutofill {
-        background: #696969;
-        background-blend-mode: multiply;
+        background: rgb(100, 98, 102, .9);
     }
 }
 .tooltip--data {
@@ -100,7 +103,7 @@
 }
 .tooltip__button.currentFocus,
 .tooltip__button:hover {
-    background-color: rgba(0, 121, 242, 0.8);
+    background-color: rgba(0, 121, 242, 0.9);
     color: #FFFFFF;
 }
 
@@ -113,9 +116,6 @@
     font-weight: 500;
     line-height: 16px;
     text-align: left;
-}
-.tooltip__button--data > * {
-    opacity: 0.9;
 }
 .tooltip__button--data:first-child {
     margin-top: 0;
@@ -142,7 +142,7 @@
     .tooltip__button--data::before,
     .tooltip__button--data::before {
         filter: invert(100%);
-        opacity: .8;
+        opacity: .9;
     }
 }
 .tooltip__button__text-container {
@@ -170,13 +170,13 @@
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data .label {
-        color: rgba(255, 255, 255, 0.85);
+        color: #ffffff;
     }
     .tooltip--data .label--medium {
-        color: rgba(255, 255, 255, 0.85);
+        color: #ffffff;
     }
     .tooltip--data .label--small {
-        color: rgba(255, 255, 255, 0.5);
+        color: #cdcdcd;
     }
 }
 .tooltip__button.currentFocus .label,
