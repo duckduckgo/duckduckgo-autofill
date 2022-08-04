@@ -14866,7 +14866,7 @@ function createGlobalConfig() {
   // INJECT supportsTopFrame HERE
   // INJECT hasModernWebkitAPI HERE
 
-  let isDDGTestMode = false; // INJECT isDDGTestMode HERE
+  let isDDGTestMode = false; isDDGTestMode = true;
 
   let contentScope = null;
   let userUnprotectedDomains = null;
