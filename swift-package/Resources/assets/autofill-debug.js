@@ -12657,6 +12657,19 @@ class DefaultScanner {
     this.device = device;
     this.matching = (0, _matching.createMatching)();
     this.options = options;
+    /** @type {number} A timestamp of the  */
+
+    this.initTimeStamp = Date.now();
+  }
+  /**
+   * Determine whether we should fire the credentials autoprompt. This is needed because some sites are blank
+   * on page load and load scripts asynchronously, so our initial scan didn't set the autoprompt correctly
+   * @returns {boolean}
+   */
+
+
+  get shouldAutoprompt() {
+    return Date.now() - this.initTimeStamp <= 1500;
   }
   /**
    * Call this to scan once and then watch for changes.
@@ -12704,7 +12717,7 @@ class DefaultScanner {
     var _window$performance, _window$performance$m, _window$performance2, _window$performance2$;
 
     (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'scanner:init:start');
-    this.findEligibleInputs(document, true);
+    this.findEligibleInputs(document);
     (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'scanner:init:end');
     this.mutObs.observe(document.body, {
       childList: true,
@@ -12713,19 +12726,16 @@ class DefaultScanner {
   }
   /**
    * @param context
-   * @param {Boolean} shouldAutoprompt
    */
 
 
   findEligibleInputs(context) {
     var _context$matches;
 
-    let shouldAutoprompt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
     if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, _selectorsCss.FORM_INPUTS_SELECTOR)) {
-      this.addInput(context, shouldAutoprompt);
+      this.addInput(context);
     } else {
-      context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR).forEach(input => this.addInput(input, shouldAutoprompt));
+      context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR).forEach(input => this.addInput(input));
     }
 
     return this;
@@ -12759,11 +12769,10 @@ class DefaultScanner {
   }
   /**
    * @param {HTMLInputElement|HTMLSelectElement} input
-   * @param {Boolean} shouldAutoprompt
    */
 
 
-  addInput(input, shouldAutoprompt) {
+  addInput(input) {
     const parentForm = this.getParentForm(input); // Note that el.contains returns true for el itself
 
     const previouslyFoundParent = [...this.forms.keys()].find(form => form.contains(parentForm));
@@ -12789,7 +12798,7 @@ class DefaultScanner {
         this.forms.delete(childForm);
       }
 
-      this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, shouldAutoprompt));
+      this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
     }
   }
   /**

@@ -57,7 +57,19 @@ class DefaultScanner {
         this.device = device
         this.matching = createMatching()
         this.options = options
+        /** @type {number} A timestamp of the  */
+        this.initTimeStamp = Date.now()
     }
+
+    /**
+     * Determine whether we should fire the credentials autoprompt. This is needed because some sites are blank
+     * on page load and load scripts asynchronously, so our initial scan didn't set the autoprompt correctly
+     * @returns {boolean}
+     */
+    get shouldAutoprompt () {
+        return Date.now() - this.initTimeStamp <= 1500
+    }
+
     /**
      * Call this to scan once and then watch for changes.
      *
@@ -93,20 +105,19 @@ class DefaultScanner {
      */
     scanAndObserve () {
         window.performance?.mark?.('scanner:init:start')
-        this.findEligibleInputs(document, true)
+        this.findEligibleInputs(document)
         window.performance?.mark?.('scanner:init:end')
         this.mutObs.observe(document.body, { childList: true, subtree: true })
     }
 
     /**
      * @param context
-     * @param {Boolean} shouldAutoprompt
      */
-    findEligibleInputs (context, shouldAutoprompt = false) {
+    findEligibleInputs (context) {
         if ('matches' in context && context.matches?.(FORM_INPUTS_SELECTOR)) {
-            this.addInput(context, shouldAutoprompt)
+            this.addInput(context)
         } else {
-            context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach((input) => this.addInput(input, shouldAutoprompt))
+            context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach((input) => this.addInput(input))
         }
         return this
     }
@@ -139,9 +150,8 @@ class DefaultScanner {
 
     /**
      * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {Boolean} shouldAutoprompt
      */
-    addInput (input, shouldAutoprompt) {
+    addInput (input) {
         const parentForm = this.getParentForm(input)
 
         // Note that el.contains returns true for el itself
@@ -163,7 +173,7 @@ class DefaultScanner {
                 this.forms.delete(childForm)
             }
 
-            this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, shouldAutoprompt))
+            this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
         }
     }
 
