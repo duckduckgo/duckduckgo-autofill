@@ -5,7 +5,7 @@ class DataHTMLTooltip extends HTMLTooltip {
     /**
      * @param {InputTypeConfigs} config
      * @param {TooltipItemRenderer[]} items
-     * @param {{onSelect(id:string): void}} callbacks
+     * @param {{onSelect(id:string): void, onManage(type:InputTypeConfigs['type']): void}} callbacks
      */
     render (config, items, callbacks) {
         let hasAddedSeparator = false
@@ -22,7 +22,7 @@ class DataHTMLTooltip extends HTMLTooltip {
 ${this.options.css}
 <div class="wrapper wrapper--data ${topClass}">
     <div class="tooltip tooltip--data" hidden>
-        ${items.map((item) => {
+    ${items.map((item) => {
         // these 2 are optional
         const labelSmall = item.labelSmall?.(this.subtype)
         const label = item.label?.(this.subtype)
@@ -38,11 +38,22 @@ ${this.options.css}
             </button>
         `
     }).join('')}
+        <hr />
+        <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
+            <span class="tooltip__button__text-container">
+                <span class="label label--medium">Manage ${config.displayName}…</span>
+            </span>
+        </button>
     </div>
 </div>`
         this.wrapper = this.shadow.querySelector('.wrapper')
         this.tooltip = this.shadow.querySelector('.tooltip')
         this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button')
+        this.manageButton = this.shadow.getElementById('manage-button')
+        this.registerClickableButton(this.manageButton, () => {
+            console.log('clicking')
+            callbacks.onManage(config.type)
+        })
 
         this.autofillButtons.forEach((btn) => {
             this.registerClickableButton(btn, () => {

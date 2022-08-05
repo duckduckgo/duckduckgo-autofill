@@ -95,6 +95,9 @@ export class HTMLTooltipUIController extends UIController {
             .render(config, asRenderers, {
                 onSelect: (id) => {
                     this._onSelect(config, data, id)
+                },
+                onManage: (type) => {
+                    this._onManage(type)
                 }
             })
     }
@@ -201,6 +204,26 @@ export class HTMLTooltipUIController extends UIController {
      */
     _onSelect (config, data, id) {
         return this._options.device.onSelect(config, data, id)
+    }
+
+    /**
+     * Called when clicking on the Manage… button in the html tooltip
+     *
+     * @param {SupportedMainTypes} type
+     * @returns {*}
+     * @private
+     */
+    _onManage (type) {
+        switch (type) {
+        case 'credentials':
+            return this._options.device.openManagePasswords()
+        case 'creditCards':
+            return this._options.device.openManageCreditCards()
+        case 'identities':
+            return this._options.device.openManageIdentities()
+        default:
+            // noop
+        }
     }
 
     isActive () {

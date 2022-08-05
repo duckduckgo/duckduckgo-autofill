@@ -1,5 +1,5 @@
 import { safeExecute, addInlineStyles } from '../autofill-utils.js'
-import { getSubtypeFromType } from '../Form/matching.js'
+import {getMainTypeFromType, getSubtypeFromType} from '../Form/matching.js'
 import { CSS_STYLES } from './styles/styles.js'
 
 /**
@@ -40,6 +40,7 @@ export class HTMLTooltip {
         })
         this.host = this.shadow.host
         this.config = config
+        this.maintype = getMainTypeFromType(inputType)
         this.subtype = getSubtypeFromType(inputType)
         this.tooltip = null
         this.getPosition = getPosition
