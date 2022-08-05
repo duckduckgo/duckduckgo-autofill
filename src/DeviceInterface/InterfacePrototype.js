@@ -537,6 +537,8 @@ class InterfacePrototype {
     async getAutofillIdentity (_id) { throw new Error('unimplemented') }
 
     openManagePasswords () {}
+    openManageCreditCards () {}
+    openManageIdentities () {}
 
     /** @param {StoreFormData} values */
     storeFormData (values) {
