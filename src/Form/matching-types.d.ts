@@ -97,6 +97,7 @@ type SupportedMainTypes =
 
 interface InputTypeConfigBase {
     type: SupportedMainTypes,
+    displayName: 'Addresses' | 'Logins' | 'Credit Cards' | '',
     getIconFilled: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
     getIconBase: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
     shouldDecorate: (input: HTMLInputElement, form: import("../Form/Form").Form) => boolean,

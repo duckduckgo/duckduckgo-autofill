@@ -42,6 +42,7 @@ const inputTypeConfig = {
     /** @type {CredentialsInputTypeConfig} */
     credentials: {
         type: 'credentials',
+        displayName: 'Logins',
         getIconBase: (_input, {device}) => {
             if (device.settings.featureToggles.inlineIcon_credentials) {
                 return ddgPasswordIcons.ddgPasswordIconBase
@@ -77,6 +78,7 @@ const inputTypeConfig = {
     /** @type {CreditCardsInputTypeConfig} */
     creditCards: {
         type: 'creditCards',
+        displayName: 'Credit Cards',
         getIconBase: () => '',
         getIconFilled: () => '',
         shouldDecorate: (_input, {device}) => {
@@ -88,6 +90,7 @@ const inputTypeConfig = {
     /** @type {IdentitiesInputTypeConfig} */
     identities: {
         type: 'identities',
+        displayName: 'Addresses',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
         shouldDecorate: (input, {device}) => {
@@ -111,6 +114,7 @@ const inputTypeConfig = {
     /** @type {UnknownInputTypeConfig} */
     unknown: {
         type: 'unknown',
+        displayName: '',
         getIconBase: () => '',
         getIconFilled: () => '',
         shouldDecorate: () => false,
