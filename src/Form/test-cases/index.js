@@ -239,5 +239,6 @@ export default [
     { html: 'googlecalendar_eventnotification.html' },
     { html: 'givesmart_login.html' },
     { html: 'vancity_login.html' },
-    { html: 'expensify.html' }
+    { html: 'expensify.html' },
+    { html: 'candidguidestar_checkout_signup.html' }
 ]
