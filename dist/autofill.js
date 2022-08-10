@@ -5280,7 +5280,6 @@ class FormAnalyzer {
   /**
    *
    * @param {object} p
-   * @param {'positive'|'negative' | ''} [p.matches] - Skip regexes and just update the value
    * @param {string} p.string - The string to check
    * @param {number} p.strength - Strength of the signal
    * @param {string} [p.signalType] - For debugging purposes, we give a name to the signal
@@ -5293,7 +5292,6 @@ class FormAnalyzer {
 
   updateSignal(_ref) {
     let {
-      matches = '',
       string,
       strength,
       signalType = 'generic',
@@ -5301,18 +5299,6 @@ class FormAnalyzer {
       shouldCheckUnifiedForm = false,
       shouldBeConservative = false
     } = _ref;
-
-    // If 'matches' is passed we shortcircuit the checks here
-    if (matches === 'positive') {
-      this.increaseSignalBy(strength, signalType);
-      return this;
-    }
-
-    if (matches === 'negative') {
-      this.decreaseSignalBy(strength, signalType);
-      return this;
-    }
-
     const matchesNegative = string === 'current-password' || negativeRegex.test(string); // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
 
     if (shouldCheckUnifiedForm && matchesNegative && strictPositiveRegex.test(string)) {
@@ -5408,7 +5394,7 @@ class FormAnalyzer {
 
 
     if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
-      // If we're sure this is a submit button, it's a stronger signal
+      // If we're confident this is a submit button, it's a stronger signal
       const strength = (0, _autofillUtils.isLikelyASubmitButton)(el) ? 20 : 2;
       this.updateSignal({
         string,
@@ -5465,12 +5451,7 @@ class FormAnalyzer {
     const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'));
 
     if (relevantFields.length > 3) {
-      this.updateSignal({
-        matches: 'positive',
-        string: '',
-        strength: 2,
-        signalType: 'many fields: it is probably not a login'
-      });
+      this.increaseSignalBy(2, 'many fields: it is probably not a login');
     } // If we can't decide at this point, try reading page headings
 
 
