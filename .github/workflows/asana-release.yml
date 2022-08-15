@@ -1,25 +1,146 @@
-name: Asana Release Workflow
+name: Autofill Release Workflow
 
 on:
   release:
     types: [ created ]
 
 jobs:
-  asana_release:
+  autofill_release: # TODO: rename the file to autofill-release.yml once reviewed to keep a clear diff
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 16
-      uses: actions/setup-node@v1
-      with:
-        node-version: 16.x
-    - name: Asana Workflow
-      env:
-        ASANA_ACCESS_TOKEN: ${{ secrets.ASANA_ACCESS_TOKEN }}
-        VERSION: ${{ github.event.release.tag_name }}
-        RELEASE_URL: ${{ github.event.release.html_url }}
-        RELEASE_NOTES: ${{ github.event.release.body }}
-      run: |
-        npm install
-        node scripts/release.js
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      - name: Checkout Android
+        uses: actions/checkout@v3
+        with:
+          repository: duckduckgo/android
+          path: android/
+          ref: develop
+          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+      - name: Update Android autofill reference
+        env:
+          BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
+        run: |
+          node ./autofill/scripts/release/update-android-repo.js
+          cd android
+          npm install
+          cd ..
+      - name: Create Android PR Body
+        id: android-pr-body
+        env:
+          DESCRIPTION: ${{ github.event.release.body }}
+        run: |
+          TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js android)"
+          # Escape whitespace
+          TEMPLATE="${TEMPLATE//'%'/'%25'}"
+          TEMPLATE="${TEMPLATE//$'\n'/'%0A'}"
+          TEMPLATE="${TEMPLATE//$'\r'/'%0D'}"
+          echo ::set-output name=RESULT::"$TEMPLATE"
+      - name: Create PR for Android
+        uses: peter-evans/create-pull-request@v10db75894f6d53fc01c3bb0995e95bd03e583a62
+        id: android-pr
+        with:
+          path: android/
+          add-paths: |
+            package.json
+            package-lock.json
+            node_modules/@duckduckgo/autofill
+          commit-message: Update autofill to ${{ github.event.release.tag_name }}
+          branch: update-autofill-${{ github.event.release.tag_name }}
+          title: Update autofill to ${{ github.event.release.tag_name }}
+          body: "${{ steps.android-pr-body.outputs.result }}"
+          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+
+      - name: Checkout BSK
+        uses: actions/checkout@v3
+        with:
+          repository: duckduckgo/test-bsk
+          path: bsk/
+          ref: develop
+          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+      - name: Update BSK autofill reference
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          node ./autofill/scripts/release/update-bsk-repo.js
+      - name: Create PR for BSK
+        uses: peter-evans/create-pull-request@10db75894f6d53fc01c3bb0995e95bd03e583a62
+        id: bsk-pr
+        with:
+          path: bsk/
+          add-paths: Package.swift,Package.resolved
+          commit-message: Update autofill to ${{ github.event.release.tag_name }}
+          branch: update-autofill-${{ github.event.release.tag_name }}
+          title: Update autofill to ${{ github.event.release.tag_name }}
+          body: ${{ github.event.release.body }} # TODO: use template
+          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+
+      - name: Checkout iOS
+        uses: actions/checkout@v3
+        with:
+          repository: duckduckgo/test-ios
+          path: ios/
+          ref: develop
+          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+      - name: Update iOS autofill reference
+        env:
+          BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
+        run: |
+          node ./autofill/scripts/release/update-apple-device-repo.js 'ios'
+      - name: Create PR for iOS
+        uses: peter-evans/create-pull-request@10db75894f6d53fc01c3bb0995e95bd03e583a62
+        id: ios-pr
+        with:
+          path: ios/
+          add-paths: DuckDuckGo.xcodeproj/project.pbxproj
+          commit-message: Update BSK with autofill ${{ github.event.release.tag_name }}
+          branch: update-bsk-with-autofill-${{ github.event.release.tag_name }}
+          title: Update BSK with autofill ${{ github.event.release.tag_name }}
+          body: ${{ github.event.release.body }} # TODO: use template
+          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+
+      - name: Checkout macOS
+        uses: actions/checkout@v3
+        with:
+          repository: more-duckduckgo-org/macos-browser
+          path: macos/
+          ref: develop
+          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+      - name: Update macOS autofill reference
+        env:
+          BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
+        run: |
+          node ./autofill/scripts/release/update-apple-device-repo.js 'macos'
+      - name: Create PR for macOS
+        uses: peter-evans/create-pull-request@10db75894f6d53fc01c3bb0995e95bd03e583a62
+        id: macos-pr
+        with:
+          path: macos/
+          add-paths: DuckDuckGo.xcodeproj/project.pbxproj
+          commit-message: Update BSK with autofill ${{ github.event.release.tag_name }}
+          branch: update-bsk-with-autofill-${{ github.event.release.tag_name }}
+          title: Update BSK with autofill ${{ github.event.release.tag_name }}
+          body: ${{ github.event.release.body }} # TODO: use template
+          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+
+      - name: Asana Workflow
+        env:
+          ASANA_ACCESS_TOKEN: ${{ secrets.ASANA_ACCESS_TOKEN }}
+          VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_NOTES: ${{ github.event.release.body }}
+          # TODO: the following are not yet used
+          BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
+          IOS_PR_URL: ${{ steps.ios-pr.outputs.pull-request-url }}
+          MACOS_PR_URL: ${{ steps.macos-pr.outputs.pull-request-url }}
+          ANDROID_PR_URL: ${{ steps.android-pr.outputs.pull-request-url }}
+        run: |
+          npm install
+          node ./autofill/scripts/release/asana-workflow.js
