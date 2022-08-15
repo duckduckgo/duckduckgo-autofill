@@ -1,5 +1,6 @@
 const {readFileSync, writeFileSync} = require('fs')
 const {join} = require('path')
+const {replaceInFile} = require('./release-utils.js')
 const cwd = join(__dirname, '..')
 const filepath = (...path) => join(cwd, ...path)
 
@@ -16,15 +17,10 @@ const autofillPackageResolvedRegex = new RegExp(
 )
 
 function updateBSKRepo () {
+    console.log('running updateBSKrepo')
     const packageSwift = readFileSync(packageSwiftPath, 'utf8')
-
-    if (!autofillPackageSwiftRegex.test(packageSwift)) {
-        const errorMsg = 'Package.swift does not seem to contain the autofill package. Check the file and the regex'
-        console.log(errorMsg)
-        console.log(packageSwift)
-        throw new Error(errorMsg)
-    }
-    const updatedPackageSwift = packageSwift.replace(
+    const updatedPackageSwift = replaceInFile(
+        packageSwift,
         autofillPackageSwiftRegex,
         `$1${version}$3`
     )
@@ -32,14 +28,11 @@ function updateBSKRepo () {
     console.log('Autofill reference updated in BSK\'s Package.swift')
 
     const packageResolved = readFileSync(packageResolvedPath, 'utf8')
-    if (!autofillPackageResolvedRegex.test(packageResolved)) {
-        throw new Error('Package.resolved does not seem to contain the autofill package. Check the file and the regex')
-    }
-    const updatedPackageResolve = packageResolved.replace(
+    const updatedPackageResolve = replaceInFile(
+        packageResolved,
         autofillPackageResolvedRegex,
         `$1${commit}$3${version}$5`
     )
-
     writeFileSync(packageResolvedPath, updatedPackageResolve)
     console.log('Autofill reference updated in BSK\'s Package.resolved')
 }

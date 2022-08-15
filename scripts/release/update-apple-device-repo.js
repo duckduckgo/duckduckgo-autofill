@@ -1,5 +1,6 @@
 const {readFileSync, writeFileSync} = require('fs')
 const {join} = require('path')
+const {replaceInFile} = require('./release-utils.js')
 const cwd = join(__dirname, '..')
 const filepath = (...path) => join(cwd, ...path)
 const platform = process.argv[2]
@@ -15,14 +16,8 @@ function updateAppleDeviceRepo (platform = 'ios') {
     )
 
     const projectFile = readFileSync(projectFilePath, 'utf8')
-
-    if (!bskPackageRegex.test(projectFile)) {
-        const errorMsg = `Project file does not seem to contain the BSK package in ${platform}. Check the file and the regex`
-        console.log(errorMsg)
-        console.log(projectFile)
-        throw new Error(errorMsg)
-    }
-    const updatedProjectFile = projectFile.replace(
+    const updatedProjectFile = replaceInFile(
+        projectFile,
         bskPackageRegex,
         `$1revision$3revision = ${commit};`
     )
