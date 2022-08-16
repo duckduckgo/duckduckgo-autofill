@@ -32,12 +32,18 @@ jobs:
           cd android
           npm install
           cd ..
-      - name: Create Android PR Body
-        id: android-pr-body
+#          TODO: update asana workflow to return a json with task urls and gids
+#          TODO: run asana workflow first
+#          TODO: use the PR body template and inject data
+#          TODO: after all PR are completed update Asana tasks with the PR urls
+      - name: Create PR Body
+        id: pr-body
         env:
-          DESCRIPTION: ${{ github.event.release.body }}
+          VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_NOTES: ${{ github.event.release.body }}
         run: |
-          TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js android)"
+          TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js)"
           # Escape whitespace
           TEMPLATE="${TEMPLATE//'%'/'%25'}"
           TEMPLATE="${TEMPLATE//$'\n'/'%0A'}"

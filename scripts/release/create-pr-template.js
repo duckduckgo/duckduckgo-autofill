@@ -9,7 +9,7 @@ const platform = process.argv[2]
 const description = process.env.DESCRIPTION || ''
 
 function createPRTemplate (platform) {
-    const templatePath = filepath(`../${platform}/.github/PULL_REQUEST_TEMPLATE.md`)
+    const templatePath = filepath(`./clients_pr_template.md`)
     const descriptionRegex = new RegExp(/\{\{ description }}/)
     const template = readFileSync(templatePath, 'utf8')
     const updatedTemplate = replaceInFile(template, descriptionRegex, description)
