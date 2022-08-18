@@ -28,7 +28,7 @@ class ExtensionInterface extends InterfacePrototype {
         return new Promise(resolve => {
             chrome.runtime.sendMessage(
                 {
-                    registeredTempAutofillContentScript: true,
+                    messageType: 'registeredAutofillContentScript',
                     documentUrl: window.location.href
                 },
                 (response) => {

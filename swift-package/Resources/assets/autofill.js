@@ -3633,7 +3633,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
   async isEnabled() {
     return new Promise(resolve => {
       chrome.runtime.sendMessage({
-        registeredTempAutofillContentScript: true,
+        messageType: 'registeredAutofillContentScript',
         documentUrl: window.location.href
       }, response => {
         if (response && 'site' in response) {
