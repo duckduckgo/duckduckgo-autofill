@@ -15122,7 +15122,7 @@ const availableInputTypesSchema = _zod.z.object({
 
 exports.availableInputTypesSchema = availableInputTypesSchema;
 
-const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.any());
+const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.unknown());
 
 exports.contentScopeFeaturesItemSettingsSchema = contentScopeFeaturesItemSettingsSchema;
 
@@ -15134,14 +15134,14 @@ const userPreferencesSchema = _zod.z.object({
     name: _zod.z.union([_zod.z.literal("ios"), _zod.z.literal("macos"), _zod.z.literal("windows"), _zod.z.literal("extension"), _zod.z.literal("android"), _zod.z.literal("unknown")])
   }),
   features: _zod.z.record(_zod.z.object({
-    settings: _zod.z.record(_zod.z.any())
+    settings: _zod.z.record(_zod.z.unknown())
   }))
 });
 
 exports.userPreferencesSchema = userPreferencesSchema;
 
 const contentScopeFeaturesSchema = _zod.z.record(_zod.z.object({
-  exceptions: _zod.z.array(_zod.z.any()),
+  exceptions: _zod.z.array(_zod.z.unknown()),
   state: _zod.z.union([_zod.z.literal("enabled"), _zod.z.literal("disabled")]),
   settings: contentScopeFeaturesItemSettingsSchema.optional()
 }));
@@ -15171,7 +15171,7 @@ exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 
 const contentScopeSchema = _zod.z.object({
   features: contentScopeFeaturesSchema,
-  unprotectedTemporary: _zod.z.array(_zod.z.any())
+  unprotectedTemporary: _zod.z.array(_zod.z.unknown())
 });
 
 exports.contentScopeSchema = contentScopeSchema;
