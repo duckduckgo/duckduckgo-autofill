@@ -15178,9 +15178,7 @@ exports.contentScopeSchema = contentScopeSchema;
 
 const runtimeConfigurationSchema = _zod.z.object({
   contentScope: contentScopeSchema,
-  userUnprotectedDomains: _zod.z.array(_zod.z.object({
-    name: _zod.z.string().optional()
-  })),
+  userUnprotectedDomains: _zod.z.array(_zod.z.string()),
   userPreferences: userPreferencesSchema
 });
 
