@@ -6465,6 +6465,9 @@ module.exports={
   "weibo.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
   },
+  "wellsfargo.com": {
+    "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
+  },
   "wsj.com": {
     "password-rules": "minlength: 5; maxlength: 15; required: digit; allowed: lower, upper, [-~!@#$^*_=`|(){}[:;\"'<>,.?]];"
   },
@@ -15178,9 +15181,7 @@ exports.contentScopeSchema = contentScopeSchema;
 
 const runtimeConfigurationSchema = _zod.z.object({
   contentScope: contentScopeSchema,
-  userUnprotectedDomains: _zod.z.array(_zod.z.object({
-    name: _zod.z.string().optional()
-  })),
+  userUnprotectedDomains: _zod.z.array(_zod.z.string()),
   userPreferences: userPreferencesSchema
 });
 

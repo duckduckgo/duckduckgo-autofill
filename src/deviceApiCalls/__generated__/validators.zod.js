@@ -98,9 +98,7 @@ export const contentScopeSchema = z.object({
 
 export const runtimeConfigurationSchema = z.object({
     contentScope: contentScopeSchema,
-    userUnprotectedDomains: z.array(z.object({
-        name: z.string().optional()
-    })),
+    userUnprotectedDomains: z.array(z.string()),
     userPreferences: userPreferencesSchema
 });
 
