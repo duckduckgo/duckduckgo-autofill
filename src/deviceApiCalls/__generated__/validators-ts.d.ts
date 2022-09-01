@@ -33,7 +33,7 @@ export interface Credentials {
    */
   username: string;
   password: string;
-  provider?: "duckduckgo" | "bitwarden";
+  credentialsProvider?: "duckduckgo" | "bitwarden";
 }
 
 // error.json
@@ -159,7 +159,7 @@ export interface Credentials {
    */
   username: string;
   password: string;
-  provider?: "duckduckgo" | "bitwarden";
+  credentialsProvider?: "duckduckgo" | "bitwarden";
 }
 export interface GenericError {
   message: string;

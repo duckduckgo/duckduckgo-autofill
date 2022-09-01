@@ -19,6 +19,7 @@ class DataHTMLTooltip extends HTMLTooltip {
 
         const topClass = wrapperClass || ''
         const dataTypeClass = `tooltip__button--data--${config.type}`
+        // TODO: instead of reading from the settings here this piece of data should come from the items
         const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''
 
         this.shadow.innerHTML = `

@@ -17,7 +17,7 @@ export const credentialsSchema = z.object({
     id: z.string().optional(),
     username: z.string(),
     password: z.string(),
-    provider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional()
+    credentialsProvider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional()
 });
 
 export const genericErrorSchema = z.object({
