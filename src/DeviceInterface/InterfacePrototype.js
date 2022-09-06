@@ -17,7 +17,11 @@ import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import {createTransport} from '../deviceApiCalls/transports/transports.js'
 import {Settings} from '../Settings.js'
 import {DeviceApi} from '../../packages/device-api/index.js'
-import {StoreFormDataCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {
+    GetAutofillCredentialsCall,
+    SelectedDetailCall,
+    StoreFormDataCall
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './formSubmissionsApi.js'
 
 /**
@@ -229,12 +233,27 @@ class InterfacePrototype {
 
         await this.setupAutofill()
         await this.refreshSettings()
+
+        // this is the temporary measure to support windows whilst we still have 'setupAutofill'
+        // eventually all interfaces will use this
+        if (!this.isEnabledViaSettings()) {
+            return
+        }
+
         await this.setupSettingsPage()
         await this.postInit()
 
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms)
         }
+    }
+
+    /**
+     * All interfaces should migrate to this, when they can.
+     * @returns {boolean}
+     */
+    isEnabledViaSettings () {
+        return true
     }
 
     /**
@@ -293,14 +312,28 @@ class InterfacePrototype {
      * @param {string} type
      */
     async selectedDetail (data, type) {
-        this.activeFormSelectedDetail(data, type)
-    }
-
-    /**
-     * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
-     * @param {string} type
-     */
-    activeFormSelectedDetail (data, type) {
+        if (this.globalConfig.isTopFrame) {
+            /**
+             * This is overridden in the Overlay, so that instead of trying to fill a form
+             * with the selected credentials, we instead send a message to the native
+             * side. Once received, the native side will store that selection so that a
+             * subsequence call from main webpage can retrieve it via polling.
+             *
+             * @override
+             * @param detailIn
+             * @param configType
+             * @returns {Promise<void>}
+             */
+            let detailsEntries = Object.entries(data).map(([key, value]) => {
+                return [key, String(value)]
+            })
+            const entries = Object.fromEntries(detailsEntries)
+            // todo: Make this part conform to the new getAutofillData format, so that filling can occur in a uniform manner.
+            // This hasn't been done yet here since it will involve changes to to macOS
+            /** @link {import("../deviceApiCalls/schemas/getAutofillData.result.json")} */
+            await this.deviceApi.notify(new SelectedDetailCall({data: entries, configType: type}))
+            return
+        }
         const form = this.currentAttached
         if (!form) {
             return
@@ -361,7 +394,8 @@ class InterfacePrototype {
         /** @type {PosFn} */
         const getPosition = () => {
             // In extensions, the tooltip is centered on the Dax icon
-            return this.globalConfig.isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
+            const alignLeft = this.globalConfig.isApp || this.globalConfig.isWindows
+            return alignLeft ? input.getBoundingClientRect() : getDaxBoundingBox(input)
         }
 
         // todo: this will be migrated to use NativeUIController soon
@@ -420,6 +454,8 @@ class InterfacePrototype {
         dataPromise.then(response => {
             if (response.success) {
                 return this.selectedDetail(response.success, config.type)
+            } else if (response) {
+                return this.selectedDetail(response, config.type)
             } else {
                 return Promise.reject(new Error('none-success response'))
             }
@@ -526,14 +562,16 @@ class InterfacePrototype {
     getAccounts () {}
     /**
      * Gets credentials ready for autofill
-     * @param {number|string} _id - the credential id
-     * @returns {APIResponseSingle<CredentialsObject>}
+     * @param {number|string} id - the credential id
+     * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
      */
-    getAutofillCredentials (_id) { throw new Error('unimplemented') }
+    async getAutofillCredentials (id) {
+        return this.deviceApi.request(new GetAutofillCredentialsCall({id: String(id)}))
+    }
     /** @returns {APIResponse<CreditCardObject>} */
-    async getAutofillCreditCard (_id) { throw new Error('unimplemented') }
+    async getAutofillCreditCard (_id) { throw new Error('getAutofillCreditCard unimplemented') }
     /** @returns {Promise<{success: IdentityObject|undefined}>} */
-    async getAutofillIdentity (_id) { throw new Error('unimplemented') }
+    async getAutofillIdentity (_id) { throw new Error('getAutofillIdentity unimplemented') }
 
     openManagePasswords () {}
 

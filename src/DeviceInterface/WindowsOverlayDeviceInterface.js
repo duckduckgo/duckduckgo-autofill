@@ -1,16 +1,16 @@
-import {AppleDeviceInterface} from './AppleDeviceInterface.js'
+import InterfacePrototype from './InterfacePrototype.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
+import {GetAutofillInitDataCall, SetSizeCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {overlayApi} from './overlayApi.js'
-import {createNotification} from '../../packages/device-api/index.js'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
- * Overlay into a single place.
+ * Windows Overlay into a single place.
  *
- * It will only run inside the macOS overlay, therefor all code here
- * can be viewed as *not* executing within a regular page context.
+ * It has some subtle differences to the macOS version, which is why
+ * this is another DeviceInterface
  */
-class AppleOverlayDeviceInterface extends AppleDeviceInterface {
+export class WindowsOverlayDeviceInterface extends InterfacePrototype {
     /**
      * Mark top frame as not stripping credential data
      * @type {boolean}
@@ -31,8 +31,12 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         }, {
             wrapperClass: 'top-autofill',
             tooltipPositionClass: () => '.wrapper { transform: none; }',
-            setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
-            testMode: this.isTestMode()
+            setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
+            testMode: this.isTestMode(),
+            /**
+             * Note: This is needed because Mutation observer didn't support visibility checks on Windows
+             */
+            checkVisibility: false
         })
     }
 
@@ -44,16 +48,12 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @returns {Promise<void>}
      */
     async setupAutofill () {
-        await this._getAutofillInitData()
-        const signedIn = await this._checkDeviceSignedIn()
+        const response = await this.deviceApi.request(new GetAutofillInitDataCall(null))
+        // @ts-ignore
+        this.storeLocalData(response)
 
-        if (signedIn) {
-            await this.getAddresses()
-        }
         // setup overlay API pieces
         const overlay = overlayApi(this)
         overlay.showImmediately()
     }
 }
-
-export { AppleOverlayDeviceInterface }

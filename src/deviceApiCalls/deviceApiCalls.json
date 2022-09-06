@@ -14,5 +14,26 @@
   "getAvailableInputTypes": {
     "id": "getAvailableInputTypesResponse",
     "resultValidator": "./schemas/getAvailableInputTypes.result.json"
+  },
+  "getAutofillInitData": {
+    "id": "getAutofillInitDataResponse",
+    "description": "This is called inside an overlay (eg: on Windows or soon also on macOS) to retrieve available data",
+    "resultValidator": "./schemas/getAutofillInitData.result.json"
+  },
+  "getAutofillCredentials": {
+    "id": "getAutofillCredentialsResponse",
+    "description": "Used to retrieve a specific set of credentials",
+    "paramsValidator": "./schemas/getAutofillCredentials.params.json"
+  },
+  "setSize": {
+    "description": "Used by Windows to communicate the desired size of the overlay to the native side",
+    "paramsValidator": "./schemas/setSize.params.json"
+  },
+  "selectedDetail": {
+    "description": "Used by Windows to communicate a selected autofill item to the native side",
+    "paramsValidator": "./schemas/selectedDetail.params.json"
+  },
+  "closeAutofillParent": {
+    "description": "Used by Windows to instruct native sides to close any autofill overlays"
   }
 }

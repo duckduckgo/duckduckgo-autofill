@@ -37,7 +37,7 @@ export class NativeUIController extends UIController {
             })
         }
 
-        // /** @type {GetAutofillDataRequest} */
+        /** @type {import('../../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} */
         const payload = {
             inputType,
             mainType,
@@ -47,7 +47,6 @@ export class NativeUIController extends UIController {
 
         device.deviceApi.request(new GetAutofillDataCall(payload))
             .then(resp => {
-                if (!resp) throw new Error('unreachable')
                 switch (resp.action) {
                 case 'fill': {
                     if (mainType in resp) {

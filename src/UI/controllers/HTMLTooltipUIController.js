@@ -27,23 +27,14 @@ export class HTMLTooltipUIController extends UIController {
     /** @type {import('../HTMLTooltip.js').HTMLTooltipOptions} */
     _htmlTooltipOptions;
 
-    /** @type {import("../../DeviceInterface/InterfacePrototype").default | null} */
-    _device = null;
-
-    /**
-     * Store any cleanups that may have been registered
-     * @type {CleanupFn[]}
-     */
-    _listenerCleanups = []
-
     /**
      * @param {HTMLTooltipControllerOptions} options
-     * @param {import('../HTMLTooltip.js').HTMLTooltipOptions} htmlTooltipOptions
+     * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
      */
     constructor (options, htmlTooltipOptions = defaultOptions) {
         super()
         this._options = options
-        this._htmlTooltipOptions = htmlTooltipOptions
+        this._htmlTooltipOptions = Object.assign({}, defaultOptions, htmlTooltipOptions)
         window.addEventListener('pointerdown', this, true)
     }
 

@@ -5,13 +5,13 @@ const listenForGlobalFormSubmission = (forms) => {
     try {
         window.addEventListener('submit', (e) =>
             // @ts-ignore
-            forms.get(e.target)?.submitHandler(),
+            forms.get(e.target)?.submitHandler('global submit event'),
         true)
 
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const focusedForm = [...forms.values()].find((form) => form.hasFocus(e))
-                focusedForm?.submitHandler()
+                focusedForm?.submitHandler('keydown + Enter')
             }
         })
 
@@ -25,7 +25,7 @@ const listenForGlobalFormSubmission = (forms) => {
             if (!entries.length) return
 
             const filledForm = [...forms.values()].find(form => form.hasValues())
-            filledForm?.submitHandler()
+            filledForm?.submitHandler('performance observer')
         })
         observer.observe({entryTypes: ['resource']})
     } catch (error) {

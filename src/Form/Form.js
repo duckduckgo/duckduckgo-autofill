@@ -437,6 +437,7 @@ class Form {
 
     shouldOpenTooltip (e, input) {
         if (this.device.globalConfig.isApp) return true
+        if (this.device.globalConfig.isWindows) return true
 
         return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled')) || isEventWithinDax(e, input)
     }
