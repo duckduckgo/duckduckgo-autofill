@@ -1,6 +1,7 @@
 import {MissingWebkitHandler, wkSend, wkSendAndWait} from '../../appleDeviceUtils/appleDeviceUtils.js'
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls.js'
+import {captureWebkitHandlers} from '../../appleDeviceUtils/captureDdgGlobals.js'
 
 export class AppleTransport extends DeviceApiTransport {
     /** @type {{hasModernWebkitAPI?: boolean, secret?: string}} */
@@ -13,6 +14,14 @@ export class AppleTransport extends DeviceApiTransport {
         this.sendOptions = {
             secret: this.config.secret,
             hasModernWebkitAPI: this.config.hasModernWebkitAPI
+        }
+        if (!this.sendOptions.hasModernWebkitAPI) {
+            // @ts-ignore
+            if (globalConfig.userPreferences?.platform.name === 'macos') {
+                if (globalConfig.webkitMessageHandlerNames.length > 0) {
+                    captureWebkitHandlers(globalConfig.webkitMessageHandlerNames)
+                }
+            }
         }
     }
 

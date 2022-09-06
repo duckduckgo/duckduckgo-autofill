@@ -4,7 +4,6 @@ import {UIController} from './UIController.js'
  * @typedef OverlayControllerOptions
  * @property {() => Promise<void>} remove - A callback that will be fired when the tooltip should be removed
  * @property {(details: ShowAutofillParentRequest) => Promise<void>} show - A callback that will be fired when the tooltip should be shown
- * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback for reacting to all `pointerdown` events.
  */
 
 /**
@@ -45,10 +44,16 @@ export class OverlayUIController extends UIController {
     _activeTooltip = null
 
     /**
+     * @type {OverlayControllerOptions}
+     */
+    _options;
+
+    /**
      * @param {OverlayControllerOptions} options
      */
     constructor (options) {
-        super(options)
+        super()
+        this._options = options
 
         // We always register this 'pointerdown' event, regardless of
         // whether we have a tooltip currently open or not. This is to ensure
@@ -162,7 +167,6 @@ export class OverlayUIController extends UIController {
         }
         case 'pointerdown': {
             this.removeTooltip(event.type)
-            this._options.onPointerDown?.(event)
             break
         }
         }

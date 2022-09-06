@@ -116,7 +116,11 @@ class Form {
         return validity
     }
 
-    submitHandler () {
+    submitHandler (via = 'unknown') {
+        if (this.device.globalConfig.isDDGTestMode) {
+            console.log('Form.submitHandler via:', via, this)
+        }
+
         if (this.handlerExecuted) return
 
         if (!this.isValid()) return

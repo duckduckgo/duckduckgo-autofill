@@ -3,9 +3,10 @@ const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.c
 /**
  * This is a centralised place to contain all string/variable replacements
  *
+ * @param {Partial<GlobalConfig>} [overrides]
  * @returns {GlobalConfig}
  */
-function createGlobalConfig () {
+function createGlobalConfig (overrides) {
     let isApp = false
     let isTopFrame = false
     let supportsTopFrame = false
@@ -16,11 +17,17 @@ function createGlobalConfig () {
     // INJECT supportsTopFrame HERE
     // INJECT hasModernWebkitAPI HERE
 
+    // This will be used when 'hasModernWebkitAPI' is false
+    /** @type {string[]} */
+    let webkitMessageHandlerNames = []
+    // INJECT webkitMessageHandlerNames HERE
+
     let isDDGTestMode = false
     // INJECT isDDGTestMode HERE
 
     let contentScope = null
     let userUnprotectedDomains = null
+    /** @type {Record<string, any> | null} */
     let userPreferences = null
     // INJECT contentScope HERE
     // INJECT userUnprotectedDomains HERE
@@ -45,7 +52,7 @@ function createGlobalConfig () {
     const isFirefox = navigator.userAgent.includes('Firefox')
     const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX))
 
-    return {
+    const config = {
         isApp,
         isDDGApp,
         isAndroid,
@@ -60,9 +67,12 @@ function createGlobalConfig () {
         userPreferences,
         isDDGTestMode,
         isDDGDomain,
-        availableInputTypes
+        availableInputTypes,
+        webkitMessageHandlerNames,
+        ...overrides
     }
+
+    return config
 }
 
-module.exports.createGlobalConfig = createGlobalConfig
-module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX
+export { createGlobalConfig, DDG_DOMAIN_REGEX }
