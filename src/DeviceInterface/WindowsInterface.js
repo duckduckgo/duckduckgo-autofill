@@ -34,8 +34,7 @@ export class WindowsInterface extends InterfacePrototype {
          */
         return new OverlayUIController({
             remove: async () => this._closeAutofillParent(),
-            show: async (details) => this._show(details),
-            onPointerDown: (event) => this._onPointerDown(event)
+            show: async (details) => this._show(details)
         })
     }
 

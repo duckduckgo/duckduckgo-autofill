@@ -249,7 +249,14 @@ class InterfacePrototype {
     }
 
     /**
-     * All interfaces should migrate to this, when they can.
+     * This is to aid the migration to all platforms using Settings.enabled.
+     *
+     * For now, Windows is the only platform that can be 'enabled' or 'disabled' via
+     * the new Settings - which is why in that interface it has `return this.settings.enabled`
+     *
+     * Whilst we wait for other platforms to catch up, we offer this default implementation
+     * of just returning true.
+     *
      * @returns {boolean}
      */
     isEnabledViaSettings () {
