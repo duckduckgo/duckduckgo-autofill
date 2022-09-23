@@ -89,7 +89,7 @@
 }
 .tooltip__button.currentFocus,
 .tooltip__button:hover {
-    background-color: rgba(0, 121, 242, 0.8);
+    background-color: rgba(0, 121, 242, 0.9);
     color: #FFFFFF;
 }
 
@@ -103,9 +103,6 @@
     font-weight: 500;
     line-height: 16px;
     text-align: left;
-}
-.tooltip__button--data > * {
-    opacity: 0.9;
 }
 .tooltip__button--data:first-child {
     margin-top: 0;
