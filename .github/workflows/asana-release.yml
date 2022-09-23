@@ -23,7 +23,7 @@ jobs:
           repository: duckduckgo/android
           path: android/
           ref: develop
-          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update Android autofill reference
         env:
           BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
@@ -62,7 +62,7 @@ jobs:
           branch: update-autofill-${{ github.event.release.tag_name }}
           title: Update autofill to ${{ github.event.release.tag_name }}
           body: "${{ steps.android-pr-body.outputs.result }}"
-          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
       - name: Checkout BSK
         uses: actions/checkout@v3
@@ -70,7 +70,7 @@ jobs:
           repository: duckduckgo/test-bsk
           path: bsk/
           ref: develop
-          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update BSK autofill reference
         env:
           VERSION: ${{ github.event.release.tag_name }}
@@ -86,7 +86,7 @@ jobs:
           branch: update-autofill-${{ github.event.release.tag_name }}
           title: Update autofill to ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }} # TODO: use template
-          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
       - name: Checkout iOS
         uses: actions/checkout@v3
@@ -94,7 +94,7 @@ jobs:
           repository: duckduckgo/test-ios
           path: ios/
           ref: develop
-          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update iOS autofill reference
         env:
           BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
@@ -110,7 +110,7 @@ jobs:
           branch: update-bsk-with-autofill-${{ github.event.release.tag_name }}
           title: Update BSK with autofill ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }} # TODO: use template
-          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
       - name: Checkout macOS
         uses: actions/checkout@v3
@@ -118,7 +118,7 @@ jobs:
           repository: more-duckduckgo-org/macos-browser
           path: macos/
           ref: develop
-          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update macOS autofill reference
         env:
           BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
@@ -134,11 +134,11 @@ jobs:
           branch: update-bsk-with-autofill-${{ github.event.release.tag_name }}
           title: Update BSK with autofill ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }} # TODO: use template
-          token: ${{ secrets.PAT_AUTOFILL_RELEASES }}
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
       - name: Asana Workflow
         env:
-          ASANA_ACCESS_TOKEN: ${{ secrets.ASANA_ACCESS_TOKEN }}
+          ASANA_ACCESS_TOKEN: ${{ secrets.NATIVE_APPS_WORKFLOW }}
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
