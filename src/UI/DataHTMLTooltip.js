@@ -8,7 +8,7 @@ class DataHTMLTooltip extends HTMLTooltip {
      * @param {{onSelect(id:string): void}} callbacks
      */
     render (config, items, callbacks) {
-        const {wrapperClass, credentialsProvider, css} = this.options
+        const {wrapperClass, css} = this.options
         let hasAddedSeparator = false
         // Only show an hr above the first duck address button, but it can be either personal or private
         const shouldShowSeparator = (dataId) => {
@@ -19,14 +19,13 @@ class DataHTMLTooltip extends HTMLTooltip {
 
         const topClass = wrapperClass || ''
         const dataTypeClass = `tooltip__button--data--${config.type}`
-        // TODO: instead of reading from the settings here this piece of data should come from the items
-        const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''
-
         this.shadow.innerHTML = `
 ${css}
 <div class="wrapper wrapper--data ${topClass}">
     <div class="tooltip tooltip--data" hidden>
         ${items.map((item) => {
+        const credentialsProvider = item.credentialsProvider?.()
+        const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''
         // these 2 are optional
         const labelSmall = item.labelSmall?.(this.subtype)
         const label = item.label?.(this.subtype)
