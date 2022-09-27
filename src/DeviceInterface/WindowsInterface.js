@@ -11,7 +11,7 @@ export class WindowsInterface extends InterfacePrototype {
     /** @type {AbortController|null} */
     _abortController = null;
     /**
-     * @deprecated This is too early, and will be removed eventually.
+     * @deprecated This runs too early, and will be removed eventually.
      * @returns {Promise<boolean>}
      */
     async isEnabled () {

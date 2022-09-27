@@ -8,7 +8,7 @@ import {signupPage} from '../helpers/pages.js'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
 
 /**
- *  Tests for email autofill on ios tooltipHandler
+ *  Tests for autofill scenarios on Windows
  */
 const test = withWindowsContext(base)
 

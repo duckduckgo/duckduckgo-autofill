@@ -142,7 +142,7 @@ export class Settings {
     async refresh (availableInputTypesOverrides) {
         this.setEnabled(await this.getEnabled())
 
-        // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect it's value
+        // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
             if (!this.enabled) {
                 return Settings.defaults

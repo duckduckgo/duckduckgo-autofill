@@ -1,6 +1,9 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
-import {GetAutofillInitDataCall, SetSizeCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {
+    GetAutofillInitDataCall,
+    SetSizeCall
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {overlayApi} from './overlayApi.js'
 
 /**
@@ -16,6 +19,11 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @type {boolean}
      */
     stripCredentials = false;
+
+    /**
+     * overlay API helpers
+     */
+    overlay = overlayApi(this);
 
     /**
      * Because we're running inside the Overlay, we always create the HTML
@@ -53,7 +61,19 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
         this.storeLocalData(response)
 
         // setup overlay API pieces
-        const overlay = overlayApi(this)
-        overlay.showImmediately()
+        this.overlay.showImmediately()
+    }
+
+    /**
+     * In the top-frame scenario, we send a message to the native
+     * side to indicate a selection. Once received, the native side will store that selection so that a
+     * subsequence call from main webpage can retrieve it
+     *
+     * @override
+     * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
+     * @param {string} type
+     */
+    async selectedDetail (data, type) {
+        return this.overlay.selectedDetail(data, type)
     }
 }

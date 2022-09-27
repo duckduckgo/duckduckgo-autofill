@@ -18,6 +18,11 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
     stripCredentials = false;
 
     /**
+     * overlay API helpers
+     */
+    overlay = overlayApi(this)
+
+    /**
      * Because we're running inside the Overlay, we always create the HTML
      * Tooltip controller.
      *
@@ -51,8 +56,20 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
             await this.getAddresses()
         }
         // setup overlay API pieces
-        const overlay = overlayApi(this)
-        overlay.showImmediately()
+        this.overlay.showImmediately()
+    }
+
+    /**
+     * In the top-frame scenario we override the base 'selectedDetail'.
+     *
+     * This
+     *
+     * @override
+     * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
+     * @param {string} type
+     */
+    async selectedDetail (data, type) {
+        return this.overlay.selectedDetail(data, type)
     }
 }
 

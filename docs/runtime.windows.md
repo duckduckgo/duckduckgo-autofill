@@ -265,9 +265,12 @@ windowsInteropPostMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: da
 String replacements
 
 ```
-// INJECT isTopFrame HERE
 isTopFrame = true
+// INJECT isTopFrame HERE
 
-// INJECT supportsTopFrame HERE
 supportsTopFrame = true
+// INJECT supportsTopFrame HERE
+
+let isWindows = false
+// INJECT isWindows HERE
 ```

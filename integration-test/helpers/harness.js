@@ -287,18 +287,19 @@ export function withAndroidContext (test) {
 }
 
 /**
- * Launch a webkit browser with a user-agent that simulates our iOS application
+ * Launch a chromium browser to simulates our Windows application
+ *
+ * Note: Autofill knows this is Windows via the isWindows string replacement
  * @param {typeof import("@playwright/test").test} test
  */
 export function withWindowsContext (test) {
     return test.extend({
         context: async ({ browser }, use, testInfo) => {
-            // ensure this test setup cannot be used by anything other than webkit browsers
+            // ensure this test setup cannot be used by anything other than the Windows browser
             testInfo.skip(testInfo.project.name !== 'windows')
 
             const context = await browser.newContext({
-                ...devices.iPhone,
-                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36 Edg/100.0.1185.44'
+                ...devices['Desktop Chrome']
             })
 
             await use(context)
@@ -364,6 +365,17 @@ export async function mockedCalls (page, names = [], mustExist = true) {
     }, {names})
 }
 
+/**
+ * This gathers all mocked API calls and adds them as an attachment to the
+ * test run.
+ *
+ * This means that when you run `npx playwright show-results` you can
+ * access every piece of JSON that was sent and received.
+ *
+ * @param {import("playwright").Page} page
+ * @param {typeof import("@playwright/test").test} test
+ * @returns {Promise<void>}
+ */
 async function addMocksAsAttachments (page, test) {
     const calls = await mockedCalls(page)
     let index = 0

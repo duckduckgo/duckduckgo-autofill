@@ -19,10 +19,9 @@ import {Settings} from '../Settings.js'
 import {DeviceApi} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
-    SelectedDetailCall,
     StoreFormDataCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {initFormSubmissionsApi} from './formSubmissionsApi.js'
+import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -315,32 +314,15 @@ class InterfacePrototype {
     }
 
     /**
+     * This indicates an item was selected, and we should try to autofill
+     *
+     * Note: When we're in a top-frame scenario, like on like macOS & Windows in the webview,
+     * this method gets overridden {@see WindowsOverlayDeviceInterface} {@see AppleOverlayDeviceInterface}
+     *
      * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
      * @param {string} type
      */
     async selectedDetail (data, type) {
-        if (this.globalConfig.isTopFrame) {
-            /**
-             * This is overridden in the Overlay, so that instead of trying to fill a form
-             * with the selected credentials, we instead send a message to the native
-             * side. Once received, the native side will store that selection so that a
-             * subsequence call from main webpage can retrieve it via polling.
-             *
-             * @override
-             * @param detailIn
-             * @param configType
-             * @returns {Promise<void>}
-             */
-            let detailsEntries = Object.entries(data).map(([key, value]) => {
-                return [key, String(value)]
-            })
-            const entries = Object.fromEntries(detailsEntries)
-            // todo: Make this part conform to the new getAutofillData format, so that filling can occur in a uniform manner.
-            // This hasn't been done yet here since it will involve changes to to macOS
-            /** @link {import("../deviceApiCalls/schemas/getAutofillData.result.json")} */
-            await this.deviceApi.notify(new SelectedDetailCall({data: entries, configType: type}))
-            return
-        }
         const form = this.currentAttached
         if (!form) {
             return
