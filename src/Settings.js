@@ -187,7 +187,7 @@ export class Settings {
             return Boolean(this.availableInputTypes.creditCards?.expirationMonth || this.availableInputTypes.creditCards?.expirationYear)
         }
 
-        if (subtype === 'emailAddress' && this.featureToggles.emailProtection) {
+        if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
             return true
         }
 
