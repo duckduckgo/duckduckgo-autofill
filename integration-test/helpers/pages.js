@@ -228,7 +228,7 @@ export function loginPage (page, server, opts = {}) {
          */
         async promptWasShown (platform = 'android') {
             const calls = await mockedCalls(page, ['getAutofillData'])
-            expect(calls.length).toBe(1)
+            expect(calls.length).toBeGreaterThan(0)
             const [, sent] = calls[0]
             let params
             if (platform === 'android') {
