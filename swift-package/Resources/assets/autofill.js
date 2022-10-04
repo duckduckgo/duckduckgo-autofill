@@ -10577,7 +10577,7 @@ exports.CSS_STYLES = CSS_STYLES;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.wkSendAndWait = exports.wkSend = exports.MissingWebkitHandler = void 0;
+exports.wkSendAndWait = exports.MissingWebkitHandler = void 0;
 
 var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals.js"));
 
@@ -10612,8 +10612,6 @@ const wkSend = function (handler) {
  * @param {Function} callback
  */
 
-
-exports.wkSend = wkSend;
 
 const generateRandomMethod = (randomMethodName, callback) => {
   _captureDdgGlobals.default.ObjectDefineProperty(_captureDdgGlobals.default.window, randomMethodName, {
@@ -11643,11 +11641,7 @@ class AppleTransport extends _index.DeviceApiTransport {
   async send(deviceApiCall) {
     try {
       // if the call has an `id`, it means that it expects a response
-      if (deviceApiCall.id) {
-        return await (0, _appleDeviceUtils.wkSendAndWait)(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions);
-      } else {
-        return await (0, _appleDeviceUtils.wkSend)(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions);
-      }
+      return await (0, _appleDeviceUtils.wkSendAndWait)(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions);
     } catch (e) {
       if (e instanceof _appleDeviceUtils.MissingWebkitHandler) {
         if (this.config.isDDGTestMode) {

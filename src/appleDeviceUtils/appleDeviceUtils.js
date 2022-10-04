@@ -109,4 +109,4 @@ class MissingWebkitHandler extends Error {
     }
 }
 
-export { wkSendAndWait, wkSend, MissingWebkitHandler }
+export { wkSendAndWait, MissingWebkitHandler }

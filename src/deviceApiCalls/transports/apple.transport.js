@@ -1,4 +1,4 @@
-import {MissingWebkitHandler, wkSend, wkSendAndWait} from '../../appleDeviceUtils/appleDeviceUtils.js'
+import {MissingWebkitHandler, wkSendAndWait} from '../../appleDeviceUtils/appleDeviceUtils.js'
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls.js'
 
@@ -19,11 +19,7 @@ export class AppleTransport extends DeviceApiTransport {
     async send (deviceApiCall) {
         try {
             // if the call has an `id`, it means that it expects a response
-            if (deviceApiCall.id) {
-                return await wkSendAndWait(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions)
-            } else {
-                return await wkSend(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions)
-            }
+            return await wkSendAndWait(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions)
         } catch (e) {
             if (e instanceof MissingWebkitHandler) {
                 if (this.config.isDDGTestMode) {
