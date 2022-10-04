@@ -15209,11 +15209,11 @@ const autofillFeatureTogglesSchema = _zod.z.object({
 exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
 
 const availableInputTypesSchema = _zod.z.object({
-  credentials: _zod.z.record(_zod.z.any()).and(_zod.z.object({
+  credentials: _zod.z.record(_zod.z.unknown()).and(_zod.z.object({
     username: _zod.z.boolean().optional(),
     password: _zod.z.boolean().optional()
   })).optional(),
-  identities: _zod.z.record(_zod.z.any()).and(_zod.z.object({
+  identities: _zod.z.record(_zod.z.unknown()).and(_zod.z.object({
     firstName: _zod.z.boolean().optional(),
     middleName: _zod.z.boolean().optional(),
     lastName: _zod.z.boolean().optional(),
@@ -15229,7 +15229,7 @@ const availableInputTypesSchema = _zod.z.object({
     phone: _zod.z.boolean().optional(),
     emailAddress: _zod.z.boolean().optional()
   })).optional(),
-  creditCards: _zod.z.record(_zod.z.any()).and(_zod.z.object({
+  creditCards: _zod.z.record(_zod.z.unknown()).and(_zod.z.object({
     cardName: _zod.z.boolean().optional(),
     cardSecurityCode: _zod.z.boolean().optional(),
     expirationMonth: _zod.z.boolean().optional(),
@@ -15305,7 +15305,7 @@ const getAvailableInputTypesResultSchema = _zod.z.object({
 
 exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 
-const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.any());
+const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.unknown());
 
 exports.contentScopeFeaturesItemSettingsSchema = contentScopeFeaturesItemSettingsSchema;
 
@@ -15317,14 +15317,14 @@ const userPreferencesSchema = _zod.z.object({
     name: _zod.z.union([_zod.z.literal("ios"), _zod.z.literal("macos"), _zod.z.literal("windows"), _zod.z.literal("extension"), _zod.z.literal("android"), _zod.z.literal("unknown")])
   }),
   features: _zod.z.record(_zod.z.object({
-    settings: _zod.z.record(_zod.z.any())
+    settings: _zod.z.record(_zod.z.unknown())
   }))
 });
 
 exports.userPreferencesSchema = userPreferencesSchema;
 
 const contentScopeFeaturesSchema = _zod.z.record(_zod.z.object({
-  exceptions: _zod.z.array(_zod.z.any()),
+  exceptions: _zod.z.array(_zod.z.unknown()),
   state: _zod.z.union([_zod.z.literal("enabled"), _zod.z.literal("disabled")]),
   settings: contentScopeFeaturesItemSettingsSchema.optional()
 }));
@@ -15346,7 +15346,7 @@ exports.autofillSettingsSchema = autofillSettingsSchema;
 
 const contentScopeSchema = _zod.z.object({
   features: contentScopeFeaturesSchema,
-  unprotectedTemporary: _zod.z.array(_zod.z.any())
+  unprotectedTemporary: _zod.z.array(_zod.z.unknown())
 });
 
 exports.contentScopeSchema = contentScopeSchema;
