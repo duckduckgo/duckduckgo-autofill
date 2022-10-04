@@ -20,7 +20,8 @@ async function mocks (page) {
         .withCredentials({
             id: '01',
             username: personalAddress,
-            password
+            password,
+            credentialsProvider: 'duckduckgo'
         })
         .applyTo(page)
     return {personalAddress, password}
@@ -227,6 +228,78 @@ test.describe('Auto-fill a login form on macOS', () => {
             await login.assertDialogOpen()
             await login.hitEscapeKey()
             await login.assertDialogClose()
+        })
+    })
+
+    test.describe('When Bitwarden is the password provider', () => {
+        test('When we have Bitwarden credentials', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+
+            await createWebkitMocks()
+                .withCredentials({
+                    id: '01',
+                    username: personalAddress,
+                    password,
+                    credentialsProvider: 'bitwarden'
+                })
+                .applyTo(page)
+
+            // Load the autofill.js script with replacements
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements({
+                    availableInputTypes: {
+                        credentials: {username: true, password: true}
+                    },
+                    featureToggles: {
+                        credentials_provider: 'bitwarden'
+                    }
+                }))
+                .platform('macos')
+                .applyTo(page)
+
+            const login = loginPage(page, server)
+            await login.navigate()
+            await login.fieldsContainIcons()
+
+            await login.assertTooltipNotOpen(personalAddress)
+
+            await login.assertBitwardenTooltipWorking(personalAddress, password)
+        })
+
+        test('When bitwarden is locked', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+
+            await createWebkitMocks()
+                .withCredentials({
+                    id: 'provider_locked',
+                    username: '',
+                    password: '',
+                    credentialsProvider: 'bitwarden'
+                })
+                .applyTo(page)
+
+            // Load the autofill.js script with replacements
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements({
+                    availableInputTypes: {
+                        credentials: {username: true, password: true}
+                    },
+                    featureToggles: {
+                        credentials_provider: 'bitwarden'
+                    }
+                }))
+                .platform('macos')
+                .applyTo(page)
+
+            const login = loginPage(page, server)
+            await login.navigate()
+            await login.fieldsContainIcons()
+
+            await login.assertTooltipNotOpen(personalAddress)
+
+            await login.assertBitwardenLockedWorking()
         })
     })
 })

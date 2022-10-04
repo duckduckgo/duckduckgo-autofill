@@ -195,6 +195,27 @@ export function loginPage (page, server, opts = {}) {
         },
         /**
          * @param {string} username
+         * @param {string} password
+         * @return {Promise<void>}
+         */
+        async assertBitwardenTooltipWorking (username, password) {
+            await this.clickIntoUsernameInput()
+            const button = await page.waitForSelector('.tooltip__button--data--bitwarden')
+            expect(button).toBeDefined()
+            await button.click()
+            await this.assertFirstCredential(username, password)
+        },
+        async assertBitwardenLockedWorking () {
+            await this.clickIntoUsernameInput()
+            const button = await page.waitForSelector('button:has-text("Bitwarden is locked")')
+            expect(button).toBeDefined()
+            await button.click()
+            const autofillCalls = await mockedCalls(page, ['pmHandlerGetAutofillCredentials'], true)
+            expect(autofillCalls).toHaveLength(1)
+            expect(autofillCalls[0][1].id).toBe('provider_locked')
+        },
+        /**
+         * @param {string} username
          * @return {Promise<void>}
          */
         async assertUsernameFilled (username) {

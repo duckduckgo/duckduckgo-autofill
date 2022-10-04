@@ -5,7 +5,8 @@ type MockCall = [name: string, input: any, output: any];
 interface CredentialsMock {
     username: string,
     password: string,
-    id: string
+    id: string,
+    credentialsProvider?: 'duckduckgo' | 'bitwarden'
 }
 
 /**
