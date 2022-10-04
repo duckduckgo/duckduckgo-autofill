@@ -43,13 +43,6 @@ export class Settings {
     constructor (config, deviceApi) {
         this.deviceApi = deviceApi
         this.globalConfig = config
-        if (!config.availableInputTypes) {
-            // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
-            if (this.globalConfig.isDDGTestMode) {
-                console.error('isDDGTestMode: ❌ availbleInputTypes must be passed in the global config')
-            }
-        }
-        this._availableInputTypes = config.availableInputTypes || Settings.defaults.availableInputTypes
     }
 
     /**
