@@ -9321,7 +9321,6 @@ class Settings {
 
     this.deviceApi = deviceApi;
     this.globalConfig = config;
-    console.log('passed config from startup', config);
 
     if (!config.availableInputTypes) {
       // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
@@ -9372,7 +9371,6 @@ class Settings {
     try {
       const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
       const availableInputTypes = (0, _index.validate)(runtimeConfig === null || runtimeConfig === void 0 ? void 0 : runtimeConfig.availableInputTypes, _validatorsZod.availableInputTypesSchema);
-      console.log('here', availableInputTypes);
       return availableInputTypes;
     } catch (e) {
       // these are the fallbacks for when a platform hasn't implemented the calls above.
@@ -9419,8 +9417,6 @@ class Settings {
   async refresh() {
     this.setFeatureToggles(await this.getFeatureToggles());
     this.setAvailableInputTypes(await this.getInitialAvailableInputTypes());
-    console.log(this.featureToggles);
-    console.log(this.availableInputTypes);
     return {
       featureToggles: this.featureToggles,
       availableInputTypes: this.availableInputTypes
