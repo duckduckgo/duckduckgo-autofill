@@ -13,6 +13,7 @@ import {
 } from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
+import {createAvailableInputTypes} from '../helpers/utils.js'
 
 /**
  *  Tests for email autofill on android tooltipHandler
@@ -24,7 +25,7 @@ const test = withIOSContext(base)
  * @param {ServerWrapper} server
  * @param {object} opts
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} opts.featureToggles
- * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} opts.availableInputTypes
+ * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} [opts.availableInputTypes]
  * @param {CredentialsMock} [opts.credentials]
  * @param {'standard' | 'withExtraText' | 'withModal' | 'covered' | 'multistep'} [opts.pageType]
  */
@@ -34,7 +35,7 @@ async function testLoginPage (page, server, opts) {
 
     // android specific mocks
     const mocks = createWebkitMocks()
-        .withAvailableInputTypes(opts.availableInputTypes)
+        .withAvailableInputTypes(opts.availableInputTypes || createAvailableInputTypes())
 
     if (opts.credentials) {
         mocks.withCredentials(opts.credentials)
@@ -89,9 +90,6 @@ test.describe('Auto-fill a login form on iOS', () => {
                     featureToggles: {
                         inputType_credentials: true
                     },
-                    availableInputTypes: {
-                        credentials: {username: true, password: true}
-                    },
                     credentials
                 })
                 await login.promptWasShown('ios')
@@ -102,9 +100,6 @@ test.describe('Auto-fill a login form on iOS', () => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
-                    },
-                    availableInputTypes: {
-                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'withExtraText'
@@ -119,9 +114,6 @@ test.describe('Auto-fill a login form on iOS', () => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
-                    },
-                    availableInputTypes: {
-                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'covered'
@@ -138,9 +130,6 @@ test.describe('Auto-fill a login form on iOS', () => {
                     featureToggles: {
                         inputType_credentials: true
                     },
-                    availableInputTypes: {
-                        credentials: {username: true, password: true}
-                    },
                     credentials,
                     pageType: 'multistep'
                 })
@@ -156,9 +145,6 @@ test.describe('Auto-fill a login form on iOS', () => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
-                    },
-                    availableInputTypes: {
-                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'withModal'
@@ -189,9 +175,6 @@ test.describe('Auto-fill a login form on iOS', () => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
-                    },
-                    availableInputTypes: {
-                        credentials: {username: true, password: true}
                     },
                     credentials
                 })

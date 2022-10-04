@@ -42,12 +42,7 @@ async function testLoginPage (page, server, opts = {}) {
 
     // Load the autofill.js script with replacements
     await createAutofillScript()
-        .replaceAll(macosContentScopeReplacements({
-            availableInputTypes: {
-                credentials: {username: true, password: true}
-            },
-            overlay
-        }))
+        .replaceAll(macosContentScopeReplacements({overlay}))
         .platform('macos')
         .applyTo(page)
 
@@ -82,11 +77,7 @@ async function createLoginFormInModalPage (page, server) {
 
     // Pretend we're running in a top-frame scenario
     await createAutofillScript()
-        .replaceAll(macosContentScopeReplacements({
-            availableInputTypes: {
-                credentials: {username: true, password: true}
-            }
-        }))
+        .replaceAll(macosContentScopeReplacements())
         .platform('macos')
         .applyTo(page)
 
@@ -248,9 +239,6 @@ test.describe('Auto-fill a login form on macOS', () => {
             // Load the autofill.js script with replacements
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements({
-                    availableInputTypes: {
-                        credentials: {username: true, password: true}
-                    },
                     featureToggles: {
                         credentials_provider: 'bitwarden'
                     }
@@ -283,9 +271,6 @@ test.describe('Auto-fill a login form on macOS', () => {
             // Load the autofill.js script with replacements
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements({
-                    availableInputTypes: {
-                        credentials: {username: true, password: true}
-                    },
                     featureToggles: {
                         credentials_provider: 'bitwarden'
                     }
