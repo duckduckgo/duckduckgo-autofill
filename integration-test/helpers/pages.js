@@ -304,6 +304,11 @@ export function loginPage (page, server, opts = {}) {
 
             expect(mockCalls.length).toBe(0)
         },
+        /**
+         * This is used mostly to avoid false negatives when we check for something _not_ happening.
+         * Basically, you check that a specific call hasn't happened but the rest of the script ran just fine.
+         * @returns {Promise<void>}
+         */
         async assertAnyMockCallOccurred () {
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             expect(calls.length).toBeGreaterThan(0)
