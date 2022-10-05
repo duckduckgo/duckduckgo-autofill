@@ -103,9 +103,10 @@ describe('Input Classifiers', () => {
             { text: 'MM-AAAA', expectedResult: '08-2025' },
             { text: 'mm_jj', expectedResult: '08_25' },
             { text: 'mm.yy', expectedResult: '08.25' },
-            { text: 'mm - yy', expectedResult: '08-25' },
+            { text: 'mm - yy', expectedResult: '08 - 25' },
             { text: 'mm yy', expectedResult: '08 25' },
-            { text: 'ie: 08.22', expectedResult: '08.25' }
+            { text: 'ie: 08.22', expectedResult: '08.25' },
+            { text: 'Expiry date: MM / YY', expectedResult: '08 / 25' }
         ])('when checking for "$text"', ({ text, expectedResult }) => {
             let elements
 
