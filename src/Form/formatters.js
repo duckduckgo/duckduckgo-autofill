@@ -1,8 +1,8 @@
 import { matchInPlaceholderAndLabels, checkPlaceholderAndLabels } from './matching.js'
 import { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES } from './countryNames.js'
 
-// Matches strings like mm/yy, mm-yyyy, mm-aa
-const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i
+// Matches strings like mm/yy, mm-yyyy, mm-aa, 12 / 2024
+const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i
 // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
 const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
 

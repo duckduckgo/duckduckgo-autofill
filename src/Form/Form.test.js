@@ -389,3 +389,66 @@ describe('Check form has focus', () => {
         expect(formClass?.hasFocus()).toBe(false)
     })
 })
+
+describe('Attempt form submission when needed', () => {
+    const submitHandler = jest.fn((e) => e.preventDefault())
+
+    afterEach(() => submitHandler.mockClear())
+
+    describe('Do not submit', () => {
+        test('when the form is not a login', () => {
+            const formEl = attachAndReturnGenericForm()
+            formEl.addEventListener('submit', submitHandler)
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+
+            const formClass = scanner.forms.get(formEl)
+            formClass?.attemptSubmissionIfNeeded()
+            expect(submitHandler).not.toHaveBeenCalled()
+        })
+        test('when the form has more than one submit button', () => {
+            const formEl = attachAndReturnGenericForm(`
+                <form>
+                    <input type="text" value="testUsername" autocomplete="username" />
+                    <input type="password" value="testPassword" autocomplete="current-password" />
+                    <button type="submit">Log in</button>
+                    <button type="submit">Other weird login buton that takes you somewhere else</button>
+                </form>`)
+            formEl.addEventListener('submit', submitHandler)
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+
+            const formClass = scanner.forms.get(formEl)
+            formClass?.attemptSubmissionIfNeeded()
+            expect(submitHandler).not.toHaveBeenCalled()
+        })
+        test('when the form is invalid', () => {
+            const formEl = attachAndReturnGenericForm(`
+                <form>
+                    <input type="email" value="not_an_email" required autocomplete="username" />
+                    <input type="password" value="" required autocomplete="current-password" />
+                    <button type="submit">Log in</button>
+                </form>`)
+            formEl.addEventListener('submit', submitHandler)
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+
+            const formClass = scanner.forms.get(formEl)
+            formClass?.attemptSubmissionIfNeeded()
+            expect(submitHandler).not.toHaveBeenCalled()
+        })
+    })
+    describe('Submit the form', () => {
+        test('a valid login form with a clear submit button', () => {
+            const formEl = attachAndReturnGenericForm(`
+                <form>
+                    <input type="text" value="testUsername" autocomplete="username" />
+                    <input type="password" value="testPassword" autocomplete="current-password" />
+                    <button type="submit">Log in</button>
+                </form>`)
+            formEl.addEventListener('submit', submitHandler)
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+
+            const formClass = scanner.forms.get(formEl)
+            formClass?.attemptSubmissionIfNeeded()
+            expect(submitHandler).toHaveBeenCalled()
+        })
+    })
+})

@@ -47,7 +47,7 @@ test.describe('macos', () => {
 
         // these are mac specific - different to the extension because they use different tooltips (currently)
         const personalAddressBtn = await page.locator(`button:has-text("${personalAddress} Blocks email trackers")`)
-        const privateAddressBtn = await page.locator(`button:has-text("Generated Private Duck Address 0@duck.com")`)
+        const privateAddressBtn = await page.locator(`button:has-text("Generate Private Duck Address 0@duck.com")`)
 
         // select the first option
         await expect(personalAddressBtn).toBeVisible()

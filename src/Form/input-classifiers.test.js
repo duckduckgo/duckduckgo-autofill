@@ -7,6 +7,7 @@ import { Form } from './Form.js'
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
 import testCases from './test-cases/index.js'
+import {SUBMIT_BUTTON_SELECTOR} from './selectors-css.js'
 
 /**
  * @param {HTMLInputElement} el
@@ -103,9 +104,10 @@ describe('Input Classifiers', () => {
             { text: 'MM-AAAA', expectedResult: '08-2025' },
             { text: 'mm_jj', expectedResult: '08_25' },
             { text: 'mm.yy', expectedResult: '08.25' },
-            { text: 'mm - yy', expectedResult: '08-25' },
+            { text: 'mm - yy', expectedResult: '08 - 25' },
             { text: 'mm yy', expectedResult: '08 25' },
-            { text: 'ie: 08.22', expectedResult: '08.25' }
+            { text: 'ie: 08.22', expectedResult: '08.25' },
+            { text: 'Expiry date: MM / YY', expectedResult: '08 / 25' }
         ])('when checking for "$text"', ({ text, expectedResult }) => {
             let elements
 
@@ -144,6 +146,15 @@ describe.each(testCases)('Test $html fields', (testCase) => {
 
         document.body.innerHTML = testContent
         document.title = title
+
+        const buttons = document.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+        buttons.forEach((button) => {
+            // We're doing this so that isVisible(button) === true. See jest.setup.js for more info
+            // @ts-ignore
+            button._jsdomMockClientWidth = 150
+            // @ts-ignore
+            button._jsdomMockClientHeight = 50
+        })
 
         const scanner = createScanner(InterfacePrototype.default())
         scanner.findEligibleInputs(document)
