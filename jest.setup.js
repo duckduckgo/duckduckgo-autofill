@@ -70,3 +70,20 @@ function setupIntersectionObserverMock ({
     })
 }
 setupIntersectionObserverMock()
+
+/**
+ *  Enables the use of clientWidth and clientHeight on html elements
+ *  @source https://github.com/jsdom/jsdom/issues/2342#issuecomment-468253441
+ **/
+// If the element has a `_jsdomMockClientWidth` property return it for clientWidth - otherwise return 0
+Object.defineProperty(window.HTMLElement.prototype, 'clientWidth', {
+    get: function () {
+        return this._jsdomMockClientWidth || 0
+    }
+})
+// If the element has a `_jsdomMockClientHeight` property return it for clientHeight - otherwise return 0
+Object.defineProperty(window.HTMLElement.prototype, 'clientHeight', {
+    get: function () {
+        return this._jsdomMockClientHeight || 0
+    }
+})

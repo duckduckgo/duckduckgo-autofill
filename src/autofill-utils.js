@@ -301,7 +301,7 @@ const isLikelyASubmitButton = (el) => {
  */
 const buttonMatchesFormType = (el, formObj) => {
     if (formObj.isLogin) {
-        return !/sign.?up/i.test(el.textContent || '')
+        return !/sign.?up|register|join/i.test(el.textContent || '')
     } else if (formObj.isSignup) {
         return !/(log|sign).?([io])n/i.test(el.textContent || '')
     } else {

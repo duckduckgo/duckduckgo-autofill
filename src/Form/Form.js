@@ -267,7 +267,11 @@ class Form {
     }
 
     attemptSubmissionIfNeeded () {
-        if (!this.isLogin || !this.isValid()) return
+        if (
+            !this.isLogin || // Only submit login forms
+            this.submitButtons.length > 1 || // Do not submit if we're unsure about the submit button
+            !this.isValid() // Do not submit invalid forms
+        ) return
 
         // check for visible empty fields before attemtping submission
         // this is to avoid loops where a captcha keeps failing for the user
