@@ -7,6 +7,7 @@ import { Form } from './Form.js'
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
 import testCases from './test-cases/index.js'
+import {SUBMIT_BUTTON_SELECTOR} from './selectors-css.js'
 
 /**
  * @param {HTMLInputElement} el
@@ -145,6 +146,15 @@ describe.each(testCases)('Test $html fields', (testCase) => {
 
         document.body.innerHTML = testContent
         document.title = title
+
+        const buttons = document.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+        buttons.forEach((button) => {
+            // We're doing this so that isVisible(button) === true. See jest.setup.js for more info
+            // @ts-ignore
+            button._jsdomMockClientWidth = 150
+            // @ts-ignore
+            button._jsdomMockClientHeight = 50
+        })
 
         const scanner = createScanner(InterfacePrototype.default())
         scanner.findEligibleInputs(document)

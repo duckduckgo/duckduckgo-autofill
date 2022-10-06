@@ -4941,7 +4941,7 @@ class Form {
     const allButtons =
     /** @type {HTMLElement[]} */
     [...this.form.querySelectorAll(selector)];
-    return allButtons.filter(btn => (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
+    return allButtons.filter(btn => (0, _autofillUtils.isVisible)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
 
   attemptSubmissionIfNeeded() {
