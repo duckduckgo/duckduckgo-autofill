@@ -135,6 +135,7 @@ const setValueForSelect = (el, val) => {
             value = `${Number(value) + 1}`
         }
         // TODO: try to match localised month names
+        // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
         if (value === String(val)) {
             if (option.selected) return false
             option.selected = true

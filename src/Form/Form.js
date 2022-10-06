@@ -12,7 +12,7 @@ import {
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
 import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
-import {canBeDecorated, getInputConfig} from './inputTypeConfig.js'
+import {canBeInteractedWith, getInputConfig} from './inputTypeConfig.js'
 
 import {
     getUnifiedExpiryDate,
@@ -381,6 +381,8 @@ class Form {
             const input = e.target
             let click = null
 
+            if (!canBeInteractedWith(input)) return
+
             // Checks for pointerdown event
             if (e.type === 'pointerdown') {
                 click = getMainClickCoords(e)
@@ -427,6 +429,8 @@ class Form {
     autofillInput (input, string, dataType) {
         // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
         if (input instanceof HTMLInputElement && !isVisible(input)) return
+        // Do not autofill if it's disabled or readonly to avoid potential breakage
+        if (!canBeInteractedWith(input)) return
 
         // @ts-ignore
         const activeInputSubtype = getInputSubtype(this.activeInput)
@@ -501,7 +505,7 @@ class Form {
     }
 
     getFirstViableCredentialsInput () {
-        return [...this.inputs.credentials].find((input) => canBeDecorated(input) && isVisible(input))
+        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isVisible(input))
     }
 
     promptLoginIfNeeded () {
