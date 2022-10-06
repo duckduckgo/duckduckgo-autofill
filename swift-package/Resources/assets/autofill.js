@@ -2162,6 +2162,9 @@ module.exports={
   "cardbenefitservices.com": {
     "password-rules": "minlength: 7; maxlength: 100; required: lower, upper; required: digit;"
   },
+  "carrefour.it": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@_];"
+  },
   "cb2.com": {
     "password-rules": "minlength: 7; maxlength: 18; required: lower, upper; required: digit;"
   },
@@ -2178,7 +2181,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;"
   },
   "citi.com": {
-    "password-rules": "minlength: 6; maxlength: 50; max-consecutive: 2; required: lower, upper; required: digit; allowed: [_!@$]"
+    "password-rules": "minlength: 8; maxlength: 64; max-consecutive: 2; required: digit; required: upper; required: lower; required: [-~`!@#$%^&*()_\\/|];"
   },
   "claimlookup.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@#$%^&+=!];"
@@ -2437,6 +2440,9 @@ module.exports={
   },
   "la-z-boy.com": {
     "password-rules": "minlength: 6; maxlength: 15; required: lower, upper; required: digit;"
+  },
+  "labcorp.com": {
+    "password-rules": "minlength: 8; maxlength: 20; required: upper; required: lower; required: digit; required: [!@#$%^&*];"
   },
   "ladwp.com": {
     "password-rules": "minlength: 8; maxlength: 20; required: digit; allowed: lower, upper;"
