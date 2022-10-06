@@ -8615,7 +8615,10 @@ class Form {
   }
 
   attemptSubmissionIfNeeded() {
-    if (!this.isLogin || !this.isValid()) return; // check for visible empty fields before attemtping submission
+    if (!this.isLogin || // Only submit login forms
+    this.submitButtons.length > 1 || // Do not submit if we're unsure about the submit button
+    !this.isValid() // Do not submit invalid forms
+    ) return; // check for visible empty fields before attemtping submission
     // this is to avoid loops where a captcha keeps failing for the user
 
     let isThereAnEmptyVisibleField = false;
@@ -8732,7 +8735,8 @@ class Form {
       }
 
       const input = e.target;
-      let click = null; // Checks for pointerdown event
+      let click = null;
+      if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // Checks for pointerdown event
 
       if (e.type === 'pointerdown') {
         click = getMainClickCoords(e);
@@ -8774,7 +8778,9 @@ class Form {
 
   autofillInput(input, string, dataType) {
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
-    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isVisible)(input)) return; // @ts-ignore
+    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isVisible)(input)) return; // Do not autofill if it's disabled or readonly to avoid potential breakage
+
+    if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // @ts-ignore
 
     const activeInputSubtype = (0, _matching.getInputSubtype)(this.activeInput);
     const inputSubtype = (0, _matching.getInputSubtype)(input);
@@ -8841,7 +8847,7 @@ class Form {
   }
 
   getFirstViableCredentialsInput() {
-    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeDecorated)(input) && (0, _autofillUtils.isVisible)(input));
+    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeInteractedWith)(input) && (0, _autofillUtils.isVisible)(input));
   }
 
   promptLoginIfNeeded() {
@@ -9730,8 +9736,8 @@ var _templateObject, _templateObject2;
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-// Matches strings like mm/yy, mm-yyyy, mm-aa
-const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
+// Matches strings like mm/yy, mm-yyyy, mm-aa, 12 / 2024
+const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
 
 const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
 /**
@@ -10144,7 +10150,7 @@ exports.getIconStylesAutofilled = getIconStylesAutofilled;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getInputConfigFromType = exports.getInputConfig = exports.canBeDecorated = void 0;
+exports.getInputConfigFromType = exports.getInputConfig = exports.canBeInteractedWith = void 0;
 
 var _logoSvg = require("./logo-svg.js");
 
@@ -10172,7 +10178,8 @@ const getIdentitiesIcon = (input, _ref) => {
   let {
     device
   } = _ref;
-  // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+  if (!canBeInteractedWith(input)) return ''; // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+
   const {
     isDDGApp,
     isFirefox
@@ -10192,20 +10199,20 @@ const getIdentitiesIcon = (input, _ref) => {
   return '';
 };
 /**
- * Inputs with readOnly or disabled should never be decorated
+ * Checks whether a field is readonly or disabled
  * @param {HTMLInputElement} input
  * @return {boolean}
  */
 
 
-const canBeDecorated = input => !input.readOnly && !input.disabled;
+const canBeInteractedWith = input => !input.readOnly && !input.disabled;
 /**
  * A map of config objects. These help by centralising here some complexity
  * @type {InputTypeConfig}
  */
 
 
-exports.canBeDecorated = canBeDecorated;
+exports.canBeInteractedWith = canBeInteractedWith;
 const inputTypeConfig = {
   /** @type {CredentialsInputTypeConfig} */
   credentials: {
@@ -10214,6 +10221,7 @@ const inputTypeConfig = {
       let {
         device
       } = _ref2;
+      if (!canBeInteractedWith(_input)) return '';
 
       if (device.settings.featureToggles.inlineIcon_credentials) {
         return ddgPasswordIcons.ddgPasswordIconBase;
@@ -10268,7 +10276,7 @@ const inputTypeConfig = {
       let {
         device
       } = _ref5;
-      return canBeDecorated(_input) && Boolean(device.settings.availableInputTypes.creditCards);
+      return Boolean(device.settings.availableInputTypes.creditCards);
     },
     dataType: 'CreditCards',
     tooltipItem: data => new _CreditCard.CreditCardTooltipItem(data)
@@ -10283,7 +10291,6 @@ const inputTypeConfig = {
       let {
         device
       } = _ref6;
-      if (!canBeDecorated(input)) return false;
       const subtype = (0, _matching.getInputSubtype)(input);
 
       if (device.settings.availableInputTypes.identities) {
@@ -14596,6 +14603,7 @@ const setValueForSelect = (el, val) => {
     if (isZeroBasedNumber) {
       value = "".concat(Number(value) + 1);
     } // TODO: try to match localised month names
+    // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
 
 
     if (value === String(val)) {
@@ -14817,7 +14825,7 @@ exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
 const buttonMatchesFormType = (el, formObj) => {
   if (formObj.isLogin) {
-    return !/sign.?up/i.test(el.textContent || '');
+    return !/sign.?up|register|join/i.test(el.textContent || '');
   } else if (formObj.isSignup) {
     return !/(log|sign).?([io])n/i.test(el.textContent || '');
   } else {
