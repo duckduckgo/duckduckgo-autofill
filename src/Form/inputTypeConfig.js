@@ -160,6 +160,6 @@ const isFieldDecorated = (input) => {
 export {
     getInputConfig,
     getInputConfigFromType,
-    canBeInteractedWith
+    canBeInteractedWith,
     isFieldDecorated
 }
