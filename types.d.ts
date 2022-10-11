@@ -28,7 +28,7 @@ interface Window {
     // Used in Apple apps
     webkit: {
         messageHandlers: Record<string, {
-            postMessage(data: any): Promise<any>
+            postMessage?(data: any): Promise<any>
         }>
     }
 

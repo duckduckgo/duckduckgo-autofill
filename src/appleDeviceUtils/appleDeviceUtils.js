@@ -18,7 +18,7 @@ const wkSend = (handler, data = {}, opts) => {
             return ddgGlobals.capturedWebkitHandlers[handler](outgoing)
         }
     }
-    return window.webkit.messageHandlers[handler].postMessage(outgoing)
+    return window.webkit.messageHandlers[handler].postMessage?.(outgoing)
 }
 
 /**

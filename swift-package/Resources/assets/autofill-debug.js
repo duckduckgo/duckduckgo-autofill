@@ -14243,6 +14243,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  */
 const wkSend = function (handler) {
+  var _window$webkit$messag, _window$webkit$messag2;
+
   let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   let opts = arguments.length > 2 ? arguments[2] : undefined;
 
@@ -14264,7 +14266,7 @@ const wkSend = function (handler) {
     }
   }
 
-  return window.webkit.messageHandlers[handler].postMessage(outgoing);
+  return (_window$webkit$messag = (_window$webkit$messag2 = window.webkit.messageHandlers[handler]).postMessage) === null || _window$webkit$messag === void 0 ? void 0 : _window$webkit$messag.call(_window$webkit$messag2, outgoing);
 };
 /**
  * Generate a random method name and adds it to the global scope
@@ -14413,30 +14415,28 @@ const ddgGlobals = {
   ObjectDefineProperty: window.Object.defineProperty,
   capturedWebkitHandlers: {}
 };
-exports.ddgGlobals = ddgGlobals;
-
 /**
  * When required (such as on macos 10.x), capture the `postMessage` method on
  * each webkit messageHandler
  *
  * @param {string[]} handlerNames
  */
+
+exports.ddgGlobals = ddgGlobals;
+
 function captureWebkitHandlers(handlerNames) {
   for (let webkitMessageHandlerName of handlerNames) {
     var _window$webkit$messag, _window$webkit$messag2;
 
     if (typeof ((_window$webkit$messag = window.webkit.messageHandlers) === null || _window$webkit$messag === void 0 ? void 0 : (_window$webkit$messag2 = _window$webkit$messag[webkitMessageHandlerName]) === null || _window$webkit$messag2 === void 0 ? void 0 : _window$webkit$messag2.postMessage) === 'function') {
-      ddgGlobals.capturedWebkitHandlers[webkitMessageHandlerName] = window.webkit.messageHandlers[webkitMessageHandlerName].postMessage.bind(window.webkit.messageHandlers[webkitMessageHandlerName]);
-      Object.defineProperty(window.webkit.messageHandlers[webkitMessageHandlerName], 'postMessage', {
-        writable: false,
-        configurable: false,
-        enumerable: false,
+      var _window$webkit$messag3;
 
-        value() {
-          /** no-op */
-        }
-
-      });
+      /**
+       * `bind` is used here to ensure future calls to the captured
+       * `postMessage` have the correct `this` context
+       */
+      ddgGlobals.capturedWebkitHandlers[webkitMessageHandlerName] = (_window$webkit$messag3 = window.webkit.messageHandlers[webkitMessageHandlerName].postMessage) === null || _window$webkit$messag3 === void 0 ? void 0 : _window$webkit$messag3.bind(window.webkit.messageHandlers[webkitMessageHandlerName]);
+      delete window.webkit.messageHandlers[webkitMessageHandlerName].postMessage;
     }
   }
 }

@@ -21,26 +21,23 @@ const ddgGlobals = {
     capturedWebkitHandlers: {}
 }
 
-export { ddgGlobals }
-
 /**
  * When required (such as on macos 10.x), capture the `postMessage` method on
  * each webkit messageHandler
  *
  * @param {string[]} handlerNames
  */
-export function captureWebkitHandlers (handlerNames) {
+function captureWebkitHandlers (handlerNames) {
     for (let webkitMessageHandlerName of handlerNames) {
         if (typeof window.webkit.messageHandlers?.[webkitMessageHandlerName]?.postMessage === 'function') {
-            ddgGlobals.capturedWebkitHandlers[webkitMessageHandlerName] = window.webkit.messageHandlers[webkitMessageHandlerName].postMessage.bind(window.webkit.messageHandlers[webkitMessageHandlerName])
-            Object.defineProperty(window.webkit.messageHandlers[webkitMessageHandlerName], 'postMessage', {
-                writable: false,
-                configurable: false,
-                enumerable: false,
-                value () {
-                    /** no-op */
-                }
-            })
+            /**
+             * `bind` is used here to ensure future calls to the captured
+             * `postMessage` have the correct `this` context
+             */
+            ddgGlobals.capturedWebkitHandlers[webkitMessageHandlerName] = window.webkit.messageHandlers[webkitMessageHandlerName].postMessage?.bind(window.webkit.messageHandlers[webkitMessageHandlerName])
+            delete window.webkit.messageHandlers[webkitMessageHandlerName].postMessage
         }
     }
 }
+
+export { ddgGlobals, captureWebkitHandlers }
