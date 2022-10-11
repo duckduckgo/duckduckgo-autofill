@@ -98,6 +98,7 @@ interface GlobalConfig {
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
      availableInputTypes: Record<string, boolean> | null;
+     webkitMessageHandlerNames: string[];
 }
 
 interface GlobalConfigImpl {

@@ -8,7 +8,6 @@ import {UIController} from './UIController.js'
  * @typedef HTMLTooltipControllerOptions
  * @property {"modern" | "legacy"} tooltipKind - A choice between the newer Autofill UI vs the older one used in the extension
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
- * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback that will be executed for every pointerdown event
  * regardless of whether this Controller has an open tooltip, or not
  */
 
@@ -150,8 +149,6 @@ export class HTMLTooltipUIController extends UIController {
                 console.error('error removing tooltip', e)
             })
         }
-
-        this._options.onPointerDown?.(e)
     }
 
     async removeTooltip (_via) {

@@ -99,7 +99,7 @@ test.describe('Auto-fill a login form on macOS', () => {
         server.close()
     })
     test.describe('without getAvailableInputTypes API', () => {
-        test.skip('with in-page HTMLTooltip', async ({page}) => {
+        test('with in-page HTMLTooltip', async ({page}) => {
             await testLoginPage(page, server)
         })
         test.describe('with overlay', () => {
@@ -122,15 +122,14 @@ test.describe('Auto-fill a login form on macOS', () => {
         test('by clicking a label', async ({page}) => {
             await testLoginPage(page, server, {clickLabel: true, pageType: 'withExtraText'})
         })
-        test('selecting an item in overlay', async ({page}) => {
+        test('selecting an item inside an overlay', async ({page}) => {
             await forwardConsoleMessages(page)
             const {personalAddress} = await mocks(page)
 
             // Pretend we're running in a top-frame scenario
             await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
+                .replaceAll(macosContentScopeReplacements({overlay: true}))
                 .replace('isTopFrame', true)
-                .replace('supportsTopFrame', true)
                 .platform('macos')
                 .applyTo(page)
 
@@ -146,7 +145,6 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await forwardConsoleMessages(page)
                 const {personalAddress, password} = await mocks(page)
 
-                // Pretend we're running in a top-frame scenario
                 await createAutofillScript()
                     .replaceAll(macosContentScopeReplacements())
                     .platform('macos')
@@ -168,8 +166,7 @@ test.describe('Auto-fill a login form on macOS', () => {
 
                 // Pretend we're running in a top-frame scenario
                 await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements())
-                    .replace('supportsTopFrame', true)
+                    .replaceAll(macosContentScopeReplacements({overlay: true}))
                     .platform('macos')
                     .applyTo(page)
 
