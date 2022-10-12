@@ -3454,6 +3454,8 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 
 var _index = require("../../packages/device-api/index.js");
 
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
@@ -3601,11 +3603,17 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
     await this.deviceApi.notify((0, _index.createNotification)('setSize', details));
   }
 
+  async askToUnlockProvider() {
+    const providerStatusUpdated = await this.deviceApi.request(new _deviceApiCalls.AskToUnlockProviderCall(null)); // rerender the tooltip
+
+    this.uiController.updateItems(providerStatusUpdated.credentials);
+  }
+
 }
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":38,"../UI/styles/styles.js":43,"./AppleDeviceInterface.js":12}],14:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":38,"../UI/styles/styles.js":43,"../deviceApiCalls/__generated__/deviceApiCalls.js":50,"./AppleDeviceInterface.js":12}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3820,6 +3828,10 @@ var _index = require("../../packages/device-api/index.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 
 var _selectorsCss = require("../Form/selectors-css.js");
+
+var _captureDdgGlobals = _interopRequireDefault(require("../appleDeviceUtils/captureDdgGlobals.js"));
+
+var _validatorsZod = require("../deviceApiCalls/__generated__/validators.zod.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4092,9 +4104,9 @@ class InterfacePrototype {
   }
 
   async startInit() {
+    await this.refreshSettings();
     this.addDeviceListeners();
     await this.setupAutofill();
-    await this.refreshSettings();
     await this.setupSettingsPage();
     await this.postInit();
 
@@ -4284,6 +4296,11 @@ class InterfacePrototype {
 
   onSelect(config, items, id) {
     id = String(id);
+
+    if (id === 'provider_locked') {
+      return this.askToUnlockProvider();
+    }
+
     const matchingData = items.find(item => String(item.id) === id);
     if (!matchingData) throw new Error('unreachable (fatal)');
 
@@ -4323,6 +4340,8 @@ class InterfacePrototype {
       return this.removeTooltip();
     });
   }
+
+  async askToUnlockProvider() {}
 
   isTooltipActive() {
     var _this$uiController$is, _this$uiController$is2, _this$uiController;
@@ -4431,7 +4450,38 @@ class InterfacePrototype {
 
   storeUserData(_data) {}
 
-  addDeviceListeners() {}
+  addDeviceListeners() {
+    if (this.settings.featureToggles.credentials_provider !== 'duckduckgo') {
+      if (this.globalConfig.hasModernWebkitAPI) {
+        _captureDdgGlobals.default.ObjectDefineProperty(_captureDdgGlobals.default.window, 'providerStatusUpdated', {
+          enumerable: false,
+          configurable: false,
+          writable: false,
+          value: data => {
+            this.providerStatusUpdated(data);
+          }
+        });
+      }
+    }
+  }
+  /**
+   * Called by the native layer on all tabs when the provider status is updated
+   * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
+   */
+
+
+  providerStatusUpdated(data) {
+    const {
+      availableInputTypes
+    } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // update settings with the new status
+
+    this.settings.setAvailableInputTypes(availableInputTypes);
+
+    if (this.globalConfig.isTopFrame) {// TODO: do we want to use this method instead of responding to askToUnlockProvider?
+    } else {
+      this.scanner.forms.forEach(form => form.redecorateAllInputs());
+    }
+  }
   /** @param {() => void} _fn */
 
 
@@ -4634,7 +4684,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api/index.js":2,"../Form/formatters.js":19,"../Form/listenForFormSubmission.js":23,"../Form/matching.js":26,"../Form/selectors-css.js":27,"../InputTypes/Credentials.js":29,"../PasswordGenerator.js":32,"../Scanner.js":33,"../Settings.js":34,"../UI/controllers/NativeUIController.js":39,"../autofill-utils.js":46,"../config.js":48,"../deviceApiCalls/__generated__/deviceApiCalls.js":50,"../deviceApiCalls/transports/transports.js":56}],16:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../Form/formatters.js":19,"../Form/listenForFormSubmission.js":23,"../Form/matching.js":26,"../Form/selectors-css.js":27,"../InputTypes/Credentials.js":29,"../PasswordGenerator.js":32,"../Scanner.js":33,"../Settings.js":34,"../UI/controllers/NativeUIController.js":39,"../appleDeviceUtils/captureDdgGlobals.js":45,"../autofill-utils.js":46,"../config.js":48,"../deviceApiCalls/__generated__/deviceApiCalls.js":50,"../deviceApiCalls/__generated__/validators.zod.js":51,"../deviceApiCalls/transports/transports.js":56}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10064,6 +10114,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     this._attachListeners();
 
     const config = (0, _inputTypeConfig.getInputConfigFromType)(topContextData.inputType);
+    this._activeInputType = topContextData.inputType;
     /**
      * @type {import('../HTMLTooltip').HTMLTooltipOptions}
      */
@@ -10087,6 +10138,27 @@ class HTMLTooltipUIController extends _UIController.UIController {
         this._onSelect(config, data, id);
       }
     });
+  }
+
+  updateItems(data) {
+    if (!this._activeInputType) return;
+    const config = (0, _inputTypeConfig.getInputConfigFromType)(this._activeInputType); // convert the data into tool tip item renderers
+
+    const asRenderers = data.map(d => config.tooltipItem(d));
+    const activeTooltip =
+    /** @type {import("../DataHTMLTooltip.js").default} */
+    this.getActiveTooltip();
+    activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.render(config, asRenderers, {
+      onSelect: id => {
+        this._onSelect(config, data, id);
+      }
+    }); // This is needed because clientHeight and clientWidth were returning 0
+
+    setTimeout(() => {
+      var _this$getActiveToolti;
+
+      (_this$getActiveToolti = this.getActiveTooltip()) === null || _this$getActiveToolti === void 0 ? void 0 : _this$getActiveToolti.setSize();
+    }, 10);
   }
 
   _attachListeners() {
@@ -10676,6 +10748,13 @@ class UIController {
   isActive() {
     return false;
   }
+  /**
+   * Updates the items in the tooltip based on new data. Currently only supporting credentials.
+   * @param {CredentialsObject[]} _data
+   */
+
+
+  updateItems(_data) {}
 
 }
 
@@ -11427,7 +11506,7 @@ exports.constants = constants;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreFormDataCall = exports.GetRuntimeConfigurationCall = exports.GetAvailableInputTypesCall = exports.GetAutofillDataCall = void 0;
+exports.StoreFormDataCall = exports.GetRuntimeConfigurationCall = exports.GetAvailableInputTypesCall = exports.GetAutofillDataCall = exports.AskToUnlockProviderCall = void 0;
 
 var _validatorsZod = require("./validators.zod.js");
 
@@ -11509,8 +11588,27 @@ class GetAvailableInputTypesCall extends _deviceApi.DeviceApiCall {
   }
 
 }
+/**
+ * @extends {DeviceApiCall<any, askToUnlockProviderResultSchema>} 
+ */
+
 
 exports.GetAvailableInputTypesCall = GetAvailableInputTypesCall;
+
+class AskToUnlockProviderCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "askToUnlockProvider");
+
+    _defineProperty(this, "id", "askToUnlockProviderResponse");
+
+    _defineProperty(this, "resultValidator", _validatorsZod.askToUnlockProviderResultSchema);
+  }
+
+}
+
+exports.AskToUnlockProviderCall = AskToUnlockProviderCall;
 
 },{"../../../packages/device-api":2,"./validators.zod.js":51}],51:[function(require,module,exports){
 "use strict";
@@ -11518,15 +11616,15 @@ exports.GetAvailableInputTypesCall = GetAvailableInputTypesCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.storeFormDataSchema = exports.runtimeConfigurationSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAvailableInputTypesRequestSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = void 0;
-const autofillFeatureTogglesSchema = null;
-exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
-const availableInputTypesSchema = null;
-exports.availableInputTypesSchema = availableInputTypesSchema;
+exports.userPreferencesSchema = exports.storeFormDataSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAvailableInputTypesRequestSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
 const credentialsSchema = null;
 exports.credentialsSchema = credentialsSchema;
+const availableInputTypesSchema = null;
+exports.availableInputTypesSchema = availableInputTypesSchema;
 const genericErrorSchema = null;
 exports.genericErrorSchema = genericErrorSchema;
+const autofillFeatureTogglesSchema = null;
+exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
 const getAliasParamsSchema = null;
 exports.getAliasParamsSchema = getAliasParamsSchema;
 const getAliasResultSchema = null;
@@ -11543,10 +11641,14 @@ const contentScopeFeaturesItemSettingsSchema = null;
 exports.contentScopeFeaturesItemSettingsSchema = contentScopeFeaturesItemSettingsSchema;
 const userPreferencesSchema = null;
 exports.userPreferencesSchema = userPreferencesSchema;
+const providerStatusUpdatedSchema = null;
+exports.providerStatusUpdatedSchema = providerStatusUpdatedSchema;
 const contentScopeFeaturesSchema = null;
 exports.contentScopeFeaturesSchema = contentScopeFeaturesSchema;
 const outgoingCredentialsSchema = null;
 exports.outgoingCredentialsSchema = outgoingCredentialsSchema;
+const askToUnlockProviderResultSchema = null;
+exports.askToUnlockProviderResultSchema = askToUnlockProviderResultSchema;
 const autofillSettingsSchema = null;
 exports.autofillSettingsSchema = autofillSettingsSchema;
 const contentScopeSchema = null;
