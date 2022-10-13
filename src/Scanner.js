@@ -117,7 +117,12 @@ class DefaultScanner {
         if ('matches' in context && context.matches?.(FORM_INPUTS_SELECTOR)) {
             this.addInput(context)
         } else {
-            context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach((input) => this.addInput(input))
+            context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach((input) => {
+                // Nothing to do with 1-character fields
+                if (input.maxLength === 1) { return }
+
+                this.addInput(input)
+            })
         }
         return this
     }
