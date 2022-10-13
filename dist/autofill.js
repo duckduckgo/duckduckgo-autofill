@@ -5280,7 +5280,7 @@ var _autofillUtils = require("../autofill-utils.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i);
-const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password/i);
+const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password/i);
 const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
 const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
 
@@ -8442,7 +8442,7 @@ const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not(
 exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
 exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
-const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
+const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
 const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])";
@@ -9086,7 +9086,14 @@ class DefaultScanner {
     if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, _selectorsCss.FORM_INPUTS_SELECTOR)) {
       this.addInput(context);
     } else {
-      context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR).forEach(input => this.addInput(input));
+      context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR).forEach(input => {
+        // Nothing to do with 1-character fields
+        if (input.maxLength === 1) {
+          return;
+        }
+
+        this.addInput(input);
+      });
     }
 
     return this;
@@ -10284,7 +10291,25 @@ class OverlayUIController extends _UIController.UIController {
       topContextData,
       click,
       input
-    } = args;
+    } = args; // Do not attach the tooltip if the input is not in the DOM
+
+    if (!input.parentNode) return; // If the input is removed from the DOM while the tooltip is attached, remove it
+
+    this._mutObs = new MutationObserver(mutationList => {
+      for (const mutationRecord of mutationList) {
+        mutationRecord.removedNodes.forEach(el => {
+          if (el.contains(input)) {
+            this.removeTooltip('mutation observer');
+          }
+        });
+      }
+    });
+
+    this._mutObs.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
     let delay = 0;
 
     if (!click && !this.elementIsInViewport(getPosition())) {
@@ -10412,6 +10437,8 @@ class OverlayUIController extends _UIController.UIController {
 
 
   async removeTooltip(trigger) {
+    var _this$_mutObs;
+
     // for none pointer events, check to see if the tooltip is open before trying to close it
     if (trigger !== 'pointerdown') {
       if (_classPrivateFieldGet(this, _state) !== 'parentShown') {
@@ -10424,6 +10451,8 @@ class OverlayUIController extends _UIController.UIController {
     _classPrivateFieldSet(this, _state, 'idle');
 
     this._removeListeners();
+
+    (_this$_mutObs = this._mutObs) === null || _this$_mutObs === void 0 ? void 0 : _this$_mutObs.disconnect();
   }
 
 }
@@ -11124,7 +11153,7 @@ function escapeXML(str) {
 }
 
 const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i;
-const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i;
+const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print/i;
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
