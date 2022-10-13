@@ -20,7 +20,7 @@ beforeEach(() => {
 
 describe('css-selector matching', () => {
     it.each([
-        { html: `<input name=mail />`, selector: 'email', matched: true },
+        { html: `<input name=email />`, selector: 'email', matched: true },
         { html: `<input name=oops! />`, selector: 'email', matched: false }
     ])(`$html: '$matched'`, (args) => {
         const { html, matched, selector } = args
@@ -75,7 +75,7 @@ describe('matching', () => {
         expect(actual).toBe('unknown')
     })
     it.each([
-        { html: `<input name=mail />`, subtype: 'identities.emailAddress' },
+        { html: `<input name=email />`, subtype: 'identities.emailAddress' },
         { html: `<input name="telefonnummer" value=0123456 />`, subtype: 'identities.phone' },
         { html: `<input name="電話" value=0123456 />`, subtype: 'identities.phone' },
         { html: `<input name="姓" value=0123456 />`, subtype: 'identities.lastName' },

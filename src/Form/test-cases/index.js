@@ -240,5 +240,7 @@ export default [
     { html: 'givesmart_login.html' },
     { html: 'vancity_login.html' },
     { html: 'expensify.html' },
-    { html: 'candidguidestar_checkout_signup.html' }
+    { html: 'candidguidestar_checkout_signup.html' },
+    { html: 'hulu_account-pin.html' },
+    { html: 'poconospa_contact.html' }
 ]
