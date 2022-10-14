@@ -8501,7 +8501,7 @@ class Form {
 
   getValues() {
     const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards].reduce((output, inputEl) => {
-      var _output$mainType;
+      var _output$mainType, _value;
 
       const mainType = (0, _matching.getInputMainType)(inputEl);
       const subtype = (0, _matching.getInputSubtype)(inputEl);
@@ -8509,6 +8509,10 @@ class Form {
 
       if (subtype === 'addressCountryCode') {
         value = (0, _formatters.inferCountryCodeFromElement)(inputEl);
+      }
+
+      if (subtype === 'password' && ((_value = value) === null || _value === void 0 ? void 0 : _value.length) <= 3) {
+        value = undefined;
       }
 
       if (value) {
@@ -8707,6 +8711,8 @@ class Form {
   }
 
   addInput(input) {
+    // Nothing to do with 1-character fields
+    if (input.maxLength === 1) return this;
     if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
     this.matching.setInputType(input, this.form, {
@@ -10723,8 +10729,8 @@ const matchingConfiguration = {
           forceUnknown: 'captcha|mfa|2fa|two factor'
         },
         username: {
-          match: '(user|account|apple|login)((.)?(name|id|login).?)?(.or.+)?$|benutzername',
-          forceUnknown: 'search'
+          match: '(user|account|apple|login)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername',
+          forceUnknown: 'search|policy'
         },
         // CC
         cardName: {
@@ -12762,14 +12768,7 @@ class DefaultScanner {
     if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, _selectorsCss.FORM_INPUTS_SELECTOR)) {
       this.addInput(context);
     } else {
-      context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR).forEach(input => {
-        // Nothing to do with 1-character fields
-        if (input.maxLength === 1) {
-          return;
-        }
-
-        this.addInput(input);
-      });
+      context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR).forEach(input => this.addInput(input));
     }
 
     return this;
