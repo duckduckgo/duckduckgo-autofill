@@ -1,0 +1,33 @@
+<!-- https://mobile.sunlife.com.ph/Sunlife/apps/services/www/Sunlife/mobilewebapp/default/index.html#/register -->
+<form name="registerForm" method="POST" ng-submit="register(registerForm.$valid)" autocomplete="off" novalidate="" class="ng-pristine ng-invalid ng-invalid-required ng-valid-pattern ng-valid-maxlength">
+    <div class="col-md-12">
+        <div class="form_item error_field has-error">
+            <label>EMAIL ADDRESS</label>
+            <input type="text" name="email" id="email" class="form-control ng-pristine ng-invalid ng-invalid-required ng-valid-pattern ng-valid-maxlength ng-touched" maxlength="50" tabindex="1" ng-model="user.email" ng-model-options="{allowInvalid: true}" required="" ng-pattern="^\w+([\.\-+%]?\w+)*@([a-zA-Z0-9])([\.-]?\w+)*(\.\w{2,9})+$" ng-trim="false" error-handler="" error-msg-required="errorMessage.emailBlank" error-msg-pattern="errorMessage.emailFormat" style="" data-manual-scoring="emailAddress">
+            <div ng-bind-html="emailErr" class="ng-binding"><div class="error-message">Please provide a valid email address</div></div>
+        </div>
+        <div class="form_item error_field" ng-class="{'has_error': invalidInfo}">
+            <label>ACCOUNT/POLICY/PLAN#</label>
+            <input type="text" name="accno" id="accno" class="form-control ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-maxlength" maxlength="15" tabindex="2" format="alphanumeric" ng-model="user.accno" required="" error-handler="" error-msg-required="errorMessage.policyNumberBlank" data-manual-scoring="unknown">
+            <div ng-bind-html="accnoErr" class="ng-binding"></div>
+        </div>
+        <div class="form_item error_field" ng-class="{'has_error': invalidInfo}">
+            <label>FIRST NAME</label>
+            <input type="text" name="firstname" id="firstname" class="form-control ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-maxlength" maxlength="80" tabindex="3" format="name" ng-model="user.firstname" ng-trim="false" required="" error-handler="" error-msg-required="errorMessage.firstNameBlank" data-manual-scoring="firstName">
+            <div ng-bind-html="firstnameErr" class="ng-binding"></div>
+        </div>
+        <div class="form_item error_field" ng-class="{'has_error': invalidInfo}">
+            <label>LAST NAME</label>
+            <input type="text" name="lastname" id="lastname" class="form-control ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-maxlength" maxlength="80" tabindex="4" format="name" ng-model="user.lastname" ng-trim="false" required="" error-handler="" error-msg-required="errorMessage.lastNameBlank" data-manual-scoring="lastName">
+            <div ng-bind-html="lastnameErr" class="ng-binding"></div>
+        </div>
+        <div class="form_item error_field" ng-class="{'has_error': invalidInfo}">
+            <label>DATE OF BIRTH</label>
+            <input type="text" name="birthdate" id="birthdate" class="form-control calender_icon ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern ng-valid-maxlength" maxlength="10" placeholder="MM/DD/YYYY" tabindex="5" jqdatepicker="" format="date" ng-model="user.birthdate" ng-pattern="/^(1[0-2]|0[1-9])\/(3[01]|[12][0-9]|0[1-9])\/[0-9]{4}$/" required="" allowed-age="18" error-handler="" error-msg-required="errorMessage.birthdateBlank" error-msg-pattern="errorMessage.birthdateInvalid" error-msg-date-invalid="errorMessage.birthdateInvalid" error-msg-age-not-allowed="errorMessage.birthdateInvalidAge" data-manual-scoring="birthday">
+            <div ng-bind-html="birthdateErr" class="ng-binding"></div>
+        </div>
+        <div class="form_submit">
+            <input type="submit" value="REGISTER NOW" class="cta yellow" id="" error-handler="false" ng-disabled="registerForm.$invalid" disabled="disabled" data-manual-submit>
+        </div>
+    </div>
+</form>

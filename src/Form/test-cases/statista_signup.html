@@ -1,0 +1,368 @@
+<!-- https://www.statista.com/register/#professional -->
+<form id="register-basic" name="registerBasic" method="POST" action="/register/" class="formGrid">
+    <div class="formRequiredText">
+        * Required fields
+    </div>
+    <fieldset class="bapUsageNav">
+        <div role="radiogroup" aria-labelledby="basicFormUsageQuestion" class="bapUsageNav__wrapper"><h3
+                id="basicFormUsageQuestion" class="visually-hidden">
+            How will you use Statista? Please choose between "Professional", "Scientific", and "Private".
+        </h3>
+            <div class="formInput__wrapper bapUsageNav__item"><label for="register_basic_usage_professional"
+                                                                     class="formRadio"><input
+                    id="register_basic_usage_professional" type="radio" name="register_basic[usage]" required="required"
+                    aria-checked="true" aria-invalid="false" data-gtm="registerBasic__usageTab--0"
+                    class="formRadio__input hidden" value="professional"> <span
+                    class="formRadio__labelText bapUsageNav__itemLabel bapUsageNav__itemLabel--active">
+            Business
+        </span> <span class="formRadio__required"><span class="visually-hidden">
+                Required
+            </span></span></label></div>
+            <div class="formInput__wrapper bapUsageNav__item"><label for="register_basic_usage_scientific"
+                                                                     class="formRadio"><input
+                    id="register_basic_usage_scientific" type="radio" name="register_basic[usage]" required="required"
+                    aria-checked="false" aria-invalid="false" data-gtm="registerBasic__usageTab--1"
+                    class="formRadio__input hidden" value="scientific"> <span
+                    class="formRadio__labelText bapUsageNav__itemLabel ">
+            Academic
+        </span> <span class="formRadio__required"><span class="visually-hidden">
+                Required
+            </span></span></label></div>
+            <div class="formInput__wrapper bapUsageNav__item"><label for="register_basic_usage_private"
+                                                                     class="formRadio"><input
+                    id="register_basic_usage_private" type="radio" name="register_basic[usage]" required="required"
+                    aria-checked="false" aria-invalid="false" data-gtm="registerBasic__usageTab--2"
+                    class="formRadio__input hidden" value="private"> <span
+                    class="formRadio__labelText bapUsageNav__itemLabel ">
+            Private
+        </span> <span class="formRadio__required"><span class="visually-hidden">
+                Required
+            </span></span></label></div>
+        </div>
+    </fieldset>
+    <div class="form_row row-spacing-10 margin-bottom-s-0">
+        <div class="width30">
+            <div class="formInput__wrapper vueFloaty"><!----> <select id="register_basic_contactAddress_idGender"
+                                                                      name="register_basic[contactAddress][idGender]"
+                                                                      required="required" aria-invalid="false"
+                                                                      class="vueFloaty__input ">
+                <option disabled="disabled" value="">
+                    Choose an option
+                </option>
+                <option value="1">
+                    Female
+                </option>
+                <option value="0">
+                    Male
+                </option>
+            </select> <label for="register_basic_contactAddress_idGender"
+                             class="vueFloaty__label vueFloaty__label--active">
+                Gender
+                <span class="formCheckbox__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label></div>
+        </div>
+        <div class="width35">
+            <div class="formInput__wrapper vueFloaty"><!----> <input id="register_basic_contactAddress_firstname"
+                                                                     type="text"
+                                                                     data-manual-scoring="firstName"
+                                                                     name="register_basic[contactAddress][firstname]"
+                                                                     required="required" aria-invalid="false"
+                                                                     maxlength="100" minlength="2"
+                                                                     class="vueFloaty__input "> <label
+                    for="register_basic_contactAddress_firstname" class="vueFloaty__label">
+                First Name
+                <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label></div>
+        </div>
+        <div class="width35">
+            <div class="formInput__wrapper vueFloaty"><!----> <input id="register_basic_contactAddress_lastname"
+                                                                     type="text"
+                                                                     data-manual-scoring="lastName"
+                                                                     name="register_basic[contactAddress][lastname]"
+                                                                     required="required" aria-invalid="false"
+                                                                     maxlength="160" minlength="2"
+                                                                     class="vueFloaty__input "> <label
+                    for="register_basic_contactAddress_lastname" class="vueFloaty__label">
+                Last Name
+                <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label></div>
+        </div>
+    </div> <!---->
+    <div class="form_row form_row--phoneInputAreaSelect">
+        <div class="form__row form__row--phoneCountries">
+            <div class="form__rowItem form__rowItem--phoneSelect">
+                <div tabindex="0" class="formDropdown">
+                    <div class="formDropdown__select select--fake">
+                        <div class="phoneCountry__code">
+                            + 356
+                        </div>
+                        <div class="phoneCountry__flag"><i class="flagsprite flag flag-mt"></i></div>
+                    </div>
+                    <div id="phoneCountries"
+                         class="formDropdown__listWrapper animated fadeInDown animation--duration-300"
+                         style="display: none;">
+                        <div class="formDropdown__searchWrapper">
+                            <div class="formInput__wrapper vueFloaty formDropdown__search" role="search"><!----> <input
+                                    id="phonecountry__search" type="text" name="" aria-invalid="false"
+                                    data-manual-scoring="unknown"
+                                    autocomplete="phoneCountry" class="vueFloaty__input "> <label
+                                    for="phonecountry__search" class="vueFloaty__label">
+                                Select country
+                                <!----> <!----></label></div>
+                            <div class="formDropdown__searchSubmit"><i aria-hidden="true" class="fa fa-search"></i>
+                            </div>
+                        </div> <!----> <!----></div>
+                </div>
+            </div>
+            <div class="form__rowItem form__rowItem--phoneInput">
+                <div class="formInput__wrapper vueFloaty">
+                    <div class="formInput__wrapper vueFloaty"><!----> <input
+                            id="register_basic_contactAddress_phonenumbers_0_number_visible" type="tel"
+                            data-manual-scoring="phone"
+                            name="register_basic[contactAddress][phonenumbers][0][number]" pattern="^[0-9()+#. –-]+$"
+                            required="required" aria-invalid="false" maxlength="75" minlength="3"
+                            class="vueFloaty__input "> <label
+                            for="register_basic_contactAddress_phonenumbers_0_number_visible" class="vueFloaty__label">
+                        Phone number
+                        <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label></div>
+                    <div class="formInput__wrapper vueFloaty" hidden="hidden" style="display: none;"><!----> <input
+                            id="register_basic_contactAddress_phonenumbers_0_number" type="hidden"
+                            name="register_basic[contactAddress][phonenumbers][0][number]" pattern="^[0-9()+#. –-]+$"
+                            required="required" aria-invalid="false" maxlength="75" minlength="3" class=" "> <!---->
+                    </div>
+                </div>
+            </div> <!----></div>
+    </div>
+    <div class="form_row row-spacing-10">
+        <div class="width50">
+            <div class="formInput__wrapper vueFloaty"><!----> <input id="register_basic_contactAddress_company"
+                                                                     type="text"
+                                                                     name="register_basic[contactAddress][company]"
+                                                                     data-manual-scoring="unknown"
+                                                                     required="required" aria-invalid="false"
+                                                                     maxlength="150" minlength="2"
+                                                                     class="vueFloaty__input "> <label
+                    for="register_basic_contactAddress_company" class="vueFloaty__label">
+                Company
+                <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label></div>
+        </div>
+        <div class="width50">
+            <div class="formInput__wrapper vueFloaty"><!----> <select id="register_basic_userBranch"
+                                                                      name="register_basic[userBranch]"
+                                                                      required="required" aria-invalid="false"
+                                                                      class="vueFloaty__input ">
+                <option disabled="disabled" value="">
+                    Your industry*
+                </option>
+                <option value="161">
+                    Advertising &amp; Agencies
+                </option>
+                <option value="90">
+                    Automotive
+                </option>
+                <option value="165">
+                    Chemicals
+                </option>
+                <option value="79">
+                    Consulting
+                </option>
+                <option value="86">
+                    Consumer Goods
+                </option>
+                <option value="105">
+                    E-Commerce
+                </option>
+                <option value="108">
+                    Education
+                </option>
+                <option value="169">
+                    Energy
+                </option>
+                <option value="173">
+                    Entertainment &amp; Event
+                </option>
+                <option value="177">
+                    Financial Services &amp; Insurance
+                </option>
+                <option value="181">
+                    Food &amp; Beverage
+                </option>
+                <option value="185">
+                    Government &amp; Public Sector
+                </option>
+                <option value="101">
+                    Legal
+                </option>
+                <option value="189">
+                    Manufacturing
+                </option>
+                <option value="80">
+                    Market Research
+                </option>
+                <option value="193">
+                    Media &amp; Publishing
+                </option>
+                <option value="197">
+                    NGO
+                </option>
+                <option value="94">
+                    Other
+                </option>
+                <option value="201">
+                    Pharma &amp; Health
+                </option>
+                <option value="205">
+                    Telecommunication &amp; IT
+                </option>
+                <option value="209">
+                    Tourism &amp; Leisure
+                </option>
+                <option value="95">
+                    Transportation &amp; Logistics
+                </option>
+            </select> <label for="register_basic_userBranch" class="vueFloaty__label vueFloaty__label--active">
+                Your industry
+                <span class="formCheckbox__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label></div>
+        </div>
+    </div>
+    <div class="form_row row-spacing-10">
+        <div class="width100">
+            <div class="formInput__wrapper vueFloaty"><!----> <input id="register_basic_contactAddress_position"
+                                                                     type="text"
+                                                                     name="register_basic[contactAddress][position]"
+                                                                     data-manual-scoring="unknown"
+                                                                     required="required" aria-invalid="false"
+                                                                     maxlength="1000" minlength="2" autocomplete="off"
+                                                                     class="vueFloaty__input "> <label
+                    for="register_basic_contactAddress_position" class="vueFloaty__label">
+                Job title
+                <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label></div> <!----></div>
+    </div>
+    <div class="form_row">
+        <div class="width100">
+            <div class="formInput__wrapper vueFloaty"><input id="register_basic_login" type="email" data-type="email"
+                                                             data-manual-scoring="emailAddress"
+                                                             name="register_basic[login]" required="required"
+                                                             aria-invalid="false" maxlength="80" minlength="7"
+                                                             class="vueFloaty__input"> <label for="register_basic_login"
+                                                                                              class="labelClass vueFloaty__label">
+                E-mail address (Business)
+                <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label> <!----></div>
+        </div>
+    </div>
+    <div class="form_row">
+        <div class="width100">
+            <div class="formInput__wrapper vueFloaty"><!----> <input id="register_basic_password" type="password"
+                                                                     name="register_basic[password]"
+                                                                     data-manual-scoring="password"
+                                                                     pattern="^(?=.*\d)(?=.*[!%&amp;@#$^*?_~]).{12,256}$"
+                                                                     required="required" aria-invalid="false"
+                                                                     maxlength="256" minlength="12"
+                                                                     class="vueFloaty__input "> <label
+                    for="register_basic_password" class="vueFloaty__label">
+                Password
+                <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label></div>
+            <div id="_describedBy" field="register_basic_password" class="margin-top-10" style="display: none;">
+                <div class="alert alert--checkout alert-info animated fadeIn">
+                    Please enter a safe password. It must contain at least:
+                    <ul class="list">
+                        <li>12 characters or more</li>
+                        <li>one number</li>
+                        <li>one special character (!%&amp;@#$^*?_~)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form_row">
+        <div class="formInput__wrapper"><label for="register_basic_contactStatus"
+                                               class="formCheckbox formCheckbox--large"><span
+                class="formCheckbox__inputWrapper"><input type="checkbox" id="register_basic_contactStatus"
+                                                          name="register_basic[contactStatus]" aria-invalid="false"
+                                                          aria-checked="true" class="formCheckbox__input"
+                                                          value="1"></span> <span class="formCheckbox__labelText"><span>Keep up-to-date! With our daily newsletters you will never miss any trends and keep up-to-date on all current topics.</span>
+            <!----></span></label></div>
+    </div>
+    <div class="form_row">
+        <div class="formInput__wrapper"><label for="register_basic_accept"
+                                               class="formCheckbox formCheckbox--large"><span
+                class="formCheckbox__inputWrapper"><input type="checkbox" id="register_basic_accept"
+                                                          name="register_basic[accept]" required="required"
+                                                          aria-invalid="false" aria-checked="false"
+                                                          class="formCheckbox__input" value="1"></span> <span
+                class="formCheckbox__labelText"><span>
+                    I accept the
+                    <a href="/imprint/#legal" target="_blank">Terms and Conditions</a>
+                    (<a href="/download/Statista-Terms-Conditions.pdf" target="_blank">PDF</a>).
+                </span>  <span class="formCheckbox__required">*
+                <span class="visually-hidden">
+                    Required
+                </span></span></span></label></div>
+    </div> <!---->
+    <div class="dataProtectionInformation dataProtectionInformation__basicForm">
+        Information on when we delete personal data, the countries where we save data (e.g., US, EU, Singapore), and the
+        companies we collaborate with can be found in our <a href="/imprint/#privacy" target="_blank" rel="noopener">privacy
+        statement</a>.
+    </div>
+    <div class="form_row text-center margin-top-20">
+        <div class="formInput__wrapper">
+            <button type="submit" id="register_basic_submit" name="register_basic[submit]"
+                    class="button button--primary button-s--green margin-vertical-0 padding-vertical-s-15 width-s100" data-manual-submit>
+                Create account
+            </button>
+        </div>
+    </div>
+    <div data-size="invisible" data-callback="recaptchaCallback" data-sitekey="6LfX9VMUAAAAADNb6cHRgZQuPB8YF7xWaOBW5W97"
+         class="g-recaptcha" data-recaptcha-id="0">
+        <div class="grecaptcha-badge" data-style="bottomright"
+             style="width: 256px; height: 60px; display: block; transition: right 0.3s ease 0s; position: fixed; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;">
+            <div class="grecaptcha-logo">
+                <iframe title="reCAPTCHA"
+                        src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LfX9VMUAAAAADNb6cHRgZQuPB8YF7xWaOBW5W97&amp;co=aHR0cHM6Ly93d3cuc3RhdGlzdGEuY29tOjQ0Mw..&amp;hl=en&amp;v=vP4jQKq0YJFzU6e21-BGy3GP&amp;size=invisible&amp;cb=7q0n0zpogg3o"
+                        width="256" height="60" role="presentation" name="a-bw064gb1h0qu" frameborder="0" scrolling="no"
+                        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation"></iframe>
+            </div>
+            <div class="grecaptcha-error"></div>
+            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response"
+                      aria-hidden="true" aria-label="recaptcha response" aria-readonly="true"
+                      style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea>
+        </div>
+        <iframe style="display: none;"></iframe>
+    </div>
+    <div class="formInput__wrapper vueFloaty" style="display: none;"><!----> <input id="register_basic_pendoIdVisitor"
+                                                                                    type="hidden"
+                                                                                    name="register_basic[pendoIdVisitor]"
+                                                                                    aria-invalid="false"
+                                                                                    class=" input input--hidden input--pendo">
+        <!----> </div>
+    <div class="formInput__wrapper vueFloaty" style="display: none;"><!----> <input id="register_basic__token"
+                                                                                    type="hidden"
+                                                                                    name="register_basic[_token]"
+                                                                                    aria-invalid="false" class=" "
+                                                                                    value="Uin3aNOULLqHyDiZ-737ZuLnTqOznXMB1sm3YKLiNnA">
+        <!----> </div>
+</form>

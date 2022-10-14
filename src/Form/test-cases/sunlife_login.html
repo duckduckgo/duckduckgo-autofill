@@ -1,0 +1,25 @@
+<!-- https://mobile.sunlife.com.ph/Sunlife/apps/services/www/Sunlife/mobilewebapp/default/index.html#/login -->
+<form name="loginForm" method="POST" ng-submit="login(loginForm.$valid)" autocomplete="off" novalidate="" class="ng-pristine ng-invalid ng-invalid-required ng-valid-maxlength">
+    <div class="col-md-12">
+        <div class="form_item error_field has-error">
+            <label>USERNAME/EMAIL</label>
+            <input type="text" id="username" name="iusername" class="form-control ng-pristine ng-invalid ng-invalid-required ng-valid-maxlength ng-touched" maxlength="50" ng-model="username" required="" format="username" error-handler="" error-msg-required="errorMessage.usernameBlank" cp-tooltip="firstTimeLoginTooltip" cp-tooltip-class="gray large" cp-tooltip-position="left" cp-tooltip-trigger="focus" data-original-title="" title="" style="" data-manual-scoring="username">
+            <div ng-bind-html="iusernameErr" class="ng-binding"><div class="error-message">Please provide your email address</div></div>
+        </div>
+
+        <div class="form_item error_field">
+            <label>PASSWORD</label>
+            <div class="input-group form-control password_group">
+                <input type="text" style="display:none;" data-manual-scoring="unknown">
+                <input type="password" style="display:none;" data-manual-scoring="password">
+                <input type="password" name="password" id="password" class="form-control password_input ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-maxlength" maxlength="30" password-highlight="" ng-model="password" required="" error-handler="" error-msg-required="errorMessage.passwordBlank" data-manual-scoring="password">
+                <div class="input-group-addon clickable_pwd_icon background-transparent" ng-click="togglePasswordVisibility()" ng-style="passwordStyle"></div>
+
+            </div>
+            <div ng-bind-html="passwordErr" class="ng-binding"></div>
+        </div>
+        <div class="form_submit">
+            <input type="submit" value="LOGIN NOW" class="cta yellow" error-handler="false" data-manual-submit> <a href="" class="forgotpwd" ng-click="forgotPassword()">Forgot password?</a>
+        </div>
+    </div>
+</form>
