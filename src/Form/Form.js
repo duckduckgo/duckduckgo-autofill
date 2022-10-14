@@ -313,6 +313,9 @@ class Form {
     }
 
     addInput (input) {
+        // Nothing to do with 1-character fields
+        if (input.maxLength === 1) return this
+
         if (this.inputs.all.has(input)) return this
 
         this.inputs.all.add(input)
