@@ -143,6 +143,9 @@ class Form {
                 if (subtype === 'addressCountryCode') {
                     value = inferCountryCodeFromElement(inputEl)
                 }
+                if (subtype === 'password' && value?.length <= 3) {
+                    value = undefined
+                }
                 if (value) {
                     output[mainType][subtype] = value
                 }
