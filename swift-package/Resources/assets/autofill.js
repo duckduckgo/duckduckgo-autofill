@@ -4833,7 +4833,8 @@ class Form {
 
       if (subtype === 'addressCountryCode') {
         value = (0, _formatters.inferCountryCodeFromElement)(inputEl);
-      }
+      } // Discard passwords that are shorter than 4 characters
+
 
       if (subtype === 'password' && ((_value = value) === null || _value === void 0 ? void 0 : _value.length) <= 3) {
         value = undefined;
