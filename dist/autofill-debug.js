@@ -14422,15 +14422,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.captureWebkitHandlers = captureWebkitHandlers;
 exports.ddgGlobals = void 0;
+
+var _window$crypto$subtle, _window$crypto$subtle2, _window$crypto$subtle3, _window$crypto$subtle4, _window$crypto$subtle5;
+
 // Capture the globals we need on page start
 const ddgGlobals = {
   window,
   // Methods must be bound to their interface, otherwise they throw Illegal invocation
-  encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
-  decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
-  generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
-  exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
-  importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
+  encrypt: (_window$crypto$subtle = window.crypto.subtle) === null || _window$crypto$subtle === void 0 ? void 0 : _window$crypto$subtle.encrypt.bind(window.crypto.subtle),
+  decrypt: (_window$crypto$subtle2 = window.crypto.subtle) === null || _window$crypto$subtle2 === void 0 ? void 0 : _window$crypto$subtle2.decrypt.bind(window.crypto.subtle),
+  generateKey: (_window$crypto$subtle3 = window.crypto.subtle) === null || _window$crypto$subtle3 === void 0 ? void 0 : _window$crypto$subtle3.generateKey.bind(window.crypto.subtle),
+  exportKey: (_window$crypto$subtle4 = window.crypto.subtle) === null || _window$crypto$subtle4 === void 0 ? void 0 : _window$crypto$subtle4.exportKey.bind(window.crypto.subtle),
+  importKey: (_window$crypto$subtle5 = window.crypto.subtle) === null || _window$crypto$subtle5 === void 0 ? void 0 : _window$crypto$subtle5.importKey.bind(window.crypto.subtle),
   getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
   TextEncoder,
   TextDecoder,
