@@ -21,7 +21,7 @@ module.exports = {
         printBasicPrototype: false
     },
     transformIgnorePatterns: [
-        '/node_modules/(?!@duckduckgo/content-scope-scripts)'
+        '/node_modules/(?!@duckduckgo/content-scope-(scripts|utils))'
     ],
     testPathIgnorePatterns: [
         '/node_modules/',
