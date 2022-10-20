@@ -3,7 +3,7 @@ import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController
 import {overlayApi} from './overlayApi.js'
 import {createNotification, validate} from '../../packages/device-api/index.js'
 import {AskToUnlockProviderCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {providerStatusUpdatedSchema} from "../deviceApiCalls/__generated__/validators.zod";
+import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
