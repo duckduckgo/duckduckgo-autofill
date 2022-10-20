@@ -166,7 +166,7 @@ class InterfacePrototype {
     storeLocalData (data) {
         this.storeLocalCredentials(data.credentials)
 
-            data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
+        data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
         // Store the full name as a separate field to simplify autocomplete
         const updatedIdentities = data.identities.map((identity) => ({
             ...identity,
@@ -561,7 +561,7 @@ class InterfacePrototype {
             const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
 
             // Update local settings and data
-        this.settings.setAvailableInputTypes(availableInputTypes)
+            this.settings.setAvailableInputTypes(availableInputTypes)
             this.storeLocalCredentials(credentials)
 
             // rerender the tooltip
