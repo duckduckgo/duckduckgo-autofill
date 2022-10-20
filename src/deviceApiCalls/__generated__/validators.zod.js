@@ -38,7 +38,8 @@ export const availableInputTypesSchema = z.object({
         expirationYear: z.boolean().optional(),
         cardNumber: z.boolean().optional()
     })).optional(),
-    email: z.boolean().optional()
+    email: z.boolean().optional(),
+    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
 });
 
 export const genericErrorSchema = z.object({

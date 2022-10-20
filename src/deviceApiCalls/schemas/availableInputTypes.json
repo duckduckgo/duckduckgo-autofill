@@ -89,6 +89,13 @@
     "email": {
       "description": "true if signed in for Email Protection",
       "type": "boolean"
+    },
+    "credentialsProviderStatus": {
+      "type": "string",
+      "enum": [
+        "locked",
+        "unlocked"
+      ]
     }
   }
 }

@@ -74,6 +74,7 @@ export interface AvailableInputTypes {
    * true if signed in for Email Protection
    */
   email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
 }
 export interface GenericError {
   message: string;
@@ -150,6 +151,7 @@ export interface AvailableInputTypes {
    * true if signed in for Email Protection
    */
   email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
 }
 
 // checkCredentialsProviderStatus.result.json
@@ -230,6 +232,7 @@ export interface AvailableInputTypes {
    * true if signed in for Email Protection
    */
   email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
 }
 export interface GenericError {
   message: string;
@@ -482,6 +485,7 @@ export interface AvailableInputTypes {
    * true if signed in for Email Protection
    */
   email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
 }
 export interface GenericError {
   message: string;
@@ -585,6 +589,7 @@ export interface AvailableInputTypes {
    * true if signed in for Email Protection
    */
   email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
 }
 export interface GenericError {
   message: string;
@@ -657,6 +662,7 @@ export interface AvailableInputTypes {
    * true if signed in for Email Protection
    */
   email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
 }
 
 // runtime-configuration.json
@@ -746,6 +752,7 @@ export interface AvailableInputTypes {
    * true if signed in for Email Protection
    */
   email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
 }
 
 // selectedDetail.params.json

@@ -100,12 +100,7 @@ interface GlobalConfig {
      userPreferences: Record<string, any> | null;
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
-     availableInputTypes: {
-          credentials: ToBoolean<CredentialsObject>,
-          identities: ToBoolean<IdentityObject>,
-          creditCards: ToBoolean<CreditCardObject>,
-          email: boolean
-     } | null;
+     availableInputTypes: import('./deviceApiCalls/__generated__/validators-ts').AvailableInputTypes | null;
      webkitMessageHandlerNames: string[];
 }
 
