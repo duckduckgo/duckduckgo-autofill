@@ -531,7 +531,7 @@ class Matching {
  *  @returns {SupportedTypes}
  */
 function getInputType (input) {
-    const attr = input.getAttribute(ATTR_INPUT_TYPE)
+    const attr = input?.getAttribute(ATTR_INPUT_TYPE)
     if (isValidSupportedType(attr)) {
         return attr
     }

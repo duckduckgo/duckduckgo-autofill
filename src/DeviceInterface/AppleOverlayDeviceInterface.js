@@ -79,7 +79,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         this.providerStatusUpdated(response)
     }
 
-    async providerStatusUpdated (data) {
+    providerStatusUpdated (data) {
         const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
 
         // Update local settings and data

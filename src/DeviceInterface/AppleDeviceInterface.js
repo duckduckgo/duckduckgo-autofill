@@ -7,6 +7,7 @@ import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
 import { createNotification, createRequest } from '../../packages/device-api/index.js'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
+import {getInputType} from '../Form/matching.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
@@ -256,9 +257,11 @@ class AppleDeviceInterface extends InterfacePrototype {
         return this.deviceApi.request(createRequest('pmHandlerGetCreditCard', { id }))
     }
 
-    async getCurrentInputType () {
-        const {inputType} = this.getTopContextData() || {}
-        return inputType || 'unknown'
+    getCurrentInputType () {
+        const topContextData = this.getTopContextData()
+        return topContextData?.inputType
+            ? topContextData.inputType
+            : getInputType(this.activeForm?.activeInput)
     }
 
     /**

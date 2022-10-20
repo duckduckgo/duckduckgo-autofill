@@ -119,9 +119,9 @@ class InterfacePrototype {
     }
 
     /**
-     * @returns {Promise<import('../Form/matching').SupportedTypes>}
+     * @returns {import('../Form/matching').SupportedTypes}
      */
-    async getCurrentInputType () {
+    getCurrentInputType () {
         throw new Error('Not implemented')
     }
 
@@ -570,7 +570,7 @@ class InterfacePrototype {
      * Called by the native layer on all tabs when the provider status is updated
      * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
      */
-    async providerStatusUpdated (data) {
+    providerStatusUpdated (data) {
         try {
             const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
 
@@ -581,7 +581,7 @@ class InterfacePrototype {
             // rerender the tooltip
             this.uiController.updateItems(credentials)
             // If the tooltip is open on an autofill type that's not available, close it
-            const currentInputSubtype = getSubtypeFromType(await this.getCurrentInputType())
+            const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
             if (!availableInputTypes.credentials?.[currentInputSubtype]) {
                 this.removeTooltip()
             }
