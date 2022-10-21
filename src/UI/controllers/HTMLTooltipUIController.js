@@ -104,7 +104,8 @@ export class HTMLTooltipUIController extends UIController {
                 this._onSelect(config, data, id)
             }
         })
-        // This is needed because clientHeight and clientWidth were returning 0
+        // TODO: can we remove this timeout once implemented with real APIs?
+        // The timeout is needed because clientHeight and clientWidth were returning 0
         setTimeout(() => {
             this.getActiveTooltip()?.setSize()
         }, 10)

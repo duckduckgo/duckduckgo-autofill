@@ -300,11 +300,13 @@ class AppleDeviceInterface extends InterfacePrototype {
                     }
                 })
             } else {
+                // On Catalina we poll the native layer
                 setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
             }
         }
     }
 
+    // Only used on Catalina
     async _pollForUpdatesToCredentialsProvider () {
         try {
             const response = await this.deviceApi.request(new CheckCredentialsProviderStatusCall(null))
