@@ -66,6 +66,22 @@ export class OverlayUIController extends UIController {
      */
     attach (args) {
         const {getPosition, topContextData, click, input} = args
+
+        // Do not attach the tooltip if the input is not in the DOM
+        if (!input.parentNode) return
+
+        // If the input is removed from the DOM while the tooltip is attached, remove it
+        this._mutObs = new MutationObserver((mutationList) => {
+            for (const mutationRecord of mutationList) {
+                mutationRecord.removedNodes.forEach(el => {
+                    if (el.contains(input)) {
+                        this.removeTooltip('mutation observer')
+                    }
+                })
+            }
+        })
+        this._mutObs.observe(document.body, {childList: true, subtree: true})
+
         let delay = 0
         if (!click && !this.elementIsInViewport(getPosition())) {
             input.scrollIntoView(true)
@@ -187,5 +203,6 @@ export class OverlayUIController extends UIController {
             .catch(e => console.error('Could not close parent', e))
         this.#state = 'idle'
         this._removeListeners()
+        this._mutObs?.disconnect()
     }
 }

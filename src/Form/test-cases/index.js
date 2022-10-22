@@ -240,5 +240,11 @@ export default [
     { html: 'givesmart_login.html' },
     { html: 'vancity_login.html' },
     { html: 'expensify.html' },
-    { html: 'candidguidestar_checkout_signup.html' }
+    { html: 'candidguidestar_checkout_signup.html' },
+    { html: 'hulu_account-pin.html' },
+    { html: 'poconospa_contact.html' },
+    { html: 'statista_login.html' },
+    { html: 'statista_signup.html', expectedFailures: ['unknown'] },
+    { html: 'sunlife_login.html' },
+    { html: 'sunlife_signup.html', expectedFailures: ['birthday'] }
 ]

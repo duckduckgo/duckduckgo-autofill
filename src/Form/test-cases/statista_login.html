@@ -1,0 +1,70 @@
+<!-- https://www.statista.com/login/ -->
+<form action="/login/" method="POST" name="loginStat" class="formLogin form_floatlabel">
+    <div class="formRequiredText">
+        * Required fields
+    </div>
+    <div class="formLogin__item formLogin__item--username">
+        <div class="formInput__wrapper vueFloaty formLogin__input--username"><!----> <input
+                id="loginStat_username_inline" type="text" name="loginStat[username]" required="required"
+                aria-invalid="false" maxlength="1000" class="vueFloaty__input " data-manual-scoring="username"> <label for="loginStat_username_inline"
+                                                                                        class="vueFloaty__label">
+            Login / user name
+            <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label>
+            <svg aria-hidden="true" class="stat__svgIcon--loginForm">
+                <use xlink:href="#iconMailAltFill"></use>
+            </svg>
+        </div>
+    </div>
+    <div class="formLogin__item formLogin__item--password">
+        <div class="formInput__wrapper vueFloaty formLogin__input--password"><!----> <input
+                id="loginStat_password_inline" type="password" name="loginStat[password]" required="required"
+                aria-invalid="false" maxlength="1000" class="vueFloaty__input " data-manual-scoring="password"> <label for="loginStat_password_inline"
+                                                                                        class="vueFloaty__label">
+            Password
+            <span class="input__required">*
+            <span class="visually-hidden">
+                Required
+            </span></span> <!----></label>
+            <svg aria-hidden="true" class="stat__svgIcon--loginForm">
+                <use xlink:href="#iconLockClosed"></use>
+            </svg>
+        </div>
+    </div>
+    <div class="formLogin__item formLogin__item--links">
+        <div class="formInput__wrapper formLogin__rememberMe" form-value="0"><label for="loginStat_rememberMe_inline"
+                                                                                    class="formCheckbox"><span
+                class="formCheckbox__inputWrapper"><input type="checkbox" id="loginStat_rememberMe_inline"
+                                                          name="loginStat[rememberMe]" aria-invalid="false"
+                                                          aria-checked="false" data-gtm="ll_rememberMe"
+                                                          class="formCheckbox__input" value=""></span> <span
+                class="formCheckbox__labelText"><span>Remember me</span>  <!----></span></label></div>
+        <div class="formInput__wrapper formLogin__forgotPassword"><a href="/login/password/"
+                                                                     data-gtm="ll_forgotPassword"
+                                                                     class="text-underline">
+            Forgot Password?
+        </a></div>
+    </div>
+    <div id="dataProtectionInformation--loginForm"
+         class="formLogin__item formLogin__item--dataProtectionInformation"><span>
+                    Information on when we delete personal data, the countries where we save data (e.g., US, EU, Singapore), and the companies we collaborate with can be found in our <a
+            href="/imprint/#privacy" target="_blank" rel="noopener">privacy statement</a>.
+                </span></div>
+    <div class="formLogin__item formLogin__item--submit">
+        <div class="formInput__wrapper">
+            <button type="submit" id="loginStat_submitLogin_inline" name="loginStat[submitLogin]" data-gtm="ll_login"
+                    class="button button--primary colOne button--medium" data-manual-submit><!---->
+                Log in
+            </button>
+        </div>
+    </div> <!---->
+    <div class="formInput__wrapper vueFloaty" style="display: none;"><!----> <input id="loginStat_pendoIdVisitor"
+                                                                                    type="hidden"
+                                                                                    name="loginStat[pendoIdVisitor]"
+                                                                                    aria-invalid="false" class=" ">
+        <!----> </div>
+    <div class="formInput__wrapper"><input id="loginStat__token_inline" type="hidden" name="loginStat[_token]" class=""
+                                           value="lqx-1ngS3ErxqqCujd4P4hdkuXdO2LgfkJ-dgasCSTE"></div>
+</form>

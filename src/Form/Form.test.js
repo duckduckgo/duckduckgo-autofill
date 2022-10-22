@@ -87,6 +87,17 @@ describe('Test the form class reading values correctly', () => {
             expValues: {credentials: undefined}
         },
         {
+            testCase: 'form where the password is <=3 characters long',
+            form: `
+<form>
+    <input type="text" value="testUsername" autocomplete="username" />
+    <input type="password" value="abc" autocomplete="new-password" />
+    <button type="submit">Sign up</button>
+</form>`,
+            expHasValues: false,
+            expValues: {credentials: undefined}
+        },
+        {
             testCase: 'form with hidden email field',
             form: `
 <form>

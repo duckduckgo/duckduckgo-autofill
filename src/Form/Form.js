@@ -143,6 +143,10 @@ class Form {
                 if (subtype === 'addressCountryCode') {
                     value = inferCountryCodeFromElement(inputEl)
                 }
+                // Discard passwords that are shorter than 4 characters
+                if (subtype === 'password' && value?.length <= 3) {
+                    value = undefined
+                }
                 if (value) {
                     output[mainType][subtype] = value
                 }
@@ -313,6 +317,9 @@ class Form {
     }
 
     addInput (input) {
+        // Nothing to do with 1-character fields
+        if (input.maxLength === 1) return this
+
         if (this.inputs.all.has(input)) return this
 
         this.inputs.all.add(input)
