@@ -12,6 +12,8 @@ import { IdentityTooltipItem } from '../InputTypes/Identity.js'
  * @return {string}
  */
 const getIdentitiesIcon = (input, {device}) => {
+    if (!canBeInteractedWith(input)) return ''
+
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
     const { isDDGApp, isFirefox } = device.globalConfig
     const subtype = getInputSubtype(input)
@@ -28,11 +30,11 @@ const getIdentitiesIcon = (input, {device}) => {
 }
 
 /**
- * Inputs with readOnly or disabled should never be decorated
+ * Checks whether a field is readonly or disabled
  * @param {HTMLInputElement} input
  * @return {boolean}
  */
-const canBeDecorated = (input) => !input.readOnly && !input.disabled
+const canBeInteractedWith = (input) => !input.readOnly && !input.disabled
 
 /**
  * A map of config objects. These help by centralising here some complexity
@@ -43,6 +45,8 @@ const inputTypeConfig = {
     credentials: {
         type: 'credentials',
         getIconBase: (_input, {device}) => {
+            if (!canBeInteractedWith(_input)) return ''
+
             if (device.settings.featureToggles.inlineIcon_credentials) {
                 return ddgPasswordIcons.ddgPasswordIconBase
             }
@@ -80,7 +84,7 @@ const inputTypeConfig = {
         getIconBase: () => '',
         getIconFilled: () => '',
         shouldDecorate: (_input, {device}) => {
-            return canBeDecorated(_input) && Boolean(device.settings.availableInputTypes.creditCards)
+            return Boolean(device.settings.availableInputTypes.creditCards)
         },
         dataType: 'CreditCards',
         tooltipItem: (data) => new CreditCardTooltipItem(data)
@@ -91,8 +95,6 @@ const inputTypeConfig = {
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
         shouldDecorate: (input, {device}) => {
-            if (!canBeDecorated(input)) return false
-
             const subtype = getInputSubtype(input)
 
             if (device.settings.availableInputTypes.identities) {
@@ -144,5 +146,5 @@ const getInputConfigFromType = (inputType) => {
 export {
     getInputConfig,
     getInputConfigFromType,
-    canBeDecorated
+    canBeInteractedWith
 }

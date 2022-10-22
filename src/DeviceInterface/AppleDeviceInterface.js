@@ -29,9 +29,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     createUIController () {
         if (this.globalConfig.userPreferences?.platform?.name === 'ios') {
-            return new NativeUIController({
-                onPointerDown: (event) => this._onPointerDown(event)
-            })
+            return new NativeUIController()
         }
 
         if (!this.globalConfig.supportsTopFrame) {
@@ -41,8 +39,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
             return new HTMLTooltipUIController({
                 device: this,
-                tooltipKind: 'modern',
-                onPointerDown: (e) => this._onPointerDown(e)
+                tooltipKind: 'modern'
             }, options)
         }
 
@@ -51,8 +48,7 @@ class AppleDeviceInterface extends InterfacePrototype {
          */
         return new OverlayUIController({
             remove: async () => this._closeAutofillParent(),
-            show: async (details) => this._show(details),
-            onPointerDown: (event) => this._onPointerDown(event)
+            show: async (details) => this._show(details)
         })
     }
 

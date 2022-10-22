@@ -257,7 +257,7 @@ const matchingConfiguration = {
             matchers: {
                 email: {match: '.mail\\b', skip: 'phone|name|reservation number', forceUnknown: 'search|filter|subject|title|\btab\b'},
                 password: {match: 'password', forceUnknown: 'captcha|mfa|2fa|two factor'},
-                username: {match: '(user|account|apple|login)((.)?(name|id|login).?)?(.or.+)?$|benutzername', forceUnknown: 'search'},
+                username: {match: '(user|account|apple|login)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername', forceUnknown: 'search|policy'},
 
                 // CC
                 cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},

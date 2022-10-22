@@ -153,6 +153,8 @@ export function loginPage (page, server, opts = {}) {
             expect(styles2 || '').not.toContain('data:image/svg+xml;base64,')
         },
         async fieldsContainIcons () {
+            // don't make assertions until the element is both found + has a none-empty 'style' attribute
+            await page.waitForFunction(() => Boolean(document.querySelector('#email')?.getAttribute('style')))
             const styles1 = await page.locator('#email').getAttribute('style')
             const styles2 = await page.locator('#password').getAttribute('style')
             expect(styles1).toContain('data:image/svg+xml;base64,')
@@ -522,39 +524,6 @@ export function overlayPage (page, server) {
             const calls = await page.evaluate('window.__playwright.mocks.calls')
             const mockCalls = calls.filter(([name]) => name === 'closeAutofillParent')
             expect(mockCalls.length).toBe(0)
-        }
-    }
-}
-
-/**
- * A wrapper around interactions for `integration-test/pages/signup.html`
- *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
- */
-export function loginAndSignup (page, server) {
-    // style lookup helpers
-    const usernameStyleAttr = () => page.locator(constants.fields.username.selectors.credential).getAttribute('style')
-    const emailStyleAttr = () => page.locator(constants.fields.email.selectors.identity).getAttribute('style')
-    const firstPasswordStyleAttr = () => page.locator('#login-password' + constants.fields.password.selectors.credential).getAttribute('style')
-
-    return {
-        async navigate () {
-            await page.goto(server.urlForPath(constants.pages['login+setup']))
-        },
-        async assertIdentitiesWereNotDecorated () {
-            const style = await emailStyleAttr()
-            expect(style).toBeNull()
-        },
-        async assertUsernameAndPasswordWereDecoratedWithIcon () {
-            expect(await usernameStyleAttr()).toContain('data:image/svg+xml;base64,')
-            expect(await firstPasswordStyleAttr()).toContain('data:image/svg+xml;base64,')
-        },
-        async assertNoDecorations () {
-            const usernameAttr = await usernameStyleAttr()
-            expect(usernameAttr).toBeNull()
-
-            expect(await firstPasswordStyleAttr()).toBeNull()
         }
     }
 }

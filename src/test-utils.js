@@ -16,6 +16,16 @@ const attachAndReturnGenericForm = (form) => {
     }
     const formEl = /** @type {HTMLElement} */ (document.querySelector('form, #form'))
     if (!formEl) throw new Error('unreachable')
+
+    const buttons = formEl.querySelectorAll('button, [role=button]')
+    buttons.forEach((button) => {
+        // We're doing this so that isVisible(button) === true. See jest.setup.js for more info
+        // @ts-ignore
+        button._jsdomMockClientWidth = 150
+        // @ts-ignore
+        button._jsdomMockClientHeight = 50
+    })
+
     return formEl
 }
 

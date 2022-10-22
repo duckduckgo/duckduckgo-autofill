@@ -104,7 +104,7 @@ export default [
     { html: 'chewy_signup.html' },
     { html: 'chewy_checkout.html', expectedSubmitFalseNegatives: 2 },
     { html: 'everydayoil_checkout.html', expectedSubmitFalseNegatives: 2, expectedSubmitFalsePositives: 4 },
-    { html: 'stripeelements_checkout.html', expectedSubmitFalseNegatives: 3, expectedSubmitFalsePositives: 9 },
+    { html: 'stripeelements_checkout.html', expectedSubmitFalseNegatives: 3 },
     { html: 'litmus_home_search.html' },
     { html: 'litmus_home_new.html' },
     { html: 'asana_tasklist.html' },
@@ -211,7 +211,7 @@ export default [
     { html: 'carmax_login.html' },
     { html: 'carmax_signup.html' },
     { html: 'vulture_login.html' },
-    { html: 'vulture_signup.html', expectedSubmitFalsePositives: 1, expectedSubmitFalseNegatives: 1 },
+    { html: 'vulture_signup.html', expectedSubmitFalseNegatives: 1 },
     { html: 'sydneymorningherald_login.html' },
     { html: 'sydneymorningherald_signup.html' },
     { html: '123rf_login.html' },
@@ -240,5 +240,11 @@ export default [
     { html: 'givesmart_login.html' },
     { html: 'vancity_login.html' },
     { html: 'expensify.html' },
-    { html: 'candidguidestar_checkout_signup.html' }
+    { html: 'candidguidestar_checkout_signup.html' },
+    { html: 'hulu_account-pin.html' },
+    { html: 'poconospa_contact.html' },
+    { html: 'statista_login.html' },
+    { html: 'statista_signup.html', expectedFailures: ['unknown'] },
+    { html: 'sunlife_login.html' },
+    { html: 'sunlife_signup.html', expectedFailures: ['birthday'] }
 ]

@@ -5838,6 +5838,9 @@ module.exports={
   "cardbenefitservices.com": {
     "password-rules": "minlength: 7; maxlength: 100; required: lower, upper; required: digit;"
   },
+  "carrefour.it": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@_];"
+  },
   "cb2.com": {
     "password-rules": "minlength: 7; maxlength: 18; required: lower, upper; required: digit;"
   },
@@ -5854,7 +5857,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;"
   },
   "citi.com": {
-    "password-rules": "minlength: 6; maxlength: 50; max-consecutive: 2; required: lower, upper; required: digit; allowed: [_!@$]"
+    "password-rules": "minlength: 8; maxlength: 64; max-consecutive: 2; required: digit; required: upper; required: lower; required: [-~`!@#$%^&*()_\\/|];"
   },
   "claimlookup.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@#$%^&+=!];"
@@ -6113,6 +6116,9 @@ module.exports={
   },
   "la-z-boy.com": {
     "password-rules": "minlength: 6; maxlength: 15; required: lower, upper; required: digit;"
+  },
+  "labcorp.com": {
+    "password-rules": "minlength: 8; maxlength: 20; required: upper; required: lower; required: digit; required: [!@#$%^&*];"
   },
   "ladwp.com": {
     "password-rules": "minlength: 8; maxlength: 20; required: digit; allowed: lower, upper;"
@@ -6465,6 +6471,9 @@ module.exports={
   "weibo.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
   },
+  "wellsfargo.com": {
+    "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
+  },
   "wsj.com": {
     "password-rules": "minlength: 5; maxlength: 15; required: digit; allowed: lower, upper, [-~!@#$^*_=`|(){}[:;\"'<>,.?]];"
   },
@@ -6584,9 +6593,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 
   createUIController() {
-    return new _NativeUIController.NativeUIController({
-      onPointerDown: event => this._onPointerDown(event)
-    });
+    return new _NativeUIController.NativeUIController();
   }
   /**
    * @deprecated use `this.settings.availableInputTypes.email` in the future
@@ -6755,9 +6762,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     var _this$globalConfig$us, _this$globalConfig$us2;
 
     if (((_this$globalConfig$us = this.globalConfig.userPreferences) === null || _this$globalConfig$us === void 0 ? void 0 : (_this$globalConfig$us2 = _this$globalConfig$us.platform) === null || _this$globalConfig$us2 === void 0 ? void 0 : _this$globalConfig$us2.name) === 'ios') {
-      return new _NativeUIController.NativeUIController({
-        onPointerDown: event => this._onPointerDown(event)
-      });
+      return new _NativeUIController.NativeUIController();
     }
 
     if (!this.globalConfig.supportsTopFrame) {
@@ -6766,8 +6771,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
       };
       return new _HTMLTooltipUIController.HTMLTooltipUIController({
         device: this,
-        tooltipKind: 'modern',
-        onPointerDown: e => this._onPointerDown(e)
+        tooltipKind: 'modern'
       }, options);
     }
     /**
@@ -6777,8 +6781,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
     return new _OverlayUIController.OverlayUIController({
       remove: async () => this._closeAutofillParent(),
-      show: async details => this._show(details),
-      onPointerDown: event => this._onPointerDown(event)
+      show: async details => this._show(details)
     });
   }
   /**
@@ -7466,8 +7469,6 @@ var _matching = require("../Form/matching.js");
 
 var _formatters = require("../Form/formatters.js");
 
-var _listenForFormSubmission = _interopRequireDefault(require("../Form/listenForFormSubmission.js"));
-
 var _Credentials = require("../InputTypes/Credentials.js");
 
 var _PasswordGenerator = require("../PasswordGenerator.js");
@@ -7486,9 +7487,7 @@ var _index = require("../../packages/device-api/index.js");
 
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 
-var _selectorsCss = require("../Form/selectors-css.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _formSubmissionsApi = require("./formSubmissionsApi.js");
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
 
@@ -7766,7 +7765,7 @@ class InterfacePrototype {
     await this.postInit();
 
     if (this.settings.featureToggles.credentials_saving) {
-      (0, _listenForFormSubmission.default)(this.scanner.forms);
+      (0, _formSubmissionsApi.initFormSubmissionsApi)(this.scanner.forms);
     }
   }
   /**
@@ -8234,56 +8233,6 @@ class InterfacePrototype {
     }
   }
   /**
-   * on macOS we try to detect if a click occurred within a form
-   * @param {PointerEvent} event
-   */
-
-
-  _onPointerDown(event) {
-    if (this.settings.featureToggles.credentials_saving) {
-      this._detectFormSubmission(event);
-    }
-  }
-  /**
-   * @param {PointerEvent} event
-   */
-
-
-  _detectFormSubmission(event) {
-    const matchingForm = [...this.scanner.forms.values()].find(form => {
-      const btns = [...form.submitButtons]; // @ts-ignore
-
-      if (btns.includes(event.target)) return true; // @ts-ignore
-
-      if (btns.find(btn => btn.contains(event.target))) return true;
-    });
-    matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler();
-
-    if (!matchingForm) {
-      var _event$target;
-
-      const selector = _selectorsCss.SUBMIT_BUTTON_SELECTOR + ', a[href="#"], a[href^=javascript], *[onclick]'; // check if the click happened on a button
-
-      const button =
-      /** @type HTMLElement */
-      (_event$target = event.target) === null || _event$target === void 0 ? void 0 : _event$target.closest(selector);
-      if (!button) return;
-      const text = (0, _matching.removeExcessWhitespace)(button === null || button === void 0 ? void 0 : button.textContent);
-      const hasRelevantText = /(log|sign).?(in|up)|continue|next|submit/i.test(text);
-
-      if (hasRelevantText && text.length < 25) {
-        // check if there's a form with values
-        const filledForm = [...this.scanner.forms.values()].find(form => form.hasValues());
-
-        if (filledForm && (0, _autofillUtils.buttonMatchesFormType)(
-        /** @type HTMLElement */
-        button, filledForm)) {
-          filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler();
-        }
-      }
-    }
-  }
-  /**
    * This serves as a single place to create a default instance
    * of InterfacePrototype that can be useful in testing scenarios
    * @returns {InterfacePrototype}
@@ -8305,7 +8254,101 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api/index.js":10,"../Form/formatters.js":27,"../Form/listenForFormSubmission.js":31,"../Form/matching.js":34,"../Form/selectors-css.js":35,"../InputTypes/Credentials.js":37,"../PasswordGenerator.js":40,"../Scanner.js":41,"../Settings.js":42,"../UI/controllers/NativeUIController.js":47,"../autofill-utils.js":54,"../config.js":56,"../deviceApiCalls/__generated__/deviceApiCalls.js":58,"../deviceApiCalls/transports/transports.js":64}],24:[function(require,module,exports){
+},{"../../packages/device-api/index.js":10,"../Form/formatters.js":28,"../Form/matching.js":34,"../InputTypes/Credentials.js":37,"../PasswordGenerator.js":40,"../Scanner.js":41,"../Settings.js":42,"../UI/controllers/NativeUIController.js":47,"../autofill-utils.js":54,"../config.js":56,"../deviceApiCalls/__generated__/deviceApiCalls.js":58,"../deviceApiCalls/transports/transports.js":64,"./formSubmissionsApi.js":24}],24:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.initFormSubmissionsApi = initFormSubmissionsApi;
+
+var _selectorsCss = require("../Form/selectors-css.js");
+
+var _matching = require("../Form/matching.js");
+
+var _autofillUtils = require("../autofill-utils.js");
+
+/**
+ * This is a single place to contain all functionality relating to form submission detection
+ *
+ * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+ */
+function initFormSubmissionsApi(forms) {
+  /**
+   * Global submit events
+   */
+  window.addEventListener('submit', e => {
+    var _forms$get;
+
+    // @ts-ignore
+    return (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler('global submit event');
+  }, true);
+  /**
+   * Global keydown events
+   */
+
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const focusedForm = [...forms.values()].find(form => form.hasFocus(e));
+      focusedForm === null || focusedForm === void 0 ? void 0 : focusedForm.submitHandler('global keydown + Enter');
+    }
+  });
+  /**
+   * Global pointer down events
+   * @param {PointerEvent} event
+   */
+
+  window.addEventListener('pointerdown', event => {
+    const matchingForm = [...forms.values()].find(form => {
+      const btns = [...form.submitButtons]; // @ts-ignore
+
+      if (btns.includes(event.target)) return true; // @ts-ignore
+
+      if (btns.find(btn => btn.contains(event.target))) return true;
+    });
+    matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler('global pointerdown event + matching form');
+
+    if (!matchingForm) {
+      var _event$target;
+
+      const selector = _selectorsCss.SUBMIT_BUTTON_SELECTOR + ', a[href="#"], a[href^=javascript], *[onclick]'; // check if the click happened on a button
+
+      const button =
+      /** @type HTMLElement */
+      (_event$target = event.target) === null || _event$target === void 0 ? void 0 : _event$target.closest(selector);
+      if (!button) return;
+      const text = (0, _matching.removeExcessWhitespace)(button === null || button === void 0 ? void 0 : button.textContent);
+      const hasRelevantText = /(log|sign).?(in|up)|continue|next|submit/i.test(text);
+
+      if (hasRelevantText && text.length < 25) {
+        // check if there's a form with values
+        const filledForm = [...forms.values()].find(form => form.hasValues());
+
+        if (filledForm && (0, _autofillUtils.buttonMatchesFormType)(
+        /** @type HTMLElement */
+        button, filledForm)) {
+          filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler('global pointerdown event + filled form');
+        }
+      }
+    }
+  }, true);
+  /**
+   * @type {PerformanceObserver}
+   */
+
+  const observer = new PerformanceObserver(list => {
+    const entries = list.getEntries().filter(entry => // @ts-ignore why does TS not know about `entry.initiatorType`?
+    ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && /login|sign-in|signin/.test(entry.name));
+    if (!entries.length) return;
+    const filledForm = [...forms.values()].find(form => form.hasValues());
+    filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler('performance observer');
+  });
+  observer.observe({
+    entryTypes: ['resource']
+  });
+}
+
+},{"../Form/matching.js":34,"../Form/selectors-css.js":35,"../autofill-utils.js":54}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8440,6 +8483,12 @@ class Form {
   submitHandler() {
     var _this$device$postSubm, _this$device;
 
+    let via = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'unknown';
+
+    if (this.device.globalConfig.isDDGTestMode) {
+      console.log('Form.submitHandler via:', via, this);
+    }
+
     if (this.handlerExecuted) return;
     if (!this.isValid()) return;
     const values = this.getValues();
@@ -8452,7 +8501,7 @@ class Form {
 
   getValues() {
     const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards].reduce((output, inputEl) => {
-      var _output$mainType;
+      var _output$mainType, _value;
 
       const mainType = (0, _matching.getInputMainType)(inputEl);
       const subtype = (0, _matching.getInputSubtype)(inputEl);
@@ -8460,6 +8509,11 @@ class Form {
 
       if (subtype === 'addressCountryCode') {
         value = (0, _formatters.inferCountryCodeFromElement)(inputEl);
+      } // Discard passwords that are shorter than 4 characters
+
+
+      if (subtype === 'password' && ((_value = value) === null || _value === void 0 ? void 0 : _value.length) <= 3) {
+        value = undefined;
       }
 
       if (value) {
@@ -8608,11 +8662,14 @@ class Form {
     const allButtons =
     /** @type {HTMLElement[]} */
     [...this.form.querySelectorAll(selector)];
-    return allButtons.filter(btn => (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
+    return allButtons.filter(btn => (0, _autofillUtils.isVisible)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
 
   attemptSubmissionIfNeeded() {
-    if (!this.isLogin || !this.isValid()) return; // check for visible empty fields before attemtping submission
+    if (!this.isLogin || // Only submit login forms
+    this.submitButtons.length > 1 || // Do not submit if we're unsure about the submit button
+    !this.isValid() // Do not submit invalid forms
+    ) return; // check for visible empty fields before attemtping submission
     // this is to avoid loops where a captcha keeps failing for the user
 
     let isThereAnEmptyVisibleField = false;
@@ -8655,6 +8712,8 @@ class Form {
   }
 
   addInput(input) {
+    // Nothing to do with 1-character fields
+    if (input.maxLength === 1) return this;
     if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
     this.matching.setInputType(input, this.form, {
@@ -8729,7 +8788,8 @@ class Form {
       }
 
       const input = e.target;
-      let click = null; // Checks for pointerdown event
+      let click = null;
+      if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // Checks for pointerdown event
 
       if (e.type === 'pointerdown') {
         click = getMainClickCoords(e);
@@ -8771,7 +8831,9 @@ class Form {
 
   autofillInput(input, string, dataType) {
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
-    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isVisible)(input)) return; // @ts-ignore
+    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isVisible)(input)) return; // Do not autofill if it's disabled or readonly to avoid potential breakage
+
+    if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // @ts-ignore
 
     const activeInputSubtype = (0, _matching.getInputSubtype)(this.activeInput);
     const inputSubtype = (0, _matching.getInputSubtype)(input);
@@ -8838,7 +8900,7 @@ class Form {
   }
 
   getFirstViableCredentialsInput() {
-    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeDecorated)(input) && (0, _autofillUtils.isVisible)(input));
+    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeInteractedWith)(input) && (0, _autofillUtils.isVisible)(input));
   }
 
   promptLoginIfNeeded() {
@@ -8882,7 +8944,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils.js":54,"../constants.js":57,"./FormAnalyzer.js":25,"./formatters.js":27,"./inputStyles.js":28,"./inputTypeConfig.js":29,"./matching.js":34}],25:[function(require,module,exports){
+},{"../autofill-utils.js":54,"../constants.js":57,"./FormAnalyzer.js":26,"./formatters.js":28,"./inputStyles.js":29,"./inputTypeConfig.js":30,"./matching.js":34}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8901,7 +8963,7 @@ var _autofillUtils = require("../autofill-utils.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i);
-const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password/i);
+const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password/i);
 const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
 const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
 
@@ -9143,7 +9205,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils.js":54,"../constants.js":57,"./matching-configuration.js":33,"./matching.js":34}],26:[function(require,module,exports){
+},{"../autofill-utils.js":54,"../constants.js":57,"./matching-configuration.js":33,"./matching.js":34}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9711,7 +9773,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9727,8 +9789,8 @@ var _templateObject, _templateObject2;
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-// Matches strings like mm/yy, mm-yyyy, mm-aa
-const DATE_SEPARATOR_REGEX = /\w\w\s?(?<separator>[/\s.\-_—–])\s?\w\w/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
+// Matches strings like mm/yy, mm-yyyy, mm-aa, 12 / 2024
+const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i; // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
 
 const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
 /**
@@ -10053,7 +10115,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames.js":26,"./matching.js":34}],28:[function(require,module,exports){
+},{"./countryNames.js":27,"./matching.js":34}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10135,13 +10197,13 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":29}],29:[function(require,module,exports){
+},{"./inputTypeConfig.js":30}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getInputConfigFromType = exports.getInputConfig = exports.canBeDecorated = void 0;
+exports.getInputConfigFromType = exports.getInputConfig = exports.canBeInteractedWith = void 0;
 
 var _logoSvg = require("./logo-svg.js");
 
@@ -10169,7 +10231,8 @@ const getIdentitiesIcon = (input, _ref) => {
   let {
     device
   } = _ref;
-  // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+  if (!canBeInteractedWith(input)) return ''; // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+
   const {
     isDDGApp,
     isFirefox
@@ -10189,20 +10252,20 @@ const getIdentitiesIcon = (input, _ref) => {
   return '';
 };
 /**
- * Inputs with readOnly or disabled should never be decorated
+ * Checks whether a field is readonly or disabled
  * @param {HTMLInputElement} input
  * @return {boolean}
  */
 
 
-const canBeDecorated = input => !input.readOnly && !input.disabled;
+const canBeInteractedWith = input => !input.readOnly && !input.disabled;
 /**
  * A map of config objects. These help by centralising here some complexity
  * @type {InputTypeConfig}
  */
 
 
-exports.canBeDecorated = canBeDecorated;
+exports.canBeInteractedWith = canBeInteractedWith;
 const inputTypeConfig = {
   /** @type {CredentialsInputTypeConfig} */
   credentials: {
@@ -10211,6 +10274,7 @@ const inputTypeConfig = {
       let {
         device
       } = _ref2;
+      if (!canBeInteractedWith(_input)) return '';
 
       if (device.settings.featureToggles.inlineIcon_credentials) {
         return ddgPasswordIcons.ddgPasswordIconBase;
@@ -10265,7 +10329,7 @@ const inputTypeConfig = {
       let {
         device
       } = _ref5;
-      return canBeDecorated(_input) && Boolean(device.settings.availableInputTypes.creditCards);
+      return Boolean(device.settings.availableInputTypes.creditCards);
     },
     dataType: 'CreditCards',
     tooltipItem: data => new _CreditCard.CreditCardTooltipItem(data)
@@ -10280,7 +10344,6 @@ const inputTypeConfig = {
       let {
         device
       } = _ref6;
-      if (!canBeDecorated(input)) return false;
       const subtype = (0, _matching.getInputSubtype)(input);
 
       if (device.settings.availableInputTypes.identities) {
@@ -10337,7 +10400,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":50,"./logo-svg.js":32,"./matching.js":34}],30:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":50,"./logo-svg.js":32,"./matching.js":34}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10396,50 +10459,7 @@ const extractElementStrings = element => {
 
 exports.extractElementStrings = extractElementStrings;
 
-},{"./matching.js":34}],31:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-/**
- * @param {Map<HTMLElement, import("./Form").Form>} forms
- */
-const listenForGlobalFormSubmission = forms => {
-  try {
-    window.addEventListener('submit', e => {
-      var _forms$get;
-
-      return (// @ts-ignore
-        (_forms$get = forms.get(e.target)) === null || _forms$get === void 0 ? void 0 : _forms$get.submitHandler()
-      );
-    }, true);
-    window.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        const focusedForm = [...forms.values()].find(form => form.hasFocus(e));
-        focusedForm === null || focusedForm === void 0 ? void 0 : focusedForm.submitHandler();
-      }
-    });
-    const observer = new PerformanceObserver(list => {
-      const entries = list.getEntries().filter(entry => // @ts-ignore why does TS not know about `entry.initiatorType`?
-      ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && /login|sign-in|signin/.test(entry.name));
-      if (!entries.length) return;
-      const filledForm = [...forms.values()].find(form => form.hasValues());
-      filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler();
-    });
-    observer.observe({
-      entryTypes: ['resource']
-    });
-  } catch (error) {// Unable to detect form submissions using AJAX calls
-  }
-};
-
-var _default = listenForGlobalFormSubmission;
-exports.default = _default;
-
-},{}],32:[function(require,module,exports){
+},{"./matching.js":34}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10710,8 +10730,8 @@ const matchingConfiguration = {
           forceUnknown: 'captcha|mfa|2fa|two factor'
         },
         username: {
-          match: '(user|account|apple|login)((.)?(name|id|login).?)?(.or.+)?$|benutzername',
-          forceUnknown: 'search'
+          match: '(user|account|apple|login)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername',
+          forceUnknown: 'search|policy'
         },
         // CC
         cardName: {
@@ -12094,7 +12114,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants.js":57,"./label-util.js":30,"./matching-configuration.js":33,"./selectors-css.js":35,"./vendor-regex.js":36}],35:[function(require,module,exports){
+},{"../constants.js":57,"./label-util.js":31,"./matching-configuration.js":33,"./selectors-css.js":35,"./vendor-regex.js":36}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12105,7 +12125,7 @@ const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not(
 exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
 exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
-const email = "\ninput:not([type])[name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=mail i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=mail i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=mail i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
+const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
 const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])";
@@ -12468,7 +12488,7 @@ class IdentityTooltipItem {
       }
 
       if (_classPrivateFieldGet(this, _data).id === 'privateAddress') {
-        return 'Generated Private Duck Address';
+        return 'Generate Private Duck Address';
       }
 
       return _classPrivateFieldGet(this, _data)[subtype];
@@ -12493,7 +12513,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters.js":27}],40:[function(require,module,exports){
+},{"../Form/formatters.js":28}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12880,7 +12900,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":24,"./Form/matching.js":34,"./Form/selectors-css.js":35,"./autofill-utils.js":54}],42:[function(require,module,exports){
+},{"./Form/Form.js":25,"./Form/matching.js":34,"./Form/selectors-css.js":35,"./autofill-utils.js":54}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13165,7 +13185,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
   render(device) {
     this.device = device;
     this.addresses = device.getLocalAddresses();
-    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Use a Private Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
+    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Generate a Private Duck Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
@@ -13517,7 +13537,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @typedef HTMLTooltipControllerOptions
  * @property {"modern" | "legacy"} tooltipKind - A choice between the newer Autofill UI vs the older one used in the extension
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
- * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback that will be executed for every pointerdown event
  * regardless of whether this Controller has an open tooltip, or not
  */
 
@@ -13659,8 +13678,6 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 
   _pointerDownListener(e) {
-    var _this$_options$onPoin, _this$_options;
-
     if (!e.isTrusted) return; // @ts-ignore
 
     if (e.target.nodeName === 'DDG-AUTOFILL') {
@@ -13678,8 +13695,6 @@ class HTMLTooltipUIController extends _UIController.UIController {
         console.error('error removing tooltip', e);
       });
     }
-
-    (_this$_options$onPoin = (_this$_options = this._options).onPointerDown) === null || _this$_options$onPoin === void 0 ? void 0 : _this$_options$onPoin.call(_this$_options, e);
   }
 
   async removeTooltip(_via) {
@@ -13746,7 +13761,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":29,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../HTMLTooltip.js":45,"./UIController.js":49}],47:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":30,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../HTMLTooltip.js":45,"./UIController.js":49}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13879,7 +13894,6 @@ var _state = /*#__PURE__*/new WeakMap();
  * @typedef OverlayControllerOptions
  * @property {() => Promise<void>} remove - A callback that will be fired when the tooltip should be removed
  * @property {(details: ShowAutofillParentRequest) => Promise<void>} show - A callback that will be fired when the tooltip should be shown
- * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback for reacting to all `pointerdown` events.
  */
 
 /**
@@ -13918,12 +13932,14 @@ class OverlayUIController extends _UIController.UIController {
   /** @type {import('../HTMLTooltip.js').HTMLTooltip | null} */
 
   /**
+   * @type {OverlayControllerOptions}
+   */
+
+  /**
    * @param {OverlayControllerOptions} options
    */
   constructor(options) {
-    super(options); // We always register this 'pointerdown' event, regardless of
-    // whether we have a tooltip currently open or not. This is to ensure
-    // we can clear out any existing state before opening a new one.
+    super();
 
     _classPrivateFieldInitSpec(this, _state, {
       writable: true,
@@ -13931,6 +13947,12 @@ class OverlayUIController extends _UIController.UIController {
     });
 
     _defineProperty(this, "_activeTooltip", null);
+
+    _defineProperty(this, "_options", void 0);
+
+    this._options = options; // We always register this 'pointerdown' event, regardless of
+    // whether we have a tooltip currently open or not. This is to ensure
+    // we can clear out any existing state before opening a new one.
 
     window.addEventListener('pointerdown', this, true);
   }
@@ -13945,7 +13967,25 @@ class OverlayUIController extends _UIController.UIController {
       topContextData,
       click,
       input
-    } = args;
+    } = args; // Do not attach the tooltip if the input is not in the DOM
+
+    if (!input.parentNode) return; // If the input is removed from the DOM while the tooltip is attached, remove it
+
+    this._mutObs = new MutationObserver(mutationList => {
+      for (const mutationRecord of mutationList) {
+        mutationRecord.removedNodes.forEach(el => {
+          if (el.contains(input)) {
+            this.removeTooltip('mutation observer');
+          }
+        });
+      }
+    });
+
+    this._mutObs.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
     let delay = 0;
 
     if (!click && !this.elementIsInViewport(getPosition())) {
@@ -14061,10 +14101,7 @@ class OverlayUIController extends _UIController.UIController {
 
       case 'pointerdown':
         {
-          var _this$_options$onPoin, _this$_options;
-
           this.removeTooltip(event.type);
-          (_this$_options$onPoin = (_this$_options = this._options).onPointerDown) === null || _this$_options$onPoin === void 0 ? void 0 : _this$_options$onPoin.call(_this$_options, event);
           break;
         }
     }
@@ -14076,6 +14113,8 @@ class OverlayUIController extends _UIController.UIController {
 
 
   async removeTooltip(trigger) {
+    var _this$_mutObs;
+
     // for none pointer events, check to see if the tooltip is open before trying to close it
     if (trigger !== 'pointerdown') {
       if (_classPrivateFieldGet(this, _state) !== 'parentShown') {
@@ -14088,6 +14127,8 @@ class OverlayUIController extends _UIController.UIController {
     _classPrivateFieldSet(this, _state, 'idle');
 
     this._removeListeners();
+
+    (_this$_mutObs = this._mutObs) === null || _this$_mutObs === void 0 ? void 0 : _this$_mutObs.disconnect();
   }
 
 }
@@ -14101,8 +14142,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.UIController = void 0;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * @typedef AttachArgs The argument required to 'attach' a tooltip
@@ -14120,42 +14159,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 class UIController {
   /**
-   * @type {any}
-   */
-
-  /**
-   * @param {any} [options]
-   */
-  constructor(options) {
-    _defineProperty(this, "_options", void 0);
-
-    this._options = options; // We always register this 'pointerdown' event, regardless of
-    // whether we have a tooltip currently open or not. This is to ensure
-    // we can clear out any existing state before opening a new one.
-
-    window.addEventListener('pointerdown', this, true);
-  }
-
-  handleEvent(event) {
-    switch (event.type) {
-      case 'pointerdown':
-        {
-          var _this$_options$onPoin, _this$_options;
-
-          (_this$_options$onPoin = (_this$_options = this._options).onPointerDown) === null || _this$_options$onPoin === void 0 ? void 0 : _this$_options$onPoin.call(_this$_options, event);
-          break;
-        }
-    }
-  }
-  /**
    * Implement this method to control what happen when Autofill
    * has enough information to 'attach' a tooltip.
    *
    * @param {AttachArgs} _args
    * @returns {void}
    */
-
-
   attach(_args) {
     throw new Error('must implement attach');
   }
@@ -14252,9 +14261,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.wkSendAndWait = exports.wkSend = exports.MissingWebkitHandler = void 0;
 
-var _captureDdgGlobals = _interopRequireDefault(require("./captureDdgGlobals.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _captureDdgGlobals = require("./captureDdgGlobals.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -14265,6 +14272,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
  */
 const wkSend = function (handler) {
+  var _window$webkit$messag, _window$webkit$messag2;
+
   let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   let opts = arguments.length > 2 ? arguments[2] : undefined;
 
@@ -14272,11 +14281,21 @@ const wkSend = function (handler) {
     throw new MissingWebkitHandler("Missing webkit handler: '".concat(handler, "'"));
   }
 
-  return window.webkit.messageHandlers[handler].postMessage({ ...data,
+  const outgoing = { ...data,
     messageHandling: { ...data.messageHandling,
       secret: opts.secret
     }
-  });
+  };
+
+  if (!opts.hasModernWebkitAPI) {
+    if (!(handler in _captureDdgGlobals.ddgGlobals.capturedWebkitHandlers)) {
+      throw new Error("cannot continue, method ".concat(handler, " not captured on macos < 11"));
+    } else {
+      return _captureDdgGlobals.ddgGlobals.capturedWebkitHandlers[handler](outgoing);
+    }
+  }
+
+  return (_window$webkit$messag = (_window$webkit$messag2 = window.webkit.messageHandlers[handler]).postMessage) === null || _window$webkit$messag === void 0 ? void 0 : _window$webkit$messag.call(_window$webkit$messag2, outgoing);
 };
 /**
  * Generate a random method name and adds it to the global scope
@@ -14289,14 +14308,14 @@ const wkSend = function (handler) {
 exports.wkSend = wkSend;
 
 const generateRandomMethod = (randomMethodName, callback) => {
-  _captureDdgGlobals.default.ObjectDefineProperty(_captureDdgGlobals.default.window, randomMethodName, {
+  _captureDdgGlobals.ddgGlobals.ObjectDefineProperty(_captureDdgGlobals.ddgGlobals.window, randomMethodName, {
     enumerable: false,
     // configurable, To allow for deletion later
     configurable: true,
     writable: false,
     value: function () {
       callback(...arguments);
-      delete _captureDdgGlobals.default.window[randomMethodName];
+      delete _captureDdgGlobals.ddgGlobals.window[randomMethodName];
     }
   });
 };
@@ -14315,7 +14334,7 @@ const wkSendAndWait = async function (handler) {
 
   if (opts.hasModernWebkitAPI) {
     const response = await wkSend(handler, data, opts);
-    return _captureDdgGlobals.default.JSONparse(response || '{}');
+    return _captureDdgGlobals.ddgGlobals.JSONparse(response || '{}');
   }
 
   try {
@@ -14325,19 +14344,19 @@ const wkSendAndWait = async function (handler) {
     const {
       ciphertext,
       tag
-    } = await new _captureDdgGlobals.default.Promise(resolve => {
+    } = await new _captureDdgGlobals.ddgGlobals.Promise(resolve => {
       generateRandomMethod(randMethodName, resolve);
       data.messageHandling = {
         methodName: randMethodName,
         secret: opts.secret,
-        key: _captureDdgGlobals.default.Arrayfrom(key),
-        iv: _captureDdgGlobals.default.Arrayfrom(iv)
+        key: _captureDdgGlobals.ddgGlobals.Arrayfrom(key),
+        iv: _captureDdgGlobals.ddgGlobals.Arrayfrom(iv)
       };
       wkSend(handler, data, opts);
     });
-    const cipher = new _captureDdgGlobals.default.Uint8Array([...ciphertext, ...tag]);
+    const cipher = new _captureDdgGlobals.ddgGlobals.Uint8Array([...ciphertext, ...tag]);
     const decrypted = await decrypt(cipher, key, iv);
-    return _captureDdgGlobals.default.JSONparse(decrypted || '{}');
+    return _captureDdgGlobals.ddgGlobals.JSONparse(decrypted || '{}');
   } catch (e) {
     // re-throw when the error is a 'MissingWebkitHandler'
     if (e instanceof MissingWebkitHandler) {
@@ -14354,7 +14373,7 @@ const wkSendAndWait = async function (handler) {
 
 exports.wkSendAndWait = wkSendAndWait;
 
-const randomString = () => '' + _captureDdgGlobals.default.getRandomValues(new _captureDdgGlobals.default.Uint32Array(1))[0];
+const randomString = () => '' + _captureDdgGlobals.ddgGlobals.getRandomValues(new _captureDdgGlobals.ddgGlobals.Uint32Array(1))[0];
 
 const createRandMethodName = () => '_' + randomString();
 
@@ -14364,21 +14383,21 @@ const algoObj = {
 };
 
 const createRandKey = async () => {
-  const key = await _captureDdgGlobals.default.generateKey(algoObj, true, ['encrypt', 'decrypt']);
-  const exportedKey = await _captureDdgGlobals.default.exportKey('raw', key);
-  return new _captureDdgGlobals.default.Uint8Array(exportedKey);
+  const key = await _captureDdgGlobals.ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt']);
+  const exportedKey = await _captureDdgGlobals.ddgGlobals.exportKey('raw', key);
+  return new _captureDdgGlobals.ddgGlobals.Uint8Array(exportedKey);
 };
 
-const createRandIv = () => _captureDdgGlobals.default.getRandomValues(new _captureDdgGlobals.default.Uint8Array(12));
+const createRandIv = () => _captureDdgGlobals.ddgGlobals.getRandomValues(new _captureDdgGlobals.ddgGlobals.Uint8Array(12));
 
 const decrypt = async (ciphertext, key, iv) => {
-  const cryptoKey = await _captureDdgGlobals.default.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
+  const cryptoKey = await _captureDdgGlobals.ddgGlobals.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
   const algo = {
     name: 'AES-GCM',
     iv
   };
-  let decrypted = await _captureDdgGlobals.default.decrypt(algo, cryptoKey, ciphertext);
-  let dec = new _captureDdgGlobals.default.TextDecoder();
+  let decrypted = await _captureDdgGlobals.ddgGlobals.decrypt(algo, cryptoKey, ciphertext);
+  let dec = new _captureDdgGlobals.ddgGlobals.TextDecoder();
   return dec.decode(decrypted);
 };
 
@@ -14401,16 +14420,20 @@ exports.MissingWebkitHandler = MissingWebkitHandler;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.captureWebkitHandlers = captureWebkitHandlers;
+exports.ddgGlobals = void 0;
+
+var _window$crypto$subtle, _window$crypto$subtle2, _window$crypto$subtle3, _window$crypto$subtle4, _window$crypto$subtle5;
+
 // Capture the globals we need on page start
-const secretGlobals = {
+const ddgGlobals = {
   window,
   // Methods must be bound to their interface, otherwise they throw Illegal invocation
-  encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
-  decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
-  generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
-  exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
-  importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
+  encrypt: (_window$crypto$subtle = window.crypto.subtle) === null || _window$crypto$subtle === void 0 ? void 0 : _window$crypto$subtle.encrypt.bind(window.crypto.subtle),
+  decrypt: (_window$crypto$subtle2 = window.crypto.subtle) === null || _window$crypto$subtle2 === void 0 ? void 0 : _window$crypto$subtle2.decrypt.bind(window.crypto.subtle),
+  generateKey: (_window$crypto$subtle3 = window.crypto.subtle) === null || _window$crypto$subtle3 === void 0 ? void 0 : _window$crypto$subtle3.generateKey.bind(window.crypto.subtle),
+  exportKey: (_window$crypto$subtle4 = window.crypto.subtle) === null || _window$crypto$subtle4 === void 0 ? void 0 : _window$crypto$subtle4.exportKey.bind(window.crypto.subtle),
+  importKey: (_window$crypto$subtle5 = window.crypto.subtle) === null || _window$crypto$subtle5 === void 0 ? void 0 : _window$crypto$subtle5.importKey.bind(window.crypto.subtle),
   getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
   TextEncoder,
   TextDecoder,
@@ -14421,10 +14444,34 @@ const secretGlobals = {
   JSONparse: window.JSON.parse,
   Arrayfrom: window.Array.from,
   Promise: window.Promise,
-  ObjectDefineProperty: window.Object.defineProperty
+  ObjectDefineProperty: window.Object.defineProperty,
+  capturedWebkitHandlers: {}
 };
-var _default = secretGlobals;
-exports.default = _default;
+/**
+ * When required (such as on macos 10.x), capture the `postMessage` method on
+ * each webkit messageHandler
+ *
+ * @param {string[]} handlerNames
+ */
+
+exports.ddgGlobals = ddgGlobals;
+
+function captureWebkitHandlers(handlerNames) {
+  for (let webkitMessageHandlerName of handlerNames) {
+    var _window$webkit$messag, _window$webkit$messag2;
+
+    if (typeof ((_window$webkit$messag = window.webkit.messageHandlers) === null || _window$webkit$messag === void 0 ? void 0 : (_window$webkit$messag2 = _window$webkit$messag[webkitMessageHandlerName]) === null || _window$webkit$messag2 === void 0 ? void 0 : _window$webkit$messag2.postMessage) === 'function') {
+      var _window$webkit$messag3;
+
+      /**
+       * `bind` is used here to ensure future calls to the captured
+       * `postMessage` have the correct `this` context
+       */
+      ddgGlobals.capturedWebkitHandlers[webkitMessageHandlerName] = (_window$webkit$messag3 = window.webkit.messageHandlers[webkitMessageHandlerName].postMessage) === null || _window$webkit$messag3 === void 0 ? void 0 : _window$webkit$messag3.bind(window.webkit.messageHandlers[webkitMessageHandlerName]);
+      delete window.webkit.messageHandlers[webkitMessageHandlerName].postMessage;
+    }
+  }
+}
 
 },{}],54:[function(require,module,exports){
 "use strict";
@@ -14593,6 +14640,7 @@ const setValueForSelect = (el, val) => {
     if (isZeroBasedNumber) {
       value = "".concat(Number(value) + 1);
     } // TODO: try to match localised month names
+    // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
 
 
     if (value === String(val)) {
@@ -14784,7 +14832,7 @@ function escapeXML(str) {
 }
 
 const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i;
-const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i;
+const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print/i;
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
@@ -14814,7 +14862,7 @@ exports.isLikelyASubmitButton = isLikelyASubmitButton;
 
 const buttonMatchesFormType = (el, formObj) => {
   if (formObj.isLogin) {
-    return !/sign.?up/i.test(el.textContent || '');
+    return !/sign.?up|register|join/i.test(el.textContent || '');
   } else if (formObj.isSignup) {
     return !/(log|sign).?([io])n/i.test(el.textContent || '');
   } else {
@@ -14872,14 +14920,22 @@ var _DeviceInterface = require("./DeviceInterface.js");
 },{"./DeviceInterface.js":18,"./requestIdleCallback.js":65}],56:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DDG_DOMAIN_REGEX = void 0;
+exports.createGlobalConfig = createGlobalConfig;
 const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
 /**
  * This is a centralised place to contain all string/variable replacements
  *
+ * @param {Partial<GlobalConfig>} [overrides]
  * @returns {GlobalConfig}
  */
 
-function createGlobalConfig() {
+exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
+
+function createGlobalConfig(overrides) {
   let isApp = false;
   let isTopFrame = false;
   let supportsTopFrame = false; // Do not remove -- Apple devices change this when they support modern webkit messaging
@@ -14888,11 +14944,18 @@ function createGlobalConfig() {
   // INJECT isTopFrame HERE
   // INJECT supportsTopFrame HERE
   // INJECT hasModernWebkitAPI HERE
+  // This will be used when 'hasModernWebkitAPI' is false
+
+  /** @type {string[]} */
+
+  let webkitMessageHandlerNames = []; // INJECT webkitMessageHandlerNames HERE
 
   let isDDGTestMode = false; isDDGTestMode = true;
 
   let contentScope = null;
   let userUnprotectedDomains = null;
+  /** @type {Record<string, any> | null} */
+
   let userPreferences = null; // INJECT contentScope HERE
   // INJECT userUnprotectedDomains HERE
   // INJECT userPreferences HERE
@@ -14915,7 +14978,7 @@ function createGlobalConfig() {
   const isMobileApp = ['ios', 'android'].includes(userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) || isAndroid;
   const isFirefox = navigator.userAgent.includes('Firefox');
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
-  return {
+  const config = {
     isApp,
     isDDGApp,
     isAndroid,
@@ -14930,12 +14993,12 @@ function createGlobalConfig() {
     userPreferences,
     isDDGTestMode,
     isDDGDomain,
-    availableInputTypes
+    availableInputTypes,
+    webkitMessageHandlerNames,
+    ...overrides
   };
+  return config;
 }
-
-module.exports.createGlobalConfig = createGlobalConfig;
-module.exports.DDG_DOMAIN_REGEX = DDG_DOMAIN_REGEX;
 
 },{}],57:[function(require,module,exports){
 "use strict";
@@ -15122,7 +15185,7 @@ const availableInputTypesSchema = _zod.z.object({
 
 exports.availableInputTypesSchema = availableInputTypesSchema;
 
-const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.any());
+const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.unknown());
 
 exports.contentScopeFeaturesItemSettingsSchema = contentScopeFeaturesItemSettingsSchema;
 
@@ -15134,14 +15197,14 @@ const userPreferencesSchema = _zod.z.object({
     name: _zod.z.union([_zod.z.literal("ios"), _zod.z.literal("macos"), _zod.z.literal("windows"), _zod.z.literal("extension"), _zod.z.literal("android"), _zod.z.literal("unknown")])
   }),
   features: _zod.z.record(_zod.z.object({
-    settings: _zod.z.record(_zod.z.any())
+    settings: _zod.z.record(_zod.z.unknown())
   }))
 });
 
 exports.userPreferencesSchema = userPreferencesSchema;
 
 const contentScopeFeaturesSchema = _zod.z.record(_zod.z.object({
-  exceptions: _zod.z.array(_zod.z.any()),
+  exceptions: _zod.z.array(_zod.z.unknown()),
   state: _zod.z.union([_zod.z.literal("enabled"), _zod.z.literal("disabled")]),
   settings: contentScopeFeaturesItemSettingsSchema.optional()
 }));
@@ -15171,16 +15234,14 @@ exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 
 const contentScopeSchema = _zod.z.object({
   features: contentScopeFeaturesSchema,
-  unprotectedTemporary: _zod.z.array(_zod.z.any())
+  unprotectedTemporary: _zod.z.array(_zod.z.unknown())
 });
 
 exports.contentScopeSchema = contentScopeSchema;
 
 const runtimeConfigurationSchema = _zod.z.object({
   contentScope: contentScopeSchema,
-  userUnprotectedDomains: _zod.z.array(_zod.z.object({
-    name: _zod.z.string().optional()
-  })),
+  userUnprotectedDomains: _zod.z.array(_zod.z.string()),
   userPreferences: userPreferencesSchema
 });
 
@@ -15411,6 +15472,8 @@ var _index = require("../../../packages/device-api/index.js");
 
 var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 
+var _captureDdgGlobals = require("../../appleDeviceUtils/captureDdgGlobals.js");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class AppleTransport extends _index.DeviceApiTransport {
@@ -15427,6 +15490,17 @@ class AppleTransport extends _index.DeviceApiTransport {
       secret: this.config.secret,
       hasModernWebkitAPI: this.config.hasModernWebkitAPI
     };
+
+    if (!this.sendOptions.hasModernWebkitAPI) {
+      var _globalConfig$userPre;
+
+      // @ts-ignore
+      if (((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : _globalConfig$userPre.platform.name) === 'macos') {
+        if (globalConfig.webkitMessageHandlerNames.length > 0) {
+          (0, _captureDdgGlobals.captureWebkitHandlers)(globalConfig.webkitMessageHandlerNames);
+        }
+      }
+    }
   }
 
   async send(deviceApiCall) {
@@ -15476,7 +15550,7 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":10,"../../appleDeviceUtils/appleDeviceUtils.js":52,"../__generated__/deviceApiCalls.js":58}],63:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":10,"../../appleDeviceUtils/appleDeviceUtils.js":52,"../../appleDeviceUtils/captureDdgGlobals.js":53,"../__generated__/deviceApiCalls.js":58}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

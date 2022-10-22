@@ -4,7 +4,6 @@ import {UIController} from './UIController.js'
  * @typedef OverlayControllerOptions
  * @property {() => Promise<void>} remove - A callback that will be fired when the tooltip should be removed
  * @property {(details: ShowAutofillParentRequest) => Promise<void>} show - A callback that will be fired when the tooltip should be shown
- * @property {(e: PointerEvent) => void} [onPointerDown] - An optional callback for reacting to all `pointerdown` events.
  */
 
 /**
@@ -45,10 +44,16 @@ export class OverlayUIController extends UIController {
     _activeTooltip = null
 
     /**
+     * @type {OverlayControllerOptions}
+     */
+    _options;
+
+    /**
      * @param {OverlayControllerOptions} options
      */
     constructor (options) {
-        super(options)
+        super()
+        this._options = options
 
         // We always register this 'pointerdown' event, regardless of
         // whether we have a tooltip currently open or not. This is to ensure
@@ -61,6 +66,22 @@ export class OverlayUIController extends UIController {
      */
     attach (args) {
         const {getPosition, topContextData, click, input} = args
+
+        // Do not attach the tooltip if the input is not in the DOM
+        if (!input.parentNode) return
+
+        // If the input is removed from the DOM while the tooltip is attached, remove it
+        this._mutObs = new MutationObserver((mutationList) => {
+            for (const mutationRecord of mutationList) {
+                mutationRecord.removedNodes.forEach(el => {
+                    if (el.contains(input)) {
+                        this.removeTooltip('mutation observer')
+                    }
+                })
+            }
+        })
+        this._mutObs.observe(document.body, {childList: true, subtree: true})
+
         let delay = 0
         if (!click && !this.elementIsInViewport(getPosition())) {
             input.scrollIntoView(true)
@@ -162,7 +183,6 @@ export class OverlayUIController extends UIController {
         }
         case 'pointerdown': {
             this.removeTooltip(event.type)
-            this._options.onPointerDown?.(event)
             break
         }
         }
@@ -183,5 +203,6 @@ export class OverlayUIController extends UIController {
             .catch(e => console.error('Could not close parent', e))
         this.#state = 'idle'
         this._removeListeners()
+        this._mutObs?.disconnect()
     }
 }

@@ -160,9 +160,7 @@ export interface GetRuntimeConfigurationResponse {
  */
 export interface RuntimeConfiguration {
   contentScope: ContentScope;
-  userUnprotectedDomains: {
-    name?: string;
-  }[];
+  userUnprotectedDomains: string[];
   userPreferences: UserPreferences;
 }
 export interface ContentScope {
@@ -205,9 +203,7 @@ export interface GenericError {
  */
 export interface RuntimeConfiguration {
   contentScope: ContentScope;
-  userUnprotectedDomains: {
-    name?: string;
-  }[];
+  userUnprotectedDomains: string[];
   userPreferences: UserPreferences;
 }
 export interface ContentScope {

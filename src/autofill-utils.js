@@ -135,6 +135,7 @@ const setValueForSelect = (el, val) => {
             value = `${Number(value) + 1}`
         }
         // TODO: try to match localised month names
+        // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
         if (value === String(val)) {
             if (option.selected) return false
             option.selected = true
@@ -273,7 +274,7 @@ function escapeXML (str) {
 }
 
 const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i
-const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i
+const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print/i
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
@@ -300,7 +301,7 @@ const isLikelyASubmitButton = (el) => {
  */
 const buttonMatchesFormType = (el, formObj) => {
     if (formObj.isLogin) {
-        return !/sign.?up/i.test(el.textContent || '')
+        return !/sign.?up|register|join/i.test(el.textContent || '')
     } else if (formObj.isSignup) {
         return !/(log|sign).?([io])n/i.test(el.textContent || '')
     } else {

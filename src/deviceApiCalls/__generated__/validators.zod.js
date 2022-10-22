@@ -56,7 +56,7 @@ export const availableInputTypesSchema = z.object({
     email: z.boolean().optional()
 });
 
-export const contentScopeFeaturesItemSettingsSchema = z.record(z.any());
+export const contentScopeFeaturesItemSettingsSchema = z.record(z.unknown());
 
 export const userPreferencesSchema = z.object({
     globalPrivacyControlValue: z.boolean().optional(),
@@ -66,12 +66,12 @@ export const userPreferencesSchema = z.object({
         name: z.union([z.literal("ios"), z.literal("macos"), z.literal("windows"), z.literal("extension"), z.literal("android"), z.literal("unknown")])
     }),
     features: z.record(z.object({
-        settings: z.record(z.any())
+        settings: z.record(z.unknown())
     }))
 });
 
 export const contentScopeFeaturesSchema = z.record(z.object({
-    exceptions: z.array(z.any()),
+    exceptions: z.array(z.unknown()),
     state: z.union([z.literal("enabled"), z.literal("disabled")]),
     settings: contentScopeFeaturesItemSettingsSchema.optional()
 }));
@@ -93,14 +93,12 @@ export const getAvailableInputTypesResultSchema = z.object({
 
 export const contentScopeSchema = z.object({
     features: contentScopeFeaturesSchema,
-    unprotectedTemporary: z.array(z.any())
+    unprotectedTemporary: z.array(z.unknown())
 });
 
 export const runtimeConfigurationSchema = z.object({
     contentScope: contentScopeSchema,
-    userUnprotectedDomains: z.array(z.object({
-        name: z.string().optional()
-    })),
+    userUnprotectedDomains: z.array(z.string()),
     userPreferences: userPreferencesSchema
 });
 

@@ -31,9 +31,20 @@ window.webkit = {messageHandlers: {
     testMock: {postMessage: webkitMock}
 }}
 
+/**
+ * Note: This test is largely redundant now, since 90% of macos integration tests fully
+ * execute the encryption flow.
+ *
+ * It remains here as a quick and easy way to debug the implementation :)
+ */
 describe('wkSendAndWait', () => {
     it('returns the expected unencrypted data', async () => {
-        const config = createGlobalConfig()
+        const config = createGlobalConfig({
+            userPreferences: {
+                platform: { name: 'macos' }
+            },
+            webkitMessageHandlerNames: ['testMock']
+        })
         const transport = new AppleTransport(config)
         const io = new DeviceApi(transport)
         const response = await io.request(createRequest('testMock', {}))
