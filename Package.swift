@@ -15,10 +15,12 @@ let package = Package(
     targets: [
         .target(
             name: "Autofill",
-            path: "swift-package/Resources/",
-            resources: [
-                .copy("assets"),
-            ]
-        ),
+            dependencies: [.target(name: "Autofill-resources")],
+            path: "swift-package/Sources"),
+
+        .target(
+            name: "Autofill-resources",
+            path: "dist",
+            resources: [.copy("assets")]),
     ]
 )

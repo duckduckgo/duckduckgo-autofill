@@ -3,8 +3,7 @@ const {join} = require('path')
 const cwd = join(__dirname, '..')
 const filepath = (...path) => join(cwd, ...path)
 const srcPath = 'src'
-const distPath = 'dist'
-const appleDistPath = join('swift-package', 'Resources', 'assets')
+const distPath = join('dist', 'assets')
 
 copyAutofillCSS()
 copyAutofillScript()
@@ -13,7 +12,6 @@ copyAutofillHTML()
 function copyAutofillCSS () {
     const stylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-tooltip-styles.css')
     copyFileSync(stylesPath, filepath(distPath, 'autofill.css'))
-    copyFileSync(stylesPath, filepath(appleDistPath, 'autofill.css'))
     copyFileSync(stylesPath, filepath('integration-test', 'extension', 'public', 'css', 'autofill.css'))
 
     const hostStylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-host-styles.css')
@@ -23,7 +21,7 @@ function copyAutofillCSS () {
 
 function copyAutofillHTML () {
     const htmlFileName = 'TopAutofill.html'
-    copyFileSync(filepath(srcPath, htmlFileName), filepath(appleDistPath, htmlFileName))
+    copyFileSync(filepath(srcPath, htmlFileName), filepath(distPath, htmlFileName))
 }
 
 function copyFirefoxCSSFile (pathIn, pathOut) {
@@ -53,10 +51,6 @@ function copyAutofillScript () {
     // replace the variables in both scripts
     const replaced = autofill.replace(source, replacement)
     const replacedDebug = autofillDebug.replace(source, replacement)
-
-    // regular output inside dist/*
-    writeFileSync(filepath(appleDistPath, scriptFileName), autofill)
-    writeFileSync(filepath(appleDistPath, debugScriptFileName), replacedDebug)
 
     // also overwrite the regular dist/autofill-debug.js to ensure all consumers of 'debug' also get isDDGTestMode=true
     writeFileSync(filepath(distPath, debugScriptFileName), replacedDebug)

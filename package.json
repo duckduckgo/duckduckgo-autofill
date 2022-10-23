@@ -1,6 +1,6 @@
 {
   "name": "@duckduckgo/autofill",
-  "main": "dist/autofill.js",
+  "main": "dist/assets/autofill.js",
   "browserslist": [
     "defaults",
     "not dead",

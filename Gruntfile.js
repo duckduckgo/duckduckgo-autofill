@@ -57,7 +57,7 @@ module.exports = function (grunt) {
                     ]
                 },
                 files: {
-                    'dist/autofill.js': ['src/autofill.js']
+                    'dist/assets/autofill.js': ['src/autofill.js']
                 }
             },
             debug: {
@@ -66,7 +66,7 @@ module.exports = function (grunt) {
                     transform: defaultTransforms
                 },
                 files: {
-                    'dist/autofill-debug.js': ['src/autofill.js']
+                    'dist/assets/autofill-debug.js': ['src/autofill.js']
                 }
             }
         },
