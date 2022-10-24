@@ -236,7 +236,8 @@ function validateCalls (deviceApiCalls) {
     return z.record(z.object({
         id: z.string().optional(),
         paramsValidator: z.string().optional(),
-        resultValidator: z.string().optional()
+        resultValidator: z.string().optional(),
+        description: z.string().optional()
     }).strict()).parse(deviceApiCalls)
 }
 

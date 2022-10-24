@@ -17,6 +17,9 @@ function createGlobalConfig (overrides) {
     // INJECT supportsTopFrame HERE
     // INJECT hasModernWebkitAPI HERE
 
+    let isWindows = false
+    // INJECT isWindows HERE
+
     // This will be used when 'hasModernWebkitAPI' is false
     /** @type {string[]} */
     let webkitMessageHandlerNames = []
@@ -59,6 +62,7 @@ function createGlobalConfig (overrides) {
         isFirefox,
         isMobileApp,
         isTopFrame,
+        isWindows,
         secret,
         supportsTopFrame,
         hasModernWebkitAPI,

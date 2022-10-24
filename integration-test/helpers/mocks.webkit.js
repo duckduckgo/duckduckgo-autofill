@@ -249,7 +249,7 @@ export function createWebkitMocks (platform = 'macos') {
             if (webkitBase.getAvailableInputTypes === null) {
                 webkitBase.getAvailableInputTypes = {success: {}}
             }
-            return withMockedWebkit(page, {...webkitBase})
+            return withMockedWebkit(page, { ...webkitBase })
         },
         /**
          * @param {(keyof webkitBase)[]} handlers

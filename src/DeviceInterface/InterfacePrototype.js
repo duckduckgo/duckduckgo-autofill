@@ -17,8 +17,11 @@ import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import {createTransport} from '../deviceApiCalls/transports/transports.js'
 import {Settings} from '../Settings.js'
 import {DeviceApi} from '../../packages/device-api/index.js'
-import {StoreFormDataCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {initFormSubmissionsApi} from './formSubmissionsApi.js'
+import {
+    GetAutofillCredentialsCall,
+    StoreFormDataCall
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -229,12 +232,34 @@ class InterfacePrototype {
 
         await this.setupAutofill()
         await this.refreshSettings()
+
+        // this is the temporary measure to support windows whilst we still have 'setupAutofill'
+        // eventually all interfaces will use this
+        if (!this.isEnabledViaSettings()) {
+            return
+        }
+
         await this.setupSettingsPage()
         await this.postInit()
 
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms)
         }
+    }
+
+    /**
+     * This is to aid the migration to all platforms using Settings.enabled.
+     *
+     * For now, Windows is the only platform that can be 'enabled' or 'disabled' via
+     * the new Settings - which is why in that interface it has `return this.settings.enabled`
+     *
+     * Whilst we wait for other platforms to catch up, we offer this default implementation
+     * of just returning true.
+     *
+     * @returns {boolean}
+     */
+    isEnabledViaSettings () {
+        return true
     }
 
     /**
@@ -289,18 +314,15 @@ class InterfacePrototype {
     }
 
     /**
+     * This indicates an item was selected, and we should try to autofill
+     *
+     * Note: When we're in a top-frame scenario, like on like macOS & Windows in the webview,
+     * this method gets overridden {@see WindowsOverlayDeviceInterface} {@see AppleOverlayDeviceInterface}
+     *
      * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
      * @param {string} type
      */
     async selectedDetail (data, type) {
-        this.activeFormSelectedDetail(data, type)
-    }
-
-    /**
-     * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
-     * @param {string} type
-     */
-    activeFormSelectedDetail (data, type) {
         const form = this.currentAttached
         if (!form) {
             return
@@ -361,7 +383,8 @@ class InterfacePrototype {
         /** @type {PosFn} */
         const getPosition = () => {
             // In extensions, the tooltip is centered on the Dax icon
-            return this.globalConfig.isApp ? input.getBoundingClientRect() : getDaxBoundingBox(input)
+            const alignLeft = this.globalConfig.isApp || this.globalConfig.isWindows
+            return alignLeft ? input.getBoundingClientRect() : getDaxBoundingBox(input)
         }
 
         // todo: this will be migrated to use NativeUIController soon
@@ -420,6 +443,8 @@ class InterfacePrototype {
         dataPromise.then(response => {
             if (response.success) {
                 return this.selectedDetail(response.success, config.type)
+            } else if (response) {
+                return this.selectedDetail(response, config.type)
             } else {
                 return Promise.reject(new Error('none-success response'))
             }
@@ -526,14 +551,16 @@ class InterfacePrototype {
     getAccounts () {}
     /**
      * Gets credentials ready for autofill
-     * @param {number|string} _id - the credential id
-     * @returns {APIResponseSingle<CredentialsObject>}
+     * @param {number|string} id - the credential id
+     * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
      */
-    getAutofillCredentials (_id) { throw new Error('unimplemented') }
+    async getAutofillCredentials (id) {
+        return this.deviceApi.request(new GetAutofillCredentialsCall({id: String(id)}))
+    }
     /** @returns {APIResponse<CreditCardObject>} */
-    async getAutofillCreditCard (_id) { throw new Error('unimplemented') }
+    async getAutofillCreditCard (_id) { throw new Error('getAutofillCreditCard unimplemented') }
     /** @returns {Promise<{success: IdentityObject|undefined}>} */
-    async getAutofillIdentity (_id) { throw new Error('unimplemented') }
+    async getAutofillIdentity (_id) { throw new Error('getAutofillIdentity unimplemented') }
 
     openManagePasswords () {}
 

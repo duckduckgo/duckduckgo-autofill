@@ -107,11 +107,41 @@ function withStringReplacements (page, replacements, platform = 'macos') {
             : JSON.stringify(value)
         output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${replacement};`)
     }
+
+    // 'macos' + 'ios'  can execute scripts before page scripts
     if (['macos', 'ios'].includes(platform)) {
         return page.addInitScript(output)
-    } else {
-        return page.evaluate(output)
     }
+
+    /**
+     * On Windows the `window.chrome.webview.x` API's are 'deleted' from the global scope
+     * So this part is here to better simulate how our script runs on Windows, with access to the injected
+     * variables like `windowsInteropPostMessage`.
+     *
+     * Please see:
+     *   - `types.d.ts` in the root to see where we add these variables for Typescript
+     *   - `src/deviceApiCalls/transports/windows.transport.js` for where these are actually used
+     */
+    if (platform === 'windows') {
+        const script = `
+            (function() {
+                const windowsInteropPostMessage = window.chrome.webview.postMessage;
+                const windowsInteropAddEventListener = window.chrome.webview.addEventListener;
+                const windowsInteropRemoveEventListener = window.chrome.webview.removeEventListener;
+                delete window.chrome.webview.postMessage;
+                delete window.chrome.webview.addEventListener;
+                delete window.chrome.webview.removeEventListener;
+                try {
+                    ${output}
+                } catch (e) {
+                     console.error("uncaught error from windows interop", e);
+                }
+            })()
+            `
+        return page.evaluate(script)
+    }
+
+    return page.evaluate(output)
 }
 
 /**
@@ -147,6 +177,9 @@ export function createAutofillScript () {
             return this
         },
         async applyTo (page) {
+            if (platform === 'windows') {
+                replacements['isWindows'] = true
+            }
             return withStringReplacements(page, replacements, platform)
         }
     }
@@ -254,6 +287,31 @@ export function withAndroidContext (test) {
 }
 
 /**
+ * Launch a chromium browser to simulates our Windows application
+ *
+ * Note: Autofill knows this is Windows via the isWindows string replacement
+ * @param {typeof import("@playwright/test").test} test
+ */
+export function withWindowsContext (test) {
+    return test.extend({
+        context: async ({ browser }, use, testInfo) => {
+            // ensure this test setup cannot be used by anything other than the Windows browser
+            testInfo.skip(testInfo.project.name !== 'windows')
+
+            const context = await browser.newContext({
+                ...devices['Desktop Chrome']
+            })
+
+            await use(context)
+            for (let page of context.pages()) {
+                await addMocksAsAttachments(page, test)
+            }
+            await context.close()
+        }
+    })
+}
+
+/**
  * @param {import("playwright").Page} page
  * @param {string} measureName
  * @return {Promise<PerformanceEntryList>}
@@ -305,4 +363,32 @@ export async function mockedCalls (page, names = [], mustExist = true) {
         return window.__playwright.mocks.calls
             .filter(([name]) => names.includes(name))
     }, {names})
+}
+
+/**
+ * This gathers all mocked API calls and adds them as an attachment to the
+ * test run.
+ *
+ * This means that when you run `npx playwright show-results` you can
+ * access every piece of JSON that was sent and received.
+ *
+ * @param {import("playwright").Page} page
+ * @param {typeof import("@playwright/test").test} test
+ * @returns {Promise<void>}
+ */
+async function addMocksAsAttachments (page, test) {
+    const calls = await mockedCalls(page)
+    let index = 0
+    for (let call of calls) {
+        index += 1
+        const [name, params, response] = call
+        const lines = [`name: ${name}`]
+        lines.push(`params: \n\n` + JSON.stringify(params, null, 2))
+        lines.push(`response: \n\n` + JSON.stringify(response, null, 2))
+        test.info().attachments.push({
+            name: `mock ${index} ${name} params`,
+            contentType: 'text/plain',
+            body: Buffer.from(lines.join('\n'))
+        })
+    }
 }

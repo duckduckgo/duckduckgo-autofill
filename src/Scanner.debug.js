@@ -37,7 +37,7 @@ const mockInterface = {
 
 // @ts-ignore
 const scanner = createScanner(mockInterface, {
-    initialDelay: 0
+    initialDelay: 1 // allow debugging directly on macOS - if this was 0 then it would try to use requestIdleCallback, which is absent in WebKit
 })
 
 scanner.init()

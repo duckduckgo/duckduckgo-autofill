@@ -32,7 +32,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 }
 
 /**
- * @param {GlobalConfig} globalConfig
+ * @param {Pick<GlobalConfig, 'contentScope' | 'userUnprotectedDomains' | 'userPreferences'>} globalConfig
  * @param [processConfig]
  * @return {boolean}
  */
@@ -174,7 +174,8 @@ const setValue = (el, val, config) => {
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
  * https://developers.google.com/web/updates/2019/02/intersectionobserver-v2
  */
-const safeExecute = (el, fn) => {
+const safeExecute = (el, fn, opts = {}) => {
+    const {checkVisibility = true} = opts
     const intObs = new IntersectionObserver((changes) => {
         for (const change of changes) {
             // Feature detection
@@ -182,8 +183,14 @@ const safeExecute = (el, fn) => {
                 // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
                 change.isVisible = true
             }
-            if (change.isIntersecting && change.isVisible) {
-                fn()
+            if (change.isIntersecting) {
+                /**
+                 * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
+                 * During testing it was found that windows does not `change.isVisible` properly.
+                 */
+                if (!checkVisibility || change.isVisible) {
+                    fn()
+                }
             }
         }
         intObs.disconnect()
