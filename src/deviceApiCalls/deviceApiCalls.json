@@ -23,7 +23,8 @@
   "getAutofillCredentials": {
     "id": "getAutofillCredentialsResponse",
     "description": "Used to retrieve a specific set of credentials",
-    "paramsValidator": "./schemas/getAutofillCredentials.params.json"
+    "paramsValidator": "./schemas/getAutofillCredentials.params.json",
+    "resultValidator": "./schemas/getAutofillCredentials.result.json"
   },
   "setSize": {
     "description": "Used by Windows to communicate the desired size of the overlay to the native side",

@@ -11833,7 +11833,7 @@ class GetAutofillInitDataCall extends _deviceApi.DeviceApiCall {
 
 }
 /**
- * @extends {DeviceApiCall<getAutofillCredentialsParamsSchema, any>} 
+ * @extends {DeviceApiCall<getAutofillCredentialsParamsSchema, getAutofillCredentialsResultSchema>} 
  */
 
 
@@ -11848,6 +11848,8 @@ class GetAutofillCredentialsCall extends _deviceApi.DeviceApiCall {
     _defineProperty(this, "id", "getAutofillCredentialsResponse");
 
     _defineProperty(this, "paramsValidator", _validatorsZod.getAutofillCredentialsParamsSchema);
+
+    _defineProperty(this, "resultValidator", _validatorsZod.getAutofillCredentialsResultSchema);
   }
 
 }
@@ -11909,7 +11911,7 @@ exports.CloseAutofillParentCall = CloseAutofillParentCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = void 0;
 const autofillFeatureTogglesSchema = null;
 exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
 const credentialsSchema = null;
@@ -11922,6 +11924,8 @@ const getAliasResultSchema = null;
 exports.getAliasResultSchema = getAliasResultSchema;
 const getAutofillCredentialsParamsSchema = null;
 exports.getAutofillCredentialsParamsSchema = getAutofillCredentialsParamsSchema;
+const getAutofillCredentialsResultSchema = null;
+exports.getAutofillCredentialsResultSchema = getAutofillCredentialsResultSchema;
 const triggerContextSchema = null;
 exports.triggerContextSchema = triggerContextSchema;
 const getAutofillDataResponseSchema = null;

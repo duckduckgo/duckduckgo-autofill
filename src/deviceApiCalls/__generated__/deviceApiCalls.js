@@ -7,6 +7,7 @@ import {
     getAvailableInputTypesResultSchema,
     getAutofillInitDataResponseSchema,
     getAutofillCredentialsParamsSchema,
+    getAutofillCredentialsResultSchema,
     setSizeParamsSchema,
     selectedDetailParamsSchema
 } from "./validators.zod.js"
@@ -53,12 +54,13 @@ export class GetAutofillInitDataCall extends DeviceApiCall {
   resultValidator = getAutofillInitDataResponseSchema
 }
 /**
- * @extends {DeviceApiCall<getAutofillCredentialsParamsSchema, any>} 
+ * @extends {DeviceApiCall<getAutofillCredentialsParamsSchema, getAutofillCredentialsResultSchema>} 
  */
 export class GetAutofillCredentialsCall extends DeviceApiCall {
   method = "getAutofillCredentials"
   id = "getAutofillCredentialsResponse"
   paramsValidator = getAutofillCredentialsParamsSchema
+  resultValidator = getAutofillCredentialsResultSchema
 }
 /**
  * @extends {DeviceApiCall<setSizeParamsSchema, any>} 

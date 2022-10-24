@@ -6,8 +6,7 @@
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getRuntimeConfiguration' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getRuntimeConfigurationResponse", success: {...} }')`
-  - See [Response Schema](../src/schema/response.getRuntimeConfiguration.schema.json)
-- [Runtime Configuration Schema (linked from above, but in a separate repo)](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
+  - See [Response Schema](../src/schemas/response.getRuntimeConfiguration.schema.json)
 
 **request example**
 
@@ -69,7 +68,7 @@ This represents which input types we can autofill for the current user.
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAvailableInputTypesResponse", success: {...} }')`
-  - See [Response Schema](../src/schema/response.getAvailableInputTypes.schema.json)
+  - See [Response Schema](../src/schemas/getAvailableInputTypes.result.json)
 
 **request example**
 
@@ -100,8 +99,8 @@ where `event.data` is:
 
 see:
 
-- [../src/schema/request.getAutofillData.schema.json](../src/schema/request.getAutofillData.schema.json)
-- [../src/schema/response.getAutofillData.schema.json](../src/schema/response.getAutofillData.schema.json)
+- [../src/schemas/getAutofillData.params.json](../src/schemas/getAutofillData.params.json)
+- [../src/schemas/getAutofillData.result.json](../src/schemas/getAutofillData.result.json)
 
 **request example**
 
@@ -176,7 +175,7 @@ see:
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAutofillInitData' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAutofillInitDataResponse", success: {...} }')`
-  - See [Response Schema](../src/schema/response.getAutofillInitData.schema.json)
+  - See [Response Schema](../src/schemas/getAutofillData.result.json)
 
 **response example**
 
@@ -213,7 +212,8 @@ see:
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAutofillCredentials', Data: { id: "01" } })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAutofillCredentialsResponse", success: {...} }')`
-  - See TODO
+  - See [Request Schema](../src/schemas/getAutofillCredentials.params.json)
+  - See [Response Schema](../src/schemas/getAutofillCredentials.result.json)
 
 **request example**
 
