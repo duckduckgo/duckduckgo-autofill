@@ -50,7 +50,7 @@ function waitForWindowsResponse (responseId, options) {
 
         // The event handler
         const handler = event => {
-            console.log(`📩 windows, ${window.location.href}`, [event.origin, JSON.stringify(event.data)])
+            // console.log(`📩 windows, ${window.location.href}`, [event.origin, JSON.stringify(event.data)])
             if (!event.data) {
                 console.warn('data absent from message')
                 return
