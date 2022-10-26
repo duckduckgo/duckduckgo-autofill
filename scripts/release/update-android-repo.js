@@ -1,6 +1,6 @@
 const {readFileSync, writeFileSync} = require('fs')
 const {join} = require('path')
-const {replaceInFile} = require('./release-utils.js')
+const {replaceInString} = require('./release-utils.js')
 const cwd = join(__dirname, '..')
 const filepath = (...path) => join(cwd, ...path)
 
@@ -15,7 +15,7 @@ function updateAndroidRepo () {
 
     const packageJsonFile = readFileSync(packageJsonFilePath, 'utf8')
 
-    const updatedPackageJsonFile = replaceInFile(
+    const updatedPackageJsonFile = replaceInString(
         packageJsonFile,
         androidPackageRegex,
         `$1${version}`

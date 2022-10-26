@@ -1,6 +1,6 @@
 const {readFileSync, writeFileSync} = require('fs')
 const {join} = require('path')
-const {replaceInFile} = require('./release-utils.js')
+const {replaceInString} = require('./release-utils.js')
 const cwd = join(__dirname, '..')
 const filepath = (...path) => join(cwd, ...path)
 const platform = process.argv[2]
@@ -16,7 +16,7 @@ function updateAppleDeviceRepo (platform = 'ios') {
     )
 
     const projectFile = readFileSync(projectFilePath, 'utf8')
-    const updatedProjectFile = replaceInFile(
+    const updatedProjectFile = replaceInString(
         projectFile,
         bskPackageRegex,
         `$1revision$3revision = ${commit};`

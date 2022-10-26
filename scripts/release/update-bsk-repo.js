@@ -1,6 +1,6 @@
 const {readFileSync, writeFileSync} = require('fs')
 const {join} = require('path')
-const {replaceInFile} = require('./release-utils.js')
+const {replaceInString} = require('./release-utils.js')
 const cwd = join(__dirname, '..')
 const filepath = (...path) => join(cwd, ...path)
 
@@ -19,7 +19,7 @@ const autofillPackageResolvedRegex = new RegExp(
 function updateBSKRepo () {
     console.log('running updateBSKrepo')
     const packageSwift = readFileSync(packageSwiftPath, 'utf8')
-    const updatedPackageSwift = replaceInFile(
+    const updatedPackageSwift = replaceInString(
         packageSwift,
         autofillPackageSwiftRegex,
         `$1${version}$3`
@@ -28,7 +28,7 @@ function updateBSKRepo () {
     console.log('Autofill reference updated in BSK\'s Package.swift')
 
     const packageResolved = readFileSync(packageResolvedPath, 'utf8')
-    const updatedPackageResolve = replaceInFile(
+    const updatedPackageResolve = replaceInString(
         packageResolved,
         autofillPackageResolvedRegex,
         `$1${commit}$3${version}$5`
