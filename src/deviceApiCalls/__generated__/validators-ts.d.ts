@@ -99,7 +99,7 @@ export interface AutofillFeatureToggles {
   password_generation?: boolean;
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
-  credentials_provider?: "duckduckgo" | "bitwarden";
+  third_party_credentials_provider?: boolean;
 }
 
 // availableInputTypes.json

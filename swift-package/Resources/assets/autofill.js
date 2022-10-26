@@ -3388,7 +3388,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
 
   async addDeviceListeners() {
-    if (this.settings.featureToggles.credentials_provider !== 'duckduckgo') {
+    if (this.settings.featureToggles.third_party_credentials_provider) {
       if (this.globalConfig.hasModernWebkitAPI) {
         _captureDdgGlobals.ddgGlobals.ObjectDefineProperty(_captureDdgGlobals.ddgGlobals.window, 'providerStatusUpdated', {
           enumerable: false,
@@ -4302,8 +4302,7 @@ class InterfacePrototype {
 
 
     const topContextData = {
-      inputType,
-      credentialsProvider: this.settings.featureToggles.credentials_provider
+      inputType
     }; // Allow features to append/change top context data
     // for example, generated passwords may get appended here
 

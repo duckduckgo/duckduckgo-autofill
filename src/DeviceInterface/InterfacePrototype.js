@@ -401,8 +401,7 @@ class InterfacePrototype {
 
         /** @type {TopContextData} */
         const topContextData = {
-            inputType,
-            credentialsProvider: this.settings.featureToggles.credentials_provider
+            inputType
         }
 
         // Allow features to append/change top context data

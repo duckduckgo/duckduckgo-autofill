@@ -289,7 +289,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async addDeviceListeners () {
-        if (this.settings.featureToggles.credentials_provider !== 'duckduckgo') {
+        if (this.settings.featureToggles.third_party_credentials_provider) {
             if (this.globalConfig.hasModernWebkitAPI) {
                 ddgGlobals.ObjectDefineProperty(ddgGlobals.window, 'providerStatusUpdated', {
                     enumerable: false,

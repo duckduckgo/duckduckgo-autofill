@@ -53,8 +53,7 @@ interface InboundPMData {
 
 interface TopContextData {
      inputType: import("./Form/matching").SupportedTypes,
-     credentials?: Omit<CredentialsObject, "id">[],
-     credentialsProvider?: CredentialsObject.credentialsProvider
+     credentials?: Omit<CredentialsObject, "id">[]
 }
 
 interface PMData {

@@ -240,7 +240,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements({
                     featureToggles: {
-                        credentials_provider: 'bitwarden'
+                        third_party_credentials_provider: true
                     }
                 }))
                 .platform('macos')
@@ -301,7 +301,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await createAutofillScript()
                     .replaceAll(macosContentScopeReplacements({
                         featureToggles: {
-                            credentials_provider: 'bitwarden'
+                            third_party_credentials_provider: true
                         }
                     }))
                     .replace('hasModernWebkitAPI', true)
@@ -372,7 +372,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await createAutofillScript()
                     .replaceAll(macosContentScopeReplacements({
                         featureToggles: {
-                            credentials_provider: 'bitwarden'
+                            third_party_credentials_provider: true
                         },
                         availableInputTypes: {
                             credentialsProviderStatus: 'locked'
@@ -408,7 +408,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await createAutofillScript()
                     .replaceAll(macosContentScopeReplacements({
                         featureToggles: {
-                            credentials_provider: 'bitwarden'
+                            third_party_credentials_provider: true
                         },
                         availableInputTypes: {
                             credentialsProviderStatus: 'locked'

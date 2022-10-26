@@ -7064,7 +7064,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
 
   async addDeviceListeners() {
-    if (this.settings.featureToggles.credentials_provider !== 'duckduckgo') {
+    if (this.settings.featureToggles.third_party_credentials_provider) {
       if (this.globalConfig.hasModernWebkitAPI) {
         _captureDdgGlobals.ddgGlobals.ObjectDefineProperty(_captureDdgGlobals.ddgGlobals.window, 'providerStatusUpdated', {
           enumerable: false,
@@ -7978,8 +7978,7 @@ class InterfacePrototype {
 
 
     const topContextData = {
-      inputType,
-      credentialsProvider: this.settings.featureToggles.credentials_provider
+      inputType
     }; // Allow features to append/change top context data
     // for example, generated passwords may get appended here
 
@@ -15444,7 +15443,7 @@ const autofillFeatureTogglesSchema = _zod.z.object({
   password_generation: _zod.z.boolean().optional(),
   credentials_saving: _zod.z.boolean().optional(),
   inlineIcon_credentials: _zod.z.boolean().optional(),
-  credentials_provider: _zod.z.union([_zod.z.literal("duckduckgo"), _zod.z.literal("bitwarden")]).optional()
+  third_party_credentials_provider: _zod.z.boolean().optional()
 });
 
 exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
