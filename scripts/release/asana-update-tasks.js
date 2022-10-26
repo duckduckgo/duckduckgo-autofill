@@ -30,29 +30,32 @@ const run = async () => {
 
     const platformEntries = Object.entries(asanaOutput)
     for (const [platformName, platformObj] of platformEntries) {
+        // If either are absent we haven't implemented the automation for that platform
         if (!platformObj.taskGid || !prUrls[platformName]) continue
 
+        // Get the task
         const { html_notes: notes } = await asana.tasks.getTask(platformObj.taskGid, { opt_fields: 'html_notes' })
 
         /** @type {[[RegExp, string]]} */
-        const changes = [
+        const taskDescriptionSubstitutions = [
             [/\[\[pr_url]]/, getLink(prUrls[platformName], platformObj.displayName + ' PR')]
         ]
 
         if (platformName === 'bsk') {
-            // also substitute the ios and macos placeholders
+            // On the BSK task we also substitute the ios and macos placeholders
             const markup =
                 `${wrapInLi(getLink(prUrls.ios, 'iOS PR:'))}${wrapInLi(getLink(prUrls.macos, 'macOS PR:'))}`
-            changes.push(
+            taskDescriptionSubstitutions.push(
                 [/\[\[extra_content]]/, markup]
             )
         } else {
-            changes.push(
+            // For all other platforms we remove the extra placeholder
+            taskDescriptionSubstitutions.push(
                 [/<li>\[\[extra_content]]<\/li>/, '']
             )
         }
 
-        const updatedNotes = replaceAllInString(notes, changes)
+        const updatedNotes = replaceAllInString(notes, taskDescriptionSubstitutions)
 
         await asana.tasks.updateTask(platformObj.taskGid, { html_notes: updatedNotes })
     }
