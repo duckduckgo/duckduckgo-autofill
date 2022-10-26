@@ -13,10 +13,21 @@ jobs:
         with:
           path: autofill/
       - name: Use Node.js 16
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
 
+      - name: Create Asana Tasks
+        id: create-asana-tasks
+        env:
+          ASANA_ACCESS_TOKEN: ${{ secrets.NATIVE_APPS_WORKFLOW }}
+          VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_NOTES: ${{ github.event.release.body }}
+        run: |
+          npm install
+          JSON_STRING="$(node ./autofill/scripts/release/asana-create-tasks.js)"
+          echo "ASANA_OUTPUT=$JSON_STRING" >> $GITHUB_OUTPUT
       - name: Checkout Android
         uses: actions/checkout@v3
         with:
@@ -32,25 +43,19 @@ jobs:
           cd android
           npm install
           cd ..
-#          TODO: update asana workflow to return a json with task urls and gids
-#          TODO: run asana workflow first
-#          TODO: use the PR body template and inject data
-#          TODO: after all PR are completed update Asana tasks with the PR urls
-      - name: Create PR Body
-        id: pr-body
+      - name: Create Android PR Body
         env:
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
+          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
         run: |
-          TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js)"
-          # Escape whitespace
-          TEMPLATE="${TEMPLATE//'%'/'%25'}"
-          TEMPLATE="${TEMPLATE//$'\n'/'%0A'}"
-          TEMPLATE="${TEMPLATE//$'\r'/'%0D'}"
-          echo ::set-output name=RESULT::"$TEMPLATE"
+          TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js android)"
+          echo "PR_BODY_ANDROID<<EOF" >> $GITHUB_ENV
+          echo "$TEMPLATE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       - name: Create PR for Android
-        uses: peter-evans/create-pull-request@v10db75894f6d53fc01c3bb0995e95bd03e583a62
+        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: android-pr
         with:
           path: android/
@@ -61,7 +66,7 @@ jobs:
           commit-message: Update autofill to ${{ github.event.release.tag_name }}
           branch: update-autofill-${{ github.event.release.tag_name }}
           title: Update autofill to ${{ github.event.release.tag_name }}
-          body: "${{ steps.android-pr-body.outputs.result }}"
+          body: "${{ env.PR_BODY_ANDROID }}"
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
       - name: Checkout BSK
@@ -76,8 +81,19 @@ jobs:
           VERSION: ${{ github.event.release.tag_name }}
         run: |
           node ./autofill/scripts/release/update-bsk-repo.js
+      - name: Create BSK PR Body
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_NOTES: ${{ github.event.release.body }}
+          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
+        run: |
+          TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js bsk)"
+          echo "PR_BODY_BSK<<EOF" >> $GITHUB_ENV
+          echo "$TEMPLATE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       - name: Create PR for BSK
-        uses: peter-evans/create-pull-request@10db75894f6d53fc01c3bb0995e95bd03e583a62
+        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: bsk-pr
         with:
           path: bsk/
@@ -85,7 +101,7 @@ jobs:
           commit-message: Update autofill to ${{ github.event.release.tag_name }}
           branch: update-autofill-${{ github.event.release.tag_name }}
           title: Update autofill to ${{ github.event.release.tag_name }}
-          body: ${{ github.event.release.body }} # TODO: use template
+          body: ${{ env.PR_BODY_BSK }}
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
       - name: Checkout iOS
@@ -100,8 +116,20 @@ jobs:
           BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
         run: |
           node ./autofill/scripts/release/update-apple-device-repo.js 'ios'
+      - name: Create iOS PR Body
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_NOTES: ${{ github.event.release.body }}
+          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
+          BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
+        run: |
+          TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js ios)"
+          echo "PR_BODY_IOS<<EOF" >> $GITHUB_ENV
+          echo "$TEMPLATE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       - name: Create PR for iOS
-        uses: peter-evans/create-pull-request@10db75894f6d53fc01c3bb0995e95bd03e583a62
+        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: ios-pr
         with:
           path: ios/
@@ -109,7 +137,7 @@ jobs:
           commit-message: Update BSK with autofill ${{ github.event.release.tag_name }}
           branch: update-bsk-with-autofill-${{ github.event.release.tag_name }}
           title: Update BSK with autofill ${{ github.event.release.tag_name }}
-          body: ${{ github.event.release.body }} # TODO: use template
+          body: ${{ env.PR_BODY_IOS }}
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
       - name: Checkout macOS
@@ -124,8 +152,20 @@ jobs:
           BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
         run: |
           node ./autofill/scripts/release/update-apple-device-repo.js 'macos'
+      - name: Create macOS PR Body
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_NOTES: ${{ github.event.release.body }}
+          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
+          BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
+        run: |
+          TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js macos)"
+          echo "PR_BODY_MACOS<<EOF" >> $GITHUB_ENV
+          echo "$TEMPLATE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       - name: Create PR for macOS
-        uses: peter-evans/create-pull-request@10db75894f6d53fc01c3bb0995e95bd03e583a62
+        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: macos-pr
         with:
           path: macos/
@@ -133,20 +173,21 @@ jobs:
           commit-message: Update BSK with autofill ${{ github.event.release.tag_name }}
           branch: update-bsk-with-autofill-${{ github.event.release.tag_name }}
           title: Update BSK with autofill ${{ github.event.release.tag_name }}
-          body: ${{ github.event.release.body }} # TODO: use template
+          body: ${{ env.PR_BODY_MACOS }}
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
-      - name: Asana Workflow
+      - name: Update Asana tasks
         env:
           ASANA_ACCESS_TOKEN: ${{ secrets.NATIVE_APPS_WORKFLOW }}
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
-          # TODO: the following are not yet used
+          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
           BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
           IOS_PR_URL: ${{ steps.ios-pr.outputs.pull-request-url }}
           MACOS_PR_URL: ${{ steps.macos-pr.outputs.pull-request-url }}
           ANDROID_PR_URL: ${{ steps.android-pr.outputs.pull-request-url }}
-        run: |
-          npm install
-          node ./autofill/scripts/release/asana-workflow.js
+        run:  node ./autofill/scripts/release/asana-update-tasks.js
+
+      - name: Ouput workflow summary
+        run: echo "### Success! :rocket:" >> $GITHUB_STEP_SUMMARY
