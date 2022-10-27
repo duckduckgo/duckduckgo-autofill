@@ -27,7 +27,7 @@ jobs:
         run: |
           cd autofill
           npm install
-          JSON_STRING="$(node ./autofill/scripts/release/asana-create-tasks.js)"
+          JSON_STRING="$(node ./scripts/release/asana-create-tasks.js)"
           echo "ASANA_OUTPUT=$JSON_STRING" >> $GITHUB_OUTPUT
           cd ..
 
