@@ -8,7 +8,7 @@ const version = process.env.VERSION
 
 function updateAndroidRepo () {
     console.log('running updateAndroidRepo')
-    const packageJsonFilePath = filepath('../android/package.json')
+    const packageJsonFilePath = filepath('../../android/package.json')
     const androidPackageRegex = new RegExp(
         /(github:duckduckgo\/duckduckgo-autofill#)([\w.]+)/
     )

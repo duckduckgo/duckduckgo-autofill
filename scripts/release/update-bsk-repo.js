@@ -7,11 +7,11 @@ const filepath = (...path) => join(cwd, ...path)
 const commit = process.env.GITHUB_SHA
 const version = process.env.VERSION
 
-const packageSwiftPath = filepath('../bsk/Package.swift')
+const packageSwiftPath = filepath('../../bsk/Package.swift')
 const autofillPackageSwiftRegex = new RegExp(
     /(\.package\(name: "Autofill", url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", \.exact\(")(.+)("\)\),)/
 )
-const packageResolvedPath = filepath('../bsk/Package.resolved')
+const packageResolvedPath = filepath('../../bsk/Package.resolved')
 const autofillPackageResolvedRegex = new RegExp(
     /("package": "Autofill",\s+"repositoryURL": "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state": {\s+"branch": null,\s+"revision": ")(\w+)(",\s+"version": ")([\d.]+)("\s+})/
 )

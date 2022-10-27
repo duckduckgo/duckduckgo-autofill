@@ -10,7 +10,7 @@ const commit = process.env.BSK_SHA
 function updateAppleDeviceRepo (platform = 'ios') {
     console.log(`running updateAppleDeviceRepo for ${platform}`)
 
-    const projectFilePath = filepath(`../${platform}/DuckDuckGo.xcodeproj/project.pbxproj`)
+    const projectFilePath = filepath(`../../${platform}/DuckDuckGo.xcodeproj/project.pbxproj`)
     const bskPackageRegex = new RegExp(
         /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = 21\.0\.0;)/
     )
