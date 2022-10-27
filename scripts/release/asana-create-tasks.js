@@ -2,26 +2,50 @@
 /* eslint-disable camelcase */
 const Asana = require('asana')
 const MarkdownIt = require('markdown-it')
+const {getLink} = require('./release-utils.js')
 const md = new MarkdownIt()
 
 const ASANA_ACCESS_TOKEN = process.env.ASANA_ACCESS_TOKEN
 const commit = process.env.GITHUB_SHA
 const version = process.env.VERSION
-const releaseUrl = process.env.RELEASE_URL
+const releaseUrl = process.env.RELEASE_URL || ''
 const releaseNotesRaw = process.env.RELEASE_NOTES
 const releaseNotes = md.render(releaseNotesRaw)
 
 const templateTaskGid = '1200547430029363'
 const autofillProjectGid = '1198964220583541'
 const releaseSectionGid = '1200559726959935'
-const projectExtractorRegex = /\[\[project_gid=(\d+)]]\s/
+const projectExtractorRegex = /\[\[project_gids=(.+)]]\s/
+
+const platforms = {
+    android: {
+        displayName: 'Android',
+        taskGid: '',
+        taskUrl: ''
+    },
+    bsk: {
+        displayName: 'BrowserServicesKit',
+        taskGid: '',
+        taskUrl: ''
+    },
+    extensions: {
+        displayName: 'Extensions',
+        taskGid: '',
+        taskUrl: ''
+    },
+    windows: {
+        displayName: 'Windows',
+        taskGid: '',
+        taskUrl: ''
+    }
+}
 
 let asana
 
 const setupAsana = () => {
     asana = Asana.Client.create({
         'defaultHeaders': {
-            'Asana-Enable': 'new_user_task_lists'
+            'Asana-Enable': 'new_project_templates,new_user_task_lists'
         }
     }).useAccessToken(ASANA_ACCESS_TOKEN)
 }
@@ -29,7 +53,7 @@ const setupAsana = () => {
 const duplicateTemplateTask = (templateTaskGid) => {
     const duplicateOption = {
         include: ['notes', 'assignee', 'subtasks', 'projects'],
-        name: `Autofill Release ${version}`,
+        name: `Autofill release ${version}`,
         opt_fields: 'html_notes'
     }
 
@@ -39,8 +63,7 @@ const duplicateTemplateTask = (templateTaskGid) => {
 const run = async () => {
     setupAsana()
 
-    console.info('Asana on. Duplicating template task...')
-
+    // Duplicating template task...
     const { new_task } = await duplicateTemplateTask(templateTaskGid)
 
     const { html_notes: notes } = await asana.tasks.getTask(new_task.gid, { opt_fields: 'html_notes' })
@@ -48,27 +71,30 @@ const run = async () => {
     const updatedNotes =
         notes.replace('[[version]]', version)
             .replace('[[commit]]', commit)
-            .replace('[[release_url]]', `<a href="${releaseUrl}">${releaseUrl}</a>`)
+            .replace('[[release_url]]', getLink(releaseUrl))
             .replace('[[notes]]', releaseNotes)
             .replace(/<\/?p>/ig, '\n')
 
-    console.info('Updating task and moving to Release section...')
-
+    // Updating task and moving to Release section...
     await asana.tasks.updateTask(new_task.gid, {html_notes: updatedNotes})
 
     await asana.tasks.addProjectForTask(new_task.gid, { project: autofillProjectGid, section: releaseSectionGid })
 
-    console.info('Getting subtasks...')
+    // Getting subtasks...
+    const { data: subtasks } = await asana.tasks.getSubtasksForTask(new_task.gid, {opt_fields: 'name,html_notes,permalink_url'})
 
-    const { data: subtasks } = await asana.tasks.getSubtasksForTask(new_task.gid, {opt_fields: 'name,html_notes'})
-
-    console.info('Updating subtasks and moving to appropriate projects...')
-
+    // Updating subtasks and moving to appropriate projects...
     for (const subtask of subtasks) {
-        const {gid, name, html_notes} = subtask
+        const {gid, name, html_notes, permalink_url} = subtask
+
+        const platform = Object.keys(platforms).find(
+            (key) => name.includes(platforms[key].displayName)
+        )
+        platforms[platform].taskGid = gid
+        platforms[platform].taskUrl = permalink_url
 
         const newName = name.replace('[[version]]', version)
-        const projectGid = html_notes.match(projectExtractorRegex)[1]
+        const projectGids = (html_notes.match(projectExtractorRegex)?.[1] || '').split(',')
 
         const subtaskNotes =
             html_notes.replace(projectExtractorRegex, '')
@@ -76,15 +102,25 @@ const run = async () => {
 
         await asana.tasks.updateTask(gid, { name: newName, html_notes: subtaskNotes })
 
-        if (projectGid) {
+        for (const projectGid of projectGids) {
             await asana.tasks.addProjectForTask(gid, { project: projectGid, insert_after: null })
         }
     }
 
-    console.info('All done. Enjoy! 🎉')
+    const finalNotes =
+        updatedNotes
+            .replace('<li>[[pr_url]]</li>', version)
+            .replace('<li>[[extra_content]]</li>', version)
+
+    await asana.tasks.updateTask(new_task.gid, {html_notes: finalNotes})
+
+    const jsonString = JSON.stringify(platforms)
+    // The log is needed to read the value from the bash context
+    console.log(jsonString)
 }
 
 run().catch((e) => {
-    console.error(e.value?.errors)
+    // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
+    console.error(e.value?.errors || e)
     process.exit(1)
 })
