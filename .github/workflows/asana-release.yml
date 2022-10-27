@@ -77,7 +77,7 @@ jobs:
         with:
           repository: duckduckgo/BrowserServicesKit
           path: bsk/
-          ref: develop
+          ref: main
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update BSK autofill reference
         env:
