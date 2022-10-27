@@ -12,7 +12,7 @@ function updateAppleDeviceRepo (platform = 'ios') {
 
     const projectFilePath = filepath(`../../${platform}/DuckDuckGo.xcodeproj/project.pbxproj`)
     const bskPackageRegex = new RegExp(
-        /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = 21\.0\.0;)/
+        /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = \d+.\d+.\d+;)/
     )
 
     const projectFile = readFileSync(projectFilePath, 'utf8')
