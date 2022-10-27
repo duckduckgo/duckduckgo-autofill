@@ -25,9 +25,11 @@ jobs:
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
         run: |
+          cd autofill
           npm install
           JSON_STRING="$(node ./autofill/scripts/release/asana-create-tasks.js)"
           echo "ASANA_OUTPUT=$JSON_STRING" >> $GITHUB_OUTPUT
+          cd ..
 
       - name: Checkout Android
         uses: actions/checkout@v3
