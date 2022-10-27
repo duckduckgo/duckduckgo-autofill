@@ -75,7 +75,7 @@ jobs:
       - name: Checkout BSK
         uses: actions/checkout@v3
         with:
-          repository: duckduckgo/test-bsk
+          repository: duckduckgo/BrowserServicesKit
           path: bsk/
           ref: develop
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
@@ -110,7 +110,7 @@ jobs:
       - name: Checkout iOS
         uses: actions/checkout@v3
         with:
-          repository: duckduckgo/test-ios
+          repository: duckduckgo/iOS
           path: ios/
           ref: develop
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
