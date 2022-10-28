@@ -40,7 +40,6 @@ class InterfacePrototype {
     currentAttached = null
     /** @type {import("../UI/HTMLTooltip.js").default | null} */
     currentTooltip = null
-    stripCredentials = true
     /** @type {number} */
     initialSetupDelayMs = 0
     autopromptFired = false
@@ -165,10 +164,9 @@ class InterfacePrototype {
      * @param { InboundPMData } data
      */
     storeLocalData (data) {
-        if (this.stripCredentials) {
-            data.credentials.forEach((cred) => delete cred.password)
+        this.storeLocalCredentials(data.credentials)
+
             data.creditCards.forEach((cc) => delete cc.cardNumber && delete cc.cardSecurityCode)
-        }
         // Store the full name as a separate field to simplify autocomplete
         const updatedIdentities = data.identities.map((identity) => ({
             ...identity,
@@ -177,7 +175,6 @@ class InterfacePrototype {
         // Add addresses
         this.#data.identities = this.addDuckAddressesToIdentities(updatedIdentities)
         this.#data.creditCards = data.creditCards
-        this.#data.credentials = data.credentials
 
         // Top autofill only
         if (data.serializedInputContext) {
@@ -188,6 +185,15 @@ class InterfacePrototype {
                 this.removeTooltip()
             }
         }
+    }
+
+    /**
+     * Stores credentials locally
+     * @param {CredentialsObject[]} credentials
+     */
+    storeLocalCredentials (credentials) {
+        credentials.forEach((cred) => delete cred.password)
+        this.#data.credentials = credentials
     }
     getTopContextData () {
         return this.#data.topContextData
