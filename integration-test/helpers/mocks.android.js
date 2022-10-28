@@ -111,6 +111,9 @@ export function createAndroidMocks () {
             }
             return this
         },
+        withCheckCredentialsProviderStatus: function () {
+            return this
+        },
         tap () {
             return this
         },

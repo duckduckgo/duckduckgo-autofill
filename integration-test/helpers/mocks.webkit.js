@@ -1,4 +1,5 @@
 import { createAvailableInputTypes } from './utils.js'
+import {constants} from './mocks.js'
 
 /**
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
@@ -6,6 +7,9 @@ import { createAvailableInputTypes } from './utils.js'
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AskToUnlockProviderResult} AskToUnlockProviderTypes
  */
+
+const {personalAddress} = constants.fields.email
+const password = '123456'
 
 /**
  * @param {object} [overrides]
@@ -139,7 +143,8 @@ export const macosWithoutOverlay = () => {
             'closeAutofillParent',
             'showAutofillParent',
             'getSelectedCredentials',
-            'askToUnlockProvider'
+            'askToUnlockProvider',
+            'checkCredentialsProviderStatus'
         ]
     }
 }
@@ -211,12 +216,30 @@ export function createWebkitMocks (platform = 'macos') {
                 credentials: [{
                     id: '2',
                     password: '',
-                    username: 'peppa',
+                    username: constants.fields.email.personalAddress,
                     credentialsProvider: 'bitwarden'
                 }],
                 availableInputTypes: createAvailableInputTypes()
             }
-        }
+        },
+        checkCredentialsProviderStatus: [
+            {
+                success: {
+                    status: 'unlocked',
+                    credentials: [],
+                    availableInputTypes: {credentials: {password: false, username: false}}
+                }
+            },
+            {
+                success: {
+                    status: 'locked',
+                    credentials: [
+                        {id: 'provider_locked'}
+                    ],
+                    availableInputTypes: {credentials: {password: true, username: true}}
+                }
+            }
+        ]
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
@@ -270,6 +293,49 @@ export function createWebkitMocks (platform = 'macos') {
         withFeatureToggles: function (_featureToggles) {
             throw new Error('unreachable - webkit cannot mock feature toggles this way. Use script replacements')
         },
+        withCheckCredentialsProviderStatus: function () {
+            webkitBase.checkCredentialsProviderStatus = [
+                {
+                    // unlocked with no credentials available
+                    success: {
+                        status: 'unlocked',
+                        credentials: [],
+                        availableInputTypes: {credentials: {password: false, username: false}}
+                    }
+                },
+                {
+                    // unlocked with credentials available
+                    success: {
+                        status: 'unlocked',
+                        credentials: [
+                            {id: '3', password: password, username: personalAddress, credentialsProvider: 'bitwarden'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: true}}
+                    }
+                },
+                {
+                    // unlocked with only a password field
+                    success: {
+                        status: 'unlocked',
+                        credentials: [
+                            {id: '3', password: password, username: '', credentialsProvider: 'bitwarden'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: false}}
+                    }
+                },
+                {
+                    // back to being locked
+                    success: {
+                        status: 'locked',
+                        credentials: [
+                            {id: 'provider_locked'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: true}}
+                    }
+                }
+            ]
+            return this
+        },
         tap (fn) {
             fn(webkitBase)
             return this
@@ -317,7 +383,19 @@ async function withMockedWebkit (page, mocks) {
                 postMessage: async (data) => {
                     /** @type {MockCall} */
                     const call = [msgName, data, response]
+                    let thisResponse = response
                     window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+
+                    // This allows mocks to have multiple return values.
+                    // It has to be inline here since it's serialized into the page.
+                    const isMulti = Array.isArray(response)
+                    if (isMulti) {
+                        const prevCount = window.__playwright.mocks.calls.filter(([name]) => name === msgName).length
+                        const next = response[prevCount - 1]
+                        if (next) {
+                            thisResponse = next
+                        }
+                    }
 
                     // If `data.messageHandling.methodName` exists, this means we're trying to use encryption
                     // therefor we mimic what happens on the native side by calling the relevant window method
@@ -325,22 +403,11 @@ async function withMockedWebkit (page, mocks) {
                     const fn = window[data.messageHandling.methodName]
                     if (typeof fn === 'function') {
                         // @ts-ignore
-                        fn(encryptResponse(data, response))
+                        fn(encryptResponse(data, thisResponse))
                         return
                     }
 
-                    // This allows mocks to have multiple return values.
-                    // It has to be inline here since it's serialized into the page.
-                    const isMulti = Array.isArray(response)
-                    if (isMulti) {
-                        const prevCount = window.__playwright.mocks.calls.filter(([name]) => name === msgName).length
-                        const next = response[prevCount]
-                        if (next) {
-                            return JSON.stringify(next)
-                        }
-                    }
-
-                    return JSON.stringify(response)
+                    return JSON.stringify(thisResponse)
                 }
             }
         }

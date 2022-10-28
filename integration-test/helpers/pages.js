@@ -216,9 +216,11 @@ export function loginPage (page, server, opts = {}) {
             const button = await page.waitForSelector('button:has-text("Bitwarden is locked")')
             expect(button).toBeDefined()
             await button.click()
-            const autofillCalls = await mockedCalls(page, ['askToUnlockProvider'], true)
+            const updatedButton = await page.waitForSelector(`button:has-text("${constants.fields.email.personalAddress}")`)
+            expect(updatedButton).toBeDefined()
+            await updatedButton.click()
+            const autofillCalls = await mockedCalls(page, ['pmHandlerGetAutofillCredentials'], true)
             expect(autofillCalls).toHaveLength(1)
-            expect(autofillCalls[0][1].id).toBe('provider_locked')
         },
         /**
          * @param {string} username

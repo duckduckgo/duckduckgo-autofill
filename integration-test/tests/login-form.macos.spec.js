@@ -284,7 +284,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 expect(autofillCalls.length).toBeGreaterThanOrEqual(1)
             })
 
-            test('when providerStatusUpdated is called by the native layer', async ({page}) => {
+            test('when the native layer calls to unblock provider UI (on modern macOS versions)', async ({page}) => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page)
 
@@ -333,7 +333,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     window.providerStatusUpdated({
                         status: 'unlocked',
                         credentials: [
-                            {id: '3', password: 'test', username: 'testName', credentialsProvider: 'bitwarden'}
+                            {id: '3', password: '${password}', username: '${personalAddress}', credentialsProvider: 'bitwarden'}
                         ],
                         availableInputTypes: {credentials: {password: true, username: true}}
                     })
@@ -346,13 +346,100 @@ test.describe('Auto-fill a login form on macOS', () => {
                     window.providerStatusUpdated({
                         status: 'unlocked',
                         credentials: [
-                            {id: '3', password: 'test', username: '', credentialsProvider: 'bitwarden'}
+                            {id: '3', password: '${password}', username: '', credentialsProvider: 'bitwarden'}
                         ],
                         availableInputTypes: {credentials: {password: true, username: false}}
                     })
                 `)
 
                 await login.onlyPasswordFieldHasIcon()
+            })
+
+            test('without overlay (Catalina)', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: 'provider_locked',
+                        username: '',
+                        password: '',
+                        credentialsProvider: 'bitwarden'
+                    })
+                    .applyTo(page)
+
+                // Load the autofill.js script with replacements
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({
+                        featureToggles: {
+                            credentials_provider: 'bitwarden'
+                        },
+                        availableInputTypes: {
+                            credentialsProviderStatus: 'locked'
+                        }
+                    }))
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.fieldsContainIcons()
+
+                await login.assertTooltipNotOpen(personalAddress)
+
+                await login.assertBitwardenLockedWorking()
+            })
+
+            test('when the native layer calls to unblock provider UI (on Catalina)', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: 'provider_locked',
+                        username: '',
+                        password: '',
+                        credentialsProvider: 'bitwarden'
+                    })
+                    .withCheckCredentialsProviderStatus()
+                    .applyTo(page)
+
+                // Load the autofill.js script with replacements
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({
+                        featureToggles: {
+                            credentials_provider: 'bitwarden'
+                        },
+                        availableInputTypes: {
+                            credentialsProviderStatus: 'locked'
+                        }
+                    }))
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.fieldsContainIcons()
+
+                await login.assertTooltipNotOpen(personalAddress)
+
+                // The call is executed every 2s and we have encoded responses in mocks.webkit.js
+                await page.waitForTimeout(2000)
+
+                // unlocked with no credentials available
+                await login.fieldsDoNotContainIcons()
+                await page.waitForTimeout(2000)
+
+                // unlocked with credentials available
+                await login.fieldsContainIcons()
+                await page.waitForTimeout(2000)
+
+                // unlocked with only a password field
+                await login.onlyPasswordFieldHasIcon()
+                await page.waitForTimeout(2000)
+
+                // back to being locked
+                await login.fieldsContainIcons()
             })
         })
     })
