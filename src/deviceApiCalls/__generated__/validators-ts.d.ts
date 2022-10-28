@@ -21,6 +21,57 @@ export interface AutofillFeatureToggles {
   credentials_provider?: "duckduckgo" | "bitwarden";
 }
 
+// availableInputTypes.json
+
+/**
+ * For each main autofill types, it maps specific fields to their availability
+ */
+export interface AvailableInputTypes {
+  /**
+   * maps field types and the availability of data for the current site
+   */
+  credentials?: {
+    username?: boolean;
+    password?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  identities?: {
+    firstName?: boolean;
+    middleName?: boolean;
+    lastName?: boolean;
+    birthdayDay?: boolean;
+    birthdayMonth?: boolean;
+    birthdayYear?: boolean;
+    addressStreet?: boolean;
+    addressStreet2?: boolean;
+    addressCity?: boolean;
+    addressProvince?: boolean;
+    addressPostalCode?: boolean;
+    addressCountryCode?: boolean;
+    phone?: boolean;
+    emailAddress?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  creditCards?: {
+    cardName?: boolean;
+    cardSecurityCode?: boolean;
+    expirationMonth?: boolean;
+    expirationYear?: boolean;
+    cardNumber?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * true if signed in for Email Protection
+   */
+  email?: boolean;
+}
+
 // credentials.json
 
 export interface Credentials {
@@ -197,10 +248,16 @@ export interface Credentials {
    */
   username: string;
   password: string;
-  provider?: "duckduckgo" | "bitwarden";
+  credentialsProvider?: "duckduckgo" | "bitwarden";
 }
 export interface GenericError {
   message: string;
+}
+
+// getAvailableInputTypes.params.json
+
+export interface GetAvailableInputTypesRequest {
+  mainType: "credentials" | "identities" | "creditCards";
 }
 
 // getAvailableInputTypes.result.json
@@ -213,19 +270,49 @@ export interface GetAvailableInputTypesResult {
   success: AvailableInputTypes;
   error?: GenericError;
 }
+/**
+ * For each main autofill types, it maps specific fields to their availability
+ */
 export interface AvailableInputTypes {
   /**
-   * true if *any* credentials are available
+   * maps field types and the availability of data for the current site
    */
-  credentials?: boolean;
+  credentials?: {
+    username?: boolean;
+    password?: boolean;
+    [k: string]: unknown;
+  };
   /**
-   * true if *any* identities are available
+   * maps field types and the availability of data saved by the user
    */
-  identities?: boolean;
+  identities?: {
+    firstName?: boolean;
+    middleName?: boolean;
+    lastName?: boolean;
+    birthdayDay?: boolean;
+    birthdayMonth?: boolean;
+    birthdayYear?: boolean;
+    addressStreet?: boolean;
+    addressStreet2?: boolean;
+    addressCity?: boolean;
+    addressProvince?: boolean;
+    addressPostalCode?: boolean;
+    addressCountryCode?: boolean;
+    phone?: boolean;
+    emailAddress?: boolean;
+    [k: string]: unknown;
+  };
   /**
-   * true if *any* credit cards are available
+   * maps field types and the availability of data saved by the user
    */
-  creditCards?: boolean;
+  creditCards?: {
+    cardName?: boolean;
+    cardSecurityCode?: boolean;
+    expirationMonth?: boolean;
+    expirationYear?: boolean;
+    cardNumber?: boolean;
+    [k: string]: unknown;
+  };
   /**
    * true if signed in for Email Protection
    */
@@ -255,6 +342,7 @@ export interface RuntimeConfiguration {
   contentScope: ContentScope;
   userUnprotectedDomains: string[];
   userPreferences: UserPreferences;
+  availableInputTypes: AvailableInputTypes;
 }
 export interface ContentScope {
   features: ContentScopeFeatures;
@@ -284,6 +372,54 @@ export interface UserPreferences {
       };
     };
   };
+}
+/**
+ * For each main autofill types, it maps specific fields to their availability
+ */
+export interface AvailableInputTypes {
+  /**
+   * maps field types and the availability of data for the current site
+   */
+  credentials?: {
+    username?: boolean;
+    password?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  identities?: {
+    firstName?: boolean;
+    middleName?: boolean;
+    lastName?: boolean;
+    birthdayDay?: boolean;
+    birthdayMonth?: boolean;
+    birthdayYear?: boolean;
+    addressStreet?: boolean;
+    addressStreet2?: boolean;
+    addressCity?: boolean;
+    addressProvince?: boolean;
+    addressPostalCode?: boolean;
+    addressCountryCode?: boolean;
+    phone?: boolean;
+    emailAddress?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  creditCards?: {
+    cardName?: boolean;
+    cardSecurityCode?: boolean;
+    expirationMonth?: boolean;
+    expirationYear?: boolean;
+    cardNumber?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * true if signed in for Email Protection
+   */
+  email?: boolean;
 }
 export interface GenericError {
   message: string;
@@ -298,6 +434,7 @@ export interface RuntimeConfiguration {
   contentScope: ContentScope;
   userUnprotectedDomains: string[];
   userPreferences: UserPreferences;
+  availableInputTypes: AvailableInputTypes;
 }
 export interface ContentScope {
   features: ContentScopeFeatures;
@@ -327,6 +464,54 @@ export interface UserPreferences {
       };
     };
   };
+}
+/**
+ * For each main autofill types, it maps specific fields to their availability
+ */
+export interface AvailableInputTypes {
+  /**
+   * maps field types and the availability of data for the current site
+   */
+  credentials?: {
+    username?: boolean;
+    password?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  identities?: {
+    firstName?: boolean;
+    middleName?: boolean;
+    lastName?: boolean;
+    birthdayDay?: boolean;
+    birthdayMonth?: boolean;
+    birthdayYear?: boolean;
+    addressStreet?: boolean;
+    addressStreet2?: boolean;
+    addressCity?: boolean;
+    addressProvince?: boolean;
+    addressPostalCode?: boolean;
+    addressCountryCode?: boolean;
+    phone?: boolean;
+    emailAddress?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  creditCards?: {
+    cardName?: boolean;
+    cardSecurityCode?: boolean;
+    expirationMonth?: boolean;
+    expirationYear?: boolean;
+    cardNumber?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * true if signed in for Email Protection
+   */
+  email?: boolean;
 }
 
 // selectedDetail.params.json

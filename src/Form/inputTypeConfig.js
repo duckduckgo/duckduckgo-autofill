@@ -1,6 +1,6 @@
 import { daxBase64 } from './logo-svg.js'
 import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js'
-import { getInputType, getMainTypeFromType, getInputSubtype } from './matching.js'
+import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType} from './matching.js'
 import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
 import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js'
 import { IdentityTooltipItem } from '../InputTypes/Identity.js'
@@ -37,6 +37,21 @@ const getIdentitiesIcon = (input, {device}) => {
 const canBeInteractedWith = (input) => !input.readOnly && !input.disabled
 
 /**
+ * Checks if the input can be decorated and we have the needed data
+ * @param {HTMLInputElement} input
+ * @param {import("../DeviceInterface/InterfacePrototype").default} device
+ * @returns {Promise<boolean>}
+ */
+const canBeAutofilled = async (input, device) => {
+    if (!canBeDecorated(input)) return false
+
+    const mainType = getInputMainType(input)
+    const subtype = getInputSubtype(input)
+    const canAutofill = await device.settings.canAutofillType(mainType, subtype)
+    return Boolean(canAutofill)
+}
+
+/**
  * A map of config objects. These help by centralising here some complexity
  * @type {InputTypeConfig}
  */
@@ -58,18 +73,17 @@ const inputTypeConfig = {
             }
             return ''
         },
-        shouldDecorate: (input, {isLogin, device}) => {
-            // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
-            // saved password
+        shouldDecorate: async (_input, {isLogin, device}) => {
+            // if we are on a 'login' page, check if we have data to autofill the field
             if (isLogin) {
-                return Boolean(device.settings.availableInputTypes.credentials)
+                return canBeAutofilled(_input, device)
             }
 
-            // at this point, it's not a 'login' attempt, so we could offer to provide a password?
+            // at this point, it's not a 'login' form, so we could offer to provide a password
             if (device.settings.featureToggles.password_generation) {
-                const subtype = getInputSubtype(input)
+                const subtype = getInputSubtype(_input)
                 if (subtype === 'password') {
-                    return true
+                    return canBeDecorated(_input)
                 }
             }
 
@@ -83,8 +97,8 @@ const inputTypeConfig = {
         type: 'creditCards',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: (_input, {device}) => {
-            return Boolean(device.settings.availableInputTypes.creditCards)
+        shouldDecorate: async (_input, {device}) => {
+            return canBeAutofilled(_input, device)
         },
         dataType: 'CreditCards',
         tooltipItem: (data) => new CreditCardTooltipItem(data)
@@ -94,18 +108,8 @@ const inputTypeConfig = {
         type: 'identities',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
-        shouldDecorate: (input, {device}) => {
-            const subtype = getInputSubtype(input)
-
-            if (device.settings.availableInputTypes.identities) {
-                return Boolean(device.getLocalIdentities?.().some((identity) => !!identity[subtype]))
-            }
-
-            if (subtype === 'emailAddress') {
-                return Boolean(device.isDeviceSignedIn())
-            }
-
-            return false
+        shouldDecorate: async (_input, {device}) => {
+            return canBeAutofilled(_input, device)
         },
         dataType: 'Identities',
         tooltipItem: (data) => new IdentityTooltipItem(data)
@@ -115,7 +119,7 @@ const inputTypeConfig = {
         type: 'unknown',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: () => false,
+        shouldDecorate: async () => false,
         dataType: '',
         tooltipItem: (_data) => {
             throw new Error('unreachable')

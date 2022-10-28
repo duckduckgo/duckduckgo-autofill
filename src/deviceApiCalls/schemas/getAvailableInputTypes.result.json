@@ -10,27 +10,8 @@
       "const": "getAvailableInputTypesResponse"
     },
     "success": {
-      "type": "object",
       "title": "AvailableInputTypes",
-      "additionalProperties": false,
-      "properties": {
-        "credentials": {
-          "description": "true if *any* credentials are available",
-          "type": "boolean"
-        },
-        "identities": {
-          "description": "true if *any* identities are available",
-          "type": "boolean"
-        },
-        "creditCards": {
-          "description": "true if *any* credit cards are available",
-          "type": "boolean"
-        },
-        "email": {
-          "description": "true if signed in for Email Protection",
-          "type": "boolean"
-        }
-      }
+      "$ref": "availableInputTypes.json"
     },
     "error":  {
       "$ref": "error.json"

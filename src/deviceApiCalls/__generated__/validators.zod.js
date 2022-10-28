@@ -13,6 +13,37 @@ export const autofillFeatureTogglesSchema = z.object({
     credentials_provider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional()
 });
 
+export const availableInputTypesSchema = z.object({
+    credentials: z.record(z.unknown()).and(z.object({
+        username: z.boolean().optional(),
+        password: z.boolean().optional()
+    })).optional(),
+    identities: z.record(z.unknown()).and(z.object({
+        firstName: z.boolean().optional(),
+        middleName: z.boolean().optional(),
+        lastName: z.boolean().optional(),
+        birthdayDay: z.boolean().optional(),
+        birthdayMonth: z.boolean().optional(),
+        birthdayYear: z.boolean().optional(),
+        addressStreet: z.boolean().optional(),
+        addressStreet2: z.boolean().optional(),
+        addressCity: z.boolean().optional(),
+        addressProvince: z.boolean().optional(),
+        addressPostalCode: z.boolean().optional(),
+        addressCountryCode: z.boolean().optional(),
+        phone: z.boolean().optional(),
+        emailAddress: z.boolean().optional()
+    })).optional(),
+    creditCards: z.record(z.unknown()).and(z.object({
+        cardName: z.boolean().optional(),
+        cardSecurityCode: z.boolean().optional(),
+        expirationMonth: z.boolean().optional(),
+        expirationYear: z.boolean().optional(),
+        cardNumber: z.boolean().optional()
+    })).optional(),
+    email: z.boolean().optional()
+});
+
 export const credentialsSchema = z.object({
     id: z.string().optional(),
     username: z.string(),
@@ -78,11 +109,14 @@ export const getAutofillInitDataResponseSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
-export const availableInputTypesSchema = z.object({
-    credentials: z.boolean().optional(),
-    identities: z.boolean().optional(),
-    creditCards: z.boolean().optional(),
-    email: z.boolean().optional()
+export const getAvailableInputTypesRequestSchema = z.object({
+    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")])
+});
+
+export const getAvailableInputTypesResultSchema = z.object({
+    type: z.literal("getAvailableInputTypesResponse").optional(),
+    success: availableInputTypesSchema,
+    error: genericErrorSchema.optional()
 });
 
 export const contentScopeFeaturesItemSettingsSchema = z.record(z.unknown());
@@ -133,12 +167,6 @@ export const getAutofillDataRequestSchema = z.object({
     triggerContext: triggerContextSchema.optional()
 });
 
-export const getAvailableInputTypesResultSchema = z.object({
-    type: z.literal("getAvailableInputTypesResponse").optional(),
-    success: availableInputTypesSchema,
-    error: genericErrorSchema.optional()
-});
-
 export const contentScopeSchema = z.object({
     features: contentScopeFeaturesSchema,
     unprotectedTemporary: z.array(z.unknown())
@@ -147,7 +175,8 @@ export const contentScopeSchema = z.object({
 export const runtimeConfigurationSchema = z.object({
     contentScope: contentScopeSchema,
     userUnprotectedDomains: z.array(z.string()),
-    userPreferences: userPreferencesSchema
+    userPreferences: userPreferencesSchema,
+    availableInputTypes: availableInputTypesSchema
 });
 
 export const storeFormDataSchema = z.object({

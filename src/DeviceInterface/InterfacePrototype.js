@@ -271,16 +271,7 @@ class InterfacePrototype {
      * @returns {Promise<void>}
      */
     async refreshSettings () {
-        const defaults = this.globalConfig.userPreferences?.platform?.name === 'macos'
-            ? {
-                identities: this.hasLocalIdentities,
-                credentials: this.hasLocalCredentials,
-                creditCards: this.hasLocalCreditCards,
-                email: this.isDeviceSignedIn()
-            }
-            : undefined
-
-        await this.settings.refresh(defaults)
+        await this.settings.refresh()
     }
 
     postInit () {}
@@ -374,6 +365,9 @@ class InterfacePrototype {
     attachTooltip (form, input, click, trigger = 'userInitiated') {
         // Avoid flashing tooltip from background tabs on macOS
         if (document.visibilityState !== 'visible') return
+        // Only autoprompt on mobile devices
+        if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return
+        // Only fire autoprompt once
         if (trigger === 'autoprompt' && this.autopromptFired) return
 
         form.activeInput = input

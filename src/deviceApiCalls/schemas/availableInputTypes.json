@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "AvailableInputTypes",
+  "description": "For each main autofill types, it maps specific fields to their availability",
+  "properties": {
+    "credentials": {
+      "description": "maps field types and the availability of data for the current site",
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "boolean"
+        },
+        "password": {
+          "type": "boolean"
+        }
+      }
+    },
+    "identities": {
+      "description": "maps field types and the availability of data saved by the user",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "boolean"
+        },
+        "middleName": {
+          "type": "boolean"
+        },
+        "lastName": {
+          "type": "boolean"
+        },
+        "birthdayDay": {
+          "type": "boolean"
+        },
+        "birthdayMonth": {
+          "type": "boolean"
+        },
+        "birthdayYear": {
+          "type": "boolean"
+        },
+        "addressStreet": {
+          "type": "boolean"
+        },
+        "addressStreet2": {
+          "type": "boolean"
+        },
+        "addressCity": {
+          "type": "boolean"
+        },
+        "addressProvince": {
+          "type": "boolean"
+        },
+        "addressPostalCode": {
+          "type": "boolean"
+        },
+        "addressCountryCode": {
+          "type": "boolean"
+        },
+        "phone": {
+          "type": "boolean"
+        },
+        "emailAddress": {
+          "type": "boolean"
+        }
+      }
+    },
+    "creditCards": {
+      "description": "maps field types and the availability of data saved by the user",
+      "type": "object",
+      "properties": {
+        "cardName": {
+          "type": "boolean"
+        },
+        "cardSecurityCode": {
+          "type": "boolean"
+        },
+        "expirationMonth": {
+          "type": "boolean"
+        },
+        "expirationYear": {
+          "type": "boolean"
+        },
+        "cardNumber": {
+          "type": "boolean"
+        }
+      }
+    },
+    "email": {
+      "description": "true if signed in for Email Protection",
+      "type": "boolean"
+    }
+  }
+}

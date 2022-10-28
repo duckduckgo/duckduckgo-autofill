@@ -68,3 +68,7 @@ interface Window {
      */
     addEventListener(type: "mouseMove", listener: (this: Document, ev: CustomEvent<{x: number, y: number}>) => void): void;
 }
+
+type ToBoolean<T extends Record<string, any>> = {
+    [K in keyof T]: boolean
+}

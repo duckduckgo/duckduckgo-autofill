@@ -6524,9 +6524,9 @@ function createDevice() {
 
   const loggingTransport = {
     async send(deviceApiCall) {
-      console.log('[outgoing]', deviceApiCall.method, 'id:', deviceApiCall.id, JSON.stringify(deviceApiCall.params || null));
+      console.log('[outgoing]', deviceApiCall.method, 'id:', deviceApiCall.id, deviceApiCall.params);
       const result = await transport.send(deviceApiCall);
-      console.log('[incoming]', deviceApiCall.method, 'id:', deviceApiCall.id, JSON.stringify(result || null));
+      console.log('[incoming]', deviceApiCall.method, 'id:', deviceApiCall.id, result);
       return result;
     }
 
@@ -6796,10 +6796,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async setupAutofill() {
-    if (this.globalConfig.isApp) {
-      await this._getAutofillInitData();
-    }
-
     const signedIn = await this._checkDeviceSignedIn();
 
     if (signedIn) {
@@ -7783,15 +7779,7 @@ class InterfacePrototype {
 
 
   async refreshSettings() {
-    var _this$globalConfig$us, _this$globalConfig$us2;
-
-    const defaults = ((_this$globalConfig$us = this.globalConfig.userPreferences) === null || _this$globalConfig$us === void 0 ? void 0 : (_this$globalConfig$us2 = _this$globalConfig$us.platform) === null || _this$globalConfig$us2 === void 0 ? void 0 : _this$globalConfig$us2.name) === 'macos' ? {
-      identities: this.hasLocalIdentities,
-      credentials: this.hasLocalCredentials,
-      creditCards: this.hasLocalCreditCards,
-      email: this.isDeviceSignedIn()
-    } : undefined;
-    await this.settings.refresh(defaults);
+    await this.settings.refresh();
   }
 
   postInit() {}
@@ -7902,7 +7890,10 @@ class InterfacePrototype {
   attachTooltip(form, input, click) {
     let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
     // Avoid flashing tooltip from background tabs on macOS
-    if (document.visibilityState !== 'visible') return;
+    if (document.visibilityState !== 'visible') return; // Only autoprompt on mobile devices
+
+    if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return; // Only fire autoprompt once
+
     if (trigger === 'autoprompt' && this.autopromptFired) return;
     form.activeInput = input;
     this.currentAttached = form;
@@ -8578,7 +8569,11 @@ class Form {
 
   redecorateAllInputs() {
     this.removeAllDecorations();
-    this.execOnInputs(input => this.decorateInput(input));
+    this.execOnInputs(input => {
+      if (input instanceof HTMLInputElement) {
+        this.decorateInput(input);
+      }
+    });
   }
 
   resetAllInputs() {
@@ -8639,7 +8634,7 @@ class Form {
    */
 
 
-  execOnInputs(fn) {
+  async execOnInputs(fn) {
     let inputType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'all';
     let shouldCheckForDecorate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     const inputs = this.inputs[inputType];
@@ -8651,7 +8646,7 @@ class Form {
         const {
           shouldDecorate
         } = (0, _inputTypeConfig.getInputConfig)(input);
-        canExecute = shouldDecorate(input, this);
+        canExecute = await shouldDecorate(input, this);
       }
 
       if (canExecute) fn(input);
@@ -8683,10 +8678,17 @@ class Form {
     const styles = (0, _inputStyles.getIconStylesBase)(input, this);
     (0, _autofillUtils.addInlineStyles)(input, styles);
   }
+  /**
+   * Decorate here means adding listeners and an optional icon
+   * @param {HTMLInputElement} input
+   * @returns {Promise<Form>}
+   */
 
-  decorateInput(input) {
+
+  async decorateInput(input) {
     const config = (0, _inputTypeConfig.getInputConfig)(input);
-    if (!config.shouldDecorate(input, this)) return this;
+    const shouldDecorate = await config.shouldDecorate(input, this);
+    if (!shouldDecorate) return this;
     input.setAttribute(ATTR_AUTOFILL, 'true');
     const hasIcon = !!config.getIconBase(input, this);
 
@@ -8756,10 +8758,12 @@ class Form {
       }
     };
 
-    if (input.nodeName !== 'SELECT') {
+    if (!(input instanceof HTMLSelectElement)) {
+      var _input$labels;
+
       const events = ['pointerdown'];
       if (!this.device.globalConfig.isMobileApp) events.push('focus');
-      input.labels.forEach(label => {
+      (_input$labels = input.labels) === null || _input$labels === void 0 ? void 0 : _input$labels.forEach(label => {
         this.addListener(label, 'pointerdown', handlerLabel);
       });
       events.forEach(ev => this.addListener(input, ev, handler));
@@ -10201,12 +10205,28 @@ const getIdentitiesIcon = (input, _ref) => {
 
 const canBeDecorated = input => !input.readOnly && !input.disabled;
 /**
+ * Checks if the input can be decorated and we have the needed data
+ * @param {HTMLInputElement} input
+ * @param {import("../DeviceInterface/InterfacePrototype").default} device
+ * @returns {Promise<boolean>}
+ */
+
+
+exports.canBeDecorated = canBeDecorated;
+
+const canBeAutofilled = async (input, device) => {
+  if (!canBeDecorated(input)) return false;
+  const mainType = (0, _matching.getInputMainType)(input);
+  const subtype = (0, _matching.getInputSubtype)(input);
+  const canAutofill = await device.settings.canAutofillType(mainType, subtype);
+  return Boolean(canAutofill);
+};
+/**
  * A map of config objects. These help by centralising here some complexity
  * @type {InputTypeConfig}
  */
 
 
-exports.canBeDecorated = canBeDecorated;
 const inputTypeConfig = {
   /** @type {CredentialsInputTypeConfig} */
   credentials: {
@@ -10233,24 +10253,23 @@ const inputTypeConfig = {
 
       return '';
     },
-    shouldDecorate: (input, _ref4) => {
+    shouldDecorate: async (_input, _ref4) => {
       let {
         isLogin,
         device
       } = _ref4;
 
-      // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
-      // saved password
+      // if we are on a 'login' page, check if we have data to autofill the field
       if (isLogin) {
-        return Boolean(device.settings.availableInputTypes.credentials);
-      } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
+        return canBeAutofilled(_input, device);
+      } // at this point, it's not a 'login' form, so we could offer to provide a password
 
 
       if (device.settings.featureToggles.password_generation) {
-        const subtype = (0, _matching.getInputSubtype)(input);
+        const subtype = (0, _matching.getInputSubtype)(_input);
 
         if (subtype === 'password') {
-          return true;
+          return canBeDecorated(_input);
         }
       }
 
@@ -10265,11 +10284,11 @@ const inputTypeConfig = {
     type: 'creditCards',
     getIconBase: () => '',
     getIconFilled: () => '',
-    shouldDecorate: (_input, _ref5) => {
+    shouldDecorate: async (_input, _ref5) => {
       let {
         device
       } = _ref5;
-      return canBeDecorated(_input) && Boolean(device.settings.availableInputTypes.creditCards);
+      return canBeAutofilled(_input, device);
     },
     dataType: 'CreditCards',
     tooltipItem: data => new _CreditCard.CreditCardTooltipItem(data)
@@ -10280,24 +10299,11 @@ const inputTypeConfig = {
     type: 'identities',
     getIconBase: getIdentitiesIcon,
     getIconFilled: getIdentitiesIcon,
-    shouldDecorate: (input, _ref6) => {
+    shouldDecorate: async (_input, _ref6) => {
       let {
         device
       } = _ref6;
-      if (!canBeDecorated(input)) return false;
-      const subtype = (0, _matching.getInputSubtype)(input);
-
-      if (device.settings.availableInputTypes.identities) {
-        var _device$getLocalIdent;
-
-        return Boolean((_device$getLocalIdent = device.getLocalIdentities) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.call(device).some(identity => !!identity[subtype]));
-      }
-
-      if (subtype === 'emailAddress') {
-        return Boolean(device.isDeviceSignedIn());
-      }
-
-      return false;
+      return canBeAutofilled(_input, device);
     },
     dataType: 'Identities',
     tooltipItem: data => new _Identity.IdentityTooltipItem(data)
@@ -10308,7 +10314,7 @@ const inputTypeConfig = {
     type: 'unknown',
     getIconBase: () => '',
     getIconFilled: () => '',
-    shouldDecorate: () => false,
+    shouldDecorate: async () => false,
     dataType: '',
     tooltipItem: _data => {
       throw new Error('unreachable');
@@ -12976,6 +12982,12 @@ class Settings {
 
     this.deviceApi = deviceApi;
     this.globalConfig = config;
+
+    if (!config.availableInputTypes) {
+      throw new Error('availbleInputTypes must be passed in the global config');
+    }
+
+    this._availableInputTypes = config.availableInputTypes;
   }
   /**
    * Feature toggles are delivered as part of the Runtime Configuration - a flexible design that
@@ -13011,13 +13023,16 @@ class Settings {
    * Available Input Types are boolean indicators to represent which input types the
    * current **user** has data available for.
    *
+   // * @param {Omit<SupportedMainTypes, 'unknown'>} mainType
    * @returns {Promise<AvailableInputTypes>}
    */
 
 
-  async getAvailableInputTypes() {
+  async getAvailableInputTypes(mainType) {
     try {
-      return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
+      return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall({
+        mainType
+      }));
     } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: getAvailableInputTypes: ❌', e);
@@ -13034,40 +13049,49 @@ class Settings {
    *      availableInputTypes: AvailableInputTypes,
    *      featureToggles: AutofillFeatureToggles
    * }>}
-   * @param {AvailableInputTypes} [availableInputTypesOverrides] a migration aid so that macOS can provide data in its old way initially
    */
 
 
-  async refresh(availableInputTypesOverrides) {
+  async refresh() {
     this.setFeatureToggles(await this.getFeatureToggles());
-    const availableInputTypesFromRemote = await this.getAvailableInputTypes();
-    /** @type {AvailableInputTypes} */
-
-    const availableInputTypes = {
-      email: false,
-      // not supported yet
-      ...availableInputTypesFromRemote,
-      ...availableInputTypesOverrides
-    }; // Update the availableInputTypes to take into account the feature toggles.
-
-    if (!this.featureToggles.inputType_credentials) {
-      availableInputTypes.credentials = false;
-    }
-
-    if (!this.featureToggles.inputType_identities) {
-      availableInputTypes.identities = false;
-    }
-
-    if (!this.featureToggles.inputType_creditCards) {
-      availableInputTypes.creditCards = false;
-    } // at this point we've fetched from remote + merged local overrides, so we're ready to set.
-
-
-    this.setAvailableInputTypes(availableInputTypes);
     return {
       featureToggles: this.featureToggles,
       availableInputTypes: this.availableInputTypes
     };
+  }
+  /**
+   * Checks if a mainType/subtype pair can be autofilled with the data we have
+   * @param {SupportedMainTypes} mainType
+   * @param {string} subtype
+   * @returns {Promise<boolean>}
+   */
+
+
+  async canAutofillType(mainType, subtype) {
+    var _this$availableInputT5;
+
+    if (!this.featureToggles["inputType_".concat(mainType)]) {
+      return false;
+    }
+
+    if (this.availableInputTypes[mainType] === undefined) {
+      const availableInputTypesFromRemote = await this.getAvailableInputTypes(mainType);
+      this.setAvailableInputTypes(availableInputTypesFromRemote);
+    }
+
+    if (subtype === 'fullName') {
+      var _this$availableInputT, _this$availableInputT2;
+
+      return Boolean(((_this$availableInputT = this.availableInputTypes.identities) === null || _this$availableInputT === void 0 ? void 0 : _this$availableInputT.firstName) || ((_this$availableInputT2 = this.availableInputTypes.identities) === null || _this$availableInputT2 === void 0 ? void 0 : _this$availableInputT2.lastName));
+    }
+
+    if (subtype === 'expiration') {
+      var _this$availableInputT3, _this$availableInputT4;
+
+      return Boolean(((_this$availableInputT3 = this.availableInputTypes.creditCards) === null || _this$availableInputT3 === void 0 ? void 0 : _this$availableInputT3.expirationMonth) || ((_this$availableInputT4 = this.availableInputTypes.creditCards) === null || _this$availableInputT4 === void 0 ? void 0 : _this$availableInputT4.expirationYear));
+    }
+
+    return Boolean((_this$availableInputT5 = this.availableInputTypes[mainType]) === null || _this$availableInputT5 === void 0 ? void 0 : _this$availableInputT5[subtype]);
   }
   /** @returns {AutofillFeatureToggles} */
 
@@ -13093,7 +13117,9 @@ class Settings {
 
 
   setAvailableInputTypes(value) {
-    this._availableInputTypes = value;
+    this._availableInputTypes = { ...this._availableInputTypes,
+      ...value
+    };
   }
 
   static default(globalConfig, deviceApi) {
@@ -13121,9 +13147,33 @@ _defineProperty(Settings, "defaults", {
 
   /** @type {AvailableInputTypes} */
   availableInputTypes: {
-    credentials: false,
-    identities: false,
-    creditCards: false,
+    credentials: {
+      username: false,
+      password: false
+    },
+    identities: {
+      firstName: false,
+      middleName: false,
+      lastName: false,
+      birthdayDay: false,
+      birthdayMonth: false,
+      birthdayYear: false,
+      addressStreet: false,
+      addressStreet2: false,
+      addressCity: false,
+      addressProvince: false,
+      addressPostalCode: false,
+      addressCountryCode: false,
+      phone: false,
+      emailAddress: false
+    },
+    creditCards: {
+      cardName: false,
+      cardSecurityCode: false,
+      expirationMonth: false,
+      expirationYear: false,
+      cardNumber: false
+    },
     email: false
   }
 });
@@ -15065,7 +15115,7 @@ class StoreFormDataCall extends _deviceApi.DeviceApiCall {
 
 }
 /**
- * @extends {DeviceApiCall<any, getAvailableInputTypesResultSchema>} 
+ * @extends {DeviceApiCall<getAvailableInputTypesRequestSchema, getAvailableInputTypesResultSchema>} 
  */
 
 
@@ -15078,6 +15128,8 @@ class GetAvailableInputTypesCall extends _deviceApi.DeviceApiCall {
     _defineProperty(this, "method", "getAvailableInputTypes");
 
     _defineProperty(this, "id", "getAvailableInputTypesResponse");
+
+    _defineProperty(this, "paramsValidator", _validatorsZod.getAvailableInputTypesRequestSchema);
 
     _defineProperty(this, "resultValidator", _validatorsZod.getAvailableInputTypesResultSchema);
   }
@@ -15092,7 +15144,7 @@ exports.GetAvailableInputTypesCall = GetAvailableInputTypesCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.storeFormDataSchema = exports.runtimeConfigurationSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = void 0;
+exports.userPreferencesSchema = exports.storeFormDataSchema = exports.runtimeConfigurationSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAvailableInputTypesRequestSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = void 0;
 
 var _zod = require("zod");
 
@@ -15110,6 +15162,39 @@ const autofillFeatureTogglesSchema = _zod.z.object({
 });
 
 exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
+
+const availableInputTypesSchema = _zod.z.object({
+  credentials: _zod.z.record(_zod.z.any()).and(_zod.z.object({
+    username: _zod.z.boolean().optional(),
+    password: _zod.z.boolean().optional()
+  })).optional(),
+  identities: _zod.z.record(_zod.z.any()).and(_zod.z.object({
+    firstName: _zod.z.boolean().optional(),
+    middleName: _zod.z.boolean().optional(),
+    lastName: _zod.z.boolean().optional(),
+    birthdayDay: _zod.z.boolean().optional(),
+    birthdayMonth: _zod.z.boolean().optional(),
+    birthdayYear: _zod.z.boolean().optional(),
+    addressStreet: _zod.z.boolean().optional(),
+    addressStreet2: _zod.z.boolean().optional(),
+    addressCity: _zod.z.boolean().optional(),
+    addressProvince: _zod.z.boolean().optional(),
+    addressPostalCode: _zod.z.boolean().optional(),
+    addressCountryCode: _zod.z.boolean().optional(),
+    phone: _zod.z.boolean().optional(),
+    emailAddress: _zod.z.boolean().optional()
+  })).optional(),
+  creditCards: _zod.z.record(_zod.z.any()).and(_zod.z.object({
+    cardName: _zod.z.boolean().optional(),
+    cardSecurityCode: _zod.z.boolean().optional(),
+    expirationMonth: _zod.z.boolean().optional(),
+    expirationYear: _zod.z.boolean().optional(),
+    cardNumber: _zod.z.boolean().optional()
+  })).optional(),
+  email: _zod.z.boolean().optional()
+});
+
+exports.availableInputTypesSchema = availableInputTypesSchema;
 
 const credentialsSchema = _zod.z.object({
   id: _zod.z.string().optional(),
@@ -15161,14 +15246,19 @@ const getAutofillDataResponseSchema = _zod.z.object({
 
 exports.getAutofillDataResponseSchema = getAutofillDataResponseSchema;
 
-const availableInputTypesSchema = _zod.z.object({
-  credentials: _zod.z.boolean().optional(),
-  identities: _zod.z.boolean().optional(),
-  creditCards: _zod.z.boolean().optional(),
-  email: _zod.z.boolean().optional()
+const getAvailableInputTypesRequestSchema = _zod.z.object({
+  mainType: _zod.z.union([_zod.z.literal("credentials"), _zod.z.literal("identities"), _zod.z.literal("creditCards")])
 });
 
-exports.availableInputTypesSchema = availableInputTypesSchema;
+exports.getAvailableInputTypesRequestSchema = getAvailableInputTypesRequestSchema;
+
+const getAvailableInputTypesResultSchema = _zod.z.object({
+  type: _zod.z.literal("getAvailableInputTypesResponse").optional(),
+  success: availableInputTypesSchema,
+  error: genericErrorSchema.optional()
+});
+
+exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 
 const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.any());
 
@@ -15209,14 +15299,6 @@ const autofillSettingsSchema = _zod.z.object({
 
 exports.autofillSettingsSchema = autofillSettingsSchema;
 
-const getAvailableInputTypesResultSchema = _zod.z.object({
-  type: _zod.z.literal("getAvailableInputTypesResponse").optional(),
-  success: availableInputTypesSchema,
-  error: genericErrorSchema.optional()
-});
-
-exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
-
 const contentScopeSchema = _zod.z.object({
   features: contentScopeFeaturesSchema,
   unprotectedTemporary: _zod.z.array(_zod.z.any())
@@ -15227,7 +15309,8 @@ exports.contentScopeSchema = contentScopeSchema;
 const runtimeConfigurationSchema = _zod.z.object({
   contentScope: contentScopeSchema,
   userUnprotectedDomains: _zod.z.array(_zod.z.string()),
-  userPreferences: userPreferencesSchema
+  userPreferences: userPreferencesSchema,
+  availableInputTypes: availableInputTypesSchema
 });
 
 exports.runtimeConfigurationSchema = runtimeConfigurationSchema;
@@ -15423,7 +15506,9 @@ function androidSpecificRuntimeConfiguration(globalConfig) {
       // @ts-ignore
       userPreferences: globalConfig.userPreferences,
       // @ts-ignore
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains
+      userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+      // @ts-ignore
+      availableInputTypes: globalConfig.availableInputTypes
     }
   };
 }
@@ -15517,7 +15602,9 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
       // @ts-ignore
       userPreferences: globalConfig.userPreferences,
       // @ts-ignore
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains
+      userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+      // @ts-ignore
+      availableInputTypes: globalConfig.availableInputTypes
     }
   };
 }

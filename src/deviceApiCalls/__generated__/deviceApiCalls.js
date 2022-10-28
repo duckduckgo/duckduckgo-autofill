@@ -4,6 +4,7 @@ import {
     getAutofillDataResponseSchema,
     getRuntimeConfigurationResponseSchema,
     storeFormDataSchema,
+    getAvailableInputTypesRequestSchema,
     getAvailableInputTypesResultSchema,
     getAutofillInitDataResponseSchema,
     getAutofillCredentialsParamsSchema,
@@ -38,11 +39,12 @@ export class StoreFormDataCall extends DeviceApiCall {
   paramsValidator = storeFormDataSchema
 }
 /**
- * @extends {DeviceApiCall<any, getAvailableInputTypesResultSchema>} 
+ * @extends {DeviceApiCall<getAvailableInputTypesRequestSchema, getAvailableInputTypesResultSchema>} 
  */
 export class GetAvailableInputTypesCall extends DeviceApiCall {
   method = "getAvailableInputTypes"
   id = "getAvailableInputTypesResponse"
+  paramsValidator = getAvailableInputTypesRequestSchema
   resultValidator = getAvailableInputTypesResultSchema
 }
 /**
