@@ -41,5 +41,9 @@
   "askToUnlockProvider": {
     "id": "askToUnlockProviderResponse",
     "resultValidator": "./schemas/askToUnlockProvider.result.json"
+  },
+  "checkCredentialsProviderStatus": {
+    "id": "checkCredentialsProviderStatusResponse",
+    "resultValidator": "./schemas/checkCredentialsProviderStatus.result.json"
   }
 }

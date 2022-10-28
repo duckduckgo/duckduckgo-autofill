@@ -6,7 +6,8 @@ import {
     storeFormDataSchema,
     getAvailableInputTypesRequestSchema,
     getAvailableInputTypesResultSchema,
-    askToUnlockProviderResultSchema
+    askToUnlockProviderResultSchema,
+    checkCredentialsProviderStatusResultSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -50,4 +51,12 @@ export class AskToUnlockProviderCall extends DeviceApiCall {
   method = "askToUnlockProvider"
   id = "askToUnlockProviderResponse"
   resultValidator = askToUnlockProviderResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, checkCredentialsProviderStatusResultSchema>} 
+ */
+export class CheckCredentialsProviderStatusCall extends DeviceApiCall {
+  method = "checkCredentialsProviderStatus"
+  id = "checkCredentialsProviderStatusResponse"
+  resultValidator = checkCredentialsProviderStatusResultSchema
 }

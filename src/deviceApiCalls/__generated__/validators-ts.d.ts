@@ -152,6 +152,89 @@ export interface AvailableInputTypes {
   email?: boolean;
 }
 
+// checkCredentialsProviderStatus.result.json
+
+/**
+ * This is only used in macOS 10.15 Catalina
+ */
+export interface CheckCredentialsProviderStatusResult {
+  /**
+   * A string used to identify this result. It's optional
+   */
+  type?: "checkCredentialsProviderStatusResponse";
+  success: ProviderStatusUpdated;
+  error?: GenericError;
+}
+export interface ProviderStatusUpdated {
+  status: "locked" | "unlocked";
+  credentials: Credentials[];
+  availableInputTypes: AvailableInputTypes;
+}
+export interface Credentials {
+  /**
+   * If present, must be a string
+   */
+  id?: string;
+  /**
+   * This field is always present, but sometimes it could be an empty string
+   */
+  username: string;
+  password: string;
+  credentialsProvider?: "duckduckgo" | "bitwarden";
+  providerStatus?: "locked" | "unlocked";
+}
+/**
+ * For each main autofill types, it maps specific fields to their availability
+ */
+export interface AvailableInputTypes {
+  /**
+   * maps field types and the availability of data for the current site
+   */
+  credentials?: {
+    username?: boolean;
+    password?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  identities?: {
+    firstName?: boolean;
+    middleName?: boolean;
+    lastName?: boolean;
+    birthdayDay?: boolean;
+    birthdayMonth?: boolean;
+    birthdayYear?: boolean;
+    addressStreet?: boolean;
+    addressStreet2?: boolean;
+    addressCity?: boolean;
+    addressProvince?: boolean;
+    addressPostalCode?: boolean;
+    addressCountryCode?: boolean;
+    phone?: boolean;
+    emailAddress?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  creditCards?: {
+    cardName?: boolean;
+    cardSecurityCode?: boolean;
+    expirationMonth?: boolean;
+    expirationYear?: boolean;
+    cardNumber?: boolean;
+    [k: string]: unknown;
+  };
+  /**
+   * true if signed in for Email Protection
+   */
+  email?: boolean;
+}
+export interface GenericError {
+  message: string;
+}
+
 // credentials.json
 
 export interface Credentials {
