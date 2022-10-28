@@ -39,12 +39,9 @@ jobs:
           ref: develop
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update Android autofill reference
-        env:
-          BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
         run: |
-          node ./autofill/scripts/release/update-android-repo.js
           cd android
-          npm install
+          npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
           cd ..
       - name: Create Android PR Body
         env:
