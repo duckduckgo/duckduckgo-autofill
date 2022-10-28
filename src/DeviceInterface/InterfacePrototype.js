@@ -19,7 +19,8 @@ import {Settings} from '../Settings.js'
 import {DeviceApi, validate} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
-    StoreFormDataCall
+    StoreFormDataCall,
+    AskToUnlockProviderCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './formSubmissionsApi.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
@@ -462,7 +463,10 @@ class InterfacePrototype {
         })
     }
 
-    async askToUnlockProvider () {}
+    async askToUnlockProvider () {
+        const response = await this.deviceApi.request(new AskToUnlockProviderCall(null))
+        this.providerStatusUpdated(response)
+    }
 
     isTooltipActive () {
         return this.uiController.isActive?.() ?? false
