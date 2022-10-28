@@ -51,9 +51,10 @@ jobs:
           ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js android)"
-          echo "PR_BODY_ANDROID<<EOF" >> $GITHUB_ENV
+          DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
+          echo "PR_BODY_ANDROID<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for Android
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: android-pr
@@ -89,9 +90,10 @@ jobs:
           ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js bsk)"
-          echo "PR_BODY_BSK<<EOF" >> $GITHUB_ENV
+          DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
+          echo "PR_BODY_BSK<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for BSK
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: bsk-pr
@@ -125,9 +127,10 @@ jobs:
           BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js ios)"
-          echo "PR_BODY_IOS<<EOF" >> $GITHUB_ENV
+          DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
+          echo "PR_BODY_IOS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for iOS
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: ios-pr
@@ -161,9 +164,10 @@ jobs:
           BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js macos)"
-          echo "PR_BODY_MACOS<<EOF" >> $GITHUB_ENV
+          DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
+          echo "PR_BODY_MACOS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for macOS
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: macos-pr
