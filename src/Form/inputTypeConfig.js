@@ -4,7 +4,7 @@ import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType} fr
 import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
 import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js'
 import { IdentityTooltipItem } from '../InputTypes/Identity.js'
-import {constants} from '../constants'
+import {constants} from '../constants.js'
 
 /**
  * Get the icon for the identities (currently only Dax for emails)

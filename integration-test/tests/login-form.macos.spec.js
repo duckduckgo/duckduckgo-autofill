@@ -22,7 +22,6 @@ async function mocks (page) {
             username: personalAddress,
             password
         })
-        .withAvailableInputTypes({ credentials: true })
         .applyTo(page)
     return {personalAddress, password}
 }
@@ -42,7 +41,12 @@ async function testLoginPage (page, server, opts = {}) {
 
     // Load the autofill.js script with replacements
     await createAutofillScript()
-        .replaceAll(macosContentScopeReplacements({overlay}))
+        .replaceAll(macosContentScopeReplacements({
+            availableInputTypes: {
+                credentials: {username: true, password: true}
+            },
+            overlay
+        }))
         .platform('macos')
         .applyTo(page)
 
@@ -77,7 +81,11 @@ async function createLoginFormInModalPage (page, server) {
 
     // Pretend we're running in a top-frame scenario
     await createAutofillScript()
-        .replaceAll(macosContentScopeReplacements())
+        .replaceAll(macosContentScopeReplacements({
+            availableInputTypes: {
+                credentials: {username: true, password: true}
+            }
+        }))
         .platform('macos')
         .applyTo(page)
 
@@ -103,13 +111,6 @@ test.describe('Auto-fill a login form on macOS', () => {
             await testLoginPage(page, server)
         })
         test.describe('with overlay', () => {
-            test('with autoprompt', async ({page}) => {
-                const login = await testLoginPage(page, server, {overlay: true})
-                // this is not ideal as it's checking an implementation detail.
-                // But it's done to ensure we're not getting a false positive
-                // and definitely loading the overlay code paths
-                await login.assertParentOpened()
-            })
             test('with click and focus', async ({page}) => {
                 const login = await testLoginPage(page, server, {overlay: true, pageType: 'withExtraText'})
                 // this is not ideal as it's checking an implementation detail.
@@ -190,11 +191,14 @@ test.describe('Auto-fill a login form on macOS', () => {
             test('I should not see the key icon', async ({page}) => {
                 await forwardConsoleMessages(page)
                 await createWebkitMocks()
-                    .withAvailableInputTypes({ credentials: false })
                     .applyTo(page)
 
                 await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements())
+                    .replaceAll(macosContentScopeReplacements({
+                        availableInputTypes: {
+                            credentials: {username: false, password: false}
+                        }
+                    }))
                     .platform('macos')
                     .applyTo(page)
 

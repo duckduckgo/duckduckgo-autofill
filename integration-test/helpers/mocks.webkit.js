@@ -1,11 +1,15 @@
+import { createAvailableInputTypes } from './utils.js'
+
 /**
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
  */
 
 /**
  * @param {object} [overrides]
  * @param {Partial<AutofillFeatureToggles>} [overrides.featureToggles]
+ * @param {Partial<AvailableInputTypes>} [overrides.availableInputTypes]
  */
 export const iosContentScopeReplacements = (overrides = {}) => {
     return {
@@ -32,16 +36,23 @@ export const iosContentScopeReplacements = (overrides = {}) => {
                     }
                 }
             }
+        },
+        availableInputTypes: {
+            ...createAvailableInputTypes(overrides.availableInputTypes)
         }
     }
 }
 
 /**
- * @param {{overlay?: boolean, featureToggles?: AutofillFeatureToggles}} opts
+ * @param {{
+ *      overlay?: boolean,
+ *      featureToggles?: AutofillFeatureToggles,
+ *      availableInputTypes?: AvailableInputTypes
+ *  }} opts
  * @returns {Partial<Replacements>}
  */
 export const macosContentScopeReplacements = (opts = {}) => {
-    const { overlay = false, featureToggles } = opts
+    const { overlay = false, featureToggles, availableInputTypes } = opts
     return {
         isApp: true,
         contentScope: {
@@ -74,6 +85,9 @@ export const macosContentScopeReplacements = (opts = {}) => {
                     }
                 }
             }
+        },
+        availableInputTypes: {
+            ...createAvailableInputTypes(availableInputTypes)
         },
         ...overlay ? macosWithOverlay() : macosWithoutOverlay()
     }

@@ -86,7 +86,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials
                 })
@@ -100,7 +100,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'withExtraText'
@@ -116,7 +116,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'withExtraText'
@@ -132,7 +132,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'withModal'
@@ -165,7 +165,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     inputType_credentials: false
                 },
                 availableInputTypes: {
-                    credentials: true
+                    credentials: {username: true, password: true}
                 },
                 credentials
             })

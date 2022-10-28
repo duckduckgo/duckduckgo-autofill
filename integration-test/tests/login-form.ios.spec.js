@@ -90,7 +90,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials
                 })
@@ -104,7 +104,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'withExtraText'
@@ -121,7 +121,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'covered'
@@ -139,7 +139,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'multistep'
@@ -158,7 +158,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials,
                     pageType: 'withModal'
@@ -191,7 +191,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     availableInputTypes: {
-                        credentials: true
+                        credentials: {username: true, password: true}
                     },
                     credentials
                 })
@@ -209,7 +209,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                     inputType_credentials: false
                 },
                 availableInputTypes: {
-                    credentials: true
+                    credentials: {username: true, password: true}
                 },
                 credentials
             })

@@ -252,7 +252,8 @@ export function loginPage (page, server, opts = {}) {
          */
         async assertParentOpened () {
             const credsCalls = await mockedCalls(page, ['getSelectedCredentials'], true)
-            expect(credsCalls.length).toBe(5)
+            const hasSucceeded = credsCalls.some((call) => call[2]?.some(({type}) => type === 'ok'))
+            expect(hasSucceeded).toBe(true)
         },
         /** @param {{password: string}} data */
         async submitPasswordOnlyForm (data) {
@@ -281,6 +282,10 @@ export function loginPage (page, server, opts = {}) {
             }
 
             expect(mockCalls.length).toBe(0)
+        },
+        async assertAnyMockCallOccurred () {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            expect(calls.length).toBeGreaterThan(0)
         },
         /** @param {string} mockCallName */
         async assertMockCallOccurred (mockCallName) {
