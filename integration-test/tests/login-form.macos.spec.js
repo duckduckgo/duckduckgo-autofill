@@ -152,22 +152,6 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)
             })
-            test('I should be able to use my saved credentials with autoprompt', async ({page}) => {
-                await forwardConsoleMessages(page)
-
-                const {personalAddress, password} = await mocks(page)
-
-                // Pretend we're running in a top-frame scenario
-                await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements({overlay: true}))
-                    .platform('macos')
-                    .applyTo(page)
-
-                const login = loginPage(page, server)
-                await login.navigate()
-                await login.fieldsContainIcons()
-                await login.assertFirstCredential(personalAddress, password)
-            })
             test('autofill should not submit the form automatically', async ({page}) => {
                 const login = await createLoginFormInModalPage(page, server)
                 await login.promptWasNotShown()
