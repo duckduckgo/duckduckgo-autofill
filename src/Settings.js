@@ -173,7 +173,8 @@ export class Settings {
 
         return {
             featureToggles: this.featureToggles,
-            availableInputTypes: this.availableInputTypes
+            availableInputTypes: this.availableInputTypes,
+            enabled: this.enabled
         }
     }
 

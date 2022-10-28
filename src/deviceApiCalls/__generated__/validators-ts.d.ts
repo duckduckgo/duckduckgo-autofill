@@ -417,6 +417,7 @@ export interface Credentials {
   username: string;
   password: string;
   credentialsProvider?: "duckduckgo" | "bitwarden";
+  providerStatus?: "locked" | "unlocked";
 }
 export interface GenericError {
   message: string;

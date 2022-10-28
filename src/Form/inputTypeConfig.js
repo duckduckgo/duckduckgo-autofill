@@ -44,7 +44,7 @@ const canBeInteractedWith = (input) => !input.readOnly && !input.disabled
  * @returns {Promise<boolean>}
  */
 const canBeAutofilled = async (input, device) => {
-    if (!canBeDecorated(input)) return false
+    if (!canBeInteractedWith(input)) return false
 
     const mainType = getInputMainType(input)
     const subtype = getInputSubtype(input)
@@ -84,7 +84,7 @@ const inputTypeConfig = {
             if (device.settings.featureToggles.password_generation) {
                 const subtype = getInputSubtype(_input)
                 if (subtype === 'password') {
-                    return canBeDecorated(_input)
+                    return canBeInteractedWith(_input)
                 }
             }
 

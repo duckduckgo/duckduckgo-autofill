@@ -401,7 +401,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                         password: '',
                         credentialsProvider: 'bitwarden'
                     })
-                    .withCheckCredentialsProviderStatus()
+                    .withCheckCredentialsProviderStatus?.()
                     .applyTo(page)
 
                 // Load the autofill.js script with replacements

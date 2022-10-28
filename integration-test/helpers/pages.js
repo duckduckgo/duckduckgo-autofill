@@ -574,7 +574,7 @@ export function overlayPage (page, server) {
             expect(callNameCalls.length).toBeGreaterThanOrEqual(1)
             const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], false)
             expect(closeAutofillParentCalls.length).toBe(0)
-        }
+        },
         /**
          * When we're in an overlay, 'closeAutofillParent' should not be called.
          */

@@ -22,7 +22,7 @@ import {
     StoreFormDataCall,
     AskToUnlockProviderCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {initFormSubmissionsApi} from './formSubmissionsApi.js'
+import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 
 /**
