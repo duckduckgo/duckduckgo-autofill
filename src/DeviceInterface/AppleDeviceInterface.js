@@ -7,6 +7,8 @@ import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
 import { createNotification, createRequest } from '../../packages/device-api/index.js'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
+import {ddgGlobals} from '../appleDeviceUtils/captureDdgGlobals.js'
+import {CheckCredentialsProviderStatusCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {getInputType} from '../Form/matching.js'
 
 /**
@@ -284,6 +286,37 @@ class AppleDeviceInterface extends InterfacePrototype {
                 handler()
             }
         })
+    }
+
+    async addDeviceListeners () {
+        if (this.settings.featureToggles.credentials_provider !== 'duckduckgo') {
+            if (this.globalConfig.hasModernWebkitAPI) {
+                ddgGlobals.ObjectDefineProperty(ddgGlobals.window, 'providerStatusUpdated', {
+                    enumerable: false,
+                    configurable: false,
+                    writable: false,
+                    value: (data) => {
+                        this.providerStatusUpdated(data)
+                    }
+                })
+            } else {
+                setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
+            }
+        }
+    }
+
+    async _pollForUpdatesToCredentialsProvider () {
+        try {
+            const response = await this.deviceApi.request(new CheckCredentialsProviderStatusCall(null))
+            if (response.availableInputTypes.credentialsProviderStatus !== this.settings.availableInputTypes.credentialsProviderStatus) {
+                this.providerStatusUpdated(response)
+            }
+            setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e)
+            }
+        }
     }
 
     /** @type {any} */

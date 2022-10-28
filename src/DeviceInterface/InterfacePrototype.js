@@ -22,7 +22,6 @@ import {
     StoreFormDataCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './formSubmissionsApi.js'
-import {ddgGlobals} from '../appleDeviceUtils/captureDdgGlobals.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 
 /**
@@ -547,24 +546,7 @@ class InterfacePrototype {
     }
     storeUserData (_data) {}
 
-    addDeviceListeners () {
-        if (this.settings.featureToggles.credentials_provider !== 'duckduckgo') {
-            if (this.globalConfig.hasModernWebkitAPI) {
-                if (!this.globalConfig.isTopFrame) {
-                ddgGlobals.ObjectDefineProperty(ddgGlobals.window, 'providerStatusUpdated', {
-                    enumerable: false,
-                    configurable: false,
-                    writable: false,
-                    value: (data) => {
-                        this.providerStatusUpdated(data)
-                    }
-                })
-                }
-            } else {
-
-            }
-        }
-    }
+    addDeviceListeners () {}
 
     /**
      * Called by the native layer on all tabs when the provider status is updated
