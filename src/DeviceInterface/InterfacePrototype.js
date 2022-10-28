@@ -37,7 +37,7 @@ import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/valid
 class InterfacePrototype {
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
-    currentAttached = null
+    activeForm = null
     /** @type {import("../UI/HTMLTooltip.js").default | null} */
     currentTooltip = null
     /** @type {number} */
@@ -323,7 +323,7 @@ class InterfacePrototype {
      * @param {string} type
      */
     async selectedDetail (data, type) {
-        const form = this.currentAttached
+        const form = this.activeForm
         if (!form) {
             return
         }
@@ -380,7 +380,7 @@ class InterfacePrototype {
         if (trigger === 'autoprompt' && this.autopromptFired) return
 
         form.activeInput = input
-        this.currentAttached = form
+        this.activeForm = form
         const inputType = getInputType(input)
 
         /** @type {PosFn} */
