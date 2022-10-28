@@ -10,7 +10,8 @@ const prUrls = {
     android: process.env.ANDROID_PR_URL || 'error',
     bsk: process.env.BSK_PR_URL || 'error',
     ios: process.env.IOS_PR_URL || 'error',
-    macos: process.env.MACOS_PR_URL || 'error'
+    macos: process.env.MACOS_PR_URL || 'error',
+    extensions: process.env.EXTENSIONS_PR_URL || 'error'
 }
 const asanaOutputRaw = process.env.ASANA_OUTPUT || '{}'
 const asanaOutput = JSON.parse(asanaOutputRaw)
