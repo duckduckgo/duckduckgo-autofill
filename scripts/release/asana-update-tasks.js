@@ -44,7 +44,7 @@ const run = async () => {
         if (platformName === 'bsk') {
             // On the BSK task we also substitute the ios and macos placeholders
             const markup =
-                `${wrapInLi(getLink(prUrls.ios, 'iOS PR:'))}${wrapInLi(getLink(prUrls.macos, 'macOS PR:'))}`
+                `${wrapInLi(getLink(prUrls.ios, 'iOS PR'))}${wrapInLi(getLink(prUrls.macos, 'macOS PR'))}`
             taskDescriptionSubstitutions.push(
                 [/\[\[extra_content]]/, markup]
             )

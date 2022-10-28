@@ -1,5 +1,4 @@
-**Reviewer:** 
-**Asana:** [[asana_url]]
+**Task/Issue URL:** [[asana_url]]
 **Autofill Release:** [[autofill_release_url]]
 [[extra_content]]
 
