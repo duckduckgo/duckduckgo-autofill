@@ -283,6 +283,76 @@ test.describe('Auto-fill a login form on macOS', () => {
                 const autofillCalls = await mockedCalls(page, ['setSize'], true)
                 expect(autofillCalls.length).toBeGreaterThanOrEqual(1)
             })
+
+            test('when providerStatusUpdated is called by the native layer', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: 'provider_locked',
+                        username: '',
+                        password: '',
+                        credentialsProvider: 'bitwarden'
+                    })
+                    .applyTo(page)
+
+                // Load the autofill.js script with replacements
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({
+                        featureToggles: {
+                            credentials_provider: 'bitwarden'
+                        }
+                    }))
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.fieldsContainIcons()
+
+                await login.assertTooltipNotOpen(personalAddress)
+
+                // NOTE: I'm not creating separate test cases because these calls can happen multiple times
+                // in the page lifecycle with different values, so this is a realistic use case
+
+                // unlocked with no credentials available
+                await page.evaluate(`
+                    window.providerStatusUpdated({
+                        status: 'unlocked',
+                        credentials: [],
+                        availableInputTypes: {credentials: {password: false, username: false}}
+                    })
+                `)
+
+                await login.fieldsDoNotContainIcons()
+
+                // unlocked with credentials available
+                await page.evaluate(`
+                    window.providerStatusUpdated({
+                        status: 'unlocked',
+                        credentials: [
+                            {id: '3', password: 'test', username: 'testName', credentialsProvider: 'bitwarden'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: true}}
+                    })
+                `)
+
+                await login.fieldsContainIcons()
+
+                // unlocked with only a password field
+                await page.evaluate(`
+                    window.providerStatusUpdated({
+                        status: 'unlocked',
+                        credentials: [
+                            {id: '3', password: 'test', username: '', credentialsProvider: 'bitwarden'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: false}}
+                    })
+                `)
+
+                await login.onlyPasswordFieldHasIcon()
+            })
         })
     })
 })

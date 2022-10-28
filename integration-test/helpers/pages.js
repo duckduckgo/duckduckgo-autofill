@@ -168,6 +168,12 @@ export function loginPage (page, server, opts = {}) {
             expect(styles1).toContain('data:image/svg+xml;base64,')
             expect(styles2).toContain('data:image/svg+xml;base64,')
         },
+        async onlyPasswordFieldHasIcon () {
+            const styles1 = await page.locator('#email').getAttribute('style')
+            const styles2 = await page.locator('#password').getAttribute('style')
+            expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
+            expect(styles2 || '').toContain('data:image/svg+xml;base64,')
+        },
         /**
          * @param {string} username
          * @return {Promise<void>}
@@ -564,7 +570,6 @@ export function overlayPage (page, server) {
         async doesNotCloseParentAfterCall (callName) {
             const callNameCalls = await mockedCalls(page, [callName], true)
             expect(callNameCalls.length).toBeGreaterThanOrEqual(1)
-            // const calls = await page.evaluate('window.__playwright.mocks.calls')
             const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], false)
             expect(closeAutofillParentCalls.length).toBe(0)
         }

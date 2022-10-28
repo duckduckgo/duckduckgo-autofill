@@ -16,12 +16,14 @@ import { createGlobalConfig } from '../config.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import {createTransport} from '../deviceApiCalls/transports/transports.js'
 import {Settings} from '../Settings.js'
-import {DeviceApi} from '../../packages/device-api/index.js'
+import {DeviceApi, validate} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
     StoreFormDataCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
+import ddgGlobals from '../appleDeviceUtils/captureDdgGlobals.js'
+import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -539,7 +541,36 @@ class InterfacePrototype {
     }
     storeUserData (_data) {}
 
-    addDeviceListeners () {}
+    addDeviceListeners () {
+        if (this.settings.featureToggles.credentials_provider !== 'duckduckgo') {
+            if (this.globalConfig.hasModernWebkitAPI) {
+                ddgGlobals.ObjectDefineProperty(ddgGlobals.window, 'providerStatusUpdated', {
+                    enumerable: false,
+                    configurable: false,
+                    writable: false,
+                    value: (data) => {
+                        this.providerStatusUpdated(data)
+                    }
+                })
+            }
+        }
+    }
+
+    /**
+     * Called by the native layer on all tabs when the provider status is updated
+     * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
+     */
+    providerStatusUpdated (data) {
+        const {availableInputTypes} = validate(data, providerStatusUpdatedSchema)
+        // update settings with the new status
+        this.settings.setAvailableInputTypes(availableInputTypes)
+        if (this.globalConfig.isTopFrame) {
+            // TODO: do we want to use this method instead of responding to askToUnlockProvider?
+        } else {
+            this.scanner.forms.forEach(form => form.redecorateAllInputs())
+        }
+    }
+
     /** @param {() => void} _fn */
     addLogoutListener (_fn) {}
     isDeviceSignedIn () { return false }

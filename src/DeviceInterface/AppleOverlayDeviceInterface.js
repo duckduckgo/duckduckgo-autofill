@@ -75,7 +75,6 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
 
     async askToUnlockProvider () {
         const providerStatusUpdated = await this.deviceApi.request(new AskToUnlockProviderCall(null))
-        // await this._getAutofillInitData()
         // rerender the tooltip
         this.uiController.updateItems(providerStatusUpdated.credentials)
     }
