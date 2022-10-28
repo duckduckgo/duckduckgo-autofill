@@ -1,4 +1,4 @@
-import {createAvailableInputTypes} from "./utils.js";
+import {createAvailableInputTypes} from './utils.js'
 
 /**
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
