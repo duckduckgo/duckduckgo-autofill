@@ -4,6 +4,7 @@ import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType} fr
 import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
 import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js'
 import { IdentityTooltipItem } from '../InputTypes/Identity.js'
+import {constants} from '../constants'
 
 /**
  * Get the icon for the identities (currently only Dax for emails)
@@ -147,8 +148,18 @@ const getInputConfigFromType = (inputType) => {
     return inputTypeConfig[inputMainType]
 }
 
+/**
+ * Given an input field checks wheter it was previously decorated
+ * @param {HTMLInputElement} input
+ * @returns {Boolean}
+ */
+const isFieldDecorated = (input) => {
+    return input.hasAttribute(constants.ATTR_INPUT_TYPE)
+}
+
 export {
     getInputConfig,
     getInputConfigFromType,
     canBeInteractedWith
+    isFieldDecorated
 }

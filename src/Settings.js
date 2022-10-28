@@ -170,7 +170,7 @@ export class Settings {
      * @returns {Promise<boolean>}
      */
     async canAutofillType (mainType, subtype) {
-        if (!this.featureToggles[`inputType_${mainType}`]) {
+        if (!this.featureToggles[`inputType_${mainType}`] && subtype !== 'emailAddress') {
             return false
         }
 
@@ -185,6 +185,10 @@ export class Settings {
 
         if (subtype === 'expiration') {
             return Boolean(this.availableInputTypes.creditCards?.expirationMonth || this.availableInputTypes.creditCards?.expirationYear)
+        }
+
+        if (subtype === 'emailAddress' && this.featureToggles.emailProtection) {
+            return true
         }
 
         return Boolean(this.availableInputTypes[mainType]?.[subtype])

@@ -12,7 +12,7 @@ import {
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
 import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
-import {canBeInteractedWith, getInputConfig} from './inputTypeConfig.js'
+import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
 import {
     getUnifiedExpiryDate,
@@ -307,14 +307,13 @@ class Form {
      * @param {'all' | SupportedMainTypes} inputType
      * @param {boolean} shouldCheckForDecorate
      */
-    async execOnInputs (fn, inputType = 'all', shouldCheckForDecorate = true) {
+    execOnInputs (fn, inputType = 'all', shouldCheckForDecorate = true) {
         const inputs = this.inputs[inputType]
         for (const input of inputs) {
             let canExecute = true
             // sometimes we want to execute even if we didn't decorate
             if (shouldCheckForDecorate) {
-                const {shouldDecorate} = getInputConfig(input)
-                canExecute = await shouldDecorate(input, this)
+                canExecute = isFieldDecorated(input)
             }
             if (canExecute) fn(input)
         }
@@ -534,12 +533,14 @@ class Form {
         return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isVisible(input))
     }
 
-    promptLoginIfNeeded () {
+    async promptLoginIfNeeded () {
         if (document.visibilityState !== 'visible' || !this.isLogin) return
 
-        if (this.device.settings.availableInputTypes.credentials) {
-            const firstCredentialInput = this.getFirstViableCredentialsInput()
-            const input = this.activeInput || firstCredentialInput
+        const firstCredentialInput = this.getFirstViableCredentialsInput()
+        const input = this.activeInput || firstCredentialInput
+        const mainType = getInputMainType(input)
+        const subtype = getInputSubtype(input)
+        if (await this.device.settings.canAutofillType(mainType, subtype)) {
             if (input) {
                 // The timeout is needed in case the page shows a cookie prompt with a slight delay
                 setTimeout(() => {

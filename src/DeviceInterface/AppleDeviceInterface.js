@@ -66,8 +66,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {Promise<void>}
      */
     async setupAutofill () {
-        // this prevents iOS from calling `_getAutofillInitData`.
-        if (this.globalConfig.isApp) {
+        if (!this.globalConfig.supportsTopFrame) {
             await this._getAutofillInitData()
         }
 

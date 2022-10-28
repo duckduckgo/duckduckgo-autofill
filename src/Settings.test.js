@@ -76,6 +76,17 @@ describe('Settings', () => {
                 async (settings) => {
                     expect(await settings.canAutofillType('identities', 'fullName')).toBe(false)
                 }
+            ],
+            [
+                { emailProtection: true },
+                {
+                    ...createAvailableInputTypes({
+                        identities: {emailAddress: true}
+                    })
+                },
+                async (settings) => {
+                    expect(await settings.canAutofillType('identities', 'emailAddress')).toBe(true)
+                }
             ]
         ]
         for (let [toggles, types, fn] of cases) {
