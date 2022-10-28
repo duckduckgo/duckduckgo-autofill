@@ -1,8 +1,9 @@
 import {AppleDeviceInterface} from './AppleDeviceInterface.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {overlayApi} from './overlayApi.js'
-import {createNotification} from '../../packages/device-api/index.js'
+import {createNotification, validate} from '../../packages/device-api/index.js'
 import {AskToUnlockProviderCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {providerStatusUpdatedSchema} from "../deviceApiCalls/__generated__/validators.zod";
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -74,9 +75,19 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
     }
 
     async askToUnlockProvider () {
-        const providerStatusUpdated = await this.deviceApi.request(new AskToUnlockProviderCall(null))
+        const response = await this.deviceApi.request(new AskToUnlockProviderCall(null))
+        this.providerStatusUpdated(response)
+    }
+
+    async providerStatusUpdated (data) {
+        const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
+
+        // Update local settings and data
+        this.settings.setAvailableInputTypes(availableInputTypes)
+        this.storeLocalCredentials(credentials)
+
         // rerender the tooltip
-        this.uiController.updateItems(providerStatusUpdated.credentials)
+        this.uiController.updateItems(credentials)
     }
 }
 

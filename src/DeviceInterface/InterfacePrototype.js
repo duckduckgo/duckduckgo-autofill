@@ -550,6 +550,7 @@ class InterfacePrototype {
     addDeviceListeners () {
         if (this.settings.featureToggles.credentials_provider !== 'duckduckgo') {
             if (this.globalConfig.hasModernWebkitAPI) {
+                if (!this.globalConfig.isTopFrame) {
                 ddgGlobals.ObjectDefineProperty(ddgGlobals.window, 'providerStatusUpdated', {
                     enumerable: false,
                     configurable: false,
@@ -558,6 +559,9 @@ class InterfacePrototype {
                         this.providerStatusUpdated(data)
                     }
                 })
+                }
+            } else {
+
             }
         }
     }
@@ -566,14 +570,27 @@ class InterfacePrototype {
      * Called by the native layer on all tabs when the provider status is updated
      * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
      */
-    providerStatusUpdated (data) {
-        const {availableInputTypes} = validate(data, providerStatusUpdatedSchema)
-        // update settings with the new status
+    async providerStatusUpdated (data) {
+        try {
+            const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
+
+            // Update local settings and data
         this.settings.setAvailableInputTypes(availableInputTypes)
-        if (this.globalConfig.isTopFrame) {
-            // TODO: do we want to use this method instead of responding to askToUnlockProvider?
-        } else {
+            this.storeLocalCredentials(credentials)
+
+            // rerender the tooltip
+            this.uiController.updateItems(credentials)
+            // If the tooltip is open on an autofill type that's not available, close it
+            const currentInputSubtype = getSubtypeFromType(await this.getCurrentInputType())
+            if (!availableInputTypes.credentials?.[currentInputSubtype]) {
+                this.removeTooltip()
+            }
+            // Redecorate fields according to the new types
             this.scanner.forms.forEach(form => form.redecorateAllInputs())
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
+            }
         }
     }
 
