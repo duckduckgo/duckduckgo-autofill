@@ -1,8 +1,8 @@
 import {constants} from '../helpers/mocks.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {createAutofillScript, forwardConsoleMessages, setupServer} from '../helpers/harness.js'
+import {createAutofillScript, forwardConsoleMessages, mockedCalls, setupServer} from '../helpers/harness.js'
 import {loginPage, loginPageWithFormInModal, loginPageWithText, overlayPage} from '../helpers/pages.js'
-import {test as base} from '@playwright/test'
+import {expect, test as base} from '@playwright/test'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -128,8 +128,8 @@ test.describe('Auto-fill a login form on macOS', () => {
 
             const overlay = overlayPage(page, server)
             await overlay.navigate()
-            await overlay.selectFirstCredential(personalAddress)
-            await overlay.doesNotCloseParent()
+            await overlay.clickButtonWithText(personalAddress)
+            await overlay.doesNotCloseParentAfterCall('pmHandlerGetAutofillCredentials')
         })
     })
     test.describe('When availableInputTypes API is available', () => {
@@ -255,36 +255,34 @@ test.describe('Auto-fill a login form on macOS', () => {
             await login.assertBitwardenTooltipWorking(personalAddress, password)
         })
 
-        test('When bitwarden is locked', async ({page}) => {
-            // enable in-terminal exceptions
-            await forwardConsoleMessages(page)
+        test.describe('When bitwarden is locked', async () => {
+            test('in overlay', async ({page}) => {
+                await forwardConsoleMessages(page)
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: 'provider_locked',
+                        username: '',
+                        password: '',
+                        credentialsProvider: 'bitwarden'
+                    })
+                    .applyTo(page)
 
-            await createWebkitMocks()
-                .withCredentials({
-                    id: 'provider_locked',
-                    username: '',
-                    password: '',
-                    credentialsProvider: 'bitwarden'
-                })
-                .applyTo(page)
+                // Pretend we're running in a top-frame scenario
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements())
+                    .replace('isTopFrame', true)
+                    .replace('supportsTopFrame', true)
+                    .platform('macos')
+                    .applyTo(page)
 
-            // Load the autofill.js script with replacements
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements({
-                    featureToggles: {
-                        credentials_provider: 'bitwarden'
-                    }
-                }))
-                .platform('macos')
-                .applyTo(page)
+                const overlay = overlayPage(page, server)
+                await overlay.navigate()
+                await overlay.clickButtonWithText('Bitwarden is locked')
+                await overlay.doesNotCloseParentAfterCall('askToUnlockProvider')
 
-            const login = loginPage(page, server)
-            await login.navigate()
-            await login.fieldsContainIcons()
-
-            await login.assertTooltipNotOpen(personalAddress)
-
-            await login.assertBitwardenLockedWorking()
+                const autofillCalls = await mockedCalls(page, ['setSize'], true)
+                expect(autofillCalls.length).toBeGreaterThanOrEqual(1)
+            })
         })
     })
 })

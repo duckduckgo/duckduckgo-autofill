@@ -6,11 +6,7 @@ import {
     storeFormDataSchema,
     getAvailableInputTypesRequestSchema,
     getAvailableInputTypesResultSchema,
-    getAutofillInitDataResponseSchema,
-    getAutofillCredentialsParamsSchema,
-    getAutofillCredentialsResultSchema,
-    setSizeParamsSchema,
-    selectedDetailParamsSchema
+    askToUnlockProviderResultSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -48,39 +44,10 @@ export class GetAvailableInputTypesCall extends DeviceApiCall {
   resultValidator = getAvailableInputTypesResultSchema
 }
 /**
- * @extends {DeviceApiCall<any, getAutofillInitDataResponseSchema>} 
+ * @extends {DeviceApiCall<any, askToUnlockProviderResultSchema>} 
  */
-export class GetAutofillInitDataCall extends DeviceApiCall {
-  method = "getAutofillInitData"
-  id = "getAutofillInitDataResponse"
-  resultValidator = getAutofillInitDataResponseSchema
-}
-/**
- * @extends {DeviceApiCall<getAutofillCredentialsParamsSchema, getAutofillCredentialsResultSchema>} 
- */
-export class GetAutofillCredentialsCall extends DeviceApiCall {
-  method = "getAutofillCredentials"
-  id = "getAutofillCredentialsResponse"
-  paramsValidator = getAutofillCredentialsParamsSchema
-  resultValidator = getAutofillCredentialsResultSchema
-}
-/**
- * @extends {DeviceApiCall<setSizeParamsSchema, any>} 
- */
-export class SetSizeCall extends DeviceApiCall {
-  method = "setSize"
-  paramsValidator = setSizeParamsSchema
-}
-/**
- * @extends {DeviceApiCall<selectedDetailParamsSchema, any>} 
- */
-export class SelectedDetailCall extends DeviceApiCall {
-  method = "selectedDetail"
-  paramsValidator = selectedDetailParamsSchema
-}
-/**
- * @extends {DeviceApiCall<any, any>} 
- */
-export class CloseAutofillParentCall extends DeviceApiCall {
-  method = "closeAutofillParent"
+export class AskToUnlockProviderCall extends DeviceApiCall {
+  method = "askToUnlockProvider"
+  id = "askToUnlockProviderResponse"
+  resultValidator = askToUnlockProviderResultSchema
 }

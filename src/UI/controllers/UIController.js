@@ -70,4 +70,10 @@ export class UIController {
     isActive () {
         return false
     }
+
+    /**
+     * Updates the items in the tooltip based on new data. Currently only supporting credentials.
+     * @param {CredentialsObject[]} _data
+     */
+    updateItems (_data) {}
 }

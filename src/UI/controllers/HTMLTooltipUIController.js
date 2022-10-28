@@ -60,6 +60,7 @@ export class HTMLTooltipUIController extends UIController {
     createTooltip (getPosition, topContextData) {
         this._attachListeners()
         const config = getInputConfigFromType(topContextData.inputType)
+        this._activeInputType = topContextData.inputType
 
         /**
          * @type {import('../HTMLTooltip').HTMLTooltipOptions}
@@ -87,6 +88,26 @@ export class HTMLTooltipUIController extends UIController {
                     this._onSelect(config, data, id)
                 }
             })
+    }
+
+    updateItems (data) {
+        if (!this._activeInputType) return
+
+        const config = getInputConfigFromType(this._activeInputType)
+
+        // convert the data into tool tip item renderers
+        const asRenderers = data.map(d => config.tooltipItem(d))
+
+        const activeTooltip = /** @type {import("../DataHTMLTooltip.js").default} */ (this.getActiveTooltip())
+        activeTooltip?.render(config, asRenderers, {
+            onSelect: (id) => {
+                this._onSelect(config, data, id)
+            }
+        })
+        // This is needed because clientHeight and clientWidth were returning 0
+        setTimeout(() => {
+            this.getActiveTooltip()?.setSize()
+        }, 10)
     }
 
     _attachListeners () {

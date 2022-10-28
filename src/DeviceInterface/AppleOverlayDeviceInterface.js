@@ -2,6 +2,7 @@ import {AppleDeviceInterface} from './AppleDeviceInterface.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {overlayApi} from './overlayApi.js'
 import {createNotification} from '../../packages/device-api/index.js'
+import {AskToUnlockProviderCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -70,6 +71,13 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      */
     async selectedDetail (data, type) {
         return this.overlay.selectedDetail(data, type)
+    }
+
+    async askToUnlockProvider () {
+        const providerStatusUpdated = await this.deviceApi.request(new AskToUnlockProviderCall(null))
+        // await this._getAutofillInitData()
+        // rerender the tooltip
+        this.uiController.updateItems(providerStatusUpdated.credentials)
     }
 }
 

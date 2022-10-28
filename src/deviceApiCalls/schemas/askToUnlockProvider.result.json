@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "AskToUnlockProviderResult",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "description": "A string used to identify this result. It's optional",
+      "type": "string",
+      "const": "askToUnlockProviderResponse"
+    },
+    "success": {
+      "$ref": "providerStatusUpdated.json"
+    },
+    "error":  {
+      "$ref": "error.json"
+    }
+  },
+  "required": [
+    "success"
+  ]
+}

@@ -4,6 +4,7 @@ import { createAvailableInputTypes } from './utils.js'
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AskToUnlockProviderResult} AskToUnlockProviderTypes
  */
 
 /**
@@ -201,7 +202,20 @@ export function createWebkitMocks (platform = 'macos') {
         /** @type {null | Record<string, any>} */
         getAvailableInputTypes: null,
         storeFormData: null,
-        selectedDetail: null
+        selectedDetail: null,
+        /** @type {AskToUnlockProviderTypes | null} */
+        askToUnlockProvider: {
+            success: {
+                status: 'unlocked',
+                credentials: [{
+                    id: '2',
+                    password: '',
+                    username: 'peppa',
+                    credentialsProvider: 'bitwarden'
+                }],
+                availableInputTypes: createAvailableInputTypes()
+            }
+        }
     }
 
     /** @type {MockBuilder<any, webkitBase>} */

@@ -228,10 +228,11 @@ class InterfacePrototype {
     }
 
     async startInit () {
+        await this.refreshSettings()
+
         this.addDeviceListeners()
 
         await this.setupAutofill()
-        await this.refreshSettings()
 
         // this is the temporary measure to support windows whilst we still have 'setupAutofill'
         // eventually all interfaces will use this
@@ -417,6 +418,11 @@ class InterfacePrototype {
      */
     onSelect (config, items, id) {
         id = String(id)
+
+        if (id === 'provider_locked') {
+            return this.askToUnlockProvider()
+        }
+
         const matchingData = items.find(item => String(item.id) === id)
         if (!matchingData) throw new Error('unreachable (fatal)')
 
@@ -448,6 +454,8 @@ class InterfacePrototype {
             return this.removeTooltip()
         })
     }
+
+    async askToUnlockProvider () {}
 
     isTooltipActive () {
         return this.uiController.isActive?.() ?? false

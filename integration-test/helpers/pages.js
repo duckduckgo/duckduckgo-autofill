@@ -210,7 +210,7 @@ export function loginPage (page, server, opts = {}) {
             const button = await page.waitForSelector('button:has-text("Bitwarden is locked")')
             expect(button).toBeDefined()
             await button.click()
-            const autofillCalls = await mockedCalls(page, ['pmHandlerGetAutofillCredentials'], true)
+            const autofillCalls = await mockedCalls(page, ['askToUnlockProvider'], true)
             expect(autofillCalls).toHaveLength(1)
             expect(autofillCalls[0][1].id).toBe('provider_locked')
         },
@@ -550,25 +550,24 @@ export function overlayPage (page, server) {
             await page.goto(server.urlForPath(constants.pages['overlay']))
         },
         /**
-         * @param {string} username
+         * @param {string} text
          * @returns {Promise<void>}
          */
-        async selectFirstCredential (username) {
-            const button = await page.waitForSelector(`button:has-text("${username}")`)
+        async clickButtonWithText (text) {
+            const button = await page.waitForSelector(`button:has-text("${text}")`)
             await button.click({ force: true })
         },
         /**
          * When we're in an overlay, 'closeAutofillParent' should not be called.
+         * @params {string} callName
          */
-        async doesNotCloseParent () {
-            // await page.waitForFunction(() => {
-            //     const calls = window.__playwright.mocks.calls
-            //     return calls.some(call => call[0] === 'getAutofillCredentials')
-            // })
+        async doesNotCloseParentAfterCall (callName) {
+            const callNameCalls = await mockedCalls(page, [callName], true)
+            expect(callNameCalls.length).toBeGreaterThanOrEqual(1)
             // const calls = await page.evaluate('window.__playwright.mocks.calls')
-            // const mockCalls = calls.filter(([name]) => name === 'closeAutofillParent')
-            // expect(mockCalls.length).toBe(0)
-        },
+            const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], false)
+            expect(closeAutofillParentCalls.length).toBe(0)
+        }
         /**
          * When we're in an overlay, 'closeAutofillParent' should not be called.
          */
@@ -577,6 +576,39 @@ export function overlayPage (page, server) {
                 const calls = window.__playwright.mocks.calls
                 return calls.some(call => call[0] === 'selectedDetail')
             })
+        }
+    }
+}
+
+/**
+ * A wrapper around interactions for `integration-test/pages/signup.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ */
+export function loginAndSignup (page, server) {
+    // style lookup helpers
+    const usernameStyleAttr = () => page.locator(constants.fields.username.selectors.credential).getAttribute('style')
+    const emailStyleAttr = () => page.locator(constants.fields.email.selectors.identity).getAttribute('style')
+    const firstPasswordStyleAttr = () => page.locator('#login-password' + constants.fields.password.selectors.credential).getAttribute('style')
+
+    return {
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['login+setup']))
+        },
+        async assertIdentitiesWereNotDecorated () {
+            const style = await emailStyleAttr()
+            expect(style).toBeNull()
+        },
+        async assertUsernameAndPasswordWereDecoratedWithIcon () {
+            expect(await usernameStyleAttr()).toContain('data:image/svg+xml;base64,')
+            expect(await firstPasswordStyleAttr()).toContain('data:image/svg+xml;base64,')
+        },
+        async assertNoDecorations () {
+            const usernameAttr = await usernameStyleAttr()
+            expect(usernameAttr).toBeNull()
+
+            expect(await firstPasswordStyleAttr()).toBeNull()
         }
     }
 }
