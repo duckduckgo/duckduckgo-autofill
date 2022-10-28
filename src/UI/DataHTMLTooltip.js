@@ -17,6 +17,7 @@ class DataHTMLTooltip extends HTMLTooltip {
         }
 
         const topClass = this.options.wrapperClass || ''
+        const specificIconClass = this.options.bitwardenEnabled ? `tooltip__button--data--bitwarden` : `tooltip__button--data--${config.type}`
 
         this.shadow.innerHTML = `
 ${this.options.css}
@@ -29,7 +30,7 @@ ${this.options.css}
 
         return `
             ${shouldShowSeparator(item.id()) ? '<hr />' : ''}
-            <button id="${item.id()}" class="tooltip__button tooltip__button--data tooltip__button--data--${config.type} js-autofill-button" >
+            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${specificIconClass} js-autofill-button" >
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}

@@ -18,6 +18,7 @@ export interface AutofillFeatureToggles {
   password_generation?: boolean;
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
+  bitwarden_enabled?: boolean;
 }
 
 // credentials.json

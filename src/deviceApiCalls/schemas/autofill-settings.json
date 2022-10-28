@@ -31,6 +31,9 @@
         },
         "inlineIcon_credentials": {
           "type": "boolean"
+        },
+        "bitwarden_enabled": {
+          "type": "boolean"
         }
       },
       "required": []

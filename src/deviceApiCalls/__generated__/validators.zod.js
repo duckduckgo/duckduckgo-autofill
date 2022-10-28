@@ -9,7 +9,8 @@ export const autofillFeatureTogglesSchema = z.object({
     emailProtection: z.boolean().optional(),
     password_generation: z.boolean().optional(),
     credentials_saving: z.boolean().optional(),
-    inlineIcon_credentials: z.boolean().optional()
+    inlineIcon_credentials: z.boolean().optional(),
+    bitwarden_enabled: z.boolean().optional()
 });
 
 export const credentialsSchema = z.object({

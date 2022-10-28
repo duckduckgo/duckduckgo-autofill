@@ -52,7 +52,8 @@ interface InboundPMData {
 
 interface TopContextData {
      inputType: import("./Form/matching").SupportedTypes,
-     credentials?: Omit<CredentialsObject, "id">[]
+     credentials?: Omit<CredentialsObject, "id">[],
+     bitwardenEnabled?: boolean
 }
 
 interface PMData {
