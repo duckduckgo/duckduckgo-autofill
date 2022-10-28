@@ -10,13 +10,14 @@ export const autofillFeatureTogglesSchema = z.object({
     password_generation: z.boolean().optional(),
     credentials_saving: z.boolean().optional(),
     inlineIcon_credentials: z.boolean().optional(),
-    bitwarden_enabled: z.boolean().optional()
+    credentials_provider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional()
 });
 
 export const credentialsSchema = z.object({
     id: z.string().optional(),
     username: z.string(),
-    password: z.string()
+    password: z.string(),
+    provider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional()
 });
 
 export const genericErrorSchema = z.object({

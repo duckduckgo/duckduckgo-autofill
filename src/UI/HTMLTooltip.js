@@ -8,7 +8,7 @@ import { CSS_STYLES } from './styles/styles.js'
  * @property {string | null} [wrapperClass]
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
  * @property {(details: {height: number, width: number}) => void} [setSize] - if this is set, it will be called initially once + every times the size changes
- * @property {boolean} [bitwardenEnabled]
+ * @property {CredentialsObject["credentialsProvider"]} [credentialsProvider]
  * @property {() => void} remove
  * @property {string} css
  * @property {boolean} checkVisibility
@@ -20,7 +20,7 @@ export const defaultOptions = {
     tooltipPositionClass: (top, left) => `.wrapper {transform: translate(${left}px, ${top}px);}`,
     css: `<style>${CSS_STYLES}</style>`,
     setSize: undefined,
-    bitwardenEnabled: false,
+    credentialsProvider: 'duckduckgo',
     remove: () => { /** noop */ },
     testMode: false,
     checkVisibility: true

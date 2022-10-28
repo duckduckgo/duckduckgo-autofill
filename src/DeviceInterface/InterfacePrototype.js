@@ -399,7 +399,7 @@ class InterfacePrototype {
         /** @type {TopContextData} */
         const topContextData = {
             inputType,
-            bitwardenEnabled: this.settings.featureToggles.bitwarden_enabled
+            credentialsProvider: this.settings.featureToggles.credentials_provider
         }
 
         // Allow features to append/change top context data

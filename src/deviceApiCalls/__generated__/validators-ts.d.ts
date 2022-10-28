@@ -18,7 +18,7 @@ export interface AutofillFeatureToggles {
   password_generation?: boolean;
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
-  bitwarden_enabled?: boolean;
+  credentials_provider?: "duckduckgo" | "bitwarden";
 }
 
 // credentials.json
@@ -33,6 +33,7 @@ export interface Credentials {
    */
   username: string;
   password: string;
+  provider?: "duckduckgo" | "bitwarden";
 }
 
 // error.json
@@ -158,6 +159,7 @@ export interface Credentials {
    */
   username: string;
   password: string;
+  provider?: "duckduckgo" | "bitwarden";
 }
 export interface GenericError {
   message: string;

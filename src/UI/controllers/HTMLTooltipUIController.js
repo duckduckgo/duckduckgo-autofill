@@ -67,7 +67,7 @@ export class HTMLTooltipUIController extends UIController {
         const tooltipOptions = {
             ...this._htmlTooltipOptions,
             // TODO: add support for macOS Catalina which uses the html tooltip in-page, without top context
-            bitwardenEnabled: topContextData.bitwardenEnabled,
+            credentialsProvider: topContextData.credentialsProvider,
             remove: () => this.removeTooltip()
         }
 

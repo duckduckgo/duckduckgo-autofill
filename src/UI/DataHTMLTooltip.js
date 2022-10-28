@@ -8,6 +8,7 @@ class DataHTMLTooltip extends HTMLTooltip {
      * @param {{onSelect(id:string): void}} callbacks
      */
     render (config, items, callbacks) {
+        const {wrapperClass, credentialsProvider, css} = this.options
         let hasAddedSeparator = false
         // Only show an hr above the first duck address button, but it can be either personal or private
         const shouldShowSeparator = (dataId) => {
@@ -16,11 +17,12 @@ class DataHTMLTooltip extends HTMLTooltip {
             return shouldShow
         }
 
-        const topClass = this.options.wrapperClass || ''
-        const specificIconClass = this.options.bitwardenEnabled ? `tooltip__button--data--bitwarden` : `tooltip__button--data--${config.type}`
+        const topClass = wrapperClass || ''
+        const dataTypeClass = `tooltip__button--data--${config.type}`
+        const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''
 
         this.shadow.innerHTML = `
-${this.options.css}
+${css}
 <div class="wrapper wrapper--data ${topClass}">
     <div class="tooltip tooltip--data" hidden>
         ${items.map((item) => {
@@ -30,7 +32,7 @@ ${this.options.css}
 
         return `
             ${shouldShowSeparator(item.id()) ? '<hr />' : ''}
-            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${specificIconClass} js-autofill-button" >
+            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button" >
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}

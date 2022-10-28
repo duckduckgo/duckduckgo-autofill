@@ -32,8 +32,12 @@
         "inlineIcon_credentials": {
           "type": "boolean"
         },
-        "bitwarden_enabled": {
-          "type": "boolean"
+        "credentials_provider": {
+          "type": "string",
+          "enum": [
+            "duckduckgo",
+            "bitwarden"
+          ]
         }
       },
       "required": []
