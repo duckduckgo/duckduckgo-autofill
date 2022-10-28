@@ -304,6 +304,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                             credentials_provider: 'bitwarden'
                         }
                     }))
+                    .replace('hasModernWebkitAPI', true)
                     .platform('macos')
                     .applyTo(page)
 

@@ -138,7 +138,8 @@ export const macosWithoutOverlay = () => {
             'selectedDetail',
             'closeAutofillParent',
             'showAutofillParent',
-            'getSelectedCredentials'
+            'getSelectedCredentials',
+            'askToUnlockProvider'
         ]
     }
 }

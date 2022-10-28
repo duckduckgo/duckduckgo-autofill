@@ -21,8 +21,8 @@ import {
     GetAutofillCredentialsCall,
     StoreFormDataCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
-import ddgGlobals from '../appleDeviceUtils/captureDdgGlobals.js'
+import {initFormSubmissionsApi} from './formSubmissionsApi.js'
+import {ddgGlobals} from '../appleDeviceUtils/captureDdgGlobals.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 
 /**
