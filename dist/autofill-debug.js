@@ -6796,6 +6796,10 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async setupAutofill() {
+    if (!this.globalConfig.supportsTopFrame) {
+      await this._getAutofillInitData();
+    }
+
     const signedIn = await this._checkDeviceSignedIn();
 
     if (signedIn) {
@@ -8634,7 +8638,7 @@ class Form {
    */
 
 
-  async execOnInputs(fn) {
+  execOnInputs(fn) {
     let inputType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'all';
     let shouldCheckForDecorate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     const inputs = this.inputs[inputType];
@@ -8643,10 +8647,7 @@ class Form {
       let canExecute = true; // sometimes we want to execute even if we didn't decorate
 
       if (shouldCheckForDecorate) {
-        const {
-          shouldDecorate
-        } = (0, _inputTypeConfig.getInputConfig)(input);
-        canExecute = await shouldDecorate(input, this);
+        canExecute = (0, _inputTypeConfig.isFieldDecorated)(input);
       }
 
       if (canExecute) fn(input);
@@ -8849,40 +8850,40 @@ class Form {
     return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeDecorated)(input) && (0, _autofillUtils.isVisible)(input));
   }
 
-  promptLoginIfNeeded() {
+  async promptLoginIfNeeded() {
     if (document.visibilityState !== 'visible' || !this.isLogin) return;
+    const firstCredentialInput = this.getFirstViableCredentialsInput();
+    const input = this.activeInput || firstCredentialInput;
+    if (!input) return;
+    const mainType = (0, _matching.getInputMainType)(input);
+    const subtype = (0, _matching.getInputSubtype)(input);
 
-    if (this.device.settings.availableInputTypes.credentials) {
-      const firstCredentialInput = this.getFirstViableCredentialsInput();
-      const input = this.activeInput || firstCredentialInput;
+    if (await this.device.settings.canAutofillType(mainType, subtype)) {
+      // The timeout is needed in case the page shows a cookie prompt with a slight delay
+      setTimeout(() => {
+        // safeExecute checks that the element is on screen according to IntersectionObserver
+        (0, _autofillUtils.safeExecute)(this.form, () => {
+          const {
+            x,
+            y,
+            width,
+            height
+          } = this.form.getBoundingClientRect();
+          const elHCenter = x + width / 2;
+          const elVCenter = y + height / 2; // This checks that the form is not covered by anything else
 
-      if (input) {
-        // The timeout is needed in case the page shows a cookie prompt with a slight delay
-        setTimeout(() => {
-          // safeExecute checks that the element is on screen according to IntersectionObserver
-          (0, _autofillUtils.safeExecute)(this.form, () => {
-            const {
-              x,
-              y,
-              width,
-              height
-            } = this.form.getBoundingClientRect();
-            const elHCenter = x + width / 2;
-            const elVCenter = y + height / 2; // This checks that the form is not covered by anything else
+          const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
 
-            const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
-
-            if (this.form.contains(topMostElementFromPoint)) {
-              this.execOnInputs(input => {
-                if ((0, _autofillUtils.isVisible)(input)) {
-                  this.touched.add(input);
-                }
-              }, 'credentials');
-              this.device.attachTooltip(this, input, null, 'autoprompt');
-            }
-          });
-        }, 200);
-      }
+          if (this.form.contains(topMostElementFromPoint)) {
+            this.execOnInputs(input => {
+              if ((0, _autofillUtils.isVisible)(input)) {
+                this.touched.add(input);
+              }
+            }, 'credentials');
+            this.device.attachTooltip(this, input, null, 'autoprompt');
+          }
+        });
+      }, 200);
     }
   }
 
@@ -10149,7 +10150,7 @@ exports.getIconStylesAutofilled = getIconStylesAutofilled;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getInputConfigFromType = exports.getInputConfig = exports.canBeDecorated = void 0;
+exports.isFieldDecorated = exports.getInputConfigFromType = exports.getInputConfig = exports.canBeDecorated = void 0;
 
 var _logoSvg = require("./logo-svg.js");
 
@@ -10162,6 +10163,8 @@ var _Credentials = require("../InputTypes/Credentials.js");
 var _CreditCard = require("../InputTypes/CreditCard.js");
 
 var _Identity = require("../InputTypes/Identity.js");
+
+var _constants = require("../constants.js");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -10344,10 +10347,22 @@ const getInputConfigFromType = inputType => {
   const inputMainType = (0, _matching.getMainTypeFromType)(inputType);
   return inputTypeConfig[inputMainType];
 };
+/**
+ * Given an input field checks wheter it was previously decorated
+ * @param {HTMLInputElement} input
+ * @returns {Boolean}
+ */
+
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":50,"./logo-svg.js":32,"./matching.js":34}],30:[function(require,module,exports){
+const isFieldDecorated = input => {
+  return input.hasAttribute(_constants.constants.ATTR_INPUT_TYPE);
+};
+
+exports.isFieldDecorated = isFieldDecorated;
+
+},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":50,"../constants.js":57,"./logo-svg.js":32,"./matching.js":34}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12982,6 +12997,7 @@ class Settings {
 
     this.deviceApi = deviceApi;
     this.globalConfig = config;
+    console.log('passed config from startup', config);
 
     if (!config.availableInputTypes) {
       // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
@@ -13007,7 +13023,6 @@ class Settings {
 
 
   async getFeatureToggles() {
-    // TODO: as of now this seems redundant. Both current implementations read this values from the globalConfig.
     try {
       var _runtimeConfig$userPr, _runtimeConfig$userPr2, _runtimeConfig$userPr3;
 
@@ -13015,7 +13030,7 @@ class Settings {
       const autofillSettings = (0, _index.validate)(runtimeConfig === null || runtimeConfig === void 0 ? void 0 : (_runtimeConfig$userPr = runtimeConfig.userPreferences) === null || _runtimeConfig$userPr === void 0 ? void 0 : (_runtimeConfig$userPr2 = _runtimeConfig$userPr.features) === null || _runtimeConfig$userPr2 === void 0 ? void 0 : (_runtimeConfig$userPr3 = _runtimeConfig$userPr2.autofill) === null || _runtimeConfig$userPr3 === void 0 ? void 0 : _runtimeConfig$userPr3.settings, _validatorsZod.autofillSettingsSchema);
       return autofillSettings.featureToggles;
     } catch (e) {
-      // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
+      // these are the fallbacks for when a platform hasn't implemented the calls above.
       if (this.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: getFeatureToggles: ❌', e);
       }
@@ -13024,10 +13039,31 @@ class Settings {
     }
   }
   /**
+   * Get the availableInputTypes coming from the global configs
+   * @returns {Promise<AvailableInputTypes>}
+   */
+
+
+  async getInitialAvailableInputTypes() {
+    try {
+      const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
+      const availableInputTypes = (0, _index.validate)(runtimeConfig === null || runtimeConfig === void 0 ? void 0 : runtimeConfig.availableInputTypes, _validatorsZod.availableInputTypesSchema);
+      console.log('here', availableInputTypes);
+      return availableInputTypes;
+    } catch (e) {
+      // these are the fallbacks for when a platform hasn't implemented the calls above.
+      if (this.globalConfig.isDDGTestMode) {
+        console.log('isDDGTestMode: getInitialAvailableInputTypes: ❌', e);
+      }
+
+      return Settings.defaults.availableInputTypes;
+    }
+  }
+  /**
    * Available Input Types are boolean indicators to represent which input types the
    * current **user** has data available for.
    *
-   // * @param {Omit<SupportedMainTypes, 'unknown'>} mainType
+   * @param {Exclude<SupportedMainTypes, 'unknown'>} mainType
    * @returns {Promise<AvailableInputTypes>}
    */
 
@@ -13057,8 +13093,10 @@ class Settings {
 
 
   async refresh() {
-    // TODO: as of now this seems redundant. Both current implementations read feature toggles from the globalConfig
     this.setFeatureToggles(await this.getFeatureToggles());
+    this.setAvailableInputTypes(await this.getInitialAvailableInputTypes());
+    console.log(this.featureToggles);
+    console.log(this.availableInputTypes);
     return {
       featureToggles: this.featureToggles,
       availableInputTypes: this.availableInputTypes
@@ -13075,7 +13113,9 @@ class Settings {
   async canAutofillType(mainType, subtype) {
     var _this$availableInputT5;
 
-    if (!this.featureToggles["inputType_".concat(mainType)]) {
+    if (mainType === 'unknown') return false;
+
+    if (!this.featureToggles["inputType_".concat(mainType)] && subtype !== 'emailAddress') {
       return false;
     }
 
@@ -13094,6 +13134,10 @@ class Settings {
       var _this$availableInputT3, _this$availableInputT4;
 
       return Boolean(((_this$availableInputT3 = this.availableInputTypes.creditCards) === null || _this$availableInputT3 === void 0 ? void 0 : _this$availableInputT3.expirationMonth) || ((_this$availableInputT4 = this.availableInputTypes.creditCards) === null || _this$availableInputT4 === void 0 ? void 0 : _this$availableInputT4.expirationYear));
+    }
+
+    if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
+      return true;
     }
 
     return Boolean((_this$availableInputT5 = this.availableInputTypes[mainType]) === null || _this$availableInputT5 === void 0 ? void 0 : _this$availableInputT5[subtype]);
@@ -15624,16 +15668,79 @@ exports.ExtensionTransport = void 0;
 
 var _index = require("../../../packages/device-api/index.js");
 
+var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
+
+var _autofillUtils = require("../../autofill-utils.js");
+
+var _Settings = require("../../Settings.js");
+
 class ExtensionTransport extends _index.DeviceApiTransport {
+  /** @param {GlobalConfig} globalConfig */
+  constructor(globalConfig) {
+    super();
+    this.config = globalConfig;
+  }
+
   async send(deviceApiCall) {
+    if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
+      return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this.config));
+    }
+
     throw new Error('not implemented yet for ' + deviceApiCall.method);
   }
 
 }
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {Promise<ReturnType<GetRuntimeConfigurationCall['result']>>}
+ */
+
 
 exports.ExtensionTransport = ExtensionTransport;
 
-},{"../../../packages/device-api/index.js":10}],64:[function(require,module,exports){
+async function extensionSpecificRuntimeConfiguration(globalConfig) {
+  const contentScope = await getContentScopeConfig();
+  const emailProtectionEnabled = (0, _autofillUtils.isAutofillEnabledFromProcessedConfig)(contentScope);
+  return {
+    success: {
+      // @ts-ignore
+      contentScope: contentScope,
+      // @ts-ignore
+      userPreferences: {
+        features: {
+          autofill: {
+            settings: {
+              featureToggles: { ..._Settings.Settings.defaults.featureToggles,
+                emailProtection: emailProtectionEnabled
+              }
+            }
+          }
+        }
+      },
+      // @ts-ignore
+      userUnprotectedDomains: globalConfig === null || globalConfig === void 0 ? void 0 : globalConfig.userUnprotectedDomains,
+      // @ts-ignore
+      availableInputTypes: { ..._Settings.Settings.defaults.availableInputTypes,
+        email: emailProtectionEnabled
+      }
+    }
+  };
+}
+
+async function getContentScopeConfig() {
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage({
+      registeredTempAutofillContentScript: true,
+      documentUrl: window.location.href
+    }, response => {
+      if (response && 'site' in response) {
+        resolve(response);
+      }
+    });
+  });
+}
+
+},{"../../../packages/device-api/index.js":10,"../../Settings.js":42,"../../autofill-utils.js":54,"../__generated__/deviceApiCalls.js":58}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15677,7 +15784,7 @@ function createTransport(globalConfig) {
     throw new Error('unreachable, createTransport');
   }
 
-  return new _extensionTransport.ExtensionTransport();
+  return new _extensionTransport.ExtensionTransport(globalConfig);
 }
 
 },{"./android.transport.js":61,"./apple.transport.js":62,"./extension.transport.js":63}],65:[function(require,module,exports){

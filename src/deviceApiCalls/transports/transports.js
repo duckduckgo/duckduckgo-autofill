@@ -34,5 +34,5 @@ export function createTransport (globalConfig) {
     }
 
     // falls back to extension... is this still the best way to determine this?
-    return new ExtensionTransport()
+    return new ExtensionTransport(globalConfig)
 }

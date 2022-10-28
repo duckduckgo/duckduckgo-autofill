@@ -1,6 +1,6 @@
 import {validate} from '../packages/device-api/index.js'
 import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
-import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
+import {autofillSettingsSchema, availableInputTypesSchema} from './deviceApiCalls/__generated__/validators.zod.js'
 import {autofillEnabled} from './autofill-utils.js'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
@@ -65,13 +65,12 @@ export class Settings {
      * @returns {Promise<AutofillFeatureToggles>}
      */
     async getFeatureToggles () {
-        // TODO: as of now this seems redundant. Both current implementations read this values from the globalConfig.
         try {
             const runtimeConfig = await this._getRuntimeConfiguration()
             const autofillSettings = validate(runtimeConfig.userPreferences?.features?.autofill?.settings, autofillSettingsSchema)
             return autofillSettings.featureToggles
         } catch (e) {
-            // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
+            // these are the fallbacks for when a platform hasn't implemented the calls above.
             if (this.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: getFeatureToggles: ❌', e)
             }
@@ -100,6 +99,26 @@ export class Settings {
     }
 
     /**
+     * Get the availableInputTypes coming from the global configs
+     * then they should use this. Currently only Windows supports this, but we aim to move all platforms to
+     * support this going forward.
+     * @returns {Promise<AvailableInputTypes>}
+     */
+    async getInitialAvailableInputTypes () {
+        try {
+            const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
+            const availableInputTypes = validate(runtimeConfig?.availableInputTypes, availableInputTypesSchema)
+            return availableInputTypes
+        } catch (e) {
+            // these are the fallbacks for when a platform hasn't implemented the calls above.
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getInitialAvailableInputTypes: ❌', e)
+            }
+            return Settings.defaults.availableInputTypes
+        }
+    }
+
+    /**
      * Get runtime configuration, but only once.
      *
      * Some platforms may be reading this directly from inlined variables, whilst others
@@ -123,6 +142,7 @@ export class Settings {
      * Available Input Types are boolean indicators to represent which input types the
      * current **user** has data available for.
      *
+     * @param {Exclude<SupportedMainTypes, 'unknown'>} mainType
      * @returns {Promise<AvailableInputTypes>}
      */
     async getAvailableInputTypes (mainType) {
@@ -149,6 +169,7 @@ export class Settings {
     async refresh () {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
+        this.setAvailableInputTypes(await this.getInitialAvailableInputTypes())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -170,6 +191,7 @@ export class Settings {
      * @returns {Promise<boolean>}
      */
     async canAutofillType (mainType, subtype) {
+        if (mainType === 'unknown') return false
         if (!this.featureToggles[`inputType_${mainType}`] && subtype !== 'emailAddress') {
             return false
         }
