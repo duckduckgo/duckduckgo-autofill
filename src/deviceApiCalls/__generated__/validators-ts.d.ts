@@ -197,6 +197,7 @@ export interface Credentials {
    */
   username: string;
   password: string;
+  provider?: "duckduckgo" | "bitwarden";
 }
 export interface GenericError {
   message: string;
