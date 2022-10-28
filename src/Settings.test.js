@@ -1,10 +1,22 @@
 import { DeviceApi } from '../packages/device-api/index.js'
 import { createGlobalConfig } from './config.js'
 import { Settings } from './Settings.js'
-import {
-    GetAvailableInputTypesCall,
-    GetRuntimeConfigurationCall
-} from './deviceApiCalls/__generated__/deviceApiCalls.js'
+import {GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
+
+const createAvailableInputTypes = (overrides) => {
+    const base = Settings.defaults.availableInputTypes
+    return {
+        ...base,
+        ...overrides
+    }
+}
+
+const createGlobalConfigWithDefaults = (defaults) => {
+    return {
+        ...createGlobalConfig(),
+        ...defaults
+    }
+}
 
 describe('Settings', () => {
     it('feature toggles + input types combinations ', async () => {
@@ -12,23 +24,57 @@ describe('Settings', () => {
         const cases = [
             [
                 { inputType_credentials: true },
-                { credentials: true },
-                (settings) => {
-                    expect(settings.availableInputTypes.credentials).toBe(true)
+                {
+                    ...createAvailableInputTypes({
+                        credentials: {username: true, password: true}
+                    })
+                },
+                async (settings) => {
+                    expect(await settings.canAutofillType('credentials', 'password')).toBe(true)
                 }
             ],
             [
                 { inputType_credentials: false },
-                { credentials: true },
-                (settings) => {
-                    expect(settings.availableInputTypes.credentials).toBe(false)
+                {
+                    ...createAvailableInputTypes({
+                        credentials: {username: true, password: true}
+                    })
+                },
+                async (settings) => {
+                    expect(await settings.canAutofillType('credentials', 'password')).toBe(false)
                 }
             ],
             [
                 {},
-                { credentials: true },
-                (settings) => {
-                    expect(settings.availableInputTypes.credentials).toBe(false)
+                {
+                    ...createAvailableInputTypes({
+                        credentials: {username: true, password: true}
+                    })
+                },
+                async (settings) => {
+                    expect(await settings.canAutofillType('credentials', 'password')).toBe(false)
+                }
+            ],
+            [
+                { inputType_identities: true },
+                {
+                    ...createAvailableInputTypes({
+                        identities: {firstName: true, lastName: true}
+                    })
+                },
+                async (settings) => {
+                    expect(await settings.canAutofillType('identities', 'fullName')).toBe(true)
+                }
+            ],
+            [
+                { inputType_identities: true },
+                {
+                    ...createAvailableInputTypes({
+                        identities: {firstName: false, lastName: false}
+                    })
+                },
+                async (settings) => {
+                    expect(await settings.canAutofillType('identities', 'fullName')).toBe(false)
                 }
             ]
         ]
@@ -45,14 +91,7 @@ describe('Settings', () => {
         })
         const settings = new Settings(createGlobalConfig(), deviceApi)
         await settings.refresh()
-        expect(settings.availableInputTypes).toMatchInlineSnapshot(`
-      {
-        "credentials": false,
-        "creditCards": false,
-        "email": false,
-        "identities": false,
-      }
-    `)
+        expect(settings.availableInputTypes).toMatchObject(Settings.defaults.availableInputTypes)
         expect(settings.featureToggles).toMatchInlineSnapshot(`
       {
         "credentials_saving": false,
@@ -90,23 +129,21 @@ async function settingsFromMockedCalls (featureToggles, availableInputTypes) {
                 features: {
                     autofill: { settings: { featureToggles: featureToggles } }
                 }
-            }
+            },
+            availableInputTypes
         }
-    })
-    const resp2 = new GetAvailableInputTypesCall(null).result({
-        success: availableInputTypes
     })
     const deviceApi = new DeviceApi({
         async send (call) {
             if (call instanceof GetRuntimeConfigurationCall) {
                 return resp1
             }
-            if (call instanceof GetAvailableInputTypesCall) {
-                return resp2
-            }
         }
     })
-    const settings = new Settings(createGlobalConfig(), deviceApi)
+    const globalConfig = createGlobalConfigWithDefaults({
+        availableInputTypes: createAvailableInputTypes(availableInputTypes)
+    })
+    const settings = new Settings(globalConfig, deviceApi)
     await settings.refresh()
     return settings
 }

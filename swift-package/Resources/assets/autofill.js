@@ -9308,10 +9308,13 @@ class Settings {
     this.globalConfig = config;
 
     if (!config.availableInputTypes) {
-      throw new Error('availbleInputTypes must be passed in the global config');
+      // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
+      if (this.globalConfig.isDDGTestMode) {
+        console.error('isDDGTestMode: ❌ availbleInputTypes must be passed in the global config');
+      }
     }
 
-    this._availableInputTypes = config.availableInputTypes;
+    this._availableInputTypes = config.availableInputTypes || Settings.defaults.availableInputTypes;
   }
   /**
    * Feature toggles are delivered as part of the Runtime Configuration - a flexible design that
@@ -9328,6 +9331,7 @@ class Settings {
 
 
   async getFeatureToggles() {
+    // TODO: as of now this seems redundant. Both current implementations read this values from the globalConfig.
     try {
       var _runtimeConfig$userPr, _runtimeConfig$userPr2, _runtimeConfig$userPr3;
 
@@ -9377,6 +9381,7 @@ class Settings {
 
 
   async refresh() {
+    // TODO: as of now this seems redundant. Both current implementations read feature toggles from the globalConfig
     this.setFeatureToggles(await this.getFeatureToggles());
     return {
       featureToggles: this.featureToggles,

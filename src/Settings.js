@@ -44,9 +44,12 @@ export class Settings {
         this.deviceApi = deviceApi
         this.globalConfig = config
         if (!config.availableInputTypes) {
-            throw new Error('availbleInputTypes must be passed in the global config')
+            // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
+            if (this.globalConfig.isDDGTestMode) {
+                console.error('isDDGTestMode: ❌ availbleInputTypes must be passed in the global config')
+            }
         }
-        this._availableInputTypes = config.availableInputTypes
+        this._availableInputTypes = config.availableInputTypes || Settings.defaults.availableInputTypes
     }
 
     /**
@@ -62,6 +65,7 @@ export class Settings {
      * @returns {Promise<AutofillFeatureToggles>}
      */
     async getFeatureToggles () {
+        // TODO: as of now this seems redundant. Both current implementations read this values from the globalConfig.
         try {
             const runtimeConfig = await this._getRuntimeConfiguration()
             const autofillSettings = validate(runtimeConfig.userPreferences?.features?.autofill?.settings, autofillSettingsSchema)
