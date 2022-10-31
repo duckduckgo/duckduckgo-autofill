@@ -492,7 +492,12 @@ class Form {
     autofillEmail (alias, dataType = 'identities') {
         this.isAutofilling = true
         this.execOnInputs(
-            (input) => this.autofillInput(input, alias, dataType),
+            (input) => {
+                const inputSubtype = getInputSubtype(input)
+                if (inputSubtype === 'emailAddress') {
+                    this.autofillInput(input, alias, dataType)
+                }
+            },
             dataType
         )
         this.isAutofilling = false

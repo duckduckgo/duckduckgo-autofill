@@ -9273,7 +9273,13 @@ class Form {
   autofillEmail(alias) {
     let dataType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'identities';
     this.isAutofilling = true;
-    this.execOnInputs(input => this.autofillInput(input, alias, dataType), dataType);
+    this.execOnInputs(input => {
+      const inputSubtype = (0, _matching.getInputSubtype)(input);
+
+      if (inputSubtype === 'emailAddress') {
+        this.autofillInput(input, alias, dataType);
+      }
+    }, dataType);
     this.isAutofilling = false;
     this.removeTooltip();
   }
