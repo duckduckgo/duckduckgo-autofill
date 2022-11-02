@@ -6,14 +6,16 @@ const filepath = (...path) => join(cwd, ...path)
 
 const platform = process.argv[2]
 
-const version = process.env.VERSION
-const releaseUrl = process.env.RELEASE_URL
-const releaseNotesRaw = process.env.RELEASE_NOTES
-const bskPrUrl = process.env.BSK_PR_URL || ''
-const asanaOutputRaw = process.env.ASANA_OUTPUT || '{}'
-const asanaOutput = JSON.parse(asanaOutputRaw)
+const data = {
+    version: process.env.VERSION,
+    releaseUrl: process.env.RELEASE_URL,
+    releaseNotesRaw: process.env.RELEASE_NOTES,
+    bskPrUrl: process.env.BSK_PR_URL || '',
+    asanaOutputRaw: process.env.ASANA_OUTPUT || '{}'
+}
 
-function createPRTemplate (platform) {
+export function createPRTemplate (platform, data) {
+    const asanaOutput = JSON.parse(data.asanaOutputRaw)
     const templatePath = filepath(`./release/clients_pr_template.md`)
     const template = readFileSync(templatePath, 'utf8')
 
@@ -29,18 +31,18 @@ function createPRTemplate (platform) {
 
     if (['ios', 'macos'].includes(platform)) {
         asanaUrl = asanaOutput.bsk?.taskUrl
-        extraContent = `**BSK PR:** ${bskPrUrl}`
+        extraContent = `**BSK PR:** ${data.bskPrUrl}`
     }
 
     const updatedTemplate = replaceAllInString(template, [
         [asanaUrlRegex, asanaUrl],
-        [autofillReleaseUrlRegex, releaseUrl],
+        [autofillReleaseUrlRegex, data.releaseUrl],
         [extraContentRegex, extraContent],
-        [versionRegex, version],
-        [descriptionRegex, releaseNotesRaw]
+        [versionRegex, data.version],
+        [descriptionRegex, data.releaseNotesRaw]
     ])
     return updatedTemplate
 }
 
 // The log is needed to read the value from the bash context
-console.log(createPRTemplate(platform))
+console.log(createPRTemplate(platform, data))

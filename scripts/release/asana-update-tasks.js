@@ -26,7 +26,7 @@ const setupAsana = () => {
     }).useAccessToken(ASANA_ACCESS_TOKEN)
 }
 
-const run = async () => {
+const asanaUpdateTasks = async () => {
     setupAsana()
 
     const platformEntries = Object.entries(asanaOutput)
@@ -62,7 +62,7 @@ const run = async () => {
     }
 }
 
-run().catch((e) => {
+asanaUpdateTasks().catch((e) => {
     // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
     console.error(e.value?.errors || e)
     process.exit(1)

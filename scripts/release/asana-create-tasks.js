@@ -60,7 +60,7 @@ const duplicateTemplateTask = (templateTaskGid) => {
     return asana.tasks.duplicateTask(templateTaskGid, duplicateOption)
 }
 
-const run = async () => {
+export const asanaCreateTasks = async () => {
     setupAsana()
 
     // Duplicating template task...
@@ -115,12 +115,16 @@ const run = async () => {
     await asana.tasks.updateTask(new_task.gid, {html_notes: finalNotes})
 
     const jsonString = JSON.stringify(platforms)
-    // The log is needed to read the value from the bash context
-    console.log(jsonString)
+    return {stdout: jsonString}
 }
 
-run().catch((e) => {
-    // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
-    console.error(e.value?.errors || e)
-    process.exit(1)
-})
+asanaCreateTasks()
+    .then((result) => {
+        // The log is needed to read the value from the bash context
+        console.log(result.stdout)
+    })
+    .catch((e) => {
+        // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
+        console.error(e.value?.errors || e)
+        process.exit(1)
+    })
