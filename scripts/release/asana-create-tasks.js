@@ -17,6 +17,18 @@ const autofillProjectGid = '1198964220583541'
 const releaseSectionGid = '1200559726959935'
 const projectExtractorRegex = /\[\[project_gids=(.+)]]\s/
 
+/**
+ * @typedef {{taskGid: string, taskUrl: string, displayName: string}} platformData
+ *
+ * @typedef {{
+ *   extensions: platformData,
+ *   android: platformData,
+ *   bsk: platformData,
+ *   windows: platformData
+ * }} AsanaOutput
+ */
+
+/** @type {AsanaOutput} */
 const platforms = {
     android: {
         displayName: 'Android',

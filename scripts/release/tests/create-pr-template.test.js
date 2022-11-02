@@ -4,35 +4,45 @@ import {data} from './release-test-helpers.js'
 describe('it returns the expected result', () => {
     test('for Android', () => {
         const output = createPRTemplate('android', data)
-        expect(output).toEqual(`**Task/Issue URL:** https://app.asana.com/0/1203244608564622/1203244608564622
-**Autofill Release:** https://github.com/duckduckgo/duckduckgo-autofill/releases/tag/1.0.0_test
-
-
-## Description
-Updates Autofill to version [1.0.0_test](https://github.com/duckduckgo/duckduckgo-autofill/releases/tag/1.0.0_test).
-
-### Autofill 1.0.0_test release notes
-These are my release notes.
-
-## Steps to test
-This release has been tested during autofill development. For smoke test steps see [this task](https://app.asana.com/0/1198964220583541/1200583647142330/f).
-`)
+        /** @type {import('../asana-create-tasks').AsanaOutput} */
+        const asanaData = JSON.parse(data.asanaOutputRaw)
+        expect(output).toContain(data.version)
+        expect(output).toContain(data.releaseNotesRaw)
+        expect(output).toContain(data.releaseUrl)
+        expect(output).toContain(asanaData.android.taskGid)
+        expect(output).not.toContain(data.bskPrUrl)
     })
 
     test('for iOS', () => {
         const output = createPRTemplate('ios', data)
-        expect(output).toEqual(`**Task/Issue URL:** https://app.asana.com/0/1203244608626550/1203244608626550
-**Autofill Release:** https://github.com/duckduckgo/duckduckgo-autofill/releases/tag/1.0.0_test
-**BSK PR:** https://github.com/duckduckgo/BrowserServicesKit/pull/159
+        /** @type {import('../asana-create-tasks').AsanaOutput} */
+        const asanaData = JSON.parse(data.asanaOutputRaw)
+        expect(output).toContain(data.version)
+        expect(output).toContain(data.releaseNotesRaw)
+        expect(output).toContain(data.releaseUrl)
+        expect(output).toContain(asanaData.bsk.taskGid)
+        expect(output).toContain(data.bskPrUrl)
+    })
 
-## Description
-Updates Autofill to version [1.0.0_test](https://github.com/duckduckgo/duckduckgo-autofill/releases/tag/1.0.0_test).
+    test('for macOS', () => {
+        const output = createPRTemplate('macos', data)
+        /** @type {import('../asana-create-tasks').AsanaOutput} */
+        const asanaData = JSON.parse(data.asanaOutputRaw)
+        expect(output).toContain(data.version)
+        expect(output).toContain(data.releaseNotesRaw)
+        expect(output).toContain(data.releaseUrl)
+        expect(output).toContain(asanaData.bsk.taskGid)
+        expect(output).toContain(data.bskPrUrl)
+    })
 
-### Autofill 1.0.0_test release notes
-These are my release notes.
-
-## Steps to test
-This release has been tested during autofill development. For smoke test steps see [this task](https://app.asana.com/0/1198964220583541/1200583647142330/f).
-`)
+    test('for extensions', () => {
+        const output = createPRTemplate('extensions', data)
+        /** @type {import('../asana-create-tasks').AsanaOutput} */
+        const asanaData = JSON.parse(data.asanaOutputRaw)
+        expect(output).toContain(data.version)
+        expect(output).toContain(data.releaseNotesRaw)
+        expect(output).toContain(data.releaseUrl)
+        expect(output).toContain(asanaData.extensions.taskGid)
+        expect(output).not.toContain(data.bskPrUrl)
     })
 })
