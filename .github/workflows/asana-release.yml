@@ -51,6 +51,7 @@ jobs:
           ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js android)"
+          # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
           DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
           echo "PR_BODY_ANDROID<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
@@ -90,6 +91,7 @@ jobs:
           ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js bsk)"
+          # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
           DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
           echo "PR_BODY_BSK<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
@@ -127,6 +129,7 @@ jobs:
           BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js ios)"
+          # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
           DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
           echo "PR_BODY_IOS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
@@ -164,6 +167,7 @@ jobs:
           BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js macos)"
+          # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
           DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
           echo "PR_BODY_MACOS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
@@ -200,6 +204,7 @@ jobs:
           ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js extensions)"
+          # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
           DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
           echo "PR_BODY_EXTENSIONS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
