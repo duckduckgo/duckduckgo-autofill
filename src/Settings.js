@@ -93,8 +93,6 @@ export class Settings {
 
     /**
      * Get the availableInputTypes coming from the global configs
-     * then they should use this. Currently only Windows supports this, but we aim to move all platforms to
-     * support this going forward.
      * @returns {Promise<AvailableInputTypes>}
      */
     async getInitialAvailableInputTypes () {

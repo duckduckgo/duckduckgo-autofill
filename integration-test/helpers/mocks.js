@@ -32,6 +32,7 @@ export const constants = {
             }
         }
     },
+    /** @type {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} */
     featureToggles: {
         credentials_saving: false,
         password_generation: false,
@@ -41,6 +42,7 @@ export const constants = {
         inputType_creditCards: false,
         inlineIcon_credentials: false
     },
+    /** @type {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} */
     availableInputTypes: {
         credentials: {
             username: true,

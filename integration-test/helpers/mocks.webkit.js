@@ -6,6 +6,7 @@ import {constants} from './mocks.js'
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AskToUnlockProviderResult} AskToUnlockProviderTypes
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').CheckCredentialsProviderStatusResult} CheckCredentialsProviderStatusTypes
  */
 
 const {personalAddress} = constants.fields.email
@@ -210,36 +211,9 @@ export function createWebkitMocks (platform = 'macos') {
         storeFormData: null,
         selectedDetail: null,
         /** @type {AskToUnlockProviderTypes | null} */
-        askToUnlockProvider: {
-            success: {
-                status: 'unlocked',
-                credentials: [{
-                    id: '2',
-                    password: '',
-                    username: constants.fields.email.personalAddress,
-                    credentialsProvider: 'bitwarden'
-                }],
-                availableInputTypes: createAvailableInputTypes()
-            }
-        },
-        checkCredentialsProviderStatus: [
-            {
-                success: {
-                    status: 'unlocked',
-                    credentials: [],
-                    availableInputTypes: {credentials: {password: false, username: false}}
-                }
-            },
-            {
-                success: {
-                    status: 'locked',
-                    credentials: [
-                        {id: 'provider_locked'}
-                    ],
-                    availableInputTypes: {credentials: {password: true, username: true}}
-                }
-            }
-        ]
+        askToUnlockProvider: null,
+        /** @type {CheckCredentialsProviderStatusTypes[]} */
+        checkCredentialsProviderStatus: []
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
@@ -293,6 +267,21 @@ export function createWebkitMocks (platform = 'macos') {
         withFeatureToggles: function (_featureToggles) {
             throw new Error('unreachable - webkit cannot mock feature toggles this way. Use script replacements')
         },
+        withAskToUnlockProvider: function () {
+            webkitBase.askToUnlockProvider = {
+                success: {
+                    status: 'unlocked',
+                    credentials: [{
+                        id: '2',
+                        password: '',
+                        username: constants.fields.email.personalAddress,
+                        credentialsProvider: 'bitwarden'
+                    }],
+                    availableInputTypes: createAvailableInputTypes()
+                }
+            }
+            return this
+        },
         withCheckCredentialsProviderStatus: function () {
             webkitBase.checkCredentialsProviderStatus = [
                 {
@@ -328,7 +317,7 @@ export function createWebkitMocks (platform = 'macos') {
                     success: {
                         status: 'locked',
                         credentials: [
-                            {id: 'provider_locked'}
+                            {id: 'provider_locked', password: '', username: ''}
                         ],
                         availableInputTypes: {credentials: {password: true, username: true}}
                     }

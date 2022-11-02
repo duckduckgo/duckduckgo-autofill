@@ -8,6 +8,7 @@
     "credentials": {
       "description": "maps field types and the availability of data for the current site",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "username": {
           "type": "boolean"
@@ -20,6 +21,7 @@
     "identities": {
       "description": "maps field types and the availability of data saved by the user",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "firstName": {
           "type": "boolean"
@@ -68,6 +70,7 @@
     "creditCards": {
       "description": "maps field types and the availability of data saved by the user",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "cardName": {
           "type": "boolean"

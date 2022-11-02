@@ -37,7 +37,6 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -57,7 +56,6 @@ export interface AvailableInputTypes {
     addressCountryCode?: boolean;
     phone?: boolean;
     emailAddress?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -68,7 +66,6 @@ export interface AvailableInputTypes {
     expirationMonth?: boolean;
     expirationYear?: boolean;
     cardNumber?: boolean;
-    [k: string]: unknown;
   };
   /**
    * true if signed in for Email Protection
@@ -114,7 +111,6 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -134,7 +130,6 @@ export interface AvailableInputTypes {
     addressCountryCode?: boolean;
     phone?: boolean;
     emailAddress?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -145,7 +140,6 @@ export interface AvailableInputTypes {
     expirationMonth?: boolean;
     expirationYear?: boolean;
     cardNumber?: boolean;
-    [k: string]: unknown;
   };
   /**
    * true if signed in for Email Protection
@@ -195,7 +189,6 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -215,7 +208,6 @@ export interface AvailableInputTypes {
     addressCountryCode?: boolean;
     phone?: boolean;
     emailAddress?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -226,7 +218,6 @@ export interface AvailableInputTypes {
     expirationMonth?: boolean;
     expirationYear?: boolean;
     cardNumber?: boolean;
-    [k: string]: unknown;
   };
   /**
    * true if signed in for Email Protection
@@ -449,7 +440,6 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -469,7 +459,6 @@ export interface AvailableInputTypes {
     addressCountryCode?: boolean;
     phone?: boolean;
     emailAddress?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -480,7 +469,6 @@ export interface AvailableInputTypes {
     expirationMonth?: boolean;
     expirationYear?: boolean;
     cardNumber?: boolean;
-    [k: string]: unknown;
   };
   /**
    * true if signed in for Email Protection
@@ -553,7 +541,6 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -573,7 +560,6 @@ export interface AvailableInputTypes {
     addressCountryCode?: boolean;
     phone?: boolean;
     emailAddress?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -584,7 +570,6 @@ export interface AvailableInputTypes {
     expirationMonth?: boolean;
     expirationYear?: boolean;
     cardNumber?: boolean;
-    [k: string]: unknown;
   };
   /**
    * true if signed in for Email Protection
@@ -626,7 +611,6 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -646,7 +630,6 @@ export interface AvailableInputTypes {
     addressCountryCode?: boolean;
     phone?: boolean;
     emailAddress?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -657,7 +640,6 @@ export interface AvailableInputTypes {
     expirationMonth?: boolean;
     expirationYear?: boolean;
     cardNumber?: boolean;
-    [k: string]: unknown;
   };
   /**
    * true if signed in for Email Protection
@@ -716,7 +698,6 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -736,7 +717,6 @@ export interface AvailableInputTypes {
     addressCountryCode?: boolean;
     phone?: boolean;
     emailAddress?: boolean;
-    [k: string]: unknown;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -747,7 +727,6 @@ export interface AvailableInputTypes {
     expirationMonth?: boolean;
     expirationYear?: boolean;
     cardNumber?: boolean;
-    [k: string]: unknown;
   };
   /**
    * true if signed in for Email Protection

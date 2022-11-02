@@ -11,11 +11,11 @@ export const credentialsSchema = z.object({
 });
 
 export const availableInputTypesSchema = z.object({
-    credentials: z.record(z.unknown()).and(z.object({
+    credentials: z.object({
         username: z.boolean().optional(),
         password: z.boolean().optional()
-    })).optional(),
-    identities: z.record(z.unknown()).and(z.object({
+    }).optional(),
+    identities: z.object({
         firstName: z.boolean().optional(),
         middleName: z.boolean().optional(),
         lastName: z.boolean().optional(),
@@ -30,14 +30,14 @@ export const availableInputTypesSchema = z.object({
         addressCountryCode: z.boolean().optional(),
         phone: z.boolean().optional(),
         emailAddress: z.boolean().optional()
-    })).optional(),
-    creditCards: z.record(z.unknown()).and(z.object({
+    }).optional(),
+    creditCards: z.object({
         cardName: z.boolean().optional(),
         cardSecurityCode: z.boolean().optional(),
         expirationMonth: z.boolean().optional(),
         expirationYear: z.boolean().optional(),
         cardNumber: z.boolean().optional()
-    })).optional(),
+    }).optional(),
     email: z.boolean().optional(),
     credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
 });

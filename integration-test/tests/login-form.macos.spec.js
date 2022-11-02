@@ -249,6 +249,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                         password: '',
                         credentialsProvider: 'bitwarden'
                     })
+                    .withAskToUnlockProvider?.()
                     .applyTo(page)
 
                 // Pretend we're running in a top-frame scenario
@@ -350,6 +351,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                         password: '',
                         credentialsProvider: 'bitwarden'
                     })
+                    .withAskToUnlockProvider?.()
                     .applyTo(page)
 
                 // Load the autofill.js script with replacements

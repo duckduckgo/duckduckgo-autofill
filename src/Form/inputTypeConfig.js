@@ -60,8 +60,8 @@ const inputTypeConfig = {
     /** @type {CredentialsInputTypeConfig} */
     credentials: {
         type: 'credentials',
-        getIconBase: (_input, {device}) => {
-            if (!canBeInteractedWith(_input)) return ''
+        getIconBase: (input, {device}) => {
+            if (!canBeInteractedWith(input)) return ''
 
             if (device.settings.featureToggles.inlineIcon_credentials) {
                 return ddgPasswordIcons.ddgPasswordIconBase
@@ -74,17 +74,17 @@ const inputTypeConfig = {
             }
             return ''
         },
-        shouldDecorate: async (_input, {isLogin, device}) => {
+        shouldDecorate: async (input, {isLogin, device}) => {
             // if we are on a 'login' page, check if we have data to autofill the field
             if (isLogin) {
-                return canBeAutofilled(_input, device)
+                return canBeAutofilled(input, device)
             }
 
             // at this point, it's not a 'login' form, so we could offer to provide a password
             if (device.settings.featureToggles.password_generation) {
-                const subtype = getInputSubtype(_input)
+                const subtype = getInputSubtype(input)
                 if (subtype === 'password') {
-                    return canBeInteractedWith(_input)
+                    return canBeInteractedWith(input)
                 }
             }
 
@@ -98,8 +98,8 @@ const inputTypeConfig = {
         type: 'creditCards',
         getIconBase: () => '',
         getIconFilled: () => '',
-        shouldDecorate: async (_input, {device}) => {
-            return canBeAutofilled(_input, device)
+        shouldDecorate: async (input, {device}) => {
+            return canBeAutofilled(input, device)
         },
         dataType: 'CreditCards',
         tooltipItem: (data) => new CreditCardTooltipItem(data)
@@ -109,8 +109,8 @@ const inputTypeConfig = {
         type: 'identities',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
-        shouldDecorate: async (_input, {device}) => {
-            return canBeAutofilled(_input, device)
+        shouldDecorate: async (input, {device}) => {
+            return canBeAutofilled(input, device)
         },
         dataType: 'Identities',
         tooltipItem: (data) => new IdentityTooltipItem(data)

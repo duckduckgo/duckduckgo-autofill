@@ -56,7 +56,7 @@ interface Window {
         }
     }
 
-    providerStatusUpdated: (data: import('./src/deviceApiCalls/__generated__/validators-ts').ProviderStatusUpdated) => void;
+    providerStatusUpdated: (data: ProviderStatusUpdated) => void;
 
     __playwright: {
         mocks: {
