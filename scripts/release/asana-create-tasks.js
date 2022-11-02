@@ -71,7 +71,7 @@ const run = async () => {
     const updatedNotes =
         notes.replace('[[version]]', version)
             .replace('[[commit]]', commit)
-            .replace('[[release_url]]', getLink(releaseUrl, 'Autofill PR'))
+            .replace('[[release_url]]', getLink(releaseUrl, 'Autofill Release'))
             .replace('[[notes]]', releaseNotes)
             .replace(/<\/?p>/ig, '\n') // TODO: we can probably remove this now
 
