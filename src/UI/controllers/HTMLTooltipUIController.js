@@ -98,12 +98,14 @@ export class HTMLTooltipUIController extends UIController {
         // convert the data into tool tip item renderers
         const asRenderers = data.map(d => config.tooltipItem(d))
 
-        const activeTooltip = /** @type {import("../DataHTMLTooltip.js").default} */ (this.getActiveTooltip())
-        activeTooltip?.render(config, asRenderers, {
-            onSelect: (id) => {
-                this._onSelect(config, data, id)
-            }
-        })
+        const activeTooltip = this.getActiveTooltip()
+        if (activeTooltip instanceof DataHTMLTooltip) {
+            activeTooltip?.render(config, asRenderers, {
+                onSelect: (id) => {
+                    this._onSelect(config, data, id)
+                }
+            })
+        }
         // TODO: can we remove this timeout once implemented with real APIs?
         // The timeout is needed because clientHeight and clientWidth were returning 0
         setTimeout(() => {

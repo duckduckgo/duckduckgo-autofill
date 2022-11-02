@@ -14260,15 +14260,17 @@ class HTMLTooltipUIController extends _UIController.UIController {
     const config = (0, _inputTypeConfig.getInputConfigFromType)(this._activeInputType); // convert the data into tool tip item renderers
 
     const asRenderers = data.map(d => config.tooltipItem(d));
-    const activeTooltip =
-    /** @type {import("../DataHTMLTooltip.js").default} */
-    this.getActiveTooltip();
-    activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.render(config, asRenderers, {
-      onSelect: id => {
-        this._onSelect(config, data, id);
-      }
-    }); // TODO: can we remove this timeout once implemented with real APIs?
+    const activeTooltip = this.getActiveTooltip();
+
+    if (activeTooltip instanceof _DataHTMLTooltip.default) {
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.render(config, asRenderers, {
+        onSelect: id => {
+          this._onSelect(config, data, id);
+        }
+      });
+    } // TODO: can we remove this timeout once implemented with real APIs?
     // The timeout is needed because clientHeight and clientWidth were returning 0
+
 
     setTimeout(() => {
       var _this$getActiveToolti;
