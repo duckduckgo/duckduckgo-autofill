@@ -102,6 +102,8 @@ export const asanaCreateTasks = async () => {
         const platform = Object.keys(platforms).find(
             (key) => name.includes(platforms[key].displayName)
         )
+        if (!platform) throw new Error('Unexpected platform name: ' + name)
+
         platforms[platform].taskGid = gid
         platforms[platform].taskUrl = permalink_url
 

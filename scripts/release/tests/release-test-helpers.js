@@ -1,4 +1,4 @@
-/** @type {{releaseNotesRaw: string, bskPrUrl: string, asanaOutputRaw: string, releaseUrl: string, version: string}} */
+/** @type {import('../create-pr-template.js').CreatePRTemplateData} */
 export const data = {
     version: '1.0.0_test',
     releaseUrl: 'https://github.com/duckduckgo/duckduckgo-autofill/releases/tag/1.0.0_test',
