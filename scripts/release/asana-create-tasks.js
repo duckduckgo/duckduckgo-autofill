@@ -85,7 +85,7 @@ export const asanaCreateTasks = async () => {
             .replace('[[commit]]', commit)
             .replace('[[release_url]]', getLink(releaseUrl, 'Autofill Release'))
             .replace('[[notes]]', releaseNotes)
-            .replace(/<\/?p>/ig, '\n') // TODO: we can probably remove this now
+            .replace(/<\/?p>/ig, '\n')
 
     // Updating task and moving to Release section...
     await asana.tasks.updateTask(new_task.gid, {html_notes: updatedNotes})
