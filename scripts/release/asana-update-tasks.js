@@ -10,7 +10,8 @@ const prUrls = {
     android: process.env.ANDROID_PR_URL || 'error',
     bsk: process.env.BSK_PR_URL || 'error',
     ios: process.env.IOS_PR_URL || 'error',
-    macos: process.env.MACOS_PR_URL || 'error'
+    macos: process.env.MACOS_PR_URL || 'error',
+    extensions: process.env.EXTENSIONS_PR_URL || 'error'
 }
 const asanaOutputRaw = process.env.ASANA_OUTPUT || '{}'
 const asanaOutput = JSON.parse(asanaOutputRaw)
@@ -25,7 +26,7 @@ const setupAsana = () => {
     }).useAccessToken(ASANA_ACCESS_TOKEN)
 }
 
-const run = async () => {
+const asanaUpdateTasks = async () => {
     setupAsana()
 
     const platformEntries = Object.entries(asanaOutput)
@@ -44,7 +45,7 @@ const run = async () => {
         if (platformName === 'bsk') {
             // On the BSK task we also substitute the ios and macos placeholders
             const markup =
-                `${wrapInLi(getLink(prUrls.ios, 'iOS PR:'))}${wrapInLi(getLink(prUrls.macos, 'macOS PR:'))}`
+                `${wrapInLi(getLink(prUrls.ios, 'iOS PR'))}${wrapInLi(getLink(prUrls.macos, 'macOS PR'))}`
             taskDescriptionSubstitutions.push(
                 [/\[\[extra_content]]/, markup]
             )
@@ -61,7 +62,7 @@ const run = async () => {
     }
 }
 
-run().catch((e) => {
+asanaUpdateTasks().catch((e) => {
     // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
     console.error(e.value?.errors || e)
     process.exit(1)

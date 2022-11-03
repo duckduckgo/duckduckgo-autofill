@@ -17,6 +17,18 @@ const autofillProjectGid = '1198964220583541'
 const releaseSectionGid = '1200559726959935'
 const projectExtractorRegex = /\[\[project_gids=(.+)]]\s/
 
+/**
+ * @typedef {{taskGid: string, taskUrl: string, displayName: string}} platformData
+ *
+ * @typedef {{
+ *   extensions: platformData,
+ *   android: platformData,
+ *   bsk: platformData,
+ *   windows: platformData
+ * }} AsanaOutput
+ */
+
+/** @type {AsanaOutput} */
 const platforms = {
     android: {
         displayName: 'Android',
@@ -60,7 +72,7 @@ const duplicateTemplateTask = (templateTaskGid) => {
     return asana.tasks.duplicateTask(templateTaskGid, duplicateOption)
 }
 
-const run = async () => {
+export const asanaCreateTasks = async () => {
     setupAsana()
 
     // Duplicating template task...
@@ -71,7 +83,7 @@ const run = async () => {
     const updatedNotes =
         notes.replace('[[version]]', version)
             .replace('[[commit]]', commit)
-            .replace('[[release_url]]', getLink(releaseUrl))
+            .replace('[[release_url]]', getLink(releaseUrl, 'Autofill Release'))
             .replace('[[notes]]', releaseNotes)
             .replace(/<\/?p>/ig, '\n')
 
@@ -90,6 +102,8 @@ const run = async () => {
         const platform = Object.keys(platforms).find(
             (key) => name.includes(platforms[key].displayName)
         )
+        if (!platform) throw new Error('Unexpected platform name: ' + name)
+
         platforms[platform].taskGid = gid
         platforms[platform].taskUrl = permalink_url
 
@@ -115,12 +129,16 @@ const run = async () => {
     await asana.tasks.updateTask(new_task.gid, {html_notes: finalNotes})
 
     const jsonString = JSON.stringify(platforms)
-    // The log is needed to read the value from the bash context
-    console.log(jsonString)
+    return {stdout: jsonString}
 }
 
-run().catch((e) => {
-    // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
-    console.error(e.value?.errors || e)
-    process.exit(1)
-})
+asanaCreateTasks()
+    .then((result) => {
+        // The log is needed to read the value from the bash context
+        console.log(result.stdout)
+    })
+    .catch((e) => {
+        // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
+        console.error(e.value?.errors || e)
+        process.exit(1)
+    })
