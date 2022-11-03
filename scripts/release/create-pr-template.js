@@ -49,7 +49,7 @@ export function createPRTemplate (platform, data) {
 
     if (['ios', 'macos'].includes(platform)) {
         asanaUrl = asanaOutput.bsk?.taskUrl
-        extraContent = `**BSK PR:** ${data.bskPrUrl}`
+        extraContent = `BSK PR: ${data.bskPrUrl}`
     }
 
     const updatedTemplate = replaceAllInString(template, [
