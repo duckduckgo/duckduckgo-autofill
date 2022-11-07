@@ -5578,9 +5578,9 @@ var _autofillUtils = require("../autofill-utils.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i);
-const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password/i);
-const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
-const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
+const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password/i);
+const conservativePositiveRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
+const strictPositiveRegex = new RegExp(/sign.?up|join|register|enroll|settings|preferences|profile|update/i);
 
 class FormAnalyzer {
   /** @type HTMLElement */
@@ -5803,8 +5803,8 @@ class FormAnalyzer {
 
     const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'));
 
-    if (relevantFields.length > 3) {
-      this.increaseSignalBy(2, 'many fields: it is probably not a login');
+    if (relevantFields.length > 4) {
+      this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
     } // If we can't decide at this point, try reading page headings
 
 
@@ -8573,7 +8573,7 @@ function getInputSubtype(input) {
 
 const removeExcessWhitespace = function () {
   let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  return (string || '').replace(/\n/g, ' ').replace(/\s{2,}/, ' ').trim();
+  return (string || '').replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
 };
 /**
  * Get text from all explicit labels
@@ -9368,7 +9368,7 @@ class DefaultScanner {
     (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'scanner:init:start');
     this.findEligibleInputs(document);
     (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'scanner:init:end');
-    this.mutObs.observe(document.body, {
+    this.mutObs.observe(document.documentElement, {
       childList: true,
       subtree: true
     });
@@ -9403,6 +9403,13 @@ class DefaultScanner {
     let element = input; // traverse the DOM to search for related inputs
 
     while (element.parentElement && element.parentElement !== document.body) {
+      var _element$parentElemen;
+
+      // If parent includes a form return the current element to avoid overlapping forms
+      if ((_element$parentElemen = element.parentElement) !== null && _element$parentElemen !== void 0 && _element$parentElemen.querySelector('form')) {
+        return element;
+      }
+
       element = element.parentElement; // todo: These selectors should be configurable
 
       const inputs = element.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
@@ -11558,7 +11565,8 @@ const isLikelyASubmitButton = el => {
   return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
   /primary|submit/i.test(el.className) || // has high-signal submit classes
   SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
-  el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) && // it's a large element 250x40px
+  el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className) // it's a large element 250x40px
+  ) && el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
   !SUBMIT_BUTTON_UNLIKELY_REGEX.test(contentExcludingLabel + ' ' + ariaLabel);
 };
 /**
