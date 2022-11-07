@@ -87,3 +87,14 @@ Object.defineProperty(window.HTMLElement.prototype, 'clientHeight', {
         return this._jsdomMockClientHeight || 0
     }
 })
+
+Object.defineProperty(window.HTMLElement.prototype, 'offsetWidth', {
+    get: function () {
+        return this._jsdomMockOffsetWidth || 0
+    }
+})
+Object.defineProperty(window.HTMLElement.prototype, 'offsetHeight', {
+    get: function () {
+        return this._jsdomMockOffsetHeight || 0
+    }
+})
