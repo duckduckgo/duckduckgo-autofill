@@ -107,7 +107,7 @@ class DefaultScanner {
         window.performance?.mark?.('scanner:init:start')
         this.findEligibleInputs(document)
         window.performance?.mark?.('scanner:init:end')
-        this.mutObs.observe(document.body, { childList: true, subtree: true })
+        this.mutObs.observe(document.documentElement, { childList: true, subtree: true })
     }
 
     /**
