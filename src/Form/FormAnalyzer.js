@@ -209,8 +209,8 @@ class FormAnalyzer {
 
         // A form with many fields is unlikely to be a login form
         const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'))
-        if (relevantFields.length > 3) {
-            this.increaseSignalBy(2, 'many fields: it is probably not a login')
+        if (relevantFields.length > 4) {
+            this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login')
         }
 
         // If we can't decide at this point, try reading page headings
