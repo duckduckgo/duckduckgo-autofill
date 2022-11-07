@@ -3,6 +3,13 @@ import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-configuration.js'
 import { getText, isLikelyASubmitButton } from '../autofill-utils.js'
 
+const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i)
+const positiveRegex = new RegExp(
+    /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password/i
+)
+const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
+const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i)
+
 class FormAnalyzer {
     /** @type HTMLElement */
     form;
@@ -49,20 +56,25 @@ class FormAnalyzer {
         return this
     }
 
+    /**
+     *
+     * @param {object} p
+     * @param {string} p.string - The string to check
+     * @param {number} p.strength - Strength of the signal
+     * @param {string} [p.signalType] - For debugging purposes, we give a name to the signal
+     * @param {boolean} [p.shouldFlip] - Flips the signals, i.e. when a link points outside. See below
+     * @param {boolean} [p.shouldCheckUnifiedForm] - Should check for login/signup forms
+     * @param {boolean} [p.shouldBeConservative] - Should use the conservative signup regex
+     * @returns {FormAnalyzer}
+     */
     updateSignal ({
-        string, // The string to check
-        strength, // Strength of the signal
-        signalType = 'generic', // For debugging purposes, we give a name to the signal
-        shouldFlip = false, // Flips the signals, i.e. when a link points outside. See below
-        shouldCheckUnifiedForm = false, // Should check for login/signup forms
-        shouldBeConservative = false // Should use the conservative signup regex
+        string,
+        strength,
+        signalType = 'generic',
+        shouldFlip = false,
+        shouldCheckUnifiedForm = false,
+        shouldBeConservative = false
     }) {
-        const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i)
-        const positiveRegex = new RegExp(
-            /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request/i
-        )
-        const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
-        const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i)
         const matchesNegative = string === 'current-password' || negativeRegex.test(string)
 
         // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
@@ -154,7 +166,7 @@ class FormAnalyzer {
 
         // check button contents
         if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
-            // If we're sure this is a submit button, it's a stronger signal
+            // If we're confident this is a submit button, it's a stronger signal
             const strength = isLikelyASubmitButton(el) ? 20 : 2
             this.updateSignal({string, strength, signalType: `submit: ${string}`})
         }
@@ -194,6 +206,12 @@ class FormAnalyzer {
             const displayValue = window.getComputedStyle(el, null).getPropertyValue('display')
             if (displayValue !== 'none') this.evaluateElement(el)
         })
+
+        // A form with many fields is unlikely to be a login form
+        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'))
+        if (relevantFields.length > 3) {
+            this.increaseSignalBy(2, 'many fields: it is probably not a login')
+        }
 
         // If we can't decide at this point, try reading page headings
         if (this.autofillSignal === 0) {

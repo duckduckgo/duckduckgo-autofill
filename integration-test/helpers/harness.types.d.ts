@@ -35,13 +35,16 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     withAvailableInputTypes(inputTypes: import("../../src/deviceApiCalls/__generated__/validators-ts").AvailableInputTypes): MockBuilder<State, Mocks>
     // Add any number of feature toggle overrides
     withFeatureToggles(featureToggles: Partial<import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles>): MockBuilder<State, Mocks>
+    // Allow remote config to be overridden
+    withRemoteAutofillState?(handlers: 'enabled' | 'disabled'): MockBuilder<State, Mocks>
     // Remove handlers to test roll-out logic
-    removeHandlers(handlers: (keyof Mocks)[]): MockBuilder<State, Mocks>
+    removeHandlers?(handlers: (keyof Mocks)[]): MockBuilder<State, Mocks>
     // observe the current state
     tap(fn: (currentState: State) => void): MockBuilder<State, Mocks>
     // apply to the page, this is the final step
     applyTo(page: import("playwright").Page): Promise<void>
 }
+
 
 /**
  * Implement this when inserting JavaScript into pages.

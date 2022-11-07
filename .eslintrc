@@ -12,6 +12,11 @@
         "no-restricted-globals": [2, "name"],
         "import/extensions":["error", "always", { "ignorePackages": true }]
     },
+    "globals": {
+        "windowsInteropPostMessage": "readonly",
+        "windowsInteropAddEventListener": "readonly",
+        "windowsInteropRemoveEventListener": "readonly"
+    },
     "env": {
         "webextensions": true,
         "browser": true,

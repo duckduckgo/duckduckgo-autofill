@@ -88,6 +88,7 @@ interface GlobalConfig {
      isAndroid: boolean;
      isFirefox: boolean;
      isMobileApp: boolean;
+     isWindows: boolean;
      isTopFrame: boolean;
      secret: string;
      supportsTopFrame: boolean;
@@ -98,6 +99,7 @@ interface GlobalConfig {
      isDDGTestMode: boolean;
      isDDGDomain: boolean;
      availableInputTypes: Record<string, boolean> | null;
+     webkitMessageHandlerNames: string[];
 }
 
 interface GlobalConfigImpl {

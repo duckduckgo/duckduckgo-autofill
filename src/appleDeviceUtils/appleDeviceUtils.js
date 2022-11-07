@@ -1,4 +1,4 @@
-import ddgGlobals from './captureDdgGlobals.js'
+import { ddgGlobals } from './captureDdgGlobals.js'
 
 /**
  * Sends message to the webkit layer (fire and forget)
@@ -10,7 +10,15 @@ const wkSend = (handler, data = {}, opts) => {
     if (!(handler in window.webkit.messageHandlers)) {
         throw new MissingWebkitHandler(`Missing webkit handler: '${handler}'`)
     }
-    return window.webkit.messageHandlers[handler].postMessage({...data, messageHandling: {...data.messageHandling, secret: opts.secret}})
+    const outgoing = {...data, messageHandling: {...data.messageHandling, secret: opts.secret}}
+    if (!opts.hasModernWebkitAPI) {
+        if (!(handler in ddgGlobals.capturedWebkitHandlers)) {
+            throw new Error(`cannot continue, method ${handler} not captured on macos < 11`)
+        } else {
+            return ddgGlobals.capturedWebkitHandlers[handler](outgoing)
+        }
+    }
+    return window.webkit.messageHandlers[handler].postMessage?.(outgoing)
 }
 
 /**

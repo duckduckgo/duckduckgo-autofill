@@ -52,6 +52,13 @@ const config = {
             }
         },
         {
+            name: 'windows',
+            testMatch: /.*windows.spec.js/,
+            use: {
+                ...devices['Desktop Chrome']
+            }
+        },
+        {
             name: 'android',
             testMatch: /.*android.spec.js/,
             use: {

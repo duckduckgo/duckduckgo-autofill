@@ -1,6 +1,6 @@
 import {AppleDeviceInterface} from './AppleDeviceInterface.js'
-import {CSS_STYLES} from '../UI/styles/styles.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
+import {overlayApi} from './overlayApi.js'
 import {createNotification} from '../../packages/device-api/index.js'
 
 /**
@@ -18,6 +18,11 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
     stripCredentials = false;
 
     /**
+     * overlay API helpers
+     */
+    overlay = overlayApi(this)
+
+    /**
      * Because we're running inside the Overlay, we always create the HTML
      * Tooltip controller.
      *
@@ -25,23 +30,15 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
     createUIController () {
-        /** @type {import('../UI/controllers/HTMLTooltipUIController').HTMLTooltipControllerOptions} */
-        const controllerOptions = {
+        return new HTMLTooltipUIController({
             tooltipKind: /** @type {const} */ ('modern'),
             device: this
-        }
-        /** @type {import('../UI/HTMLTooltip').HTMLTooltipOptions} */
-        const tooltipOptions = {
+        }, {
             wrapperClass: 'top-autofill',
             tooltipPositionClass: () => '.wrapper { transform: none; }',
-            css: `<style>${CSS_STYLES}</style>`,
-            setSize: (details) => this._setSize(details),
-            testMode: this.isTestMode(),
-            remove: () => {
-                /** noop - the overlay does not close itself */
-            }
-        }
-        return new HTMLTooltipUIController(controllerOptions, tooltipOptions)
+            setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
+            testMode: this.isTestMode()
+        })
     }
 
     /**
@@ -58,76 +55,21 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         if (signedIn) {
             await this.getAddresses()
         }
-
-        this._setupTopFrame()
-        this._listenForCustomMouseEvent()
-    }
-
-    _setupTopFrame () {
-        const topContextData = this.getTopContextData()
-        if (!topContextData) throw new Error('unreachable, topContextData should be available')
-
-        // Provide dummy values, they're not used
-        const getPosition = () => {
-            return {
-                x: 0,
-                y: 0,
-                height: 50,
-                width: 50
-            }
-        }
-
-        // Create the tooltip, and set it as active
-        const tooltip = this.uiController.createTooltip?.(getPosition, topContextData)
-        if (tooltip) {
-            this.uiController.setActiveTooltip?.(tooltip)
-        }
+        // setup overlay API pieces
+        this.overlay.showImmediately()
     }
 
     /**
-     * The native side will send a custom event 'mouseMove' to indicate
-     * that the HTMLTooltip should fake an element being focussed.
+     * In the top-frame scenario we override the base 'selectedDetail'.
      *
-     * Note: There's no cleanup required here since the Overlay has a fresh
-     * page load every time it's opened.
-     */
-    _listenForCustomMouseEvent () {
-        window.addEventListener('mouseMove', (event) => {
-            const activeTooltip = this.uiController.getActiveTooltip?.()
-            activeTooltip?.focus(event.detail.x, event.detail.y)
-        })
-    }
-
-    /**
-     * This is overridden in the Overlay, so that instead of trying to fill a form
-     * with the selected credentials, we instead send a message to the native
-     * side. Once received, the native side will store that selection so that a
-     * subsequence call from main webpage can retrieve it via polling.
+     * This
      *
      * @override
-     * @param detailIn
-     * @param configType
-     * @returns {Promise<void>}
+     * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
+     * @param {string} type
      */
-    async selectedDetail (detailIn, configType) {
-        let detailsEntries = Object.entries(detailIn).map(([key, value]) => {
-            return [key, String(value)]
-        })
-        const data = Object.fromEntries(detailsEntries)
-        await this.deviceApi.notify(createNotification('selectedDetail', { data, configType }))
-    }
-
-    /**
-     * When the HTMLTooltip calls 'setSize', we forward that message to the native layer
-     * so that the window that contains the Autofill UI can be set correctly.
-     *
-     * This is an overlay-only scenario - normally 'setSize' isn't needed (like in the extension)
-     * because the HTML element will grow as needed.
-     *
-     * @param {{height: number, width: number}} details
-     */
-    async _setSize (details) {
-        await this.deviceApi.notify(createNotification('setSize', details))
+    async selectedDetail (data, type) {
+        return this.overlay.selectedDetail(data, type)
     }
 }
 

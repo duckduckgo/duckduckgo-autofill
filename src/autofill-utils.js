@@ -32,7 +32,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 }
 
 /**
- * @param {GlobalConfig} globalConfig
+ * @param {Pick<GlobalConfig, 'contentScope' | 'userUnprotectedDomains' | 'userPreferences'>} globalConfig
  * @param [processConfig]
  * @return {boolean}
  */
@@ -135,6 +135,7 @@ const setValueForSelect = (el, val) => {
             value = `${Number(value) + 1}`
         }
         // TODO: try to match localised month names
+        // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
         if (value === String(val)) {
             if (option.selected) return false
             option.selected = true
@@ -173,7 +174,8 @@ const setValue = (el, val, config) => {
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
  * https://developers.google.com/web/updates/2019/02/intersectionobserver-v2
  */
-const safeExecute = (el, fn) => {
+const safeExecute = (el, fn, opts = {}) => {
+    const {checkVisibility = true} = opts
     const intObs = new IntersectionObserver((changes) => {
         for (const change of changes) {
             // Feature detection
@@ -181,8 +183,14 @@ const safeExecute = (el, fn) => {
                 // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
                 change.isVisible = true
             }
-            if (change.isIntersecting && change.isVisible) {
-                fn()
+            if (change.isIntersecting) {
+                /**
+                 * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
+                 * During testing it was found that windows does not `change.isVisible` properly.
+                 */
+                if (!checkVisibility || change.isVisible) {
+                    fn()
+                }
             }
         }
         intObs.disconnect()
@@ -273,7 +281,7 @@ function escapeXML (str) {
 }
 
 const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i
-const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide/i
+const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print/i
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
@@ -300,7 +308,7 @@ const isLikelyASubmitButton = (el) => {
  */
 const buttonMatchesFormType = (el, formObj) => {
     if (formObj.isLogin) {
-        return !/sign.?up/i.test(el.textContent || '')
+        return !/sign.?up|register|join/i.test(el.textContent || '')
     } else if (formObj.isSignup) {
         return !/(log|sign).?([io])n/i.test(el.textContent || '')
     } else {

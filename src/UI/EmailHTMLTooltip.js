@@ -20,7 +20,7 @@ ${this.options.css}
             <span class="tooltip__button--email__secondary-text">Blocks email trackers</span>
         </button>
         <button class="tooltip__button tooltip__button--email js-use-private">
-            <span class="tooltip__button--email__primary-text">Use a Private Address</span>
+            <span class="tooltip__button--email__primary-text">Generate a Private Duck Address</span>
             <span class="tooltip__button--email__secondary-text">Blocks email trackers and hides your address</span>
         </button>
     </div>

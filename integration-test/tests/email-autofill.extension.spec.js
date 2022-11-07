@@ -30,7 +30,7 @@ test.describe('chrome extension', () => {
 
         // buttons, unique to the extension
         const personalAddressBtn = await page.locator(`text=Use ${personalAddress} Blocks email trackers`)
-        const privateAddressBtn = await page.locator(`text=Use a Private Address Blocks email trackers and hides your address`)
+        const privateAddressBtn = await page.locator(`text=Generate a Private Duck Address Blocks email trackers and hides your address`)
 
         // click first option
         await personalAddressBtn.click({timeout: 500})

@@ -33,7 +33,7 @@ describe('Settings', () => {
             ]
         ]
         for (let [toggles, types, fn] of cases) {
-            const settings = await withMockedCalls(toggles, types)
+            const settings = await settingsFromMockedCalls(toggles, types)
             fn(settings)
         }
     })
@@ -71,11 +71,16 @@ describe('Settings', () => {
  * @param {import("./Settings").AutofillFeatureToggles} featureToggles
  * @param {import("./Settings").AvailableInputTypes} availableInputTypes
  */
-async function withMockedCalls (featureToggles, availableInputTypes) {
+async function settingsFromMockedCalls (featureToggles, availableInputTypes) {
     const resp1 = new GetRuntimeConfigurationCall(null).result({
         success: {
             contentScope: {
-                features: {},
+                features: {
+                    autofill: {
+                        state: 'enabled',
+                        exceptions: []
+                    }
+                },
                 unprotectedTemporary: []
             },
             userUnprotectedDomains: [],

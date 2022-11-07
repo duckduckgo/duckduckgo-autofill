@@ -44,7 +44,6 @@ export const macosContentScopeReplacements = (opts = {}) => {
     const { overlay = false, featureToggles } = opts
     return {
         isApp: true,
-        hasModernWebkitAPI: true,
         contentScope: {
             features: {
                 'autofill': {
@@ -76,7 +75,7 @@ export const macosContentScopeReplacements = (opts = {}) => {
                 }
             }
         },
-        ...overlay ? macosWithOverlay() : undefined
+        ...overlay ? macosWithOverlay() : macosWithoutOverlay()
     }
 }
 
@@ -85,10 +84,50 @@ export const macosContentScopeReplacements = (opts = {}) => {
  */
 export const macosWithOverlay = () => {
     return {
+        hasModernWebkitAPI: true,
         isTopFrame: false,
         supportsTopFrame: true
     }
 }
+
+/**
+ * @returns {Partial<Replacements>}
+ */
+export const macosWithoutOverlay = () => {
+    return {
+        hasModernWebkitAPI: false,
+        isTopFrame: false,
+        supportsTopFrame: false,
+        webkitMessageHandlerNames: [
+            'emailHandlerStoreToken',
+            'emailHandlerRemoveToken',
+            'emailHandlerGetAlias',
+            'emailHandlerGetUserData',
+            'emailHandlerGetCapabilities',
+            'emailHandlerRefreshAlias',
+            'emailHandlerGetAddresses',
+            'emailHandlerCheckAppSignedInStatus',
+            'pmHandlerGetAutofillInitData',
+            'pmHandlerStoreData',
+            'pmHandlerGetAccounts',
+            'pmHandlerGetAutofillCredentials',
+            'pmHandlerGetIdentity',
+            'pmHandlerGetCreditCard',
+            'pmHandlerOpenManageCreditCards',
+            'pmHandlerOpenManageIdentities',
+            'pmHandlerOpenManagePasswords',
+            'getAvailableInputTypes',
+            'getAutofillData',
+            'storeFormData',
+            'setSize',
+            'selectedDetail',
+            'closeAutofillParent',
+            'showAutofillParent',
+            'getSelectedCredentials'
+        ]
+    }
+}
+
 /**
  * Use this to mock webkit message handlers.
  *
@@ -147,7 +186,8 @@ export function createWebkitMocks (platform = 'macos') {
         getAutofillData: null,
         /** @type {null | Record<string, any>} */
         getAvailableInputTypes: null,
-        storeFormData: null
+        storeFormData: null,
+        selectedDetail: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
@@ -209,7 +249,7 @@ export function createWebkitMocks (platform = 'macos') {
             if (webkitBase.getAvailableInputTypes === null) {
                 webkitBase.getAvailableInputTypes = {success: {}}
             }
-            return withMockedWebkit(page, {...webkitBase})
+            return withMockedWebkit(page, { ...webkitBase })
         },
         /**
          * @param {(keyof webkitBase)[]} handlers
@@ -243,13 +283,22 @@ async function withMockedWebkit (page, mocks) {
         window.webkit = {
             messageHandlers: {}
         }
-
         for (let [msgName, response] of Object.entries(mocks)) {
             window.webkit.messageHandlers[msgName] = {
                 postMessage: async (data) => {
                     /** @type {MockCall} */
                     const call = [msgName, data, response]
                     window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+
+                    // If `data.messageHandling.methodName` exists, this means we're trying to use encryption
+                    // therefor we mimic what happens on the native side by calling the relevant window method
+                    // with the encrypted data
+                    const fn = window[data.messageHandling.methodName]
+                    if (typeof fn === 'function') {
+                        // @ts-ignore
+                        fn(encryptResponse(data, response))
+                        return
+                    }
 
                     // This allows mocks to have multiple return values.
                     // It has to be inline here since it's serialized into the page.
@@ -264,6 +313,59 @@ async function withMockedWebkit (page, mocks) {
 
                     return JSON.stringify(response)
                 }
+            }
+        }
+
+        /**
+         * @param {{
+         *     "messageHandling": {
+         *         "methodName": string,
+         *         "secret": string,
+         *         "key": number[],
+         *         "iv": number[],
+         *     },
+         *     [index: string]: any,
+         * }} message - the incoming message. The encryption parts are within `messageHandling`
+         * @param {Record<string, any>} response - the data that will be encrypted and returned back to the page
+         * @returns {Promise<{ciphertext: *[], tag: *[]}>}
+         */
+        async function encryptResponse (message, response) {
+            /**
+             * Create a `CryptoKey` based on the incoming message's 'key' field
+             * @type {CryptoKey}
+             */
+            const keyEncoded = await crypto.subtle.importKey(
+                'raw',
+                new Uint8Array(message.messageHandling.key),
+                'AES-GCM',
+                false,
+                ['encrypt', 'decrypt']
+            )
+
+            /**
+             * Encode the response JSON
+             */
+            const enc = new TextEncoder()
+            const encodedJson = enc.encode(JSON.stringify(response))
+
+            /**
+             * Encrypt the JSON string
+             */
+            const encryptedContent = await window.crypto.subtle.encrypt(
+                {
+                    name: 'AES-GCM',
+                    iv: new Uint8Array(message.messageHandling.iv)
+                },
+                keyEncoded,
+                encodedJson
+            )
+
+            /**
+             * Now return the encrypted data in the same shape that the native side would
+             */
+            return {
+                ciphertext: [...new Uint8Array(encryptedContent)],
+                tag: []
             }
         }
     }, mocks)
