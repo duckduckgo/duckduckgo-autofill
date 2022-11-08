@@ -41,7 +41,8 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     isDeviceSignedIn () {
-        return this.hasLocalAddresses
+        // If we have a personal address saved, consider the extension signed in
+        return !!this.getLocalAddresses().personalAddress
     }
 
     setupAutofill () {
@@ -49,7 +50,7 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     postInit () {
-        if (this.hasLocalAddresses) {
+        if (this.isDeviceSignedIn()) {
             const cleanup = this.scanner.init()
             this.addLogoutListener(cleanup)
         }
