@@ -32,7 +32,7 @@ const data = {
  * @param {CreatePRTemplateData} data
  * @returns {string}
  */
-export function createPRTemplate (platform, data) {
+function createPRTemplate (platform, data) {
     const asanaOutput = JSON.parse(data.asanaOutputRaw)
     const templatePath = filepath(`./release/clients_pr_template.md`)
     const template = readFileSync(templatePath, 'utf8')
@@ -64,3 +64,5 @@ export function createPRTemplate (platform, data) {
 
 // The log is needed to read the value from the bash context
 console.log(createPRTemplate(platform, data))
+
+module.exports = {createPRTemplate}

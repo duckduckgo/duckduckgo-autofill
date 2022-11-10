@@ -5727,6 +5727,12 @@ module.exports={
   "airasia.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
   },
+  "airfrance.com": {
+    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit; allowed: [-!#$&+/?@_];"
+  },
+  "airfrance.us": {
+    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit; allowed: [-!#$&+/?@_];"
+  },
   "ajisushionline.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [ !#$%&*?@];"
   },
