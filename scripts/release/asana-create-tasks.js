@@ -72,7 +72,7 @@ const duplicateTemplateTask = (templateTaskGid) => {
     return asana.tasks.duplicateTask(templateTaskGid, duplicateOption)
 }
 
-export const asanaCreateTasks = async () => {
+const asanaCreateTasks = async () => {
     setupAsana()
 
     // Duplicating template task...
@@ -142,3 +142,5 @@ asanaCreateTasks()
         console.error(e.value?.errors || e)
         process.exit(1)
     })
+
+module.exports = {asanaCreateTasks}
