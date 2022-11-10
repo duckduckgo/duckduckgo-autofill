@@ -72,18 +72,42 @@ function setupIntersectionObserverMock ({
 setupIntersectionObserverMock()
 
 /**
- *  Enables the use of clientWidth and clientHeight on html elements
- *  @source https://github.com/jsdom/jsdom/issues/2342#issuecomment-468253441
+ *  Enable the use of clientWidth, clientHeight, offsetWidth and offsetHeight on html elements
+ *  @source https://github.com/jsdom/jsdom/issues/2342#issuecomment-468253441 (adapted)
  **/
-// If the element has a `_jsdomMockClientWidth` property return it for clientWidth - otherwise return 0
+// Enables setting clientWidth by the data-mock-clientWidth attribute or the property _jsdomMockClientWidth
 Object.defineProperty(window.HTMLElement.prototype, 'clientWidth', {
     get: function () {
+        const mockClientWidthAttribute = this.getAttribute('data-mock-clientWidth')
+        if (mockClientWidthAttribute) return mockClientWidthAttribute
+
         return this._jsdomMockClientWidth || 0
     }
 })
-// If the element has a `_jsdomMockClientHeight` property return it for clientHeight - otherwise return 0
+// Enables setting clientHeight by the data-mock-clientHeight attribute or the property _jsdomMockClientHeight
 Object.defineProperty(window.HTMLElement.prototype, 'clientHeight', {
     get: function () {
+        const mockClientHeightAttribute = this.getAttribute('data-mock-clientHeight')
+        if (mockClientHeightAttribute) return mockClientHeightAttribute
+
         return this._jsdomMockClientHeight || 0
+    }
+})
+// Enables setting offsetWidth by the data-mock-offsetWidth attribute or the property _jsdomMockOffsetWidth
+Object.defineProperty(window.HTMLElement.prototype, 'offsetWidth', {
+    get: function () {
+        const mockOffsetWidthAttribute = this.getAttribute('data-mock-offsetWidth')
+        if (mockOffsetWidthAttribute) return mockOffsetWidthAttribute
+
+        return this._jsdomMockOffsetWidth || 0
+    }
+})
+// Enables setting offsetHeight by the data-mock-offsetHeight attribute or the property _jsdomMockOffsetHeight
+Object.defineProperty(window.HTMLElement.prototype, 'offsetHeight', {
+    get: function () {
+        const mockOffsetHeightAttribute = this.getAttribute('data-mock-offsetHeight')
+        if (mockOffsetHeightAttribute) return mockOffsetHeightAttribute
+
+        return this._jsdomMockOffsetHeight || 0
     }
 })

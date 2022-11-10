@@ -677,7 +677,7 @@ function getInputSubtype (input) {
 const removeExcessWhitespace = (string = '') => {
     return (string || '')
         .replace(/\n/g, ' ')
-        .replace(/\s{2,}/, ' ').trim()
+        .replace(/\s{2,}/g, ' ').trim()
 }
 
 /**

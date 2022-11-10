@@ -294,10 +294,13 @@ const isLikelyASubmitButton = (el) => {
     const value = (el instanceof HTMLInputElement ? el.value || '' : '')
     const contentExcludingLabel = text + ' ' + title + ' ' + value
 
-    return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-    /primary|submit/i.test(el.className) || // has high-signal submit classes
-    SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
-    (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className))) && // it's a large element 250x40px
+    return (
+        el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+        /primary|submit/i.test(el.className) || // has high-signal submit classes
+        SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
+        (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) // it's a large element 250x40px
+    ) &&
+    el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
     !SUBMIT_BUTTON_UNLIKELY_REGEX.test(contentExcludingLabel + ' ' + ariaLabel)
 }
 

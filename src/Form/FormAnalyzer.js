@@ -3,12 +3,12 @@ import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-configuration.js'
 import { getText, isLikelyASubmitButton } from '../autofill-utils.js'
 
-const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i)
+const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i)
 const positiveRegex = new RegExp(
-    /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password/i
+    /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password|password confirm?/i
 )
-const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
-const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i)
+const conservativePositiveRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
+const strictPositiveRegex = new RegExp(/sign.?up|join|register|enroll|settings|preferences|profile|update/i)
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -209,8 +209,8 @@ class FormAnalyzer {
 
         // A form with many fields is unlikely to be a login form
         const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'))
-        if (relevantFields.length > 3) {
-            this.increaseSignalBy(2, 'many fields: it is probably not a login')
+        if (relevantFields.length > 4) {
+            this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login')
         }
 
         // If we can't decide at this point, try reading page headings
