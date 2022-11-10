@@ -251,5 +251,7 @@ export default [
     { html: 'evite_checkout-login.html' },
     { html: 'evite_checkout-signup.html' },
     // Issues with buttons here is due to lots of hidden forms and weird markup, they don't affect the actual UX
-    { html: 'boardgamearena_signup.html', expectedFailures: ['birthday'], expectedSubmitFalsePositives: 2, expectedSubmitFalseNegatives: 5 }
+    { html: 'boardgamearena_signup.html', expectedFailures: ['birthday'], expectedSubmitFalsePositives: 2, expectedSubmitFalseNegatives: 5 },
+    { html: 'eventbrite_checkout-signup.html' },
+    { html: 'eventbrite_fake-signup.html' }
 ]
