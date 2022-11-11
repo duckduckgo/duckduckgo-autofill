@@ -78,18 +78,18 @@ const waitForJobSuccess = async (job_gid, attempts = 1) => {
     const maxAttempts = 20
 
     return new Promise(async (resolve, reject) => {
-            const { status } = await asana.jobs.getJob(job_gid)
-            if (status === 'succeeded') {
-                return resolve(status)
-            }
-            attempts += 1
+        const { status } = await asana.jobs.getJob(job_gid)
+        if (status === 'succeeded') {
+            return resolve(status)
+        }
+        attempts += 1
 
         if (attempts > maxAttempts) {
             return reject(new Error(`The job ${job_gid} took too long to execute`))
         }
 
-            await timersPromises.setTimeout(interval)
-            return waitForJobSuccess(job_gid, attempts)
+        await timersPromises.setTimeout(interval)
+        return waitForJobSuccess(job_gid, attempts)
     })
 }
 
