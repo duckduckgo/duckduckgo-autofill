@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable camelcase */
+const timersPromises = require('node:timers/promises')
 const Asana = require('asana')
 const MarkdownIt = require('markdown-it')
 const {getLink} = require('./release-utils.js')
@@ -72,11 +73,29 @@ const duplicateTemplateTask = (templateTaskGid) => {
     return asana.tasks.duplicateTask(templateTaskGid, duplicateOption)
 }
 
+const waitForJobSuccess = async (job_gid, attempts = 1) => {
+    const interval = 500
+    const maxAttempts = 20
+
+    return new Promise(async (resolve, reject) => {
+        if (attempts <= maxAttempts) {
+            const { status } = await asana.jobs.getJob(job_gid)
+            if (status === 'succeeded') {
+                return resolve(status)
+            }
+            attempts += 1
+            await timersPromises.setTimeout(interval)
+            return waitForJobSuccess(job_gid, attempts)
+        }
+        reject(new Error(`The job ${job_gid} took too long to execute`))
+    })
+}
+
 const asanaCreateTasks = async () => {
     setupAsana()
 
     // Duplicating template task...
-    const { new_task } = await duplicateTemplateTask(templateTaskGid)
+    const { new_task, gid: duplicateTaskJobGid } = await duplicateTemplateTask(templateTaskGid)
 
     const { html_notes: notes } = await asana.tasks.getTask(new_task.gid, { opt_fields: 'html_notes' })
 
@@ -91,6 +110,8 @@ const asanaCreateTasks = async () => {
     await asana.tasks.updateTask(new_task.gid, {html_notes: updatedNotes})
 
     await asana.tasks.addProjectForTask(new_task.gid, { project: autofillProjectGid, section: releaseSectionGid })
+
+    await waitForJobSuccess(duplicateTaskJobGid)
 
     // Getting subtasks...
     const { data: subtasks } = await asana.tasks.getSubtasksForTask(new_task.gid, {opt_fields: 'name,html_notes,permalink_url'})
