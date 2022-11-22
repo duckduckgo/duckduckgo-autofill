@@ -107,7 +107,7 @@ class DefaultScanner {
         window.performance?.mark?.('scanner:init:start')
         this.findEligibleInputs(document)
         window.performance?.mark?.('scanner:init:end')
-        this.mutObs.observe(document.body, { childList: true, subtree: true })
+        this.mutObs.observe(document.documentElement, { childList: true, subtree: true })
     }
 
     /**
@@ -134,7 +134,13 @@ class DefaultScanner {
         let element = input
         // traverse the DOM to search for related inputs
         while (element.parentElement && element.parentElement !== document.body) {
+            // If parent includes a form return the current element to avoid overlapping forms
+            if (element.parentElement?.querySelector('form')) {
+                return element
+            }
+
             element = element.parentElement
+
             // todo: These selectors should be configurable
             const inputs = element.querySelectorAll(FORM_INPUTS_SELECTOR)
             const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR)

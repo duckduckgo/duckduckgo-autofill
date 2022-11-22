@@ -41,6 +41,36 @@ At that point it's very clear what has broken, and you can work to resolve the i
 
 ## Testing Tips
 
+### Set element dimensions in tests
+In jsdom all elements have 0 `clientHeight` and `clientWidth` and dimensions in general. Since our logic checks 
+dimensions of elements, in particular buttons, to determine if they are likely to be submit buttons, you can set
+those values in the test suite as js properties or by using `data-` attributes. For example, in input-classifier.test.js
+we set all button values to default size
+
+```js
+buttons.forEach((button) => {
+    // We're doing this so that isVisible(button) === true. See jest.setup.js for more info
+    // @ts-ignore
+    button._jsdomMockClientWidth = 150
+    // @ts-ignore
+    button._jsdomMockClientHeight = 50
+    // @ts-ignore
+    button._jsdomMockOffsetWidth = 150
+    // @ts-ignore
+    button._jsdomMockOffsetHeight = 50
+})
+```
+
+You can override those values directly in the markup of the test, by doing:
+
+```html
+<button data-mock-offsetHeight="36" data-mock-offsetWidth="22">
+    Log in
+</button>
+```
+
+### Run a single test case
+
 To run a single real-world test case, you can do the following
 
 ```shell

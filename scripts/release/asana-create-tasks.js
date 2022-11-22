@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable camelcase */
+const timersPromises = require('node:timers/promises')
 const Asana = require('asana')
 const MarkdownIt = require('markdown-it')
 const {getLink} = require('./release-utils.js')
@@ -17,6 +18,18 @@ const autofillProjectGid = '1198964220583541'
 const releaseSectionGid = '1200559726959935'
 const projectExtractorRegex = /\[\[project_gids=(.+)]]\s/
 
+/**
+ * @typedef {{taskGid: string, taskUrl: string, displayName: string}} platformData
+ *
+ * @typedef {{
+ *   extensions: platformData,
+ *   android: platformData,
+ *   bsk: platformData,
+ *   windows: platformData
+ * }} AsanaOutput
+ */
+
+/** @type {AsanaOutput} */
 const platforms = {
     android: {
         displayName: 'Android',
@@ -60,18 +73,38 @@ const duplicateTemplateTask = (templateTaskGid) => {
     return asana.tasks.duplicateTask(templateTaskGid, duplicateOption)
 }
 
-const run = async () => {
+const waitForJobSuccess = async (job_gid, attempts = 1) => {
+    const interval = 500
+    const maxAttempts = 20
+
+    return new Promise(async (resolve, reject) => {
+        const { status } = await asana.jobs.getJob(job_gid)
+        if (status === 'succeeded') {
+            return resolve(status)
+        }
+        attempts += 1
+
+        if (attempts > maxAttempts) {
+            return reject(new Error(`The job ${job_gid} took too long to execute`))
+        }
+
+        await timersPromises.setTimeout(interval)
+        return waitForJobSuccess(job_gid, attempts)
+    })
+}
+
+const asanaCreateTasks = async () => {
     setupAsana()
 
     // Duplicating template task...
-    const { new_task } = await duplicateTemplateTask(templateTaskGid)
+    const { new_task, gid: duplicateTaskJobGid } = await duplicateTemplateTask(templateTaskGid)
 
     const { html_notes: notes } = await asana.tasks.getTask(new_task.gid, { opt_fields: 'html_notes' })
 
     const updatedNotes =
         notes.replace('[[version]]', version)
             .replace('[[commit]]', commit)
-            .replace('[[release_url]]', getLink(releaseUrl))
+            .replace('[[release_url]]', getLink(releaseUrl, 'Autofill Release'))
             .replace('[[notes]]', releaseNotes)
             .replace(/<\/?p>/ig, '\n')
 
@@ -79,6 +112,10 @@ const run = async () => {
     await asana.tasks.updateTask(new_task.gid, {html_notes: updatedNotes})
 
     await asana.tasks.addProjectForTask(new_task.gid, { project: autofillProjectGid, section: releaseSectionGid })
+
+    // The duplicateTask job returns when the task itself has been duplicated, ignoring the subtasks.
+    // We want to wait that the job completes so that we can fetch all the subtasks correctly.
+    await waitForJobSuccess(duplicateTaskJobGid)
 
     // Getting subtasks...
     const { data: subtasks } = await asana.tasks.getSubtasksForTask(new_task.gid, {opt_fields: 'name,html_notes,permalink_url'})
@@ -90,6 +127,8 @@ const run = async () => {
         const platform = Object.keys(platforms).find(
             (key) => name.includes(platforms[key].displayName)
         )
+        if (!platform) throw new Error('Unexpected platform name: ' + name)
+
         platforms[platform].taskGid = gid
         platforms[platform].taskUrl = permalink_url
 
@@ -115,12 +154,18 @@ const run = async () => {
     await asana.tasks.updateTask(new_task.gid, {html_notes: finalNotes})
 
     const jsonString = JSON.stringify(platforms)
-    // The log is needed to read the value from the bash context
-    console.log(jsonString)
+    return {stdout: jsonString}
 }
 
-run().catch((e) => {
-    // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
-    console.error(e.value?.errors || e)
-    process.exit(1)
-})
+asanaCreateTasks()
+    .then((result) => {
+        // The log is needed to read the value from the bash context
+        console.log(result.stdout)
+    })
+    .catch((e) => {
+        // The Asana API returns errors in e.value.errors. If that's undefined log whatever else we got
+        console.error(e.value?.errors || e)
+        process.exit(1)
+    })
+
+module.exports = {asanaCreateTasks}

@@ -24,6 +24,10 @@ const attachAndReturnGenericForm = (form) => {
         button._jsdomMockClientWidth = 150
         // @ts-ignore
         button._jsdomMockClientHeight = 50
+        // @ts-ignore
+        button._jsdomMockOffsetWidth = 150
+        // @ts-ignore
+        button._jsdomMockOffsetHeight = 50
     })
 
     return formEl

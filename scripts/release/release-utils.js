@@ -53,4 +53,67 @@ function wrapInLi (content) {
     return `<li>${content}</li>`
 }
 
-module.exports = {replaceInString, replaceAllInString, getLink, wrapInLi}
+/**
+ * Provide the source project.pbxproj for iOS and macOS and get it updated with the BSK reference
+ * @param {string} projectPbxprojContent
+ * @param {string} commit
+ * @returns {string}
+ */
+function updateProjectPbxproj (projectPbxprojContent, commit) {
+    const bskPackageRegex = new RegExp(
+        /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = \d+.\d+.\d+;)/
+    )
+
+    return replaceInString(
+        projectPbxprojContent,
+        bskPackageRegex,
+        `$1revision$3revision = ${commit};`
+    )
+}
+
+/**
+ * Provide the source Package.swift for BSK and get it updated with the autofill version
+ * @param {string} packageSwiftContent
+ * @param {string} version
+ * @returns {string}
+ */
+function updatePackageSwift (packageSwiftContent, version) {
+    const autofillPackageSwiftRegex = new RegExp(
+        /(\.package\(name: "Autofill", url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", \.exact\(")(.+)("\)\),)/
+    )
+
+    return replaceInString(
+        packageSwiftContent,
+        autofillPackageSwiftRegex,
+        `$1${version}$3`
+    )
+}
+
+/**
+ * Provide the source Package.resolved for BSK and get it updated with the autofill version
+ * @param {string} packageResolvedContent
+ * @param {string} version
+ * @param {string} commit
+ * @returns {string}
+ */
+function updatePackageResolved (packageResolvedContent, version, commit) {
+    const autofillPackageResolvedRegex = new RegExp(
+        /("package": "Autofill",\s+"repositoryURL": "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state": {\s+"branch": null,\s+"revision": ")(\w+)(",\s+"version": ")([\d.]+)("\s+})/
+    )
+
+    return replaceInString(
+        packageResolvedContent,
+        autofillPackageResolvedRegex,
+        `$1${commit}$3${version}$5`
+    )
+}
+
+module.exports = {
+    replaceInString,
+    replaceAllInString,
+    getLink,
+    wrapInLi,
+    updatePackageSwift,
+    updatePackageResolved,
+    updateProjectPbxproj
+}

@@ -154,6 +154,10 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             button._jsdomMockClientWidth = 150
             // @ts-ignore
             button._jsdomMockClientHeight = 50
+            // @ts-ignore
+            button._jsdomMockOffsetWidth = 150
+            // @ts-ignore
+            button._jsdomMockOffsetHeight = 50
         })
 
         const scanner = createScanner(InterfacePrototype.default())
