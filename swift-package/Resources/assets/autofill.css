@@ -1,3 +1,7 @@
+:root {
+    color-scheme: light dark;
+}
+
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
 }
@@ -30,6 +34,11 @@
     -webkit-backdrop-filter: blur(40px);
     backdrop-filter: blur(40px);
 }
+@media (prefers-color-scheme: dark) {
+    .tooltip--data, #topAutofill {
+        background: rgb(100, 98, 102, .9);
+    }
+}
 .tooltip--data {
     padding: 6px;
     font-size: 13px;
@@ -39,9 +48,14 @@
 :not(.top-autofill) .tooltip--data {
     top: 100%;
     left: 100%;
-    border: 0.5px solid rgba(0, 0, 0, 0.2);
+    border: 0.5px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
+}
+@media (prefers-color-scheme: dark) {
+    :not(.top-autofill) .tooltip--data {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 }
 :not(.top-autofill) .tooltip--email {
     top: calc(100% + 6px);
@@ -137,6 +151,13 @@
 .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
     filter: invert(100%);
 }
+@media (prefers-color-scheme: dark) {
+    .tooltip__button--data::before,
+    .tooltip__button--data::before {
+        filter: invert(100%);
+        opacity: .9;
+    }
+}
 .tooltip__button__text-container {
     margin: auto 0;
 }
@@ -159,6 +180,17 @@
     font-weight: 400;
     letter-spacing: 0.06px;
     color: rgba(0,0,0,0.6);
+}
+@media (prefers-color-scheme: dark) {
+    .tooltip--data .label {
+        color: #ffffff;
+    }
+    .tooltip--data .label--medium {
+        color: #ffffff;
+    }
+    .tooltip--data .label--small {
+        color: #cdcdcd;
+    }
 }
 .tooltip__button.currentFocus .label,
 .tooltip__button:hover .label,
@@ -194,6 +226,12 @@ hr {
 
 hr:first-child {
     display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    hr {
+        border-top: 1px solid rgba(255,255,255,.2);
+    }
 }
 
 #privateAddress {

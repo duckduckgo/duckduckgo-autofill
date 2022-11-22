@@ -188,7 +188,7 @@ export class Settings {
             return false
         }
 
-        if (this.availableInputTypes[mainType] === undefined) {
+        if (this.availableInputTypes?.[mainType] === undefined) {
             const availableInputTypesFromRemote = await this.getAvailableInputTypes(mainType)
             this.setAvailableInputTypes(availableInputTypesFromRemote)
         }
