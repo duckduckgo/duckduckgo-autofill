@@ -3,6 +3,8 @@
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
  */
+import {createAvailableInputTypes} from './utils.js'
+
 /**
  * @param {object} [overrides]
  * @param {Partial<AutofillFeatureToggles>} [overrides.featureToggles]
@@ -12,6 +14,10 @@ export function androidStringReplacements (overrides = {}) {
     return {
         /** @type {AvailableInputTypes} */
         availableInputTypes: {
+            ...createAvailableInputTypes({
+                credentials: {username: true, password: true},
+                email: true
+            }),
             ...overrides.availableInputTypes
         },
         contentScope: {
@@ -103,6 +109,9 @@ export function createAndroidMocks () {
                 action: 'fill',
                 credentials
             }
+            return this
+        },
+        withCheckCredentialsProviderStatus: function () {
             return this
         },
         tap () {

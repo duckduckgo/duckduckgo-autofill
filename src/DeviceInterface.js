@@ -19,9 +19,9 @@ function createDevice () {
      */
     const loggingTransport = {
         async send (deviceApiCall) {
-            console.log('[->outgoing]', 'id:', deviceApiCall.method, JSON.stringify(deviceApiCall.params || null))
+            console.log('[->outgoing]', 'id:', deviceApiCall.method, deviceApiCall.params || null)
             const result = await transport.send(deviceApiCall)
-            console.log('[<-incoming]', 'id:', deviceApiCall.method, JSON.stringify(result || null))
+            console.log('[<-incoming]', 'id:', deviceApiCall.method, result || null)
             return result
         }
     }

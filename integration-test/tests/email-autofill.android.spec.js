@@ -71,6 +71,7 @@ test.describe('android', () => {
                 .applyTo(page)
 
             await emailPage.clickIntoInput()
+            await emailPage.assertEmailValue(personalAddress)
         })
     })
     test.describe('when not signed in', () => {

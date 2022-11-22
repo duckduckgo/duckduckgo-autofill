@@ -35,7 +35,6 @@ test.describe('Auto-fill a login form on windows', () => {
                         username: personalAddress,
                         password
                     })
-                    .withAvailableInputTypes({credentials: true})
                     .withFeatureToggles({
                         inputType_credentials: true
                     })
@@ -57,7 +56,7 @@ test.describe('Auto-fill a login form on windows', () => {
                 await login.navigate()
 
                 await createWindowsMocks()
-                    .withAvailableInputTypes({credentials: false})
+                    .withAvailableInputTypes({credentials: {username: false, password: false}})
                     .applyTo(page)
 
                 await createAutofillScript()
@@ -76,7 +75,6 @@ test.describe('Auto-fill a login form on windows', () => {
 
                 await createWindowsMocks()
                     .withFeatureToggles({inputType_credentials: false})
-                    .withAvailableInputTypes({credentials: true})
                     .applyTo(page)
 
                 await createAutofillScript()
@@ -99,9 +97,6 @@ test.describe('Auto-fill a login form on windows', () => {
             await overlay.navigate()
 
             await createWindowsMocks()
-                .withAvailableInputTypes({
-                    credentials: true
-                })
                 .withCredentials({
                     id: '01',
                     username: personalAddress,
@@ -115,7 +110,7 @@ test.describe('Auto-fill a login form on windows', () => {
                 .platform('windows')
                 .applyTo(page)
 
-            await overlay.selectFirstCredential(personalAddress)
+            await overlay.clickButtonWithText(personalAddress)
             await overlay.assertSelectedDetail()
         })
     })

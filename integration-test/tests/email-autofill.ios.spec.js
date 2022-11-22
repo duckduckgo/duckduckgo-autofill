@@ -22,7 +22,7 @@ test.describe('ios', () => {
     test.afterAll(async () => {
         server.close()
     })
-    test('should autofill the selected email without feature flagging', async ({page}) => {
+    test('should autofill the selected email when email protection is enabled', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
@@ -32,9 +32,10 @@ test.describe('ios', () => {
             .applyTo(page)
 
         // Load the autofill.js script with replacements
-        // on iOS it's the user-agent that's used as the platform check
         await createAutofillScript()
-            .replaceAll(iosContentScopeReplacements())
+            .replaceAll(iosContentScopeReplacements({
+                featureToggles: {emailProtection: true}
+            }))
             .platform('ios')
             .applyTo(page)
 
@@ -51,5 +52,31 @@ test.describe('ios', () => {
 
         // Because of the mock above, assume an email was selected and ensure it's auto-filled
         await emailPage.assertEmailValue(privateAddress0)
+    })
+
+    test('should not autofill email when email protection is disabled', async ({page}) => {
+        // enable in-terminal exceptions
+        await forwardConsoleMessages(page)
+
+        await createWebkitMocks('ios')
+            .applyTo(page)
+
+        // Load the autofill.js script with replacements
+        await createAutofillScript()
+            .replaceAll(iosContentScopeReplacements({
+                featureToggles: {emailProtection: false, inputType_identities: false},
+                availableInputTypes: {email: false, identities: {emailAddress: false}}
+            }))
+            .platform('ios')
+            .applyTo(page)
+
+        // page abstraction
+        const emailPage = emailAutofillPage(page, server)
+        await emailPage.navigate()
+
+        await emailPage.clickIntoInput()
+
+        // Since email autofill is disabled we expect an empty field
+        await emailPage.assertEmailValue('')
     })
 })

@@ -531,7 +531,7 @@ class Matching {
  *  @returns {SupportedTypes}
  */
 function getInputType (input) {
-    const attr = input.getAttribute(ATTR_INPUT_TYPE)
+    const attr = input?.getAttribute(ATTR_INPUT_TYPE)
     if (isValidSupportedType(attr)) {
         return attr
     }
@@ -677,7 +677,7 @@ function getInputSubtype (input) {
 const removeExcessWhitespace = (string = '') => {
     return (string || '')
         .replace(/\n/g, ' ')
-        .replace(/\s{2,}/, ' ').trim()
+        .replace(/\s{2,}/g, ' ').trim()
 }
 
 /**

@@ -246,5 +246,12 @@ export default [
     { html: 'statista_login.html' },
     { html: 'statista_signup.html', expectedFailures: ['unknown'] },
     { html: 'sunlife_login.html' },
-    { html: 'sunlife_signup.html', expectedFailures: ['birthday'] }
+    { html: 'sunlife_signup.html', expectedFailures: ['birthday'] },
+    { html: 'netid_login.html', expectedSubmitFalsePositives: 2 },
+    { html: 'evite_checkout-login.html' },
+    { html: 'evite_checkout-signup.html' },
+    // Issues with buttons here is due to lots of hidden forms and weird markup, they don't affect the actual UX
+    { html: 'boardgamearena_signup.html', expectedFailures: ['birthday'], expectedSubmitFalsePositives: 2, expectedSubmitFalseNegatives: 5 },
+    { html: 'eventbrite_checkout-signup.html' },
+    { html: 'eventbrite_fake-signup.html' }
 ]

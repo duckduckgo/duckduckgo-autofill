@@ -4,12 +4,15 @@ import {
     getAutofillDataResponseSchema,
     getRuntimeConfigurationResponseSchema,
     storeFormDataSchema,
+    getAvailableInputTypesRequestSchema,
     getAvailableInputTypesResultSchema,
     getAutofillInitDataResponseSchema,
     getAutofillCredentialsParamsSchema,
     getAutofillCredentialsResultSchema,
     setSizeParamsSchema,
-    selectedDetailParamsSchema
+    selectedDetailParamsSchema,
+    askToUnlockProviderResultSchema,
+    checkCredentialsProviderStatusResultSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -38,11 +41,12 @@ export class StoreFormDataCall extends DeviceApiCall {
   paramsValidator = storeFormDataSchema
 }
 /**
- * @extends {DeviceApiCall<any, getAvailableInputTypesResultSchema>} 
+ * @extends {DeviceApiCall<getAvailableInputTypesRequestSchema, getAvailableInputTypesResultSchema>} 
  */
 export class GetAvailableInputTypesCall extends DeviceApiCall {
   method = "getAvailableInputTypes"
   id = "getAvailableInputTypesResponse"
+  paramsValidator = getAvailableInputTypesRequestSchema
   resultValidator = getAvailableInputTypesResultSchema
 }
 /**
@@ -81,4 +85,20 @@ export class SelectedDetailCall extends DeviceApiCall {
  */
 export class CloseAutofillParentCall extends DeviceApiCall {
   method = "closeAutofillParent"
+}
+/**
+ * @extends {DeviceApiCall<any, askToUnlockProviderResultSchema>} 
+ */
+export class AskToUnlockProviderCall extends DeviceApiCall {
+  method = "askToUnlockProvider"
+  id = "askToUnlockProviderResponse"
+  resultValidator = askToUnlockProviderResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, checkCredentialsProviderStatusResultSchema>} 
+ */
+export class CheckCredentialsProviderStatusCall extends DeviceApiCall {
+  method = "checkCredentialsProviderStatus"
+  id = "checkCredentialsProviderStatusResponse"
+  resultValidator = checkCredentialsProviderStatusResultSchema
 }

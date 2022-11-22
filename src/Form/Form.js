@@ -12,7 +12,7 @@ import {
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
 import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
-import {canBeInteractedWith, getInputConfig} from './inputTypeConfig.js'
+import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
 import {
     getUnifiedExpiryDate,
@@ -238,7 +238,11 @@ class Form {
     }
     redecorateAllInputs () {
         this.removeAllDecorations()
-        this.execOnInputs((input) => this.decorateInput(input))
+        this.execOnInputs((input) => {
+            if (input instanceof HTMLInputElement) {
+                this.decorateInput(input)
+            }
+        })
     }
     resetAllInputs () {
         this.execOnInputs((input) => {
@@ -309,8 +313,7 @@ class Form {
             let canExecute = true
             // sometimes we want to execute even if we didn't decorate
             if (shouldCheckForDecorate) {
-                const {shouldDecorate} = getInputConfig(input)
-                canExecute = shouldDecorate(input, this)
+                canExecute = isFieldDecorated(input)
             }
             if (canExecute) fn(input)
         }
@@ -344,10 +347,16 @@ class Form {
         addInlineStyles(input, styles)
     }
 
-    decorateInput (input) {
+    /**
+     * Decorate here means adding listeners and an optional icon
+     * @param {HTMLInputElement} input
+     * @returns {Promise<Form>}
+     */
+    async decorateInput (input) {
         const config = getInputConfig(input)
 
-        if (!config.shouldDecorate(input, this)) return this
+        const shouldDecorate = await config.shouldDecorate(input, this)
+        if (!shouldDecorate) return this
 
         input.setAttribute(ATTR_AUTOFILL, 'true')
 
@@ -424,10 +433,10 @@ class Form {
             }
         }
 
-        if (input.nodeName !== 'SELECT') {
+        if (!(input instanceof HTMLSelectElement)) {
             const events = ['pointerdown']
             if (!this.device.globalConfig.isMobileApp) events.push('focus')
-            input.labels.forEach((label) => {
+            input.labels?.forEach((label) => {
                 this.addListener(label, 'pointerdown', handlerLabel)
             })
             events.forEach((ev) => this.addListener(input, ev, handler))
@@ -483,7 +492,12 @@ class Form {
     autofillEmail (alias, dataType = 'identities') {
         this.isAutofilling = true
         this.execOnInputs(
-            (input) => this.autofillInput(input, alias, dataType),
+            (input) => {
+                const inputSubtype = getInputSubtype(input)
+                if (inputSubtype === 'emailAddress') {
+                    this.autofillInput(input, alias, dataType)
+                }
+            },
             dataType
         )
         this.isAutofilling = false
@@ -524,33 +538,35 @@ class Form {
         return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isVisible(input))
     }
 
-    promptLoginIfNeeded () {
+    async promptLoginIfNeeded () {
         if (document.visibilityState !== 'visible' || !this.isLogin) return
 
-        if (this.device.settings.availableInputTypes.credentials) {
-            const firstCredentialInput = this.getFirstViableCredentialsInput()
-            const input = this.activeInput || firstCredentialInput
-            if (input) {
-                // The timeout is needed in case the page shows a cookie prompt with a slight delay
-                setTimeout(() => {
-                    // safeExecute checks that the element is on screen according to IntersectionObserver
-                    safeExecute(this.form, () => {
-                        const {x, y, width, height} = this.form.getBoundingClientRect()
-                        const elHCenter = x + (width / 2)
-                        const elVCenter = y + (height / 2)
-                        // This checks that the form is not covered by anything else
-                        const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
-                        if (this.form.contains(topMostElementFromPoint)) {
-                            this.execOnInputs((input) => {
-                                if (isVisible(input)) {
-                                    this.touched.add(input)
-                                }
-                            }, 'credentials')
-                            this.device.attachTooltip(this, input, null, 'autoprompt')
-                        }
-                    })
-                }, 200)
-            }
+        const firstCredentialInput = this.getFirstViableCredentialsInput()
+        const input = this.activeInput || firstCredentialInput
+        if (!input) return
+
+        const mainType = getInputMainType(input)
+        const subtype = getInputSubtype(input)
+        if (await this.device.settings.canAutofillType(mainType, subtype)) {
+            // The timeout is needed in case the page shows a cookie prompt with a slight delay
+            setTimeout(() => {
+                // safeExecute checks that the element is on screen according to IntersectionObserver
+                safeExecute(this.form, () => {
+                    const {x, y, width, height} = this.form.getBoundingClientRect()
+                    const elHCenter = x + (width / 2)
+                    const elVCenter = y + (height / 2)
+                    // This checks that the form is not covered by anything else
+                    const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
+                    if (this.form.contains(topMostElementFromPoint)) {
+                        this.execOnInputs((input) => {
+                            if (isVisible(input)) {
+                                this.touched.add(input)
+                            }
+                        }, 'credentials')
+                        this.device.attachTooltip(this, input, null, 'autoprompt')
+                    }
+                })
+            }, 200)
         }
     }
 }

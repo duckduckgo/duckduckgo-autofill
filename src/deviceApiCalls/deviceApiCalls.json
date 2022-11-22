@@ -13,6 +13,7 @@
   },
   "getAvailableInputTypes": {
     "id": "getAvailableInputTypesResponse",
+    "paramsValidator": "./schemas/getAvailableInputTypes.params.json",
     "resultValidator": "./schemas/getAvailableInputTypes.result.json"
   },
   "getAutofillInitData": {
@@ -36,5 +37,13 @@
   },
   "closeAutofillParent": {
     "description": "Used by Windows to instruct native sides to close any autofill overlays"
+  },
+  "askToUnlockProvider": {
+    "id": "askToUnlockProviderResponse",
+    "resultValidator": "./schemas/askToUnlockProvider.result.json"
+  },
+  "checkCredentialsProviderStatus": {
+    "id": "checkCredentialsProviderStatusResponse",
+    "resultValidator": "./schemas/checkCredentialsProviderStatus.result.json"
   }
 }

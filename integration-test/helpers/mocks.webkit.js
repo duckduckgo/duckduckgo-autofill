@@ -1,11 +1,21 @@
+import { createAvailableInputTypes } from './utils.js'
+import {constants} from './mocks.js'
+
 /**
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AskToUnlockProviderResult} AskToUnlockProviderTypes
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').CheckCredentialsProviderStatusResult} CheckCredentialsProviderStatusTypes
  */
+
+const {personalAddress} = constants.fields.email
+const password = '123456'
 
 /**
  * @param {object} [overrides]
  * @param {Partial<AutofillFeatureToggles>} [overrides.featureToggles]
+ * @param {Partial<AvailableInputTypes>} [overrides.availableInputTypes]
  */
 export const iosContentScopeReplacements = (overrides = {}) => {
     return {
@@ -32,16 +42,23 @@ export const iosContentScopeReplacements = (overrides = {}) => {
                     }
                 }
             }
+        },
+        availableInputTypes: {
+            ...createAvailableInputTypes(overrides.availableInputTypes)
         }
     }
 }
 
 /**
- * @param {{overlay?: boolean, featureToggles?: AutofillFeatureToggles}} opts
+ * @param {{
+ *      overlay?: boolean,
+ *      featureToggles?: AutofillFeatureToggles,
+ *      availableInputTypes?: AvailableInputTypes
+ *  }} opts
  * @returns {Partial<Replacements>}
  */
 export const macosContentScopeReplacements = (opts = {}) => {
-    const { overlay = false, featureToggles } = opts
+    const { overlay = false, featureToggles, availableInputTypes } = opts
     return {
         isApp: true,
         contentScope: {
@@ -74,6 +91,9 @@ export const macosContentScopeReplacements = (opts = {}) => {
                     }
                 }
             }
+        },
+        availableInputTypes: {
+            ...createAvailableInputTypes(availableInputTypes)
         },
         ...overlay ? macosWithOverlay() : macosWithoutOverlay()
     }
@@ -123,7 +143,9 @@ export const macosWithoutOverlay = () => {
             'selectedDetail',
             'closeAutofillParent',
             'showAutofillParent',
-            'getSelectedCredentials'
+            'getSelectedCredentials',
+            'askToUnlockProvider',
+            'checkCredentialsProviderStatus'
         ]
     }
 }
@@ -187,7 +209,11 @@ export function createWebkitMocks (platform = 'macos') {
         /** @type {null | Record<string, any>} */
         getAvailableInputTypes: null,
         storeFormData: null,
-        selectedDetail: null
+        selectedDetail: null,
+        /** @type {AskToUnlockProviderTypes | null} */
+        askToUnlockProvider: null,
+        /** @type {CheckCredentialsProviderStatusTypes[]} */
+        checkCredentialsProviderStatus: []
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
@@ -241,6 +267,64 @@ export function createWebkitMocks (platform = 'macos') {
         withFeatureToggles: function (_featureToggles) {
             throw new Error('unreachable - webkit cannot mock feature toggles this way. Use script replacements')
         },
+        withAskToUnlockProvider: function () {
+            webkitBase.askToUnlockProvider = {
+                success: {
+                    status: 'unlocked',
+                    credentials: [{
+                        id: '2',
+                        password: '',
+                        username: constants.fields.email.personalAddress,
+                        credentialsProvider: 'bitwarden'
+                    }],
+                    availableInputTypes: createAvailableInputTypes()
+                }
+            }
+            return this
+        },
+        withCheckCredentialsProviderStatus: function () {
+            webkitBase.checkCredentialsProviderStatus = [
+                {
+                    // unlocked with no credentials available
+                    success: {
+                        status: 'unlocked',
+                        credentials: [],
+                        availableInputTypes: {credentials: {password: false, username: false}}
+                    }
+                },
+                {
+                    // unlocked with credentials available
+                    success: {
+                        status: 'unlocked',
+                        credentials: [
+                            {id: '3', password: password, username: personalAddress, credentialsProvider: 'bitwarden'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: true}}
+                    }
+                },
+                {
+                    // unlocked with only a password field
+                    success: {
+                        status: 'unlocked',
+                        credentials: [
+                            {id: '3', password: password, username: '', credentialsProvider: 'bitwarden'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: false}}
+                    }
+                },
+                {
+                    // back to being locked
+                    success: {
+                        status: 'locked',
+                        credentials: [
+                            {id: 'provider_locked', password: '', username: ''}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: true}}
+                    }
+                }
+            ]
+            return this
+        },
         tap (fn) {
             fn(webkitBase)
             return this
@@ -288,7 +372,19 @@ async function withMockedWebkit (page, mocks) {
                 postMessage: async (data) => {
                     /** @type {MockCall} */
                     const call = [msgName, data, response]
+                    let thisResponse = response
                     window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+
+                    // This allows mocks to have multiple return values.
+                    // It has to be inline here since it's serialized into the page.
+                    const isMulti = Array.isArray(response)
+                    if (isMulti) {
+                        const prevCount = window.__playwright.mocks.calls.filter(([name]) => name === msgName).length
+                        const next = response[prevCount - 1]
+                        if (next) {
+                            thisResponse = next
+                        }
+                    }
 
                     // If `data.messageHandling.methodName` exists, this means we're trying to use encryption
                     // therefor we mimic what happens on the native side by calling the relevant window method
@@ -296,22 +392,11 @@ async function withMockedWebkit (page, mocks) {
                     const fn = window[data.messageHandling.methodName]
                     if (typeof fn === 'function') {
                         // @ts-ignore
-                        fn(encryptResponse(data, response))
+                        fn(encryptResponse(data, thisResponse))
                         return
                     }
 
-                    // This allows mocks to have multiple return values.
-                    // It has to be inline here since it's serialized into the page.
-                    const isMulti = Array.isArray(response)
-                    if (isMulti) {
-                        const prevCount = window.__playwright.mocks.calls.filter(([name]) => name === msgName).length
-                        const next = response[prevCount]
-                        if (next) {
-                            return JSON.stringify(next)
-                        }
-                    }
-
-                    return JSON.stringify(response)
+                    return JSON.stringify(thisResponse)
                 }
             }
         }

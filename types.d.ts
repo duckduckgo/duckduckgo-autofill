@@ -56,6 +56,8 @@ interface Window {
         }
     }
 
+    providerStatusUpdated: (data: ProviderStatusUpdated) => void;
+
     __playwright: {
         mocks: {
             calls: MockCall[]
@@ -67,4 +69,8 @@ interface Window {
      * send to indicate where a mouseMove event occurred
      */
     addEventListener(type: "mouseMove", listener: (this: Document, ev: CustomEvent<{x: number, y: number}>) => void): void;
+}
+
+type ToBoolean<T extends Record<string, any>> = {
+    [K in keyof T]: boolean
 }

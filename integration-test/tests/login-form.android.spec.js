@@ -20,7 +20,7 @@ const test = withAndroidContext(base)
  * @param {ServerWrapper} server
  * @param {object} opts
  * @param {Partial<AutofillFeatureToggles>} opts.featureToggles
- * @param {Partial<AvailableInputTypes>} opts.availableInputTypes
+ * @param {Partial<AvailableInputTypes>} [opts.availableInputTypes]
  * @param {CredentialsMock} [opts.credentials]
  * @param {'standard' | 'withExtraText' | 'withModal'} [opts.pageType]
  */
@@ -85,9 +85,6 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     featureToggles: {
                         inputType_credentials: true
                     },
-                    availableInputTypes: {
-                        credentials: true
-                    },
                     credentials
                 })
                 await login.promptWasShown()
@@ -98,9 +95,6 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
-                    },
-                    availableInputTypes: {
-                        credentials: true
                     },
                     credentials,
                     pageType: 'withExtraText'
@@ -115,9 +109,6 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     featureToggles: {
                         inputType_credentials: true
                     },
-                    availableInputTypes: {
-                        credentials: true
-                    },
                     credentials,
                     pageType: 'withExtraText'
                 })
@@ -130,9 +121,6 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true
-                    },
-                    availableInputTypes: {
-                        credentials: true
                     },
                     credentials,
                     pageType: 'withModal'
@@ -165,7 +153,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     inputType_credentials: false
                 },
                 availableInputTypes: {
-                    credentials: true
+                    credentials: {username: true, password: true}
                 },
                 credentials
             })

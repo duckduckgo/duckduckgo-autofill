@@ -1,8 +1,8 @@
 import {constants} from '../helpers/mocks.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {createAutofillScript, forwardConsoleMessages, setupServer} from '../helpers/harness.js'
+import {createAutofillScript, forwardConsoleMessages, mockedCalls, setupServer} from '../helpers/harness.js'
 import {loginPage, loginPageWithFormInModal, loginPageWithText, overlayPage} from '../helpers/pages.js'
-import {test as base} from '@playwright/test'
+import {expect, test as base} from '@playwright/test'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -20,9 +20,9 @@ async function mocks (page) {
         .withCredentials({
             id: '01',
             username: personalAddress,
-            password
+            password,
+            credentialsProvider: 'duckduckgo'
         })
-        .withAvailableInputTypes({ credentials: true })
         .applyTo(page)
     return {personalAddress, password}
 }
@@ -103,13 +103,6 @@ test.describe('Auto-fill a login form on macOS', () => {
             await testLoginPage(page, server)
         })
         test.describe('with overlay', () => {
-            test('with autoprompt', async ({page}) => {
-                const login = await testLoginPage(page, server, {overlay: true})
-                // this is not ideal as it's checking an implementation detail.
-                // But it's done to ensure we're not getting a false positive
-                // and definitely loading the overlay code paths
-                await login.assertParentOpened()
-            })
             test('with click and focus', async ({page}) => {
                 const login = await testLoginPage(page, server, {overlay: true, pageType: 'withExtraText'})
                 // this is not ideal as it's checking an implementation detail.
@@ -135,8 +128,8 @@ test.describe('Auto-fill a login form on macOS', () => {
 
             const overlay = overlayPage(page, server)
             await overlay.navigate()
-            await overlay.selectFirstCredential(personalAddress)
-            await overlay.doesNotCloseParent()
+            await overlay.clickButtonWithText(personalAddress)
+            await overlay.doesNotCloseParentAfterCall('pmHandlerGetAutofillCredentials')
         })
     })
     test.describe('When availableInputTypes API is available', () => {
@@ -159,22 +152,6 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)
             })
-            test('I should be able to use my saved credentials with autoprompt', async ({page}) => {
-                await forwardConsoleMessages(page)
-
-                const {personalAddress, password} = await mocks(page)
-
-                // Pretend we're running in a top-frame scenario
-                await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements({overlay: true}))
-                    .platform('macos')
-                    .applyTo(page)
-
-                const login = loginPage(page, server)
-                await login.navigate()
-                await login.fieldsContainIcons()
-                await login.assertFirstCredential(personalAddress, password)
-            })
             test('autofill should not submit the form automatically', async ({page}) => {
                 const login = await createLoginFormInModalPage(page, server)
                 await login.promptWasNotShown()
@@ -190,11 +167,14 @@ test.describe('Auto-fill a login form on macOS', () => {
             test('I should not see the key icon', async ({page}) => {
                 await forwardConsoleMessages(page)
                 await createWebkitMocks()
-                    .withAvailableInputTypes({ credentials: false })
                     .applyTo(page)
 
                 await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements())
+                    .replaceAll(macosContentScopeReplacements({
+                        availableInputTypes: {
+                            credentials: {username: false, password: false}
+                        }
+                    }))
                     .platform('macos')
                     .applyTo(page)
 
@@ -223,6 +203,230 @@ test.describe('Auto-fill a login form on macOS', () => {
             await login.assertDialogOpen()
             await login.hitEscapeKey()
             await login.assertDialogClose()
+        })
+    })
+
+    test.describe('When Bitwarden is the password provider', () => {
+        test('When we have Bitwarden credentials', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+
+            await createWebkitMocks()
+                .withCredentials({
+                    id: '01',
+                    username: personalAddress,
+                    password,
+                    credentialsProvider: 'bitwarden'
+                })
+                .applyTo(page)
+
+            // Load the autofill.js script with replacements
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements({
+                    featureToggles: {
+                        third_party_credentials_provider: true
+                    }
+                }))
+                .platform('macos')
+                .applyTo(page)
+
+            const login = loginPage(page, server)
+            await login.navigate()
+            await login.fieldsContainIcons()
+
+            await login.assertTooltipNotOpen(personalAddress)
+
+            await login.assertBitwardenTooltipWorking(personalAddress, password)
+        })
+
+        test.describe('When bitwarden is locked', async () => {
+            test('in overlay', async ({page}) => {
+                await forwardConsoleMessages(page)
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: 'provider_locked',
+                        username: '',
+                        password: '',
+                        credentialsProvider: 'bitwarden'
+                    })
+                    .withAskToUnlockProvider?.()
+                    .applyTo(page)
+
+                // Pretend we're running in a top-frame scenario
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements())
+                    .replace('isTopFrame', true)
+                    .replace('supportsTopFrame', true)
+                    .platform('macos')
+                    .applyTo(page)
+
+                const overlay = overlayPage(page, server)
+                await overlay.navigate()
+                await overlay.clickButtonWithText('Bitwarden is locked')
+                await overlay.doesNotCloseParentAfterCall('askToUnlockProvider')
+
+                const autofillCalls = await mockedCalls(page, ['setSize'], true)
+                expect(autofillCalls.length).toBeGreaterThanOrEqual(1)
+            })
+
+            test('when the native layer calls to unblock provider UI (on modern macOS versions)', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: 'provider_locked',
+                        username: '',
+                        password: '',
+                        credentialsProvider: 'bitwarden'
+                    })
+                    .applyTo(page)
+
+                // Load the autofill.js script with replacements
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({
+                        featureToggles: {
+                            third_party_credentials_provider: true
+                        }
+                    }))
+                    .replace('hasModernWebkitAPI', true)
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.fieldsContainIcons()
+
+                await login.assertTooltipNotOpen(personalAddress)
+
+                // NOTE: I'm not creating separate test cases because these calls can happen multiple times
+                // in the page lifecycle with different values, so this is a realistic use case
+
+                // unlocked with no credentials available
+                await page.evaluate(`
+                    window.providerStatusUpdated({
+                        status: 'unlocked',
+                        credentials: [],
+                        availableInputTypes: {credentials: {password: false, username: false}}
+                    })
+                `)
+
+                await login.fieldsDoNotContainIcons()
+
+                // unlocked with credentials available
+                await page.evaluate(`
+                    window.providerStatusUpdated({
+                        status: 'unlocked',
+                        credentials: [
+                            {id: '3', password: '${password}', username: '${personalAddress}', credentialsProvider: 'bitwarden'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: true}}
+                    })
+                `)
+
+                await login.fieldsContainIcons()
+
+                // unlocked with only a password field
+                await page.evaluate(`
+                    window.providerStatusUpdated({
+                        status: 'unlocked',
+                        credentials: [
+                            {id: '3', password: '${password}', username: '', credentialsProvider: 'bitwarden'}
+                        ],
+                        availableInputTypes: {credentials: {password: true, username: false}}
+                    })
+                `)
+
+                await login.onlyPasswordFieldHasIcon()
+            })
+
+            test('without overlay (Catalina)', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: 'provider_locked',
+                        username: '',
+                        password: '',
+                        credentialsProvider: 'bitwarden'
+                    })
+                    .withAskToUnlockProvider?.()
+                    .applyTo(page)
+
+                // Load the autofill.js script with replacements
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({
+                        featureToggles: {
+                            third_party_credentials_provider: true
+                        },
+                        availableInputTypes: {
+                            credentialsProviderStatus: 'locked'
+                        }
+                    }))
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.fieldsContainIcons()
+
+                await login.assertTooltipNotOpen(personalAddress)
+
+                await login.assertBitwardenLockedWorking()
+            })
+
+            test('when the native layer calls to unblock provider UI (on Catalina)', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                await createWebkitMocks()
+                    .withCredentials({
+                        id: 'provider_locked',
+                        username: '',
+                        password: '',
+                        credentialsProvider: 'bitwarden'
+                    })
+                    .withCheckCredentialsProviderStatus?.()
+                    .applyTo(page)
+
+                // Load the autofill.js script with replacements
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({
+                        featureToggles: {
+                            third_party_credentials_provider: true
+                        },
+                        availableInputTypes: {
+                            credentialsProviderStatus: 'locked'
+                        }
+                    }))
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.fieldsContainIcons()
+
+                await login.assertTooltipNotOpen(personalAddress)
+
+                // The call is executed every 2s and we have encoded responses in mocks.webkit.js
+                await page.waitForTimeout(2000)
+
+                // unlocked with no credentials available
+                await login.fieldsDoNotContainIcons()
+                await page.waitForTimeout(2000)
+
+                // unlocked with credentials available
+                await login.fieldsContainIcons()
+                await page.waitForTimeout(2000)
+
+                // unlocked with only a password field
+                await login.onlyPasswordFieldHasIcon()
+                await page.waitForTimeout(2000)
+
+                // back to being locked
+                await login.fieldsContainIcons()
+            })
         })
     })
 })

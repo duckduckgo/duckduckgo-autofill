@@ -6,7 +6,9 @@ const SUBMIT_BUTTON_SELECTOR = `
 input[type=submit],
 input[type=button],
 button:not([role=switch]):not([role=link]),
-[role=button]`
+[role=button],
+a[href="#"][id*=button i],
+a[href="#"][id*=btn i]`
 
 const email = `
 input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
@@ -183,7 +185,10 @@ const username = [
     `input[name="userID" i]`,
     `input[id="login-id" i]`,
     `input[name=accountname i]`,
-    `input[autocomplete=username]`
+    `input[autocomplete=username]`,
+    `input[name*=accountid i]`,
+    `input[name="j_username" i]`,
+    `input[id="username" i]`
 ]
 
 // todo: these are still used directly right now, mostly in scanForInputs

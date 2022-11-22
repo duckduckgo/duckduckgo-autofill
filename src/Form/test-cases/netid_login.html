@@ -1,0 +1,50 @@
+<!-- used in several academic institutions in the US for example https://netid.unm.edu/identityiq/login.jsf -->
+<form id="loginForm" name="loginForm" method="post" action="/identityiq/login.jsf;jsessionid=186422DA2B3D672A5D0AA73415A193E1" autocomplete="off">
+    <input type="hidden" name="loginForm" value="loginForm">
+    <input id="loginForm:initialTimeZoneId" type="hidden" name="loginForm:initialTimeZoneId" value="Europe/Malta"><input id="loginForm:preLoginUrl" type="hidden" name="loginForm:preLoginUrl">
+    <section class="panel">
+        <header class="panel-heading bg-light lter text-center"><span class="h3 font-thin login-welcome">Welcome to UNM NetID</span>
+        </header>
+
+        <div class="panel-body">
+            <section role="presentation">
+                <div class="clearfix text-center">
+                    <div class="inline">
+                        <div class="thumb-md m-b-lg">
+                            <img role="presentation" src="/identityiq/ui/images/loginLogo.png" class="img-circle" alt="Login Logo">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="sp-ui-app ng-scope" translate-cloak="">
+                <div id="alertDiv" class="sr-only" role="alert" aria-live="assertive" aria-hidden="true"></div>
+            </div>
+
+            <div class="form-group ">
+                <label class="compliance-only" for="loginForm:accountId">UNM NetID</label><input id="loginForm:accountId" type="text" name="loginForm:accountId" class="form-control input-lg" placeholder="UNM NetID" autocomplete="off" onkeypress="return SailPoint.Login.submitenter(this,event,'loginForm:loginButton')" data-manual-scoring="username">
+            </div>
+            <div class="form-group ">
+                <label class="compliance-only" for="loginForm:password">Password</label><input placeholder="Password" id="loginForm:password" type="password" name="loginForm:password" value="" onkeypress="return SailPoint.Login.submitenter(this,event,'loginForm:loginButton')" class="form-control input-lg" data-manual-scoring="password">
+            </div>
+
+            <div class="pull-left m-t-n-xs">
+                <div>
+                    <a id="registrationLinkLink" href="javascript:void(0);" class="font-thin text-info" onclick="$('#loginForm\\:registrationLink').click()"><strong>New UNM NetID Registration</strong>
+                    </a><input id="loginForm:registrationLink" type="submit" name="loginForm:registrationLink" value="" style="display:none">
+                </div>
+            </div>
+
+            <div class="pull-right m-t-n-xs">
+                <div id="forgotPasswordDiv" style="visibility: visible;">
+                    <a id="forgotPassButtonLink" href="javascript:void(0);" class="font-thin text-info" onclick="$('#loginForm\\:forgotPasswordButton').click()"><strong>Forgot UNM NetID Password?</strong>
+                    </a><input id="loginForm:forgotPasswordButton" type="submit" name="loginForm:forgotPasswordButton" value="" style="display:none">
+                </div>
+            </div>
+        </div>
+        <footer class="panel-footer text-center clearfix bg-light lter">
+            <div class="inline"><input id="loginForm:loginButton" type="submit" name="loginForm:loginButton" value="Login" class="btn btn-info btn-s-lg" onclick="disableButton()" data-manual-submit>
+            </div>
+        </footer>
+    </section><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0" value="-6583027252685001410:-4186350560548046107" autocomplete="off">
+</form>

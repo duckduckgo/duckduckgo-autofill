@@ -2051,6 +2051,12 @@ module.exports={
   "airasia.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
   },
+  "airfrance.com": {
+    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit; allowed: [-!#$&+/?@_];"
+  },
+  "airfrance.us": {
+    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit; allowed: [-!#$&+/?@_];"
+  },
   "ajisushionline.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [ !#$%&*?@];"
   },
@@ -2864,9 +2870,9 @@ function createDevice() {
 
   const loggingTransport = {
     async send(deviceApiCall) {
-      console.log('[->outgoing]', 'id:', deviceApiCall.method, JSON.stringify(deviceApiCall.params || null));
+      console.log('[->outgoing]', 'id:', deviceApiCall.method, deviceApiCall.params || null);
       const result = await transport.send(deviceApiCall);
-      console.log('[<-incoming]', 'id:', deviceApiCall.method, JSON.stringify(result || null));
+      console.log('[<-incoming]', 'id:', deviceApiCall.method, result || null);
       return result;
     }
 
@@ -3071,6 +3077,12 @@ var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCa
 
 var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 
+var _captureDdgGlobals = require("../appleDeviceUtils/captureDdgGlobals.js");
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
+
+var _matching = require("../Form/matching.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -3141,8 +3153,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 
   async setupAutofill() {
-    // this prevents iOS from calling `_getAutofillInitData`.
-    if (this.globalConfig.isApp) {
+    if (!this.globalConfig.supportsTopFrame) {
       await this._getAutofillInitData();
     }
 
@@ -3376,11 +3387,11 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     }));
   }
 
-  async getCurrentInputType() {
-    const {
-      inputType
-    } = this.getTopContextData() || {};
-    return inputType || 'unknown';
+  getCurrentInputType() {
+    var _this$activeForm;
+
+    const topContextData = this.getTopContextData();
+    return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : _this$activeForm.activeInput);
   }
   /**
    * @returns {Promise<string>}
@@ -3405,6 +3416,41 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
         handler();
       }
     });
+  }
+
+  async addDeviceListeners() {
+    if (this.settings.featureToggles.third_party_credentials_provider) {
+      if (this.globalConfig.hasModernWebkitAPI) {
+        _captureDdgGlobals.ddgGlobals.ObjectDefineProperty(_captureDdgGlobals.ddgGlobals.window, 'providerStatusUpdated', {
+          enumerable: false,
+          configurable: false,
+          writable: false,
+          value: data => {
+            this.providerStatusUpdated(data);
+          }
+        });
+      } else {
+        // On Catalina we poll the native layer
+        setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
+      }
+    }
+  } // Only used on Catalina
+
+
+  async _pollForUpdatesToCredentialsProvider() {
+    try {
+      const response = await this.deviceApi.request(new _deviceApiCalls.CheckCredentialsProviderStatusCall(null));
+
+      if (response.availableInputTypes.credentialsProviderStatus !== this.settings.availableInputTypes.credentialsProviderStatus) {
+        this.providerStatusUpdated(response);
+      }
+
+      setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e);
+      }
+    }
   }
   /** @type {any} */
 
@@ -3458,7 +3504,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../UI/HTMLTooltip.js":40,"../UI/controllers/HTMLTooltipUIController.js":41,"../UI/controllers/NativeUIController.js":42,"../UI/controllers/OverlayUIController.js":43,"../autofill-utils.js":49,"../deviceApiCalls/additionalDeviceApiCalls.js":55,"./InterfacePrototype.js":15,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],13:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../Form/matching.js":29,"../UI/HTMLTooltip.js":40,"../UI/controllers/HTMLTooltipUIController.js":41,"../UI/controllers/NativeUIController.js":42,"../UI/controllers/OverlayUIController.js":43,"../appleDeviceUtils/captureDdgGlobals.js":48,"../autofill-utils.js":49,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/additionalDeviceApiCalls.js":55,"./InterfacePrototype.js":15,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3473,6 +3519,10 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 var _overlayApi = require("./overlayApi.js");
 
 var _index = require("../../packages/device-api/index.js");
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
+
+var _validatorsZod = require("../deviceApiCalls/__generated__/validators.zod.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -3547,11 +3597,28 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
     return this.overlay.selectedDetail(data, type);
   }
 
+  async askToUnlockProvider() {
+    const response = await this.deviceApi.request(new _deviceApiCalls.AskToUnlockProviderCall(null));
+    this.providerStatusUpdated(response);
+  }
+
+  providerStatusUpdated(data) {
+    const {
+      credentials,
+      availableInputTypes
+    } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
+
+    this.settings.setAvailableInputTypes(availableInputTypes);
+    this.storeLocalCredentials(credentials); // rerender the tooltip
+
+    this.uiController.updateItems(credentials);
+  }
+
 }
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":41,"./AppleDeviceInterface.js":12,"./overlayApi.js":19}],14:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":41,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/__generated__/validators.zod.js":54,"./AppleDeviceInterface.js":12,"./overlayApi.js":19}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3765,6 +3832,8 @@ var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js
 
 var _initFormSubmissionsApi = require("./initFormSubmissionsApi.js");
 
+var _validatorsZod = require("../deviceApiCalls/__generated__/validators.zod.js");
+
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
 
 function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
@@ -3821,11 +3890,9 @@ class InterfacePrototype {
   constructor(config, deviceApi, settings) {
     _defineProperty(this, "attempts", 0);
 
-    _defineProperty(this, "currentAttached", null);
+    _defineProperty(this, "activeForm", null);
 
     _defineProperty(this, "currentTooltip", null);
-
-    _defineProperty(this, "stripCredentials", true);
 
     _defineProperty(this, "initialSetupDelayMs", 0);
 
@@ -3912,9 +3979,9 @@ class InterfacePrototype {
 
 
   /**
-   * @returns {Promise<import('../Form/matching').SupportedTypes>}
+   * @returns {import('../Form/matching').SupportedTypes}
    */
-  async getCurrentInputType() {
+  getCurrentInputType() {
     throw new Error('Not implemented');
   }
 
@@ -3958,19 +4025,15 @@ class InterfacePrototype {
 
 
   storeLocalData(data) {
-    if (this.stripCredentials) {
-      data.credentials.forEach(cred => delete cred.password);
-      data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode);
-    } // Store the full name as a separate field to simplify autocomplete
-
+    this.storeLocalCredentials(data.credentials);
+    data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode); // Store the full name as a separate field to simplify autocomplete
 
     const updatedIdentities = data.identities.map(identity => ({ ...identity,
       fullName: (0, _formatters.formatFullName)(identity)
     })); // Add addresses
 
     _classPrivateFieldGet(this, _data2).identities = this.addDuckAddressesToIdentities(updatedIdentities);
-    _classPrivateFieldGet(this, _data2).creditCards = data.creditCards;
-    _classPrivateFieldGet(this, _data2).credentials = data.credentials; // Top autofill only
+    _classPrivateFieldGet(this, _data2).creditCards = data.creditCards; // Top autofill only
 
     if (data.serializedInputContext) {
       try {
@@ -3980,6 +4043,16 @@ class InterfacePrototype {
         this.removeTooltip();
       }
     }
+  }
+  /**
+   * Stores credentials locally
+   * @param {CredentialsObject[]} credentials
+   */
+
+
+  storeLocalCredentials(credentials) {
+    credentials.forEach(cred => delete cred.password);
+    _classPrivateFieldGet(this, _data2).credentials = credentials;
   }
 
   getTopContextData() {
@@ -4034,9 +4107,9 @@ class InterfacePrototype {
   }
 
   async startInit() {
+    await this.refreshSettings();
     this.addDeviceListeners();
-    await this.setupAutofill();
-    await this.refreshSettings(); // this is the temporary measure to support windows whilst we still have 'setupAutofill'
+    await this.setupAutofill(); // this is the temporary measure to support windows whilst we still have 'setupAutofill'
     // eventually all interfaces will use this
 
     if (!this.isEnabledViaSettings()) {
@@ -4077,15 +4150,7 @@ class InterfacePrototype {
 
 
   async refreshSettings() {
-    var _this$globalConfig$us, _this$globalConfig$us2;
-
-    const defaults = ((_this$globalConfig$us = this.globalConfig.userPreferences) === null || _this$globalConfig$us === void 0 ? void 0 : (_this$globalConfig$us2 = _this$globalConfig$us.platform) === null || _this$globalConfig$us2 === void 0 ? void 0 : _this$globalConfig$us2.name) === 'macos' ? {
-      identities: this.hasLocalIdentities,
-      credentials: this.hasLocalCredentials,
-      creditCards: this.hasLocalCreditCards,
-      email: this.isDeviceSignedIn()
-    } : undefined;
-    await this.settings.refresh(defaults);
+    await this.settings.refresh();
   }
 
   postInit() {}
@@ -4131,7 +4196,7 @@ class InterfacePrototype {
 
 
   async selectedDetail(data, type) {
-    const form = this.currentAttached;
+    const form = this.activeForm;
 
     if (!form) {
       return;
@@ -4192,10 +4257,13 @@ class InterfacePrototype {
   attachTooltip(form, input, click) {
     let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
     // Avoid flashing tooltip from background tabs on macOS
-    if (document.visibilityState !== 'visible') return;
+    if (document.visibilityState !== 'visible') return; // Only autoprompt on mobile devices
+
+    if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return; // Only fire autoprompt once
+
     if (trigger === 'autoprompt' && this.autopromptFired) return;
     form.activeInput = input;
-    this.currentAttached = form;
+    this.activeForm = form;
     const inputType = (0, _matching.getInputType)(input);
     /** @type {PosFn} */
 
@@ -4249,6 +4317,11 @@ class InterfacePrototype {
 
   onSelect(config, items, id) {
     id = String(id);
+
+    if (id === _Credentials.PROVIDER_LOCKED) {
+      return this.askToUnlockProvider();
+    }
+
     const matchingData = items.find(item => String(item.id) === id);
     if (!matchingData) throw new Error('unreachable (fatal)');
 
@@ -4289,6 +4362,11 @@ class InterfacePrototype {
       console.error(e);
       return this.removeTooltip();
     });
+  }
+
+  async askToUnlockProvider() {
+    const response = await this.deviceApi.request(new _deviceApiCalls.AskToUnlockProviderCall(null));
+    this.providerStatusUpdated(response);
   }
 
   isTooltipActive() {
@@ -4399,6 +4477,40 @@ class InterfacePrototype {
   storeUserData(_data) {}
 
   addDeviceListeners() {}
+  /**
+   * Called by the native layer on all tabs when the provider status is updated
+   * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
+   */
+
+
+  providerStatusUpdated(data) {
+    try {
+      var _availableInputTypes$;
+
+      const {
+        credentials,
+        availableInputTypes
+      } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
+
+      this.settings.setAvailableInputTypes(availableInputTypes);
+      this.storeLocalCredentials(credentials); // rerender the tooltip
+
+      this.uiController.updateItems(credentials); // If the tooltip is open on an autofill type that's not available, close it
+
+      const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
+
+      if (!((_availableInputTypes$ = availableInputTypes.credentials) !== null && _availableInputTypes$ !== void 0 && _availableInputTypes$[currentInputSubtype])) {
+        this.removeTooltip();
+      } // Redecorate fields according to the new types
+
+
+      this.scanner.forms.forEach(form => form.redecorateAllInputs());
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
+      }
+    }
+  }
   /** @param {() => void} _fn */
 
 
@@ -4553,7 +4665,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api/index.js":2,"../Form/formatters.js":23,"../Form/matching.js":29,"../InputTypes/Credentials.js":32,"../PasswordGenerator.js":35,"../Scanner.js":36,"../Settings.js":37,"../UI/controllers/NativeUIController.js":42,"../autofill-utils.js":49,"../config.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/transports/transports.js":59,"./initFormSubmissionsApi.js":18}],16:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../Form/formatters.js":23,"../Form/matching.js":29,"../InputTypes/Credentials.js":32,"../PasswordGenerator.js":35,"../Scanner.js":36,"../Settings.js":37,"../UI/controllers/NativeUIController.js":42,"../autofill-utils.js":49,"../config.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/__generated__/validators.zod.js":54,"../deviceApiCalls/transports/transports.js":59,"./initFormSubmissionsApi.js":18}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4628,7 +4740,7 @@ class WindowsInterface extends _InterfacePrototype.default {
     this.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
       signal: this._abortController.signal
     }).then(resp => {
-      if (!this.currentAttached) {
+      if (!this.activeForm) {
         throw new Error('this.currentAttached was absent');
       }
 
@@ -4636,9 +4748,9 @@ class WindowsInterface extends _InterfacePrototype.default {
         case 'fill':
           {
             if (mainType in resp) {
-              var _this$currentAttached;
+              var _this$activeForm;
 
-              (_this$currentAttached = this.currentAttached) === null || _this$currentAttached === void 0 ? void 0 : _this$currentAttached.autofillData(resp[mainType], mainType);
+              (_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : _this$activeForm.autofillData(resp[mainType], mainType);
             } else {
               throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
             }
@@ -4648,9 +4760,9 @@ class WindowsInterface extends _InterfacePrototype.default {
 
         case 'focus':
           {
-            var _this$currentAttached2, _this$currentAttached3;
+            var _this$activeForm2, _this$activeForm2$act;
 
-            (_this$currentAttached2 = this.currentAttached) === null || _this$currentAttached2 === void 0 ? void 0 : (_this$currentAttached3 = _this$currentAttached2.activeInput) === null || _this$currentAttached3 === void 0 ? void 0 : _this$currentAttached3.focus();
+            (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : (_this$activeForm2$act = _this$activeForm2.activeInput) === null || _this$activeForm2$act === void 0 ? void 0 : _this$activeForm2$act.focus();
             break;
           }
 
@@ -5242,7 +5354,11 @@ class Form {
 
   redecorateAllInputs() {
     this.removeAllDecorations();
-    this.execOnInputs(input => this.decorateInput(input));
+    this.execOnInputs(input => {
+      if (input instanceof HTMLInputElement) {
+        this.decorateInput(input);
+      }
+    });
   }
 
   resetAllInputs() {
@@ -5315,10 +5431,7 @@ class Form {
       let canExecute = true; // sometimes we want to execute even if we didn't decorate
 
       if (shouldCheckForDecorate) {
-        const {
-          shouldDecorate
-        } = (0, _inputTypeConfig.getInputConfig)(input);
-        canExecute = shouldDecorate(input, this);
+        canExecute = (0, _inputTypeConfig.isFieldDecorated)(input);
       }
 
       if (canExecute) fn(input);
@@ -5352,10 +5465,17 @@ class Form {
     const styles = (0, _inputStyles.getIconStylesBase)(input, this);
     (0, _autofillUtils.addInlineStyles)(input, styles);
   }
+  /**
+   * Decorate here means adding listeners and an optional icon
+   * @param {HTMLInputElement} input
+   * @returns {Promise<Form>}
+   */
 
-  decorateInput(input) {
+
+  async decorateInput(input) {
     const config = (0, _inputTypeConfig.getInputConfig)(input);
-    if (!config.shouldDecorate(input, this)) return this;
+    const shouldDecorate = await config.shouldDecorate(input, this);
+    if (!shouldDecorate) return this;
     input.setAttribute(ATTR_AUTOFILL, 'true');
     const hasIcon = !!config.getIconBase(input, this);
 
@@ -5426,10 +5546,12 @@ class Form {
       }
     };
 
-    if (input.nodeName !== 'SELECT') {
+    if (!(input instanceof HTMLSelectElement)) {
+      var _input$labels;
+
       const events = ['pointerdown'];
       if (!this.device.globalConfig.isMobileApp) events.push('focus');
-      input.labels.forEach(label => {
+      (_input$labels = input.labels) === null || _input$labels === void 0 ? void 0 : _input$labels.forEach(label => {
         this.addListener(label, 'pointerdown', handlerLabel);
       });
       events.forEach(ev => this.addListener(input, ev, handler));
@@ -5481,7 +5603,13 @@ class Form {
   autofillEmail(alias) {
     let dataType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'identities';
     this.isAutofilling = true;
-    this.execOnInputs(input => this.autofillInput(input, alias, dataType), dataType);
+    this.execOnInputs(input => {
+      const inputSubtype = (0, _matching.getInputSubtype)(input);
+
+      if (inputSubtype === 'emailAddress') {
+        this.autofillInput(input, alias, dataType);
+      }
+    }, dataType);
     this.isAutofilling = false;
     this.removeTooltip();
   }
@@ -5518,40 +5646,40 @@ class Form {
     return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeInteractedWith)(input) && (0, _autofillUtils.isVisible)(input));
   }
 
-  promptLoginIfNeeded() {
+  async promptLoginIfNeeded() {
     if (document.visibilityState !== 'visible' || !this.isLogin) return;
+    const firstCredentialInput = this.getFirstViableCredentialsInput();
+    const input = this.activeInput || firstCredentialInput;
+    if (!input) return;
+    const mainType = (0, _matching.getInputMainType)(input);
+    const subtype = (0, _matching.getInputSubtype)(input);
 
-    if (this.device.settings.availableInputTypes.credentials) {
-      const firstCredentialInput = this.getFirstViableCredentialsInput();
-      const input = this.activeInput || firstCredentialInput;
+    if (await this.device.settings.canAutofillType(mainType, subtype)) {
+      // The timeout is needed in case the page shows a cookie prompt with a slight delay
+      setTimeout(() => {
+        // safeExecute checks that the element is on screen according to IntersectionObserver
+        (0, _autofillUtils.safeExecute)(this.form, () => {
+          const {
+            x,
+            y,
+            width,
+            height
+          } = this.form.getBoundingClientRect();
+          const elHCenter = x + width / 2;
+          const elVCenter = y + height / 2; // This checks that the form is not covered by anything else
 
-      if (input) {
-        // The timeout is needed in case the page shows a cookie prompt with a slight delay
-        setTimeout(() => {
-          // safeExecute checks that the element is on screen according to IntersectionObserver
-          (0, _autofillUtils.safeExecute)(this.form, () => {
-            const {
-              x,
-              y,
-              width,
-              height
-            } = this.form.getBoundingClientRect();
-            const elHCenter = x + width / 2;
-            const elVCenter = y + height / 2; // This checks that the form is not covered by anything else
+          const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
 
-            const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
-
-            if (this.form.contains(topMostElementFromPoint)) {
-              this.execOnInputs(input => {
-                if ((0, _autofillUtils.isVisible)(input)) {
-                  this.touched.add(input);
-                }
-              }, 'credentials');
-              this.device.attachTooltip(this, input, null, 'autoprompt');
-            }
-          });
-        }, 200);
-      }
+          if (this.form.contains(topMostElementFromPoint)) {
+            this.execOnInputs(input => {
+              if ((0, _autofillUtils.isVisible)(input)) {
+                this.touched.add(input);
+              }
+            }, 'credentials');
+            this.device.attachTooltip(this, input, null, 'autoprompt');
+          }
+        });
+      }, 200);
     }
   }
 
@@ -5577,10 +5705,10 @@ var _autofillUtils = require("../autofill-utils.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password forgotten/i);
-const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password/i);
-const conservativePositiveRegex = new RegExp(/sign.?up|join|register|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
-const strictPositiveRegex = new RegExp(/sign.?up|join|register|settings|preferences|profile|update/i);
+const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i);
+const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password|password confirm?/i);
+const conservativePositiveRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
+const strictPositiveRegex = new RegExp(/sign.?up|join|register|enroll|settings|preferences|profile|update/i);
 
 class FormAnalyzer {
   /** @type HTMLElement */
@@ -5803,8 +5931,8 @@ class FormAnalyzer {
 
     const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'));
 
-    if (relevantFields.length > 3) {
-      this.increaseSignalBy(2, 'many fields: it is probably not a login');
+    if (relevantFields.length > 4) {
+      this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
     } // If we can't decide at this point, try reading page headings
 
 
@@ -6818,7 +6946,7 @@ exports.getIconStylesAutofilled = getIconStylesAutofilled;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getInputConfigFromType = exports.getInputConfig = exports.canBeInteractedWith = void 0;
+exports.isFieldDecorated = exports.getInputConfigFromType = exports.getInputConfig = exports.canBeInteractedWith = void 0;
 
 var _logoSvg = require("./logo-svg.js");
 
@@ -6831,6 +6959,8 @@ var _Credentials = require("../InputTypes/Credentials.js");
 var _CreditCard = require("../InputTypes/CreditCard.js");
 
 var _Identity = require("../InputTypes/Identity.js");
+
+var _constants = require("../constants.js");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -6875,21 +7005,37 @@ const getIdentitiesIcon = (input, _ref) => {
 
 const canBeInteractedWith = input => !input.readOnly && !input.disabled;
 /**
+ * Checks if the input can be decorated and we have the needed data
+ * @param {HTMLInputElement} input
+ * @param {import("../DeviceInterface/InterfacePrototype").default} device
+ * @returns {Promise<boolean>}
+ */
+
+
+exports.canBeInteractedWith = canBeInteractedWith;
+
+const canBeAutofilled = async (input, device) => {
+  if (!canBeInteractedWith(input)) return false;
+  const mainType = (0, _matching.getInputMainType)(input);
+  const subtype = (0, _matching.getInputSubtype)(input);
+  const canAutofill = await device.settings.canAutofillType(mainType, subtype);
+  return Boolean(canAutofill);
+};
+/**
  * A map of config objects. These help by centralising here some complexity
  * @type {InputTypeConfig}
  */
 
 
-exports.canBeInteractedWith = canBeInteractedWith;
 const inputTypeConfig = {
   /** @type {CredentialsInputTypeConfig} */
   credentials: {
     type: 'credentials',
-    getIconBase: (_input, _ref2) => {
+    getIconBase: (input, _ref2) => {
       let {
         device
       } = _ref2;
-      if (!canBeInteractedWith(_input)) return '';
+      if (!canBeInteractedWith(input)) return '';
 
       if (device.settings.featureToggles.inlineIcon_credentials) {
         return ddgPasswordIcons.ddgPasswordIconBase;
@@ -6908,24 +7054,23 @@ const inputTypeConfig = {
 
       return '';
     },
-    shouldDecorate: (input, _ref4) => {
+    shouldDecorate: async (input, _ref4) => {
       let {
         isLogin,
         device
       } = _ref4;
 
-      // if we are on a 'login' page, continue to use old logic, eg: just checking if there's a
-      // saved password
+      // if we are on a 'login' page, check if we have data to autofill the field
       if (isLogin) {
-        return Boolean(device.settings.availableInputTypes.credentials);
-      } // at this point, it's not a 'login' attempt, so we could offer to provide a password?
+        return canBeAutofilled(input, device);
+      } // at this point, it's not a 'login' form, so we could offer to provide a password
 
 
       if (device.settings.featureToggles.password_generation) {
         const subtype = (0, _matching.getInputSubtype)(input);
 
         if (subtype === 'password') {
-          return true;
+          return canBeInteractedWith(input);
         }
       }
 
@@ -6940,11 +7085,11 @@ const inputTypeConfig = {
     type: 'creditCards',
     getIconBase: () => '',
     getIconFilled: () => '',
-    shouldDecorate: (_input, _ref5) => {
+    shouldDecorate: async (input, _ref5) => {
       let {
         device
       } = _ref5;
-      return Boolean(device.settings.availableInputTypes.creditCards);
+      return canBeAutofilled(input, device);
     },
     dataType: 'CreditCards',
     tooltipItem: data => new _CreditCard.CreditCardTooltipItem(data)
@@ -6955,23 +7100,11 @@ const inputTypeConfig = {
     type: 'identities',
     getIconBase: getIdentitiesIcon,
     getIconFilled: getIdentitiesIcon,
-    shouldDecorate: (input, _ref6) => {
+    shouldDecorate: async (input, _ref6) => {
       let {
         device
       } = _ref6;
-      const subtype = (0, _matching.getInputSubtype)(input);
-
-      if (device.settings.availableInputTypes.identities) {
-        var _device$getLocalIdent;
-
-        return Boolean((_device$getLocalIdent = device.getLocalIdentities) === null || _device$getLocalIdent === void 0 ? void 0 : _device$getLocalIdent.call(device).some(identity => !!identity[subtype]));
-      }
-
-      if (subtype === 'emailAddress') {
-        return Boolean(device.isDeviceSignedIn());
-      }
-
-      return false;
+      return canBeAutofilled(input, device);
     },
     dataType: 'Identities',
     tooltipItem: data => new _Identity.IdentityTooltipItem(data)
@@ -6982,7 +7115,7 @@ const inputTypeConfig = {
     type: 'unknown',
     getIconBase: () => '',
     getIconFilled: () => '',
-    shouldDecorate: () => false,
+    shouldDecorate: async () => false,
     dataType: '',
     tooltipItem: _data => {
       throw new Error('unreachable');
@@ -7012,10 +7145,22 @@ const getInputConfigFromType = inputType => {
   const inputMainType = (0, _matching.getMainTypeFromType)(inputType);
   return inputTypeConfig[inputMainType];
 };
+/**
+ * Given an input field checks wheter it was previously decorated
+ * @param {HTMLInputElement} input
+ * @returns {Boolean}
+ */
+
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials.js":32,"../InputTypes/CreditCard.js":33,"../InputTypes/Identity.js":34,"../UI/img/ddgPasswordIcon.js":45,"./logo-svg.js":27,"./matching.js":29}],26:[function(require,module,exports){
+const isFieldDecorated = input => {
+  return input.hasAttribute(_constants.constants.ATTR_INPUT_TYPE);
+};
+
+exports.isFieldDecorated = isFieldDecorated;
+
+},{"../InputTypes/Credentials.js":32,"../InputTypes/CreditCard.js":33,"../InputTypes/Identity.js":34,"../UI/img/ddgPasswordIcon.js":45,"../constants.js":52,"./logo-svg.js":27,"./matching.js":29}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7345,7 +7490,7 @@ const matchingConfiguration = {
           forceUnknown: 'captcha|mfa|2fa|two factor'
         },
         username: {
-          match: '(user|account|apple|login)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername',
+          match: '(user|account|apple|login|net)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername',
           forceUnknown: 'search|policy'
         },
         // CC
@@ -8440,7 +8585,7 @@ _defineProperty(Matching, "emptyConfig", {
 });
 
 function getInputType(input) {
-  const attr = input.getAttribute(ATTR_INPUT_TYPE);
+  const attr = input === null || input === void 0 ? void 0 : input.getAttribute(ATTR_INPUT_TYPE);
 
   if (isValidSupportedType(attr)) {
     return attr;
@@ -8573,7 +8718,7 @@ function getInputSubtype(input) {
 
 const removeExcessWhitespace = function () {
   let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  return (string || '').replace(/\n/g, ' ').replace(/\s{2,}/, ' ').trim();
+  return (string || '').replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
 };
 /**
  * Get text from all explicit labels
@@ -8738,7 +8883,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.__secret_do_not_use = exports.SUBMIT_BUTTON_SELECTOR = exports.FORM_INPUTS_SELECTOR = void 0;
 const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]),\nselect";
 exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
-const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button]";
+const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
 exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
 const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
@@ -8767,7 +8912,7 @@ const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthd
 const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
 const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), "input[name=username i]", // fix for `aa.com`
 "input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
-"input[name=\"userID\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]", "input[autocomplete=username]"]; // todo: these are still used directly right now, mostly in scanForInputs
+"input[name=\"userID\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]", "input[autocomplete=username]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 // Exported here for now, to be moved to configuration later
@@ -8868,7 +9013,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.AUTOGENERATED_KEY = void 0;
+exports.PROVIDER_LOCKED = exports.AUTOGENERATED_KEY = void 0;
 exports.appendGeneratedId = appendGeneratedId;
 exports.createCredentialsTooltipItem = createCredentialsTooltipItem;
 exports.fromPassword = fromPassword;
@@ -8890,11 +9035,13 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
 
 const AUTOGENERATED_KEY = 'autogenerated';
+exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
+const PROVIDER_LOCKED = 'provider_locked';
 /**
  * @implements {TooltipItemRenderer}
  */
 
-exports.AUTOGENERATED_KEY = AUTOGENERATED_KEY;
+exports.PROVIDER_LOCKED = PROVIDER_LOCKED;
 
 var _data = /*#__PURE__*/new WeakMap();
 
@@ -8913,6 +9060,8 @@ class CredentialsTooltipItem {
     _defineProperty(this, "labelMedium", _subtype => _classPrivateFieldGet(this, _data).username);
 
     _defineProperty(this, "labelSmall", _subtype => '•••••••••••••••');
+
+    _defineProperty(this, "credentialsProvider", () => _classPrivateFieldGet(this, _data).credentialsProvider);
 
     _classPrivateFieldSet(this, _data, data);
   }
@@ -8964,6 +9113,35 @@ function fromPassword(password) {
   };
 }
 /**
+ * @implements TooltipItemRenderer
+ */
+
+
+var _data3 = /*#__PURE__*/new WeakMap();
+
+class ProviderLockedItem {
+  /** @type {CredentialsObject} */
+
+  /** @param {CredentialsObject} data */
+  constructor(data) {
+    _classPrivateFieldInitSpec(this, _data3, {
+      writable: true,
+      value: void 0
+    });
+
+    _defineProperty(this, "id", () => String(_classPrivateFieldGet(this, _data3).id));
+
+    _defineProperty(this, "labelMedium", _subtype => 'Bitwarden is locked');
+
+    _defineProperty(this, "labelSmall", _subtype => 'Unlock your vault to access credentials or generate passwords');
+
+    _defineProperty(this, "credentialsProvider", () => _classPrivateFieldGet(this, _data3).credentialsProvider);
+
+    _classPrivateFieldSet(this, _data3, data);
+  }
+
+}
+/**
  * If the locally generated/stored password ends up being the same
  * as submitted in a subsequent form submission - then we mark the
  * credentials as 'autogenerated' so that the native layer can decide
@@ -8995,6 +9173,10 @@ function appendGeneratedId(data, generatedPassword) {
 
 
 function createCredentialsTooltipItem(data) {
+  if (data.id === PROVIDER_LOCKED) {
+    return new ProviderLockedItem(data);
+  }
+
   if (AUTOGENERATED_KEY in data && data.password) {
     return new AutoGeneratedCredential(data);
   }
@@ -9368,7 +9550,7 @@ class DefaultScanner {
     (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'scanner:init:start');
     this.findEligibleInputs(document);
     (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'scanner:init:end');
-    this.mutObs.observe(document.body, {
+    this.mutObs.observe(document.documentElement, {
       childList: true,
       subtree: true
     });
@@ -9403,6 +9585,13 @@ class DefaultScanner {
     let element = input; // traverse the DOM to search for related inputs
 
     while (element.parentElement && element.parentElement !== document.body) {
+      var _element$parentElemen;
+
+      // If parent includes a form return the current element to avoid overlapping forms
+      if ((_element$parentElemen = element.parentElement) !== null && _element$parentElemen !== void 0 && _element$parentElemen.querySelector('form')) {
+        return element;
+      }
+
       element = element.parentElement; // todo: These selectors should be configurable
 
       const inputs = element.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
@@ -9608,7 +9797,7 @@ class Settings {
       const autofillSettings = (0, _index.validate)((_runtimeConfig$userPr = runtimeConfig.userPreferences) === null || _runtimeConfig$userPr === void 0 ? void 0 : (_runtimeConfig$userPr2 = _runtimeConfig$userPr.features) === null || _runtimeConfig$userPr2 === void 0 ? void 0 : (_runtimeConfig$userPr3 = _runtimeConfig$userPr2.autofill) === null || _runtimeConfig$userPr3 === void 0 ? void 0 : _runtimeConfig$userPr3.settings, _validatorsZod.autofillSettingsSchema);
       return autofillSettings.featureToggles;
     } catch (e) {
-      // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
+      // these are the fallbacks for when a platform hasn't implemented the calls above.
       if (this.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: getFeatureToggles: ❌', e);
       }
@@ -9639,6 +9828,26 @@ class Settings {
     }
   }
   /**
+   * Get the availableInputTypes coming from the global configs
+   * @returns {Promise<AvailableInputTypes>}
+   */
+
+
+  async getInitialAvailableInputTypes() {
+    try {
+      const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
+      const availableInputTypes = (0, _index.validate)(runtimeConfig === null || runtimeConfig === void 0 ? void 0 : runtimeConfig.availableInputTypes, _validatorsZod.availableInputTypesSchema);
+      return availableInputTypes;
+    } catch (e) {
+      // these are the fallbacks for when a platform hasn't implemented the calls above.
+      if (this.globalConfig.isDDGTestMode) {
+        console.log('isDDGTestMode: getInitialAvailableInputTypes: ❌', e);
+      }
+
+      return Settings.defaults.availableInputTypes;
+    }
+  }
+  /**
    * Get runtime configuration, but only once.
    *
    * Some platforms may be reading this directly from inlined variables, whilst others
@@ -9663,13 +9872,16 @@ class Settings {
    * Available Input Types are boolean indicators to represent which input types the
    * current **user** has data available for.
    *
+   * @param {Exclude<SupportedMainTypes, 'unknown'>} mainType
    * @returns {Promise<AvailableInputTypes>}
    */
 
 
-  async getAvailableInputTypes() {
+  async getAvailableInputTypes(mainType) {
     try {
-      return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
+      return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall({
+        mainType
+      }));
     } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: getAvailableInputTypes: ❌', e);
@@ -9687,12 +9899,13 @@ class Settings {
    *      featureToggles: AutofillFeatureToggles,
    *      enabled: boolean | null
    * }>}
-   * @param {AvailableInputTypes} [availableInputTypesOverrides] a migration aid so that macOS can provide data in its old way initially
    */
 
 
-  async refresh(availableInputTypesOverrides) {
-    this.setEnabled(await this.getEnabled()); // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
+  async refresh() {
+    this.setEnabled(await this.getEnabled());
+    this.setFeatureToggles(await this.getFeatureToggles());
+    this.setAvailableInputTypes(await this.getInitialAvailableInputTypes()); // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
 
     if (typeof this.enabled === 'boolean') {
       if (!this.enabled) {
@@ -9700,36 +9913,51 @@ class Settings {
       }
     }
 
-    this.setFeatureToggles(await this.getFeatureToggles());
-    const availableInputTypesFromRemote = await this.getAvailableInputTypes();
-    /** @type {AvailableInputTypes} */
-
-    const availableInputTypes = {
-      email: false,
-      // not supported yet
-      ...availableInputTypesFromRemote,
-      ...availableInputTypesOverrides
-    }; // Update the availableInputTypes to take into account the feature toggles.
-
-    if (!this.featureToggles.inputType_credentials) {
-      availableInputTypes.credentials = false;
-    }
-
-    if (!this.featureToggles.inputType_identities) {
-      availableInputTypes.identities = false;
-    }
-
-    if (!this.featureToggles.inputType_creditCards) {
-      availableInputTypes.creditCards = false;
-    } // at this point we've fetched from remote + merged local overrides, so we're ready to set.
-
-
-    this.setAvailableInputTypes(availableInputTypes);
     return {
       featureToggles: this.featureToggles,
       availableInputTypes: this.availableInputTypes,
       enabled: this.enabled
     };
+  }
+  /**
+   * Checks if a mainType/subtype pair can be autofilled with the data we have
+   * @param {SupportedMainTypes} mainType
+   * @param {string} subtype
+   * @returns {Promise<boolean>}
+   */
+
+
+  async canAutofillType(mainType, subtype) {
+    var _this$availableInputT, _this$availableInputT6;
+
+    if (mainType === 'unknown') return false;
+
+    if (!this.featureToggles["inputType_".concat(mainType)] && subtype !== 'emailAddress') {
+      return false;
+    }
+
+    if (((_this$availableInputT = this.availableInputTypes) === null || _this$availableInputT === void 0 ? void 0 : _this$availableInputT[mainType]) === undefined) {
+      const availableInputTypesFromRemote = await this.getAvailableInputTypes(mainType);
+      this.setAvailableInputTypes(availableInputTypesFromRemote);
+    }
+
+    if (subtype === 'fullName') {
+      var _this$availableInputT2, _this$availableInputT3;
+
+      return Boolean(((_this$availableInputT2 = this.availableInputTypes.identities) === null || _this$availableInputT2 === void 0 ? void 0 : _this$availableInputT2.firstName) || ((_this$availableInputT3 = this.availableInputTypes.identities) === null || _this$availableInputT3 === void 0 ? void 0 : _this$availableInputT3.lastName));
+    }
+
+    if (subtype === 'expiration') {
+      var _this$availableInputT4, _this$availableInputT5;
+
+      return Boolean(((_this$availableInputT4 = this.availableInputTypes.creditCards) === null || _this$availableInputT4 === void 0 ? void 0 : _this$availableInputT4.expirationMonth) || ((_this$availableInputT5 = this.availableInputTypes.creditCards) === null || _this$availableInputT5 === void 0 ? void 0 : _this$availableInputT5.expirationYear));
+    }
+
+    if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
+      return true;
+    }
+
+    return Boolean((_this$availableInputT6 = this.availableInputTypes[mainType]) === null || _this$availableInputT6 === void 0 ? void 0 : _this$availableInputT6[subtype]);
   }
   /** @returns {AutofillFeatureToggles} */
 
@@ -9755,7 +9983,9 @@ class Settings {
 
 
   setAvailableInputTypes(value) {
-    this._availableInputTypes = value;
+    this._availableInputTypes = { ...this._availableInputTypes,
+      ...value
+    };
   }
 
   static default(globalConfig, deviceApi) {
@@ -9797,9 +10027,33 @@ _defineProperty(Settings, "defaults", {
 
   /** @type {AvailableInputTypes} */
   availableInputTypes: {
-    credentials: false,
-    identities: false,
-    creditCards: false,
+    credentials: {
+      username: false,
+      password: false
+    },
+    identities: {
+      firstName: false,
+      middleName: false,
+      lastName: false,
+      birthdayDay: false,
+      birthdayMonth: false,
+      birthdayYear: false,
+      addressStreet: false,
+      addressStreet2: false,
+      addressCity: false,
+      addressProvince: false,
+      addressPostalCode: false,
+      addressCountryCode: false,
+      phone: false,
+      emailAddress: false
+    },
+    creditCards: {
+      cardName: false,
+      cardSecurityCode: false,
+      expirationMonth: false,
+      expirationYear: false,
+      cardNumber: false
+    },
     email: false
   },
 
@@ -9828,6 +10082,10 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
    * @param {{onSelect(id:string): void}} callbacks
    */
   render(config, items, callbacks) {
+    const {
+      wrapperClass,
+      css
+    } = this.options;
     let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
 
     const shouldShowSeparator = dataId => {
@@ -9836,14 +10094,17 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
       return shouldShow;
     };
 
-    const topClass = this.options.wrapperClass || '';
-    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
-      var _item$labelSmall, _item$label;
+    const topClass = wrapperClass || '';
+    const dataTypeClass = "tooltip__button--data--".concat(config.type);
+    this.shadow.innerHTML = "\n".concat(css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
+      var _item$credentialsProv, _item$labelSmall, _item$label;
 
-      // these 2 are optional
+      const credentialsProvider = (_item$credentialsProv = item.credentialsProvider) === null || _item$credentialsProv === void 0 ? void 0 : _item$credentialsProv.call(item);
+      const providerIconClass = credentialsProvider ? "tooltip__button--data--".concat(credentialsProvider) : ''; // these 2 are optional
+
       const labelSmall = (_item$labelSmall = item.labelSmall) === null || _item$labelSmall === void 0 ? void 0 : _item$labelSmall.call(item, this.subtype);
       const label = (_item$label = item.label) === null || _item$label === void 0 ? void 0 : _item$label.call(item, this.subtype);
-      return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data tooltip__button--data--").concat(config.type, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat((0, _autofillUtils.escapeXML)(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat((0, _autofillUtils.escapeXML)(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat((0, _autofillUtils.escapeXML)(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
+      return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data ").concat(dataTypeClass, " ").concat(providerIconClass, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat((0, _autofillUtils.escapeXML)(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat((0, _autofillUtils.escapeXML)(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat((0, _autofillUtils.escapeXML)(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
     }).join(''), "\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
@@ -10305,6 +10566,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     this._attachListeners();
 
     const config = (0, _inputTypeConfig.getInputConfigFromType)(topContextData.inputType);
+    this._activeInputType = topContextData.inputType;
     /**
      * @type {import('../HTMLTooltip').HTMLTooltipOptions}
      */
@@ -10328,6 +10590,30 @@ class HTMLTooltipUIController extends _UIController.UIController {
         this._onSelect(config, data, id);
       }
     });
+  }
+
+  updateItems(data) {
+    if (!this._activeInputType) return;
+    const config = (0, _inputTypeConfig.getInputConfigFromType)(this._activeInputType); // convert the data into tool tip item renderers
+
+    const asRenderers = data.map(d => config.tooltipItem(d));
+    const activeTooltip = this.getActiveTooltip();
+
+    if (activeTooltip instanceof _DataHTMLTooltip.default) {
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.render(config, asRenderers, {
+        onSelect: id => {
+          this._onSelect(config, data, id);
+        }
+      });
+    } // TODO: can we remove this timeout once implemented with real APIs?
+    // The timeout is needed because clientHeight and clientWidth were returning 0
+
+
+    setTimeout(() => {
+      var _this$getActiveToolti;
+
+      (_this$getActiveToolti = this.getActiveTooltip()) === null || _this$getActiveToolti === void 0 ? void 0 : _this$getActiveToolti.setSize();
+    }, 10);
   }
 
   _attachListeners() {
@@ -10916,6 +11202,13 @@ class UIController {
   isActive() {
     return false;
   }
+  /**
+   * Updates the items in the tooltip based on new data. Currently only supporting credentials.
+   * @param {CredentialsObject[]} _data
+   */
+
+
+  updateItems(_data) {}
 
 }
 
@@ -10950,7 +11243,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.CSS_STYLES = void 0;
-const CSS_STYLES = ".wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(0, 0, 0, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.8);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data > * {\n    opacity: 0.9;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
+const CSS_STYLES = ":root {\n    color-scheme: light dark;\n}\n\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 1);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data, #topAutofill {\n        background: rgb(100, 98, 102, .9);\n    }\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(255, 255, 255, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n@media (prefers-color-scheme: dark) {\n    :not(.top-autofill) .tooltip--data {\n        border: 1px solid rgba(255, 255, 255, 0.2);\n    }\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.9);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    position: relative;\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 4px;\n}\n#provider_locked::after {\n    position: absolute;\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 11px 13px;\n    background-repeat: no-repeat;\n    background-position: right bottom;\n}\n.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,\n.tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {\n    filter: invert(100%);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip__button--data::before,\n    .tooltip__button--data::before {\n        filter: invert(100%);\n        opacity: .9;\n    }\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data .label {\n        color: #ffffff;\n    }\n    .tooltip--data .label--medium {\n        color: #ffffff;\n    }\n    .tooltip--data .label--small {\n        color: #cdcdcd;\n    }\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iOCIgZmlsbD0iIzE3NUREQyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjU2OTYgNS40MzM1NUMxOC41MDg0IDUuMzc0NDIgMTguNDM0NyA1LjMyNzYzIDE4LjM1MzEgNS4yOTYxMUMxOC4yNzE1IDUuMjY0NiAxOC4xODM3IDUuMjQ5MDQgMTguMDk1MyA1LjI1MDQxSDUuOTIxOTFDNS44MzMyNiA1LjI0NzI5IDUuNzQ0OTMgNS4yNjIwNSA1LjY2MzA0IDUuMjkzNjdDNS41ODExNSA1LjMyNTI5IDUuNTA3NjUgNS4zNzMwMiA1LjQ0NzYyIDUuNDMzNTVDNS4zMjE3IDUuNTUwMTMgNS4yNTA2NSA1LjcwODE1IDUuMjUgNS44NzMxVjEzLjM4MjFDNS4yNTMzNiAxMy45NTM1IDUuMzc0MDggMTQuNTE5MSA1LjYwNTcyIDE1LjA0ODdDNS44MTkzMSAxNS41NzI4IDYuMTEyMDcgMTYuMDY2MSA2LjQ3NTI0IDE2LjUxMzlDNi44NDIgMTYuOTY4MyA3LjI1OTI5IDE3LjM4NTcgNy43MjAyNSAxNy43NTkzQzguMTQwNTMgMTguMTI1NiA4LjU4OTcxIDE4LjQ2MjMgOS4wNjQwNyAxOC43NjY2QzkuNDU5MzEgMTkuMDIzIDkuOTEzODMgMTkuMjc5NCAxMC4zNDg2IDE5LjUxNzVDMTAuNzgzNCAxOS43NTU2IDExLjA5OTYgMTkuOTIwNCAxMS4yNzc0IDE5Ljk5MzdDMTEuNDU1MyAyMC4wNjY5IDExLjYxMzQgMjAuMTQwMiAxMS43MTIyIDIwLjE5NTFDMTEuNzk5MiAyMC4yMzEzIDExLjg5MzUgMjAuMjUgMTEuOTg4OCAyMC4yNUMxMi4wODQyIDIwLjI1IDEyLjE3ODUgMjAuMjMxMyAxMi4yNjU1IDIwLjE5NTFDMTIuNDIxMiAyMC4xMzYzIDEyLjU3MjkgMjAuMDY5IDEyLjcyIDE5Ljk5MzdDMTIuNzcxMSAxOS45Njc0IDEyLjgzMzUgMTkuOTM2NiAxMi45MDY5IDE5LjkwMDRDMTMuMDg5MSAxOS44MTA1IDEzLjMzODggMTkuNjg3MiAxMy42NDg5IDE5LjUxNzVDMTQuMDgzNiAxOS4yNzk0IDE0LjUxODQgMTkuMDIzIDE0LjkzMzQgMTguNzY2NkMxNS40MDQgMTguNDU3NyAxNS44NTI4IDE4LjEyMTIgMTYuMjc3MiAxNy43NTkzQzE2LjczMzEgMTcuMzgwOSAxNy4xNDk5IDE2Ljk2NCAxNy41MjIyIDE2LjUxMzlDMTcuODc4IDE2LjA2MTcgMTguMTcwMiAxNS41NjkzIDE4LjM5MTcgMTUuMDQ4N0MxOC42MjM0IDE0LjUxOTEgMTguNzQ0MSAxMy45NTM1IDE4Ljc0NzQgMTMuMzgyMVY1Ljg3MzFDMTguNzU1NyA1Ljc5MjE0IDE4Ljc0MzkgNS43MTA1IDE4LjcxMzEgNS42MzQzNUMxOC42ODIzIDUuNTU4MiAxOC42MzMyIDUuNDg5NTQgMTguNTY5NiA1LjQzMzU1Wk0xNy4wMDg0IDEzLjQ1NTNDMTcuMDA4NCAxNi4xODQyIDEyLjAwODYgMTguNTI4NSAxMi4wMDg2IDE4LjUyODVWNi44NjIwOUgxNy4wMDg0VjEzLjQ1NTNaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K');\n}\n#provider_locked:after {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMSAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgNy42MDA1N1Y3LjYwMjVWOS41MjI1QzEgMTAuMDgwMSAxLjIyMTUxIDEwLjYxNDkgMS42MTU4MSAxMS4wMDkyQzIuMDEwMSAxMS40MDM1IDIuNTQ0ODggMTEuNjI1IDMuMTAyNSAxMS42MjVINy4yNzI1QzcuNTQ4NjEgMTEuNjI1IDcuODIyMDEgMTEuNTcwNiA4LjA3NzA5IDExLjQ2NUM4LjMzMjE4IDExLjM1OTMgOC41NjM5NiAxMS4yMDQ0IDguNzU5MTkgMTEuMDA5MkM4Ljk1NDQzIDEwLjgxNCA5LjEwOTMgMTAuNTgyMiA5LjIxNDk2IDEwLjMyNzFDOS4zMjA2MiAxMC4wNzIgOS4zNzUgOS43OTg2MSA5LjM3NSA5LjUyMjVMOS4zNzUgNy42MDI1TDkuMzc1IDcuNjAwNTdDOS4zNzQxNSA3LjE2MTMxIDkuMjM1NzQgNi43MzMzNSA4Ljk3OTIyIDYuMzc2NzhDOC44NzY4MyA2LjIzNDQ2IDguNzU3NjggNi4xMDYzNyA4LjYyNSA1Ljk5NDg5VjUuMTg3NUM4LjYyNSA0LjI3NTgyIDguMjYyODQgMy40MDE0OCA3LjYxODE4IDIuNzU2ODJDNi45NzM1MiAyLjExMjE2IDYuMDk5MTggMS43NSA1LjE4NzUgMS43NUM0LjI3NTgyIDEuNzUgMy40MDE0OCAyLjExMjE2IDIuNzU2ODIgMi43NTY4MkMyLjExMjE2IDMuNDAxNDggMS43NSA0LjI3NTgyIDEuNzUgNS4xODc1VjUuOTk0ODlDMS42MTczMiA2LjEwNjM3IDEuNDk4MTcgNi4yMzQ0NiAxLjM5NTc4IDYuMzc2NzhDMS4xMzkyNiA2LjczMzM1IDEuMDAwODUgNy4xNjEzMSAxIDcuNjAwNTdaTTQuOTY4NyA0Ljk2ODdDNS4wMjY5NCA0LjkxMDQ3IDUuMTA1MzIgNC44NzY5OSA1LjE4NzUgNC44NzUwN0M1LjI2OTY4IDQuODc2OTkgNS4zNDgwNiA0LjkxMDQ3IDUuNDA2MyA0Ljk2ODdDNS40NjU0MiA1LjAyNzgzIDUuNDk5MDQgNS4xMDc3NCA1LjUgNS4xOTEzVjUuNUg0Ljg3NVY1LjE5MTNDNC44NzU5NiA1LjEwNzc0IDQuOTA5NTggNS4wMjc4MyA0Ljk2ODcgNC45Njg3WiIgZmlsbD0iIzIyMjIyMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    hr {\n        border-top: 1px solid rgba(255,255,255,.2);\n    }\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
 },{}],47:[function(require,module,exports){
@@ -11558,7 +11851,8 @@ const isLikelyASubmitButton = el => {
   return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
   /primary|submit/i.test(el.className) || // has high-signal submit classes
   SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
-  el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) && // it's a large element 250x40px
+  el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className) // it's a large element 250x40px
+  ) && el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
   !SUBMIT_BUTTON_UNLIKELY_REGEX.test(contentExcludingLabel + ' ' + ariaLabel);
 };
 /**
@@ -11733,7 +12027,7 @@ exports.constants = constants;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreFormDataCall = exports.SetSizeCall = exports.SelectedDetailCall = exports.GetRuntimeConfigurationCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.CloseAutofillParentCall = void 0;
+exports.StoreFormDataCall = exports.SetSizeCall = exports.SelectedDetailCall = exports.GetRuntimeConfigurationCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = void 0;
 
 var _validatorsZod = require("./validators.zod.js");
 
@@ -11795,7 +12089,7 @@ class StoreFormDataCall extends _deviceApi.DeviceApiCall {
 
 }
 /**
- * @extends {DeviceApiCall<any, getAvailableInputTypesResultSchema>} 
+ * @extends {DeviceApiCall<getAvailableInputTypesRequestSchema, getAvailableInputTypesResultSchema>} 
  */
 
 
@@ -11808,6 +12102,8 @@ class GetAvailableInputTypesCall extends _deviceApi.DeviceApiCall {
     _defineProperty(this, "method", "getAvailableInputTypes");
 
     _defineProperty(this, "id", "getAvailableInputTypesResponse");
+
+    _defineProperty(this, "paramsValidator", _validatorsZod.getAvailableInputTypesRequestSchema);
 
     _defineProperty(this, "resultValidator", _validatorsZod.getAvailableInputTypesResultSchema);
   }
@@ -11902,8 +12198,46 @@ class CloseAutofillParentCall extends _deviceApi.DeviceApiCall {
   }
 
 }
+/**
+ * @extends {DeviceApiCall<any, askToUnlockProviderResultSchema>} 
+ */
+
 
 exports.CloseAutofillParentCall = CloseAutofillParentCall;
+
+class AskToUnlockProviderCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "askToUnlockProvider");
+
+    _defineProperty(this, "id", "askToUnlockProviderResponse");
+
+    _defineProperty(this, "resultValidator", _validatorsZod.askToUnlockProviderResultSchema);
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<any, checkCredentialsProviderStatusResultSchema>} 
+ */
+
+
+exports.AskToUnlockProviderCall = AskToUnlockProviderCall;
+
+class CheckCredentialsProviderStatusCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "checkCredentialsProviderStatus");
+
+    _defineProperty(this, "id", "checkCredentialsProviderStatusResponse");
+
+    _defineProperty(this, "resultValidator", _validatorsZod.checkCredentialsProviderStatusResultSchema);
+  }
+
+}
+
+exports.CheckCredentialsProviderStatusCall = CheckCredentialsProviderStatusCall;
 
 },{"../../../packages/device-api":2,"./validators.zod.js":54}],54:[function(require,module,exports){
 "use strict";
@@ -11911,13 +12245,17 @@ exports.CloseAutofillParentCall = CloseAutofillParentCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = void 0;
-const autofillFeatureTogglesSchema = null;
-exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAvailableInputTypesRequestSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
 const credentialsSchema = null;
 exports.credentialsSchema = credentialsSchema;
+const availableInputTypesSchema = null;
+exports.availableInputTypesSchema = availableInputTypesSchema;
 const genericErrorSchema = null;
 exports.genericErrorSchema = genericErrorSchema;
+const autofillFeatureTogglesSchema = null;
+exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
+const providerStatusUpdatedSchema = null;
+exports.providerStatusUpdatedSchema = providerStatusUpdatedSchema;
 const getAliasParamsSchema = null;
 exports.getAliasParamsSchema = getAliasParamsSchema;
 const getAliasResultSchema = null;
@@ -11932,8 +12270,10 @@ const getAutofillDataResponseSchema = null;
 exports.getAutofillDataResponseSchema = getAutofillDataResponseSchema;
 const getAutofillInitDataResponseSchema = null;
 exports.getAutofillInitDataResponseSchema = getAutofillInitDataResponseSchema;
-const availableInputTypesSchema = null;
-exports.availableInputTypesSchema = availableInputTypesSchema;
+const getAvailableInputTypesRequestSchema = null;
+exports.getAvailableInputTypesRequestSchema = getAvailableInputTypesRequestSchema;
+const getAvailableInputTypesResultSchema = null;
+exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 const contentScopeFeaturesItemSettingsSchema = null;
 exports.contentScopeFeaturesItemSettingsSchema = contentScopeFeaturesItemSettingsSchema;
 const userPreferencesSchema = null;
@@ -11946,12 +12286,14 @@ const setSizeParamsSchema = null;
 exports.setSizeParamsSchema = setSizeParamsSchema;
 const outgoingCredentialsSchema = null;
 exports.outgoingCredentialsSchema = outgoingCredentialsSchema;
+const askToUnlockProviderResultSchema = null;
+exports.askToUnlockProviderResultSchema = askToUnlockProviderResultSchema;
 const autofillSettingsSchema = null;
 exports.autofillSettingsSchema = autofillSettingsSchema;
+const checkCredentialsProviderStatusResultSchema = null;
+exports.checkCredentialsProviderStatusResultSchema = checkCredentialsProviderStatusResultSchema;
 const getAutofillDataRequestSchema = null;
 exports.getAutofillDataRequestSchema = getAutofillDataRequestSchema;
-const getAvailableInputTypesResultSchema = null;
-exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 const contentScopeSchema = null;
 exports.contentScopeSchema = contentScopeSchema;
 const runtimeConfigurationSchema = null;
@@ -12138,7 +12480,9 @@ function androidSpecificRuntimeConfiguration(globalConfig) {
       // @ts-ignore
       userPreferences: globalConfig.userPreferences,
       // @ts-ignore
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains
+      userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+      // @ts-ignore
+      availableInputTypes: globalConfig.availableInputTypes
     }
   };
 }
@@ -12245,7 +12589,9 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
       // @ts-ignore
       userPreferences: globalConfig.userPreferences,
       // @ts-ignore
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains
+      userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+      // @ts-ignore
+      availableInputTypes: globalConfig.availableInputTypes
     }
   };
 }
@@ -12260,16 +12606,79 @@ exports.ExtensionTransport = void 0;
 
 var _index = require("../../../packages/device-api/index.js");
 
+var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
+
+var _autofillUtils = require("../../autofill-utils.js");
+
+var _Settings = require("../../Settings.js");
+
 class ExtensionTransport extends _index.DeviceApiTransport {
+  /** @param {GlobalConfig} globalConfig */
+  constructor(globalConfig) {
+    super();
+    this.config = globalConfig;
+  }
+
   async send(deviceApiCall) {
+    if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
+      return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this.config));
+    }
+
     throw new Error('not implemented yet for ' + deviceApiCall.method);
   }
 
 }
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {Promise<ReturnType<GetRuntimeConfigurationCall['result']>>}
+ */
+
 
 exports.ExtensionTransport = ExtensionTransport;
 
-},{"../../../packages/device-api/index.js":2}],59:[function(require,module,exports){
+async function extensionSpecificRuntimeConfiguration(globalConfig) {
+  const contentScope = await getContentScopeConfig();
+  const emailProtectionEnabled = (0, _autofillUtils.isAutofillEnabledFromProcessedConfig)(contentScope);
+  return {
+    success: {
+      // @ts-ignore
+      contentScope: contentScope,
+      // @ts-ignore
+      userPreferences: {
+        features: {
+          autofill: {
+            settings: {
+              featureToggles: { ..._Settings.Settings.defaults.featureToggles,
+                emailProtection: emailProtectionEnabled
+              }
+            }
+          }
+        }
+      },
+      // @ts-ignore
+      userUnprotectedDomains: globalConfig === null || globalConfig === void 0 ? void 0 : globalConfig.userUnprotectedDomains,
+      // @ts-ignore
+      availableInputTypes: { ..._Settings.Settings.defaults.availableInputTypes,
+        email: emailProtectionEnabled
+      }
+    }
+  };
+}
+
+async function getContentScopeConfig() {
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage({
+      registeredTempAutofillContentScript: true,
+      documentUrl: window.location.href
+    }, response => {
+      if (response && 'site' in response) {
+        resolve(response);
+      }
+    });
+  });
+}
+
+},{"../../../packages/device-api/index.js":2,"../../Settings.js":37,"../../autofill-utils.js":49,"../__generated__/deviceApiCalls.js":53}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12320,7 +12729,7 @@ function createTransport(globalConfig) {
   } // falls back to extension... is this still the best way to determine this?
 
 
-  return new _extensionTransport.ExtensionTransport();
+  return new _extensionTransport.ExtensionTransport(globalConfig);
 }
 
 },{"./android.transport.js":56,"./apple.transport.js":57,"./extension.transport.js":58,"./windows.transport.js":60}],60:[function(require,module,exports){

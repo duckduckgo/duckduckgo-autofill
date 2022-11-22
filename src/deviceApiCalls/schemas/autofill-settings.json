@@ -31,6 +31,9 @@
         },
         "inlineIcon_credentials": {
           "type": "boolean"
+        },
+        "third_party_credentials_provider": {
+          "type": "boolean"
         }
       },
       "required": []
