@@ -117,10 +117,6 @@ export const getAutofillInitDataResponseSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
-export const getAvailableInputTypesRequestSchema = z.object({
-    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")])
-});
-
 export const getAvailableInputTypesResultSchema = z.object({
     type: z.literal("getAvailableInputTypesResponse").optional(),
     success: availableInputTypesSchema,
@@ -195,8 +191,7 @@ export const contentScopeSchema = z.object({
 export const runtimeConfigurationSchema = z.object({
     contentScope: contentScopeSchema,
     userUnprotectedDomains: z.array(z.string()),
-    userPreferences: userPreferencesSchema,
-    availableInputTypes: availableInputTypesSchema
+    userPreferences: userPreferencesSchema
 });
 
 export const storeFormDataSchema = z.object({

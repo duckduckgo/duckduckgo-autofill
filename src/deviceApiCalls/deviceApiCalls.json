@@ -13,7 +13,6 @@
   },
   "getAvailableInputTypes": {
     "id": "getAvailableInputTypesResponse",
-    "paramsValidator": "./schemas/getAvailableInputTypes.params.json",
     "resultValidator": "./schemas/getAvailableInputTypes.result.json"
   },
   "getAutofillInitData": {

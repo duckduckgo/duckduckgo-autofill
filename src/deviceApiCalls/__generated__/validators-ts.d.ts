@@ -414,12 +414,6 @@ export interface GenericError {
   message: string;
 }
 
-// getAvailableInputTypes.params.json
-
-export interface GetAvailableInputTypesRequest {
-  mainType: "credentials" | "identities" | "creditCards";
-}
-
 // getAvailableInputTypes.result.json
 
 export interface GetAvailableInputTypesResult {
@@ -500,7 +494,6 @@ export interface RuntimeConfiguration {
   contentScope: ContentScope;
   userUnprotectedDomains: string[];
   userPreferences: UserPreferences;
-  availableInputTypes: AvailableInputTypes;
 }
 export interface ContentScope {
   features: ContentScopeFeatures;
@@ -530,52 +523,6 @@ export interface UserPreferences {
       };
     };
   };
-}
-/**
- * For each main autofill types, it maps specific fields to their availability
- */
-export interface AvailableInputTypes {
-  /**
-   * maps field types and the availability of data for the current site
-   */
-  credentials?: {
-    username?: boolean;
-    password?: boolean;
-  };
-  /**
-   * maps field types and the availability of data saved by the user
-   */
-  identities?: {
-    firstName?: boolean;
-    middleName?: boolean;
-    lastName?: boolean;
-    birthdayDay?: boolean;
-    birthdayMonth?: boolean;
-    birthdayYear?: boolean;
-    addressStreet?: boolean;
-    addressStreet2?: boolean;
-    addressCity?: boolean;
-    addressProvince?: boolean;
-    addressPostalCode?: boolean;
-    addressCountryCode?: boolean;
-    phone?: boolean;
-    emailAddress?: boolean;
-  };
-  /**
-   * maps field types and the availability of data saved by the user
-   */
-  creditCards?: {
-    cardName?: boolean;
-    cardSecurityCode?: boolean;
-    expirationMonth?: boolean;
-    expirationYear?: boolean;
-    cardNumber?: boolean;
-  };
-  /**
-   * true if signed in for Email Protection
-   */
-  email?: boolean;
-  credentialsProviderStatus?: "locked" | "unlocked";
 }
 export interface GenericError {
   message: string;
@@ -657,7 +604,6 @@ export interface RuntimeConfiguration {
   contentScope: ContentScope;
   userUnprotectedDomains: string[];
   userPreferences: UserPreferences;
-  availableInputTypes: AvailableInputTypes;
 }
 export interface ContentScope {
   features: ContentScopeFeatures;
@@ -687,52 +633,6 @@ export interface UserPreferences {
       };
     };
   };
-}
-/**
- * For each main autofill types, it maps specific fields to their availability
- */
-export interface AvailableInputTypes {
-  /**
-   * maps field types and the availability of data for the current site
-   */
-  credentials?: {
-    username?: boolean;
-    password?: boolean;
-  };
-  /**
-   * maps field types and the availability of data saved by the user
-   */
-  identities?: {
-    firstName?: boolean;
-    middleName?: boolean;
-    lastName?: boolean;
-    birthdayDay?: boolean;
-    birthdayMonth?: boolean;
-    birthdayYear?: boolean;
-    addressStreet?: boolean;
-    addressStreet2?: boolean;
-    addressCity?: boolean;
-    addressProvince?: boolean;
-    addressPostalCode?: boolean;
-    addressCountryCode?: boolean;
-    phone?: boolean;
-    emailAddress?: boolean;
-  };
-  /**
-   * maps field types and the availability of data saved by the user
-   */
-  creditCards?: {
-    cardName?: boolean;
-    cardSecurityCode?: boolean;
-    expirationMonth?: boolean;
-    expirationYear?: boolean;
-    cardNumber?: boolean;
-  };
-  /**
-   * true if signed in for Email Protection
-   */
-  email?: boolean;
-  credentialsProviderStatus?: "locked" | "unlocked";
 }
 
 // selectedDetail.params.json

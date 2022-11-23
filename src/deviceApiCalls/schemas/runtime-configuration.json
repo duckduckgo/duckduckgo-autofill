@@ -108,15 +108,11 @@
         "features",
         "platform"
       ]
-    },
-    "availableInputTypes": {
-      "$ref": "availableInputTypes.json"
     }
   },
   "required": [
     "contentScope",
     "userPreferences",
-    "userUnprotectedDomains",
-    "availableInputTypes"
+    "userUnprotectedDomains"
   ]
 }

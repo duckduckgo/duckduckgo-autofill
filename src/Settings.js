@@ -1,6 +1,6 @@
 import {validate} from '../packages/device-api/index.js'
 import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
-import {autofillSettingsSchema, availableInputTypesSchema} from './deviceApiCalls/__generated__/validators.zod.js'
+import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
 import {autofillEnabled} from './autofill-utils.js'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
@@ -92,24 +92,6 @@ export class Settings {
     }
 
     /**
-     * Get the availableInputTypes coming from the global configs
-     * @returns {Promise<AvailableInputTypes>}
-     */
-    async getInitialAvailableInputTypes () {
-        try {
-            const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
-            const availableInputTypes = validate(runtimeConfig?.availableInputTypes, availableInputTypesSchema)
-            return availableInputTypes
-        } catch (e) {
-            // these are the fallbacks for when a platform hasn't implemented the calls above.
-            if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: getInitialAvailableInputTypes: ❌', e)
-            }
-            return Settings.defaults.availableInputTypes
-        }
-    }
-
-    /**
      * Get runtime configuration, but only once.
      *
      * Some platforms may be reading this directly from inlined variables, whilst others
@@ -133,12 +115,11 @@ export class Settings {
      * Available Input Types are boolean indicators to represent which input types the
      * current **user** has data available for.
      *
-     * @param {Exclude<SupportedMainTypes, 'unknown'>} mainType
      * @returns {Promise<AvailableInputTypes>}
      */
-    async getAvailableInputTypes (mainType) {
+    async getAvailableInputTypes () {
         try {
-            return await this.deviceApi.request(new GetAvailableInputTypesCall({mainType}))
+            return await this.deviceApi.request(new GetAvailableInputTypesCall(null))
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: getAvailableInputTypes: ❌', e)
@@ -160,7 +141,7 @@ export class Settings {
     async refresh () {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
-        this.setAvailableInputTypes(await this.getInitialAvailableInputTypes())
+        this.setAvailableInputTypes(await this.getAvailableInputTypes())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -189,7 +170,7 @@ export class Settings {
         }
 
         if (this.availableInputTypes?.[mainType] === undefined) {
-            const availableInputTypesFromRemote = await this.getAvailableInputTypes(mainType)
+            const availableInputTypesFromRemote = await this.getAvailableInputTypes()
             this.setAvailableInputTypes(availableInputTypesFromRemote)
         }
 

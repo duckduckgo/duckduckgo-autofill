@@ -9828,26 +9828,6 @@ class Settings {
     }
   }
   /**
-   * Get the availableInputTypes coming from the global configs
-   * @returns {Promise<AvailableInputTypes>}
-   */
-
-
-  async getInitialAvailableInputTypes() {
-    try {
-      const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
-      const availableInputTypes = (0, _index.validate)(runtimeConfig === null || runtimeConfig === void 0 ? void 0 : runtimeConfig.availableInputTypes, _validatorsZod.availableInputTypesSchema);
-      return availableInputTypes;
-    } catch (e) {
-      // these are the fallbacks for when a platform hasn't implemented the calls above.
-      if (this.globalConfig.isDDGTestMode) {
-        console.log('isDDGTestMode: getInitialAvailableInputTypes: ❌', e);
-      }
-
-      return Settings.defaults.availableInputTypes;
-    }
-  }
-  /**
    * Get runtime configuration, but only once.
    *
    * Some platforms may be reading this directly from inlined variables, whilst others
@@ -9872,16 +9852,13 @@ class Settings {
    * Available Input Types are boolean indicators to represent which input types the
    * current **user** has data available for.
    *
-   * @param {Exclude<SupportedMainTypes, 'unknown'>} mainType
    * @returns {Promise<AvailableInputTypes>}
    */
 
 
-  async getAvailableInputTypes(mainType) {
+  async getAvailableInputTypes() {
     try {
-      return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall({
-        mainType
-      }));
+      return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
     } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: getAvailableInputTypes: ❌', e);
@@ -9905,7 +9882,7 @@ class Settings {
   async refresh() {
     this.setEnabled(await this.getEnabled());
     this.setFeatureToggles(await this.getFeatureToggles());
-    this.setAvailableInputTypes(await this.getInitialAvailableInputTypes()); // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
+    this.setAvailableInputTypes(await this.getAvailableInputTypes()); // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
 
     if (typeof this.enabled === 'boolean') {
       if (!this.enabled) {
@@ -9937,7 +9914,7 @@ class Settings {
     }
 
     if (((_this$availableInputT = this.availableInputTypes) === null || _this$availableInputT === void 0 ? void 0 : _this$availableInputT[mainType]) === undefined) {
-      const availableInputTypesFromRemote = await this.getAvailableInputTypes(mainType);
+      const availableInputTypesFromRemote = await this.getAvailableInputTypes();
       this.setAvailableInputTypes(availableInputTypesFromRemote);
     }
 
@@ -12089,7 +12066,7 @@ class StoreFormDataCall extends _deviceApi.DeviceApiCall {
 
 }
 /**
- * @extends {DeviceApiCall<getAvailableInputTypesRequestSchema, getAvailableInputTypesResultSchema>} 
+ * @extends {DeviceApiCall<any, getAvailableInputTypesResultSchema>} 
  */
 
 
@@ -12102,8 +12079,6 @@ class GetAvailableInputTypesCall extends _deviceApi.DeviceApiCall {
     _defineProperty(this, "method", "getAvailableInputTypes");
 
     _defineProperty(this, "id", "getAvailableInputTypesResponse");
-
-    _defineProperty(this, "paramsValidator", _validatorsZod.getAvailableInputTypesRequestSchema);
 
     _defineProperty(this, "resultValidator", _validatorsZod.getAvailableInputTypesResultSchema);
   }
@@ -12245,7 +12220,7 @@ exports.CheckCredentialsProviderStatusCall = CheckCredentialsProviderStatusCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAvailableInputTypesRequestSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
 const credentialsSchema = null;
 exports.credentialsSchema = credentialsSchema;
 const availableInputTypesSchema = null;
@@ -12270,8 +12245,6 @@ const getAutofillDataResponseSchema = null;
 exports.getAutofillDataResponseSchema = getAutofillDataResponseSchema;
 const getAutofillInitDataResponseSchema = null;
 exports.getAutofillInitDataResponseSchema = getAutofillInitDataResponseSchema;
-const getAvailableInputTypesRequestSchema = null;
-exports.getAvailableInputTypesRequestSchema = getAvailableInputTypesRequestSchema;
 const getAvailableInputTypesResultSchema = null;
 exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 const contentScopeFeaturesItemSettingsSchema = null;
