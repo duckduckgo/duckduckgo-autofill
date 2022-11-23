@@ -56,7 +56,7 @@ export function createWindowsMocks () {
                 ...createAvailableInputTypes()
             }
         },
-        /** @type {null | {success: AvailableInputTypes}} */
+        /** @type {null | AvailableInputTypes} */
         getAvailableInputTypes: null,
         /** @type {InboundPMData} */
         getAutofillInitData: {
@@ -80,7 +80,7 @@ export function createWindowsMocks () {
             return this
         },
         withAvailableInputTypes (inputTypes) {
-            mocks.getAvailableInputTypes = {success: inputTypes}
+            mocks.getAvailableInputTypes = inputTypes
             return this
         },
         /**

@@ -1,5 +1,5 @@
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
-import {GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls.js'
+import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls.js'
 import {isAutofillEnabledFromProcessedConfig} from '../../autofill-utils.js'
 import {Settings} from '../../Settings.js'
 
@@ -13,6 +13,10 @@ export class ExtensionTransport extends DeviceApiTransport {
     async send (deviceApiCall) {
         if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
             return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this.config))
+        }
+
+        if (deviceApiCall instanceof GetAvailableInputTypesCall) {
+            return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes())
         }
 
         throw new Error('not implemented yet for ' + deviceApiCall.method)
@@ -37,12 +41,19 @@ async function extensionSpecificRuntimeConfiguration (globalConfig) {
                 emailProtection: emailProtectionEnabled
             }}}}},
             // @ts-ignore
-            userUnprotectedDomains: globalConfig?.userUnprotectedDomains,
-            // @ts-ignore
-            availableInputTypes: {
-                ...Settings.defaults.availableInputTypes,
-                email: emailProtectionEnabled
-            }
+            userUnprotectedDomains: globalConfig?.userUnprotectedDomains
+        }
+    }
+}
+
+async function extensionSpecificGetAvailableInputTypes () {
+    const contentScope = await getContentScopeConfig()
+    const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope)
+
+    return {
+        success: {
+            ...Settings.defaults.availableInputTypes,
+            email: emailProtectionEnabled
         }
     }
 }

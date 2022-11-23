@@ -8,6 +8,7 @@ import {
 import {loginPage, overlayPage} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
+import {createAvailableInputTypes} from '../helpers/utils.js'
 
 const test = withWindowsContext(base)
 
@@ -30,6 +31,7 @@ test.describe('Auto-fill a login form on windows', () => {
                 await login.navigate()
 
                 await createWindowsMocks()
+                    .withAvailableInputTypes(createAvailableInputTypes())
                     .withCredentials({
                         id: '01',
                         username: personalAddress,
@@ -44,6 +46,7 @@ test.describe('Auto-fill a login form on windows', () => {
                 await createAutofillScript()
                     .platform('windows')
                     .applyTo(page)
+                await page.pause()
 
                 await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)

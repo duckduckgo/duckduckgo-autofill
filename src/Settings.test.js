@@ -1,7 +1,7 @@
 import { DeviceApi } from '../packages/device-api/index.js'
 import { createGlobalConfig } from './config.js'
 import { Settings } from './Settings.js'
-import {GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
+import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const createAvailableInputTypes = (overrides) => {
     const base = Settings.defaults.availableInputTypes
@@ -140,14 +140,18 @@ async function settingsFromMockedCalls (featureToggles, availableInputTypes) {
                 features: {
                     autofill: { settings: { featureToggles: featureToggles } }
                 }
-            },
-            availableInputTypes
+            }
         }
     })
     const deviceApi = new DeviceApi({
         async send (call) {
             if (call instanceof GetRuntimeConfigurationCall) {
                 return resp1
+            }
+            if (call instanceof GetAvailableInputTypesCall) {
+                return {
+                    success: availableInputTypes
+                }
             }
         }
     })

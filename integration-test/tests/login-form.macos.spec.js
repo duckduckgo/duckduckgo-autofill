@@ -3,6 +3,7 @@ import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks
 import {createAutofillScript, forwardConsoleMessages, mockedCalls, setupServer} from '../helpers/harness.js'
 import {loginPage, loginPageWithFormInModal, loginPageWithText, overlayPage} from '../helpers/pages.js'
 import {expect, test as base} from '@playwright/test'
+import {createAvailableInputTypes} from '../helpers/utils.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -17,6 +18,7 @@ const password = '123456'
  */
 async function mocks (page) {
     await createWebkitMocks()
+        .withAvailableInputTypes(createAvailableInputTypes())
         .withCredentials({
             id: '01',
             username: personalAddress,
@@ -212,6 +214,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             await forwardConsoleMessages(page)
 
             await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
                 .withCredentials({
                     id: '01',
                     username: personalAddress,
@@ -243,6 +246,9 @@ test.describe('Auto-fill a login form on macOS', () => {
             test('in overlay', async ({page}) => {
                 await forwardConsoleMessages(page)
                 await createWebkitMocks()
+                    .withAvailableInputTypes(createAvailableInputTypes({
+                        credentialsProviderStatus: 'locked'
+                    }))
                     .withCredentials({
                         id: 'provider_locked',
                         username: '',
@@ -274,6 +280,9 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await forwardConsoleMessages(page)
 
                 await createWebkitMocks()
+                    .withAvailableInputTypes(createAvailableInputTypes({
+                        credentialsProviderStatus: 'locked'
+                    }))
                     .withCredentials({
                         id: 'provider_locked',
                         username: '',
@@ -345,6 +354,9 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await forwardConsoleMessages(page)
 
                 await createWebkitMocks()
+                    .withAvailableInputTypes(createAvailableInputTypes({
+                        credentialsProviderStatus: 'locked'
+                    }))
                     .withCredentials({
                         id: 'provider_locked',
                         username: '',
@@ -359,9 +371,6 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .replaceAll(macosContentScopeReplacements({
                         featureToggles: {
                             third_party_credentials_provider: true
-                        },
-                        availableInputTypes: {
-                            credentialsProviderStatus: 'locked'
                         }
                     }))
                     .platform('macos')
@@ -381,6 +390,9 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await forwardConsoleMessages(page)
 
                 await createWebkitMocks()
+                    .withAvailableInputTypes(createAvailableInputTypes({
+                        credentialsProviderStatus: 'locked'
+                    }))
                     .withCredentials({
                         id: 'provider_locked',
                         username: '',
@@ -395,9 +407,6 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .replaceAll(macosContentScopeReplacements({
                         featureToggles: {
                             third_party_credentials_provider: true
-                        },
-                        availableInputTypes: {
-                            credentialsProviderStatus: 'locked'
                         }
                     }))
                     .platform('macos')

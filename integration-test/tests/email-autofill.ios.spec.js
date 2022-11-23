@@ -27,6 +27,7 @@ test.describe('ios', () => {
         await forwardConsoleMessages(page)
 
         await createWebkitMocks('ios')
+            .withAvailableInputTypes({email: true})
             .withPersonalEmail('0')
             .withPrivateEmail('0')
             .applyTo(page)

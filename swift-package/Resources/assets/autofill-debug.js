@@ -16479,6 +16479,10 @@ class ExtensionTransport extends _index.DeviceApiTransport {
       return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this.config));
     }
 
+    if (deviceApiCall instanceof _deviceApiCalls.GetAvailableInputTypesCall) {
+      return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes());
+    }
+
     throw new Error('not implemented yet for ' + deviceApiCall.method);
   }
 
@@ -16511,11 +16515,17 @@ async function extensionSpecificRuntimeConfiguration(globalConfig) {
         }
       },
       // @ts-ignore
-      userUnprotectedDomains: globalConfig === null || globalConfig === void 0 ? void 0 : globalConfig.userUnprotectedDomains,
-      // @ts-ignore
-      availableInputTypes: { ..._Settings.Settings.defaults.availableInputTypes,
-        email: emailProtectionEnabled
-      }
+      userUnprotectedDomains: globalConfig === null || globalConfig === void 0 ? void 0 : globalConfig.userUnprotectedDomains
+    }
+  };
+}
+
+async function extensionSpecificGetAvailableInputTypes() {
+  const contentScope = await getContentScopeConfig();
+  const emailProtectionEnabled = (0, _autofillUtils.isAutofillEnabledFromProcessedConfig)(contentScope);
+  return {
+    success: { ..._Settings.Settings.defaults.availableInputTypes,
+      email: emailProtectionEnabled
     }
   };
 }
