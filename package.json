@@ -33,6 +33,8 @@
     "@babel/core": "^7.17.8",
     "@babel/eslint-parser": "^7.18.2",
     "@babel/preset-env": "^7.16.11",
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#1.3.0",
+    "@duckduckgo/content-scope-utils": "github:duckduckgo/content-scope-utils#1.0.1",
     "@playwright/test": "^1.24.1",
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.36",
@@ -64,8 +66,5 @@
     "typescript": "^4.7.2",
     "zod": "^3.16.0"
   },
-  "dependencies": {
-    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#1.3.0",
-    "@duckduckgo/content-scope-utils": "github:duckduckgo/content-scope-utils#shane/feature-messaging"
-  }
+  "dependencies": {}
 }

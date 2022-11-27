@@ -58,6 +58,715 @@ function processConfig(data, userList, preferences) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _messaging = require("./messaging.js");
+
+Object.keys(_messaging).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _messaging[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _messaging[key];
+    }
+  });
+});
+
+},{"./messaging.js":3}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MissingHandler = exports.MessagingTransport = exports.Messaging = void 0;
+Object.defineProperty(exports, "WebkitMessagingConfig", {
+  enumerable: true,
+  get: function () {
+    return _webkit.WebkitMessagingConfig;
+  }
+});
+Object.defineProperty(exports, "WindowsMessagingConfig", {
+  enumerable: true,
+  get: function () {
+    return _windows.WindowsMessagingConfig;
+  }
+});
+
+var _windows = require("./messaging/windows.js");
+
+var _webkit = require("./messaging/webkit.js");
+
+/**
+ * @module Messaging
+ *
+ * @description
+ *
+ * An abstraction for communications between JavaScript and host platforms.
+ *
+ * 1) First you construct your platform-specific configuration (eg: {@link WebkitMessagingConfig})
+ * 2) Then use that to get an instance of the Messaging utility which allows
+ * you to send and receive data in a unified way
+ * 3) Each platform implements {@link MessagingTransport} along with its own Configuration
+ *     - For example, to learn what configuration is required for Webkit, see: {@link "Webkit Messaging".WebkitMessagingConfig}
+ *     - Or, to learn about how messages are sent and received in Webkit, see {@link "Webkit Messaging".WebkitMessagingTransport}
+ *
+ * @example Webkit Messaging
+ *
+ * ```js
+ * import { Messaging, WebkitMessagingConfig } from "@duckduckgo/content-scope-scripts/lib/messaging.js"
+ *
+ * // This config would be injected into the UserScript
+ * const injectedConfig = {
+ *   hasModernWebkitAPI: true,
+ *   webkitMessageHandlerNames: ["foo", "bar", "baz"],
+ *   secret: "dax",
+ * };
+ *
+ * // Then use that config to construct platform-specific configuration
+ * const config = new WebkitMessagingConfig(injectedConfig);
+ *
+ * // finally, get an instance of Messaging and start sending messages in a unified way 🚀
+ * const messaging = new Messaging(config);
+ * messaging.notify("hello world!", {foo: "bar"})
+ *
+ * ```
+ *
+ * @example Windows Messaging
+ *
+ * ```js
+ * import { Messaging, WindowsMessagingConfig } from "@duckduckgo/content-scope-scripts/lib/messaging.js"
+ *
+ * // Messaging on Windows is namespaced, so you can create multiple messaging instances
+ * const autofillConfig  = new WindowsMessagingConfig({ featureName: "Autofill" });
+ * const debugConfig     = new WindowsMessagingConfig({ featureName: "Debugging" });
+ *
+ * const autofillMessaging = new Messaging(autofillConfig);
+ * const debugMessaging    = new Messaging(debugConfig);
+ *
+ * // Now send messages to both features as needed 🚀
+ * autofillMessaging.notify("storeFormData", { "username": "dax" })
+ * debugMessaging.notify("pageLoad", { time: window.performance.now() })
+ * ```
+ */
+
+/**
+ * @implements {MessagingTransport}
+ */
+class Messaging {
+  /**
+   * @param {WebkitMessagingConfig | WindowsMessagingConfig} config
+   */
+  constructor(config) {
+    this.transport = getTransport(config);
+  }
+  /**
+   * Send a 'fire-and-forget' message.
+   * @throws
+   * {@link MissingHandler}
+   *
+   * @example
+   *
+   * ```
+   * const messaging = new Messaging(config)
+   * messaging.notify("foo", {bar: "baz"})
+   * ```
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   */
+
+
+  notify(name) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    this.transport.notify(name, data);
+  }
+  /**
+   * Send a request, and wait for a response
+   * @throws
+   * {@link MissingHandler}
+   *
+   * @example
+   * ```
+   * const messaging = new Messaging(config)
+   * const response = await messaging.request("foo", {bar: "baz"})
+   * ```
+   *
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   * @return {Promise<any>}
+   */
+
+
+  request(name) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return this.transport.request(name, data);
+  }
+
+}
+/**
+ * @interface
+ */
+
+
+exports.Messaging = Messaging;
+
+class MessagingTransport {
+  /**
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   * @returns {void}
+   */
+  // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  notify(name) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    throw new Error("must implement 'notify'");
+  }
+  /**
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   * @return {Promise<any>}
+   */
+  // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+
+  request(name) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    throw new Error('must implement');
+  }
+
+}
+/**
+ * @param {WebkitMessagingConfig | WindowsMessagingConfig} config
+ * @returns {MessagingTransport}
+ */
+
+
+exports.MessagingTransport = MessagingTransport;
+
+function getTransport(config) {
+  if (config instanceof _webkit.WebkitMessagingConfig) {
+    return new _webkit.WebkitMessagingTransport(config);
+  }
+
+  if (config instanceof _windows.WindowsMessagingConfig) {
+    return new _windows.WindowsMessagingTransport(config);
+  }
+
+  throw new Error('unreachable');
+}
+/**
+ * Thrown when a handler cannot be found
+ */
+
+
+class MissingHandler extends Error {
+  /**
+   * @param {string} message
+   * @param {string} handlerName
+   */
+  constructor(message, handlerName) {
+    super(message);
+    this.handlerName = handlerName;
+  }
+
+}
+/**
+ * Some re-exports for convenience
+ */
+
+
+exports.MissingHandler = MissingHandler;
+
+},{"./messaging/webkit.js":4,"./messaging/windows.js":5}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WebkitMessagingTransport = exports.WebkitMessagingConfig = exports.SecureMessagingParams = void 0;
+
+var _messaging = require("../messaging.js");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @example
+ * On macOS 11+, this will just call through to `window.webkit.messageHandlers.x.postMessage`
+ *
+ * Eg: for a `foo` message defined in Swift that accepted the payload `{"bar": "baz"}`, the following
+ * would occur:
+ *
+ * ```js
+ * const json = await window.webkit.messageHandlers.foo.postMessage({ bar: "baz" });
+ * const response = JSON.parse(json)
+ * ```
+ *
+ * @example
+ * On macOS 10 however, the process is a little more involved. A method will be appended to `window`
+ * that allows the response to be delivered there instead. It's not exactly this, but you can visualize the flow
+ * as being something along the lines of:
+ *
+ * ```js
+ * // add the window method
+ * window["_0123456"] = (response) => {
+ *    // decrypt `response` and deliver the result to the caller here
+ *    // then remove the temporary method
+ *    delete window["_0123456"]
+ * };
+ *
+ * // send the data + `messageHanding` values
+ * window.webkit.messageHandlers.foo.postMessage({
+ *   bar: "baz",
+ *   messagingHandling: {
+ *     methodName: "_0123456",
+ *     secret: "super-secret",
+ *     key: [1, 2, 45, 2],
+ *     iv: [34, 4, 43],
+ *   }
+ * });
+ *
+ * // later in swift, the following JavaScript snippet will be executed
+ * (() => {
+ *   window["_0123456"]({
+ *     ciphertext: [12, 13, 4],
+ *     tag: [3, 5, 67, 56]
+ *   })
+ * })()
+ * ```
+ * @implements {MessagingTransport}
+ */
+class WebkitMessagingTransport {
+  /** @type {WebkitMessagingConfig} */
+
+  /**
+   * @param {WebkitMessagingConfig} config
+   */
+  constructor(config) {
+    _defineProperty(this, "config", void 0);
+
+    _defineProperty(this, "globals", void 0);
+
+    _defineProperty(this, "algoObj", {
+      name: 'AES-GCM',
+      length: 256
+    });
+
+    this.config = config;
+    this.globals = captureGlobals();
+
+    if (!this.config.hasModernWebkitAPI) {
+      this.captureWebkitHandlers(this.config.webkitMessageHandlerNames);
+    }
+  }
+  /**
+   * Sends message to the webkit layer (fire and forget)
+   * @param {String} handler
+   * @param {*} data
+   * @internal
+   */
+
+
+  wkSend(handler) {
+    var _this$globals$window$, _this$globals$window$2;
+
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (!(handler in this.globals.window.webkit.messageHandlers)) {
+      throw new _messaging.MissingHandler("Missing webkit handler: '".concat(handler, "'"), handler);
+    }
+
+    const outgoing = { ...data,
+      messageHandling: { ...data.messageHandling,
+        secret: this.config.secret
+      }
+    };
+
+    if (!this.config.hasModernWebkitAPI) {
+      if (!(handler in this.globals.capturedWebkitHandlers)) {
+        throw new _messaging.MissingHandler("cannot continue, method ".concat(handler, " not captured on macos < 11"), handler);
+      } else {
+        return this.globals.capturedWebkitHandlers[handler](outgoing);
+      }
+    }
+
+    return (_this$globals$window$ = (_this$globals$window$2 = this.globals.window.webkit.messageHandlers[handler]).postMessage) === null || _this$globals$window$ === void 0 ? void 0 : _this$globals$window$.call(_this$globals$window$2, outgoing);
+  }
+  /**
+   * Sends message to the webkit layer and waits for the specified response
+   * @param {String} handler
+   * @param {*} data
+   * @returns {Promise<*>}
+   * @internal
+   */
+
+
+  async wkSendAndWait(handler) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (this.config.hasModernWebkitAPI) {
+      const response = await this.wkSend(handler, data);
+      return this.globals.JSONparse(response || '{}');
+    }
+
+    try {
+      const randMethodName = this.createRandMethodName();
+      const key = await this.createRandKey();
+      const iv = this.createRandIv();
+      const {
+        ciphertext,
+        tag
+      } = await new this.globals.Promise((
+      /** @type {any} */
+      resolve) => {
+        this.generateRandomMethod(randMethodName, resolve);
+        data.messageHandling = new SecureMessagingParams({
+          methodName: randMethodName,
+          secret: this.config.secret,
+          key: this.globals.Arrayfrom(key),
+          iv: this.globals.Arrayfrom(iv)
+        });
+        this.wkSend(handler, data);
+      });
+      const cipher = new this.globals.Uint8Array([...ciphertext, ...tag]);
+      const decrypted = await this.decrypt(cipher, key, iv);
+      return this.globals.JSONparse(decrypted || '{}');
+    } catch (e) {
+      // re-throw when the error is just a 'MissingHandler'
+      if (e instanceof _messaging.MissingHandler) {
+        throw e;
+      } else {
+        console.error('decryption failed', e);
+        console.error(e);
+        return {
+          error: e
+        };
+      }
+    }
+  }
+  /**
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   */
+
+
+  notify(name) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    this.wkSend(name, data);
+  }
+  /**
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+
+  request(name) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return this.wkSendAndWait(name, data);
+  }
+  /**
+   * Generate a random method name and adds it to the global scope
+   * The native layer will use this method to send the response
+   * @param {string | number} randomMethodName
+   * @param {Function} callback
+   */
+
+
+  generateRandomMethod(randomMethodName, callback) {
+    var _this = this;
+
+    this.globals.ObjectDefineProperty(this.globals.window, randomMethodName, {
+      enumerable: false,
+      // configurable, To allow for deletion later
+      configurable: true,
+      writable: false,
+
+      /**
+       * @param {any[]} args
+       */
+      value: function () {
+        callback(...arguments); // @ts-ignore - we want this to throw if it fails as it would indicate a fatal error.
+
+        delete _this.globals.window[randomMethodName];
+      }
+    });
+  }
+
+  randomString() {
+    return '' + this.globals.getRandomValues(new this.globals.Uint32Array(1))[0];
+  }
+
+  createRandMethodName() {
+    return '_' + this.randomString();
+  }
+  /**
+   * @type {{name: string, length: number}}
+   */
+
+
+  /**
+   * @returns {Promise<Uint8Array>}
+   */
+  async createRandKey() {
+    const key = await this.globals.generateKey(this.algoObj, true, ['encrypt', 'decrypt']);
+    const exportedKey = await this.globals.exportKey('raw', key);
+    return new this.globals.Uint8Array(exportedKey);
+  }
+  /**
+   * @returns {Uint8Array}
+   */
+
+
+  createRandIv() {
+    return this.globals.getRandomValues(new this.globals.Uint8Array(12));
+  }
+  /**
+   * @param {BufferSource} ciphertext
+   * @param {BufferSource} key
+   * @param {Uint8Array} iv
+   * @returns {Promise<string>}
+   */
+
+
+  async decrypt(ciphertext, key, iv) {
+    const cryptoKey = await this.globals.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
+    const algo = {
+      name: 'AES-GCM',
+      iv
+    };
+    let decrypted = await this.globals.decrypt(algo, cryptoKey, ciphertext);
+    let dec = new this.globals.TextDecoder();
+    return dec.decode(decrypted);
+  }
+  /**
+   * When required (such as on macos 10.x), capture the `postMessage` method on
+   * each webkit messageHandler
+   *
+   * @param {string[]} handlerNames
+   */
+
+
+  captureWebkitHandlers(handlerNames) {
+    const handlers = window.webkit.messageHandlers;
+    if (!handlers) throw new _messaging.MissingHandler('window.webkit.messageHandlers was absent', 'all');
+
+    for (let webkitMessageHandlerName of handlerNames) {
+      var _handlers$webkitMessa;
+
+      if (typeof ((_handlers$webkitMessa = handlers[webkitMessageHandlerName]) === null || _handlers$webkitMessa === void 0 ? void 0 : _handlers$webkitMessa.postMessage) === 'function') {
+        var _handlers$webkitMessa2;
+
+        /**
+         * `bind` is used here to ensure future calls to the captured
+         * `postMessage` have the correct `this` context
+         */
+        const original = handlers[webkitMessageHandlerName];
+        const bound = (_handlers$webkitMessa2 = handlers[webkitMessageHandlerName].postMessage) === null || _handlers$webkitMessa2 === void 0 ? void 0 : _handlers$webkitMessa2.bind(original);
+        this.globals.capturedWebkitHandlers[webkitMessageHandlerName] = bound;
+        delete handlers[webkitMessageHandlerName].postMessage;
+      }
+    }
+  }
+
+}
+/**
+ * Use this configuration to create an instance of {@link Messaging} for WebKit
+ *
+ * ```js
+ * import { fromConfig, WebkitMessagingConfig } from "@duckduckgo/content-scope-scripts/lib/messaging.js"
+ *
+ * const config = new WebkitMessagingConfig({
+ *   hasModernWebkitAPI: true,
+ *   webkitMessageHandlerNames: ["foo", "bar", "baz"],
+ *   secret: "dax",
+ * });
+ *
+ * const messaging = new Messaging(config)
+ * const resp = await messaging.request("debugConfig")
+ * ```
+ */
+
+
+exports.WebkitMessagingTransport = WebkitMessagingTransport;
+
+class WebkitMessagingConfig {
+  /**
+   * @param {object} params
+   * @param {boolean} params.hasModernWebkitAPI
+   * @param {string[]} params.webkitMessageHandlerNames
+   * @param {string} params.secret
+   */
+  constructor(params) {
+    /**
+     * Whether or not the current WebKit Platform supports secure messaging
+     * by default (eg: macOS 11+)
+     */
+    this.hasModernWebkitAPI = params.hasModernWebkitAPI;
+    /**
+     * A list of WebKit message handler names that a user script can send
+     */
+
+    this.webkitMessageHandlerNames = params.webkitMessageHandlerNames;
+    /**
+     * A string provided by native platforms to be sent with future outgoing
+     * messages
+     */
+
+    this.secret = params.secret;
+  }
+
+}
+/**
+ * This is the additional payload that gets appended to outgoing messages.
+ * It's used in the Swift side to encrypt the response that comes back
+ */
+
+
+exports.WebkitMessagingConfig = WebkitMessagingConfig;
+
+class SecureMessagingParams {
+  /**
+   * @param {object} params
+   * @param {string} params.methodName
+   * @param {string} params.secret
+   * @param {number[]} params.key
+   * @param {number[]} params.iv
+   */
+  constructor(params) {
+    /**
+     * The method that's been appended to `window` to be called later
+     */
+    this.methodName = params.methodName;
+    /**
+     * The secret used to ensure message sender validity
+     */
+
+    this.secret = params.secret;
+    /**
+     * The CipherKey as number[]
+     */
+
+    this.key = params.key;
+    /**
+     * The Initial Vector as number[]
+     */
+
+    this.iv = params.iv;
+  }
+
+}
+/**
+ * Capture some globals used for messaging handling to prevent page
+ * scripts from tampering with this
+ */
+
+
+exports.SecureMessagingParams = SecureMessagingParams;
+
+function captureGlobals() {
+  // Creat base with null prototype
+  return {
+    window,
+    // Methods must be bound to their interface, otherwise they throw Illegal invocation
+    encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
+    decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
+    generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
+    exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
+    importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
+    getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
+    TextEncoder,
+    TextDecoder,
+    Uint8Array,
+    Uint16Array,
+    Uint32Array,
+    JSONstringify: window.JSON.stringify,
+    JSONparse: window.JSON.parse,
+    Arrayfrom: window.Array.from,
+    Promise: window.Promise,
+    ObjectDefineProperty: window.Object.defineProperty,
+    addEventListener: window.addEventListener.bind(window),
+
+    /** @type {Record<string, any>} */
+    capturedWebkitHandlers: {}
+  };
+}
+
+},{"../messaging.js":3}],5:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WindowsMessagingTransport = exports.WindowsMessagingConfig = void 0;
+
+var _messaging = require("../messaging.js");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @implements {MessagingTransport}
+ */
+class WindowsMessagingTransport {
+  /**
+   * @param {WindowsMessagingConfig} config
+   */
+  constructor(config) {
+    _defineProperty(this, "config", void 0);
+
+    this.config = config;
+  }
+  /**
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   */
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+
+  notify(name) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    throw new Error('todo: implement notify for windows');
+  }
+  /**
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   * @param {{signal?: AbortSignal}} opts
+   * @return {Promise<any>}
+   */
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+
+  request(name) {
+    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    throw new Error('todo: implement request for windows');
+  }
+
+}
+
+exports.WindowsMessagingTransport = WindowsMessagingTransport;
+
+class WindowsMessagingConfig {
+  /**
+   * @param {object} params
+   * @param {string} params.featureName
+   */
+  constructor(params) {
+    this.featureName = params.featureName;
+  }
+
+}
+
+exports.WindowsMessagingConfig = WindowsMessagingConfig;
+
+},{"../messaging.js":3}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 Object.defineProperty(exports, "DeviceApi", {
   enumerable: true,
   get: function () {
@@ -99,7 +808,7 @@ var _deviceApiCall = require("./lib/device-api-call.js");
 
 var _deviceApi = require("./lib/device-api.js");
 
-},{"./lib/device-api-call.js":3,"./lib/device-api.js":4}],3:[function(require,module,exports){
+},{"./lib/device-api-call.js":7,"./lib/device-api.js":8}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -425,7 +1134,7 @@ function validate(data) {
   return data;
 }
 
-},{}],4:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -501,7 +1210,7 @@ class DeviceApi {
 
 exports.DeviceApi = DeviceApi;
 
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -650,7 +1359,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":6,"./lib/constants.js":7,"./lib/rules-parser.js":8}],6:[function(require,module,exports){
+},{"./lib/apple.password.js":10,"./lib/constants.js":11,"./lib/rules-parser.js":12}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1274,7 +1983,7 @@ exports.Password = Password;
 
 _defineProperty(Password, "defaults", defaults);
 
-},{"./constants.js":7,"./rules-parser.js":8}],7:[function(require,module,exports){
+},{"./constants.js":11,"./rules-parser.js":12}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1295,7 +2004,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],8:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2028,7 +2737,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],9:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -2832,7 +3541,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],10:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2904,7 +3613,7 @@ function createDevice() {
   return new _ExtensionInterface.ExtensionInterface(globalConfig, deviceApi, settings);
 }
 
-},{"../packages/device-api/index.js":2,"./DeviceInterface/AndroidInterface.js":11,"./DeviceInterface/AppleDeviceInterface.js":12,"./DeviceInterface/AppleOverlayDeviceInterface.js":13,"./DeviceInterface/ExtensionInterface.js":14,"./DeviceInterface/WindowsInterface.js":16,"./DeviceInterface/WindowsOverlayDeviceInterface.js":17,"./Settings.js":37,"./config.js":51,"./deviceApiCalls/transports/transports.js":59}],11:[function(require,module,exports){
+},{"../packages/device-api/index.js":6,"./DeviceInterface/AndroidInterface.js":15,"./DeviceInterface/AppleDeviceInterface.js":16,"./DeviceInterface/AppleOverlayDeviceInterface.js":17,"./DeviceInterface/ExtensionInterface.js":18,"./DeviceInterface/WindowsInterface.js":20,"./DeviceInterface/WindowsOverlayDeviceInterface.js":21,"./Settings.js":41,"./config.js":53,"./deviceApiCalls/transports/transports.js":61}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3051,7 +3760,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../UI/controllers/NativeUIController.js":42,"../autofill-utils.js":49,"./InterfacePrototype.js":15,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],12:[function(require,module,exports){
+},{"../UI/controllers/NativeUIController.js":46,"../autofill-utils.js":51,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3464,7 +4173,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../UI/HTMLTooltip.js":40,"../UI/controllers/HTMLTooltipUIController.js":41,"../UI/controllers/NativeUIController.js":42,"../UI/controllers/OverlayUIController.js":43,"../autofill-utils.js":49,"../deviceApiCalls/additionalDeviceApiCalls.js":55,"./InterfacePrototype.js":15,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],13:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../UI/HTMLTooltip.js":44,"../UI/controllers/HTMLTooltipUIController.js":45,"../UI/controllers/NativeUIController.js":46,"../UI/controllers/OverlayUIController.js":47,"../autofill-utils.js":51,"../deviceApiCalls/additionalDeviceApiCalls.js":57,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3557,7 +4266,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":41,"./AppleDeviceInterface.js":12,"./overlayApi.js":19}],14:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../UI/controllers/HTMLTooltipUIController.js":45,"./AppleDeviceInterface.js":16,"./overlayApi.js":23}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3737,7 +4446,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../UI/HTMLTooltip.js":40,"../UI/controllers/HTMLTooltipUIController.js":41,"../autofill-utils.js":49,"./InterfacePrototype.js":15}],15:[function(require,module,exports){
+},{"../UI/HTMLTooltip.js":44,"../UI/controllers/HTMLTooltipUIController.js":45,"../autofill-utils.js":51,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4559,7 +5268,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api/index.js":2,"../Form/formatters.js":23,"../Form/matching.js":29,"../InputTypes/Credentials.js":32,"../PasswordGenerator.js":35,"../Scanner.js":36,"../Settings.js":37,"../UI/controllers/NativeUIController.js":42,"../autofill-utils.js":49,"../config.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/transports/transports.js":59,"./initFormSubmissionsApi.js":18}],16:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../Form/formatters.js":27,"../Form/matching.js":33,"../InputTypes/Credentials.js":36,"../PasswordGenerator.js":39,"../Scanner.js":40,"../Settings.js":41,"../UI/controllers/NativeUIController.js":46,"../autofill-utils.js":51,"../config.js":53,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"../deviceApiCalls/transports/transports.js":61,"./initFormSubmissionsApi.js":22}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4698,7 +5407,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 exports.WindowsInterface = WindowsInterface;
 
-},{"../UI/controllers/OverlayUIController.js":43,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"./InterfacePrototype.js":15}],17:[function(require,module,exports){
+},{"../UI/controllers/OverlayUIController.js":47,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"./InterfacePrototype.js":19}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4794,7 +5503,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
-},{"../UI/controllers/HTMLTooltipUIController.js":41,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"./InterfacePrototype.js":15,"./overlayApi.js":19}],18:[function(require,module,exports){
+},{"../UI/controllers/HTMLTooltipUIController.js":45,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"./InterfacePrototype.js":19,"./overlayApi.js":23}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4888,7 +5597,7 @@ function initFormSubmissionsApi(forms) {
   });
 }
 
-},{"../Form/matching.js":29,"../Form/selectors-css.js":30,"../autofill-utils.js":49}],19:[function(require,module,exports){
+},{"../Form/matching.js":33,"../Form/selectors-css.js":34,"../autofill-utils.js":51}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4968,7 +5677,7 @@ function overlayApi(device) {
   };
 }
 
-},{"../deviceApiCalls/__generated__/deviceApiCalls.js":53}],20:[function(require,module,exports){
+},{"../deviceApiCalls/__generated__/deviceApiCalls.js":55}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5565,7 +6274,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils.js":49,"../constants.js":52,"./FormAnalyzer.js":21,"./formatters.js":23,"./inputStyles.js":24,"./inputTypeConfig.js":25,"./matching.js":29}],21:[function(require,module,exports){
+},{"../autofill-utils.js":51,"../constants.js":54,"./FormAnalyzer.js":25,"./formatters.js":27,"./inputStyles.js":28,"./inputTypeConfig.js":29,"./matching.js":33}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5826,7 +6535,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils.js":49,"../constants.js":52,"./matching-configuration.js":28,"./matching.js":29}],22:[function(require,module,exports){
+},{"../autofill-utils.js":51,"../constants.js":54,"./matching-configuration.js":32,"./matching.js":33}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6394,7 +7103,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],23:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6736,7 +7445,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames.js":22,"./matching.js":29}],24:[function(require,module,exports){
+},{"./countryNames.js":26,"./matching.js":33}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6818,7 +7527,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":25}],25:[function(require,module,exports){
+},{"./inputTypeConfig.js":29}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7021,7 +7730,7 @@ const getInputConfigFromType = inputType => {
 
 exports.getInputConfigFromType = getInputConfigFromType;
 
-},{"../InputTypes/Credentials.js":32,"../InputTypes/CreditCard.js":33,"../InputTypes/Identity.js":34,"../UI/img/ddgPasswordIcon.js":45,"./logo-svg.js":27,"./matching.js":29}],26:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":36,"../InputTypes/CreditCard.js":37,"../InputTypes/Identity.js":38,"../UI/img/ddgPasswordIcon.js":49,"./logo-svg.js":31,"./matching.js":33}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7080,7 +7789,7 @@ const extractElementStrings = element => {
 
 exports.extractElementStrings = extractElementStrings;
 
-},{"./matching.js":29}],27:[function(require,module,exports){
+},{"./matching.js":33}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7090,7 +7799,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],28:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7733,7 +8442,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css.js":30}],29:[function(require,module,exports){
+},{"./selectors-css.js":34}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8735,7 +9444,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants.js":52,"./label-util.js":26,"./matching-configuration.js":28,"./selectors-css.js":30,"./vendor-regex.js":31}],30:[function(require,module,exports){
+},{"../constants.js":54,"./label-util.js":30,"./matching-configuration.js":32,"./selectors-css.js":34,"./vendor-regex.js":35}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8808,7 +9517,7 @@ const __secret_do_not_use = {
 };
 exports.__secret_do_not_use = __secret_do_not_use;
 
-},{}],31:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8868,7 +9577,7 @@ function createCacheableVendorRegexes(rules, ruleSets) {
   return vendorRegExp;
 }
 
-},{}],32:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9008,7 +9717,7 @@ function createCredentialsTooltipItem(data) {
   return new CredentialsTooltipItem(data);
 }
 
-},{}],33:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9060,7 +9769,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],34:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9134,7 +9843,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters.js":23}],35:[function(require,module,exports){
+},{"../Form/formatters.js":27}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9206,7 +9915,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password/index.js":5,"../packages/password/rules.json":9}],36:[function(require,module,exports){
+},{"../packages/password/index.js":9,"../packages/password/rules.json":13}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9528,7 +10237,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":20,"./Form/matching.js":29,"./Form/selectors-css.js":30,"./autofill-utils.js":49}],37:[function(require,module,exports){
+},{"./Form/Form.js":24,"./Form/matching.js":33,"./Form/selectors-css.js":34,"./autofill-utils.js":51}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9820,7 +10529,7 @@ _defineProperty(Settings, "defaults", {
   enabled: null
 });
 
-},{"../packages/device-api/index.js":2,"./autofill-utils.js":49,"./deviceApiCalls/__generated__/deviceApiCalls.js":53,"./deviceApiCalls/__generated__/validators.zod.js":54,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],38:[function(require,module,exports){
+},{"../packages/device-api/index.js":6,"./autofill-utils.js":51,"./deviceApiCalls/__generated__/deviceApiCalls.js":55,"./deviceApiCalls/__generated__/validators.zod.js":56,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9875,7 +10584,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
 var _default = DataHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils.js":49,"./HTMLTooltip.js":40}],39:[function(require,module,exports){
+},{"../autofill-utils.js":51,"./HTMLTooltip.js":44}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9942,7 +10651,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
 var _default = EmailHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils.js":49,"./HTMLTooltip.js":40}],40:[function(require,module,exports){
+},{"../autofill-utils.js":51,"./HTMLTooltip.js":44}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10226,7 +10935,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching.js":29,"../autofill-utils.js":49,"./styles/styles.js":46}],41:[function(require,module,exports){
+},{"../Form/matching.js":33,"../autofill-utils.js":51,"./styles/styles.js":50}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10465,7 +11174,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":25,"../DataHTMLTooltip.js":38,"../EmailHTMLTooltip.js":39,"../HTMLTooltip.js":40,"./UIController.js":44}],42:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":29,"../DataHTMLTooltip.js":42,"../EmailHTMLTooltip.js":43,"../HTMLTooltip.js":44,"./UIController.js":48}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10565,7 +11274,7 @@ class NativeUIController extends _UIController.UIController {
 
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching.js":29,"../../deviceApiCalls/__generated__/deviceApiCalls.js":53,"./UIController.js":44}],43:[function(require,module,exports){
+},{"../../Form/matching.js":33,"../../deviceApiCalls/__generated__/deviceApiCalls.js":55,"./UIController.js":48}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10848,7 +11557,7 @@ class OverlayUIController extends _UIController.UIController {
 
 exports.OverlayUIController = OverlayUIController;
 
-},{"../../Form/matching.js":29,"./UIController.js":44}],44:[function(require,module,exports){
+},{"../../Form/matching.js":33,"./UIController.js":48}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10934,7 +11643,7 @@ class UIController {
 
 exports.UIController = UIController;
 
-},{}],45:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10956,7 +11665,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],46:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10966,227 +11675,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ":root {\n    color-scheme: light dark;\n}\n\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 0.9);\n    -webkit-backdrop-filter: blur(96px);\n    backdrop-filter: blur(96px);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data, #topAutofill {\n        background: rgb(100, 98, 102, .9);\n    }\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(255, 255, 255, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n@media (prefers-color-scheme: dark) {\n    :not(.top-autofill) .tooltip--data {\n        border: 1px solid rgba(255, 255, 255, 0.2);\n    }\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.9);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 1px;\n}\n.tooltip__button--data.currentFocus::before,\n.tooltip__button--data:hover::before {\n    filter: invert(100%);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip__button--data::before,\n    .tooltip__button--data::before {\n        filter: invert(100%);\n        opacity: .9;\n    }\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data .label {\n        color: #ffffff;\n    }\n    .tooltip--data .label--medium {\n        color: #ffffff;\n    }\n    .tooltip--data .label--small {\n        color: #cdcdcd;\n    }\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    hr {\n        border-top: 1px solid rgba(255,255,255,.2);\n    }\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],47:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.wkSendAndWait = exports.wkSend = exports.MissingWebkitHandler = void 0;
-
-var _captureDdgGlobals = require("./captureDdgGlobals.js");
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * Sends message to the webkit layer (fire and forget)
- * @param {String} handler
- * @param {*} data
- * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
- */
-const wkSend = function (handler) {
-  var _window$webkit$messag, _window$webkit$messag2;
-
-  let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let opts = arguments.length > 2 ? arguments[2] : undefined;
-
-  if (!(handler in window.webkit.messageHandlers)) {
-    throw new MissingWebkitHandler("Missing webkit handler: '".concat(handler, "'"));
-  }
-
-  const outgoing = { ...data,
-    messageHandling: { ...data.messageHandling,
-      secret: opts.secret
-    }
-  };
-
-  if (!opts.hasModernWebkitAPI) {
-    if (!(handler in _captureDdgGlobals.ddgGlobals.capturedWebkitHandlers)) {
-      throw new Error("cannot continue, method ".concat(handler, " not captured on macos < 11"));
-    } else {
-      return _captureDdgGlobals.ddgGlobals.capturedWebkitHandlers[handler](outgoing);
-    }
-  }
-
-  return (_window$webkit$messag = (_window$webkit$messag2 = window.webkit.messageHandlers[handler]).postMessage) === null || _window$webkit$messag === void 0 ? void 0 : _window$webkit$messag.call(_window$webkit$messag2, outgoing);
-};
-/**
- * Generate a random method name and adds it to the global scope
- * The native layer will use this method to send the response
- * @param {String} randomMethodName
- * @param {Function} callback
- */
-
-
-exports.wkSend = wkSend;
-
-const generateRandomMethod = (randomMethodName, callback) => {
-  _captureDdgGlobals.ddgGlobals.ObjectDefineProperty(_captureDdgGlobals.ddgGlobals.window, randomMethodName, {
-    enumerable: false,
-    // configurable, To allow for deletion later
-    configurable: true,
-    writable: false,
-    value: function () {
-      callback(...arguments);
-      delete _captureDdgGlobals.ddgGlobals.window[randomMethodName];
-    }
-  });
-};
-/**
- * Sends message to the webkit layer and waits for the specified response
- * @param {String} handler
- * @param {*} data
- * @param {{hasModernWebkitAPI?: boolean, secret?: string}} opts
- * @returns {Promise<*>}
- */
-
-
-const wkSendAndWait = async function (handler) {
-  let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-  if (opts.hasModernWebkitAPI) {
-    const response = await wkSend(handler, data, opts);
-    return _captureDdgGlobals.ddgGlobals.JSONparse(response || '{}');
-  }
-
-  try {
-    const randMethodName = createRandMethodName();
-    const key = await createRandKey();
-    const iv = createRandIv();
-    const {
-      ciphertext,
-      tag
-    } = await new _captureDdgGlobals.ddgGlobals.Promise(resolve => {
-      generateRandomMethod(randMethodName, resolve);
-      data.messageHandling = {
-        methodName: randMethodName,
-        secret: opts.secret,
-        key: _captureDdgGlobals.ddgGlobals.Arrayfrom(key),
-        iv: _captureDdgGlobals.ddgGlobals.Arrayfrom(iv)
-      };
-      wkSend(handler, data, opts);
-    });
-    const cipher = new _captureDdgGlobals.ddgGlobals.Uint8Array([...ciphertext, ...tag]);
-    const decrypted = await decrypt(cipher, key, iv);
-    return _captureDdgGlobals.ddgGlobals.JSONparse(decrypted || '{}');
-  } catch (e) {
-    // re-throw when the error is a 'MissingWebkitHandler'
-    if (e instanceof MissingWebkitHandler) {
-      throw e;
-    } else {
-      console.error('decryption failed', e);
-      console.error(e);
-      return {
-        error: e
-      };
-    }
-  }
-};
-
-exports.wkSendAndWait = wkSendAndWait;
-
-const randomString = () => '' + _captureDdgGlobals.ddgGlobals.getRandomValues(new _captureDdgGlobals.ddgGlobals.Uint32Array(1))[0];
-
-const createRandMethodName = () => '_' + randomString();
-
-const algoObj = {
-  name: 'AES-GCM',
-  length: 256
-};
-
-const createRandKey = async () => {
-  const key = await _captureDdgGlobals.ddgGlobals.generateKey(algoObj, true, ['encrypt', 'decrypt']);
-  const exportedKey = await _captureDdgGlobals.ddgGlobals.exportKey('raw', key);
-  return new _captureDdgGlobals.ddgGlobals.Uint8Array(exportedKey);
-};
-
-const createRandIv = () => _captureDdgGlobals.ddgGlobals.getRandomValues(new _captureDdgGlobals.ddgGlobals.Uint8Array(12));
-
-const decrypt = async (ciphertext, key, iv) => {
-  const cryptoKey = await _captureDdgGlobals.ddgGlobals.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
-  const algo = {
-    name: 'AES-GCM',
-    iv
-  };
-  let decrypted = await _captureDdgGlobals.ddgGlobals.decrypt(algo, cryptoKey, ciphertext);
-  let dec = new _captureDdgGlobals.ddgGlobals.TextDecoder();
-  return dec.decode(decrypted);
-};
-
-class MissingWebkitHandler extends Error {
-  constructor(handlerName) {
-    super();
-
-    _defineProperty(this, "handlerName", void 0);
-
-    this.handlerName = handlerName;
-  }
-
-}
-
-exports.MissingWebkitHandler = MissingWebkitHandler;
-
-},{"./captureDdgGlobals.js":48}],48:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.captureWebkitHandlers = captureWebkitHandlers;
-exports.ddgGlobals = void 0;
-
-var _window$crypto$subtle, _window$crypto$subtle2, _window$crypto$subtle3, _window$crypto$subtle4, _window$crypto$subtle5;
-
-// Capture the globals we need on page start
-const ddgGlobals = {
-  window,
-  // Methods must be bound to their interface, otherwise they throw Illegal invocation
-  encrypt: (_window$crypto$subtle = window.crypto.subtle) === null || _window$crypto$subtle === void 0 ? void 0 : _window$crypto$subtle.encrypt.bind(window.crypto.subtle),
-  decrypt: (_window$crypto$subtle2 = window.crypto.subtle) === null || _window$crypto$subtle2 === void 0 ? void 0 : _window$crypto$subtle2.decrypt.bind(window.crypto.subtle),
-  generateKey: (_window$crypto$subtle3 = window.crypto.subtle) === null || _window$crypto$subtle3 === void 0 ? void 0 : _window$crypto$subtle3.generateKey.bind(window.crypto.subtle),
-  exportKey: (_window$crypto$subtle4 = window.crypto.subtle) === null || _window$crypto$subtle4 === void 0 ? void 0 : _window$crypto$subtle4.exportKey.bind(window.crypto.subtle),
-  importKey: (_window$crypto$subtle5 = window.crypto.subtle) === null || _window$crypto$subtle5 === void 0 ? void 0 : _window$crypto$subtle5.importKey.bind(window.crypto.subtle),
-  getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
-  TextEncoder,
-  TextDecoder,
-  Uint8Array,
-  Uint16Array,
-  Uint32Array,
-  JSONstringify: window.JSON.stringify,
-  JSONparse: window.JSON.parse,
-  Arrayfrom: window.Array.from,
-  Promise: window.Promise,
-  ObjectDefineProperty: window.Object.defineProperty,
-  capturedWebkitHandlers: {}
-};
-/**
- * When required (such as on macos 10.x), capture the `postMessage` method on
- * each webkit messageHandler
- *
- * @param {string[]} handlerNames
- */
-
-exports.ddgGlobals = ddgGlobals;
-
-function captureWebkitHandlers(handlerNames) {
-  for (let webkitMessageHandlerName of handlerNames) {
-    var _window$webkit$messag, _window$webkit$messag2;
-
-    if (typeof ((_window$webkit$messag = window.webkit.messageHandlers) === null || _window$webkit$messag === void 0 ? void 0 : (_window$webkit$messag2 = _window$webkit$messag[webkitMessageHandlerName]) === null || _window$webkit$messag2 === void 0 ? void 0 : _window$webkit$messag2.postMessage) === 'function') {
-      var _window$webkit$messag3;
-
-      /**
-       * `bind` is used here to ensure future calls to the captured
-       * `postMessage` have the correct `this` context
-       */
-      ddgGlobals.capturedWebkitHandlers[webkitMessageHandlerName] = (_window$webkit$messag3 = window.webkit.messageHandlers[webkitMessageHandlerName].postMessage) === null || _window$webkit$messag3 === void 0 ? void 0 : _window$webkit$messag3.bind(window.webkit.messageHandlers[webkitMessageHandlerName]);
-      delete window.webkit.messageHandlers[webkitMessageHandlerName].postMessage;
-    }
-  }
-}
-
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11612,7 +12101,7 @@ const getText = el => {
 
 exports.getText = getText;
 
-},{"./Form/matching.js":29}],50:[function(require,module,exports){
+},{"./Form/matching.js":33}],52:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -11641,7 +12130,7 @@ var _DeviceInterface = require("./DeviceInterface.js");
   }
 })();
 
-},{"./DeviceInterface.js":10,"./requestIdleCallback.js":61}],51:[function(require,module,exports){
+},{"./DeviceInterface.js":14,"./requestIdleCallback.js":63}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11727,7 +12216,7 @@ function createGlobalConfig(overrides) {
   return config;
 }
 
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11741,7 +12230,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11919,7 +12408,7 @@ class CloseAutofillParentCall extends _deviceApi.DeviceApiCall {
 
 exports.CloseAutofillParentCall = CloseAutofillParentCall;
 
-},{"../../../packages/device-api":2,"./validators.zod.js":54}],54:[function(require,module,exports){
+},{"../../../packages/device-api":6,"./validators.zod.js":56}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11975,7 +12464,7 @@ exports.storeFormDataSchema = storeFormDataSchema;
 const getRuntimeConfigurationResponseSchema = null;
 exports.getRuntimeConfigurationResponseSchema = getRuntimeConfigurationResponseSchema;
 
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12016,7 +12505,7 @@ class GetAlias extends _index.DeviceApiCall {
 
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api/index.js":2,"./__generated__/validators.zod.js":54}],56:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"./__generated__/validators.zod.js":56}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12172,7 +12661,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":2,"../__generated__/deviceApiCalls.js":53}],57:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":6,"../__generated__/deviceApiCalls.js":55}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12180,53 +12669,35 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AppleTransport = void 0;
 
-var _appleDeviceUtils = require("../../appleDeviceUtils/appleDeviceUtils.js");
+var _contentScopeUtils = require("@duckduckgo/content-scope-utils");
 
 var _index = require("../../../packages/device-api/index.js");
 
 var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 
-var _captureDdgGlobals = require("../../appleDeviceUtils/captureDdgGlobals.js");
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 class AppleTransport extends _index.DeviceApiTransport {
-  /** @type {{hasModernWebkitAPI?: boolean, secret?: string}} */
-
   /** @param {GlobalConfig} globalConfig */
   constructor(globalConfig) {
     super();
-
-    _defineProperty(this, "sendOptions", void 0);
-
     this.config = globalConfig;
-    this.sendOptions = {
-      secret: this.config.secret,
-      hasModernWebkitAPI: this.config.hasModernWebkitAPI
-    };
-
-    if (!this.sendOptions.hasModernWebkitAPI) {
-      var _globalConfig$userPre;
-
-      // @ts-ignore
-      if (((_globalConfig$userPre = globalConfig.userPreferences) === null || _globalConfig$userPre === void 0 ? void 0 : _globalConfig$userPre.platform.name) === 'macos') {
-        if (globalConfig.webkitMessageHandlerNames.length > 0) {
-          (0, _captureDdgGlobals.captureWebkitHandlers)(globalConfig.webkitMessageHandlerNames);
-        }
-      }
-    }
+    const webkitConfig = new _contentScopeUtils.WebkitMessagingConfig({
+      hasModernWebkitAPI: this.config.hasModernWebkitAPI,
+      webkitMessageHandlerNames: this.config.webkitMessageHandlerNames,
+      secret: this.config.secret
+    });
+    this.messaging = new _contentScopeUtils.Messaging(webkitConfig);
   }
 
   async send(deviceApiCall) {
     try {
       // if the call has an `id`, it means that it expects a response
       if (deviceApiCall.id) {
-        return await (0, _appleDeviceUtils.wkSendAndWait)(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions);
+        return await this.messaging.request(deviceApiCall.method, deviceApiCall.params || undefined);
       } else {
-        return await (0, _appleDeviceUtils.wkSend)(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions);
+        return this.messaging.notify(deviceApiCall.method, deviceApiCall.params || undefined);
       }
     } catch (e) {
-      if (e instanceof _appleDeviceUtils.MissingWebkitHandler) {
+      if (e instanceof _contentScopeUtils.MissingHandler) {
         if (this.config.isDDGTestMode) {
           console.log('MissingWebkitHandler error for:', deviceApiCall.method);
         }
@@ -12264,7 +12735,7 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":2,"../../appleDeviceUtils/appleDeviceUtils.js":47,"../../appleDeviceUtils/captureDdgGlobals.js":48,"../__generated__/deviceApiCalls.js":53}],58:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":6,"../__generated__/deviceApiCalls.js":55,"@duckduckgo/content-scope-utils":2}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12283,7 +12754,7 @@ class ExtensionTransport extends _index.DeviceApiTransport {
 
 exports.ExtensionTransport = ExtensionTransport;
 
-},{"../../../packages/device-api/index.js":2}],59:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":6}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12337,7 +12808,7 @@ function createTransport(globalConfig) {
   return new _extensionTransport.ExtensionTransport();
 }
 
-},{"./android.transport.js":56,"./apple.transport.js":57,"./extension.transport.js":58,"./windows.transport.js":60}],60:[function(require,module,exports){
+},{"./android.transport.js":58,"./apple.transport.js":59,"./extension.transport.js":60,"./windows.transport.js":62}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12437,7 +12908,7 @@ function waitForWindowsResponse(responseId, options) {
   });
 }
 
-},{"../../../packages/device-api/index.js":2}],61:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":6}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12485,4 +12956,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}]},{},[50]);
+},{}]},{},[52]);

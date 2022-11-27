@@ -1,18 +1,18 @@
-import {fromConfig, MissingHandler, WebkitMessagingConfig} from '@duckduckgo/content-scope-utils/lib/messaging.js'
-import {DeviceApiTransport} from '../../../packages/device-api/index.js'
-import {GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls.js'
+import { Messaging, MissingHandler, WebkitMessagingConfig } from '@duckduckgo/content-scope-utils'
+import { DeviceApiTransport } from '../../../packages/device-api/index.js'
+import { GetRuntimeConfigurationCall } from '../__generated__/deviceApiCalls.js'
 
 export class AppleTransport extends DeviceApiTransport {
     /** @param {GlobalConfig} globalConfig */
     constructor (globalConfig) {
         super()
         this.config = globalConfig
-        const webkitConfig = new WebkitMessagingConfig(
-            this.config.hasModernWebkitAPI,
-            this.config.webkitMessageHandlerNames,
-            this.config.secret
-        )
-        this.messaging = fromConfig(webkitConfig)
+        const webkitConfig = new WebkitMessagingConfig({
+            hasModernWebkitAPI: this.config.hasModernWebkitAPI,
+            webkitMessageHandlerNames: this.config.webkitMessageHandlerNames,
+            secret: this.config.secret
+        })
+        this.messaging = new Messaging(webkitConfig)
     }
 
     async send (deviceApiCall) {
