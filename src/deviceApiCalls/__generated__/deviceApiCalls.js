@@ -9,7 +9,8 @@ import {
     getAutofillCredentialsParamsSchema,
     getAutofillCredentialsResultSchema,
     setSizeParamsSchema,
-    selectedDetailParamsSchema
+    selectedDetailParamsSchema,
+    sendJSPixelParamsSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -81,4 +82,11 @@ export class SelectedDetailCall extends DeviceApiCall {
  */
 export class CloseAutofillParentCall extends DeviceApiCall {
   method = "closeAutofillParent"
+}
+/**
+ * @extends {DeviceApiCall<sendJSPixelParamsSchema, any>} 
+ */
+export class SendJSPixelCall extends DeviceApiCall {
+  method = "sendJSPixel"
+  paramsValidator = sendJSPixelParamsSchema
 }

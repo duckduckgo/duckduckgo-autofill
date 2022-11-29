@@ -108,6 +108,10 @@ export const selectedDetailParamsSchema = z.object({
     configType: z.string()
 });
 
+export const sendJSPixelParamsSchema = z.object({
+    pixelName: z.literal("autofill.identity.count")
+});
+
 export const setSizeParamsSchema = z.object({
     height: z.number(),
     width: z.number()

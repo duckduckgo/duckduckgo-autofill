@@ -337,6 +337,15 @@ export interface SelectedDetailParams {
   configType: string;
 }
 
+// sendJSPixel.params.json
+
+/**
+ * Send pixels data to be fired from the native layer
+ */
+export interface SendJSPixelParams {
+  pixelName: "autofill.identity.count";
+}
+
 // setSize.params.json
 
 /**

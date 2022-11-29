@@ -36,5 +36,8 @@
   },
   "closeAutofillParent": {
     "description": "Used by Windows to instruct native sides to close any autofill overlays"
+  },
+  "sendJSPixel": {
+    "paramsValidator": "./schemas/sendJSPixel.params.json"
   }
 }
