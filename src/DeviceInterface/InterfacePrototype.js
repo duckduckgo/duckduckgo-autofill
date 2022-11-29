@@ -448,7 +448,7 @@ class InterfacePrototype {
                 // some platforms do not include a `success` object, why?
                 const data = response.success || response
                 return this.selectedDetail(data, config.type)
-            }else {
+            } else {
                 return Promise.reject(new Error('none-success response'))
             }
         }).catch(e => {
