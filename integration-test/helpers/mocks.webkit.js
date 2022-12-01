@@ -123,7 +123,8 @@ export const macosWithoutOverlay = () => {
             'selectedDetail',
             'closeAutofillParent',
             'showAutofillParent',
-            'getSelectedCredentials'
+            'getSelectedCredentials',
+            'sendJSPixel'
         ]
     }
 }
@@ -187,7 +188,8 @@ export function createWebkitMocks (platform = 'macos') {
         /** @type {null | Record<string, any>} */
         getAvailableInputTypes: null,
         storeFormData: null,
-        selectedDetail: null
+        selectedDetail: null,
+        sendJSPixel: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */

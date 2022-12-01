@@ -3789,6 +3789,8 @@ var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCa
 
 var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -4172,11 +4174,17 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     });
   }
 
+  firePixel(pixelName) {
+    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
+      pixelName
+    }));
+  }
+
 }
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":6,"../UI/HTMLTooltip.js":44,"../UI/controllers/HTMLTooltipUIController.js":45,"../UI/controllers/NativeUIController.js":46,"../UI/controllers/OverlayUIController.js":47,"../autofill-utils.js":51,"../deviceApiCalls/additionalDeviceApiCalls.js":57,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],17:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../UI/HTMLTooltip.js":44,"../UI/controllers/HTMLTooltipUIController.js":45,"../UI/controllers/NativeUIController.js":46,"../UI/controllers/OverlayUIController.js":47,"../autofill-utils.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"../deviceApiCalls/additionalDeviceApiCalls.js":57,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4191,6 +4199,8 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 var _overlayApi = require("./overlayApi.js");
 
 var _index = require("../../packages/device-api/index.js");
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -4265,11 +4275,17 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
     return this.overlay.selectedDetail(data, type);
   }
 
+  firePixel(pixelName) {
+    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
+      pixelName
+    }));
+  }
+
 }
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":6,"../UI/controllers/HTMLTooltipUIController.js":45,"./AppleDeviceInterface.js":16,"./overlayApi.js":23}],18:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../UI/controllers/HTMLTooltipUIController.js":45,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"./AppleDeviceInterface.js":16,"./overlayApi.js":23}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5255,15 +5271,11 @@ class InterfacePrototype {
   }
   /**
    * Sends a pixel to be fired on the client side
-   * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
+   * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} _pixelName
    */
 
 
-  firePixel(pixelName) {
-    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
-      pixelName
-    }));
-  }
+  firePixel(_pixelName) {}
   /**
    * This serves as a single place to create a default instance
    * of InterfacePrototype that can be useful in testing scenarios

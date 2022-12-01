@@ -18,7 +18,7 @@ import {createTransport} from '../deviceApiCalls/transports/transports.js'
 import {Settings} from '../Settings.js'
 import {DeviceApi} from '../../packages/device-api/index.js'
 import {
-    GetAutofillCredentialsCall, SendJSPixelCall,
+    GetAutofillCredentialsCall,
     StoreFormDataCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
@@ -656,11 +656,9 @@ class InterfacePrototype {
 
     /**
      * Sends a pixel to be fired on the client side
-     * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
+     * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} _pixelName
      */
-    firePixel (pixelName) {
-        this.deviceApi.notify(new SendJSPixelCall({pixelName}))
-    }
+    firePixel (_pixelName) {}
 
     /**
      * This serves as a single place to create a default instance

@@ -7,6 +7,7 @@ import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
 import { createNotification, createRequest } from '../../packages/device-api/index.js'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
+import {SendJSPixelCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
@@ -321,6 +322,10 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
             poll()
         })
+    }
+
+    firePixel (pixelName) {
+        this.deviceApi.notify(new SendJSPixelCall({pixelName}))
     }
 }
 
