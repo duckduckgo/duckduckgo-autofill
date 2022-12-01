@@ -3417,6 +3417,9 @@ module.exports={
   "ssa.gov": {
     "password-rules": "required: lower; required: upper; required: digit; required: [~!@#$%^&*];"
   },
+  "store.nintendo.co.uk": {
+    "password-rules": "minlength: 8; maxlength: 20;"
+  },
   "store.nvidia.com": {
     "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [-!@#$%^*~:;&><[{}|_+=?]];"
   },
@@ -4995,7 +4998,7 @@ class InterfacePrototype {
     dataPromise.then(response => {
       if (response) {
         if (config.type === 'identities') {
-          this.firePixel('autofill.identity.count');
+          this.firePixel('autofill_identity');
         } // some platforms do not include a `success` object, why?
 
 

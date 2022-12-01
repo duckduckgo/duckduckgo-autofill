@@ -109,7 +109,7 @@ export const selectedDetailParamsSchema = z.object({
 });
 
 export const sendJSPixelParamsSchema = z.object({
-    pixelName: z.literal("autofill.identity.count")
+    pixelName: z.literal("autofill_identity")
 });
 
 export const setSizeParamsSchema = z.object({

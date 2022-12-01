@@ -9,7 +9,7 @@
       "oneOf": [
         {
           "type": "string",
-          "const": "autofill.identity.count"
+          "const": "autofill_identity"
         }
       ]
     }

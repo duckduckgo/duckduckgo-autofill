@@ -443,7 +443,7 @@ class InterfacePrototype {
         dataPromise.then(response => {
             if (response) {
                 if (config.type === 'identities') {
-                    this.firePixel('autofill.identity.count')
+                    this.firePixel('autofill_identity')
                 }
                 // some platforms do not include a `success` object, why?
                 const data = response.success || response
