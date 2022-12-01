@@ -158,6 +158,8 @@ test.describe('Auto-fill a login form on macOS', () => {
 
                 await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)
+
+                await login.assertNoPixelFired()
             })
             test('I should be able to use my saved credentials with autoprompt', async ({page}) => {
                 await forwardConsoleMessages(page)
