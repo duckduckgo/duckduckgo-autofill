@@ -46,7 +46,6 @@ test.describe('Auto-fill a login form on windows', () => {
                 await createAutofillScript()
                     .platform('windows')
                     .applyTo(page)
-                await page.pause()
 
                 await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)
