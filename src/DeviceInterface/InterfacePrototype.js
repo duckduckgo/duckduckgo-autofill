@@ -421,7 +421,7 @@ class InterfacePrototype {
      *
      * @param {InputTypeConfigs} config
      * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
-     * @param {string|number} id
+     * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
      */
     onSelect (config, items, id) {
         id = String(id)
@@ -596,7 +596,7 @@ class InterfacePrototype {
     getAccounts () {}
     /**
      * Gets credentials ready for autofill
-     * @param {number|string} id - the credential id
+     * @param {CredentialsObject['id']} id - the credential id
      * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
      */
     async getAutofillCredentials (id) {

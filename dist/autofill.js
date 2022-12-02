@@ -4032,7 +4032,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
   /**
    * Gets credentials ready for autofill
-   * @param {Number} id - the credential id
+   * @param {CredentialsObject['id']} id - the credential id
    * @returns {APIResponseSingle<CredentialsObject>}
    */
 
@@ -4068,7 +4068,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
   /**
    * Gets a single identity obj once the user requests it
-   * @param {Number} id
+   * @param {IdentityObject['id']} id
    * @returns {Promise<{success: IdentityObject|undefined}>}
    */
 
@@ -4086,7 +4086,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
   /**
    * Gets a single complete credit card obj once the user requests it
-   * @param {Number} id
+   * @param {CreditCardObject['id']} id
    * @returns {APIResponse<CreditCardObject>}
    */
 
@@ -5033,7 +5033,7 @@ class InterfacePrototype {
    *
    * @param {InputTypeConfigs} config
    * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
-   * @param {string|number} id
+   * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
    */
 
 
@@ -5260,7 +5260,7 @@ class InterfacePrototype {
   getAccounts() {}
   /**
    * Gets credentials ready for autofill
-   * @param {number|string} id - the credential id
+   * @param {CredentialsObject['id']} id - the credential id
    * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
    */
 
@@ -11432,7 +11432,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
    *
    * @param {InputTypeConfigs} config
    * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
-   * @param {string | number} id
+   * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
    */
 
 
