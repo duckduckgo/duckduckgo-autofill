@@ -7,7 +7,6 @@ import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
 import { createNotification, createRequest } from '../../packages/device-api/index.js'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
-import {ddgGlobals} from '../appleDeviceUtils/captureDdgGlobals.js'
 import {CheckCredentialsProviderStatusCall, SendJSPixelCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {getInputType} from '../Form/matching.js'
 
@@ -291,7 +290,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     async addDeviceListeners () {
         if (this.settings.featureToggles.third_party_credentials_provider) {
             if (this.globalConfig.hasModernWebkitAPI) {
-                ddgGlobals.ObjectDefineProperty(ddgGlobals.window, 'providerStatusUpdated', {
+                Object.defineProperty(window, 'providerStatusUpdated', {
                     enumerable: false,
                     configurable: false,
                     writable: false,
