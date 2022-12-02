@@ -51,7 +51,7 @@ test.describe('iOS Save prompts', () => {
              * but by having this mock check here, it confirms that scripts ran, messages
              * were sent etc.
              */
-            await login.assertMockCallOccurred('getAvailableInputTypes')
+            await login.assertAnyMockCallOccurred()
         })
     })
     test.describe('When saving credentials is enabled ✅', () => {

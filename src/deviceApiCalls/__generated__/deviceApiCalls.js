@@ -10,6 +10,8 @@ import {
     getAutofillCredentialsResultSchema,
     setSizeParamsSchema,
     selectedDetailParamsSchema,
+    askToUnlockProviderResultSchema,
+    checkCredentialsProviderStatusResultSchema,
     sendJSPixelParamsSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
@@ -82,6 +84,22 @@ export class SelectedDetailCall extends DeviceApiCall {
  */
 export class CloseAutofillParentCall extends DeviceApiCall {
   method = "closeAutofillParent"
+}
+/**
+ * @extends {DeviceApiCall<any, askToUnlockProviderResultSchema>} 
+ */
+export class AskToUnlockProviderCall extends DeviceApiCall {
+  method = "askToUnlockProvider"
+  id = "askToUnlockProviderResponse"
+  resultValidator = askToUnlockProviderResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, checkCredentialsProviderStatusResultSchema>} 
+ */
+export class CheckCredentialsProviderStatusCall extends DeviceApiCall {
+  method = "checkCredentialsProviderStatus"
+  id = "checkCredentialsProviderStatusResponse"
+  resultValidator = checkCredentialsProviderStatusResultSchema
 }
 /**
  * @extends {DeviceApiCall<sendJSPixelParamsSchema, any>} 

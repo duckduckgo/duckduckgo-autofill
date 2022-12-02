@@ -37,6 +37,14 @@
   "closeAutofillParent": {
     "description": "Used by Windows to instruct native sides to close any autofill overlays"
   },
+  "askToUnlockProvider": {
+    "id": "askToUnlockProviderResponse",
+    "resultValidator": "./schemas/askToUnlockProvider.result.json"
+  },
+  "checkCredentialsProviderStatus": {
+    "id": "checkCredentialsProviderStatusResponse",
+    "resultValidator": "./schemas/checkCredentialsProviderStatus.result.json"
+  },
   "sendJSPixel": {
     "paramsValidator": "./schemas/sendJSPixel.params.json"
   }

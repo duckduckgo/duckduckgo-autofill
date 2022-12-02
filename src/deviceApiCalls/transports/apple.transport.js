@@ -51,7 +51,9 @@ function appleSpecificRuntimeConfiguration (globalConfig) {
             // @ts-ignore
             userPreferences: globalConfig.userPreferences,
             // @ts-ignore
-            userUnprotectedDomains: globalConfig.userUnprotectedDomains
+            userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+            // @ts-ignore
+            availableInputTypes: globalConfig.availableInputTypes
         }
     }
 }

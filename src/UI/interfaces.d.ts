@@ -7,6 +7,7 @@ interface TooltipItemRenderer {
   labelMedium(subtype: string): string;
   label?(subtype: string): string | null | undefined;
   labelSmall?(subtype: string): string | null | undefined;
+  credentialsProvider?(): CredentialsObject["credentialsProvider"]
 }
 
 type PosFn = () => { x: number; y: number; height: number; width: number; }

@@ -5,7 +5,8 @@ type MockCall = [name: string, input: any, output: any];
 interface CredentialsMock {
     username: string,
     password: string,
-    id: string
+    id: string,
+    credentialsProvider?: 'duckduckgo' | 'bitwarden'
 }
 
 /**
@@ -37,6 +38,8 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     withFeatureToggles(featureToggles: Partial<import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles>): MockBuilder<State, Mocks>
     // Allow remote config to be overridden
     withRemoteAutofillState?(handlers: 'enabled' | 'disabled'): MockBuilder<State, Mocks>
+    withAskToUnlockProvider?(): MockBuilder<State, Mocks>
+    withCheckCredentialsProviderStatus?(): MockBuilder<State, Mocks>
     // Remove handlers to test roll-out logic
     removeHandlers?(handlers: (keyof Mocks)[]): MockBuilder<State, Mocks>
     // observe the current state

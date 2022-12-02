@@ -63,6 +63,9 @@ test.describe('Android Save prompts', () => {
                     .replaceAll(androidStringReplacements({
                         featureToggles: {
                             credentials_saving: true
+                        },
+                        availableInputTypes: {
+                            credentials: {username: false, password: false}
                         }
                     }))
                     .platform('android')
@@ -110,7 +113,10 @@ test.describe('Android Save prompts', () => {
             // create + inject the script
             await createAutofillScript()
                 .replaceAll(androidStringReplacements({
-                    featureToggles: toggles
+                    featureToggles: toggles,
+                    availableInputTypes: {
+                        credentials: {username: false, password: false}
+                    }
                 }))
                 .platform('android')
                 .applyTo(page)
@@ -121,7 +127,7 @@ test.describe('Android Save prompts', () => {
             }
 
             await login.submitLoginForm(credentials)
-            await login.promptWasNotShown()
+            await login.shouldNotPromptToSave('android')
         })
     })
 
@@ -144,6 +150,9 @@ test.describe('Android Save prompts', () => {
                 .replaceAll(androidStringReplacements({
                     featureToggles: {
                         credentials_saving: true
+                    },
+                    availableInputTypes: {
+                        credentials: {username: false, password: false}
                     }
                 }))
                 .platform('android')

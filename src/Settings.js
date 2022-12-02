@@ -63,7 +63,7 @@ export class Settings {
             const autofillSettings = validate(runtimeConfig.userPreferences?.features?.autofill?.settings, autofillSettingsSchema)
             return autofillSettings.featureToggles
         } catch (e) {
-            // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
+            // these are the fallbacks for when a platform hasn't implemented the calls above.
             if (this.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: getFeatureToggles: ❌', e)
             }
@@ -137,10 +137,11 @@ export class Settings {
      *      featureToggles: AutofillFeatureToggles,
      *      enabled: boolean | null
      * }>}
-     * @param {AvailableInputTypes} [availableInputTypesOverrides] a migration aid so that macOS can provide data in its old way initially
      */
-    async refresh (availableInputTypesOverrides) {
+    async refresh () {
         this.setEnabled(await this.getEnabled())
+        this.setFeatureToggles(await this.getFeatureToggles())
+        this.setAvailableInputTypes(await this.getAvailableInputTypes())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -149,35 +150,43 @@ export class Settings {
             }
         }
 
-        this.setFeatureToggles(await this.getFeatureToggles())
-        const availableInputTypesFromRemote = await this.getAvailableInputTypes()
-
-        /** @type {AvailableInputTypes} */
-        const availableInputTypes = {
-            email: false, // not supported yet
-            ...availableInputTypesFromRemote,
-            ...availableInputTypesOverrides
-        }
-
-        // Update the availableInputTypes to take into account the feature toggles.
-        if (!this.featureToggles.inputType_credentials) {
-            availableInputTypes.credentials = false
-        }
-        if (!this.featureToggles.inputType_identities) {
-            availableInputTypes.identities = false
-        }
-        if (!this.featureToggles.inputType_creditCards) {
-            availableInputTypes.creditCards = false
-        }
-
-        // at this point we've fetched from remote + merged local overrides, so we're ready to set.
-        this.setAvailableInputTypes(availableInputTypes)
-
         return {
             featureToggles: this.featureToggles,
             availableInputTypes: this.availableInputTypes,
             enabled: this.enabled
         }
+    }
+
+    /**
+     * Checks if a mainType/subtype pair can be autofilled with the data we have
+     * @param {SupportedMainTypes} mainType
+     * @param {string} subtype
+     * @returns {Promise<boolean>}
+     */
+    async canAutofillType (mainType, subtype) {
+        if (mainType === 'unknown') return false
+        if (!this.featureToggles[`inputType_${mainType}`] && subtype !== 'emailAddress') {
+            return false
+        }
+
+        if (this.availableInputTypes?.[mainType] === undefined) {
+            const availableInputTypesFromRemote = await this.getAvailableInputTypes()
+            this.setAvailableInputTypes(availableInputTypesFromRemote)
+        }
+
+        if (subtype === 'fullName') {
+            return Boolean(this.availableInputTypes.identities?.firstName || this.availableInputTypes.identities?.lastName)
+        }
+
+        if (subtype === 'expiration') {
+            return Boolean(this.availableInputTypes.creditCards?.expirationMonth || this.availableInputTypes.creditCards?.expirationYear)
+        }
+
+        if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
+            return true
+        }
+
+        return Boolean(this.availableInputTypes[mainType]?.[subtype])
     }
 
     /** @returns {AutofillFeatureToggles} */
@@ -199,7 +208,7 @@ export class Settings {
 
     /** @param {AvailableInputTypes} value */
     setAvailableInputTypes (value) {
-        this._availableInputTypes = value
+        this._availableInputTypes = {...this._availableInputTypes, ...value}
     }
 
     static defaults = {
@@ -215,9 +224,33 @@ export class Settings {
         },
         /** @type {AvailableInputTypes} */
         availableInputTypes: {
-            credentials: false,
-            identities: false,
-            creditCards: false,
+            credentials: {
+                username: false,
+                password: false
+            },
+            identities: {
+                firstName: false,
+                middleName: false,
+                lastName: false,
+                birthdayDay: false,
+                birthdayMonth: false,
+                birthdayYear: false,
+                addressStreet: false,
+                addressStreet2: false,
+                addressCity: false,
+                addressProvince: false,
+                addressPostalCode: false,
+                addressCountryCode: false,
+                phone: false,
+                emailAddress: false
+            },
+            creditCards: {
+                cardName: false,
+                cardSecurityCode: false,
+                expirationMonth: false,
+                expirationYear: false,
+                cardNumber: false
+            },
             email: false
         },
         /** @type {boolean | null} */

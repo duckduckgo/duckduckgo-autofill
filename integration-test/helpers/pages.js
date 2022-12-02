@@ -177,6 +177,12 @@ export function loginPage (page, server, opts = {}) {
             expect(styles1).toContain('data:image/svg+xml;base64,')
             expect(styles2).toContain('data:image/svg+xml;base64,')
         },
+        async onlyPasswordFieldHasIcon () {
+            const styles1 = await page.locator('#email').getAttribute('style')
+            const styles2 = await page.locator('#password').getAttribute('style')
+            expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
+            expect(styles2 || '').toContain('data:image/svg+xml;base64,')
+        },
         /**
          * @param {string} username
          * @return {Promise<void>}
@@ -201,6 +207,29 @@ export function loginPage (page, server, opts = {}) {
                 const button = await page.waitForSelector(`button:has-text("${username}")`)
                 await button.click()
             }
+        },
+        /**
+         * @param {string} username
+         * @param {string} password
+         * @return {Promise<void>}
+         */
+        async assertBitwardenTooltipWorking (username, password) {
+            await this.clickIntoUsernameInput()
+            const button = await page.waitForSelector('.tooltip__button--data--bitwarden')
+            expect(button).toBeDefined()
+            await button.click()
+            await this.assertFirstCredential(username, password)
+        },
+        async assertBitwardenLockedWorking () {
+            await this.clickIntoUsernameInput()
+            const button = await page.waitForSelector('button:has-text("Bitwarden is locked")')
+            expect(button).toBeDefined()
+            await button.click()
+            const updatedButton = await page.waitForSelector(`button:has-text("${constants.fields.email.personalAddress}")`)
+            expect(updatedButton).toBeDefined()
+            await updatedButton.click()
+            const autofillCalls = await mockedCalls(page, ['pmHandlerGetAutofillCredentials'], true)
+            expect(autofillCalls).toHaveLength(1)
         },
         /**
          * @param {string} username
@@ -237,7 +266,7 @@ export function loginPage (page, server, opts = {}) {
          */
         async promptWasShown (platform = 'android') {
             const calls = await mockedCalls(page, ['getAutofillData'])
-            expect(calls.length).toBe(1)
+            expect(calls.length).toBeGreaterThan(0)
             const [, sent] = calls[0]
             let params
             if (platform === 'android') {
@@ -261,7 +290,8 @@ export function loginPage (page, server, opts = {}) {
          */
         async assertParentOpened () {
             const credsCalls = await mockedCalls(page, ['getSelectedCredentials'], true)
-            expect(credsCalls.length).toBe(5)
+            const hasSucceeded = credsCalls.some((call) => call[2]?.some(({type}) => type === 'ok'))
+            expect(hasSucceeded).toBe(true)
         },
         /** @param {{password: string}} data */
         async submitPasswordOnlyForm (data) {
@@ -290,6 +320,15 @@ export function loginPage (page, server, opts = {}) {
             }
 
             expect(mockCalls.length).toBe(0)
+        },
+        /**
+         * This is used mostly to avoid false negatives when we check for something _not_ happening.
+         * Basically, you check that a specific call hasn't happened but the rest of the script ran just fine.
+         * @returns {Promise<void>}
+         */
+        async assertAnyMockCallOccurred () {
+            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            expect(calls.length).toBeGreaterThan(0)
         },
         /** @param {string} mockCallName */
         async assertMockCallOccurred (mockCallName) {
@@ -532,24 +571,22 @@ export function overlayPage (page, server) {
             await page.goto(server.urlForPath(constants.pages['overlay']))
         },
         /**
-         * @param {string} username
+         * @param {string} text
          * @returns {Promise<void>}
          */
-        async selectFirstCredential (username) {
-            const button = await page.waitForSelector(`button:has-text("${username}")`)
+        async clickButtonWithText (text) {
+            const button = await page.waitForSelector(`button:has-text("${text}")`)
             await button.click({ force: true })
         },
         /**
          * When we're in an overlay, 'closeAutofillParent' should not be called.
+         * @params {string} callName
          */
-        async doesNotCloseParent () {
-            // await page.waitForFunction(() => {
-            //     const calls = window.__playwright.mocks.calls
-            //     return calls.some(call => call[0] === 'getAutofillCredentials')
-            // })
-            // const calls = await page.evaluate('window.__playwright.mocks.calls')
-            // const mockCalls = calls.filter(([name]) => name === 'closeAutofillParent')
-            // expect(mockCalls.length).toBe(0)
+        async doesNotCloseParentAfterCall (callName) {
+            const callNameCalls = await mockedCalls(page, [callName], true)
+            expect(callNameCalls.length).toBeGreaterThanOrEqual(1)
+            const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], false)
+            expect(closeAutofillParentCalls.length).toBe(0)
         },
         /**
          * When we're in an overlay, 'closeAutofillParent' should not be called.
@@ -559,6 +596,39 @@ export function overlayPage (page, server) {
                 const calls = window.__playwright.mocks.calls
                 return calls.some(call => call[0] === 'selectedDetail')
             })
+        }
+    }
+}
+
+/**
+ * A wrapper around interactions for `integration-test/pages/signup.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ */
+export function loginAndSignup (page, server) {
+    // style lookup helpers
+    const usernameStyleAttr = () => page.locator(constants.fields.username.selectors.credential).getAttribute('style')
+    const emailStyleAttr = () => page.locator(constants.fields.email.selectors.identity).getAttribute('style')
+    const firstPasswordStyleAttr = () => page.locator('#login-password' + constants.fields.password.selectors.credential).getAttribute('style')
+
+    return {
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['login+setup']))
+        },
+        async assertIdentitiesWereNotDecorated () {
+            const style = await emailStyleAttr()
+            expect(style).toBeNull()
+        },
+        async assertUsernameAndPasswordWereDecoratedWithIcon () {
+            expect(await usernameStyleAttr()).toContain('data:image/svg+xml;base64,')
+            expect(await firstPasswordStyleAttr()).toContain('data:image/svg+xml;base64,')
+        },
+        async assertNoDecorations () {
+            const usernameAttr = await usernameStyleAttr()
+            expect(usernameAttr).toBeNull()
+
+            expect(await firstPasswordStyleAttr()).toBeNull()
         }
     }
 }

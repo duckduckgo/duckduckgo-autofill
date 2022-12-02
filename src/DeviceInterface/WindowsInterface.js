@@ -50,20 +50,20 @@ export class WindowsInterface extends InterfacePrototype {
         this._abortController = new AbortController()
         this.deviceApi.request(new GetAutofillDataCall(details), { signal: this._abortController.signal })
             .then(resp => {
-                if (!this.currentAttached) {
+                if (!this.activeForm) {
                     throw new Error('this.currentAttached was absent')
                 }
                 switch (resp.action) {
                 case 'fill': {
                     if (mainType in resp) {
-                        this.currentAttached?.autofillData(resp[mainType], mainType)
+                        this.activeForm?.autofillData(resp[mainType], mainType)
                     } else {
                         throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
                     }
                     break
                 }
                 case 'focus': {
-                    this.currentAttached?.activeInput?.focus()
+                    this.activeForm?.activeInput?.focus()
                     break
                 }
                 case 'none': {

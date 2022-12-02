@@ -7,6 +7,7 @@ import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
+import {createAvailableInputTypes} from '../helpers/utils.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -26,6 +27,7 @@ test.describe('macos', () => {
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
+            .withAvailableInputTypes({email: true})
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
             .applyTo(page)
@@ -86,6 +88,7 @@ test.describe('macos', () => {
             const signup = signupPage(page, server)
 
             await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
                 .withIdentity(identity)
                 .applyTo(page)
 
@@ -116,6 +119,7 @@ test.describe('macos', () => {
         const {personalAddress} = constants.fields.email
 
         await createWebkitMocks()
+            .withAvailableInputTypes({email: true})
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
             .withIdentity({

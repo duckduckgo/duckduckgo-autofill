@@ -7,7 +7,8 @@ import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
 import { createNotification, createRequest } from '../../packages/device-api/index.js'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
-import {SendJSPixelCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {CheckCredentialsProviderStatusCall, SendJSPixelCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {getInputType} from '../Form/matching.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
@@ -67,8 +68,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {Promise<void>}
      */
     async setupAutofill () {
-        // this prevents iOS from calling `_getAutofillInitData`.
-        if (this.globalConfig.isApp) {
+        if (!this.globalConfig.supportsTopFrame) {
             await this._getAutofillInitData()
         }
 
@@ -258,9 +258,11 @@ class AppleDeviceInterface extends InterfacePrototype {
         return this.deviceApi.request(createRequest('pmHandlerGetCreditCard', { id }))
     }
 
-    async getCurrentInputType () {
-        const {inputType} = this.getTopContextData() || {}
-        return inputType || 'unknown'
+    getCurrentInputType () {
+        const topContextData = this.getTopContextData()
+        return topContextData?.inputType
+            ? topContextData.inputType
+            : getInputType(this.activeForm?.activeInput)
     }
 
     /**
@@ -283,6 +285,39 @@ class AppleDeviceInterface extends InterfacePrototype {
                 handler()
             }
         })
+    }
+
+    async addDeviceListeners () {
+        if (this.settings.featureToggles.third_party_credentials_provider) {
+            if (this.globalConfig.hasModernWebkitAPI) {
+                Object.defineProperty(window, 'providerStatusUpdated', {
+                    enumerable: false,
+                    configurable: false,
+                    writable: false,
+                    value: (data) => {
+                        this.providerStatusUpdated(data)
+                    }
+                })
+            } else {
+                // On Catalina we poll the native layer
+                setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
+            }
+        }
+    }
+
+    // Only used on Catalina
+    async _pollForUpdatesToCredentialsProvider () {
+        try {
+            const response = await this.deviceApi.request(new CheckCredentialsProviderStatusCall(null))
+            if (response.availableInputTypes.credentialsProviderStatus !== this.settings.availableInputTypes.credentialsProviderStatus) {
+                this.providerStatusUpdated(response)
+            }
+            setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e)
+            }
+        }
     }
 
     /** @type {any} */

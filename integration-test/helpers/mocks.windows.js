@@ -1,3 +1,5 @@
+import {createAvailableInputTypes} from './utils.js'
+
 /**
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} AvailableInputTypes
@@ -49,10 +51,13 @@ export function createWindowsMocks () {
                         }
                     }
                 }
+            },
+            availableInputTypes: {
+                ...createAvailableInputTypes()
             }
         },
-        /** @type {AvailableInputTypes} */
-        getAvailableInputTypes: {},
+        /** @type {null | AvailableInputTypes} */
+        getAvailableInputTypes: null,
         /** @type {InboundPMData} */
         getAutofillInitData: {
             credentials: [],
