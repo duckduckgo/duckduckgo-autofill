@@ -2,7 +2,7 @@ import {AppleDeviceInterface} from './AppleDeviceInterface.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {overlayApi} from './overlayApi.js'
 import {createNotification, validate} from '../../packages/device-api/index.js'
-import {AskToUnlockProviderCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {AskToUnlockProviderCall, SendJSPixelCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 
 /**
@@ -88,6 +88,10 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
 
         // rerender the tooltip
         this.uiController.updateItems(credentials)
+    }
+
+    firePixel (pixelName) {
+        this.deviceApi.notify(new SendJSPixelCall({pixelName}))
     }
 }
 

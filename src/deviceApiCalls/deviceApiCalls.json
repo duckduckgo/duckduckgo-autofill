@@ -44,5 +44,8 @@
   "checkCredentialsProviderStatus": {
     "id": "checkCredentialsProviderStatusResponse",
     "resultValidator": "./schemas/checkCredentialsProviderStatus.result.json"
+  },
+  "sendJSPixel": {
+    "paramsValidator": "./schemas/sendJSPixel.params.json"
   }
 }

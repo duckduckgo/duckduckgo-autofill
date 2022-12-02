@@ -11,7 +11,8 @@ import {
     setSizeParamsSchema,
     selectedDetailParamsSchema,
     askToUnlockProviderResultSchema,
-    checkCredentialsProviderStatusResultSchema
+    checkCredentialsProviderStatusResultSchema,
+    sendJSPixelParamsSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -99,4 +100,11 @@ export class CheckCredentialsProviderStatusCall extends DeviceApiCall {
   method = "checkCredentialsProviderStatus"
   id = "checkCredentialsProviderStatusResponse"
   resultValidator = checkCredentialsProviderStatusResultSchema
+}
+/**
+ * @extends {DeviceApiCall<sendJSPixelParamsSchema, any>} 
+ */
+export class SendJSPixelCall extends DeviceApiCall {
+  method = "sendJSPixel"
+  paramsValidator = sendJSPixelParamsSchema
 }

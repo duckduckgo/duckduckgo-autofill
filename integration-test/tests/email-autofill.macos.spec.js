@@ -99,6 +99,7 @@ test.describe('macos', () => {
             await signup.selectGeneratedPassword()
             await signup.selectFirstName('shane Main identity')
             await signup.assertEmailValue(identity.emailAddress)
+            await signup.assertPixelFired('autofill_identity')
         })
         test('with no input types', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -141,6 +142,7 @@ test.describe('macos', () => {
         await signup.selectSecondEmailField(`${personalAddress} Main identity`)
         await signup.assertSecondEmailValue(personalAddress)
         await signup.assertFirstEmailEmpty()
+        await signup.assertPixelFired('autofill_identity')
     })
     test.describe('matching performance', () => {
         test.skip('matching performance v1', async ({page}) => {

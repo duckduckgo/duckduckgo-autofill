@@ -153,6 +153,8 @@ test.describe('Auto-fill a login form on macOS', () => {
 
                 await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)
+
+                await login.assertNoPixelFired()
             })
             test('autofill should not submit the form automatically', async ({page}) => {
                 const login = await createLoginFormInModalPage(page, server)

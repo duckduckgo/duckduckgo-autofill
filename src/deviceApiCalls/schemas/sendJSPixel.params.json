@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SendJSPixelParams",
+  "type": "object",
+  "description": "Send pixels data to be fired from the native layer",
+  "additionalProperties": false,
+  "properties": {
+    "pixelName": {
+      "oneOf": [
+        {
+          "type": "string",
+          "const": "autofill_identity"
+        }
+      ]
+    }
+  },
+  "required": [
+    "pixelName"
+  ]
+}

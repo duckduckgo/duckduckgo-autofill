@@ -1,40 +1,30 @@
-import {MissingWebkitHandler, wkSend, wkSendAndWait} from '../../appleDeviceUtils/appleDeviceUtils.js'
-import {DeviceApiTransport} from '../../../packages/device-api/index.js'
-import {GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls.js'
-import {captureWebkitHandlers} from '../../appleDeviceUtils/captureDdgGlobals.js'
+import { Messaging, MissingHandler, WebkitMessagingConfig } from '@duckduckgo/content-scope-utils'
+import { DeviceApiTransport } from '../../../packages/device-api/index.js'
+import { GetRuntimeConfigurationCall } from '../__generated__/deviceApiCalls.js'
 
 export class AppleTransport extends DeviceApiTransport {
-    /** @type {{hasModernWebkitAPI?: boolean, secret?: string}} */
-    sendOptions;
-
     /** @param {GlobalConfig} globalConfig */
     constructor (globalConfig) {
         super()
         this.config = globalConfig
-        this.sendOptions = {
-            secret: this.config.secret,
-            hasModernWebkitAPI: this.config.hasModernWebkitAPI
-        }
-        if (!this.sendOptions.hasModernWebkitAPI) {
-            // @ts-ignore
-            if (globalConfig.userPreferences?.platform.name === 'macos') {
-                if (globalConfig.webkitMessageHandlerNames.length > 0) {
-                    captureWebkitHandlers(globalConfig.webkitMessageHandlerNames)
-                }
-            }
-        }
+        const webkitConfig = new WebkitMessagingConfig({
+            hasModernWebkitAPI: this.config.hasModernWebkitAPI,
+            webkitMessageHandlerNames: this.config.webkitMessageHandlerNames,
+            secret: this.config.secret
+        })
+        this.messaging = new Messaging(webkitConfig)
     }
 
     async send (deviceApiCall) {
         try {
             // if the call has an `id`, it means that it expects a response
             if (deviceApiCall.id) {
-                return await wkSendAndWait(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions)
+                return await this.messaging.request(deviceApiCall.method, deviceApiCall.params || undefined)
             } else {
-                return await wkSend(deviceApiCall.method, deviceApiCall.params || undefined, this.sendOptions)
+                return this.messaging.notify(deviceApiCall.method, deviceApiCall.params || undefined)
             }
         } catch (e) {
-            if (e instanceof MissingWebkitHandler) {
+            if (e instanceof MissingHandler) {
                 if (this.config.isDDGTestMode) {
                     console.log('MissingWebkitHandler error for:', deviceApiCall.method)
                 }

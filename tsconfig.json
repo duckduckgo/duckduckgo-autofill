@@ -24,15 +24,19 @@
     "noUnusedParameters": true,
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
+    "maxNodeModuleJsDepth": 1
   },
   "include": [
+    "node_modules/@duckduckgo/content-scope-utils",
     "src",
     "scripts",
     "packages/password",
     "packages/device-api",
     "*.js",
-    "types.d.ts",
-    "integration-test/helpers",
-    "integration-test/tests"
+    "types.d.ts"
+  ],
+  "exclude": [
+    "jest-test-environment.js",
+    "Gruntfile.js"
   ]
 }

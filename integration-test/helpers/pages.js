@@ -49,6 +49,15 @@ export function signupPage (page, server) {
             const email = page.locator(selectors.identity)
             await expect(email).toHaveValue(emailAddress)
         },
+        /**
+         * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[pixelName]} pixelName
+         */
+        async assertPixelFired (pixelName) {
+            const calls = await mockedCalls(page, ['sendJSPixel'])
+            expect(calls.length).toBeGreaterThanOrEqual(1)
+            const [, sent] = calls[0]
+            expect(sent.pixelName).toEqual(pixelName)
+        },
         async addNewForm () {
             const btn = page.locator('text=Add new form')
             await btn.click()
@@ -403,6 +412,10 @@ export function loginPage (page, server, opts = {}) {
             const attrCount = page.locator('[data-ddg-inputtype]')
             const count = await attrCount.count()
             expect(count).toBe(0)
+        },
+        async assertNoPixelFired () {
+            const mockCalls = await mockedCalls(page, ['sendJSPixel'], false)
+            expect(mockCalls).toHaveLength(0)
         }
     }
 }

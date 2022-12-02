@@ -145,7 +145,8 @@ export const macosWithoutOverlay = () => {
             'showAutofillParent',
             'getSelectedCredentials',
             'askToUnlockProvider',
-            'checkCredentialsProviderStatus'
+            'checkCredentialsProviderStatus',
+            'sendJSPixel'
         ]
     }
 }
@@ -213,7 +214,8 @@ export function createWebkitMocks (platform = 'macos') {
         /** @type {AskToUnlockProviderTypes | null} */
         askToUnlockProvider: null,
         /** @type {CheckCredentialsProviderStatusTypes[]} */
-        checkCredentialsProviderStatus: []
+        checkCredentialsProviderStatus: [],
+        sendJSPixel: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
