@@ -10644,6 +10644,11 @@ class Settings {
 
     if (!this.featureToggles["inputType_".concat(mainType)] && subtype !== 'emailAddress') {
       return false;
+    } // If it's an email field and Email Protection is enabled, return true regardless of other options
+
+
+    if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
+      return true;
     }
 
     if (((_this$availableInputT = this.availableInputTypes) === null || _this$availableInputT === void 0 ? void 0 : _this$availableInputT[mainType]) === undefined) {
@@ -10661,10 +10666,6 @@ class Settings {
       var _this$availableInputT4, _this$availableInputT5;
 
       return Boolean(((_this$availableInputT4 = this.availableInputTypes.creditCards) === null || _this$availableInputT4 === void 0 ? void 0 : _this$availableInputT4.expirationMonth) || ((_this$availableInputT5 = this.availableInputTypes.creditCards) === null || _this$availableInputT5 === void 0 ? void 0 : _this$availableInputT5.expirationYear));
-    }
-
-    if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
-      return true;
     }
 
     return Boolean((_this$availableInputT6 = this.availableInputTypes[mainType]) === null || _this$availableInputT6 === void 0 ? void 0 : _this$availableInputT6[subtype]);
