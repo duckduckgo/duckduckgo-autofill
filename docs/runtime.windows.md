@@ -88,10 +88,42 @@ where `event.data` is:
 {
   "type": "getAvailableInputTypesResponse",
   "success": {
-    "credentials": true
+    "email": false,
+    "credentials": {
+      "username": true,
+      "password": true
+    },
+    "identities": {
+      "firstName": false,
+      "middleName": false,
+      "lastName": false,
+      "birthdayDay": false,
+      "birthdayMonth": false,
+      "birthdayYear": false,
+      "addressStreet": false,
+      "addressStreet2": false,
+      "addressCity": false,
+      "addressProvince": false,
+      "addressPostalCode": false,
+      "addressCountryCode": false,
+      "phone": false,
+      "emailAddress": false
+    },
+    "creditCards": {
+      "cardName": false,
+      "cardSecurityCode": false,
+      "expirationMonth": false,
+      "expirationYear": false,
+      "cardNumber": false
+    }
   }
 }
 ```
+
+This represents which input types we can autofill for the current user. Values are `true` if we can autofill the
+field type with at least one item. For example, if we have two credential items and the first only has a username
+and the second only has a password, both fields will be `true`. At this time `identities` and `creditCards` are
+optional as they are not supported on Windows.
 
 ---
 
