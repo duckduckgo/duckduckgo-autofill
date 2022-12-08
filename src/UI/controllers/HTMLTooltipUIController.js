@@ -209,7 +209,7 @@ export class HTMLTooltipUIController extends UIController {
      *
      * @param {InputTypeConfigs} config
      * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
-     * @param {string | number} id
+     * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
      */
     _onSelect (config, data, id) {
         return this._options.device.onSelect(config, data, id)

@@ -7708,7 +7708,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
   /**
    * Gets credentials ready for autofill
-   * @param {Number} id - the credential id
+   * @param {CredentialsObject['id']} id - the credential id
    * @returns {APIResponseSingle<CredentialsObject>}
    */
 
@@ -7744,7 +7744,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
   /**
    * Gets a single identity obj once the user requests it
-   * @param {Number} id
+   * @param {IdentityObject['id']} id
    * @returns {Promise<{success: IdentityObject|undefined}>}
    */
 
@@ -7762,7 +7762,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
   /**
    * Gets a single complete credit card obj once the user requests it
-   * @param {Number} id
+   * @param {CreditCardObject['id']} id
    * @returns {APIResponse<CreditCardObject>}
    */
 
@@ -8709,7 +8709,7 @@ class InterfacePrototype {
    *
    * @param {InputTypeConfigs} config
    * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
-   * @param {string|number} id
+   * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
    */
 
 
@@ -8936,7 +8936,7 @@ class InterfacePrototype {
   getAccounts() {}
   /**
    * Gets credentials ready for autofill
-   * @param {number|string} id - the credential id
+   * @param {CredentialsObject['id']} id - the credential id
    * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
    */
 
@@ -14320,6 +14320,11 @@ class Settings {
 
     if (!this.featureToggles["inputType_".concat(mainType)] && subtype !== 'emailAddress') {
       return false;
+    } // If it's an email field and Email Protection is enabled, return true regardless of other options
+
+
+    if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
+      return true;
     }
 
     if (((_this$availableInputT = this.availableInputTypes) === null || _this$availableInputT === void 0 ? void 0 : _this$availableInputT[mainType]) === undefined) {
@@ -14337,10 +14342,6 @@ class Settings {
       var _this$availableInputT4, _this$availableInputT5;
 
       return Boolean(((_this$availableInputT4 = this.availableInputTypes.creditCards) === null || _this$availableInputT4 === void 0 ? void 0 : _this$availableInputT4.expirationMonth) || ((_this$availableInputT5 = this.availableInputTypes.creditCards) === null || _this$availableInputT5 === void 0 ? void 0 : _this$availableInputT5.expirationYear));
-    }
-
-    if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
-      return true;
     }
 
     return Boolean((_this$availableInputT6 = this.availableInputTypes[mainType]) === null || _this$availableInputT6 === void 0 ? void 0 : _this$availableInputT6[subtype]);
@@ -15108,7 +15109,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
    *
    * @param {InputTypeConfigs} config
    * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
-   * @param {string | number} id
+   * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
    */
 
 

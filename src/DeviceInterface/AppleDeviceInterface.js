@@ -211,7 +211,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * Gets credentials ready for autofill
-     * @param {Number} id - the credential id
+     * @param {CredentialsObject['id']} id - the credential id
      * @returns {APIResponseSingle<CredentialsObject>}
      */
     getAutofillCredentials (id) {
@@ -241,7 +241,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * Gets a single identity obj once the user requests it
-     * @param {Number} id
+     * @param {IdentityObject['id']} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
     getAutofillIdentity (id) {
@@ -251,7 +251,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * Gets a single complete credit card obj once the user requests it
-     * @param {Number} id
+     * @param {CreditCardObject['id']} id
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
