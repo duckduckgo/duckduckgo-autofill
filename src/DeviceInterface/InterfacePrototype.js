@@ -293,7 +293,7 @@ class InterfacePrototype {
         const isEnabled = await this.isEnabled()
         if (!isEnabled) return
         if (document.readyState === 'complete') {
-            this.startInit()
+            await this.startInit()
         } else {
             window.addEventListener('load', () => {
                 this.startInit()
