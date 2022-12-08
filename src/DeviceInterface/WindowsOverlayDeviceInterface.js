@@ -59,9 +59,12 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
         const response = await this.deviceApi.request(new GetAutofillInitDataCall(null))
         // @ts-ignore
         this.storeLocalData(response)
+    }
 
+    async postInit () {
         // setup overlay API pieces
         this.overlay.showImmediately()
+        super.postInit()
     }
 
     /**

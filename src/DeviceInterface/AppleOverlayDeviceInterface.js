@@ -57,8 +57,12 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         if (signedIn) {
             await this.getAddresses()
         }
+    }
+
+    async postInit () {
         // setup overlay API pieces
         this.overlay.showImmediately()
+        super.postInit()
     }
 
     /**

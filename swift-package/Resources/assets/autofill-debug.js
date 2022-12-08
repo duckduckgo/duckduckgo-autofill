@@ -7969,10 +7969,13 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 
     if (signedIn) {
       await this.getAddresses();
-    } // setup overlay API pieces
+    }
+  }
 
-
+  async postInit() {
+    // setup overlay API pieces
     this.overlay.showImmediately();
+    super.postInit();
   }
   /**
    * In the top-frame scenario we override the base 'selectedDetail'.
@@ -9333,9 +9336,13 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
   async setupAutofill() {
     const response = await this.deviceApi.request(new _deviceApiCalls.GetAutofillInitDataCall(null)); // @ts-ignore
 
-    this.storeLocalData(response); // setup overlay API pieces
+    this.storeLocalData(response);
+  }
 
+  async postInit() {
+    // setup overlay API pieces
     this.overlay.showImmediately();
+    super.postInit();
   }
   /**
    * In the top-frame scenario, we send a message to the native
