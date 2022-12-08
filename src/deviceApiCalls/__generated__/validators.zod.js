@@ -51,6 +51,7 @@ export const autofillFeatureTogglesSchema = z.object({
     inputType_identities: z.boolean().optional(),
     inputType_creditCards: z.boolean().optional(),
     emailProtection: z.boolean().optional(),
+    emailProtection_incontext_signup: z.boolean().optional(),
     password_generation: z.boolean().optional(),
     credentials_saving: z.boolean().optional(),
     inlineIcon_credentials: z.boolean().optional(),

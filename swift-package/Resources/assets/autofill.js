@@ -4392,8 +4392,14 @@ class ExtensionInterface extends _InterfacePrototype.default {
   }
 
   getShowingTooltip() {
-    if (this.hasLocalAddresses) return POPUP_TYPES.EmailProtection;
-    if (!this.hasDismissedEmailSignup) return POPUP_TYPES.EmailSignup;
+    if (this.hasLocalAddresses) {
+      return POPUP_TYPES.EmailProtection;
+    }
+
+    if (this.settings.featureToggles.emailProtection_incontext_signup && !this.hasDismissedEmailSignup) {
+      return POPUP_TYPES.EmailSignup;
+    }
+
     return null;
   }
 
@@ -10770,6 +10776,7 @@ _defineProperty(Settings, "defaults", {
     credentials_saving: false,
     password_generation: false,
     emailProtection: false,
+    emailProtection_incontext_signup: false,
     inputType_identities: false,
     inputType_credentials: false,
     inputType_creditCards: false,

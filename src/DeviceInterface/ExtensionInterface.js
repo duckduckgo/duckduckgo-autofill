@@ -41,8 +41,14 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     getShowingTooltip () {
-        if (this.hasLocalAddresses) return POPUP_TYPES.EmailProtection
-        if (!this.hasDismissedEmailSignup) return POPUP_TYPES.EmailSignup
+        if (this.hasLocalAddresses) {
+            return POPUP_TYPES.EmailProtection
+        }
+
+        if (this.settings.featureToggles.emailProtection_incontext_signup && !this.hasDismissedEmailSignup) {
+            return POPUP_TYPES.EmailSignup
+        }
+
         return null
     }
 

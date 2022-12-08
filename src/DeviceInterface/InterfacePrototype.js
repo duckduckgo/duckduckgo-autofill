@@ -251,7 +251,6 @@ class InterfacePrototype {
         }
 
         await this.setupSettingsPage()
-
         await this.postInit()
 
         if (this.settings.featureToggles.credentials_saving) {

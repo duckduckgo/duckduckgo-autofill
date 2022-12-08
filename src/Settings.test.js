@@ -107,6 +107,7 @@ describe('Settings', () => {
       {
         "credentials_saving": false,
         "emailProtection": false,
+        "emailProtection_incontext_signup": false,
         "inlineIcon_credentials": false,
         "inputType_credentials": false,
         "inputType_creditCards": false,
