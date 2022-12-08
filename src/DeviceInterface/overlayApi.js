@@ -14,7 +14,7 @@ export function overlayApi (device) {
      * page load every time it's opened.
      */
     window.addEventListener('mouseMove', (event) => {
-        const activeTooltip = device.uiController.getActiveTooltip?.()
+        const activeTooltip = device.uiController?.getActiveTooltip?.()
         activeTooltip?.focus(event.detail.x, event.detail.y)
     })
 
@@ -37,9 +37,9 @@ export function overlayApi (device) {
             }
 
             // Create the tooltip, and set it as active
-            const tooltip = device.uiController.createTooltip?.(getPosition, topContextData)
+            const tooltip = device.uiController?.createTooltip?.(getPosition, topContextData)
             if (tooltip) {
-                device.uiController.setActiveTooltip?.(tooltip)
+                device.uiController?.setActiveTooltip?.(tooltip)
             }
         },
         /**

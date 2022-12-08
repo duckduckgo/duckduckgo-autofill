@@ -10,6 +10,11 @@ import {
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
 
+const POPUP_TYPES = {
+    EmailProtection: 'EmailProtection',
+    EmailSignup: 'EmailSignup'
+}
+
 class ExtensionInterface extends InterfacePrototype {
     /**
      * @override
@@ -21,7 +26,24 @@ class ExtensionInterface extends InterfacePrototype {
             css: `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossOrigin="anonymous">`,
             testMode: this.isTestMode()
         }
-        return new HTMLTooltipUIController({ tooltipKind: 'legacy', device: this }, htmlTooltipOptions)
+        const tooltipKinds = {
+            [POPUP_TYPES.EmailProtection]: 'legacy',
+            [POPUP_TYPES.EmailSignup]: 'emailsignup'
+        }
+        const tooltipKind = tooltipKinds[this.getShowingTooltip()] || tooltipKinds[POPUP_TYPES.EmailProtection]
+
+        return new HTMLTooltipUIController({ tooltipKind, device: this }, htmlTooltipOptions)
+    }
+
+    get hasDismissedEmailSignup () {
+        // TODO -- implement peristed dismissed timestamp
+        return false
+    }
+
+    getShowingTooltip () {
+        if (this.hasLocalAddresses) return POPUP_TYPES.EmailProtection
+        if (!this.hasDismissedEmailSignup) return POPUP_TYPES.EmailSignup
+        return null
     }
 
     async isEnabled () {
@@ -49,9 +71,19 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     postInit () {
-        if (this.hasLocalAddresses) {
+        switch (this.getShowingTooltip()) {
+        case POPUP_TYPES.EmailProtection: {
             const cleanup = this.scanner.init()
             this.addLogoutListener(cleanup)
+            break
+        }
+        case POPUP_TYPES.EmailSignup: {
+            this.scanner.init()
+            break
+        }
+        default: {
+            break
+        }
         }
     }
 

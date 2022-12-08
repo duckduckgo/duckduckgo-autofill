@@ -19,7 +19,7 @@ describe('InterfacePrototype', function () {
         jest.spyOn(device, 'refreshSettings').mockImplementation(() => Promise.resolve())
         await device.init()
 
-        const uiController = device.uiController
+        const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController)
         jest.spyOn(uiController, 'attach')
 
         const formEl = attachAndReturnGenericForm()

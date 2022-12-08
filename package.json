@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "copy-assets": "node scripts/copy-assets.js",
-    "open-test-extension": "web-ext run -t chromium -u https://privacy-test-pages.glitch.me/ -s integration-test/extension",
+    "open-test-extension": "npx web-ext run -t chromium -u https://privacy-test-pages.glitch.me/ -s integration-test/extension",
     "schema:generate": "node scripts/api-call-generator.js",
     "test": "npm run test:unit && npm run lint && tsc",
     "test:clean-tree": "npm run build && sh scripts/check-for-changes.sh",

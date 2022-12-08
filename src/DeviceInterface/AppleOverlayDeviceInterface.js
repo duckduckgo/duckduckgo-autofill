@@ -87,7 +87,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         this.storeLocalCredentials(credentials)
 
         // rerender the tooltip
-        this.uiController.updateItems(credentials)
+        this.uiController?.updateItems(credentials)
     }
 
     firePixel (pixelName) {
