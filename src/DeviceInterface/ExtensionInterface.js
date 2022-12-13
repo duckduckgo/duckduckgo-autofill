@@ -103,6 +103,14 @@ class ExtensionInterface extends InterfacePrototype {
         ))
     }
 
+    privateAddressUsed () {
+        chrome.runtime.sendMessage({privateAddressUsed: true})
+    }
+
+    personalAddressUsed () {
+        chrome.runtime.sendMessage({personalAddressUsed: true})
+    }
+
     /**
      * Used by the email web app
      * Settings page displays data of the logged in user data

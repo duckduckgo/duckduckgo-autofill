@@ -37,11 +37,19 @@ ${this.options.css}
                 this.addressEl.textContent = formatDuckAddress(addresses.personalAddress)
             }
         }
+
+        const personalAddressUsed = this.device.personalAddressUsed.bind(this.device)
+        const privateAddressUsed = this.device.privateAddressUsed.bind(this.device)
+
         this.registerClickableButton(this.usePersonalButton, () => {
             this.fillForm('personalAddress')
+            personalAddressUsed()
+            console.log('personalAddress selected')
         })
         this.registerClickableButton(this.usePrivateButton, () => {
             this.fillForm('privateAddress')
+            privateAddressUsed()
+            console.log('privateAddress selected')
         })
 
         // Get the alias from the extension
