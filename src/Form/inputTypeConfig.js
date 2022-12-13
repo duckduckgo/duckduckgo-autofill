@@ -140,7 +140,7 @@ const getInputConfig = (input) => {
 
 /**
  * Retrieves configs from an input type
- * @param {import('./matching').SupportedTypes | string} inputType
+ * @param {import('./matching').SupportedTypes} inputType
  * @returns {InputTypeConfigs}
  */
 const getInputConfigFromType = (inputType) => {
