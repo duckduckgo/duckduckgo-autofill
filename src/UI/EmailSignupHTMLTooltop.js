@@ -33,7 +33,7 @@ ${this.options.css}
         this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup')
 
         this.registerClickableButton(this.dismissEmailSignup, () => {
-            console.log('Persist dismissal')
+            // TODO: Persist dismissal
         })
 
         this.init()

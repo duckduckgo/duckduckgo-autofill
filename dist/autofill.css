@@ -284,7 +284,6 @@ hr:first-child {
 
 .notice-controls {
     display: flex;
-    justify-content: space-between;
 }
 
 .tooltip--email-signup .notice-controls > * {
@@ -298,12 +297,36 @@ hr:first-child {
     text-decoration: none;
 }
 
+.notice-controls .ghost {
+    margin-left: 1rem;
+}
+
 .tooltip--email-signup a.primary {
     background: #3969EF;
     color: #fff;
 }
 
+.tooltip--email-signup a.primary:hover,
+.tooltip--email-signup a.primary:focus {
+    background: #2b55ca;
+}
+
+.tooltip--email-signup a.primary:active {
+    background: #1e42a4;
+}
+
 .tooltip--email-signup button.ghost {
     background: transparent;
     color: #3969EF;
+}
+
+.tooltip--email-signup button.ghost:hover,
+.tooltip--email-signup button.ghost:focus {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: #2b55ca;
+}
+
+.tooltip--email-signup button.ghost:active {
+    background-color: rgba(0, 0, 0, 0.12);
+    color: #1e42a4;
 }
