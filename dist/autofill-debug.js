@@ -8082,11 +8082,25 @@ class ExtensionInterface extends _InterfacePrototype.default {
         value: new Date().getTime()
       }
     });
-    this.removeAutofillFromUI();
+    this.removeAutofillUIFromPage();
   }
 
-  removeAutofillFromUI() {
-    this._scannerCleanup && this._scannerCleanup();
+  async resetAutofillUI() {
+    this.removeAutofillUIFromPage(); // Start the setup process again
+
+    await this.refreshSettings();
+    await this.setupAutofill(); // TODO: Do we need this to be called?
+    // await this.setupSettingsPage({shouldLog: true})
+
+    this.uiController = this.createUIController();
+    await this.postInit();
+  }
+
+  removeAutofillUIFromPage() {
+    var _this$uiController, _this$_scannerCleanup;
+
+    (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : _this$uiController.destroy();
+    (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this);
   }
 
   async isEnabled() {
@@ -8116,7 +8130,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
         {
           this._scannerCleanup = this.scanner.init();
           this.addLogoutListener(() => {
-            this.removeAutofillFromUI();
+            this.resetAutofillUI();
           });
           break;
         }
@@ -8213,15 +8227,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
       switch (message.type) {
         case 'ddgUserReady':
-          this.setupAutofill().then(() => {
-            this.refreshSettings().then(() => {
-              this.setupSettingsPage({
-                shouldLog: true
-              }).then(() => {
-                return this.postInit();
-              });
-            });
-          });
+          this.resetAutofillUI();
           break;
 
         case 'contextualAutofill':
@@ -8241,12 +8247,18 @@ class ExtensionInterface extends _InterfacePrototype.default {
   }
 
   addLogoutListener(handler) {
-    // Cleanup on logout events
-    chrome.runtime.onMessage.addListener((message, sender) => {
+    if (this._logoutListenerHandler) {
+      chrome.runtime.onMessage.removeListener(this._logoutListenerHandler);
+    } // Cleanup on logout events
+
+
+    this._logoutListenerHandler = (message, sender) => {
       if (sender.id === chrome.runtime.id && message.type === 'logout') {
         handler();
       }
-    });
+    };
+
+    chrome.runtime.onMessage.addListener(this._logoutListenerHandler);
   }
 
 }
@@ -14114,6 +14126,8 @@ class DefaultScanner {
 
 
   init() {
+    var _this = this;
+
     const delay = this.options.initialDelay; // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
 
     if (delay === 0) {
@@ -14123,17 +14137,25 @@ class DefaultScanner {
       setTimeout(() => this.scanAndObserve(), delay);
     }
 
-    return () => {
+    return function () {
+      let {
+        silent
+      } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        silent: false
+      };
       // remove Dax, listeners, timers, and observers
-      clearTimeout(this.debounceTimer);
-      this.mutObs.disconnect();
-      this.forms.forEach(form => {
+      clearTimeout(_this.debounceTimer);
+
+      _this.mutObs.disconnect();
+
+      _this.forms.forEach(form => {
         form.resetAllInputs();
         form.removeAllDecorations();
       });
-      this.forms.clear();
 
-      if (this.device.globalConfig.isDDGDomain) {
+      _this.forms.clear();
+
+      if (_this.device.globalConfig.isDDGDomain && !silent) {
         (0, _autofillUtils.notifyWebApp)({
           deviceSignedIn: {
             value: false
@@ -15199,6 +15221,14 @@ class HTMLTooltipUIController extends _UIController.UIController {
     this._options = options;
     this._htmlTooltipOptions = Object.assign({}, _HTMLTooltip.defaultOptions, htmlTooltipOptions);
     window.addEventListener('pointerdown', this, true);
+  }
+
+  destroy() {
+    this.removeTooltip('destroy');
+
+    this._removeListeners();
+
+    window.removeEventListener('pointerdown', this, true);
   }
   /**
    * @param {import('./UIController').AttachArgs} args

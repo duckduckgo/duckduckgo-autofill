@@ -55,11 +55,26 @@ class ExtensionInterface extends InterfacePrototype {
                 value: new Date().getTime()
             }
         })
-        this.removeAutofillFromUI()
+        this.removeAutofillUIFromPage()
     }
 
-    removeAutofillFromUI () {
-        this._scannerCleanup && this._scannerCleanup()
+    async resetAutofillUI () {
+        this.removeAutofillUIFromPage()
+
+        // Start the setup process again
+        await this.refreshSettings()
+        await this.setupAutofill()
+
+        // TODO: Do we need this to be called?
+        // await this.setupSettingsPage({shouldLog: true})
+
+        this.uiController = this.createUIController()
+        await this.postInit()
+    }
+
+    removeAutofillUIFromPage () {
+        this.uiController?.destroy()
+        this._scannerCleanup?.()
     }
 
     async isEnabled () {
@@ -91,7 +106,7 @@ class ExtensionInterface extends InterfacePrototype {
         case TOOLTIP_TYPES.EmailProtection: {
             this._scannerCleanup = this.scanner.init()
             this.addLogoutListener(() => {
-                this.removeAutofillFromUI()
+                this.resetAutofillUI()
             })
             break
         }
@@ -183,13 +198,7 @@ class ExtensionInterface extends InterfacePrototype {
 
             switch (message.type) {
             case 'ddgUserReady':
-                this.setupAutofill().then(() => {
-                    this.refreshSettings().then(() => {
-                        this.setupSettingsPage({shouldLog: true}).then(() => {
-                            return this.postInit()
-                        })
-                    })
-                })
+                this.resetAutofillUI()
                 break
             case 'contextualAutofill':
                 setValue(activeEl, formatDuckAddress(message.alias), this.globalConfig)
@@ -210,12 +219,17 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     addLogoutListener (handler) {
+        if (this._logoutListenerHandler) {
+            chrome.runtime.onMessage.removeListener(this._logoutListenerHandler)
+        }
+
         // Cleanup on logout events
-        chrome.runtime.onMessage.addListener((message, sender) => {
+        this._logoutListenerHandler = (message, sender) => {
             if (sender.id === chrome.runtime.id && message.type === 'logout') {
                 handler()
             }
-        })
+        }
+        chrome.runtime.onMessage.addListener(this._logoutListenerHandler)
     }
 }
 

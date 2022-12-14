@@ -85,7 +85,7 @@ class DefaultScanner {
             // otherwise, use the delay time to defer the initial scan
             setTimeout(() => this.scanAndObserve(), delay)
         }
-        return () => {
+        return ({ silent } = { silent: false }) => {
             // remove Dax, listeners, timers, and observers
             clearTimeout(this.debounceTimer)
             this.mutObs.disconnect()
@@ -94,7 +94,7 @@ class DefaultScanner {
                 form.removeAllDecorations()
             })
             this.forms.clear()
-            if (this.device.globalConfig.isDDGDomain) {
+            if (this.device.globalConfig.isDDGDomain && !silent) {
                 notifyWebApp({ deviceSignedIn: {value: false} })
             }
         }

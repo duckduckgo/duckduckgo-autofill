@@ -45,6 +45,12 @@ export class HTMLTooltipUIController extends UIController {
         window.addEventListener('pointerdown', this, true)
     }
 
+    destroy () {
+        this.removeTooltip('destroy')
+        this._removeListeners()
+        window.removeEventListener('pointerdown', this, true)
+    }
+
     /**
      * @param {import('./UIController').AttachArgs} args
      */
