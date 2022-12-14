@@ -527,6 +527,15 @@ export interface GenericError {
   message: string;
 }
 
+// incontext-signup-settings.json
+
+/**
+ * Delivered as part of Runtime Configuration, but needs to live here since Runtime Configuration can contain settings for many features
+ */
+export interface IncontextSignupSettings {
+  dismissedAt?: number;
+}
+
 // providerStatusUpdated.json
 
 export interface ProviderStatusUpdated {

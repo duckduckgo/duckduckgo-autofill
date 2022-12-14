@@ -10,7 +10,7 @@ import {
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
 
-const POPUP_TYPES = {
+const TOOLTIP_TYPES = {
     EmailProtection: 'EmailProtection',
     EmailSignup: 'EmailSignup'
 }
@@ -27,29 +27,39 @@ class ExtensionInterface extends InterfacePrototype {
             testMode: this.isTestMode()
         }
         const tooltipKinds = {
-            [POPUP_TYPES.EmailProtection]: 'legacy',
-            [POPUP_TYPES.EmailSignup]: 'emailsignup'
+            [TOOLTIP_TYPES.EmailProtection]: 'legacy',
+            [TOOLTIP_TYPES.EmailSignup]: 'emailsignup'
         }
-        const tooltipKind = tooltipKinds[this.getShowingTooltip()] || tooltipKinds[POPUP_TYPES.EmailProtection]
+        const tooltipKind = tooltipKinds[this.getShowingTooltip()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection]
 
         return new HTMLTooltipUIController({ tooltipKind, device: this }, htmlTooltipOptions)
     }
 
-    get hasDismissedEmailSignup () {
-        // TODO -- implement peristed dismissed timestamp
-        return false
-    }
-
     getShowingTooltip () {
         if (this.hasLocalAddresses) {
-            return POPUP_TYPES.EmailProtection
+            return TOOLTIP_TYPES.EmailProtection
         }
 
-        if (this.settings.featureToggles.emailProtection_incontext_signup && !this.hasDismissedEmailSignup) {
-            return POPUP_TYPES.EmailSignup
+        if (this.settings.featureToggles.emailProtection_incontext_signup && this.settings.incontextSignupDismissed === false) {
+            return TOOLTIP_TYPES.EmailSignup
         }
 
         return null
+    }
+
+    onIncontextSignupDismissed () {
+        this.settings.setIncontextSignupDismissed(true)
+        chrome.runtime.sendMessage({
+            messageType: 'setIncontextSignupDismissedAt',
+            options: {
+                value: new Date().getTime()
+            }
+        })
+        this.removeAutofillFromUI()
+    }
+
+    removeAutofillFromUI () {
+        this._scannerCleanup && this._scannerCleanup()
     }
 
     async isEnabled () {
@@ -78,16 +88,19 @@ class ExtensionInterface extends InterfacePrototype {
 
     postInit () {
         switch (this.getShowingTooltip()) {
-        case POPUP_TYPES.EmailProtection: {
-            const cleanup = this.scanner.init()
-            this.addLogoutListener(cleanup)
+        case TOOLTIP_TYPES.EmailProtection: {
+            this._scannerCleanup = this.scanner.init()
+            this.addLogoutListener(() => {
+                this.removeAutofillFromUI()
+            })
             break
         }
-        case POPUP_TYPES.EmailSignup: {
-            this.scanner.init()
+        case TOOLTIP_TYPES.EmailSignup: {
+            this._scannerCleanup = this.scanner.init()
             break
         }
         default: {
+            // Don't do anyhing if we don't have a tooltip to show
             break
         }
         }

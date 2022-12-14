@@ -1,6 +1,6 @@
 import {validate} from '../packages/device-api/index.js'
 import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
-import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
+import {autofillSettingsSchema, incontextSignupSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
 import {autofillEnabled} from './autofill-utils.js'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
@@ -35,6 +35,8 @@ export class Settings {
     _runtimeConfiguration = null
     /** @type {boolean | null} */
     _enabled = null
+    /** @type {boolean | null} */
+    _incontextSignupDismissed = null
 
     /**
      * @param {GlobalConfig} config
@@ -92,6 +94,19 @@ export class Settings {
     }
 
     /**
+     * @returns {Promise<boolean|null>}
+     */
+    async getIncontextSignupDismissed () {
+        try {
+            const runtimeConfig = await this._getRuntimeConfiguration()
+            const incontextSignupSettings = validate(runtimeConfig.userPreferences?.features?.incontextSignup?.settings, incontextSignupSettingsSchema)
+            return Boolean(incontextSignupSettings.dismissedAt)
+        } catch (e) {
+            return null
+        }
+    }
+
+    /**
      * Get runtime configuration, but only once.
      *
      * Some platforms may be reading this directly from inlined variables, whilst others
@@ -142,6 +157,7 @@ export class Settings {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
         this.setAvailableInputTypes(await this.getAvailableInputTypes())
+        this.setIncontextSignupDismissed(await this.getIncontextSignupDismissed())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -276,5 +292,17 @@ export class Settings {
      */
     setEnabled (enabled) {
         this._enabled = enabled
+    }
+
+    /** @returns {boolean|null} */
+    get incontextSignupDismissed () {
+        return this._incontextSignupDismissed
+    }
+
+    /**
+     * @param {boolean|null} incontextSignupDismissed
+     */
+    setIncontextSignupDismissed (incontextSignupDismissed) {
+        this._incontextSignupDismissed = incontextSignupDismissed
     }
 }

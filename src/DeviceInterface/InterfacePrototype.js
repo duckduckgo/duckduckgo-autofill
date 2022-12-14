@@ -122,6 +122,8 @@ class InterfacePrototype {
         topContextData: undefined
     }
 
+    onIncontextSignupDismissed () {}
+
     /**
      * @returns {import('../Form/matching').SupportedTypes}
      */

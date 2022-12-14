@@ -145,6 +145,10 @@ export const userPreferencesSchema = z.object({
     }))
 });
 
+export const incontextSignupSettingsSchema = z.object({
+    dismissedAt: z.number().optional()
+});
+
 export const runtimeConfigurationSchema = z.object({
     contentScope: contentScopeSchema,
     userUnprotectedDomains: z.array(z.string()),

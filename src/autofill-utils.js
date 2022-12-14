@@ -58,6 +58,15 @@ const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
     return true
 }
 
+const isIncontextSignupEnabledFromProcessedConfig = (processedConfig) => {
+    const site = processedConfig.site
+    if (site.isBroken || !site.enabledFeatures.includes('incontextSignup')) {
+        return false
+    }
+
+    return true
+}
+
 // Access the original setter (needed to bypass React's implementation on mobile)
 // @ts-ignore
 const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
@@ -346,6 +355,7 @@ export {
     notifyWebApp,
     sendAndWaitForAnswer,
     isAutofillEnabledFromProcessedConfig,
+    isIncontextSignupEnabledFromProcessedConfig,
     autofillEnabled,
     setValue,
     safeExecute,

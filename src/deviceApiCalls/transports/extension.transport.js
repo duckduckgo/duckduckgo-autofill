@@ -4,7 +4,7 @@ import {
     GetRuntimeConfigurationCall,
     SendJSPixelCall
 } from '../__generated__/deviceApiCalls.js'
-import {isAutofillEnabledFromProcessedConfig} from '../../autofill-utils.js'
+import {isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig} from '../../autofill-utils.js'
 import {Settings} from '../../Settings.js'
 
 export class ExtensionTransport extends DeviceApiTransport {
@@ -39,16 +39,32 @@ export class ExtensionTransport extends DeviceApiTransport {
 async function extensionSpecificRuntimeConfiguration (globalConfig) {
     const contentScope = await getContentScopeConfig()
     const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope)
+    const incontextSignupEnabled = isIncontextSignupEnabledFromProcessedConfig(contentScope)
+    const incontextSignupDismissedAt = await getIncontextSignupDismissedAt()
 
     return {
         success: {
             // @ts-ignore
             contentScope: contentScope,
             // @ts-ignore
-            userPreferences: {features: {autofill: {settings: {featureToggles: {
-                ...Settings.defaults.featureToggles,
-                emailProtection: emailProtectionEnabled
-            }}}}},
+            userPreferences: {
+                features: {
+                    autofill: {
+                        settings: {
+                            featureToggles: {
+                                ...Settings.defaults.featureToggles,
+                                emailProtection: emailProtectionEnabled,
+                                emailProtection_incontext_signup: incontextSignupEnabled
+                            }
+                        }
+                    },
+                    incontextSignup: {
+                        settings: {
+                            dismissedAt: incontextSignupDismissedAt
+                        }
+                    }
+                }
+            },
             // @ts-ignore
             userUnprotectedDomains: globalConfig?.userUnprotectedDomains
         }
@@ -82,6 +98,7 @@ async function getContentScopeConfig () {
         )
     })
 }
+
 /**
  * @param {import('../__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
  */
@@ -96,6 +113,19 @@ async function extensionSpecificSendPixel (pixelName) {
             },
             () => {
                 resolve(true)
+            }
+        )
+    })
+}
+
+async function getIncontextSignupDismissedAt () {
+    return new Promise(resolve => {
+        chrome.runtime.sendMessage(
+            {
+                messageType: 'getIncontextSignupDismissedAt'
+            },
+            (response) => {
+                resolve(response)
             }
         )
     })
