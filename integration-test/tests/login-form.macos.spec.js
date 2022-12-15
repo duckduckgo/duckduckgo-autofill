@@ -187,6 +187,26 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.clickIntoUsernameInput()
                 await login.fieldsDoNotContainIcons()
             })
+            test('I should see Dax if Email Protection is enabled', async ({page}) => {
+                await forwardConsoleMessages(page)
+                await createWebkitMocks()
+                    .withAvailableInputTypes({
+                        credentials: {username: false, password: false},
+                        email: true
+                    })
+                    .withPersonalEmail(personalAddress)
+                    .withPrivateEmail('random123@duck.com')
+                    .applyTo(page)
+
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements())
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, server)
+                await login.navigate()
+                await login.emailHasDaxPasswordNoIcon()
+            })
         })
     })
 

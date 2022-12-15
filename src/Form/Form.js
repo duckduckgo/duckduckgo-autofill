@@ -23,7 +23,7 @@ import {
 } from './formatters.js'
 
 import {constants} from '../constants.js'
-const {ATTR_AUTOFILL} = constants
+const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = constants
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
@@ -244,6 +244,25 @@ class Form {
             }
         })
     }
+
+    /**
+     * Removes all scoring attributes from the inputs and deletes them from memory
+     */
+    forgetAllInputs () {
+        this.execOnInputs((input) => {
+            input.removeAttribute(ATTR_INPUT_TYPE)
+        })
+        Object.values(this.inputs).forEach((inputSet) => inputSet.clear())
+    }
+
+    /**
+     * Resets our input scoring and starts from scratch
+     */
+    recategorizeAllInputs () {
+        this.removeAllDecorations()
+        this.forgetAllInputs()
+        this.categorizeInputs()
+    }
     resetAllInputs () {
         this.execOnInputs((input) => {
             setValue(input, '', this.device.globalConfig)
@@ -327,7 +346,12 @@ class Form {
 
         this.inputs.all.add(input)
 
-        this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
+        const opts = {
+            isLogin: this.isLogin,
+            hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
+            isMobile: this.device.globalConfig.isMobileApp
+        }
+        this.matching.setInputType(input, this.form, opts)
 
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)

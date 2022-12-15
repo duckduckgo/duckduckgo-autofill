@@ -177,11 +177,27 @@ export function loginPage (page, server, opts = {}) {
             expect(styles1).toContain('data:image/svg+xml;base64,')
             expect(styles2).toContain('data:image/svg+xml;base64,')
         },
+        async emailFieldShowsDax () {
+            // don't make assertions until the element is both found + has a none-empty 'style' attribute
+            await page.waitForFunction(() => Boolean(document.querySelector('#email')?.getAttribute('style')))
+            const emailStyle = await page.locator('#email').getAttribute('style')
+            expect(emailStyle).toContain(constants.iconMatchers.dax)
+        },
+        async emailHasDaxPasswordNoIcon () {
+            await this.emailFieldShowsDax()
+            const passwordStyle = await page.locator('#password').getAttribute('style')
+            expect(passwordStyle || '').not.toContain('data:image/svg+xml;base64,')
+        },
+        async emailHasDaxPasswordHasKey () {
+            await this.emailFieldShowsDax()
+            const passwordStyle = await page.locator('#password').getAttribute('style')
+            expect(passwordStyle || '').toContain(constants.iconMatchers.key)
+        },
         async onlyPasswordFieldHasIcon () {
             const styles1 = await page.locator('#email').getAttribute('style')
             const styles2 = await page.locator('#password').getAttribute('style')
             expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
-            expect(styles2 || '').toContain('data:image/svg+xml;base64,')
+            expect(styles2 || '').toContain(constants.iconMatchers.key)
         },
         /**
          * @param {string} username

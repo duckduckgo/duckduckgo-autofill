@@ -5230,7 +5230,7 @@ class InterfacePrototype {
       } // Redecorate fields according to the new types
 
 
-      this.scanner.forms.forEach(form => form.redecorateAllInputs());
+      this.scanner.forms.forEach(form => form.recategorizeAllInputs());
     } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
@@ -5834,7 +5834,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const {
-  ATTR_AUTOFILL
+  ATTR_AUTOFILL,
+  ATTR_INPUT_TYPE
 } = _constants.constants;
 
 class Form {
@@ -6093,6 +6094,27 @@ class Form {
       }
     });
   }
+  /**
+   * Removes all scoring attributes from the inputs and deletes them from memory
+   */
+
+
+  forgetAllInputs() {
+    this.execOnInputs(input => {
+      input.removeAttribute(ATTR_INPUT_TYPE);
+    });
+    Object.values(this.inputs).forEach(inputSet => inputSet.clear());
+  }
+  /**
+   * Resets our input scoring and starts from scratch
+   */
+
+
+  recategorizeAllInputs() {
+    this.removeAllDecorations();
+    this.forgetAllInputs();
+    this.categorizeInputs();
+  }
 
   resetAllInputs() {
     this.execOnInputs(input => {
@@ -6172,13 +6194,18 @@ class Form {
   }
 
   addInput(input) {
+    var _this$device$settings;
+
     // Nothing to do with 1-character fields
     if (input.maxLength === 1) return this;
     if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
-    this.matching.setInputType(input, this.form, {
-      isLogin: this.isLogin
-    });
+    const opts = {
+      isLogin: this.isLogin,
+      hasCredentials: Boolean((_this$device$settings = this.device.settings.availableInputTypes.credentials) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.username),
+      isMobile: this.device.globalConfig.isMobileApp
+    };
+    this.matching.setInputType(input, this.form, opts);
     const mainInputType = (0, _matching.getInputMainType)(input);
     this.inputs[mainInputType].add(input);
     this.decorateInput(input);
@@ -7891,7 +7918,7 @@ const getInputConfig = input => {
 };
 /**
  * Retrieves configs from an input type
- * @param {import('./matching').SupportedTypes | string} inputType
+ * @param {import('./matching').SupportedTypes} inputType
  * @returns {InputTypeConfigs}
  */
 
@@ -8917,7 +8944,7 @@ class Matching {
    *
    * @param {HTMLInputElement|HTMLSelectElement} input
    * @param {HTMLElement} formEl
-   * @param {{isLogin?: boolean}} [opts]
+   * @param {SetInputTypeOpts} [opts]
    * @returns {SupportedTypes}
    */
 
@@ -8947,7 +8974,15 @@ class Matching {
       }
 
       if (this.subtypeFromMatchers('email', input)) {
-        return opts.isLogin ? 'credentials.username' : 'identities.emailAddress';
+        if (opts.isLogin) {
+          if (!opts.isMobile && !opts.hasCredentials) {
+            return 'identities.emailAddress';
+          }
+
+          return 'credentials.username';
+        }
+
+        return 'identities.emailAddress';
       }
 
       if (this.subtypeFromMatchers('username', input)) {
@@ -8964,10 +8999,18 @@ class Matching {
     return 'unknown';
   }
   /**
+   * @typedef {{
+   *   isLogin?: boolean,
+   *   hasCredentials?: boolean,
+   *   isMobile?: boolean
+   * }} SetInputTypeOpts
+   */
+
+  /**
    * Sets the input type as a data attribute to the element and returns it
    * @param {HTMLInputElement} input
    * @param {HTMLElement} formEl
-   * @param {{isLogin?: boolean}} [opts]
+   * @param {SetInputTypeOpts} [opts]
    * @returns {SupportedSubTypes | string}
    */
 

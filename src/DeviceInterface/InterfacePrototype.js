@@ -574,7 +574,7 @@ class InterfacePrototype {
                 this.removeTooltip()
             }
             // Redecorate fields according to the new types
-            this.scanner.forms.forEach(form => form.redecorateAllInputs())
+            this.scanner.forms.forEach(form => form.recategorizeAllInputs())
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
