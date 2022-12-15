@@ -89,8 +89,10 @@ async function extensionSpecificSendPixel (pixelName) {
     return new Promise(resolve => {
         chrome.runtime.sendMessage(
             {
-                firePixel: true,
-                pixelName
+                messageType: 'firePixel',
+                options: {
+                    pixelName
+                }
             },
             () => {
                 resolve(true)

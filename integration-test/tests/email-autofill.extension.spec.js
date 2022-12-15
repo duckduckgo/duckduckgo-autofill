@@ -38,6 +38,8 @@ test.describe('chrome extension', () => {
         // ensure autofill populates the field
         await emailPage.assertEmailValue(personalAddress)
 
+        // TODO: ensure pixel was fired
+
         // now ensure a second click into the input doesn't show the dropdown
         await emailPage.clickIntoInput()
 
