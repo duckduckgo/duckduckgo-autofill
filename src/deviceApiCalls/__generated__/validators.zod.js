@@ -150,7 +150,7 @@ export const selectedDetailParamsSchema = z.object({
 });
 
 export const sendJSPixelParamsSchema = z.object({
-    pixelName: z.literal("autofill_identity")
+    pixelName: z.union([z.literal("autofill_identity"), z.literal("autofill_private_address"), z.literal("autofill_personal_address")])
 });
 
 export const setSizeParamsSchema = z.object({

@@ -525,10 +525,6 @@ class InterfacePrototype {
     /** @returns {Promise<EmailAddresses>} */
     async getAddresses () { throw new Error('unimplemented') }
 
-    personalAddressUsed () { }
-
-    privateAddressUsed () { }
-
     /** @returns {Promise<null|Record<any,any>>} */
     getUserData () { return Promise.resolve(null) }
 

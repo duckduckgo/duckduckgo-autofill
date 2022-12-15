@@ -10,6 +10,14 @@
         {
           "type": "string",
           "const": "autofill_identity"
+        },
+        {
+          "type": "string",
+          "const": "autofill_private_address"
+        },
+        {
+          "type": "string",
+          "const": "autofill_personal_address"
         }
       ]
     }

@@ -38,18 +38,15 @@ ${this.options.css}
             }
         }
 
-        const personalAddressUsed = this.device.personalAddressUsed.bind(this.device)
-        const privateAddressUsed = this.device.privateAddressUsed.bind(this.device)
+        const firePixel = this.device.firePixel.bind(this.device)
 
         this.registerClickableButton(this.usePersonalButton, () => {
             this.fillForm('personalAddress')
-            personalAddressUsed()
-            console.log('personalAddress selected')
+            firePixel('autofill_personal_address')
         })
         this.registerClickableButton(this.usePrivateButton, () => {
             this.fillForm('privateAddress')
-            privateAddressUsed()
-            console.log('privateAddress selected')
+            firePixel('autofill_private_address')
         })
 
         // Get the alias from the extension

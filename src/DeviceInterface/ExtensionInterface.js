@@ -9,6 +9,7 @@ import {
 } from '../autofill-utils.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
+import { SendJSPixelCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const POPUP_TYPES = {
     EmailProtection: 'EmailProtection',
@@ -103,12 +104,8 @@ class ExtensionInterface extends InterfacePrototype {
         ))
     }
 
-    privateAddressUsed () {
-        chrome.runtime.sendMessage({privateAddressUsed: true})
-    }
-
-    personalAddressUsed () {
-        chrome.runtime.sendMessage({personalAddressUsed: true})
+    firePixel (pixelName) {
+        this.deviceApi.notify(new SendJSPixelCall({pixelName}))
     }
 
     /**
