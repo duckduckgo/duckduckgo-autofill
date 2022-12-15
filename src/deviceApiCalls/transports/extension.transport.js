@@ -15,7 +15,6 @@ export class ExtensionTransport extends DeviceApiTransport {
     }
 
     async send (deviceApiCall) {
-        console.log({deviceApiCall})
         if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
             return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this.config))
         }
