@@ -4,12 +4,18 @@ const userData = {
     userName: 'shane-123',
     nextAlias: random
 }
+// eslint-disable-next-line no-undef
+globalThis.pixels = []
 
 function getAddresses () {
     return {
         personalAddress: `${userData.userName}`,
         privateAddress: `${userData.nextAlias}`
     }
+}
+function firePixel ({pixelName}) {
+    // eslint-disable-next-line no-undef
+    globalThis.pixels.push(pixelName)
 }
 
 async function addUserData (userData, sender) {
@@ -79,6 +85,8 @@ function init () {
             return sendResponse(getAddresses())
         } else if (message.addUserData) {
             return sendResponse(addUserData(message.addUserData, sender))
+        } else if (message.messageType === 'firePixel') {
+            return sendResponse(firePixel(message.options))
         }
     })
 
