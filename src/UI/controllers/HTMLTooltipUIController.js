@@ -1,12 +1,13 @@
 import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
 import DataHTMLTooltip from '../DataHTMLTooltip.js'
 import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
+import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltop.js'
 import {defaultOptions} from '../HTMLTooltip.js'
 import {UIController} from './UIController.js'
 
 /**
  * @typedef HTMLTooltipControllerOptions
- * @property {"modern" | "legacy"} tooltipKind - A choice between the newer Autofill UI vs the older one used in the extension
+ * @property {"modern" | "legacy" | "emailsignup"} tooltipKind - A choice between the newer Autofill UI vs the older ones used in the extension
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
  * regardless of whether this Controller has an open tooltip, or not
  */
@@ -72,6 +73,11 @@ export class HTMLTooltipUIController extends UIController {
 
         if (this._options.tooltipKind === 'legacy') {
             return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
+                .render(this._options.device)
+        }
+
+        if (this._options.tooltipKind === 'emailsignup') {
+            return new EmailSignupHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
                 .render(this._options.device)
         }
 

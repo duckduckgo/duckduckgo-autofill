@@ -23,6 +23,9 @@
         "emailProtection": {
           "type": "boolean"
         },
+        "emailProtection_incontext_signup": {
+          "type": "boolean"
+        },
         "password_generation": {
           "type": "boolean"
         },

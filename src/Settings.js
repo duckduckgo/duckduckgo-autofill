@@ -218,6 +218,7 @@ export class Settings {
             credentials_saving: false,
             password_generation: false,
             emailProtection: false,
+            emailProtection_incontext_signup: false,
             inputType_identities: false,
             inputType_credentials: false,
             inputType_creditCards: false,

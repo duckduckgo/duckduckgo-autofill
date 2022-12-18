@@ -93,6 +93,7 @@ export interface AutofillFeatureToggles {
   inputType_identities?: boolean;
   inputType_creditCards?: boolean;
   emailProtection?: boolean;
+  emailProtection_incontext_signup?: boolean;
   password_generation?: boolean;
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
