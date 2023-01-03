@@ -85,7 +85,7 @@ function init () {
             return sendResponse(getAddresses())
         } else if (message.addUserData) {
             return sendResponse(addUserData(message.addUserData, sender))
-        } else if (message.messageType === 'firePixel') {
+        } else if (message.messageType === 'sendJSPixel') {
             return sendResponse(firePixel(message.options))
         }
     })

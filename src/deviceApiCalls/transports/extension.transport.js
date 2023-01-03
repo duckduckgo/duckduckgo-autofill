@@ -23,6 +23,7 @@ export class ExtensionTransport extends DeviceApiTransport {
             return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes())
         }
 
+        // TODO: unify all calls to use deviceApiCall.method instead of all these if blocks
         if (deviceApiCall instanceof SendJSPixelCall) {
             return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params.pixelName))
         }
@@ -88,7 +89,7 @@ async function extensionSpecificSendPixel (pixelName) {
     return new Promise(resolve => {
         chrome.runtime.sendMessage(
             {
-                messageType: 'firePixel',
+                messageType: 'sendJSPixel',
                 options: {
                     pixelName
                 }

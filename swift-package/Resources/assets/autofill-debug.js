@@ -8037,6 +8037,8 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 
 var _HTMLTooltip = require("../UI/HTMLTooltip.js");
 
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const POPUP_TYPES = {
@@ -8131,6 +8133,12 @@ class ExtensionInterface extends _InterfacePrototype.default {
     }, data => {
       this.storeLocalAddresses(data);
       return resolve(data);
+    }));
+  }
+
+  firePixel(pixelName) {
+    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
+      pixelName
     }));
   }
   /**
@@ -8243,7 +8251,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../UI/HTMLTooltip.js":53,"../UI/controllers/HTMLTooltipUIController.js":54,"../autofill-utils.js":60,"./InterfacePrototype.js":27}],27:[function(require,module,exports){
+},{"../UI/HTMLTooltip.js":53,"../UI/controllers/HTMLTooltipUIController.js":54,"../autofill-utils.js":60,"../deviceApiCalls/__generated__/deviceApiCalls.js":64,"./InterfacePrototype.js":27}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14600,11 +14608,14 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
       }
     };
 
+    const firePixel = this.device.firePixel.bind(this.device);
     this.registerClickableButton(this.usePersonalButton, () => {
       this.fillForm('personalAddress');
+      firePixel('autofill_personal_address');
     });
     this.registerClickableButton(this.usePrivateButton, () => {
       this.fillForm('privateAddress');
+      firePixel('autofill_private_address');
     }); // Get the alias from the extension
 
     this.device.getAddresses().then(this.updateAddresses);
@@ -16708,7 +16719,7 @@ const selectedDetailParamsSchema = _zod.z.object({
 exports.selectedDetailParamsSchema = selectedDetailParamsSchema;
 
 const sendJSPixelParamsSchema = _zod.z.object({
-  pixelName: _zod.z.literal("autofill_identity")
+  pixelName: _zod.z.union([_zod.z.literal("autofill_identity"), _zod.z.literal("autofill_private_address"), _zod.z.literal("autofill_personal_address")])
 });
 
 exports.sendJSPixelParamsSchema = sendJSPixelParamsSchema;
@@ -17094,6 +17105,11 @@ class ExtensionTransport extends _index.DeviceApiTransport {
 
     if (deviceApiCall instanceof _deviceApiCalls.GetAvailableInputTypesCall) {
       return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes());
+    } // TODO: unify all calls to use deviceApiCall.method instead of all these if blocks
+
+
+    if (deviceApiCall instanceof _deviceApiCalls.SendJSPixelCall) {
+      return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params.pixelName));
     }
 
     throw new Error('not implemented yet for ' + deviceApiCall.method);
@@ -17152,6 +17168,23 @@ async function getContentScopeConfig() {
       if (response && 'site' in response) {
         resolve(response);
       }
+    });
+  });
+}
+/**
+ * @param {import('../__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
+ */
+
+
+async function extensionSpecificSendPixel(pixelName) {
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage({
+      messageType: 'sendJSPixel',
+      options: {
+        pixelName
+      }
+    }, () => {
+      resolve(true);
     });
   });
 }
