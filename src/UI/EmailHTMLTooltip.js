@@ -37,11 +37,16 @@ ${this.options.css}
                 this.addressEl.textContent = formatDuckAddress(addresses.personalAddress)
             }
         }
+
+        const firePixel = this.device.firePixel.bind(this.device)
+
         this.registerClickableButton(this.usePersonalButton, () => {
             this.fillForm('personalAddress')
+            firePixel('autofill_personal_address')
         })
         this.registerClickableButton(this.usePrivateButton, () => {
             this.fillForm('privateAddress')
+            firePixel('autofill_private_address')
         })
 
         // Get the alias from the extension

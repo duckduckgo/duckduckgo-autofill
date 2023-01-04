@@ -654,7 +654,7 @@ export interface SelectedDetailParams {
  * Send pixels data to be fired from the native layer
  */
 export interface SendJSPixelParams {
-  pixelName: "autofill_identity";
+  pixelName: "autofill_identity" | "autofill_private_address" | "autofill_personal_address";
 }
 
 // setSize.params.json
