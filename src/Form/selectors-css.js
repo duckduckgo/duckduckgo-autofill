@@ -49,6 +49,7 @@ input[autocomplete="card-number"],
 input[name="ccnumber"],
 input[name="cc-number"],
 input[name*=card i][name*=number i],
+input[name*=cardnumber i],
 input[id*=cardnumber i],
 input[id*=card-number i],
 input[id*=card_number i]`

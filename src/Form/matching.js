@@ -485,7 +485,7 @@ class Matching {
         if (!ccFieldSelector) {
             return false
         }
-        const hasCCSelectorChild = formEl.querySelector(ccFieldSelector)
+        const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector)
         // If the form contains one of the specific selectors, we have high confidence
         if (hasCCSelectorChild) return true
 
