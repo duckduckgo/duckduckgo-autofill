@@ -133,7 +133,7 @@ class DefaultScanner {
 
         let element = input
         // traverse the DOM to search for related inputs
-        while (element.parentElement && element.parentElement !== document.body) {
+        while (element.parentElement && element.parentElement !== document.documentElement) {
             // If parent includes a form return the current element to avoid overlapping forms
             if (element.parentElement?.querySelector('form')) {
                 return element
