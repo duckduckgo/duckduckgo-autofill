@@ -2910,6 +2910,9 @@ module.exports={
   "claro.com.br": {
     "password-rules": "minlength: 8; required: lower; allowed: upper, digit, [-!@#$%&*_+=<>];"
   },
+  "classmates.com": {
+    "password-rules": "minlength: 6; maxlength: 20; allowed: lower, upper, digit, [!@#$%^&*];"
+  },
   "clien.net": {
     "password-rules": "minlength: 5; required: lower, upper; required: digit;"
   },
@@ -3222,9 +3225,6 @@ module.exports={
   "microsoft.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: special;"
   },
-  "minecraft.com": {
-    "password-rules": "minlength: 8; required: lower, upper; required: digit; allowed: ascii-printable;"
-  },
   "mintmobile.com": {
     "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: special; allowed: [!#$%&()*+:;=@[^_`{}~]];"
   },
@@ -3248,6 +3248,9 @@ module.exports={
   },
   "myhealthrecord.com": {
     "password-rules": "minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];"
+  },
+  "mysedgwick.com": {
+    "password-rules": "minlength: 8; maxlength: 16; allowed: lower; required: upper; required: digit; required: [@#%^&+=!]; allowed: [-~_$.,;]"
   },
   "mysubaru.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!#$%()*+,./:;=?@\\^`~];"
