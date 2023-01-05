@@ -6179,7 +6179,12 @@ class Form {
 
   categorizeInputs() {
     const selector = this.matching.cssSelector('FORM_INPUTS_SELECTOR');
-    this.form.querySelectorAll(selector).forEach(input => this.addInput(input));
+
+    if (this.form.matches(selector)) {
+      this.addInput(this.form);
+    } else {
+      this.form.querySelectorAll(selector).forEach(input => this.addInput(input));
+    }
   }
 
   get submitButtons() {
@@ -9328,7 +9333,7 @@ class Matching {
       return false;
     }
 
-    const hasCCSelectorChild = formEl.querySelector(ccFieldSelector); // If the form contains one of the specific selectors, we have high confidence
+    const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector); // If the form contains one of the specific selectors, we have high confidence
 
     if (hasCCSelectorChild) return true; // Read form attributes to find a signal
 
@@ -9685,7 +9690,7 @@ const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):n
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
 const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])";
 const cardName = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
-const cardNumber = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name*=card i][name*=number i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
+const cardNumber = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name*=card i][name*=number i],\ninput[name*=cardnumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
 const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name*=security i][name*=code i]";
 const expirationMonth = "\n[autocomplete=\"cc-exp-month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i]";
 const expirationYear = "\n[autocomplete=\"cc-exp-year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i]";
@@ -10379,7 +10384,7 @@ class DefaultScanner {
 
     let element = input; // traverse the DOM to search for related inputs
 
-    while (element.parentElement && element.parentElement !== document.body) {
+    while (element.parentElement && element.parentElement !== document.documentElement) {
       var _element$parentElemen;
 
       // If parent includes a form return the current element to avoid overlapping forms
@@ -12219,7 +12224,9 @@ const fireEventsOnSelect = el => {
 const setValueForSelect = (el, val) => {
   const subtype = (0, _matching.getInputSubtype)(el);
   const isMonth = subtype.includes('Month');
-  const isZeroBasedNumber = isMonth && el.options[0].value === '0' && el.options.length === 12; // Loop first through all values because they tend to be more precise
+  const isZeroBasedNumber = isMonth && el.options[0].value === '0' && el.options.length === 12;
+  const stringVal = String(val);
+  const numberVal = Number(val); // Loop first through all values because they tend to be more precise
 
   for (const option of el.options) {
     // If values for months are zero-based (Jan === 0), add one to match our data type
@@ -12231,7 +12238,7 @@ const setValueForSelect = (el, val) => {
     // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
 
 
-    if (value === String(val)) {
+    if (value === stringVal || Number(value) === numberVal) {
       if (option.selected) return false;
       option.selected = true;
       fireEventsOnSelect(el);
@@ -12240,7 +12247,7 @@ const setValueForSelect = (el, val) => {
   }
 
   for (const option of el.options) {
-    if (option.innerText === String(val)) {
+    if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
       if (option.selected) return false;
       option.selected = true;
       fireEventsOnSelect(el);
