@@ -5985,24 +5985,6 @@ class Form {
     /** @type HTMLElement */
     e === null || e === void 0 ? void 0 : e.target);
   }
-  /**
-   * Checks that the form element doesn't contain an invalid field
-   * @return {boolean}
-   */
-
-
-  isValid() {
-    if (this.form instanceof HTMLFormElement) {
-      return this.form.checkValidity();
-    } // If the container is not a valid form, we must check fields individually
-
-
-    let validity = true;
-    this.execOnInputs(input => {
-      if (input.validity && !input.validity.valid) validity = false;
-    }, 'all', false);
-    return validity;
-  }
 
   submitHandler() {
     var _this$device$postSubm, _this$device;
@@ -6014,7 +5996,6 @@ class Form {
     }
 
     if (this.handlerExecuted) return;
-    if (!this.isValid()) return;
     const values = this.getValues();
     (_this$device$postSubm = (_this$device = this.device).postSubmit) === null || _this$device$postSubm === void 0 ? void 0 : _this$device$postSubm.call(_this$device, values, this); // mark this form as being handled
 
@@ -6200,8 +6181,7 @@ class Form {
 
   attemptSubmissionIfNeeded() {
     if (!this.isLogin || // Only submit login forms
-    this.submitButtons.length > 1 || // Do not submit if we're unsure about the submit button
-    !this.isValid() // Do not submit invalid forms
+    this.submitButtons.length > 1 // Do not submit if we're unsure about the submit button
     ) return; // check for visible empty fields before attemtping submission
     // this is to avoid loops where a captcha keeps failing for the user
 
@@ -6509,7 +6489,7 @@ var _autofillUtils = require("../autofill-utils.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i);
-const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password|password confirm?/i);
+const positiveRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i);
 const conservativePositiveRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
 const strictPositiveRegex = new RegExp(/sign.?up|join|register|enroll|settings|preferences|profile|update/i);
 
@@ -6678,8 +6658,19 @@ class FormAnalyzer {
 
 
     if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
-      // If we're confident this is a submit button, it's a stronger signal
-      const strength = (0, _autofillUtils.isLikelyASubmitButton)(el) ? 20 : 2;
+      // If we're confident this is the submit button, it's a stronger signal
+      let likelyASubmit = (0, _autofillUtils.isLikelyASubmitButton)(el);
+
+      if (likelyASubmit) {
+        this.form.querySelectorAll('input[type=submit], button[type=submit]').forEach(submit => {
+          // If there is another element marked as submit and this is not, flip back to false
+          if (el.type !== 'submit' && el !== submit) {
+            likelyASubmit = false;
+          }
+        });
+      }
+
+      const strength = likelyASubmit ? 20 : 2;
       this.updateSignal({
         string,
         strength,
@@ -9684,7 +9675,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.__secret_do_not_use = exports.SUBMIT_BUTTON_SELECTOR = exports.FORM_INPUTS_SELECTOR = void 0;
-const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]),\nselect";
+const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\nselect";
 exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
 exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
