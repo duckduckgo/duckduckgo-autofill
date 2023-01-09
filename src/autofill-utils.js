@@ -126,6 +126,8 @@ const setValueForSelect = (el, val) => {
     const isMonth = subtype.includes('Month')
     const isZeroBasedNumber = isMonth &&
         el.options[0].value === '0' && el.options.length === 12
+    const stringVal = String(val)
+    const numberVal = Number(val)
 
     // Loop first through all values because they tend to be more precise
     for (const option of el.options) {
@@ -136,7 +138,7 @@ const setValueForSelect = (el, val) => {
         }
         // TODO: try to match localised month names
         // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
-        if (value === String(val)) {
+        if (value === stringVal || Number(value) === numberVal) {
             if (option.selected) return false
             option.selected = true
             fireEventsOnSelect(el)
@@ -145,7 +147,7 @@ const setValueForSelect = (el, val) => {
     }
 
     for (const option of el.options) {
-        if (option.innerText === String(val)) {
+        if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
             if (option.selected) return false
             option.selected = true
             fireEventsOnSelect(el)

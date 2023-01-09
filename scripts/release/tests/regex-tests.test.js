@@ -33,7 +33,7 @@ dependencies: [
         const exampleProjectPbxproj = `
 98A16C2928A11BDE00A6C003 /* XCRemoteSwiftPackageReference "BrowserServicesKit" */ = {
     isa = XCRemoteSwiftPackageReference;
-    repositoryURL = "https://github.com/duckduckgo/BrowserServicesKit";
+    repositoryURL = "https://github.com/DuckDuckGo/BrowserServicesKit";
     requirement = {
         kind = exactVersion;
         version = 32.0.1;

@@ -1,5 +1,9 @@
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
-import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from '../__generated__/deviceApiCalls.js'
+import {
+    GetAvailableInputTypesCall,
+    GetRuntimeConfigurationCall,
+    SendJSPixelCall
+} from '../__generated__/deviceApiCalls.js'
 import {isAutofillEnabledFromProcessedConfig} from '../../autofill-utils.js'
 import {Settings} from '../../Settings.js'
 
@@ -17,6 +21,11 @@ export class ExtensionTransport extends DeviceApiTransport {
 
         if (deviceApiCall instanceof GetAvailableInputTypesCall) {
             return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes())
+        }
+
+        // TODO: unify all calls to use deviceApiCall.method instead of all these if blocks
+        if (deviceApiCall instanceof SendJSPixelCall) {
+            return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params.pixelName))
         }
 
         throw new Error('not implemented yet for ' + deviceApiCall.method)
@@ -69,6 +78,24 @@ async function getContentScopeConfig () {
                 if (response && 'site' in response) {
                     resolve(response)
                 }
+            }
+        )
+    })
+}
+/**
+ * @param {import('../__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
+ */
+async function extensionSpecificSendPixel (pixelName) {
+    return new Promise(resolve => {
+        chrome.runtime.sendMessage(
+            {
+                messageType: 'sendJSPixel',
+                options: {
+                    pixelName
+                }
+            },
+            () => {
+                resolve(true)
             }
         )
     })

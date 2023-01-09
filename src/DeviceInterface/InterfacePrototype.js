@@ -59,7 +59,7 @@ class InterfacePrototype {
     /** @type {import('../Scanner').Scanner} */
     scanner;
 
-    /** @type {import("../UI/controllers/UIController.js").UIController} */
+    /** @type {import("../UI/controllers/UIController.js").UIController | null} */
     uiController;
 
     /** @type {import("../../packages/device-api").DeviceApi} */
@@ -73,8 +73,8 @@ class InterfacePrototype {
     constructor (config, deviceApi, settings) {
         this.globalConfig = config
         this.deviceApi = deviceApi
-        this.uiController = this.createUIController()
         this.settings = settings
+        this.uiController = null
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
@@ -242,6 +242,8 @@ class InterfacePrototype {
 
         await this.setupAutofill()
 
+        this.uiController = this.createUIController()
+
         // this is the temporary measure to support windows whilst we still have 'setupAutofill'
         // eventually all interfaces will use this
         if (!this.isEnabledViaSettings()) {
@@ -293,7 +295,7 @@ class InterfacePrototype {
         const isEnabled = await this.isEnabled()
         if (!isEnabled) return
         if (document.readyState === 'complete') {
-            this.startInit()
+            await this.startInit()
         } else {
             window.addEventListener('load', () => {
                 this.startInit()
@@ -408,7 +410,7 @@ class InterfacePrototype {
         // for example, generated passwords may get appended here
         const processedTopContext = this.preAttachTooltip(topContextData, input, form)
 
-        this.uiController.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this, trigger})
+        this.uiController?.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this, trigger})
 
         if (trigger === 'autoprompt') {
             this.autopromptFired = true
@@ -471,11 +473,11 @@ class InterfacePrototype {
     }
 
     isTooltipActive () {
-        return this.uiController.isActive?.() ?? false
+        return this.uiController?.isActive?.() ?? false
     }
 
     removeTooltip () {
-        return this.uiController.removeTooltip?.('interface')
+        return this.uiController?.removeTooltip?.('interface')
     }
 
     async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
@@ -567,7 +569,7 @@ class InterfacePrototype {
             this.storeLocalCredentials(credentials)
 
             // rerender the tooltip
-            this.uiController.updateItems(credentials)
+            this.uiController?.updateItems(credentials)
             // If the tooltip is open on an autofill type that's not available, close it
             const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
             if (!availableInputTypes.credentials?.[currentInputSubtype]) {

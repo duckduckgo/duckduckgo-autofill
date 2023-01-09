@@ -93,6 +93,7 @@ export interface AutofillFeatureToggles {
   inputType_identities?: boolean;
   inputType_creditCards?: boolean;
   emailProtection?: boolean;
+  emailProtection_incontext_signup?: boolean;
   password_generation?: boolean;
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
@@ -496,18 +497,16 @@ export interface RuntimeConfiguration {
   userPreferences: UserPreferences;
 }
 export interface ContentScope {
-  features: ContentScopeFeatures;
-  unprotectedTemporary: unknown[];
-}
-export interface ContentScopeFeatures {
-  [k: string]: {
-    exceptions: unknown[];
-    state: "enabled" | "disabled";
-    settings?: ContentScopeFeaturesItem_Settings;
+  features: {
+    [k: string]: {
+      exceptions: unknown[];
+      state: "enabled" | "disabled";
+      settings?: {
+        [k: string]: unknown;
+      };
+    };
   };
-}
-export interface ContentScopeFeaturesItem_Settings {
-  [k: string]: unknown;
+  unprotectedTemporary: unknown[];
 }
 export interface UserPreferences {
   globalPrivacyControlValue?: boolean;
@@ -606,18 +605,16 @@ export interface RuntimeConfiguration {
   userPreferences: UserPreferences;
 }
 export interface ContentScope {
-  features: ContentScopeFeatures;
-  unprotectedTemporary: unknown[];
-}
-export interface ContentScopeFeatures {
-  [k: string]: {
-    exceptions: unknown[];
-    state: "enabled" | "disabled";
-    settings?: ContentScopeFeaturesItem_Settings;
+  features: {
+    [k: string]: {
+      exceptions: unknown[];
+      state: "enabled" | "disabled";
+      settings?: {
+        [k: string]: unknown;
+      };
+    };
   };
-}
-export interface ContentScopeFeaturesItem_Settings {
-  [k: string]: unknown;
+  unprotectedTemporary: unknown[];
 }
 export interface UserPreferences {
   globalPrivacyControlValue?: boolean;
@@ -653,7 +650,7 @@ export interface SelectedDetailParams {
  * Send pixels data to be fired from the native layer
  */
 export interface SendJSPixelParams {
-  pixelName: "autofill_identity";
+  pixelName: "autofill_identity" | "autofill_private_address" | "autofill_personal_address";
 }
 
 // setSize.params.json

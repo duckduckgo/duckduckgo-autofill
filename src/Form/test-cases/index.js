@@ -253,5 +253,8 @@ export default [
     // Issues with buttons here is due to lots of hidden forms and weird markup, they don't affect the actual UX
     { html: 'boardgamearena_signup.html', expectedFailures: ['birthday'], expectedSubmitFalsePositives: 2, expectedSubmitFalseNegatives: 5 },
     { html: 'eventbrite_checkout-signup.html' },
-    { html: 'eventbrite_fake-signup.html' }
+    { html: 'eventbrite_fake-signup.html' },
+    { html: 'ryanair_cc-card-name.html' },
+    { html: 'paypal_otp.html' },
+    { html: 'postnews_login.html' }
 ]

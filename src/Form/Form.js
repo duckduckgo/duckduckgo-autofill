@@ -99,31 +99,12 @@ class Form {
         return this.form.contains(document.activeElement) || this.form.contains(/** @type HTMLElement */(e?.target))
     }
 
-    /**
-     * Checks that the form element doesn't contain an invalid field
-     * @return {boolean}
-     */
-    isValid () {
-        if (this.form instanceof HTMLFormElement) {
-            return this.form.checkValidity()
-        }
-
-        // If the container is not a valid form, we must check fields individually
-        let validity = true
-        this.execOnInputs((input) => {
-            if (input.validity && !input.validity.valid) validity = false
-        }, 'all', false)
-        return validity
-    }
-
     submitHandler (via = 'unknown') {
         if (this.device.globalConfig.isDDGTestMode) {
             console.log('Form.submitHandler via:', via, this)
         }
 
         if (this.handlerExecuted) return
-
-        if (!this.isValid()) return
 
         const values = this.getValues()
 
@@ -284,7 +265,11 @@ class Form {
 
     categorizeInputs () {
         const selector = this.matching.cssSelector('FORM_INPUTS_SELECTOR')
-        this.form.querySelectorAll(selector).forEach(input => this.addInput(input))
+        if (this.form.matches(selector)) {
+            this.addInput(this.form)
+        } else {
+            this.form.querySelectorAll(selector).forEach(input => this.addInput(input))
+        }
     }
 
     get submitButtons () {
@@ -300,8 +285,7 @@ class Form {
     attemptSubmissionIfNeeded () {
         if (
             !this.isLogin || // Only submit login forms
-            this.submitButtons.length > 1 || // Do not submit if we're unsure about the submit button
-            !this.isValid() // Do not submit invalid forms
+            this.submitButtons.length > 1 // Do not submit if we're unsure about the submit button
         ) return
 
         // check for visible empty fields before attemtping submission

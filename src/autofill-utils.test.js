@@ -46,6 +46,8 @@ const renderInputWithSelect = () => {
     <select name="country">
         <option value="GB">Great Britain</option>
         <option value="US">USA</option>
+        <option value="02">February</option>
+        <option value="march">03</option>
     </select>
     `
 
@@ -58,23 +60,40 @@ const renderInputWithSelect = () => {
     select.addEventListener('click', () => events.push('click'))
     select.addEventListener('change', () => events.push('change'))
 
+    // Needed to bypass the fact that jsdom has innerText = undefined
+    for (const option of select.options) {
+        option.innerText = option.textContent || ''
+    }
+
     return {select, events}
 }
 
 describe('value setting on selects', function () {
+    const eventsToFireOnSelect = [
+        'mousedown',
+        'mouseup',
+        'click',
+        'change',
+        'mousedown',
+        'mouseup',
+        'click',
+        'change'
+    ]
+
     it('should set value & dispatch events when value has changed', () => {
         const {select, events} = renderInputWithSelect()
         setValue(select, 'US')
-        expect(events).toStrictEqual([
-            'mousedown',
-            'mouseup',
-            'click',
-            'change',
-            'mousedown',
-            'mouseup',
-            'click',
-            'change'
-        ])
+        expect(events).toStrictEqual(eventsToFireOnSelect)
+    })
+    it('should set value when the value is expressed with a leading 0 like 02 for February', () => {
+        const {select, events} = renderInputWithSelect()
+        setValue(select, '2')
+        expect(select.value).toBe('02')
+        expect(events).toStrictEqual(eventsToFireOnSelect)
+
+        setValue(select, '3')
+        expect(select.value).toBe('march')
+        expect(events).toStrictEqual([...eventsToFireOnSelect, ...eventsToFireOnSelect])
     })
     it('should not fire any events when the value has not changed', () => {
         const {select, events} = renderInputWithSelect()

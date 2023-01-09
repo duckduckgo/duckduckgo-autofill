@@ -57,8 +57,12 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         if (signedIn) {
             await this.getAddresses()
         }
+    }
+
+    async postInit () {
         // setup overlay API pieces
         this.overlay.showImmediately()
+        super.postInit()
     }
 
     /**
@@ -87,7 +91,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         this.storeLocalCredentials(credentials)
 
         // rerender the tooltip
-        this.uiController.updateItems(credentials)
+        this.uiController?.updateItems(credentials)
     }
 
     firePixel (pixelName) {

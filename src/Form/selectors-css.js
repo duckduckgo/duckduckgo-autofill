@@ -1,5 +1,5 @@
 const FORM_INPUTS_SELECTOR = `
-input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]),
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
 select`
 
 const SUBMIT_BUTTON_SELECTOR = `
@@ -49,6 +49,7 @@ input[autocomplete="card-number"],
 input[name="ccnumber"],
 input[name="cc-number"],
 input[name*=card i][name*=number i],
+input[name*=cardnumber i],
 input[id*=cardnumber i],
 input[id*=card-number i],
 input[id*=card_number i]`
