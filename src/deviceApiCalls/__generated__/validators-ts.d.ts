@@ -497,18 +497,16 @@ export interface RuntimeConfiguration {
   userPreferences: UserPreferences;
 }
 export interface ContentScope {
-  features: ContentScopeFeatures;
-  unprotectedTemporary: unknown[];
-}
-export interface ContentScopeFeatures {
-  [k: string]: {
-    exceptions: unknown[];
-    state: "enabled" | "disabled";
-    settings?: ContentScopeFeaturesItem_Settings;
+  features: {
+    [k: string]: {
+      exceptions: unknown[];
+      state: "enabled" | "disabled";
+      settings?: {
+        [k: string]: unknown;
+      };
+    };
   };
-}
-export interface ContentScopeFeaturesItem_Settings {
-  [k: string]: unknown;
+  unprotectedTemporary: unknown[];
 }
 export interface UserPreferences {
   globalPrivacyControlValue?: boolean;
@@ -607,18 +605,16 @@ export interface RuntimeConfiguration {
   userPreferences: UserPreferences;
 }
 export interface ContentScope {
-  features: ContentScopeFeatures;
-  unprotectedTemporary: unknown[];
-}
-export interface ContentScopeFeatures {
-  [k: string]: {
-    exceptions: unknown[];
-    state: "enabled" | "disabled";
-    settings?: ContentScopeFeaturesItem_Settings;
+  features: {
+    [k: string]: {
+      exceptions: unknown[];
+      state: "enabled" | "disabled";
+      settings?: {
+        [k: string]: unknown;
+      };
+    };
   };
-}
-export interface ContentScopeFeaturesItem_Settings {
-  [k: string]: unknown;
+  unprotectedTemporary: unknown[];
 }
 export interface UserPreferences {
   globalPrivacyControlValue?: boolean;

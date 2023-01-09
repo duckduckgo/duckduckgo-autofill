@@ -12865,7 +12865,7 @@ exports.SendJSPixelCall = SendJSPixelCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
 const credentialsSchema = null;
 exports.credentialsSchema = credentialsSchema;
 const availableInputTypesSchema = null;
@@ -12892,12 +12892,12 @@ const getAutofillInitDataResponseSchema = null;
 exports.getAutofillInitDataResponseSchema = getAutofillInitDataResponseSchema;
 const getAvailableInputTypesResultSchema = null;
 exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
-const contentScopeFeaturesItemSettingsSchema = null;
-exports.contentScopeFeaturesItemSettingsSchema = contentScopeFeaturesItemSettingsSchema;
+const contentScopeSchema = null;
+exports.contentScopeSchema = contentScopeSchema;
 const userPreferencesSchema = null;
 exports.userPreferencesSchema = userPreferencesSchema;
-const contentScopeFeaturesSchema = null;
-exports.contentScopeFeaturesSchema = contentScopeFeaturesSchema;
+const runtimeConfigurationSchema = null;
+exports.runtimeConfigurationSchema = runtimeConfigurationSchema;
 const selectedDetailParamsSchema = null;
 exports.selectedDetailParamsSchema = selectedDetailParamsSchema;
 const sendJSPixelParamsSchema = null;
@@ -12914,14 +12914,10 @@ const checkCredentialsProviderStatusResultSchema = null;
 exports.checkCredentialsProviderStatusResultSchema = checkCredentialsProviderStatusResultSchema;
 const getAutofillDataRequestSchema = null;
 exports.getAutofillDataRequestSchema = getAutofillDataRequestSchema;
-const contentScopeSchema = null;
-exports.contentScopeSchema = contentScopeSchema;
-const runtimeConfigurationSchema = null;
-exports.runtimeConfigurationSchema = runtimeConfigurationSchema;
-const storeFormDataSchema = null;
-exports.storeFormDataSchema = storeFormDataSchema;
 const getRuntimeConfigurationResponseSchema = null;
 exports.getRuntimeConfigurationResponseSchema = getRuntimeConfigurationResponseSchema;
+const storeFormDataSchema = null;
+exports.storeFormDataSchema = storeFormDataSchema;
 
 },{}],58:[function(require,module,exports){
 "use strict";

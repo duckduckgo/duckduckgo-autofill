@@ -124,7 +124,14 @@ export const getAvailableInputTypesResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
-export const contentScopeFeaturesItemSettingsSchema = z.record(z.unknown());
+export const contentScopeSchema = z.object({
+    features: z.record(z.object({
+        exceptions: z.array(z.unknown()),
+        state: z.union([z.literal("enabled"), z.literal("disabled")]),
+        settings: z.record(z.unknown()).optional()
+    })),
+    unprotectedTemporary: z.array(z.unknown())
+});
 
 export const userPreferencesSchema = z.object({
     globalPrivacyControlValue: z.boolean().optional(),
@@ -138,11 +145,11 @@ export const userPreferencesSchema = z.object({
     }))
 });
 
-export const contentScopeFeaturesSchema = z.record(z.object({
-    exceptions: z.array(z.unknown()),
-    state: z.union([z.literal("enabled"), z.literal("disabled")]),
-    settings: contentScopeFeaturesItemSettingsSchema.optional()
-}));
+export const runtimeConfigurationSchema = z.object({
+    contentScope: contentScopeSchema,
+    userUnprotectedDomains: z.array(z.string()),
+    userPreferences: userPreferencesSchema
+});
 
 export const selectedDetailParamsSchema = z.object({
     data: z.record(z.unknown()),
@@ -188,23 +195,12 @@ export const getAutofillDataRequestSchema = z.object({
     triggerContext: triggerContextSchema.optional()
 });
 
-export const contentScopeSchema = z.object({
-    features: contentScopeFeaturesSchema,
-    unprotectedTemporary: z.array(z.unknown())
-});
-
-export const runtimeConfigurationSchema = z.object({
-    contentScope: contentScopeSchema,
-    userUnprotectedDomains: z.array(z.string()),
-    userPreferences: userPreferencesSchema
-});
-
-export const storeFormDataSchema = z.object({
-    credentials: outgoingCredentialsSchema.optional()
-});
-
 export const getRuntimeConfigurationResponseSchema = z.object({
     type: z.literal("getRuntimeConfigurationResponse").optional(),
     success: runtimeConfigurationSchema.optional(),
     error: genericErrorSchema.optional()
+});
+
+export const storeFormDataSchema = z.object({
+    credentials: outgoingCredentialsSchema.optional()
 });

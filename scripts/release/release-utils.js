@@ -14,7 +14,7 @@ function replaceInString (string, searchRegex, replace) {
         throw new Error(errorMsg)
     }
     return string.replaceAll(
-        new RegExp(searchRegex.source, 'g'),
+        new RegExp(searchRegex.source, 'gi'),
         replace
     )
 }
@@ -61,7 +61,8 @@ function wrapInLi (content) {
  */
 function updateProjectPbxproj (projectPbxprojContent, commit) {
     const bskPackageRegex = new RegExp(
-        /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = \d+.\d+.\d+;)/
+        /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = \d+.\d+.\d+;)/,
+        'i'
     )
 
     return replaceInString(
@@ -79,7 +80,8 @@ function updateProjectPbxproj (projectPbxprojContent, commit) {
  */
 function updatePackageSwift (packageSwiftContent, version) {
     const autofillPackageSwiftRegex = new RegExp(
-        /(\.package\(name: "Autofill", url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", \.exact\(")(.+)("\)\),)/
+        /(\.package\(name: "Autofill", url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", \.exact\(")(.+)("\)\),)/,
+        'i'
     )
 
     return replaceInString(
@@ -98,7 +100,8 @@ function updatePackageSwift (packageSwiftContent, version) {
  */
 function updatePackageResolved (packageResolvedContent, version, commit) {
     const autofillPackageResolvedRegex = new RegExp(
-        /("package": "Autofill",\s+"repositoryURL": "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state": {\s+"branch": null,\s+"revision": ")(\w+)(",\s+"version": ")([\d.]+)("\s+})/
+        /("package": "Autofill",\s+"repositoryURL": "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state": {\s+"branch": null,\s+"revision": ")(\w+)(",\s+"version": ")([\d.]+)("\s+})/,
+        'i'
     )
 
     return replaceInString(

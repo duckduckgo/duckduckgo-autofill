@@ -16541,7 +16541,7 @@ exports.SendJSPixelCall = SendJSPixelCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
 
 var _zod = require("zod");
 
@@ -16695,9 +16695,16 @@ const getAvailableInputTypesResultSchema = _zod.z.object({
 
 exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 
-const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.unknown());
+const contentScopeSchema = _zod.z.object({
+  features: _zod.z.record(_zod.z.object({
+    exceptions: _zod.z.array(_zod.z.unknown()),
+    state: _zod.z.union([_zod.z.literal("enabled"), _zod.z.literal("disabled")]),
+    settings: _zod.z.record(_zod.z.unknown()).optional()
+  })),
+  unprotectedTemporary: _zod.z.array(_zod.z.unknown())
+});
 
-exports.contentScopeFeaturesItemSettingsSchema = contentScopeFeaturesItemSettingsSchema;
+exports.contentScopeSchema = contentScopeSchema;
 
 const userPreferencesSchema = _zod.z.object({
   globalPrivacyControlValue: _zod.z.boolean().optional(),
@@ -16713,13 +16720,13 @@ const userPreferencesSchema = _zod.z.object({
 
 exports.userPreferencesSchema = userPreferencesSchema;
 
-const contentScopeFeaturesSchema = _zod.z.record(_zod.z.object({
-  exceptions: _zod.z.array(_zod.z.unknown()),
-  state: _zod.z.union([_zod.z.literal("enabled"), _zod.z.literal("disabled")]),
-  settings: contentScopeFeaturesItemSettingsSchema.optional()
-}));
+const runtimeConfigurationSchema = _zod.z.object({
+  contentScope: contentScopeSchema,
+  userUnprotectedDomains: _zod.z.array(_zod.z.string()),
+  userPreferences: userPreferencesSchema
+});
 
-exports.contentScopeFeaturesSchema = contentScopeFeaturesSchema;
+exports.runtimeConfigurationSchema = runtimeConfigurationSchema;
 
 const selectedDetailParamsSchema = _zod.z.object({
   data: _zod.z.record(_zod.z.unknown()),
@@ -16781,27 +16788,6 @@ const getAutofillDataRequestSchema = _zod.z.object({
 
 exports.getAutofillDataRequestSchema = getAutofillDataRequestSchema;
 
-const contentScopeSchema = _zod.z.object({
-  features: contentScopeFeaturesSchema,
-  unprotectedTemporary: _zod.z.array(_zod.z.unknown())
-});
-
-exports.contentScopeSchema = contentScopeSchema;
-
-const runtimeConfigurationSchema = _zod.z.object({
-  contentScope: contentScopeSchema,
-  userUnprotectedDomains: _zod.z.array(_zod.z.string()),
-  userPreferences: userPreferencesSchema
-});
-
-exports.runtimeConfigurationSchema = runtimeConfigurationSchema;
-
-const storeFormDataSchema = _zod.z.object({
-  credentials: outgoingCredentialsSchema.optional()
-});
-
-exports.storeFormDataSchema = storeFormDataSchema;
-
 const getRuntimeConfigurationResponseSchema = _zod.z.object({
   type: _zod.z.literal("getRuntimeConfigurationResponse").optional(),
   success: runtimeConfigurationSchema.optional(),
@@ -16809,6 +16795,12 @@ const getRuntimeConfigurationResponseSchema = _zod.z.object({
 });
 
 exports.getRuntimeConfigurationResponseSchema = getRuntimeConfigurationResponseSchema;
+
+const storeFormDataSchema = _zod.z.object({
+  credentials: outgoingCredentialsSchema.optional()
+});
+
+exports.storeFormDataSchema = storeFormDataSchema;
 
 },{"zod":12}],66:[function(require,module,exports){
 "use strict";
