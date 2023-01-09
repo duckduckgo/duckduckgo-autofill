@@ -3219,6 +3219,9 @@ module.exports={
   "medicare.gov": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@!$%^*()];"
   },
+  "member.everbridge.net": {
+    "password-rules": "minlength: 8; required: lower, upper; required: digit; allowed: [!@#$%^&*()];"
+  },
   "metlife.com": {
     "password-rules": "minlength: 6; maxlength: 20;"
   },
