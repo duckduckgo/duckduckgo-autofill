@@ -136,7 +136,6 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.promptWasShown('ios')
                 await login.assertUsernameFilled(personalAddress)
                 await login.assertPasswordEmpty()
-                await login.clickContinue()
                 await login.clickIntoPasswordInput()
                 await login.assertPasswordFilled(password)
                 await login.assertFormSubmitted()
