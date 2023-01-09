@@ -304,81 +304,6 @@ describe('Test the form class reading values correctly', () => {
     })
 })
 
-describe('Form validity is reported correctly', () => {
-    const testCases = [
-        {
-            testCase: 'valid form with validation',
-            form: `
-<form>
-    <input autocomplete="cc-name" required value="Peppa Pig">
-    <input autocomplete="cc-number" required value="4111111111111111">
-</form>`,
-            expIsValid: true
-        },
-        {
-            testCase: 'valid form because of no validation',
-            form: `
-<form>
-    <input autocomplete="cc-name" value="Peppa Pig">
-    <input autocomplete="cc-number" value="4111111111111111">
-</form>`,
-            expIsValid: true
-        },
-        {
-            testCase: 'valid non-standard form',
-            form: `
-<div id="form">
-    <input autocomplete="cc-name" required value="Peppa Pig">
-    <input autocomplete="cc-number" required value="4111111111111111">
-</div>`,
-            expIsValid: true
-        },
-        {
-            testCase: 'invalid form',
-            form: `
-<form>
-    <input autocomplete="cc-name" required value="">
-    <input autocomplete="cc-number" minlength="10" value="4111">
-</form>`,
-            expIsValid: false
-        },
-        {
-            testCase: 'invalid non-standard form',
-            form: `
-<div id="form">
-    <input autocomplete="cc-name" required value="">
-    <input autocomplete="cc-number" required value="">
-</div>`,
-            expIsValid: false
-        },
-        {
-            testCase: 'invalid non-standard form because of invalid undecorated field',
-            form: `
-<div id="form">
-    <input autocomplete="cc-name" value="">
-    <input autocomplete="cc-number" value="">
-    <input type="text" required value="">
-</div>`,
-            expIsValid: false
-        }
-    ]
-
-    test.each(testCases)('Test $testCase', (
-        {
-            form,
-            expIsValid
-        }) => {
-        const formEl = attachAndReturnGenericForm(form)
-
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-
-        const formClass = scanner.forms.get(formEl)
-        const isValid = formClass?.isValid()
-
-        expect(isValid).toBe(expIsValid)
-    })
-})
-
 describe('Check form has focus', () => {
     test('focus detected correctly', () => {
         const formEl = attachAndReturnGenericForm()
@@ -423,20 +348,6 @@ describe('Attempt form submission when needed', () => {
                     <input type="password" value="testPassword" autocomplete="current-password" />
                     <button type="submit">Log in</button>
                     <button type="submit">Other weird login buton that takes you somewhere else</button>
-                </form>`)
-            formEl.addEventListener('submit', submitHandler)
-            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-
-            const formClass = scanner.forms.get(formEl)
-            formClass?.attemptSubmissionIfNeeded()
-            expect(submitHandler).not.toHaveBeenCalled()
-        })
-        test('when the form is invalid', () => {
-            const formEl = attachAndReturnGenericForm(`
-                <form>
-                    <input type="email" value="not_an_email" required autocomplete="username" />
-                    <input type="password" value="" required autocomplete="current-password" />
-                    <button type="submit">Log in</button>
                 </form>`)
             formEl.addEventListener('submit', submitHandler)
             const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)

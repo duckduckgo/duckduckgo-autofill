@@ -5,7 +5,7 @@ import { getText, isLikelyASubmitButton } from '../autofill-utils.js'
 
 const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i)
 const positiveRegex = new RegExp(
-    /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat|reset) password|password confirm?/i
+    /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i
 )
 const conservativePositiveRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
 const strictPositiveRegex = new RegExp(/sign.?up|join|register|enroll|settings|preferences|profile|update/i)
@@ -166,8 +166,19 @@ class FormAnalyzer {
 
         // check button contents
         if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
-            // If we're confident this is a submit button, it's a stronger signal
-            const strength = isLikelyASubmitButton(el) ? 20 : 2
+            // If we're confident this is the submit button, it's a stronger signal
+            let likelyASubmit = isLikelyASubmitButton(el)
+            if (likelyASubmit) {
+                this.form.querySelectorAll('input[type=submit], button[type=submit]').forEach(
+                    (submit) => {
+                        // If there is another element marked as submit and this is not, flip back to false
+                        if (el.type !== 'submit' && el !== submit) {
+                            likelyASubmit = false
+                        }
+                    }
+                )
+            }
+            const strength = likelyASubmit ? 20 : 2
             this.updateSignal({string, strength, signalType: `submit: ${string}`})
         }
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
