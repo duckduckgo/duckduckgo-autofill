@@ -45,7 +45,7 @@ async function generateFiles (baseDir) {
     const constants = {
         dirs: { schemas: join(baseDir, 'schemas') },
         outputs: {
-            ts: join(BASE_OUTPUT, 'validators-ts.d.ts'),
+            ts: join(BASE_OUTPUT, 'validators-ts.ts'),
             validators: join(BASE_OUTPUT, 'validators.zod.js'),
             apiCalls: join(BASE_OUTPUT, 'deviceApiCalls.js')
         },
