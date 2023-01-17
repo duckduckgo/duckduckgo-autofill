@@ -65,6 +65,9 @@ class InterfacePrototype {
     /** @type {import("../../packages/device-api").DeviceApi} */
     deviceApi;
 
+    /** @type {boolean} */
+    alreadyInitialized;
+
     /**
      * @param {GlobalConfig} config
      * @param {import("../../packages/device-api").DeviceApi} deviceApi
@@ -78,6 +81,7 @@ class InterfacePrototype {
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
+        this.alreadyInitialized = false
     }
 
     /**
@@ -236,6 +240,8 @@ class InterfacePrototype {
     }
 
     async startInit () {
+        if (this.alreadyInitialized) return
+
         await this.refreshSettings()
 
         this.addDeviceListeners()
@@ -256,6 +262,8 @@ class InterfacePrototype {
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms)
         }
+
+        this.alreadyInitialized = true
     }
 
     /**
@@ -294,12 +302,19 @@ class InterfacePrototype {
     async init () {
         const isEnabled = await this.isEnabled()
         if (!isEnabled) return
+
+        const handler = async () => {
+            if (document.readyState === 'complete') {
+                await this.startInit()
+                window.removeEventListener('load', handler)
+                document.removeEventListener('readystatechange', handler)
+            }
+        }
         if (document.readyState === 'complete') {
             await this.startInit()
         } else {
-            window.addEventListener('load', () => {
-                this.startInit()
-            })
+            window.addEventListener('load', handler)
+            document.addEventListener('readystatechange', handler)
         }
     }
 
