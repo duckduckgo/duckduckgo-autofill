@@ -6,8 +6,9 @@ class DataHTMLTooltip extends HTMLTooltip {
      * @param {InputTypeConfigs} config
      * @param {TooltipItemRenderer[]} items
      * @param {{onSelect(id:string): void}} callbacks
+     * @param {import("../DeviceInterface/InterfacePrototype").default} device
      */
-    render (config, items, callbacks) {
+    render (config, items, callbacks, device) {
         const {wrapperClass, css} = this.options
         let hasAddedSeparator = false
         // Only show an hr above the first duck address button, but it can be either personal or private
@@ -50,6 +51,17 @@ ${css}
         this.autofillButtons.forEach((btn) => {
             this.registerClickableButton(btn, () => {
                 callbacks.onSelect(btn.id)
+
+                switch (btn.id) {
+                case 'personalAddress':
+                    device.firePixel('autofill_personal_address')
+                    break
+                case 'privateAddress':
+                    device.firePixel('autofill_private_address')
+                    break
+                default:
+                    break
+                }
             })
         })
 
