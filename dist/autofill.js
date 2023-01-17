@@ -2811,6 +2811,9 @@ module.exports={
   "astonmartinf1.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;"
   },
+  "auth.readymag.com": {
+    "password-rules": "minlength: 8; maxlength: 128; required: lower; required: upper; allowed: special;"
+  },
   "autify.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!\"#$%&'()*+,./:;<=>?@[^_`{|}~]];"
   },

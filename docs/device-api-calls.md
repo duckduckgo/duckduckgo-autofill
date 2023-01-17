@@ -185,7 +185,7 @@ are generated, as this can help you prevent typos and other human errors.
 
 - `src/deviceApiCalls/__generated__/deviceApiCalls.js`
   - This contains the class definitions that you'll use directly when making API calls
-- `src/deviceApiCalls/__generated__/validators-ts.d.ts`
+- `src/deviceApiCalls/__generated__/validators-ts.ts`
   - This contains the auto-generated Typescript definitions from the schema files
 - `src/deviceApiCalls/__generated__/validators.zod.js`
   - This contains the auto-generated validators that are referenced in `deviceApiCalls.js`
