@@ -8575,6 +8575,7 @@ class InterfacePrototype {
 
   async startInit() {
     if (this.alreadyInitialized) return;
+    this.alreadyInitialized = true;
     await this.refreshSettings();
     this.addDeviceListeners();
     await this.setupAutofill();
@@ -8591,8 +8592,6 @@ class InterfacePrototype {
     if (this.settings.featureToggles.credentials_saving) {
       (0, _initFormSubmissionsApi.initFormSubmissionsApi)(this.scanner.forms);
     }
-
-    this.alreadyInitialized = true;
   }
   /**
    * This is to aid the migration to all platforms using Settings.enabled.
@@ -9667,6 +9666,7 @@ class Form {
       }
     });
     this.categorizeInputs();
+    console.log('rattone', this);
 
     if (shouldAutoprompt) {
       this.promptLoginIfNeeded();

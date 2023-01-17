@@ -242,6 +242,8 @@ class InterfacePrototype {
     async startInit () {
         if (this.alreadyInitialized) return
 
+        this.alreadyInitialized = true
+
         await this.refreshSettings()
 
         this.addDeviceListeners()
@@ -262,8 +264,6 @@ class InterfacePrototype {
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms)
         }
-
-        this.alreadyInitialized = true
     }
 
     /**
