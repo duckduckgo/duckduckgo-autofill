@@ -9666,7 +9666,6 @@ class Form {
       }
     });
     this.categorizeInputs();
-    console.log('rattone', this);
 
     if (shouldAutoprompt) {
       this.promptLoginIfNeeded();
