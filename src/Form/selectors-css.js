@@ -17,7 +17,6 @@ input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=f
 input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
 input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
-input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[type=email],
 input[type=text][aria-label*=email i]:not([aria-label*=search i]),
 input:not([type])[aria-label*=email i]:not([aria-label*=search i]),
@@ -66,21 +65,27 @@ input[name*=security i][name*=code i]`
 
 const expirationMonth = `
 [autocomplete="cc-exp-month"],
+[autocomplete="cc_exp_month"],
 [name="ccmonth"],
 [name="ppw-expirationDate_month"],
 [name=cardExpiryMonth],
 [name*=ExpDate_Month i],
 [name*=expiration i][name*=month i],
-[id*=expiration i][id*=month i]`
+[id*=expiration i][id*=month i],
+[name*=cc-exp-month i],
+[name*=cc_exp_month i]`
 
 const expirationYear = `
 [autocomplete="cc-exp-year"],
+[autocomplete="cc_exp_year"],
 [name="ccyear"],
 [name="ppw-expirationDate_year"],
 [name=cardExpiryYear],
 [name*=ExpDate_Year i],
 [name*=expiration i][name*=year i],
-[id*=expiration i][id*=year i]`
+[id*=expiration i][id*=year i],
+[name*=cc-exp-year i],
+[name*=cc_exp_year i]`
 
 const expiration = `
 [autocomplete="cc-exp"],
@@ -190,7 +195,8 @@ const username = [
     `input[autocomplete=username]`,
     `input[name*=accountid i]`,
     `input[name="j_username" i]`,
-    `input[id="username" i]`
+    `input[id="username" i]`,
+    `input[placeholder^="username" i]`
 ]
 
 // todo: these are still used directly right now, mostly in scanForInputs
