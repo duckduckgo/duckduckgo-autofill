@@ -11,17 +11,16 @@ a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`
 
 const email = `
-input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
 input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
-input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]),
-input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),
+input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
 input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[type=email],
 input[type=text][aria-label*=email i]:not([aria-label*=search i]),
 input:not([type])[aria-label*=email i]:not([aria-label*=search i]),
-input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[name=username][type=email],
 input[autocomplete=email]`
 
@@ -158,21 +157,21 @@ const addressCountryCode = [
 
 const birthdayDay = `
 [name=bday-day],
-[name=birthday_day], [name=birthday-day],
+[name*=birthday_day i], [name*=birthday-day i],
 [name=date_of_birth_day], [name=date-of-birth-day],
 [name^=birthdate_d], [name^=birthdate-d],
 [aria-label="birthday" i][placeholder="day" i]`
 
 const birthdayMonth = `
 [name=bday-month],
-[name=birthday_month], [name=birthday-month],
+[name*=birthday_month i], [name*=birthday-month i],
 [name=date_of_birth_month], [name=date-of-birth-month],
 [name^=birthdate_m], [name^=birthdate-m],
 select[name="mm"]`
 
 const birthdayYear = `
 [name=bday-year],
-[name=birthday_year], [name=birthday-year],
+[name*=birthday_year i], [name*=birthday-year i],
 [name=date_of_birth_year], [name=date-of-birth-year],
 [name^=birthdate_y], [name^=birthdate-y],
 [aria-label="birthday" i][placeholder="year" i]`
@@ -183,7 +182,9 @@ const username = [
     // fix for `aa.com`
     `input[name="loginId" i]`,
     // fix for https://online.mbank.pl/pl/Login
-    `input[name="userID" i]`,
+    `input[name="userid" i]`,
+    `input[name="user_id" i]`,
+    `input[name="user-id" i]`,
     `input[id="login-id" i]`,
     `input[name=accountname i]`,
     `input[autocomplete=username]`,

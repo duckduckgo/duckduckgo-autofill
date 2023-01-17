@@ -8,7 +8,7 @@ const signupRegex = new RegExp(
     /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i
 )
 const conservativeSignupRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
-const strictSignupRegex = new RegExp(/sign.?up|join|register|enroll|settings|preferences|profile|update/i)
+const strictSignupRegex = new RegExp(/sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update/i)
 
 class FormAnalyzer {
     /** @type HTMLElement */
