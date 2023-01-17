@@ -47,6 +47,7 @@ class Form {
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
+        this.isHybrid = this.formAnalyzer.isHybrid
         this.device = deviceInterface
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
@@ -332,8 +333,9 @@ class Form {
 
         const opts = {
             isLogin: this.isLogin,
+            isHybrid: this.isHybrid,
             hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
-            isMobile: this.device.globalConfig.isMobileApp
+            supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
         }
         this.matching.setInputType(input, this.form, opts)
 

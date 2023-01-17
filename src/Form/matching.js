@@ -209,8 +209,9 @@ class Matching {
             }
 
             if (this.subtypeFromMatchers('email', input)) {
-                if (opts.isLogin) {
-                    if (!opts.isMobile && !opts.hasCredentials) {
+                if (opts.isLogin || opts.isHybrid) {
+                    // Show identities when supported and there are no credentials
+                    if (opts.supportsIdentitiesAutofill && !opts.hasCredentials) {
                         return 'identities.emailAddress'
                     }
 
@@ -237,8 +238,9 @@ class Matching {
     /**
      * @typedef {{
      *   isLogin?: boolean,
+     *   isHybrid?: boolean,
      *   hasCredentials?: boolean,
-     *   isMobile?: boolean
+     *   supportsIdentitiesAutofill?: boolean
      * }} SetInputTypeOpts
      */
 

@@ -34,6 +34,12 @@ class FormAnalyzer {
          */
         this.signals = []
 
+        /**
+         * A hybrid form can be either a login or a signup, the site uses a single form for both
+         * @type {boolean}
+         */
+        this.isHybrid = false
+
         // Avoid autofill on our signup page
         if (window.location.href.match(/^https:\/\/(.+\.)?duckduckgo\.com\/email\/choose-address/i)) {
             return this
@@ -45,10 +51,14 @@ class FormAnalyzer {
     }
 
     get isLogin () {
+        if (this.isHybrid) return false
+
         return this.autofillSignal < 0
     }
 
     get isSignup () {
+        if (this.isHybrid) return false
+
         return this.autofillSignal >= 0
     }
 
@@ -99,7 +109,8 @@ class FormAnalyzer {
 
         // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
         if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
-            this.decreaseSignalBy(strength + 2, `Unified detected ${signalType}`)
+            this.signals.push(`hybrid form: ${signalType}`)
+            this.isHybrid = true
             return this
         }
 
@@ -133,23 +144,21 @@ class FormAnalyzer {
 
     evaluatePageTitle () {
         const pageTitle = document.title
-        this.updateSignal({string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`})
+        this.updateSignal({string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`, shouldCheckUnifiedForm: true})
     }
 
     evaluatePageHeadings () {
         const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]')
-        if (headings) {
-            headings.forEach(({textContent}) => {
-                textContent = removeExcessWhitespace(textContent || '')
-                this.updateSignal({
-                    string: textContent,
-                    strength: 0.5,
-                    signalType: `heading: ${textContent}`,
-                    shouldCheckUnifiedForm: true,
-                    shouldBeConservative: true
-                })
+        headings.forEach(({textContent}) => {
+            textContent = removeExcessWhitespace(textContent || '')
+            this.updateSignal({
+                string: textContent,
+                strength: 0.5,
+                signalType: `heading: ${textContent}`,
+                shouldCheckUnifiedForm: true,
+                shouldBeConservative: true
             })
-        }
+        })
     }
 
     evaluatePage () {

@@ -74,9 +74,9 @@ const inputTypeConfig = {
             }
             return ''
         },
-        shouldDecorate: async (input, {isLogin, device}) => {
+        shouldDecorate: async (input, {isLogin, isHybrid, device}) => {
             // if we are on a 'login' page, check if we have data to autofill the field
-            if (isLogin) {
+            if (isLogin || isHybrid) {
                 return canBeAutofilled(input, device)
             }
 

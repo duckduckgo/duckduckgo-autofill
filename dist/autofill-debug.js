@@ -8341,6 +8341,8 @@ class InterfacePrototype {
 
   /** @type {import("../../packages/device-api").DeviceApi} */
 
+  /** @type {boolean} */
+
   /**
    * @param {GlobalConfig} config
    * @param {import("../../packages/device-api").DeviceApi} deviceApi
@@ -8375,6 +8377,8 @@ class InterfacePrototype {
 
     _defineProperty(this, "deviceApi", void 0);
 
+    _defineProperty(this, "alreadyInitialized", void 0);
+
     _classPrivateFieldInitSpec(this, _data2, {
       writable: true,
       value: {
@@ -8392,6 +8396,7 @@ class InterfacePrototype {
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
+    this.alreadyInitialized = false;
   }
   /**
    * Implementors should override this with a UI controller that suits
@@ -8566,6 +8571,7 @@ class InterfacePrototype {
   }
 
   async startInit() {
+    if (this.alreadyInitialized) return;
     await this.refreshSettings();
     this.addDeviceListeners();
     await this.setupAutofill();
@@ -8582,6 +8588,8 @@ class InterfacePrototype {
     if (this.settings.featureToggles.credentials_saving) {
       (0, _initFormSubmissionsApi.initFormSubmissionsApi)(this.scanner.forms);
     }
+
+    this.alreadyInitialized = true;
   }
   /**
    * This is to aid the migration to all platforms using Settings.enabled.
@@ -8623,12 +8631,19 @@ class InterfacePrototype {
     const isEnabled = await this.isEnabled();
     if (!isEnabled) return;
 
+    const handler = async () => {
+      if (document.readyState === 'complete') {
+        await this.startInit();
+        window.removeEventListener('load', handler);
+        document.removeEventListener('readystatechange', handler);
+      }
+    };
+
     if (document.readyState === 'complete') {
       await this.startInit();
     } else {
-      window.addEventListener('load', () => {
-        this.startInit();
-      });
+      window.addEventListener('load', handler);
+      document.addEventListener('readystatechange', handler);
     }
   }
   /**
@@ -9614,6 +9629,7 @@ class Form {
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
+    this.isHybrid = this.formAnalyzer.isHybrid;
     this.device = deviceInterface;
     /** @type Record<'all' | SupportedMainTypes, Set> */
 
@@ -9931,8 +9947,9 @@ class Form {
     this.inputs.all.add(input);
     const opts = {
       isLogin: this.isLogin,
+      isHybrid: this.isHybrid,
       hasCredentials: Boolean((_this$device$settings = this.device.settings.availableInputTypes.credentials) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.username),
-      isMobile: this.device.globalConfig.isMobileApp
+      supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
     };
     this.matching.setInputType(input, this.form, opts);
     const mainInputType = (0, _matching.getInputMainType)(input);
@@ -10197,7 +10214,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i);
 const signupRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i);
 const conservativeSignupRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
-const strictSignupRegex = new RegExp(/sign.?up|join|register|enroll|settings|preferences|profile|update/i);
+const strictSignupRegex = new RegExp(/sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update/i);
 
 class FormAnalyzer {
   /** @type HTMLElement */
@@ -10227,7 +10244,13 @@ class FormAnalyzer {
      * @type {string[]}
      */
 
-    this.signals = []; // Avoid autofill on our signup page
+    this.signals = [];
+    /**
+     * A hybrid form can be either a login or a signup, the site uses a single form for both
+     * @type {boolean}
+     */
+
+    this.isHybrid = false; // Avoid autofill on our signup page
 
     if (window.location.href.match(/^https:\/\/(.+\.)?duckduckgo\.com\/email\/choose-address/i)) {
       return this;
@@ -10239,10 +10262,12 @@ class FormAnalyzer {
   }
 
   get isLogin() {
+    if (this.isHybrid) return false;
     return this.autofillSignal < 0;
   }
 
   get isSignup() {
+    if (this.isHybrid) return false;
     return this.autofillSignal >= 0;
   }
   /**
@@ -10296,7 +10321,8 @@ class FormAnalyzer {
     const matchesLogin = string === 'current-password' || loginRegex.test(string); // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
 
     if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
-      this.decreaseSignalBy(strength + 2, "Unified detected ".concat(signalType));
+      this.signals.push("hybrid form: ".concat(signalType));
+      this.isHybrid = true;
       return this;
     }
 
@@ -10334,28 +10360,26 @@ class FormAnalyzer {
     this.updateSignal({
       string: pageTitle,
       strength: 2,
-      signalType: "page title: ".concat(pageTitle)
+      signalType: "page title: ".concat(pageTitle),
+      shouldCheckUnifiedForm: true
     });
   }
 
   evaluatePageHeadings() {
     const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]');
-
-    if (headings) {
-      headings.forEach(_ref2 => {
-        let {
-          textContent
-        } = _ref2;
-        textContent = (0, _matching.removeExcessWhitespace)(textContent || '');
-        this.updateSignal({
-          string: textContent,
-          strength: 0.5,
-          signalType: "heading: ".concat(textContent),
-          shouldCheckUnifiedForm: true,
-          shouldBeConservative: true
-        });
+    headings.forEach(_ref2 => {
+      let {
+        textContent
+      } = _ref2;
+      textContent = (0, _matching.removeExcessWhitespace)(textContent || '');
+      this.updateSignal({
+        string: textContent,
+        strength: 0.5,
+        signalType: "heading: ".concat(textContent),
+        shouldCheckUnifiedForm: true,
+        shouldBeConservative: true
       });
-    }
+    });
   }
 
   evaluatePage() {
@@ -11581,11 +11605,12 @@ const inputTypeConfig = {
     shouldDecorate: async (input, _ref4) => {
       let {
         isLogin,
+        isHybrid,
         device
       } = _ref4;
 
       // if we are on a 'login' page, check if we have data to autofill the field
-      if (isLogin) {
+      if (isLogin || isHybrid) {
         return canBeAutofilled(input, device);
       } // at this point, it's not a 'login' form, so we could offer to provide a password
 
@@ -12005,8 +12030,8 @@ const matchingConfiguration = {
     ddgMatcher: {
       matchers: {
         email: {
-          match: '.mail\\b',
-          skip: 'phone|name|reservation number',
+          match: '.mail\\b|apple.?id',
+          skip: 'phone|name|reservation number|code',
           forceUnknown: 'search|filter|subject|title|\btab\b'
         },
         password: {
@@ -12014,7 +12039,7 @@ const matchingConfiguration = {
           forceUnknown: 'captcha|mfa|2fa|two factor'
         },
         username: {
-          match: '(user|account|apple|login|net)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername',
+          match: '(user|account|login|net)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername',
           forceUnknown: 'search|policy'
         },
         // CC
@@ -12714,8 +12739,9 @@ class Matching {
       }
 
       if (this.subtypeFromMatchers('email', input)) {
-        if (opts.isLogin) {
-          if (!opts.isMobile && !opts.hasCredentials) {
+        if (opts.isLogin || opts.isHybrid) {
+          // Show identities when supported and there are no credentials
+          if (opts.supportsIdentitiesAutofill && !opts.hasCredentials) {
             return 'identities.emailAddress';
           }
 
@@ -12741,8 +12767,9 @@ class Matching {
   /**
    * @typedef {{
    *   isLogin?: boolean,
+   *   isHybrid?: boolean,
    *   hasCredentials?: boolean,
-   *   isMobile?: boolean
+   *   supportsIdentitiesAutofill?: boolean
    * }} SetInputTypeOpts
    */
 
@@ -13425,7 +13452,7 @@ const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not(
 exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
 exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
-const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
+const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[name=username][type=email],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
 const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])";
@@ -13447,12 +13474,12 @@ const addressProvince = "\n[name=province], [name=state], [autocomplete=address-
 const addressPostalCode = "\n[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],\n[name*=postalCode i], [name*=zipcode i]";
 const addressCountryCode = ["[name=country], [autocomplete=country],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
 ];
-const birthdayDay = "\n[name=bday-day],\n[name=birthday_day], [name=birthday-day],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
-const birthdayMonth = "\n[name=bday-month],\n[name=birthday_month], [name=birthday-month],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m],\nselect[name=\"mm\"]";
-const birthdayYear = "\n[name=bday-year],\n[name=birthday_year], [name=birthday-year],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
+const birthdayDay = "\n[name=bday-day],\n[name*=birthday_day i], [name*=birthday-day i],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
+const birthdayMonth = "\n[name=bday-month],\n[name*=birthday_month i], [name*=birthday-month i],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m],\nselect[name=\"mm\"]";
+const birthdayYear = "\n[name=bday-year],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
 const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), "input[name=username i]", // fix for `aa.com`
 "input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
-"input[name=\"userID\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]", "input[autocomplete=username]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
+"input[name=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]", "input[autocomplete=username]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 // Exported here for now, to be moved to configuration later
