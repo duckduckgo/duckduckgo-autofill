@@ -47,5 +47,12 @@
   },
   "sendJSPixel": {
     "paramsValidator": "./schemas/sendJSPixel.params.json"
+  },
+  "setIncontextSignupDismissedAt": {
+    "paramsValidator": "./schemas/setIncontextSignupDismissedAt.params.json"
+  },
+  "getIncontextSignupDismissedAt": {
+    "id": "getIncontextSignupDismissedAt",
+    "resultValidator": "./schemas/getIncontextSignupDismissedAt.result.json"
   }
 }

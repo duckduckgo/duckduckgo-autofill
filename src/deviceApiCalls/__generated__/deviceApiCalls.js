@@ -12,7 +12,9 @@ import {
     selectedDetailParamsSchema,
     askToUnlockProviderResultSchema,
     checkCredentialsProviderStatusResultSchema,
-    sendJSPixelParamsSchema
+    sendJSPixelParamsSchema,
+    setIncontextSignupDismissedAtSchema,
+    getIncontextSignupDismissedAtSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -107,4 +109,19 @@ export class CheckCredentialsProviderStatusCall extends DeviceApiCall {
 export class SendJSPixelCall extends DeviceApiCall {
   method = "sendJSPixel"
   paramsValidator = sendJSPixelParamsSchema
+}
+/**
+ * @extends {DeviceApiCall<setIncontextSignupDismissedAtSchema, any>} 
+ */
+export class SetIncontextSignupDismissedAtCall extends DeviceApiCall {
+  method = "setIncontextSignupDismissedAt"
+  paramsValidator = setIncontextSignupDismissedAtSchema
+}
+/**
+ * @extends {DeviceApiCall<any, getIncontextSignupDismissedAtSchema>} 
+ */
+export class GetIncontextSignupDismissedAtCall extends DeviceApiCall {
+  method = "getIncontextSignupDismissedAt"
+  id = "getIncontextSignupDismissedAt"
+  resultValidator = getIncontextSignupDismissedAtSchema
 }

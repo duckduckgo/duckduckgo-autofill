@@ -124,6 +124,12 @@ export const getAvailableInputTypesResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
+export const getIncontextSignupDismissedAtSchema = z.object({
+    success: z.object({
+        value: z.number().optional()
+    })
+});
+
 export const contentScopeSchema = z.object({
     features: z.record(z.object({
         exceptions: z.array(z.unknown()),
@@ -170,6 +176,10 @@ export const sendJSPixelParamsSchema = z.union([z.object({
     }), z.object({
         pixelName: z.literal("autofill_private_address")
     })]);
+
+export const setIncontextSignupDismissedAtSchema = z.object({
+    value: z.number().optional()
+});
 
 export const setSizeParamsSchema = z.object({
     height: z.number(),

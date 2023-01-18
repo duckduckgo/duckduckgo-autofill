@@ -87,6 +87,10 @@ function init () {
             return sendResponse(addUserData(message.addUserData, sender))
         } else if (message.messageType === 'sendJSPixel') {
             return sendResponse(firePixel(message.options))
+        } else if (message.messageType === 'getIncontextSignupDismissedAt') {
+            return sendResponse({ success: {} })
+        } else if (message.messageType === 'setIncontextSignupDismissedAt') {
+            return sendResponse()
         }
     })
 

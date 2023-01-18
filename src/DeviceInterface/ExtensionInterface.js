@@ -9,6 +9,7 @@ import {
 } from '../autofill-utils.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
+import { SetIncontextSignupDismissedAtCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const TOOLTIP_TYPES = {
     EmailProtection: 'EmailProtection',
@@ -49,17 +50,14 @@ class ExtensionInterface extends InterfacePrototype {
 
     onIncontextSignupDismissed () {
         this.settings.setIncontextSignupDismissed(true)
-        chrome.runtime.sendMessage({
-            messageType: 'setIncontextSignupDismissedAt',
-            options: {
-                value: new Date().getTime()
-            }
-        })
+        this.deviceApi.notify(new SetIncontextSignupDismissedAtCall({ value: new Date().getTime() }))
         this.removeAutofillUIFromPage()
     }
 
     async resetAutofillUI () {
         this.removeAutofillUIFromPage()
+
+        // TOOD: can we use recategorizeAllInputs here?
 
         // Start the setup process again
         await this.refreshSettings()

@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SetIncontextSignupDismissedAt",
+    "type": "object",
+    "description": "Sets the time that the in-context Email Protection sign-up message was dismissed",
+    "additionalProperties": false,
+    "properties": {
+        "value": {
+            "type": "number"
+        }
+    },
+    "required": []
+}

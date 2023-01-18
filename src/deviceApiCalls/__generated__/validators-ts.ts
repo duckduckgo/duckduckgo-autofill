@@ -475,6 +475,17 @@ export interface GenericError {
   message: string;
 }
 
+// getIncontextSignupDismissedAt.result.json
+
+/**
+ * Gets the time that the in-context Email Protection sign-up message was dismissed, if set
+ */
+export interface GetIncontextSignupDismissedAt {
+  success: {
+    value?: number;
+  };
+}
+
 // getRuntimeConfiguration.result.json
 
 /**
@@ -671,6 +682,15 @@ export type SendJSPixelParams =
   | {
       pixelName: "autofill_private_address";
     };
+
+// setIncontextSignupDismissedAt.params.json
+
+/**
+ * Sets the time that the in-context Email Protection sign-up message was dismissed
+ */
+export interface SetIncontextSignupDismissedAt {
+  value?: number;
+}
 
 // setSize.params.json
 

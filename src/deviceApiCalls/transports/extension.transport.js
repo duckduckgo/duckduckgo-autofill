@@ -2,7 +2,9 @@ import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {
     GetAvailableInputTypesCall,
     GetRuntimeConfigurationCall,
-    SendJSPixelCall
+    SendJSPixelCall,
+    SetIncontextSignupDismissedAtCall,
+    GetIncontextSignupDismissedAtCall
 } from '../__generated__/deviceApiCalls.js'
 import {isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig} from '../../autofill-utils.js'
 import {Settings} from '../../Settings.js'
@@ -16,11 +18,19 @@ export class ExtensionTransport extends DeviceApiTransport {
 
     async send (deviceApiCall) {
         if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
-            return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this.config))
+            return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this))
         }
 
         if (deviceApiCall instanceof GetAvailableInputTypesCall) {
             return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes())
+        }
+
+        if (deviceApiCall instanceof SetIncontextSignupDismissedAtCall) {
+            return deviceApiCall.result(await extensionSpecificSetIncontextSignupDismissedAt(deviceApiCall.params.value))
+        }
+
+        if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
+            return deviceApiCall.result(await extensionSpecificGetIncontextSignupDismissedAt())
         }
 
         // TODO: unify all calls to use deviceApiCall.method instead of all these if blocks
@@ -33,14 +43,14 @@ export class ExtensionTransport extends DeviceApiTransport {
 }
 
 /**
- * @param {GlobalConfig} globalConfig
+ * @param {ExtensionTransport} deviceApi
  * @returns {Promise<ReturnType<GetRuntimeConfigurationCall['result']>>}
  */
-async function extensionSpecificRuntimeConfiguration (globalConfig) {
+async function extensionSpecificRuntimeConfiguration (deviceApi) {
     const contentScope = await getContentScopeConfig()
     const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope)
     const incontextSignupEnabled = isIncontextSignupEnabledFromProcessedConfig(contentScope)
-    const incontextSignupDismissedAt = await getIncontextSignupDismissedAt()
+    const incontextSignupDismissedAt = await deviceApi.send(new GetIncontextSignupDismissedAtCall(null))
 
     return {
         success: {
@@ -60,13 +70,13 @@ async function extensionSpecificRuntimeConfiguration (globalConfig) {
                     },
                     incontextSignup: {
                         settings: {
-                            dismissedAt: incontextSignupDismissedAt
+                            dismissedAt: incontextSignupDismissedAt.success.value
                         }
                     }
                 }
             },
             // @ts-ignore
-            userUnprotectedDomains: globalConfig?.userUnprotectedDomains
+            userUnprotectedDomains: deviceApi.config?.userUnprotectedDomains
         }
     }
 }
@@ -118,7 +128,7 @@ async function extensionSpecificSendPixel (pixelName) {
     })
 }
 
-async function getIncontextSignupDismissedAt () {
+async function extensionSpecificGetIncontextSignupDismissedAt () {
     return new Promise(resolve => {
         chrome.runtime.sendMessage(
             {
@@ -126,6 +136,20 @@ async function getIncontextSignupDismissedAt () {
             },
             (response) => {
                 resolve(response)
+            }
+        )
+    })
+}
+
+async function extensionSpecificSetIncontextSignupDismissedAt (value) {
+    return new Promise(resolve => {
+        chrome.runtime.sendMessage(
+            {
+                messageType: 'setIncontextSignupDismissedAt',
+                options: { value }
+            },
+            () => {
+                resolve(true)
             }
         )
     })

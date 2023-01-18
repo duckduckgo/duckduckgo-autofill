@@ -8034,6 +8034,8 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 
 var _HTMLTooltip = require("../UI/HTMLTooltip.js");
 
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const TOOLTIP_TYPES = {
@@ -8076,17 +8078,15 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
   onIncontextSignupDismissed() {
     this.settings.setIncontextSignupDismissed(true);
-    chrome.runtime.sendMessage({
-      messageType: 'setIncontextSignupDismissedAt',
-      options: {
-        value: new Date().getTime()
-      }
-    });
+    this.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupDismissedAtCall({
+      value: new Date().getTime()
+    }));
     this.removeAutofillUIFromPage();
   }
 
   async resetAutofillUI() {
-    this.removeAutofillUIFromPage(); // Start the setup process again
+    this.removeAutofillUIFromPage(); // TOOD: can we use recategorizeAllInputs here?
+    // Start the setup process again
 
     await this.refreshSettings();
     await this.setupAutofill(); // TODO: Do we need this to be called?
@@ -8265,7 +8265,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../UI/HTMLTooltip.js":53,"../UI/controllers/HTMLTooltipUIController.js":54,"../autofill-utils.js":60,"./InterfacePrototype.js":27}],27:[function(require,module,exports){
+},{"../UI/HTMLTooltip.js":53,"../UI/controllers/HTMLTooltipUIController.js":54,"../autofill-utils.js":60,"../deviceApiCalls/__generated__/deviceApiCalls.js":64,"./InterfacePrototype.js":27}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15224,7 +15224,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
   }
 
   destroy() {
-    this.removeTooltip('destroy');
+    this.removeTooltip();
 
     this._removeListeners();
 
@@ -16523,7 +16523,7 @@ exports.constants = constants;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreFormDataCall = exports.SetSizeCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.GetRuntimeConfigurationCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = void 0;
+exports.StoreFormDataCall = exports.SetSizeCall = exports.SetIncontextSignupDismissedAtCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.GetRuntimeConfigurationCall = exports.GetIncontextSignupDismissedAtCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = void 0;
 
 var _validatorsZod = require("./validators.zod.js");
 
@@ -16747,8 +16747,44 @@ class SendJSPixelCall extends _deviceApi.DeviceApiCall {
   }
 
 }
+/**
+ * @extends {DeviceApiCall<setIncontextSignupDismissedAtSchema, any>} 
+ */
+
 
 exports.SendJSPixelCall = SendJSPixelCall;
+
+class SetIncontextSignupDismissedAtCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "setIncontextSignupDismissedAt");
+
+    _defineProperty(this, "paramsValidator", _validatorsZod.setIncontextSignupDismissedAtSchema);
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<any, getIncontextSignupDismissedAtSchema>} 
+ */
+
+
+exports.SetIncontextSignupDismissedAtCall = SetIncontextSignupDismissedAtCall;
+
+class GetIncontextSignupDismissedAtCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "getIncontextSignupDismissedAt");
+
+    _defineProperty(this, "id", "getIncontextSignupDismissedAt");
+
+    _defineProperty(this, "resultValidator", _validatorsZod.getIncontextSignupDismissedAtSchema);
+  }
+
+}
+
+exports.GetIncontextSignupDismissedAtCall = GetIncontextSignupDismissedAtCall;
 
 },{"../../../packages/device-api":14,"./validators.zod.js":65}],65:[function(require,module,exports){
 "use strict";
@@ -16756,7 +16792,7 @@ exports.SendJSPixelCall = SendJSPixelCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.incontextSignupSettingsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.incontextSignupSettingsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
 
 var _zod = require("zod");
 
@@ -16910,6 +16946,14 @@ const getAvailableInputTypesResultSchema = _zod.z.object({
 
 exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 
+const getIncontextSignupDismissedAtSchema = _zod.z.object({
+  success: _zod.z.object({
+    value: _zod.z.number().optional()
+  })
+});
+
+exports.getIncontextSignupDismissedAtSchema = getIncontextSignupDismissedAtSchema;
+
 const contentScopeSchema = _zod.z.object({
   features: _zod.z.record(_zod.z.object({
     exceptions: _zod.z.array(_zod.z.unknown()),
@@ -16968,6 +17012,12 @@ const sendJSPixelParamsSchema = _zod.z.union([_zod.z.object({
 })]);
 
 exports.sendJSPixelParamsSchema = sendJSPixelParamsSchema;
+
+const setIncontextSignupDismissedAtSchema = _zod.z.object({
+  value: _zod.z.number().optional()
+});
+
+exports.setIncontextSignupDismissedAtSchema = setIncontextSignupDismissedAtSchema;
 
 const setSizeParamsSchema = _zod.z.object({
   height: _zod.z.number(),
@@ -17330,11 +17380,19 @@ class ExtensionTransport extends _index.DeviceApiTransport {
 
   async send(deviceApiCall) {
     if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
-      return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this.config));
+      return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this));
     }
 
     if (deviceApiCall instanceof _deviceApiCalls.GetAvailableInputTypesCall) {
       return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes());
+    }
+
+    if (deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupDismissedAtCall) {
+      return deviceApiCall.result(await extensionSpecificSetIncontextSignupDismissedAt(deviceApiCall.params.value));
+    }
+
+    if (deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall) {
+      return deviceApiCall.result(await extensionSpecificGetIncontextSignupDismissedAt());
     } // TODO: unify all calls to use deviceApiCall.method instead of all these if blocks
 
 
@@ -17347,18 +17405,20 @@ class ExtensionTransport extends _index.DeviceApiTransport {
 
 }
 /**
- * @param {GlobalConfig} globalConfig
+ * @param {ExtensionTransport} deviceApi
  * @returns {Promise<ReturnType<GetRuntimeConfigurationCall['result']>>}
  */
 
 
 exports.ExtensionTransport = ExtensionTransport;
 
-async function extensionSpecificRuntimeConfiguration(globalConfig) {
+async function extensionSpecificRuntimeConfiguration(deviceApi) {
+  var _deviceApi$config;
+
   const contentScope = await getContentScopeConfig();
   const emailProtectionEnabled = (0, _autofillUtils.isAutofillEnabledFromProcessedConfig)(contentScope);
   const incontextSignupEnabled = (0, _autofillUtils.isIncontextSignupEnabledFromProcessedConfig)(contentScope);
-  const incontextSignupDismissedAt = await getIncontextSignupDismissedAt();
+  const incontextSignupDismissedAt = await deviceApi.send(new _deviceApiCalls.GetIncontextSignupDismissedAtCall(null));
   return {
     success: {
       // @ts-ignore
@@ -17376,13 +17436,13 @@ async function extensionSpecificRuntimeConfiguration(globalConfig) {
           },
           incontextSignup: {
             settings: {
-              dismissedAt: incontextSignupDismissedAt
+              dismissedAt: incontextSignupDismissedAt.success.value
             }
           }
         }
       },
       // @ts-ignore
-      userUnprotectedDomains: globalConfig === null || globalConfig === void 0 ? void 0 : globalConfig.userUnprotectedDomains
+      userUnprotectedDomains: (_deviceApi$config = deviceApi.config) === null || _deviceApi$config === void 0 ? void 0 : _deviceApi$config.userUnprotectedDomains
     }
   };
 }
@@ -17427,12 +17487,25 @@ async function extensionSpecificSendPixel(pixelName) {
   });
 }
 
-async function getIncontextSignupDismissedAt() {
+async function extensionSpecificGetIncontextSignupDismissedAt() {
   return new Promise(resolve => {
     chrome.runtime.sendMessage({
       messageType: 'getIncontextSignupDismissedAt'
     }, response => {
       resolve(response);
+    });
+  });
+}
+
+async function extensionSpecificSetIncontextSignupDismissedAt(value) {
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage({
+      messageType: 'setIncontextSignupDismissedAt',
+      options: {
+        value
+      }
+    }, () => {
+      resolve(true);
     });
   });
 }
