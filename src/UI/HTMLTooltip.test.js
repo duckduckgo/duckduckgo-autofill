@@ -31,7 +31,7 @@ describe('HTMLTooltip', () => {
      * @link {https://app.asana.com/0/1177771139624306/1202412384393015/f}
      */
     it('works with default values', () => {
-        const config = getInputConfigFromType('credentials')
+        const config = getInputConfigFromType('credentials.username')
         const tooltip = new HTMLTooltip(config, 'credentials.username', () => {}, defaultOptions)
         const spy = jest.spyOn(tooltip, 'setupSizeListener')
         tooltip.init()

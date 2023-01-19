@@ -74,9 +74,9 @@ const inputTypeConfig = {
             }
             return ''
         },
-        shouldDecorate: async (input, {isLogin, device}) => {
+        shouldDecorate: async (input, {isLogin, isHybrid, device}) => {
             // if we are on a 'login' page, check if we have data to autofill the field
-            if (isLogin) {
+            if (isLogin || isHybrid) {
                 return canBeAutofilled(input, device)
             }
 
@@ -140,7 +140,7 @@ const getInputConfig = (input) => {
 
 /**
  * Retrieves configs from an input type
- * @param {import('./matching').SupportedTypes | string} inputType
+ * @param {import('./matching').SupportedTypes} inputType
  * @returns {InputTypeConfigs}
  */
 const getInputConfigFromType = (inputType) => {

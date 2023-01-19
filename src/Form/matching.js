@@ -183,7 +183,7 @@ class Matching {
      *
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLElement} formEl
-     * @param {{isLogin?: boolean}} [opts]
+     * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedTypes}
      */
     inferInputType (input, formEl, opts = {}) {
@@ -209,7 +209,16 @@ class Matching {
             }
 
             if (this.subtypeFromMatchers('email', input)) {
-                return opts.isLogin ? 'credentials.username' : 'identities.emailAddress'
+                if (opts.isLogin || opts.isHybrid) {
+                    // Show identities when supported and there are no credentials
+                    if (opts.supportsIdentitiesAutofill && !opts.hasCredentials) {
+                        return 'identities.emailAddress'
+                    }
+
+                    return 'credentials.username'
+                }
+
+                return 'identities.emailAddress'
             }
 
             if (this.subtypeFromMatchers('username', input)) {
@@ -227,10 +236,19 @@ class Matching {
     }
 
     /**
+     * @typedef {{
+     *   isLogin?: boolean,
+     *   isHybrid?: boolean,
+     *   hasCredentials?: boolean,
+     *   supportsIdentitiesAutofill?: boolean
+     * }} SetInputTypeOpts
+     */
+
+    /**
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
-     * @param {{isLogin?: boolean}} [opts]
+     * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
     setInputType (input, formEl, opts = {}) {

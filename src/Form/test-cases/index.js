@@ -256,5 +256,11 @@ export default [
     { html: 'eventbrite_fake-signup.html' },
     { html: 'ryanair_cc-card-name.html' },
     { html: 'paypal_otp.html' },
-    { html: 'postnews_login.html' }
+    { html: 'postnews_login.html' },
+    { html: 'airbnb_signup.html' },
+    { html: 'cookpad_email-confirmation-code.html', expectedFailures: ['unknown'] },
+    { html: 'instagram_email-confirmation-code.html' },
+    { html: 'cookpad_signup-second-step.html' },
+    { html: 'samash_credit-card.html' },
+    { html: 'substack_login.html' }
 ]

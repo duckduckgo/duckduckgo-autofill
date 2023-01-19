@@ -8,6 +8,7 @@ import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
 import testCases from './test-cases/index.js'
 import {SUBMIT_BUTTON_SELECTOR} from './selectors-css.js'
+import {createAvailableInputTypes} from '../../integration-test/helpers/utils.js'
 
 /**
  * @param {HTMLInputElement} el
@@ -160,7 +161,10 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             button._jsdomMockOffsetHeight = 50
         })
 
-        const scanner = createScanner(InterfacePrototype.default())
+        const deviceInterface = InterfacePrototype.default()
+        const availableInputTypes = createAvailableInputTypes({credentials: {username: true, password: true}})
+        deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
+        const scanner = createScanner(deviceInterface)
         scanner.findEligibleInputs(document)
 
         const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()

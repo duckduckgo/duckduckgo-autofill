@@ -114,14 +114,43 @@ describe('matching', () => {
                     <span aria-hidden="true" id="idms-input-labelledby-1643321390647-1">First <script>console.log("hello world")</script>
                     name</span>`,
             subtype: 'identities.firstName'
+        },
+        {
+            // when hybrid with no credentials, use credentials by default (nothing shows)
+            html: `<input type="email" autocomplete="email" />`,
+            subtype: 'credentials.username',
+            opts: {isHybrid: true, hasCredentials: false}
+        },
+        {
+            // when hybrid with no credentials but we support identities, show identities
+            html: `<input type="email" autocomplete="email" />`,
+            subtype: 'identities.emailAddress',
+            opts: {isHybrid: true, hasCredentials: false, supportsIdentitiesAutofill: true}
+        },
+        {
+            // when login with no credentials but we support identities, show identities
+            html: `<input type="email" autocomplete="email" />`,
+            subtype: 'identities.emailAddress',
+            opts: {isLogin: true, hasCredentials: false, supportsIdentitiesAutofill: true}
+        },
+        {
+            // when login with credentials, show credentials regardless of identities
+            html: `<input type="email" autocomplete="email" />`,
+            subtype: 'credentials.username',
+            opts: {isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true}
+        },
+        {
+            // when hybrid with credentials, show credentials regardless of identities
+            html: `<input type="email" autocomplete="email" />`,
+            subtype: 'credentials.username',
+            opts: {isHybrid: true, hasCredentials: true, supportsIdentitiesAutofill: true}
         }
-
     ])(`$html should be '$subtype'`, (args) => {
-        const { html, subtype } = args
+        const { html, subtype, opts } = args
         const { formElement, inputs } = setFormHtml(html)
 
         const matching = createMatching()
-        const inferred = matching.inferInputType(inputs[0], formElement)
+        const inferred = matching.inferInputType(inputs[0], formElement, opts)
         expect(inferred).toBe(subtype)
     })
     it('should not continue past a ddg-matcher that has a "not" regex', () => {

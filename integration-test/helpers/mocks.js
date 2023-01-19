@@ -72,5 +72,9 @@ export const constants = {
             cardNumber: true
         },
         email: true
+    },
+    iconMatchers: {
+        key: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4w',
+        dax: 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBo'
     }
 }

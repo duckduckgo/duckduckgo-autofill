@@ -3,12 +3,12 @@ import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-configuration.js'
 import { getText, isLikelyASubmitButton } from '../autofill-utils.js'
 
-const negativeRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i)
-const positiveRegex = new RegExp(
+const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i)
+const signupRegex = new RegExp(
     /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i
 )
-const conservativePositiveRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
-const strictPositiveRegex = new RegExp(/sign.?up|join|register|enroll|settings|preferences|profile|update/i)
+const conservativeSignupRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
+const strictSignupRegex = new RegExp(/sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update/i)
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -23,8 +23,22 @@ class FormAnalyzer {
     constructor (form, input, matching) {
         this.form = form
         this.matching = matching || new Matching(matchingConfiguration)
+        /**
+         * The signal is a continuum where negative values imply login and positive imply signup
+         * @type {number}
+         */
         this.autofillSignal = 0
+        /**
+         * Collects the signals for debugging purposes
+         * @type {string[]}
+         */
         this.signals = []
+
+        /**
+         * A hybrid form can be either a login or a signup, the site uses a single form for both
+         * @type {boolean}
+         */
+        this.isHybrid = false
 
         // Avoid autofill on our signup page
         if (window.location.href.match(/^https:\/\/(.+\.)?duckduckgo\.com\/email\/choose-address/i)) {
@@ -37,19 +51,35 @@ class FormAnalyzer {
     }
 
     get isLogin () {
+        if (this.isHybrid) return false
+
         return this.autofillSignal < 0
     }
 
     get isSignup () {
+        if (this.isHybrid) return false
+
         return this.autofillSignal >= 0
     }
 
+    /**
+     * Tilts the scoring towards Signup
+     * @param {number} strength
+     * @param {string} signal
+     * @returns {FormAnalyzer}
+     */
     increaseSignalBy (strength, signal) {
         this.autofillSignal += strength
         this.signals.push(`${signal}: +${strength}`)
         return this
     }
 
+    /**
+     * Tilts the scoring towards Login
+     * @param {number} strength
+     * @param {string} signal
+     * @returns {FormAnalyzer}
+     */
     decreaseSignalBy (strength, signal) {
         this.autofillSignal -= strength
         this.signals.push(`${signal}: -${strength}`)
@@ -57,7 +87,7 @@ class FormAnalyzer {
     }
 
     /**
-     *
+     * Updates the Login<->Signup signal according to the provided parameters
      * @param {object} p
      * @param {string} p.string - The string to check
      * @param {number} p.strength - Strength of the signal
@@ -75,24 +105,25 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false,
         shouldBeConservative = false
     }) {
-        const matchesNegative = string === 'current-password' || negativeRegex.test(string)
+        const matchesLogin = string === 'current-password' || loginRegex.test(string)
 
         // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
-        if (shouldCheckUnifiedForm && matchesNegative && strictPositiveRegex.test(string)) {
-            this.decreaseSignalBy(strength + 2, `Unified detected ${signalType}`)
+        if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
+            this.signals.push(`hybrid form: ${signalType}`)
+            this.isHybrid = true
             return this
         }
 
-        const positiveRegexToUse = shouldBeConservative ? conservativePositiveRegex : positiveRegex
-        const matchesPositive = string === 'new-password' || positiveRegexToUse.test(string)
+        const signupRegexToUse = shouldBeConservative ? conservativeSignupRegex : signupRegex
+        const matchesSignup = string === 'new-password' || signupRegexToUse.test(string)
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
-            if (matchesNegative) this.increaseSignalBy(strength, signalType)
-            if (matchesPositive) this.decreaseSignalBy(strength, signalType)
+            if (matchesLogin) this.increaseSignalBy(strength, signalType)
+            if (matchesSignup) this.decreaseSignalBy(strength, signalType)
         } else {
-            if (matchesNegative) this.decreaseSignalBy(strength, signalType)
-            if (matchesPositive) this.increaseSignalBy(strength, signalType)
+            if (matchesLogin) this.decreaseSignalBy(strength, signalType)
+            if (matchesSignup) this.increaseSignalBy(strength, signalType)
         }
         return this
     }
@@ -113,23 +144,21 @@ class FormAnalyzer {
 
     evaluatePageTitle () {
         const pageTitle = document.title
-        this.updateSignal({string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`})
+        this.updateSignal({string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`, shouldCheckUnifiedForm: true})
     }
 
     evaluatePageHeadings () {
         const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]')
-        if (headings) {
-            headings.forEach(({textContent}) => {
-                textContent = removeExcessWhitespace(textContent || '')
-                this.updateSignal({
-                    string: textContent,
-                    strength: 0.5,
-                    signalType: `heading: ${textContent}`,
-                    shouldCheckUnifiedForm: true,
-                    shouldBeConservative: true
-                })
+        headings.forEach(({textContent}) => {
+            textContent = removeExcessWhitespace(textContent || '')
+            this.updateSignal({
+                string: textContent,
+                strength: 0.5,
+                signalType: `heading: ${textContent}`,
+                shouldCheckUnifiedForm: true,
+                shouldBeConservative: true
             })
-        }
+        })
     }
 
     evaluatePage () {

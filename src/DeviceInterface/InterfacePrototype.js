@@ -65,6 +65,9 @@ class InterfacePrototype {
     /** @type {import("../../packages/device-api").DeviceApi} */
     deviceApi;
 
+    /** @type {boolean} */
+    isInitializationStarted;
+
     /**
      * @param {GlobalConfig} config
      * @param {import("../../packages/device-api").DeviceApi} deviceApi
@@ -78,6 +81,7 @@ class InterfacePrototype {
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
+        this.isInitializationStarted = false
     }
 
     /**
@@ -236,6 +240,10 @@ class InterfacePrototype {
     }
 
     async startInit () {
+        if (this.isInitializationStarted) return
+
+        this.alreadyInitialized = true
+
         await this.refreshSettings()
 
         this.addDeviceListeners()
@@ -294,12 +302,19 @@ class InterfacePrototype {
     async init () {
         const isEnabled = await this.isEnabled()
         if (!isEnabled) return
+
+        const handler = async () => {
+            if (document.readyState === 'complete') {
+                window.removeEventListener('load', handler)
+                document.removeEventListener('readystatechange', handler)
+                await this.startInit()
+            }
+        }
         if (document.readyState === 'complete') {
             await this.startInit()
         } else {
-            window.addEventListener('load', () => {
-                this.startInit()
-            })
+            window.addEventListener('load', handler)
+            document.addEventListener('readystatechange', handler)
         }
     }
 
@@ -576,7 +591,7 @@ class InterfacePrototype {
                 this.removeTooltip()
             }
             // Redecorate fields according to the new types
-            this.scanner.forms.forEach(form => form.redecorateAllInputs())
+            this.scanner.forms.forEach(form => form.recategorizeAllInputs())
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
