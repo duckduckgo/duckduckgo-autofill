@@ -188,11 +188,6 @@ export function loginPage (page, server, opts = {}) {
             const passwordStyle = await page.locator('#password').getAttribute('style')
             expect(passwordStyle || '').not.toContain('data:image/svg+xml;base64,')
         },
-        async emailHasDaxPasswordHasKey () {
-            await this.emailFieldShowsDax()
-            const passwordStyle = await page.locator('#password').getAttribute('style')
-            expect(passwordStyle || '').toContain(constants.iconMatchers.key)
-        },
         async onlyPasswordFieldHasIcon () {
             const styles1 = await page.locator('#email').getAttribute('style')
             const styles2 = await page.locator('#password').getAttribute('style')
