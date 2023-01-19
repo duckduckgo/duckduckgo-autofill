@@ -116,34 +116,34 @@ describe('matching', () => {
             subtype: 'identities.firstName'
         },
         {
-            // respects the options parameter
+            // when hybrid with no credentials, use credentials by default (nothing shows)
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
             opts: {isHybrid: true, hasCredentials: false}
         },
         {
-            // respects the options parameter
+            // when hybrid with no credentials but we support identities, show identities
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'identities.emailAddress',
             opts: {isHybrid: true, hasCredentials: false, supportsIdentitiesAutofill: true}
         },
         {
-            // respects the options parameter
+            // when login with no credentials but we support identities, show identities
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'identities.emailAddress',
             opts: {isLogin: true, hasCredentials: false, supportsIdentitiesAutofill: true}
         },
         {
-            // respects the options parameter
+            // when login with credentials, show credentials regardless of identities
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
             opts: {isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true}
         },
         {
-            // respects the options parameter
+            // when hybrid with credentials, show credentials regardless of identities
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
-            opts: {isHybrid: true, hasCredentials: true}
+            opts: {isHybrid: true, hasCredentials: true, supportsIdentitiesAutofill: true}
         }
     ])(`$html should be '$subtype'`, (args) => {
         const { html, subtype, opts } = args

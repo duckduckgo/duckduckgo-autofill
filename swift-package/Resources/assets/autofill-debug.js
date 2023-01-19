@@ -8380,7 +8380,7 @@ class InterfacePrototype {
 
     _defineProperty(this, "deviceApi", void 0);
 
-    _defineProperty(this, "alreadyInitialized", void 0);
+    _defineProperty(this, "isInitializationStarted", void 0);
 
     _classPrivateFieldInitSpec(this, _data2, {
       writable: true,
@@ -8399,7 +8399,7 @@ class InterfacePrototype {
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
-    this.alreadyInitialized = false;
+    this.isInitializationStarted = false;
   }
   /**
    * Implementors should override this with a UI controller that suits
@@ -8574,7 +8574,7 @@ class InterfacePrototype {
   }
 
   async startInit() {
-    if (this.alreadyInitialized) return;
+    if (this.isInitializationStarted) return;
     this.alreadyInitialized = true;
     await this.refreshSettings();
     this.addDeviceListeners();
@@ -8635,9 +8635,9 @@ class InterfacePrototype {
 
     const handler = async () => {
       if (document.readyState === 'complete') {
-        await this.startInit();
         window.removeEventListener('load', handler);
         document.removeEventListener('readystatechange', handler);
+        await this.startInit();
       }
     };
 
@@ -12038,6 +12038,7 @@ const matchingConfiguration = {
         },
         password: {
           match: 'password',
+          skip: 'email',
           forceUnknown: 'captcha|mfa|2fa|two factor'
         },
         username: {
@@ -13458,30 +13459,30 @@ const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):n
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
 const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])";
-const cardName = "\ninput[autocomplete=\"cc-name\"],\ninput[autocomplete=\"ccname\"],\ninput[name=\"ccname\"],\ninput[name=\"cc-name\"],\ninput[name=\"ppw-accountHolderName\"],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
-const cardNumber = "\ninput[autocomplete=\"cc-number\"],\ninput[autocomplete=\"ccnumber\"],\ninput[autocomplete=\"cardnumber\"],\ninput[autocomplete=\"card-number\"],\ninput[name=\"ccnumber\"],\ninput[name=\"cc-number\"],\ninput[name*=card i][name*=number i],\ninput[name*=cardnumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
-const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\"],\ninput[autocomplete=\"csc\"],\ninput[autocomplete=\"cc-cvc\"],\ninput[autocomplete=\"cvc\"],\ninput[name=\"cvc\"],\ninput[name=\"cc-cvc\"],\ninput[name=\"cc-csc\"],\ninput[name=\"csc\"],\ninput[name*=security i][name*=code i]";
-const expirationMonth = "\n[autocomplete=\"cc-exp-month\"],\n[autocomplete=\"cc_exp_month\"],\n[name=\"ccmonth\"],\n[name=\"ppw-expirationDate_month\"],\n[name=cardExpiryMonth],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i],\n[name*=cc-exp-month i],\n[name*=cc_exp_month i]";
-const expirationYear = "\n[autocomplete=\"cc-exp-year\"],\n[autocomplete=\"cc_exp_year\"],\n[name=\"ccyear\"],\n[name=\"ppw-expirationDate_year\"],\n[name=cardExpiryYear],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i],\n[name*=cc-exp-year i],\n[name*=cc_exp_year i]";
-const expiration = "\n[autocomplete=\"cc-exp\"],\n[name=\"cc-exp\"],\n[name=\"exp-date\"],\n[name=\"expirationDate\"],\ninput[id*=expiration i]";
+const cardName = "\ninput[autocomplete=\"cc-name\" i],\ninput[autocomplete=\"ccname\" i],\ninput[name=\"ccname\" i],\ninput[name=\"cc-name\" i],\ninput[name=\"ppw-accountHolderName\" i],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
+const cardNumber = "\ninput[autocomplete=\"cc-number\" i],\ninput[autocomplete=\"ccnumber\" i],\ninput[autocomplete=\"cardnumber\" i],\ninput[autocomplete=\"card-number\" i],\ninput[name=\"ccnumber\" i],\ninput[name=\"cc-number\" i],\ninput[name*=card i][name*=number i],\ninput[name*=cardnumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
+const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\" i],\ninput[autocomplete=\"csc\" i],\ninput[autocomplete=\"cc-cvc\" i],\ninput[autocomplete=\"cvc\" i],\ninput[name=\"cvc\" i],\ninput[name=\"cc-cvc\" i],\ninput[name=\"cc-csc\" i],\ninput[name=\"csc\" i],\ninput[name*=security i][name*=code i]";
+const expirationMonth = "\n[autocomplete=\"cc-exp-month\" i],\n[autocomplete=\"cc_exp_month\" i],\n[name=\"ccmonth\" i],\n[name=\"ppw-expirationDate_month\" i],\n[name=cardExpiryMonth i],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i],\n[name*=cc-exp-month i],\n[name*=cc_exp_month i]";
+const expirationYear = "\n[autocomplete=\"cc-exp-year\" i],\n[autocomplete=\"cc_exp_year\" i],\n[name=\"ccyear\" i],\n[name=\"ppw-expirationDate_year\" i],\n[name=cardExpiryYear i],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i],\n[name*=cc-exp-year i],\n[name*=cc_exp_year i]";
+const expiration = "\n[autocomplete=\"cc-exp\" i],\n[name=\"cc-exp\" i],\n[name=\"exp-date\" i],\n[name=\"expirationDate\" i],\ninput[id*=expiration i]";
 const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firstname i], [autocomplete*=firstname i],\n[name*=first-name i], [autocomplete*=first-name i],\n[name*=first_name i], [autocomplete*=first_name i],\n[name*=givenname i], [autocomplete*=givenname i],\n[name*=given-name i],\n[name*=given_name i], [autocomplete*=given_name i],\n[name*=forename i], [autocomplete*=forename i]";
 const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
 const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
 const fullName = "\n[name=name], [autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
 const phone = "\n[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]), [name*=mobile i]:not([name*=type i]), [autocomplete=tel], [placeholder*=\"phone number\" i]";
-const addressStreet1 = "\n[name=address], [autocomplete=street-address], [autocomplete=address-line1],\n[name=street],\n[name=ppw-line1], [name*=addressLine1 i]";
-const addressStreet2 = "\n[name=address], [autocomplete=address-line2],\n[name=ppw-line2], [name*=addressLine2 i]";
-const addressCity = "\n[name=city], [autocomplete=address-level2],\n[name=ppw-city], [name*=addressCity i]";
-const addressProvince = "\n[name=province], [name=state], [autocomplete=address-level1]";
-const addressPostalCode = "\n[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],\n[name*=postalCode i], [name*=zipcode i]";
-const addressCountryCode = ["[name=country], [autocomplete=country],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
+const addressStreet1 = "\n[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],\n[name=street i],\n[name=ppw-line1 i], [name*=addressLine1 i]";
+const addressStreet2 = "\n[name=address2 i], [autocomplete=address-line2 i],\n[name=ppw-line2 i], [name*=addressLine2 i]";
+const addressCity = "\n[name=city i], [autocomplete=address-level2 i],\n[name=ppw-city i], [name*=addressCity i]";
+const addressProvince = "\n[name=province i], [name=state i], [autocomplete=address-level1 i]";
+const addressPostalCode = "\n[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i],\n[name*=postalCode i], [name*=zipcode i]";
+const addressCountryCode = ["[name=country i], [autocomplete=country i],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
 ];
-const birthdayDay = "\n[name=bday-day],\n[name*=birthday_day i], [name*=birthday-day i],\n[name=date_of_birth_day], [name=date-of-birth-day],\n[name^=birthdate_d], [name^=birthdate-d],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
-const birthdayMonth = "\n[name=bday-month],\n[name*=birthday_month i], [name*=birthday-month i],\n[name=date_of_birth_month], [name=date-of-birth-month],\n[name^=birthdate_m], [name^=birthdate-m],\nselect[name=\"mm\"]";
-const birthdayYear = "\n[name=bday-year],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year], [name=date-of-birth-year],\n[name^=birthdate_y], [name^=birthdate-y],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
-const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user]"), "input[name=username i]", // fix for `aa.com`
+const birthdayDay = "\n[name=bday-day i],\n[name*=birthday_day i], [name*=birthday-day i],\n[name=date_of_birth_day i], [name=date-of-birth-day i],\n[name^=birthdate_d i], [name^=birthdate-d i],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
+const birthdayMonth = "\n[name=bday-month i],\n[name*=birthday_month i], [name*=birthday-month i],\n[name=date_of_birth_month i], [name=date-of-birth-month i],\n[name^=birthdate_m i], [name^=birthdate-m i],\nselect[name=\"mm\" i]";
+const birthdayYear = "\n[name=bday-year i],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year i], [name=date-of-birth-year i],\n[name^=birthdate_y i], [name^=birthdate-y i],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
+const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user i]"), "input[name=username i]", // fix for `aa.com`
 "input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
-"input[name=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]", "input[autocomplete=username]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"username\" i]", "input[placeholder^=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
+"input[name=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]", "input[autocomplete=username i]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"username\" i]", "input[placeholder^=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 // Exported here for now, to be moved to configuration later
