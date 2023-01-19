@@ -54,7 +54,7 @@ class ExtensionInterface extends InterfacePrototype {
         this.removeAutofillUIFromPage()
     }
 
-    async resetAutofillUI () {
+    async resetAutofillUI (callback) {
         this.removeAutofillUIFromPage()
 
         // TOOD: can we use recategorizeAllInputs here?
@@ -63,8 +63,7 @@ class ExtensionInterface extends InterfacePrototype {
         await this.refreshSettings()
         await this.setupAutofill()
 
-        // TODO: Do we need this to be called?
-        // await this.setupSettingsPage({shouldLog: true})
+        if (callback) await callback()
 
         this.uiController = this.createUIController()
         await this.postInit()
@@ -196,7 +195,7 @@ class ExtensionInterface extends InterfacePrototype {
 
             switch (message.type) {
             case 'ddgUserReady':
-                this.resetAutofillUI()
+                this.resetAutofillUI(() => this.setupSettingsPage({shouldLog: true}))
                 break
             case 'contextualAutofill':
                 setValue(activeEl, formatDuckAddress(message.alias), this.globalConfig)

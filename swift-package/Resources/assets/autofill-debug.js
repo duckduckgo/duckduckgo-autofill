@@ -8084,14 +8084,13 @@ class ExtensionInterface extends _InterfacePrototype.default {
     this.removeAutofillUIFromPage();
   }
 
-  async resetAutofillUI() {
+  async resetAutofillUI(callback) {
     this.removeAutofillUIFromPage(); // TOOD: can we use recategorizeAllInputs here?
     // Start the setup process again
 
     await this.refreshSettings();
-    await this.setupAutofill(); // TODO: Do we need this to be called?
-    // await this.setupSettingsPage({shouldLog: true})
-
+    await this.setupAutofill();
+    if (callback) await callback();
     this.uiController = this.createUIController();
     await this.postInit();
   }
@@ -8227,7 +8226,9 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
       switch (message.type) {
         case 'ddgUserReady':
-          this.resetAutofillUI();
+          this.resetAutofillUI(() => this.setupSettingsPage({
+            shouldLog: true
+          }));
           break;
 
         case 'contextualAutofill':
@@ -14126,8 +14127,6 @@ class DefaultScanner {
 
 
   init() {
-    var _this = this;
-
     const delay = this.options.initialDelay; // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
 
     if (delay === 0) {
@@ -14137,25 +14136,22 @@ class DefaultScanner {
       setTimeout(() => this.scanAndObserve(), delay);
     }
 
-    return function () {
-      let {
-        silent
-      } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        silent: false
-      };
-      // remove Dax, listeners, timers, and observers
-      clearTimeout(_this.debounceTimer);
+    return () => {
+      var _this$device$activeFo;
 
-      _this.mutObs.disconnect();
+      const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput; // remove Dax, listeners, timers, and observers
 
-      _this.forms.forEach(form => {
+      clearTimeout(this.debounceTimer);
+      this.mutObs.disconnect();
+      this.forms.forEach(form => {
         form.resetAllInputs();
         form.removeAllDecorations();
       });
+      this.forms.clear(); // Bring the user back to the input they were interacting with
 
-      _this.forms.clear();
+      activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
 
-      if (_this.device.globalConfig.isDDGDomain && !silent) {
+      if (this.device.globalConfig.isDDGDomain) {
         (0, _autofillUtils.notifyWebApp)({
           deviceSignedIn: {
             value: false

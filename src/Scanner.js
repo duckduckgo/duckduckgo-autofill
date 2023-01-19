@@ -85,16 +85,23 @@ class DefaultScanner {
             // otherwise, use the delay time to defer the initial scan
             setTimeout(() => this.scanAndObserve(), delay)
         }
-        return ({ silent } = { silent: false }) => {
+        return () => {
+            const activeInput = this.device.activeForm?.activeInput
+
             // remove Dax, listeners, timers, and observers
             clearTimeout(this.debounceTimer)
             this.mutObs.disconnect()
+
             this.forms.forEach(form => {
                 form.resetAllInputs()
                 form.removeAllDecorations()
             })
             this.forms.clear()
-            if (this.device.globalConfig.isDDGDomain && !silent) {
+
+            // Bring the user back to the input they were interacting with
+            activeInput?.focus()
+
+            if (this.device.globalConfig.isDDGDomain) {
                 notifyWebApp({ deviceSignedIn: {value: false} })
             }
         }
