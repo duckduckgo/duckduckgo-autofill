@@ -66,7 +66,7 @@ class InterfacePrototype {
     deviceApi;
 
     /** @type {boolean} */
-    alreadyInitialized;
+    isInitializationStarted;
 
     /**
      * @param {GlobalConfig} config
@@ -81,7 +81,7 @@ class InterfacePrototype {
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
-        this.alreadyInitialized = false
+        this.isInitializationStarted = false
     }
 
     /**
@@ -240,7 +240,7 @@ class InterfacePrototype {
     }
 
     async startInit () {
-        if (this.alreadyInitialized) return
+        if (this.isInitializationStarted) return
 
         this.alreadyInitialized = true
 
@@ -305,9 +305,9 @@ class InterfacePrototype {
 
         const handler = async () => {
             if (document.readyState === 'complete') {
-                await this.startInit()
                 window.removeEventListener('load', handler)
                 document.removeEventListener('readystatechange', handler)
+                await this.startInit()
             }
         }
         if (document.readyState === 'complete') {

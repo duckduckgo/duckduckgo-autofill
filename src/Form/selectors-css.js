@@ -30,22 +30,22 @@ input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date])
 const password = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])`
 
 const cardName = `
-input[autocomplete="cc-name"],
-input[autocomplete="ccname"],
-input[name="ccname"],
-input[name="cc-name"],
-input[name="ppw-accountHolderName"],
+input[autocomplete="cc-name" i],
+input[autocomplete="ccname" i],
+input[name="ccname" i],
+input[name="cc-name" i],
+input[name="ppw-accountHolderName" i],
 input[id*=cardname i],
 input[id*=card-name i],
 input[id*=card_name i]`
 
 const cardNumber = `
-input[autocomplete="cc-number"],
-input[autocomplete="ccnumber"],
-input[autocomplete="cardnumber"],
-input[autocomplete="card-number"],
-input[name="ccnumber"],
-input[name="cc-number"],
+input[autocomplete="cc-number" i],
+input[autocomplete="ccnumber" i],
+input[autocomplete="cardnumber" i],
+input[autocomplete="card-number" i],
+input[name="ccnumber" i],
+input[name="cc-number" i],
 input[name*=card i][name*=number i],
 input[name*=cardnumber i],
 input[id*=cardnumber i],
@@ -53,22 +53,22 @@ input[id*=card-number i],
 input[id*=card_number i]`
 
 const cardSecurityCode = `
-input[autocomplete="cc-csc"],
-input[autocomplete="csc"],
-input[autocomplete="cc-cvc"],
-input[autocomplete="cvc"],
-input[name="cvc"],
-input[name="cc-cvc"],
-input[name="cc-csc"],
-input[name="csc"],
+input[autocomplete="cc-csc" i],
+input[autocomplete="csc" i],
+input[autocomplete="cc-cvc" i],
+input[autocomplete="cvc" i],
+input[name="cvc" i],
+input[name="cc-cvc" i],
+input[name="cc-csc" i],
+input[name="csc" i],
 input[name*=security i][name*=code i]`
 
 const expirationMonth = `
-[autocomplete="cc-exp-month"],
-[autocomplete="cc_exp_month"],
-[name="ccmonth"],
-[name="ppw-expirationDate_month"],
-[name=cardExpiryMonth],
+[autocomplete="cc-exp-month" i],
+[autocomplete="cc_exp_month" i],
+[name="ccmonth" i],
+[name="ppw-expirationDate_month" i],
+[name=cardExpiryMonth i],
 [name*=ExpDate_Month i],
 [name*=expiration i][name*=month i],
 [id*=expiration i][id*=month i],
@@ -76,11 +76,11 @@ const expirationMonth = `
 [name*=cc_exp_month i]`
 
 const expirationYear = `
-[autocomplete="cc-exp-year"],
-[autocomplete="cc_exp_year"],
-[name="ccyear"],
-[name="ppw-expirationDate_year"],
-[name=cardExpiryYear],
+[autocomplete="cc-exp-year" i],
+[autocomplete="cc_exp_year" i],
+[name="ccyear" i],
+[name="ppw-expirationDate_year" i],
+[name=cardExpiryYear i],
 [name*=ExpDate_Year i],
 [name*=expiration i][name*=year i],
 [id*=expiration i][id*=year i],
@@ -88,10 +88,10 @@ const expirationYear = `
 [name*=cc_exp_year i]`
 
 const expiration = `
-[autocomplete="cc-exp"],
-[name="cc-exp"],
-[name="exp-date"],
-[name="expirationDate"],
+[autocomplete="cc-exp" i],
+[name="cc-exp" i],
+[name="exp-date" i],
+[name="expirationDate" i],
 input[id*=expiration i]`
 
 const firstName = `
@@ -134,55 +134,55 @@ const phone = `
 [name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]), [name*=mobile i]:not([name*=type i]), [autocomplete=tel], [placeholder*="phone number" i]`
 
 const addressStreet1 = `
-[name=address], [autocomplete=street-address], [autocomplete=address-line1],
-[name=street],
-[name=ppw-line1], [name*=addressLine1 i]`
+[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],
+[name=street i],
+[name=ppw-line1 i], [name*=addressLine1 i]`
 
 const addressStreet2 = `
-[name=address], [autocomplete=address-line2],
-[name=ppw-line2], [name*=addressLine2 i]`
+[name=address2 i], [autocomplete=address-line2 i],
+[name=ppw-line2 i], [name*=addressLine2 i]`
 
 const addressCity = `
-[name=city], [autocomplete=address-level2],
-[name=ppw-city], [name*=addressCity i]`
+[name=city i], [autocomplete=address-level2 i],
+[name=ppw-city i], [name*=addressCity i]`
 
 const addressProvince = `
-[name=province], [name=state], [autocomplete=address-level1]`
+[name=province i], [name=state i], [autocomplete=address-level1 i]`
 
 const addressPostalCode = `
-[name=zip], [name=zip2], [name=postal], [autocomplete=postal-code], [autocomplete=zip-code],
+[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i],
 [name*=postalCode i], [name*=zipcode i]`
 
 const addressCountryCode = [
-    `[name=country], [autocomplete=country],
+    `[name=country i], [autocomplete=country i],
      [name*=countryCode i], [name*=country-code i],
      [name*=countryName i], [name*=country-name i]`,
     `select.idms-address-country` // Fix for Apple signup
 ]
 
 const birthdayDay = `
-[name=bday-day],
+[name=bday-day i],
 [name*=birthday_day i], [name*=birthday-day i],
-[name=date_of_birth_day], [name=date-of-birth-day],
-[name^=birthdate_d], [name^=birthdate-d],
+[name=date_of_birth_day i], [name=date-of-birth-day i],
+[name^=birthdate_d i], [name^=birthdate-d i],
 [aria-label="birthday" i][placeholder="day" i]`
 
 const birthdayMonth = `
-[name=bday-month],
+[name=bday-month i],
 [name*=birthday_month i], [name*=birthday-month i],
-[name=date_of_birth_month], [name=date-of-birth-month],
-[name^=birthdate_m], [name^=birthdate-m],
-select[name="mm"]`
+[name=date_of_birth_month i], [name=date-of-birth-month i],
+[name^=birthdate_m i], [name^=birthdate-m i],
+select[name="mm" i]`
 
 const birthdayYear = `
-[name=bday-year],
+[name=bday-year i],
 [name*=birthday_year i], [name*=birthday-year i],
-[name=date_of_birth_year], [name=date-of-birth-year],
-[name^=birthdate_y], [name^=birthdate-y],
+[name=date_of_birth_year i], [name=date-of-birth-year i],
+[name^=birthdate_y i], [name^=birthdate-y i],
 [aria-label="birthday" i][placeholder="year" i]`
 
 const username = [
-    `${GENERIC_TEXT_FIELD}[autocomplete^=user]`,
+    `${GENERIC_TEXT_FIELD}[autocomplete^=user i]`,
     `input[name=username i]`,
     // fix for `aa.com`
     `input[name="loginId" i]`,
@@ -192,7 +192,7 @@ const username = [
     `input[name="user-id" i]`,
     `input[id="login-id" i]`,
     `input[name=accountname i]`,
-    `input[autocomplete=username]`,
+    `input[autocomplete=username i]`,
     `input[name*=accountid i]`,
     `input[name="j_username" i]`,
     `input[id="username" i]`,
