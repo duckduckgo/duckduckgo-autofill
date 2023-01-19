@@ -1,5 +1,5 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import {autofillEnabled, sendAndWaitForAnswer} from '../autofill-utils.js'
+import {autofillEnabled, sendAndWaitForAnswer, notifyWebApp} from '../autofill-utils.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
@@ -47,7 +47,12 @@ class AndroidInterface extends InterfacePrototype {
 
     postInit () {
         const cleanup = this.scanner.init()
-        this.addLogoutListener(cleanup)
+        this.addLogoutListener(() => {
+            cleanup()
+            if (this.globalConfig.isDDGDomain) {
+                notifyWebApp({ deviceSignedIn: {value: false} })
+            }
+        })
     }
     /**
      * Used by the email web app

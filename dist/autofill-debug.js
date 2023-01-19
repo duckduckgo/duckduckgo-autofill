@@ -7367,7 +7367,17 @@ class AndroidInterface extends _InterfacePrototype.default {
 
   postInit() {
     const cleanup = this.scanner.init();
-    this.addLogoutListener(cleanup);
+    this.addLogoutListener(() => {
+      cleanup();
+
+      if (this.globalConfig.isDDGDomain) {
+        (0, _autofillUtils.notifyWebApp)({
+          deviceSignedIn: {
+            value: false
+          }
+        });
+      }
+    });
   }
   /**
    * Used by the email web app
@@ -7567,7 +7577,17 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     }
 
     const cleanup = this.scanner.init();
-    this.addLogoutListener(cleanup);
+    this.addLogoutListener(() => {
+      cleanup();
+
+      if (this.globalConfig.isDDGDomain) {
+        (0, _autofillUtils.notifyWebApp)({
+          deviceSignedIn: {
+            value: false
+          }
+        });
+      }
+    });
   }
   /**
    * Used by the email web app
@@ -8085,8 +8105,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
   }
 
   async resetAutofillUI(callback) {
-    this.removeAutofillUIFromPage(); // TOOD: can we use recategorizeAllInputs here?
-    // Start the setup process again
+    this.removeAutofillUIFromPage(); // Start the setup process again
 
     await this.refreshSettings();
     await this.setupAutofill();
@@ -8130,6 +8149,14 @@ class ExtensionInterface extends _InterfacePrototype.default {
           this._scannerCleanup = this.scanner.init();
           this.addLogoutListener(() => {
             this.resetAutofillUI();
+
+            if (this.globalConfig.isDDGDomain) {
+              (0, _autofillUtils.notifyWebApp)({
+                deviceSignedIn: {
+                  value: false
+                }
+              });
+            }
           });
           break;
         }
@@ -9673,7 +9700,7 @@ class Form {
 
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
-    this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
+    this.formAnalyzer = new _FormAnalyzer.default(form, input, deviceInterface.globalConfig, matching);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
     this.isHybrid = this.formAnalyzer.isHybrid;
@@ -10271,9 +10298,10 @@ class FormAnalyzer {
   /**
    * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {GlobalConfig} config
    * @param {Matching} [matching]
    */
-  constructor(form, input, matching) {
+  constructor(form, input, config, matching) {
     _defineProperty(this, "form", void 0);
 
     _defineProperty(this, "matching", void 0);
@@ -10297,9 +10325,9 @@ class FormAnalyzer {
      * @type {boolean}
      */
 
-    this.isHybrid = false; // Avoid autofill on our signup page
+    this.isHybrid = false; // Avoid autofill on Email Protection web app
 
-    if (window.location.href.match(/^https:\/\/(.+\.)?duckduckgo\.com\/email\/choose-address/i)) {
+    if (config.isDDGDomain) {
       return this;
     }
 
@@ -14008,8 +14036,6 @@ exports.createScanner = createScanner;
 
 var _Form = require("./Form/Form.js");
 
-var _autofillUtils = require("./autofill-utils.js");
-
 var _selectorsCss = require("./Form/selectors-css.js");
 
 var _matching = require("./Form/matching.js");
@@ -14150,14 +14176,6 @@ class DefaultScanner {
       this.forms.clear(); // Bring the user back to the input they were interacting with
 
       activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
-
-      if (this.device.globalConfig.isDDGDomain) {
-        (0, _autofillUtils.notifyWebApp)({
-          deviceSignedIn: {
-            value: false
-          }
-        });
-      }
     };
   }
   /**
@@ -14183,6 +14201,11 @@ class DefaultScanner {
 
   findEligibleInputs(context) {
     var _context$matches;
+
+    // Avoid autofill on Email Protection web app
+    if (this.device.globalConfig.isDDGDomain) {
+      return this;
+    }
 
     if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, _selectorsCss.FORM_INPUTS_SELECTOR)) {
       this.addInput(context);
@@ -14325,7 +14348,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":32,"./Form/matching.js":41,"./Form/selectors-css.js":42,"./autofill-utils.js":60}],49:[function(require,module,exports){
+},{"./Form/Form.js":32,"./Form/matching.js":41,"./Form/selectors-css.js":42}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15218,12 +15241,14 @@ class HTMLTooltipUIController extends _UIController.UIController {
     this._htmlTooltipOptions = Object.assign({}, _HTMLTooltip.defaultOptions, htmlTooltipOptions);
     window.addEventListener('pointerdown', this, true);
   }
+  /**
+   * Cleans up after this UI controller by removing the tooltip and all
+   * listeners.
+   */
+
 
   destroy() {
     this.removeTooltip();
-
-    this._removeListeners();
-
     window.removeEventListener('pointerdown', this, true);
   }
   /**

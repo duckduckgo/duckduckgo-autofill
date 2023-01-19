@@ -18,9 +18,10 @@ class FormAnalyzer {
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {GlobalConfig} config
      * @param {Matching} [matching]
      */
-    constructor (form, input, matching) {
+    constructor (form, input, config, matching) {
         this.form = form
         this.matching = matching || new Matching(matchingConfiguration)
         /**
@@ -40,8 +41,8 @@ class FormAnalyzer {
          */
         this.isHybrid = false
 
-        // Avoid autofill on our signup page
-        if (window.location.href.match(/^https:\/\/(.+\.)?duckduckgo\.com\/email\/choose-address/i)) {
+        // Avoid autofill on Email Protection web app
+        if (config.isDDGDomain) {
             return this
         }
 

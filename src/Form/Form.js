@@ -44,7 +44,7 @@ class Form {
     constructor (form, input, deviceInterface, matching, shouldAutoprompt = false) {
         this.form = form
         this.matching = matching || createMatching()
-        this.formAnalyzer = new FormAnalyzer(form, input, matching)
+        this.formAnalyzer = new FormAnalyzer(form, input, deviceInterface.globalConfig, matching)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
         this.isHybrid = this.formAnalyzer.isHybrid

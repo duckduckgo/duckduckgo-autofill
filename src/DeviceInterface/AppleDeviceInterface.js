@@ -1,5 +1,5 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import { formatDuckAddress, autofillEnabled } from '../autofill-utils.js'
+import { formatDuckAddress, autofillEnabled, notifyWebApp } from '../autofill-utils.js'
 import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
 import { defaultOptions } from '../UI/HTMLTooltip.js'
 import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
@@ -85,7 +85,12 @@ class AppleDeviceInterface extends InterfacePrototype {
             this.scanner.forms.forEach(form => form.redecorateAllInputs())
         }
         const cleanup = this.scanner.init()
-        this.addLogoutListener(cleanup)
+        this.addLogoutListener(() => {
+            cleanup()
+            if (this.globalConfig.isDDGDomain) {
+                notifyWebApp({ deviceSignedIn: {value: false} })
+            }
+        })
     }
 
     /**

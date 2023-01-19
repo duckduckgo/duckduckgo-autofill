@@ -1,5 +1,4 @@
 import { Form } from './Form/Form.js'
-import { notifyWebApp } from './autofill-utils.js'
 import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
 import { createMatching } from './Form/matching.js'
 
@@ -100,10 +99,6 @@ class DefaultScanner {
 
             // Bring the user back to the input they were interacting with
             activeInput?.focus()
-
-            if (this.device.globalConfig.isDDGDomain) {
-                notifyWebApp({ deviceSignedIn: {value: false} })
-            }
         }
     }
 
@@ -121,6 +116,11 @@ class DefaultScanner {
      * @param context
      */
     findEligibleInputs (context) {
+        // Avoid autofill on Email Protection web app
+        if (this.device.globalConfig.isDDGDomain) {
+            return this
+        }
+
         if ('matches' in context && context.matches?.(FORM_INPUTS_SELECTOR)) {
             this.addInput(context)
         } else {

@@ -5,7 +5,8 @@ import {
     sendAndWaitForAnswer,
     setValue,
     formatDuckAddress,
-    isAutofillEnabledFromProcessedConfig
+    isAutofillEnabledFromProcessedConfig,
+    notifyWebApp
 } from '../autofill-utils.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
@@ -57,8 +58,6 @@ class ExtensionInterface extends InterfacePrototype {
     async resetAutofillUI (callback) {
         this.removeAutofillUIFromPage()
 
-        // TOOD: can we use recategorizeAllInputs here?
-
         // Start the setup process again
         await this.refreshSettings()
         await this.setupAutofill()
@@ -104,6 +103,9 @@ class ExtensionInterface extends InterfacePrototype {
             this._scannerCleanup = this.scanner.init()
             this.addLogoutListener(() => {
                 this.resetAutofillUI()
+                if (this.globalConfig.isDDGDomain) {
+                    notifyWebApp({ deviceSignedIn: {value: false} })
+                }
             })
             break
         }

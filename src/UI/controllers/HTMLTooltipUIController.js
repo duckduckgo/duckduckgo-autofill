@@ -45,9 +45,12 @@ export class HTMLTooltipUIController extends UIController {
         window.addEventListener('pointerdown', this, true)
     }
 
+    /**
+     * Cleans up after this UI controller by removing the tooltip and all
+     * listeners.
+     */
     destroy () {
         this.removeTooltip()
-        this._removeListeners()
         window.removeEventListener('pointerdown', this, true)
     }
 
