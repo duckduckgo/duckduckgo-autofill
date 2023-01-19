@@ -58,6 +58,13 @@ test.describe('macos', () => {
         // ensure autofill populates the field
         await emailPage.assertEmailValue(personalAddress)
 
+        // ensure pixel was fired
+        await emailPage.assertPixelsFired([
+            'autofill_personal_address',
+            // FIXME ↓ : This is a bug, this pixel should not be fired here
+            'autofill_identity'
+        ])
+
         // ensure the popup DOES show a second time, even though Dax was not clicked (this is mac specific)
         await emailPage.clickIntoInput()
         await expect(personalAddressBtn).toBeVisible()
@@ -67,6 +74,16 @@ test.describe('macos', () => {
 
         // ...and ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
+
+        // ensure pixel was fired
+        await emailPage.assertPixelsFired([
+            'autofill_personal_address',
+            // FIXME ↓ : This is a bug, this pixel should not be fired here
+            'autofill_identity',
+            'autofill_private_address',
+            // FIXME ↓ : This is a bug, this pixel should not be fired here
+            'autofill_identity'
+        ])
     })
     test.describe('auto filling a signup form', () => {
         async function applyScript (page) {

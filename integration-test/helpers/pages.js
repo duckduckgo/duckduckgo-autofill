@@ -557,7 +557,13 @@ export function emailAutofillPage (page, server) {
             const email = page.locator(selectors.identity)
             await expect(email).toHaveValue(emailAddress)
         },
-        async assertPixelsFired (expectedPixels) {
+        async assertPixelsFired (pixelNames) {
+            const calls = await mockedCalls(page, ['sendJSPixel'])
+            expect(calls.length).toBeGreaterThanOrEqual(1)
+            const firedPixelNames = calls.map(([_, sent]) => sent.pixelName)
+            expect(firedPixelNames).toEqual(pixelNames)
+        },
+        async assertExtensionPixelsCaptured (expectedPixels) {
             let [backgroundPage] = await page.context().backgroundPages()
             const backgroundPagePixels = await backgroundPage.evaluateHandle(() => {
                 // eslint-disable-next-line no-undef
