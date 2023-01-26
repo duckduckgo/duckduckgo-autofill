@@ -452,6 +452,7 @@ class InterfacePrototype {
         // wait for the data back from the device
         dataPromise.then(response => {
             if (response) {
+                const data = response.success || response
                 if (config.type === 'identities') {
                     this.firePixel('autofill_identity')
                     switch (id) {
@@ -462,11 +463,14 @@ class InterfacePrototype {
                         this.firePixel('autofill_private_address')
                         break
                     default:
+                        // Also fire pixel if user autofilled identity which uses their personal address
+                        if (this.hasLocalAddresses && (data?.emailAddress === formatDuckAddress(this.#addresses.personalAddress))) {
+                            this.firePixel('autofill_personal_address')
+                        }
                         break
                     }
                 }
                 // some platforms do not include a `success` object, why?
-                const data = response.success || response
                 return this.selectedDetail(data, config.type)
             } else {
                 return Promise.reject(new Error('none-success response'))

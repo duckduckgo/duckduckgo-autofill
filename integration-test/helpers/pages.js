@@ -50,13 +50,13 @@ export function signupPage (page, server) {
             await expect(email).toHaveValue(emailAddress)
         },
         /**
-         * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[pixelName]} pixelName
+         * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[pixelName][]} pixelNames
          */
-        async assertPixelFired (pixelName) {
+        async assertPixelsFired (pixelNames) {
             const calls = await mockedCalls(page, ['sendJSPixel'])
             expect(calls.length).toBeGreaterThanOrEqual(1)
-            const [, sent] = calls[0]
-            expect(sent.pixelName).toEqual(pixelName)
+            const firedPixelNames = calls.map(([_, sent]) => sent.pixelName)
+            expect(firedPixelNames).toEqual(pixelNames)
         },
         async addNewForm () {
             const btn = page.locator('text=Add new form')
