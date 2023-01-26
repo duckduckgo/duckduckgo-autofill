@@ -20,7 +20,7 @@ import {DeviceApi, validate} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
     StoreFormDataCall,
-    AskToUnlockProviderCall
+    AskToUnlockProviderCall, SendJSPixelCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
@@ -454,6 +454,16 @@ class InterfacePrototype {
             if (response) {
                 if (config.type === 'identities') {
                     this.firePixel('autofill_identity')
+                    switch (id) {
+                    case 'personalAddress':
+                        this.firePixel('autofill_personal_address')
+                        break
+                    case 'privateAddress':
+                        this.firePixel('autofill_private_address')
+                        break
+                    default:
+                        break
+                    }
                 }
                 // some platforms do not include a `success` object, why?
                 const data = response.success || response
@@ -700,9 +710,11 @@ class InterfacePrototype {
 
     /**
      * Sends a pixel to be fired on the client side
-     * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} _pixelName
+     * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
      */
-    firePixel (_pixelName) {}
+    firePixel (pixelName) {
+        this.deviceApi.notify(new SendJSPixelCall({pixelName}))
+    }
 
     /**
      * This serves as a single place to create a default instance

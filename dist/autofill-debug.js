@@ -7895,12 +7895,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     });
   }
 
-  firePixel(pixelName) {
-    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
-      pixelName
-    }));
-  }
-
 }
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
@@ -8020,12 +8014,6 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
     (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : _this$uiController.updateItems(credentials);
   }
 
-  firePixel(pixelName) {
-    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
-      pixelName
-    }));
-  }
-
 }
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
@@ -8045,8 +8033,6 @@ var _autofillUtils = require("../autofill-utils.js");
 var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController.js");
 
 var _HTMLTooltip = require("../UI/HTMLTooltip.js");
-
-var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8142,12 +8128,6 @@ class ExtensionInterface extends _InterfacePrototype.default {
     }, data => {
       this.storeLocalAddresses(data);
       return resolve(data);
-    }));
-  }
-
-  firePixel(pixelName) {
-    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
-      pixelName
     }));
   }
   /**
@@ -8260,7 +8240,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../UI/HTMLTooltip.js":53,"../UI/controllers/HTMLTooltipUIController.js":54,"../autofill-utils.js":60,"../deviceApiCalls/__generated__/deviceApiCalls.js":64,"./InterfacePrototype.js":27}],27:[function(require,module,exports){
+},{"../UI/HTMLTooltip.js":53,"../UI/controllers/HTMLTooltipUIController.js":54,"../autofill-utils.js":60,"./InterfacePrototype.js":27}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8819,6 +8799,19 @@ class InterfacePrototype {
       if (response) {
         if (config.type === 'identities') {
           this.firePixel('autofill_identity');
+
+          switch (id) {
+            case 'personalAddress':
+              this.firePixel('autofill_personal_address');
+              break;
+
+            case 'privateAddress':
+              this.firePixel('autofill_private_address');
+              break;
+
+            default:
+              break;
+          }
         } // some platforms do not include a `success` object, why?
 
 
@@ -9114,11 +9107,15 @@ class InterfacePrototype {
   }
   /**
    * Sends a pixel to be fired on the client side
-   * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} _pixelName
+   * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
    */
 
 
-  firePixel(_pixelName) {}
+  firePixel(pixelName) {
+    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
+      pixelName
+    }));
+  }
   /**
    * This serves as a single place to create a default instance
    * of InterfacePrototype that can be useful in testing scenarios
@@ -14536,9 +14533,8 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
    * @param {InputTypeConfigs} config
    * @param {TooltipItemRenderer[]} items
    * @param {{onSelect(id:string): void}} callbacks
-   * @param {import("../DeviceInterface/InterfacePrototype").default} device
    */
-  render(config, items, callbacks, device) {
+  render(config, items, callbacks) {
     const {
       wrapperClass,
       css
@@ -14569,19 +14565,6 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
     this.autofillButtons.forEach(btn => {
       this.registerClickableButton(btn, () => {
         callbacks.onSelect(btn.id);
-
-        switch (btn.id) {
-          case 'personalAddress':
-            device.firePixel('autofill_personal_address');
-            break;
-
-          case 'privateAddress':
-            device.firePixel('autofill_private_address');
-            break;
-
-          default:
-            break;
-        }
       });
     });
     this.init();
@@ -15100,7 +15083,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
       onSelect: id => {
         this._onSelect(config, data, id);
       }
-    }, this._options.device);
+    });
   }
 
   updateItems(data) {
@@ -15115,7 +15098,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
         onSelect: id => {
           this._onSelect(config, data, id);
         }
-      }, this._options.device);
+      });
     } // TODO: can we remove this timeout once implemented with real APIs?
     // The timeout is needed because clientHeight and clientWidth were returning 0
 

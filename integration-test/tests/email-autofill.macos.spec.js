@@ -60,9 +60,8 @@ test.describe('macos', () => {
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            'autofill_personal_address',
-            // FIXME ↓ : This is a bug, this pixel should not be fired here
-            'autofill_identity'
+            'autofill_identity',
+            'autofill_personal_address'
         ])
 
         // ensure the popup DOES show a second time, even though Dax was not clicked (this is mac specific)
@@ -77,12 +76,10 @@ test.describe('macos', () => {
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            'autofill_personal_address',
-            // FIXME ↓ : This is a bug, this pixel should not be fired here
             'autofill_identity',
-            'autofill_private_address',
-            // FIXME ↓ : This is a bug, this pixel should not be fired here
-            'autofill_identity'
+            'autofill_personal_address',
+            'autofill_identity',
+            'autofill_private_address'
         ])
     })
     test.describe('auto filling a signup form', () => {

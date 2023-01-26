@@ -93,7 +93,7 @@ export class HTMLTooltipUIController extends UIController {
                 onSelect: (id) => {
                     this._onSelect(config, data, id)
                 }
-            }, this._options.device)
+            })
     }
 
     updateItems (data) {
@@ -110,7 +110,7 @@ export class HTMLTooltipUIController extends UIController {
                 onSelect: (id) => {
                     this._onSelect(config, data, id)
                 }
-            }, this._options.device)
+            })
         }
         // TODO: can we remove this timeout once implemented with real APIs?
         // The timeout is needed because clientHeight and clientWidth were returning 0
