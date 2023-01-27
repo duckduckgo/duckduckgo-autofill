@@ -12309,10 +12309,10 @@ const setValue = (el, val, config) => {
 exports.setValue = setValue;
 
 const safeExecute = function (el, fn) {
-  let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  const {
-    checkVisibility = true
-  } = opts;
+  let _opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  // TODO: temporary fix to misterious bug in Chrome
+  // const {checkVisibility = true} = opts
   const intObs = new IntersectionObserver(changes => {
     for (const change of changes) {
       // Feature detection
@@ -12326,9 +12326,11 @@ const safeExecute = function (el, fn) {
          * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
          * During testing it was found that windows does not `change.isVisible` properly.
          */
-        if (!checkVisibility || change.isVisible) {
-          fn();
-        }
+        // TODO: temporary fix to misterious bug in Chrome
+        // if (!checkVisibility || change.isVisible) {
+        //     fn()
+        // }
+        fn();
       }
     }
 
