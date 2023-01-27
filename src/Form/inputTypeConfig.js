@@ -123,7 +123,7 @@ const inputTypeConfig = {
         shouldDecorate: async () => false,
         dataType: '',
         tooltipItem: (_data) => {
-            throw new Error('unreachable')
+            throw new Error('unreachable - setting tooltip to unknown field type')
         }
     }
 }

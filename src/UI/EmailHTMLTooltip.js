@@ -42,11 +42,11 @@ ${this.options.css}
 
         this.registerClickableButton(this.usePersonalButton, () => {
             this.fillForm('personalAddress')
-            firePixel('autofill_personal_address')
+            firePixel({pixelName: 'autofill_personal_address'})
         })
         this.registerClickableButton(this.usePrivateButton, () => {
             this.fillForm('privateAddress')
-            firePixel('autofill_private_address')
+            firePixel({pixelName: 'autofill_private_address'})
         })
 
         // Get the alias from the extension

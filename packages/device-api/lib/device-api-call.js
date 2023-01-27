@@ -91,7 +91,7 @@ export class DeviceApiCall {
         if (validator) {
             const result = validator?.safeParse(data)
             if (!result) {
-                throw new Error('unreachable')
+                throw new Error('unreachable, data failure', data)
             }
             if (!result.success) {
                 if ('error' in result) {

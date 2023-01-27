@@ -29,6 +29,12 @@ export class HTMLTooltipUIController extends UIController {
     _htmlTooltipOptions;
 
     /**
+     * Overwritten when calling createTooltip
+     * @type {import('../../Form/matching').SupportedTypes}
+     */
+    _activeInputType = 'unknown';
+
+    /**
      * @param {HTMLTooltipControllerOptions} options
      * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
      */
@@ -91,13 +97,13 @@ export class HTMLTooltipUIController extends UIController {
         return new DataHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
             .render(config, asRenderers, {
                 onSelect: (id) => {
-                    this._onSelect(config, data, id)
+                    this._onSelect(topContextData.inputType, data, id)
                 }
             })
     }
 
     updateItems (data) {
-        if (!this._activeInputType) return
+        if (this._activeInputType === 'unknown') return
 
         const config = getInputConfigFromType(this._activeInputType)
 
@@ -108,7 +114,7 @@ export class HTMLTooltipUIController extends UIController {
         if (activeTooltip instanceof DataHTMLTooltip) {
             activeTooltip?.render(config, asRenderers, {
                 onSelect: (id) => {
-                    this._onSelect(config, data, id)
+                    this._onSelect(this._activeInputType, data, id)
                 }
             })
         }
@@ -213,12 +219,12 @@ export class HTMLTooltipUIController extends UIController {
      *
      * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
      *
-     * @param {InputTypeConfigs} config
+     * @param {import('../../Form/matching').SupportedTypes} inputType
      * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
      * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
      */
-    _onSelect (config, data, id) {
-        return this._options.device.onSelect(config, data, id)
+    _onSelect (inputType, data, id) {
+        return this._options.device.onSelect(inputType, data, id)
     }
 
     isActive () {

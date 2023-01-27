@@ -44,19 +44,31 @@ export function signupPage (page, server) {
             const button = await page.waitForSelector(`button:has-text("${name}")`)
             await button.click({ force: true })
         },
+        async selectLastName (name) {
+            const input = page.locator('#lastname')
+            await input.click()
+            const button = await page.waitForSelector(`button:has-text("${name}")`)
+            await button.click({ force: true })
+        },
         async assertEmailValue (emailAddress) {
             const {selectors} = constants.fields.email
             const email = page.locator(selectors.identity)
             await expect(email).toHaveValue(emailAddress)
         },
+        async selectFirstEmailField (selector) {
+            const input = page.locator(decoratedFirstInputSelector)
+            await input.click()
+            const button = page.locator(`button:has-text("${selector}")`)
+            await button.click({ force: true })
+        },
         /**
-         * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[pixelName]} pixelName
+         * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */
-        async assertPixelFired (pixelName) {
+        async assertPixelsFired (pixels) {
             const calls = await mockedCalls(page, ['sendJSPixel'])
             expect(calls.length).toBeGreaterThanOrEqual(1)
-            const [, sent] = calls[0]
-            expect(sent.pixelName).toEqual(pixelName)
+            const firedPixels = calls.map(([_, {pixelName, params}]) => params ? ({pixelName, params}) : ({pixelName}))
+            expect(firedPixels).toEqual(pixels)
         },
         async addNewForm () {
             const btn = page.locator('text=Add new form')
@@ -568,7 +580,16 @@ export function emailAutofillPage (page, server) {
             const email = page.locator(selectors.identity)
             await expect(email).toHaveValue(emailAddress)
         },
-        async assertPixelsFired (expectedPixels) {
+        /**
+         * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
+         */
+        async assertPixelsFired (pixels) {
+            const calls = await mockedCalls(page, ['sendJSPixel'])
+            expect(calls.length).toBeGreaterThanOrEqual(1)
+            const firedPixels = calls.map(([_, {pixelName, params}]) => params ? ({pixelName, params}) : ({pixelName}))
+            expect(firedPixels).toEqual(pixels)
+        },
+        async assertExtensionPixelsCaptured (expectedPixels) {
             let [backgroundPage] = await page.context().backgroundPages()
             const backgroundPagePixels = await backgroundPage.evaluateHandle(() => {
                 // eslint-disable-next-line no-undef

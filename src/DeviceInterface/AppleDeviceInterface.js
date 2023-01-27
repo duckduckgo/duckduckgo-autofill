@@ -7,7 +7,7 @@ import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
 import { createNotification, createRequest } from '../../packages/device-api/index.js'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
-import {CheckCredentialsProviderStatusCall, SendJSPixelCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {CheckCredentialsProviderStatusCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {getInputType} from '../Form/matching.js'
 
 /**
@@ -357,10 +357,6 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
             poll()
         })
-    }
-
-    firePixel (pixelName) {
-        this.deviceApi.notify(new SendJSPixelCall({pixelName}))
     }
 }
 

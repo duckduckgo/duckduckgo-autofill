@@ -176,8 +176,9 @@ const setValue = (el, val, config) => {
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
  * https://developers.google.com/web/updates/2019/02/intersectionobserver-v2
  */
-const safeExecute = (el, fn, opts = {}) => {
-    const {checkVisibility = true} = opts
+const safeExecute = (el, fn, _opts = {}) => {
+    // TODO: temporary fix to misterious bug in Chrome
+    // const {checkVisibility = true} = opts
     const intObs = new IntersectionObserver((changes) => {
         for (const change of changes) {
             // Feature detection
@@ -190,9 +191,11 @@ const safeExecute = (el, fn, opts = {}) => {
                  * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
                  * During testing it was found that windows does not `change.isVisible` properly.
                  */
-                if (!checkVisibility || change.isVisible) {
-                    fn()
-                }
+                // TODO: temporary fix to misterious bug in Chrome
+                // if (!checkVisibility || change.isVisible) {
+                //     fn()
+                // }
+                fn()
             }
         }
         intObs.disconnect()

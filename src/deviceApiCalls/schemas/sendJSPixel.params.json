@@ -4,25 +4,50 @@
   "type": "object",
   "description": "Send pixels data to be fired from the native layer",
   "additionalProperties": false,
-  "properties": {
-    "pixelName": {
-      "oneOf": [
-        {
+  "oneOf": [
+    {
+      "properties": {
+        "pixelName": {
           "type": "string",
           "const": "autofill_identity"
         },
-        {
-          "type": "string",
-          "const": "autofill_private_address"
-        },
-        {
+        "params": {
+          "properties": {
+            "fieldType": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "pixelName": {
           "type": "string",
           "const": "autofill_personal_address"
         }
-      ]
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "pixelName": {
+          "type": "string",
+          "const": "autofill_private_address"
+        }
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
     }
-  },
-  "required": [
-    "pixelName"
   ]
 }

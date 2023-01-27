@@ -943,7 +943,7 @@ class DeviceApiCall {
       const result = validator === null || validator === void 0 ? void 0 : validator.safeParse(data);
 
       if (!result) {
-        throw new Error('unreachable');
+        throw new Error('unreachable, data failure', data);
       }
 
       if (!result.success) {
@@ -4219,12 +4219,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     });
   }
 
-  firePixel(pixelName) {
-    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
-      pixelName
-    }));
-  }
-
 }
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
@@ -4344,12 +4338,6 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
     (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : _this$uiController.updateItems(credentials);
   }
 
-  firePixel(pixelName) {
-    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
-      pixelName
-    }));
-  }
-
 }
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
@@ -4369,8 +4357,6 @@ var _autofillUtils = require("../autofill-utils.js");
 var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController.js");
 
 var _HTMLTooltip = require("../UI/HTMLTooltip.js");
-
-var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4466,12 +4452,6 @@ class ExtensionInterface extends _InterfacePrototype.default {
     }, data => {
       this.storeLocalAddresses(data);
       return resolve(data);
-    }));
-  }
-
-  firePixel(pixelName) {
-    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
-      pixelName
     }));
   }
   /**
@@ -4584,7 +4564,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../UI/HTMLTooltip.js":45,"../UI/controllers/HTMLTooltipUIController.js":46,"../autofill-utils.js":52,"../deviceApiCalls/__generated__/deviceApiCalls.js":56,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
+},{"../UI/HTMLTooltip.js":45,"../UI/controllers/HTMLTooltipUIController.js":46,"../autofill-utils.js":52,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5112,14 +5092,16 @@ class InterfacePrototype {
    * When an item was selected, we then call back to the device
    * to fetch the full suite of data needed to complete the autofill
    *
-   * @param {InputTypeConfigs} config
+   * @param {import('../Form/matching').SupportedTypes} inputType
    * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
    * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
    */
 
 
-  onSelect(config, items, id) {
+  onSelect(inputType, items, id) {
     id = String(id);
+    const mainType = (0, _matching.getMainTypeFromType)(inputType);
+    const subtype = (0, _matching.getSubtypeFromType)(inputType);
 
     if (id === _Credentials.PROVIDER_LOCKED) {
       return this.askToUnlockProvider();
@@ -5129,7 +5111,7 @@ class InterfacePrototype {
     if (!matchingData) throw new Error('unreachable (fatal)');
 
     const dataPromise = (() => {
-      switch (config.type) {
+      switch (mainType) {
         case 'creditCards':
           return this.getAutofillCreditCard(id);
 
@@ -5155,13 +5137,45 @@ class InterfacePrototype {
 
     dataPromise.then(response => {
       if (response) {
-        if (config.type === 'identities') {
-          this.firePixel('autofill_identity');
+        const data = response.success || response;
+
+        if (mainType === 'identities') {
+          this.firePixel({
+            pixelName: 'autofill_identity',
+            params: {
+              fieldType: subtype
+            }
+          });
+
+          switch (id) {
+            case 'personalAddress':
+              this.firePixel({
+                pixelName: 'autofill_personal_address'
+              });
+              break;
+
+            case 'privateAddress':
+              this.firePixel({
+                pixelName: 'autofill_private_address'
+              });
+              break;
+
+            default:
+              // Also fire pixel when filling an identity with the personal duck address from an email field
+              const checks = [subtype === 'emailAddress', this.hasLocalAddresses, (data === null || data === void 0 ? void 0 : data.emailAddress) === (0, _autofillUtils.formatDuckAddress)(_classPrivateFieldGet(this, _addresses).personalAddress)];
+
+              if (checks.every(Boolean)) {
+                this.firePixel({
+                  pixelName: 'autofill_personal_address'
+                });
+              }
+
+              break;
+          }
         } // some platforms do not include a `success` object, why?
 
 
-        const data = response.success || response;
-        return this.selectedDetail(data, config.type);
+        return this.selectedDetail(data, mainType);
       } else {
         return Promise.reject(new Error('none-success response'));
       }
@@ -5452,11 +5466,13 @@ class InterfacePrototype {
   }
   /**
    * Sends a pixel to be fired on the client side
-   * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} _pixelName
+   * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams} pixelParams
    */
 
 
-  firePixel(_pixelName) {}
+  firePixel(pixelParams) {
+    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall(pixelParams));
+  }
   /**
    * This serves as a single place to create a default instance
    * of InterfacePrototype that can be useful in testing scenarios
@@ -7580,6 +7596,7 @@ const inferCountryCodeFromElement = el => {
 exports.inferCountryCodeFromElement = inferCountryCodeFromElement;
 
 const getMMAndYYYYFromString = expiration => {
+  /** @type {string[]} */
   const values = expiration.match(/(\d+)/g) || [];
   return values === null || values === void 0 ? void 0 : values.reduce((output, current) => {
     if (Number(current) > 12) {
@@ -7993,7 +8010,7 @@ const inputTypeConfig = {
     shouldDecorate: async () => false,
     dataType: '',
     tooltipItem: _data => {
-      throw new Error('unreachable');
+      throw new Error('unreachable - setting tooltip to unknown field type');
     }
   }
 };
@@ -11034,11 +11051,15 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
     const firePixel = this.device.firePixel.bind(this.device);
     this.registerClickableButton(this.usePersonalButton, () => {
       this.fillForm('personalAddress');
-      firePixel('autofill_personal_address');
+      firePixel({
+        pixelName: 'autofill_personal_address'
+      });
     });
     this.registerClickableButton(this.usePrivateButton, () => {
       this.fillForm('privateAddress');
-      firePixel('autofill_private_address');
+      firePixel({
+        pixelName: 'autofill_private_address'
+      });
     }); // Get the alias from the extension
 
     this.device.getAddresses().then(this.updateAddresses);
@@ -11427,6 +11448,11 @@ class HTMLTooltipUIController extends _UIController.UIController {
   /** @type {import('../HTMLTooltip.js').HTMLTooltipOptions} */
 
   /**
+   * Overwritten when calling createTooltip
+   * @type {import('../../Form/matching').SupportedTypes}
+   */
+
+  /**
    * @param {HTMLTooltipControllerOptions} options
    * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
    */
@@ -11439,6 +11465,8 @@ class HTMLTooltipUIController extends _UIController.UIController {
     _defineProperty(this, "_options", void 0);
 
     _defineProperty(this, "_htmlTooltipOptions", void 0);
+
+    _defineProperty(this, "_activeInputType", 'unknown');
 
     this._options = options;
     this._htmlTooltipOptions = Object.assign({}, _HTMLTooltip.defaultOptions, htmlTooltipOptions);
@@ -11501,13 +11529,13 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
     return new _DataHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(config, asRenderers, {
       onSelect: id => {
-        this._onSelect(config, data, id);
+        this._onSelect(topContextData.inputType, data, id);
       }
     });
   }
 
   updateItems(data) {
-    if (!this._activeInputType) return;
+    if (this._activeInputType === 'unknown') return;
     const config = (0, _inputTypeConfig.getInputConfigFromType)(this._activeInputType); // convert the data into tool tip item renderers
 
     const asRenderers = data.map(d => config.tooltipItem(d));
@@ -11516,7 +11544,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     if (activeTooltip instanceof _DataHTMLTooltip.default) {
       activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.render(config, asRenderers, {
         onSelect: id => {
-          this._onSelect(config, data, id);
+          this._onSelect(this._activeInputType, data, id);
         }
       });
     } // TODO: can we remove this timeout once implemented with real APIs?
@@ -11634,14 +11662,14 @@ class HTMLTooltipUIController extends _UIController.UIController {
    *
    * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
    *
-   * @param {InputTypeConfigs} config
+   * @param {import('../../Form/matching').SupportedTypes} inputType
    * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
    * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
    */
 
 
-  _onSelect(config, data, id) {
-    return this._options.device.onSelect(config, data, id);
+  _onSelect(inputType, data, id) {
+    return this._options.device.onSelect(inputType, data, id);
   }
 
   isActive() {
@@ -12375,10 +12403,10 @@ const setValue = (el, val, config) => {
 exports.setValue = setValue;
 
 const safeExecute = function (el, fn) {
-  let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  const {
-    checkVisibility = true
-  } = opts;
+  let _opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  // TODO: temporary fix to misterious bug in Chrome
+  // const {checkVisibility = true} = opts
   const intObs = new IntersectionObserver(changes => {
     for (const change of changes) {
       // Feature detection
@@ -12392,9 +12420,11 @@ const safeExecute = function (el, fn) {
          * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
          * During testing it was found that windows does not `change.isVisible` properly.
          */
-        if (!checkVisibility || change.isVisible) {
-          fn();
-        }
+        // TODO: temporary fix to misterious bug in Chrome
+        // if (!checkVisibility || change.isVisible) {
+        //     fn()
+        // }
+        fn();
       }
     }
 
