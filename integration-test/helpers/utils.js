@@ -15,4 +15,13 @@ const createAvailableInputTypes = (overrides) => {
     }
 }
 
-export {createAvailableInputTypes}
+/**
+ * Given a Duck address returns the username without the domain
+ * @param {string} emailAddress
+ * @returns {string}
+ */
+const stripDuckExtension = (emailAddress) => {
+    return emailAddress.replace('@duck.com', '')
+}
+
+export {createAvailableInputTypes, stripDuckExtension}

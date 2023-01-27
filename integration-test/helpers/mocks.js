@@ -30,6 +30,14 @@ export const constants = {
             selectors: {
                 credential: '[data-ddg-inputtype="credentials.password"]'
             }
+        },
+        identities: {
+            id: '01',
+            title: 'Main identity',
+            emailAddress: 'user@gmail.com',
+            firstName: 'First',
+            lastName: 'Last',
+            phone: '+1234567890'
         }
     },
     /** @type {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} */

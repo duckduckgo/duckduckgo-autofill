@@ -7,7 +7,7 @@ import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {createAvailableInputTypes} from '../helpers/utils.js'
+import {createAvailableInputTypes, stripDuckExtension} from '../helpers/utils.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -90,11 +90,10 @@ test.describe('macos', () => {
                 .applyTo(page)
         }
 
-        const {personalAddress} = constants.fields.email
-        let identity = {
-            id: '01',
-            title: 'Main identity',
-            firstName: 'shane',
+        const {personalAddress, privateAddress0} = constants.fields.email
+        const identity = constants.fields.identities
+        const identityWithDuckAddress = {
+            ...identity,
             emailAddress: personalAddress
         }
         test('with an identity only', async ({page}) => {
@@ -111,8 +110,46 @@ test.describe('macos', () => {
             await signup.navigate()
             await signup.assertEmailHasNoDaxIcon()
             await signup.selectGeneratedPassword()
-            await signup.selectFirstName('shane Main identity')
+            await signup.selectFirstName(identity.firstName + ' Main identity')
             await signup.assertEmailValue(identity.emailAddress)
+            await signup.assertPixelsFired(['autofill_identity'])
+        })
+        test('with an identity + Email Protection, autofill using duck address in identity', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withPersonalEmail(stripDuckExtension(personalAddress))
+                .withPrivateEmail(stripDuckExtension(privateAddress0))
+                .withIdentity(identityWithDuckAddress)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            await signup.navigate()
+            await signup.selectGeneratedPassword()
+            await signup.selectFirstEmailField(identityWithDuckAddress.emailAddress)
+            await signup.assertEmailValue(identityWithDuckAddress.emailAddress)
+            await signup.assertPixelsFired(['autofill_identity', 'autofill_personal_address'])
+        })
+        test('with an identity + Email Protection, autofill using duck address in identity triggered from name field', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withPersonalEmail(stripDuckExtension(personalAddress))
+                .withPrivateEmail(stripDuckExtension(privateAddress0))
+                .withIdentity(identityWithDuckAddress)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            await signup.navigate()
+            await signup.selectGeneratedPassword()
+            await signup.selectFirstName(identityWithDuckAddress.firstName)
+            await signup.assertEmailValue(identityWithDuckAddress.emailAddress)
             await signup.assertPixelsFired(['autofill_identity'])
         })
         test('with no input types', async ({page}) => {
@@ -130,18 +167,13 @@ test.describe('macos', () => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
-        const {personalAddress} = constants.fields.email
+        const {personalAddress, privateAddress0} = constants.fields.email
 
         await createWebkitMocks()
             .withAvailableInputTypes({email: true})
-            .withPrivateEmail('0')
-            .withPersonalEmail('shane-123')
-            .withIdentity({
-                id: '01',
-                title: 'Main identity',
-                firstName: 'shane',
-                emailAddress: personalAddress
-            })
+            .withPersonalEmail(stripDuckExtension(personalAddress))
+            .withPrivateEmail(stripDuckExtension(privateAddress0))
+            .withIdentity(constants.fields.identities)
             .applyTo(page)
 
         // Load the autofill.js script with replacements
@@ -153,7 +185,7 @@ test.describe('macos', () => {
         const signup = signupPage(page, server)
         await signup.navigate()
         await signup.addNewForm()
-        await signup.selectSecondEmailField(`${personalAddress} Main identity`)
+        await signup.selectSecondEmailField(personalAddress)
         await signup.assertSecondEmailValue(personalAddress)
         await signup.assertFirstEmailEmpty()
         await signup.assertPixelsFired(['autofill_identity', 'autofill_personal_address'])

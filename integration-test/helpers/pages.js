@@ -49,6 +49,12 @@ export function signupPage (page, server) {
             const email = page.locator(selectors.identity)
             await expect(email).toHaveValue(emailAddress)
         },
+        async selectFirstEmailField (selector) {
+            const input = page.locator(decoratedFirstInputSelector)
+            await input.click()
+            const button = page.locator(`button:has-text("${selector}")`)
+            await button.click({ force: true })
+        },
         /**
          * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[pixelName][]} pixelNames
          */

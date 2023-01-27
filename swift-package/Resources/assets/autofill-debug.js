@@ -4619,7 +4619,7 @@ class DeviceApiCall {
       const result = validator === null || validator === void 0 ? void 0 : validator.safeParse(data);
 
       if (!result) {
-        throw new Error('unreachable');
+        throw new Error('unreachable, data failure', data);
       }
 
       if (!result.success) {
@@ -8754,14 +8754,17 @@ class InterfacePrototype {
    * When an item was selected, we then call back to the device
    * to fetch the full suite of data needed to complete the autofill
    *
-   * @param {InputTypeConfigs} config
+   * @param {import('../Form/matching').SupportedTypes} inputType
    * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
    * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
    */
 
 
-  onSelect(config, items, id) {
+  onSelect(inputType, items, id) {
     id = String(id);
+    const mainType = (0, _matching.getMainTypeFromType)(inputType);
+    const subtype = (0, _matching.getSubtypeFromType)(inputType);
+    console.log(inputType);
 
     if (id === _Credentials.PROVIDER_LOCKED) {
       return this.askToUnlockProvider();
@@ -8771,7 +8774,7 @@ class InterfacePrototype {
     if (!matchingData) throw new Error('unreachable (fatal)');
 
     const dataPromise = (() => {
-      switch (config.type) {
+      switch (mainType) {
         case 'creditCards':
           return this.getAutofillCreditCard(id);
 
@@ -8799,7 +8802,8 @@ class InterfacePrototype {
       if (response) {
         const data = response.success || response;
 
-        if (config.type === 'identities') {
+        if (mainType === 'identities') {
+          // TODO: add trigger field type (subtype)
           this.firePixel('autofill_identity');
 
           switch (id) {
@@ -8812,8 +8816,10 @@ class InterfacePrototype {
               break;
 
             default:
-              // Also fire pixel if user autofilled identity which uses their personal address
-              if (this.hasLocalAddresses && (data === null || data === void 0 ? void 0 : data.emailAddress) === (0, _autofillUtils.formatDuckAddress)(_classPrivateFieldGet(this, _addresses).personalAddress)) {
+              // Also fire pixel when filling an identity with the personal duck address from an email field
+              const checks = [subtype === 'emailAddress', this.hasLocalAddresses, (data === null || data === void 0 ? void 0 : data.emailAddress) === (0, _autofillUtils.formatDuckAddress)(_classPrivateFieldGet(this, _addresses).personalAddress)];
+
+              if (checks.every(Boolean)) {
                 this.firePixel('autofill_personal_address');
               }
 
@@ -8822,7 +8828,7 @@ class InterfacePrototype {
         } // some platforms do not include a `success` object, why?
 
 
-        return this.selectedDetail(data, config.type);
+        return this.selectedDetail(data, mainType);
       } else {
         return Promise.reject(new Error('none-success response'));
       }
@@ -8958,12 +8964,15 @@ class InterfacePrototype {
       const {
         credentials,
         availableInputTypes
-      } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
+      } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema);
+      console.log('data validated'); // Update local settings and data
 
       this.settings.setAvailableInputTypes(availableInputTypes);
-      this.storeLocalCredentials(credentials); // rerender the tooltip
+      this.storeLocalCredentials(credentials);
+      console.log('local settings updated'); // rerender the tooltip
 
-      (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : _this$uiController4.updateItems(credentials); // If the tooltip is open on an autofill type that's not available, close it
+      (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : _this$uiController4.updateItems(credentials);
+      console.log('items updated'); // If the tooltip is open on an autofill type that's not available, close it
 
       const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
 
@@ -11598,7 +11607,7 @@ const inputTypeConfig = {
     shouldDecorate: async () => false,
     dataType: '',
     tooltipItem: _data => {
-      throw new Error('unreachable');
+      throw new Error('unreachable - setting tooltip to unknown field type');
     }
   }
 };
@@ -15013,6 +15022,11 @@ class HTMLTooltipUIController extends _UIController.UIController {
   /** @type {import('../HTMLTooltip.js').HTMLTooltipOptions} */
 
   /**
+   * Overwritten when calling createTooltip
+   * @type {import('../../Form/matching').SupportedTypes}
+   */
+
+  /**
    * @param {HTMLTooltipControllerOptions} options
    * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
    */
@@ -15025,6 +15039,8 @@ class HTMLTooltipUIController extends _UIController.UIController {
     _defineProperty(this, "_options", void 0);
 
     _defineProperty(this, "_htmlTooltipOptions", void 0);
+
+    _defineProperty(this, "_activeInputType", 'unknown');
 
     this._options = options;
     this._htmlTooltipOptions = Object.assign({}, _HTMLTooltip.defaultOptions, htmlTooltipOptions);
@@ -15087,13 +15103,13 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
     return new _DataHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(config, asRenderers, {
       onSelect: id => {
-        this._onSelect(config, data, id);
+        this._onSelect(topContextData.inputType, data, id);
       }
     });
   }
 
   updateItems(data) {
-    if (!this._activeInputType) return;
+    if (this._activeInputType === 'unknown') return;
     const config = (0, _inputTypeConfig.getInputConfigFromType)(this._activeInputType); // convert the data into tool tip item renderers
 
     const asRenderers = data.map(d => config.tooltipItem(d));
@@ -15102,7 +15118,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     if (activeTooltip instanceof _DataHTMLTooltip.default) {
       activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.render(config, asRenderers, {
         onSelect: id => {
-          this._onSelect(config, data, id);
+          this._onSelect(this._activeInputType, data, id);
         }
       });
     } // TODO: can we remove this timeout once implemented with real APIs?
@@ -15220,14 +15236,14 @@ class HTMLTooltipUIController extends _UIController.UIController {
    *
    * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
    *
-   * @param {InputTypeConfigs} config
+   * @param {import('../../Form/matching').SupportedTypes} inputType
    * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
    * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
    */
 
 
-  _onSelect(config, data, id) {
-    return this._options.device.onSelect(config, data, id);
+  _onSelect(inputType, data, id) {
+    return this._options.device.onSelect(inputType, data, id);
   }
 
   isActive() {
