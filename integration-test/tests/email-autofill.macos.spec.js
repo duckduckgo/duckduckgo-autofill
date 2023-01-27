@@ -60,8 +60,8 @@ test.describe('macos', () => {
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            'autofill_identity',
-            'autofill_personal_address'
+            {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
+            {pixelName: 'autofill_personal_address'}
         ])
 
         // ensure the popup DOES show a second time, even though Dax was not clicked (this is mac specific)
@@ -76,10 +76,10 @@ test.describe('macos', () => {
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            'autofill_identity',
-            'autofill_personal_address',
-            'autofill_identity',
-            'autofill_private_address'
+            {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
+            {pixelName: 'autofill_personal_address'},
+            {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
+            {pixelName: 'autofill_private_address'}
         ])
     })
     test.describe('auto filling a signup form', () => {
@@ -96,7 +96,7 @@ test.describe('macos', () => {
             ...identity,
             emailAddress: personalAddress
         }
-        test('with an identity only', async ({page}) => {
+        test('with an identity only - filling firstName', async ({page}) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page, server)
 
@@ -112,7 +112,29 @@ test.describe('macos', () => {
             await signup.selectGeneratedPassword()
             await signup.selectFirstName(identity.firstName + ' Main identity')
             await signup.assertEmailValue(identity.emailAddress)
-            await signup.assertPixelsFired(['autofill_identity'])
+            await signup.assertPixelsFired([
+                {pixelName: 'autofill_identity', params: {fieldType: 'firstName'}}
+            ])
+        })
+        test('with an identity only - filling lastName', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page, server)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withIdentity(identity)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            await signup.navigate()
+            await signup.assertEmailHasNoDaxIcon()
+            await signup.selectGeneratedPassword()
+            await signup.selectLastName(identity.lastName + ' Main identity')
+            await signup.assertEmailValue(identity.emailAddress)
+            await signup.assertPixelsFired([
+                {pixelName: 'autofill_identity', params: {fieldType: 'lastName'}}
+            ])
         })
         test('with an identity + Email Protection, autofill using duck address in identity', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -131,7 +153,10 @@ test.describe('macos', () => {
             await signup.selectGeneratedPassword()
             await signup.selectFirstEmailField(identityWithDuckAddress.emailAddress)
             await signup.assertEmailValue(identityWithDuckAddress.emailAddress)
-            await signup.assertPixelsFired(['autofill_identity', 'autofill_personal_address'])
+            await signup.assertPixelsFired([
+                {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
+                {pixelName: 'autofill_personal_address'}
+            ])
         })
         test('with an identity + Email Protection, autofill using duck address in identity triggered from name field', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -150,7 +175,9 @@ test.describe('macos', () => {
             await signup.selectGeneratedPassword()
             await signup.selectFirstName(identityWithDuckAddress.firstName)
             await signup.assertEmailValue(identityWithDuckAddress.emailAddress)
-            await signup.assertPixelsFired(['autofill_identity'])
+            await signup.assertPixelsFired([
+                {pixelName: 'autofill_identity', params: {fieldType: 'firstName'}}
+            ])
         })
         test('with no input types', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -188,7 +215,10 @@ test.describe('macos', () => {
         await signup.selectSecondEmailField(personalAddress)
         await signup.assertSecondEmailValue(personalAddress)
         await signup.assertFirstEmailEmpty()
-        await signup.assertPixelsFired(['autofill_identity', 'autofill_personal_address'])
+        await signup.assertPixelsFired([
+            {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
+            {pixelName: 'autofill_personal_address'}
+        ])
     })
     test.describe('matching performance', () => {
         test.skip('matching performance v1', async ({page}) => {
