@@ -5126,16 +5126,24 @@ class InterfacePrototype {
         const data = response.success || response;
 
         if (mainType === 'identities') {
-          // TODO: add trigger field type (subtype)
-          this.firePixel('autofill_identity');
+          this.firePixel({
+            pixelName: 'autofill_identity',
+            params: {
+              fieldType: subtype
+            }
+          });
 
           switch (id) {
             case 'personalAddress':
-              this.firePixel('autofill_personal_address');
+              this.firePixel({
+                pixelName: 'autofill_personal_address'
+              });
               break;
 
             case 'privateAddress':
-              this.firePixel('autofill_private_address');
+              this.firePixel({
+                pixelName: 'autofill_private_address'
+              });
               break;
 
             default:
@@ -5143,7 +5151,9 @@ class InterfacePrototype {
               const checks = [subtype === 'emailAddress', this.hasLocalAddresses, (data === null || data === void 0 ? void 0 : data.emailAddress) === (0, _autofillUtils.formatDuckAddress)(_classPrivateFieldGet(this, _addresses).personalAddress)];
 
               if (checks.every(Boolean)) {
-                this.firePixel('autofill_personal_address');
+                this.firePixel({
+                  pixelName: 'autofill_personal_address'
+                });
               }
 
               break;
@@ -5442,14 +5452,12 @@ class InterfacePrototype {
   }
   /**
    * Sends a pixel to be fired on the client side
-   * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
+   * @param {import('../deviceApiCalls/__generated__/validators-ts').SendJSPixelParams} pixelParams
    */
 
 
-  firePixel(pixelName) {
-    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall({
-      pixelName
-    }));
+  firePixel(pixelParams) {
+    this.deviceApi.notify(new _deviceApiCalls.SendJSPixelCall(pixelParams));
   }
   /**
    * This serves as a single place to create a default instance
@@ -10949,11 +10957,15 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
     const firePixel = this.device.firePixel.bind(this.device);
     this.registerClickableButton(this.usePersonalButton, () => {
       this.fillForm('personalAddress');
-      firePixel('autofill_personal_address');
+      firePixel({
+        pixelName: 'autofill_personal_address'
+      });
     });
     this.registerClickableButton(this.usePrivateButton, () => {
       this.fillForm('privateAddress');
-      firePixel('autofill_private_address');
+      firePixel({
+        pixelName: 'autofill_private_address'
+      });
     }); // Get the alias from the extension
 
     this.device.getAddresses().then(this.updateAddresses);
