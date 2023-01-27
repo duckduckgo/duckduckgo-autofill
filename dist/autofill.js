@@ -5088,7 +5088,6 @@ class InterfacePrototype {
     id = String(id);
     const mainType = (0, _matching.getMainTypeFromType)(inputType);
     const subtype = (0, _matching.getSubtypeFromType)(inputType);
-    console.log(inputType);
 
     if (id === _Credentials.PROVIDER_LOCKED) {
       return this.askToUnlockProvider();
@@ -5288,15 +5287,12 @@ class InterfacePrototype {
       const {
         credentials,
         availableInputTypes
-      } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema);
-      console.log('data validated'); // Update local settings and data
+      } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
 
       this.settings.setAvailableInputTypes(availableInputTypes);
-      this.storeLocalCredentials(credentials);
-      console.log('local settings updated'); // rerender the tooltip
+      this.storeLocalCredentials(credentials); // rerender the tooltip
 
-      (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : _this$uiController4.updateItems(credentials);
-      console.log('items updated'); // If the tooltip is open on an autofill type that's not available, close it
+      (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : _this$uiController4.updateItems(credentials); // If the tooltip is open on an autofill type that's not available, close it
 
       const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
 
