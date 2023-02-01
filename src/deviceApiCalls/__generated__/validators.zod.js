@@ -175,6 +175,14 @@ export const sendJSPixelParamsSchema = z.union([z.object({
         pixelName: z.literal("autofill_personal_address")
     }), z.object({
         pixelName: z.literal("autofill_private_address")
+    }), z.object({
+        pixelName: z.literal("incontext_show")
+    }), z.object({
+        pixelName: z.literal("incontext_get_email_protection")
+    }), z.object({
+        pixelName: z.literal("incontext_dismiss_persisted")
+    }), z.object({
+        pixelName: z.literal("incontext_dismiss_initial")
     })]);
 
 export const setIncontextSignupDismissedAtSchema = z.object({

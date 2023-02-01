@@ -124,6 +124,8 @@ class InterfacePrototype {
         topContextData: undefined
     }
 
+    onIncontextSignup () {}
+
     onIncontextSignupDismissed () {}
 
     /**

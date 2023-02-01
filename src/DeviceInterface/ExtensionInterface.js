@@ -49,6 +49,10 @@ class ExtensionInterface extends InterfacePrototype {
         return null
     }
 
+    onIncontextSignup () {
+        this.firePixel({pixelName: 'incontext_get_email_protection'})
+    }
+
     onIncontextSignupDismissed () {
         // Check if the email signup tooltip has previously been dismissed.
         // If it has, make the dismissal persist and remove it from the page.
@@ -57,9 +61,11 @@ class ExtensionInterface extends InterfacePrototype {
             this.settings.setIncontextSignupDismissed(true)
             this.deviceApi.notify(new SetIncontextSignupDismissedAtCall({ value: new Date().getTime() }))
             this.removeAutofillUIFromPage()
+            this.firePixel({pixelName: 'incontext_dismiss_persisted'})
         } else {
             this.emailSignupInitialDismissal = true
             this.removeTooltip()
+            this.firePixel({pixelName: 'incontext_dismiss_initial'})
         }
     }
 

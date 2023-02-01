@@ -19,7 +19,7 @@ ${this.options.css}
             forwarding messages to your inbox?
         </p>
         <div class="notice-controls">
-            <a href="https://duckduckgo.com/email/start-incontext" target="_blank" class="primary">
+            <a href="https://duckduckgo.com/email/start-incontext" target="_blank" class="primary js-get-email-signup">
                 Get Email Protection
             </a>
             <button class="ghost js-dismiss-email-signup">
@@ -30,10 +30,15 @@ ${this.options.css}
 </div>`
 
         this.tooltip = this.shadow.querySelector('.tooltip')
-        this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup')
 
+        this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup')
         this.registerClickableButton(this.dismissEmailSignup, () => {
             device.onIncontextSignupDismissed()
+        })
+
+        this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup')
+        this.registerClickableButton(this.getEmailSignup, () => {
+            device.onIncontextSignup()
         })
 
         this.init()

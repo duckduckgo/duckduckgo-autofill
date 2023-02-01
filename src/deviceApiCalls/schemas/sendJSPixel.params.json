@@ -48,6 +48,54 @@
         "pixelName"
       ],
       "additionalProperties": false
+    },
+    {
+      "properties": {
+        "pixelName": {
+          "type": "string",
+          "const": "incontext_show"
+        }
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "pixelName": {
+          "type": "string",
+          "const": "incontext_get_email_protection"
+        }
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "pixelName": {
+          "type": "string",
+          "const": "incontext_dismiss_persisted"
+        }
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "pixelName": {
+          "type": "string",
+          "const": "incontext_dismiss_initial"
+        }
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
     }
   ]
 }

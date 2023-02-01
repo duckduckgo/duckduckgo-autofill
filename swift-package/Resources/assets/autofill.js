@@ -4386,6 +4386,12 @@ class ExtensionInterface extends _InterfacePrototype.default {
     return null;
   }
 
+  onIncontextSignup() {
+    this.firePixel({
+      pixelName: 'incontext_get_email_protection'
+    });
+  }
+
   onIncontextSignupDismissed() {
     // Check if the email signup tooltip has previously been dismissed.
     // If it has, make the dismissal persist and remove it from the page.
@@ -4396,9 +4402,15 @@ class ExtensionInterface extends _InterfacePrototype.default {
         value: new Date().getTime()
       }));
       this.removeAutofillUIFromPage();
+      this.firePixel({
+        pixelName: 'incontext_dismiss_persisted'
+      });
     } else {
       this.emailSignupInitialDismissal = true;
       this.removeTooltip();
+      this.firePixel({
+        pixelName: 'incontext_dismiss_initial'
+      });
     }
   }
 
@@ -4786,6 +4798,8 @@ class InterfacePrototype {
   }
   /** @type { PMData } */
 
+
+  onIncontextSignup() {}
 
   onIncontextSignupDismissed() {}
   /**
@@ -11194,11 +11208,15 @@ class EmailSignupHTMLTooltip extends _HTMLTooltip.default {
    */
   render(device) {
     this.device = device;
-    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email tooltip--email-signup\" hidden>\n        <h1>\n            Protect your inbox \uD83D\uDCAA I've caught trackers hiding in 85% of emails.\n        </h1>\n        <p>\n            Want me to hide your email address and remove hidden trackers before\n            forwarding messages to your inbox?\n        </p>\n        <div class=\"notice-controls\">\n            <a href=\"https://duckduckgo.com/email/start-incontext\" target=\"_blank\" class=\"primary\">\n                Get Email Protection\n            </a>\n            <button class=\"ghost js-dismiss-email-signup\">\n                ").concat(device.emailSignupInitialDismissal ? "Don't Ask Again" : 'Maybe Later', "\n            </button>\n        </div>\n    </div>\n</div>");
+    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email tooltip--email-signup\" hidden>\n        <h1>\n            Protect your inbox \uD83D\uDCAA I've caught trackers hiding in 85% of emails.\n        </h1>\n        <p>\n            Want me to hide your email address and remove hidden trackers before\n            forwarding messages to your inbox?\n        </p>\n        <div class=\"notice-controls\">\n            <a href=\"https://duckduckgo.com/email/start-incontext\" target=\"_blank\" class=\"primary js-get-email-signup\">\n                Get Email Protection\n            </a>\n            <button class=\"ghost js-dismiss-email-signup\">\n                ").concat(device.emailSignupInitialDismissal ? "Don't Ask Again" : 'Maybe Later', "\n            </button>\n        </div>\n    </div>\n</div>");
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup');
     this.registerClickableButton(this.dismissEmailSignup, () => {
       device.onIncontextSignupDismissed();
+    });
+    this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup');
+    this.registerClickableButton(this.getEmailSignup, () => {
+      device.onIncontextSignup();
     });
     this.init();
     return this;
@@ -11618,6 +11636,10 @@ class HTMLTooltipUIController extends _UIController.UIController {
     }
 
     if (this._options.tooltipKind === 'emailsignup') {
+      this._options.device.firePixel({
+        pixelName: 'incontext_show'
+      });
+
       return new _EmailSignupHTMLTooltop.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
     } // collect the data for each item to display
 

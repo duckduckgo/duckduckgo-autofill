@@ -681,6 +681,18 @@ export type SendJSPixelParams =
     }
   | {
       pixelName: "autofill_private_address";
+    }
+  | {
+      pixelName: "incontext_show";
+    }
+  | {
+      pixelName: "incontext_get_email_protection";
+    }
+  | {
+      pixelName: "incontext_dismiss_persisted";
+    }
+  | {
+      pixelName: "incontext_dismiss_initial";
     };
 
 // setIncontextSignupDismissedAt.params.json

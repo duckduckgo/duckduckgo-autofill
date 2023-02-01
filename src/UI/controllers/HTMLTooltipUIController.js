@@ -92,6 +92,7 @@ export class HTMLTooltipUIController extends UIController {
         }
 
         if (this._options.tooltipKind === 'emailsignup') {
+            this._options.device.firePixel({pixelName: 'incontext_show'})
             return new EmailSignupHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
                 .render(this._options.device)
         }
