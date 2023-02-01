@@ -398,11 +398,11 @@ class InterfacePrototype {
      * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
      * @param {{ x: number; y: number; } | null} click
-     * @param {'userInitiated' | 'autoprompt'} trigger
+     * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
      */
     attachTooltip (form, input, click, trigger = 'userInitiated') {
         // Avoid flashing tooltip from background tabs on macOS
-        if (document.visibilityState !== 'visible') return
+        if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return
         // Only autoprompt on mobile devices
         if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return
         // Only fire autoprompt once

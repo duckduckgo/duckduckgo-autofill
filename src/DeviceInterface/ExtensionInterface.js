@@ -115,6 +115,11 @@ class ExtensionInterface extends InterfacePrototype {
                     notifyWebApp({ deviceSignedIn: {value: false} })
                 }
             })
+
+            if (this.activeForm?.activeInput) {
+                this.attachTooltip(this.activeForm, this.activeForm?.activeInput, null, 'postSignup')
+            }
+
             break
         }
         case TOOLTIP_TYPES.EmailSignup: {

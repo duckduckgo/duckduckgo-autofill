@@ -8120,6 +8120,8 @@ class ExtensionInterface extends _InterfacePrototype.default {
     switch (this.getShowingTooltip()) {
       case TOOLTIP_TYPES.EmailProtection:
         {
+          var _this$activeForm;
+
           this._scannerCleanup = this.scanner.init();
           this.addLogoutListener(() => {
             this.resetAutofillUI();
@@ -8132,6 +8134,13 @@ class ExtensionInterface extends _InterfacePrototype.default {
               });
             }
           });
+
+          if ((_this$activeForm = this.activeForm) !== null && _this$activeForm !== void 0 && _this$activeForm.activeInput) {
+            var _this$activeForm2;
+
+            this.attachTooltip(this.activeForm, (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.activeInput, null, 'postSignup');
+          }
+
           break;
         }
 
@@ -8752,7 +8761,7 @@ class InterfacePrototype {
    * @param {import("../Form/Form").Form} form
    * @param {HTMLInputElement} input
    * @param {{ x: number; y: number; } | null} click
-   * @param {'userInitiated' | 'autoprompt'} trigger
+   * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
    */
 
 
@@ -8761,7 +8770,7 @@ class InterfacePrototype {
 
     let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
     // Avoid flashing tooltip from background tabs on macOS
-    if (document.visibilityState !== 'visible') return; // Only autoprompt on mobile devices
+    if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return; // Only autoprompt on mobile devices
 
     if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return; // Only fire autoprompt once
 
@@ -15846,7 +15855,7 @@ exports.UIController = void 0;
  * @property {{x: number, y: number}|null} click The click positioning
  * @property {TopContextData} topContextData
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
- * @property {'userInitiated' | 'autoprompt'} trigger
+ * @property {import('../../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
  */
 
 /**
@@ -17068,7 +17077,7 @@ const getAutofillDataRequestSchema = _zod.z.object({
   inputType: _zod.z.string(),
   mainType: _zod.z.union([_zod.z.literal("credentials"), _zod.z.literal("identities"), _zod.z.literal("creditCards")]),
   subType: _zod.z.string(),
-  trigger: _zod.z.union([_zod.z.literal("userInitiated"), _zod.z.literal("autoprompt")]).optional(),
+  trigger: _zod.z.union([_zod.z.literal("userInitiated"), _zod.z.literal("autoprompt"), _zod.z.literal("postSignup")]).optional(),
   serializedInputContext: _zod.z.string().optional(),
   triggerContext: triggerContextSchema.optional()
 });

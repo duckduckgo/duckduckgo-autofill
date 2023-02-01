@@ -325,7 +325,7 @@ export interface GetAutofillDataRequest {
   /**
    * Signals that the prompt was triggered automatically rather than by user action
    */
-  trigger?: "userInitiated" | "autoprompt";
+  trigger?: "userInitiated" | "autoprompt" | "postSignup";
   /**
    * Serialized JSON that will be picked up once the 'parent' requests its initial data
    */
