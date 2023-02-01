@@ -11576,16 +11576,19 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
     _defineProperty(this, "_activeInputType", 'unknown');
 
+    _defineProperty(this, "_activeInput", void 0);
+
+    _defineProperty(this, "_activeInputOriginalAutocomplete", void 0);
+
     this._options = options;
     this._htmlTooltipOptions = Object.assign({}, _HTMLTooltip.defaultOptions, htmlTooltipOptions);
     window.addEventListener('pointerdown', this, true);
   }
+
   /**
    * Cleans up after this UI controller by removing the tooltip and all
    * listeners.
    */
-
-
   destroy() {
     this.removeTooltip();
     window.removeEventListener('pointerdown', this, true);
@@ -11609,6 +11612,9 @@ class HTMLTooltipUIController extends _UIController.UIController {
     const tooltip = this.createTooltip(getPosition, topContextData);
     this.setActiveTooltip(tooltip);
     form.showingTooltip(input);
+    this._activeInput = input;
+    this._activeInputOriginalAutocomplete = input.getAttribute('autocomplete');
+    input.setAttribute('autocomplete', 'off');
   }
   /**
    * Actually create the HTML Tooltip
@@ -11747,6 +11753,17 @@ class HTMLTooltipUIController extends _UIController.UIController {
       this._activeTooltip.remove();
 
       this._activeTooltip = null;
+    }
+
+    if (this._activeInput) {
+      if (this._activeInputOriginalAutocomplete) {
+        this._activeInput.setAttribute('autocomplete', this._activeInputOriginalAutocomplete);
+      } else {
+        this._activeInput.removeAttribute('autocomplete');
+      }
+
+      this._activeInput = null;
+      this._activeInputOriginalAutocomplete = null;
     }
   }
   /**

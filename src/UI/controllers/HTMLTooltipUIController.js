@@ -45,6 +45,9 @@ export class HTMLTooltipUIController extends UIController {
         window.addEventListener('pointerdown', this, true)
     }
 
+    _activeInput;
+    _activeInputOriginalAutocomplete;
+
     /**
      * Cleans up after this UI controller by removing the tooltip and all
      * listeners.
@@ -65,6 +68,10 @@ export class HTMLTooltipUIController extends UIController {
         const tooltip = this.createTooltip(getPosition, topContextData)
         this.setActiveTooltip(tooltip)
         form.showingTooltip(input)
+
+        this._activeInput = input
+        this._activeInputOriginalAutocomplete = input.getAttribute('autocomplete')
+        input.setAttribute('autocomplete', 'off')
     }
 
     /**
@@ -194,6 +201,16 @@ export class HTMLTooltipUIController extends UIController {
             this._removeListeners()
             this._activeTooltip.remove()
             this._activeTooltip = null
+        }
+
+        if (this._activeInput) {
+            if (this._activeInputOriginalAutocomplete) {
+                this._activeInput.setAttribute('autocomplete', this._activeInputOriginalAutocomplete)
+            } else {
+                this._activeInput.removeAttribute('autocomplete')
+            }
+            this._activeInput = null
+            this._activeInputOriginalAutocomplete = null
         }
     }
 
