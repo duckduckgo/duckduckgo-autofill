@@ -23,8 +23,7 @@ export class WindowsInterface extends InterfacePrototype {
     }
 
     postInit () {
-        const cleanup = this.scanner.init()
-        this.addLogoutListener(cleanup)
+        super.postInit()
         this.ready = true
     }
 

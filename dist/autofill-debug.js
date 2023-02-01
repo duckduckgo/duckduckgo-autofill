@@ -7364,21 +7364,6 @@ class AndroidInterface extends _InterfacePrototype.default {
   }
 
   async setupAutofill() {}
-
-  postInit() {
-    const cleanup = this.scanner.init();
-    this.addLogoutListener(() => {
-      cleanup();
-
-      if (this.globalConfig.isDDGDomain) {
-        (0, _autofillUtils.notifyWebApp)({
-          deviceSignedIn: {
-            value: false
-          }
-        });
-      }
-    });
-  }
   /**
    * Used by the email web app
    * Settings page displays data of the logged in user data
@@ -7569,25 +7554,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
         await this.getAddresses();
       }
     }
-  }
-
-  async postInit() {
-    if (this.isDeviceSignedIn()) {
-      this.scanner.forms.forEach(form => form.redecorateAllInputs());
-    }
-
-    const cleanup = this.scanner.init();
-    this.addLogoutListener(() => {
-      cleanup();
-
-      if (this.globalConfig.isDDGDomain) {
-        (0, _autofillUtils.notifyWebApp)({
-          deviceSignedIn: {
-            value: false
-          }
-        });
-      }
-    });
   }
   /**
    * Used by the email web app
@@ -8669,8 +8635,6 @@ class InterfacePrototype {
     await this.settings.refresh();
   }
 
-  postInit() {}
-
   async isEnabled() {
     return (0, _autofillUtils.autofillEnabled)(this.globalConfig);
   }
@@ -8693,6 +8657,21 @@ class InterfacePrototype {
       window.addEventListener('load', handler);
       document.addEventListener('readystatechange', handler);
     }
+  }
+
+  postInit() {
+    const cleanup = this.scanner.init();
+    this.addLogoutListener(() => {
+      cleanup();
+
+      if (this.globalConfig.isDDGDomain) {
+        (0, _autofillUtils.notifyWebApp)({
+          deviceSignedIn: {
+            value: false
+          }
+        });
+      }
+    });
   }
   /**
    * @deprecated This was a port from the macOS implementation so the API may not be suitable for all
@@ -9280,8 +9259,7 @@ class WindowsInterface extends _InterfacePrototype.default {
   }
 
   postInit() {
-    const cleanup = this.scanner.init();
-    this.addLogoutListener(cleanup);
+    super.postInit();
     this.ready = true;
   }
 
@@ -17419,7 +17397,7 @@ class ExtensionTransport extends _index.DeviceApiTransport {
     }
 
     if (deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupDismissedAtCall) {
-      return deviceApiCall.result(await extensionSpecificSetIncontextSignupDismissedAt(deviceApiCall.params.value));
+      return deviceApiCall.result(await extensionSpecificSetIncontextSignupDismissedAt(deviceApiCall.params));
     }
 
     if (deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall) {
@@ -17428,7 +17406,7 @@ class ExtensionTransport extends _index.DeviceApiTransport {
 
 
     if (deviceApiCall instanceof _deviceApiCalls.SendJSPixelCall) {
-      return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params.pixelName));
+      return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params));
     }
 
     throw new Error('not implemented yet for ' + deviceApiCall.method);
@@ -17501,17 +17479,15 @@ async function getContentScopeConfig() {
   });
 }
 /**
- * @param {import('../__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
+ * @param {import('../__generated__/validators-ts').SendJSPixelParams} params
  */
 
 
-async function extensionSpecificSendPixel(pixelName) {
+async function extensionSpecificSendPixel(params) {
   return new Promise(resolve => {
     chrome.runtime.sendMessage({
       messageType: 'sendJSPixel',
-      options: {
-        pixelName
-      }
+      options: params
     }, () => {
       resolve(true);
     });
@@ -17527,14 +17503,16 @@ async function extensionSpecificGetIncontextSignupDismissedAt() {
     });
   });
 }
+/**
+ * @param {import('../__generated__/validators-ts').SetIncontextSignupDismissedAt} params
+ */
 
-async function extensionSpecificSetIncontextSignupDismissedAt(value) {
+
+async function extensionSpecificSetIncontextSignupDismissedAt(params) {
   return new Promise(resolve => {
     chrome.runtime.sendMessage({
       messageType: 'setIncontextSignupDismissedAt',
-      options: {
-        value
-      }
+      options: params
     }, () => {
       resolve(true);
     });

@@ -297,8 +297,6 @@ class InterfacePrototype {
         await this.settings.refresh()
     }
 
-    postInit () {}
-
     async isEnabled () {
         return autofillEnabled(this.globalConfig)
     }
@@ -320,6 +318,16 @@ class InterfacePrototype {
             window.addEventListener('load', handler)
             document.addEventListener('readystatechange', handler)
         }
+    }
+
+    postInit () {
+        const cleanup = this.scanner.init()
+        this.addLogoutListener(() => {
+            cleanup()
+            if (this.globalConfig.isDDGDomain) {
+                notifyWebApp({ deviceSignedIn: {value: false} })
+            }
+        })
     }
 
     /**

@@ -26,7 +26,7 @@ export class ExtensionTransport extends DeviceApiTransport {
         }
 
         if (deviceApiCall instanceof SetIncontextSignupDismissedAtCall) {
-            return deviceApiCall.result(await extensionSpecificSetIncontextSignupDismissedAt(deviceApiCall.params.value))
+            return deviceApiCall.result(await extensionSpecificSetIncontextSignupDismissedAt(deviceApiCall.params))
         }
 
         if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
@@ -35,7 +35,7 @@ export class ExtensionTransport extends DeviceApiTransport {
 
         // TODO: unify all calls to use deviceApiCall.method instead of all these if blocks
         if (deviceApiCall instanceof SendJSPixelCall) {
-            return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params.pixelName))
+            return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params))
         }
 
         throw new Error('not implemented yet for ' + deviceApiCall.method)
@@ -110,16 +110,14 @@ async function getContentScopeConfig () {
 }
 
 /**
- * @param {import('../__generated__/validators-ts').SendJSPixelParams['pixelName']} pixelName
+ * @param {import('../__generated__/validators-ts').SendJSPixelParams} params
  */
-async function extensionSpecificSendPixel (pixelName) {
+async function extensionSpecificSendPixel (params) {
     return new Promise(resolve => {
         chrome.runtime.sendMessage(
             {
                 messageType: 'sendJSPixel',
-                options: {
-                    pixelName
-                }
+                options: params
             },
             () => {
                 resolve(true)
@@ -141,12 +139,15 @@ async function extensionSpecificGetIncontextSignupDismissedAt () {
     })
 }
 
-async function extensionSpecificSetIncontextSignupDismissedAt (value) {
+/**
+ * @param {import('../__generated__/validators-ts').SetIncontextSignupDismissedAt} params
+ */
+async function extensionSpecificSetIncontextSignupDismissedAt (params) {
     return new Promise(resolve => {
         chrome.runtime.sendMessage(
             {
                 messageType: 'setIncontextSignupDismissedAt',
-                options: { value }
+                options: params
             },
             () => {
                 resolve(true)
