@@ -32,12 +32,12 @@ class ExtensionInterface extends InterfacePrototype {
             [TOOLTIP_TYPES.EmailProtection]: 'legacy',
             [TOOLTIP_TYPES.EmailSignup]: 'emailsignup'
         }
-        const tooltipKind = tooltipKinds[this.getShowingTooltip()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection]
+        const tooltipKind = tooltipKinds[this.getActiveTooltipType()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection]
 
         return new HTMLTooltipUIController({ tooltipKind, device: this }, htmlTooltipOptions)
     }
 
-    getShowingTooltip () {
+    getActiveTooltipType () {
         if (this.hasLocalAddresses) {
             return TOOLTIP_TYPES.EmailProtection
         }
@@ -112,7 +112,7 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     postInit () {
-        switch (this.getShowingTooltip()) {
+        switch (this.getActiveTooltipType()) {
         case TOOLTIP_TYPES.EmailProtection: {
             this._scannerCleanup = this.scanner.init()
             this.addLogoutListener(() => {
@@ -237,6 +237,8 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     addLogoutListener (handler) {
+        // Make sure there's only one log out listener attached by removing the
+        // previous logout listener first, if it exists.
         if (this._logoutListenerHandler) {
             chrome.runtime.onMessage.removeListener(this._logoutListenerHandler)
         }

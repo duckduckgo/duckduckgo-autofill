@@ -18,10 +18,9 @@ class FormAnalyzer {
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {GlobalConfig} config
      * @param {Matching} [matching]
      */
-    constructor (form, input, config, matching) {
+    constructor (form, input, matching) {
         this.form = form
         this.matching = matching || new Matching(matchingConfiguration)
         /**
@@ -40,11 +39,6 @@ class FormAnalyzer {
          * @type {boolean}
          */
         this.isHybrid = false
-
-        // Avoid autofill on Email Protection web app
-        if (config.isDDGDomain) {
-            return this
-        }
 
         this.evaluateElAttributes(input, 3, true)
         form ? this.evaluateForm() : this.evaluatePage()

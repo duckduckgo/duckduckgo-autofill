@@ -8043,14 +8043,14 @@ class ExtensionInterface extends _InterfacePrototype.default {
       [TOOLTIP_TYPES.EmailProtection]: 'legacy',
       [TOOLTIP_TYPES.EmailSignup]: 'emailsignup'
     };
-    const tooltipKind = tooltipKinds[this.getShowingTooltip()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection];
+    const tooltipKind = tooltipKinds[this.getActiveTooltipType()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection];
     return new _HTMLTooltipUIController.HTMLTooltipUIController({
       tooltipKind,
       device: this
     }, htmlTooltipOptions);
   }
 
-  getShowingTooltip() {
+  getActiveTooltipType() {
     if (this.hasLocalAddresses) {
       return TOOLTIP_TYPES.EmailProtection;
     }
@@ -8129,7 +8129,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
   }
 
   postInit() {
-    switch (this.getShowingTooltip()) {
+    switch (this.getActiveTooltipType()) {
       case TOOLTIP_TYPES.EmailProtection:
         {
           var _this$activeForm;
@@ -8270,6 +8270,8 @@ class ExtensionInterface extends _InterfacePrototype.default {
   }
 
   addLogoutListener(handler) {
+    // Make sure there's only one log out listener attached by removing the
+    // previous logout listener first, if it exists.
     if (this._logoutListenerHandler) {
       chrome.runtime.onMessage.removeListener(this._logoutListenerHandler);
     } // Cleanup on logout events
@@ -9711,7 +9713,7 @@ class Form {
 
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
-    this.formAnalyzer = new _FormAnalyzer.default(form, input, deviceInterface.globalConfig, matching);
+    this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
     this.isLogin = this.formAnalyzer.isLogin;
     this.isSignup = this.formAnalyzer.isSignup;
     this.isHybrid = this.formAnalyzer.isHybrid;
@@ -10309,10 +10311,9 @@ class FormAnalyzer {
   /**
    * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
-   * @param {GlobalConfig} config
    * @param {Matching} [matching]
    */
-  constructor(form, input, config, matching) {
+  constructor(form, input, matching) {
     _defineProperty(this, "form", void 0);
 
     _defineProperty(this, "matching", void 0);
@@ -10336,12 +10337,7 @@ class FormAnalyzer {
      * @type {boolean}
      */
 
-    this.isHybrid = false; // Avoid autofill on Email Protection web app
-
-    if (config.isDDGDomain) {
-      return this;
-    }
-
+    this.isHybrid = false;
     this.evaluateElAttributes(input, 3, true);
     form ? this.evaluateForm() : this.evaluatePage();
     return this;
