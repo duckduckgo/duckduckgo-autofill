@@ -5,7 +5,10 @@
     "additionalProperties": false,
     "description": "Delivered as part of Runtime Configuration, but needs to live here since Runtime Configuration can contain settings for many features",
     "properties": {
-        "dismissedAt": {
+        "initiallyDismissedAt": {
+            "type": "number"
+        },
+        "permanentlyDismissedAt": {
             "type": "number"
         }
     }

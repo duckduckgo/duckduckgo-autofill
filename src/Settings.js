@@ -36,7 +36,9 @@ export class Settings {
     /** @type {boolean | null} */
     _enabled = null
     /** @type {boolean | null} */
-    _incontextSignupDismissed = null
+    _incontextSignupInitiallyDismissed = null
+    /** @type {boolean | null} */
+    _incontextSignupPermanentlyDismissed = null
 
     /**
      * @param {GlobalConfig} config
@@ -96,11 +98,21 @@ export class Settings {
     /**
      * @returns {Promise<boolean|null>}
      */
-    async getIncontextSignupDismissed () {
+    async getIncontextSignupInitiallyDismissed () {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration()
             const incontextSignupSettings = validate(runtimeConfig.userPreferences?.features?.incontextSignup?.settings, incontextSignupSettingsSchema)
-            return Boolean(incontextSignupSettings.dismissedAt)
+            return Boolean(incontextSignupSettings.initiallyDismissedAt)
+        } catch (e) {
+            return null
+        }
+    }
+
+    async getIncontextSignupPermanentlyDismissed () {
+        try {
+            const runtimeConfig = await this._getRuntimeConfiguration()
+            const incontextSignupSettings = validate(runtimeConfig.userPreferences?.features?.incontextSignup?.settings, incontextSignupSettingsSchema)
+            return Boolean(incontextSignupSettings.permanentlyDismissedAt)
         } catch (e) {
             return null
         }
@@ -157,7 +169,8 @@ export class Settings {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
         this.setAvailableInputTypes(await this.getAvailableInputTypes())
-        this.setIncontextSignupDismissed(await this.getIncontextSignupDismissed())
+        this.setIncontextSignupInitiallyDismissed(await this.getIncontextSignupInitiallyDismissed())
+        this.setIncontextSignupPermanentlyDismissed(await this.getIncontextSignupPermanentlyDismissed())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -295,14 +308,26 @@ export class Settings {
     }
 
     /** @returns {boolean|null} */
-    get incontextSignupDismissed () {
-        return this._incontextSignupDismissed
+    get incontextSignupInitiallyDismissed () {
+        return this._incontextSignupInitiallyDismissed
     }
 
     /**
-     * @param {boolean|null} incontextSignupDismissed
+     * @param {boolean|null} incontextSignupInitiallyDismissed
      */
-    setIncontextSignupDismissed (incontextSignupDismissed) {
-        this._incontextSignupDismissed = incontextSignupDismissed
+    setIncontextSignupInitiallyDismissed (incontextSignupInitiallyDismissed) {
+        this._incontextSignupInitiallyDismissed = incontextSignupInitiallyDismissed
+    }
+
+    /** @returns {boolean|null} */
+    get incontextSignupPermanentlyDismissed () {
+        return this._incontextSignupPermanentlyDismissed
+    }
+
+    /**
+     * @param {boolean|null} incontextSignupPermanentlyDismissed
+     */
+    setIncontextSignupPermanentlyDismissed (incontextSignupPermanentlyDismissed) {
+        this._incontextSignupPermanentlyDismissed = incontextSignupPermanentlyDismissed
     }
 }

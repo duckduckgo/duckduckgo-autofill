@@ -10,7 +10,10 @@ import {
 } from '../autofill-utils.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
-import { SetIncontextSignupDismissedAtCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {
+    SetIncontextSignupInitiallyDismissedAtCall,
+    SetIncontextSignupPermanentlyDismissedAtCall
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const TOOLTIP_TYPES = {
     EmailProtection: 'EmailProtection',
@@ -42,7 +45,7 @@ class ExtensionInterface extends InterfacePrototype {
             return TOOLTIP_TYPES.EmailProtection
         }
 
-        if (this.settings.featureToggles.emailProtection_incontext_signup && this.settings.incontextSignupDismissed === false) {
+        if (this.settings.featureToggles.emailProtection_incontext_signup && this.settings.incontextSignupPermanentlyDismissed === false) {
             return TOOLTIP_TYPES.EmailSignup
         }
 
@@ -57,13 +60,14 @@ class ExtensionInterface extends InterfacePrototype {
         // Check if the email signup tooltip has previously been dismissed.
         // If it has, make the dismissal persist and remove it from the page.
         // If it hasn't, set a flag for next time and just hide the tooltip.
-        if (this.emailSignupInitialDismissal) {
-            this.settings.setIncontextSignupDismissed(true)
-            this.deviceApi.notify(new SetIncontextSignupDismissedAtCall({ value: new Date().getTime() }))
+        if (this.settings.incontextSignupInitiallyDismissed) {
+            this.settings.setIncontextSignupPermanentlyDismissed(true)
+            this.deviceApi.notify(new SetIncontextSignupPermanentlyDismissedAtCall({ value: new Date().getTime() }))
             this.removeAutofillUIFromPage()
             this.firePixel({pixelName: 'incontext_dismiss_persisted'})
         } else {
-            this.emailSignupInitialDismissal = true
+            this.settings.setIncontextSignupInitiallyDismissed(true)
+            this.deviceApi.notify(new SetIncontextSignupInitiallyDismissedAtCall({ value: new Date().getTime() }))
             this.removeTooltip()
             this.firePixel({pixelName: 'incontext_dismiss_initial'})
         }

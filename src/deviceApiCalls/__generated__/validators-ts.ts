@@ -482,7 +482,8 @@ export interface GenericError {
  */
 export interface GetIncontextSignupDismissedAt {
   success: {
-    value?: number;
+    initiallyDismissedAt?: number;
+    permanentlyDismissedAt?: number;
   };
 }
 
@@ -544,7 +545,8 @@ export interface GenericError {
  * Delivered as part of Runtime Configuration, but needs to live here since Runtime Configuration can contain settings for many features
  */
 export interface IncontextSignupSettings {
-  dismissedAt?: number;
+  initiallyDismissedAt?: number;
+  permanentlyDismissedAt?: number;
 }
 
 // providerStatusUpdated.json
@@ -695,12 +697,21 @@ export type SendJSPixelParams =
       pixelName: "incontext_dismiss_initial";
     };
 
-// setIncontextSignupDismissedAt.params.json
+// setIncontextSignupInitiallyDismissedAt.params.json
 
 /**
- * Sets the time that the in-context Email Protection sign-up message was dismissed
+ * Sets the time that the in-context Email Protection sign-up message was initially dismissed
  */
-export interface SetIncontextSignupDismissedAt {
+export interface SetIncontextSignupInitiallyDismissedAt {
+  value?: number;
+}
+
+// setIncontextSignupPermanentlyDismissedAt.params.json
+
+/**
+ * Sets the time that the in-context Email Protection sign-up message was permanently dismissed
+ */
+export interface SetIncontextSignupPermanentlyDismissedAt {
   value?: number;
 }
 

@@ -9,7 +9,10 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "value": {
+                "initiallyDismissedAt": {
+                    "type": "number"
+                },
+                "permanentlyDismissedAt": {
                     "type": "number"
                 }
             },

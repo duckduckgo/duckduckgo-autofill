@@ -3,7 +3,8 @@ import {
     GetAvailableInputTypesCall,
     GetRuntimeConfigurationCall,
     SendJSPixelCall,
-    SetIncontextSignupDismissedAtCall,
+    SetIncontextSignupInitiallyDismissedAtCall,
+    SetIncontextSignupPermanentlyDismissedAtCall,
     GetIncontextSignupDismissedAtCall
 } from '../__generated__/deviceApiCalls.js'
 import {isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig} from '../../autofill-utils.js'
@@ -25,8 +26,12 @@ export class ExtensionTransport extends DeviceApiTransport {
             return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes())
         }
 
-        if (deviceApiCall instanceof SetIncontextSignupDismissedAtCall) {
-            return deviceApiCall.result(await extensionSpecificSetIncontextSignupDismissedAt(deviceApiCall.params))
+        if (deviceApiCall instanceof SetIncontextSignupInitiallyDismissedAtCall) {
+            return deviceApiCall.result(await extensionSpecificSetIncontextSignupInitiallyDismissedAtCall(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
+            return deviceApiCall.result(await extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(deviceApiCall.params))
         }
 
         if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
@@ -70,7 +75,8 @@ async function extensionSpecificRuntimeConfiguration (deviceApi) {
                     },
                     incontextSignup: {
                         settings: {
-                            dismissedAt: incontextSignupDismissedAt.success.value
+                            initiallyDismissedAt: incontextSignupDismissedAt.success.initiallyDismissedAt,
+                            permanentlyDismissedAt: incontextSignupDismissedAt.success.permanentlyDismissedAt
                         }
                     }
                 }
@@ -140,13 +146,30 @@ async function extensionSpecificGetIncontextSignupDismissedAt () {
 }
 
 /**
- * @param {import('../__generated__/validators-ts').SetIncontextSignupDismissedAt} params
+ * @param {import('../__generated__/validators-ts').SetIncontextSignupInitiallyDismissedAt} params
  */
-async function extensionSpecificSetIncontextSignupDismissedAt (params) {
+async function extensionSpecificSetIncontextSignupInitiallyDismissedAtCall (params) {
     return new Promise(resolve => {
         chrome.runtime.sendMessage(
             {
-                messageType: 'setIncontextSignupDismissedAt',
+                messageType: 'setIncontextSignupInitiallyDismissedAt',
+                options: params
+            },
+            () => {
+                resolve(true)
+            }
+        )
+    })
+}
+
+/**
+ * @param {import('../__generated__/validators-ts').SetIncontextSignupPermanentlyDismissedAt} params
+ */
+async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall (params) {
+    return new Promise(resolve => {
+        chrome.runtime.sendMessage(
+            {
+                messageType: 'setIncontextSignupPermanentlyDismissedAt',
                 options: params
             },
             () => {

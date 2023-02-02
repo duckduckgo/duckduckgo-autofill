@@ -126,7 +126,8 @@ export const getAvailableInputTypesResultSchema = z.object({
 
 export const getIncontextSignupDismissedAtSchema = z.object({
     success: z.object({
-        value: z.number().optional()
+        initiallyDismissedAt: z.number().optional(),
+        permanentlyDismissedAt: z.number().optional()
     })
 });
 
@@ -152,7 +153,8 @@ export const userPreferencesSchema = z.object({
 });
 
 export const incontextSignupSettingsSchema = z.object({
-    dismissedAt: z.number().optional()
+    initiallyDismissedAt: z.number().optional(),
+    permanentlyDismissedAt: z.number().optional()
 });
 
 export const runtimeConfigurationSchema = z.object({
@@ -185,7 +187,11 @@ export const sendJSPixelParamsSchema = z.union([z.object({
         pixelName: z.literal("incontext_dismiss_initial")
     })]);
 
-export const setIncontextSignupDismissedAtSchema = z.object({
+export const setIncontextSignupInitiallyDismissedAtSchema = z.object({
+    value: z.number().optional()
+});
+
+export const setIncontextSignupPermanentlyDismissedAtSchema = z.object({
     value: z.number().optional()
 });
 

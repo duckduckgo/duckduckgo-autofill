@@ -48,8 +48,11 @@
   "sendJSPixel": {
     "paramsValidator": "./schemas/sendJSPixel.params.json"
   },
-  "setIncontextSignupDismissedAt": {
-    "paramsValidator": "./schemas/setIncontextSignupDismissedAt.params.json"
+  "setIncontextSignupInitiallyDismissedAt": {
+    "paramsValidator": "./schemas/setIncontextSignupInitiallyDismissedAt.params.json"
+  },
+  "setIncontextSignupPermanentlyDismissedAt": {
+    "paramsValidator": "./schemas/setIncontextSignupPermanentlyDismissedAt.params.json"
   },
   "getIncontextSignupDismissedAt": {
     "id": "getIncontextSignupDismissedAt",

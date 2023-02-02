@@ -44,8 +44,6 @@ class InterfacePrototype {
     initialSetupDelayMs = 0
     autopromptFired = false
 
-    emailSignupInitialDismissal = false
-
     /** @type {PasswordGenerator} */
     passwordGenerator = new PasswordGenerator();
 
