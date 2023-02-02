@@ -6,7 +6,7 @@
  * @property {{x: number, y: number}|null} click The click positioning
  * @property {TopContextData} topContextData
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
- * @property {'userInitiated' | 'autoprompt'} trigger
+ * @property {import('../../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
  */
 
 /**

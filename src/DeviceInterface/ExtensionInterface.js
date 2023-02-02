@@ -5,12 +5,17 @@ import {
     sendAndWaitForAnswer,
     setValue,
     formatDuckAddress,
-    isAutofillEnabledFromProcessedConfig
+    isAutofillEnabledFromProcessedConfig,
+    notifyWebApp
 } from '../autofill-utils.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
+import {
+    SetIncontextSignupInitiallyDismissedAtCall,
+    SetIncontextSignupPermanentlyDismissedAtCall
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
-const POPUP_TYPES = {
+const TOOLTIP_TYPES = {
     EmailProtection: 'EmailProtection',
     EmailSignup: 'EmailSignup'
 }
@@ -27,29 +32,63 @@ class ExtensionInterface extends InterfacePrototype {
             testMode: this.isTestMode()
         }
         const tooltipKinds = {
-            [POPUP_TYPES.EmailProtection]: 'legacy',
-            [POPUP_TYPES.EmailSignup]: 'emailsignup'
+            [TOOLTIP_TYPES.EmailProtection]: 'legacy',
+            [TOOLTIP_TYPES.EmailSignup]: 'emailsignup'
         }
-        const tooltipKind = tooltipKinds[this.getShowingTooltip()] || tooltipKinds[POPUP_TYPES.EmailProtection]
+        const tooltipKind = tooltipKinds[this.getActiveTooltipType()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection]
 
         return new HTMLTooltipUIController({ tooltipKind, device: this }, htmlTooltipOptions)
     }
 
-    get hasDismissedEmailSignup () {
-        // TODO -- implement peristed dismissed timestamp
-        return false
-    }
-
-    getShowingTooltip () {
+    getActiveTooltipType () {
         if (this.hasLocalAddresses) {
-            return POPUP_TYPES.EmailProtection
+            return TOOLTIP_TYPES.EmailProtection
         }
 
-        if (this.settings.featureToggles.emailProtection_incontext_signup && !this.hasDismissedEmailSignup) {
-            return POPUP_TYPES.EmailSignup
+        if (this.settings.featureToggles.emailProtection_incontext_signup && this.settings.incontextSignupPermanentlyDismissed === false) {
+            return TOOLTIP_TYPES.EmailSignup
         }
 
         return null
+    }
+
+    onIncontextSignup () {
+        this.firePixel({pixelName: 'incontext_get_email_protection'})
+    }
+
+    onIncontextSignupDismissed () {
+        // Check if the email signup tooltip has previously been dismissed.
+        // If it has, make the dismissal persist and remove it from the page.
+        // If it hasn't, set a flag for next time and just hide the tooltip.
+        if (this.settings.incontextSignupInitiallyDismissed) {
+            this.settings.setIncontextSignupPermanentlyDismissed(true)
+            this.deviceApi.notify(new SetIncontextSignupPermanentlyDismissedAtCall({ value: new Date().getTime() }))
+            this.removeAutofillUIFromPage()
+            this.firePixel({pixelName: 'incontext_dismiss_persisted'})
+        } else {
+            this.settings.setIncontextSignupInitiallyDismissed(true)
+            this.deviceApi.notify(new SetIncontextSignupInitiallyDismissedAtCall({ value: new Date().getTime() }))
+            this.removeTooltip()
+            this.firePixel({pixelName: 'incontext_dismiss_initial'})
+        }
+    }
+
+    async resetAutofillUI (callback) {
+        this.removeAutofillUIFromPage()
+
+        // Start the setup process again
+        await this.refreshSettings()
+        await this.setupAutofill()
+
+        if (callback) await callback()
+
+        this.uiController = this.createUIController()
+        await this.postInit()
+    }
+
+    removeAutofillUIFromPage () {
+        this.uiController?.destroy()
+        this._scannerCleanup?.()
     }
 
     async isEnabled () {
@@ -77,17 +116,28 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     postInit () {
-        switch (this.getShowingTooltip()) {
-        case POPUP_TYPES.EmailProtection: {
-            const cleanup = this.scanner.init()
-            this.addLogoutListener(cleanup)
+        switch (this.getActiveTooltipType()) {
+        case TOOLTIP_TYPES.EmailProtection: {
+            this._scannerCleanup = this.scanner.init()
+            this.addLogoutListener(() => {
+                this.resetAutofillUI()
+                if (this.globalConfig.isDDGDomain) {
+                    notifyWebApp({ deviceSignedIn: {value: false} })
+                }
+            })
+
+            if (this.activeForm?.activeInput) {
+                this.attachTooltip(this.activeForm, this.activeForm?.activeInput, null, 'postSignup')
+            }
+
             break
         }
-        case POPUP_TYPES.EmailSignup: {
-            this.scanner.init()
+        case TOOLTIP_TYPES.EmailSignup: {
+            this._scannerCleanup = this.scanner.init()
             break
         }
         default: {
+            // Don't do anyhing if we don't have a tooltip to show
             break
         }
         }
@@ -170,13 +220,7 @@ class ExtensionInterface extends InterfacePrototype {
 
             switch (message.type) {
             case 'ddgUserReady':
-                this.setupAutofill().then(() => {
-                    this.refreshSettings().then(() => {
-                        this.setupSettingsPage({shouldLog: true}).then(() => {
-                            return this.postInit()
-                        })
-                    })
-                })
+                this.resetAutofillUI(() => this.setupSettingsPage({shouldLog: true}))
                 break
             case 'contextualAutofill':
                 setValue(activeEl, formatDuckAddress(message.alias), this.globalConfig)
@@ -197,12 +241,19 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     addLogoutListener (handler) {
+        // Make sure there's only one log out listener attached by removing the
+        // previous logout listener first, if it exists.
+        if (this._logoutListenerHandler) {
+            chrome.runtime.onMessage.removeListener(this._logoutListenerHandler)
+        }
+
         // Cleanup on logout events
-        chrome.runtime.onMessage.addListener((message, sender) => {
+        this._logoutListenerHandler = (message, sender) => {
             if (sender.id === chrome.runtime.id && message.type === 'logout') {
                 handler()
             }
-        })
+        }
+        chrome.runtime.onMessage.addListener(this._logoutListenerHandler)
     }
 }
 

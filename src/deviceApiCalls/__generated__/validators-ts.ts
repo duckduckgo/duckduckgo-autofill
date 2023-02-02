@@ -325,7 +325,7 @@ export interface GetAutofillDataRequest {
   /**
    * Signals that the prompt was triggered automatically rather than by user action
    */
-  trigger?: "userInitiated" | "autoprompt";
+  trigger?: "userInitiated" | "autoprompt" | "postSignup";
   /**
    * Serialized JSON that will be picked up once the 'parent' requests its initial data
    */
@@ -475,6 +475,18 @@ export interface GenericError {
   message: string;
 }
 
+// getIncontextSignupDismissedAt.result.json
+
+/**
+ * Gets the time that the in-context Email Protection sign-up message was dismissed, if set
+ */
+export interface GetIncontextSignupDismissedAt {
+  success: {
+    initiallyDismissedAt?: number;
+    permanentlyDismissedAt?: number;
+  };
+}
+
 // getRuntimeConfiguration.result.json
 
 /**
@@ -525,6 +537,16 @@ export interface UserPreferences {
 }
 export interface GenericError {
   message: string;
+}
+
+// incontext-signup-settings.json
+
+/**
+ * Delivered as part of Runtime Configuration, but needs to live here since Runtime Configuration can contain settings for many features
+ */
+export interface IncontextSignupSettings {
+  initiallyDismissedAt?: number;
+  permanentlyDismissedAt?: number;
 }
 
 // providerStatusUpdated.json
@@ -661,7 +683,37 @@ export type SendJSPixelParams =
     }
   | {
       pixelName: "autofill_private_address";
+    }
+  | {
+      pixelName: "incontext_show";
+    }
+  | {
+      pixelName: "incontext_get_email_protection";
+    }
+  | {
+      pixelName: "incontext_dismiss_persisted";
+    }
+  | {
+      pixelName: "incontext_dismiss_initial";
     };
+
+// setIncontextSignupInitiallyDismissedAt.params.json
+
+/**
+ * Sets the time that the in-context Email Protection sign-up message was initially dismissed
+ */
+export interface SetIncontextSignupInitiallyDismissedAt {
+  value?: number;
+}
+
+// setIncontextSignupPermanentlyDismissedAt.params.json
+
+/**
+ * Sets the time that the in-context Email Protection sign-up message was permanently dismissed
+ */
+export interface SetIncontextSignupPermanentlyDismissedAt {
+  value?: number;
+}
 
 // setSize.params.json
 

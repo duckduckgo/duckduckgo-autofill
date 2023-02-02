@@ -124,6 +124,13 @@ export const getAvailableInputTypesResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
+export const getIncontextSignupDismissedAtSchema = z.object({
+    success: z.object({
+        initiallyDismissedAt: z.number().optional(),
+        permanentlyDismissedAt: z.number().optional()
+    })
+});
+
 export const contentScopeSchema = z.object({
     features: z.record(z.object({
         exceptions: z.array(z.unknown()),
@@ -143,6 +150,11 @@ export const userPreferencesSchema = z.object({
     features: z.record(z.object({
         settings: z.record(z.unknown())
     }))
+});
+
+export const incontextSignupSettingsSchema = z.object({
+    initiallyDismissedAt: z.number().optional(),
+    permanentlyDismissedAt: z.number().optional()
 });
 
 export const runtimeConfigurationSchema = z.object({
@@ -165,7 +177,23 @@ export const sendJSPixelParamsSchema = z.union([z.object({
         pixelName: z.literal("autofill_personal_address")
     }), z.object({
         pixelName: z.literal("autofill_private_address")
+    }), z.object({
+        pixelName: z.literal("incontext_show")
+    }), z.object({
+        pixelName: z.literal("incontext_get_email_protection")
+    }), z.object({
+        pixelName: z.literal("incontext_dismiss_persisted")
+    }), z.object({
+        pixelName: z.literal("incontext_dismiss_initial")
     })]);
+
+export const setIncontextSignupInitiallyDismissedAtSchema = z.object({
+    value: z.number().optional()
+});
+
+export const setIncontextSignupPermanentlyDismissedAtSchema = z.object({
+    value: z.number().optional()
+});
 
 export const setSizeParamsSchema = z.object({
     height: z.number(),
@@ -197,7 +225,7 @@ export const getAutofillDataRequestSchema = z.object({
     inputType: z.string(),
     mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")]),
     subType: z.string(),
-    trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt")]).optional(),
+    trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt"), z.literal("postSignup")]).optional(),
     serializedInputContext: z.string().optional(),
     triggerContext: triggerContextSchema.optional()
 });

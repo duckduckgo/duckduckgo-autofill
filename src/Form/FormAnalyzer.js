@@ -40,11 +40,6 @@ class FormAnalyzer {
          */
         this.isHybrid = false
 
-        // Avoid autofill on our signup page
-        if (window.location.href.match(/^https:\/\/(.+\.)?duckduckgo\.com\/email\/choose-address/i)) {
-            return this
-        }
-
         this.evaluateElAttributes(input, 3, true)
         form ? this.evaluateForm() : this.evaluatePage()
         return this

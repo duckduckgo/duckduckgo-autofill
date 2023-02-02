@@ -25,7 +25,7 @@
     "trigger": {
       "description": "Signals that the prompt was triggered automatically rather than by user action",
       "type": "string",
-      "enum": ["userInitiated", "autoprompt"]
+      "enum": ["userInitiated", "autoprompt", "postSignup"]
     },
     "serializedInputContext": {
       "description": "Serialized JSON that will be picked up once the 'parent' requests its initial data",

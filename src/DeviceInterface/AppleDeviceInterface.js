@@ -80,14 +80,6 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
     }
 
-    async postInit () {
-        if (this.isDeviceSignedIn()) {
-            this.scanner.forms.forEach(form => form.redecorateAllInputs())
-        }
-        const cleanup = this.scanner.init()
-        this.addLogoutListener(cleanup)
-    }
-
     /**
      * Used by the email web app
      * Settings page displays data of the logged in user data

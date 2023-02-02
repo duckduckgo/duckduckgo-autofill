@@ -122,6 +122,10 @@ class InterfacePrototype {
         topContextData: undefined
     }
 
+    onIncontextSignup () {}
+
+    onIncontextSignupDismissed () {}
+
     /**
      * @returns {import('../Form/matching').SupportedTypes}
      */
@@ -293,8 +297,6 @@ class InterfacePrototype {
         await this.settings.refresh()
     }
 
-    postInit () {}
-
     async isEnabled () {
         return autofillEnabled(this.globalConfig)
     }
@@ -316,6 +318,16 @@ class InterfacePrototype {
             window.addEventListener('load', handler)
             document.addEventListener('readystatechange', handler)
         }
+    }
+
+    postInit () {
+        const cleanup = this.scanner.init()
+        this.addLogoutListener(() => {
+            cleanup()
+            if (this.globalConfig.isDDGDomain) {
+                notifyWebApp({ deviceSignedIn: {value: false} })
+            }
+        })
     }
 
     /**
@@ -386,11 +398,11 @@ class InterfacePrototype {
      * @param {import("../Form/Form").Form} form
      * @param {HTMLInputElement} input
      * @param {{ x: number; y: number; } | null} click
-     * @param {'userInitiated' | 'autoprompt'} trigger
+     * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
      */
     attachTooltip (form, input, click, trigger = 'userInitiated') {
         // Avoid flashing tooltip from background tabs on macOS
-        if (document.visibilityState !== 'visible') return
+        if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return
         // Only autoprompt on mobile devices
         if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return
         // Only fire autoprompt once

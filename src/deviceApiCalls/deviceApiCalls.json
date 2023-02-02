@@ -47,5 +47,15 @@
   },
   "sendJSPixel": {
     "paramsValidator": "./schemas/sendJSPixel.params.json"
+  },
+  "setIncontextSignupInitiallyDismissedAt": {
+    "paramsValidator": "./schemas/setIncontextSignupInitiallyDismissedAt.params.json"
+  },
+  "setIncontextSignupPermanentlyDismissedAt": {
+    "paramsValidator": "./schemas/setIncontextSignupPermanentlyDismissedAt.params.json"
+  },
+  "getIncontextSignupDismissedAt": {
+    "id": "getIncontextSignupDismissedAt",
+    "resultValidator": "./schemas/getIncontextSignupDismissedAt.result.json"
   }
 }
