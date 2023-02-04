@@ -233,6 +233,7 @@ class InterfacePrototype {
                 }
                 break;
             }
+            case "windows-overlay":
             case "macos-overlay": {
                 /**
                  * The native side will send a custom event 'mouseMove' to indicate
@@ -253,20 +254,6 @@ class InterfacePrototype {
                 break;
             case "windows":
                 break;
-            case "windows-overlay": {
-                /**
-                 * The native side will send a custom event 'mouseMove' to indicate
-                 * that the HTMLTooltip should fake an element being focused.
-                 *
-                 * Note: There's no cleanup required here since the Overlay has a fresh
-                 * page load every time it's opened.
-                 */
-                window.addEventListener('mouseMove', (event) => {
-                    const activeTooltip = this.uiController?.getActiveTooltip?.()
-                    activeTooltip?.focus(event.detail.x, event.detail.y)
-                })
-                break;
-            }
             case "extension": {
                 // Add contextual menu listeners
                 let activeEl = null
@@ -297,38 +284,23 @@ class InterfacePrototype {
                             break
                     }
                 })
+                break;
             }
+            default: assertUnreachable(this.ctx)
         }
     }
 
     async setupAutofill () {
         switch (this.ctx) {
             case "macos-legacy":
-                await this._getAutofillInitData();
-                const signedIn = await this._checkDeviceSignedIn()
-                if (signedIn) {
-                    await this.getAddresses()
-                }
-                break
-            case "macos-modern": {
-                const signedIn = await this._checkDeviceSignedIn()
-                if (signedIn) {
-                    await this.getAddresses()
-                }
-                break
-            }
-            case "macos-overlay": {
-                await this._getAutofillInitData()
-                const signedIn = await this._checkDeviceSignedIn()
-                if (signedIn) {
-                    await this.getAddresses()
-                }
-                break
-            }
+            case "macos-modern":
+            case "macos-overlay":
             case "ios": {
-                await this._getAutofillInitData()
-                const signedIn = await this._checkDeviceSignedIn()
-                if (signedIn) {
+                const response = await this.deviceApi.request(createRequest('pmHandlerGetAutofillInitData'))
+                this.storeLocalData(response.success)
+                const {isAppSignedIn} = await this.deviceApi.request(createRequest('emailHandlerCheckAppSignedInStatus'))
+                this._isDeviceSignedIn = Boolean(isAppSignedIn);
+                if (this._isDeviceSignedIn) {
                     await this.getAddresses()
                 }
                 break;
@@ -345,60 +317,8 @@ class InterfacePrototype {
             }
             case "extension":
                 return this.getAddresses()
-
+            default: assertUnreachable(this.ctx)
         }
-    }
-
-    /**
-     * Gets the init data from the device
-     */
-    async _getAutofillInitData () {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay": {
-                const response = await this.deviceApi.request(createRequest('pmHandlerGetAutofillInitData'))
-                this.storeLocalData(response.success)
-                return response
-            }
-            case "ios":
-                break;
-            case "android":
-                break;
-            case "windows":
-                break;
-            case "windows-overlay":
-                break;
-            case "extension":
-                break;
-            default: throw new Error('unreachable')
-        }
-    }
-
-    /**
-     * @returns {Promise<boolean>}
-     */
-    async _checkDeviceSignedIn () {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay":
-            case "ios": {
-                const {isAppSignedIn} = await this.deviceApi.request(createRequest('emailHandlerCheckAppSignedInStatus'))
-                this._isDeviceSignedIn = Boolean(isAppSignedIn);
-                return this._isDeviceSignedIn;
-            }
-            case "android":
-                break;
-            case "windows":
-                break;
-            case "windows-overlay":
-                break;
-            case "extension":
-                break;
-
-        }
-        return false;
     }
 
     /**
@@ -1286,11 +1206,7 @@ class InterfacePrototype {
     async askToUnlockProvider () {
         switch (this.ctx) {
             case "macos-legacy":
-            case "macos-modern": {
-                const response = await this.deviceApi.request(new AskToUnlockProviderCall(null))
-                this.providerStatusUpdated(response)
-                return;
-            }
+            case "macos-modern":
             case "macos-overlay": {
                 const response = await this.deviceApi.request(new AskToUnlockProviderCall(null))
                 this.providerStatusUpdated(response)
@@ -1386,7 +1302,7 @@ class InterfacePrototype {
                     }
                 ))
             }
-            default: throw new Error('unimplemented')
+            default: assertUnreachable(this.ctx)
         }
         return null
     }
@@ -1491,6 +1407,7 @@ class InterfacePrototype {
                     (data) => resolve(data)
                 ))
             }
+            default: assertUnreachable(this.ctx)
         }
         return null
     }
@@ -1597,6 +1514,7 @@ class InterfacePrototype {
             case "extension": {
                 return chrome.runtime.sendMessage(data)
             }
+            default: assertUnreachable(this.ctx)
         }
     }
 
@@ -1640,9 +1558,30 @@ class InterfacePrototype {
     providerStatusUpdated (data) {
         switch (this.ctx) {
             case "macos-legacy":
+            case "macos-modern": {
+                try {
+                    const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
+
+                    // Update local settings and data
+                    this.settings.setAvailableInputTypes(availableInputTypes)
+                    this.storeLocalCredentials(credentials)
+
+                    // rerender the tooltip
+                    this.uiController?.updateItems(credentials)
+                    // If the tooltip is open on an autofill type that's not available, close it
+                    const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
+                    if (!availableInputTypes.credentials?.[currentInputSubtype]) {
+                        this.removeTooltip()
+                    }
+                    // Redecorate fields according to the new types
+                    this.scanner.forms.forEach(form => form.recategorizeAllInputs())
+                } catch (e) {
+                    if (this.globalConfig.isDDGTestMode) {
+                        console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
+                    }
+                }
                 break;
-            case "macos-modern":
-                break;
+            }
             case "macos-overlay": {
                 const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
 
@@ -1655,36 +1594,12 @@ class InterfacePrototype {
                 break;
             }
             case "ios":
-                break;
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
-                break;
             case "extension":
-                break;
-            default: assertUnreachable(this.ctx)
-        }
-        try {
-            const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
-
-            // Update local settings and data
-            this.settings.setAvailableInputTypes(availableInputTypes)
-            this.storeLocalCredentials(credentials)
-
-            // rerender the tooltip
-            this.uiController?.updateItems(credentials)
-            // If the tooltip is open on an autofill type that's not available, close it
-            const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
-            if (!availableInputTypes.credentials?.[currentInputSubtype]) {
-                this.removeTooltip()
-            }
-            // Redecorate fields according to the new types
-            this.scanner.forms.forEach(form => form.recategorizeAllInputs())
-        } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
+            default: {
+                throw new Error('unreachable')
             }
         }
     }
@@ -1773,6 +1688,7 @@ class InterfacePrototype {
             case "extension": {
                 return this.hasLocalAddresses
             }
+            default: assertUnreachable(this.ctx)
         }
     }
     /**
@@ -1802,33 +1718,10 @@ class InterfacePrototype {
                 break;
             case "extension":
                 break;
-
-        }
-    }
-
-    /**
-     * @param {{username: string, password: string}} credentials
-     */
-    storeCredentials (credentials) {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay":
-            case "ios": {
-                return this.deviceApi.notify(createNotification('pmHandlerStoreCredentials', credentials))
-            }
-            case "android":
-                break;
-            case "windows":
-                break;
-            case "windows-overlay":
-                break;
-            case "extension":
-                break;
             default: assertUnreachable(this.ctx)
         }
     }
-    getAccounts () {}
+
     /**
      * Gets credentials ready for autofill
      * @param {CredentialsObject['id']} id - the credential id
@@ -1870,27 +1763,6 @@ class InterfacePrototype {
     async getAutofillIdentity (id) {
         const identity = this.getLocalIdentities().find(({id: identityId}) => `${identityId}` === `${id}`)
         return Promise.resolve({success: identity})
-    }
-
-    openManagePasswords () {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay":
-            case "ios": {
-                return this.deviceApi.notify(createNotification('pmHandlerOpenManagePasswords'))
-            }
-            case "android":
-                break;
-            case "windows":
-                break;
-            case "windows-overlay":
-                break;
-            case "extension":
-                break;
-            default: assertUnreachable(this.ctx)
-        }
-        throw new Error('unreachable')
     }
 
     /** @param {StoreFormData} values */

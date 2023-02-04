@@ -3905,6 +3905,7 @@ class InterfacePrototype {
           break;
         }
 
+      case "windows-overlay":
       case "macos-overlay":
         {
           /**
@@ -3931,24 +3932,6 @@ class InterfacePrototype {
 
       case "windows":
         break;
-
-      case "windows-overlay":
-        {
-          /**
-           * The native side will send a custom event 'mouseMove' to indicate
-           * that the HTMLTooltip should fake an element being focused.
-           *
-           * Note: There's no cleanup required here since the Overlay has a fresh
-           * page load every time it's opened.
-           */
-          window.addEventListener('mouseMove', event => {
-            var _this$uiController2, _this$uiController2$g;
-
-            const activeTooltip = (_this$uiController2 = this.uiController) === null || _this$uiController2 === void 0 ? void 0 : (_this$uiController2$g = _this$uiController2.getActiveTooltip) === null || _this$uiController2$g === void 0 ? void 0 : _this$uiController2$g.call(_this$uiController2);
-            activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
-          });
-          break;
-        }
 
       case "extension":
         {
@@ -3981,51 +3964,29 @@ class InterfacePrototype {
                 break;
             }
           });
+          break;
         }
+
+      default:
+        assertUnreachable(this.ctx);
     }
   }
 
   async setupAutofill() {
     switch (this.ctx) {
       case "macos-legacy":
-        await this._getAutofillInitData();
-        const signedIn = await this._checkDeviceSignedIn();
-
-        if (signedIn) {
-          await this.getAddresses();
-        }
-
-        break;
-
       case "macos-modern":
-        {
-          const signedIn = await this._checkDeviceSignedIn();
-
-          if (signedIn) {
-            await this.getAddresses();
-          }
-
-          break;
-        }
-
       case "macos-overlay":
-        {
-          await this._getAutofillInitData();
-          const signedIn = await this._checkDeviceSignedIn();
-
-          if (signedIn) {
-            await this.getAddresses();
-          }
-
-          break;
-        }
-
       case "ios":
         {
-          await this._getAutofillInitData();
-          const signedIn = await this._checkDeviceSignedIn();
+          const response = await this.deviceApi.request((0, _index.createRequest)('pmHandlerGetAutofillInitData'));
+          this.storeLocalData(response.success);
+          const {
+            isAppSignedIn
+          } = await this.deviceApi.request((0, _index.createRequest)('emailHandlerCheckAppSignedInStatus'));
+          this._isDeviceSignedIn = Boolean(isAppSignedIn);
 
-          if (signedIn) {
+          if (this._isDeviceSignedIn) {
             await this.getAddresses();
           }
 
@@ -4048,76 +4009,10 @@ class InterfacePrototype {
 
       case "extension":
         return this.getAddresses();
-    }
-  }
-  /**
-   * Gets the init data from the device
-   */
-
-
-  async _getAutofillInitData() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-        {
-          const response = await this.deviceApi.request((0, _index.createRequest)('pmHandlerGetAutofillInitData'));
-          this.storeLocalData(response.success);
-          return response;
-        }
-
-      case "ios":
-        break;
-
-      case "android":
-        break;
-
-      case "windows":
-        break;
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
 
       default:
-        throw new Error('unreachable');
+        assertUnreachable(this.ctx);
     }
-  }
-  /**
-   * @returns {Promise<boolean>}
-   */
-
-
-  async _checkDeviceSignedIn() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          const {
-            isAppSignedIn
-          } = await this.deviceApi.request((0, _index.createRequest)('emailHandlerCheckAppSignedInStatus'));
-          this._isDeviceSignedIn = Boolean(isAppSignedIn);
-          return this._isDeviceSignedIn;
-        }
-
-      case "android":
-        break;
-
-      case "windows":
-        break;
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-    }
-
-    return false;
   }
   /**
    * Implementors should override this with a UI controller that suits
@@ -4823,7 +4718,6 @@ class InterfacePrototype {
 
   postInit() {
     const defaultPostInit = () => {
-      console.log('defaultPostInit()');
       const cleanup = this.scanner.init();
       this.addLogoutListener(() => {
         cleanup();
@@ -4839,7 +4733,7 @@ class InterfacePrototype {
     };
 
     const showImmediately = () => {
-      var _this$uiController3, _this$uiController3$c;
+      var _this$uiController2, _this$uiController2$c;
 
       const topContextData = this.getTopContextData();
       if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values
@@ -4854,12 +4748,12 @@ class InterfacePrototype {
       }; // Create the tooltip, and set it as active
 
 
-      const tooltip = (_this$uiController3 = this.uiController) === null || _this$uiController3 === void 0 ? void 0 : (_this$uiController3$c = _this$uiController3.createTooltip) === null || _this$uiController3$c === void 0 ? void 0 : _this$uiController3$c.call(_this$uiController3, getPosition, topContextData);
+      const tooltip = (_this$uiController2 = this.uiController) === null || _this$uiController2 === void 0 ? void 0 : (_this$uiController2$c = _this$uiController2.createTooltip) === null || _this$uiController2$c === void 0 ? void 0 : _this$uiController2$c.call(_this$uiController2, getPosition, topContextData);
 
       if (tooltip) {
-        var _this$uiController4, _this$uiController4$s;
+        var _this$uiController3, _this$uiController3$s;
 
-        (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : (_this$uiController4$s = _this$uiController4.setActiveTooltip) === null || _this$uiController4$s === void 0 ? void 0 : _this$uiController4$s.call(_this$uiController4, tooltip);
+        (_this$uiController3 = this.uiController) === null || _this$uiController3 === void 0 ? void 0 : (_this$uiController3$s = _this$uiController3.setActiveTooltip) === null || _this$uiController3$s === void 0 ? void 0 : _this$uiController3$s.call(_this$uiController3, tooltip);
       }
     };
 
@@ -5098,7 +4992,7 @@ class InterfacePrototype {
 
 
   attachTooltip(form, input, click) {
-    var _this$uiController5;
+    var _this$uiController4;
 
     let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
     // Avoid flashing tooltip from background tabs on macOS
@@ -5136,7 +5030,7 @@ class InterfacePrototype {
     // for example, generated passwords may get appended here
 
     const processedTopContext = this.preAttachTooltip(topContextData, input, form);
-    (_this$uiController5 = this.uiController) === null || _this$uiController5 === void 0 ? void 0 : _this$uiController5.attach({
+    (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : _this$uiController4.attach({
       input,
       form,
       click,
@@ -5251,12 +5145,6 @@ class InterfacePrototype {
     switch (this.ctx) {
       case "macos-legacy":
       case "macos-modern":
-        {
-          const response = await this.deviceApi.request(new _deviceApiCalls.AskToUnlockProviderCall(null));
-          this.providerStatusUpdated(response);
-          return;
-        }
-
       case "macos-overlay":
         {
           const response = await this.deviceApi.request(new _deviceApiCalls.AskToUnlockProviderCall(null));
@@ -5285,15 +5173,15 @@ class InterfacePrototype {
   }
 
   isTooltipActive() {
-    var _this$uiController$is, _this$uiController6, _this$uiController6$i;
+    var _this$uiController$is, _this$uiController5, _this$uiController5$i;
 
-    return (_this$uiController$is = (_this$uiController6 = this.uiController) === null || _this$uiController6 === void 0 ? void 0 : (_this$uiController6$i = _this$uiController6.isActive) === null || _this$uiController6$i === void 0 ? void 0 : _this$uiController6$i.call(_this$uiController6)) !== null && _this$uiController$is !== void 0 ? _this$uiController$is : false;
+    return (_this$uiController$is = (_this$uiController5 = this.uiController) === null || _this$uiController5 === void 0 ? void 0 : (_this$uiController5$i = _this$uiController5.isActive) === null || _this$uiController5$i === void 0 ? void 0 : _this$uiController5$i.call(_this$uiController5)) !== null && _this$uiController$is !== void 0 ? _this$uiController$is : false;
   }
 
   removeTooltip() {
-    var _this$uiController7, _this$uiController7$r;
+    var _this$uiController6, _this$uiController6$r;
 
-    return (_this$uiController7 = this.uiController) === null || _this$uiController7 === void 0 ? void 0 : (_this$uiController7$r = _this$uiController7.removeTooltip) === null || _this$uiController7$r === void 0 ? void 0 : _this$uiController7$r.call(_this$uiController7, 'interface');
+    return (_this$uiController6 = this.uiController) === null || _this$uiController6 === void 0 ? void 0 : (_this$uiController6$r = _this$uiController6.removeTooltip) === null || _this$uiController6$r === void 0 ? void 0 : _this$uiController6$r.call(_this$uiController6, 'interface');
   }
 
   async setupSettingsPage() {
@@ -5384,7 +5272,7 @@ class InterfacePrototype {
         }
 
       default:
-        throw new Error('unimplemented');
+        assertUnreachable(this.ctx);
     }
 
     return null;
@@ -5520,6 +5408,9 @@ class InterfacePrototype {
             getEmailProtectionCapabilities: true
           }, data => resolve(data)));
         }
+
+      default:
+        assertUnreachable(this.ctx);
     }
 
     return null;
@@ -5671,6 +5562,9 @@ class InterfacePrototype {
         {
           return chrome.runtime.sendMessage(data);
         }
+
+      default:
+        assertUnreachable(this.ctx);
     }
   }
 
@@ -5701,9 +5595,9 @@ class InterfacePrototype {
   }
 
   removeAutofillUIFromPage() {
-    var _this$uiController8, _this$_scannerCleanup;
+    var _this$uiController7, _this$_scannerCleanup;
 
-    (_this$uiController8 = this.uiController) === null || _this$uiController8 === void 0 ? void 0 : _this$uiController8.destroy();
+    (_this$uiController7 = this.uiController) === null || _this$uiController7 === void 0 ? void 0 : _this$uiController7.destroy();
     (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this);
   }
   /**
@@ -5715,10 +5609,37 @@ class InterfacePrototype {
   providerStatusUpdated(data) {
     switch (this.ctx) {
       case "macos-legacy":
-        break;
-
       case "macos-modern":
-        break;
+        {
+          try {
+            var _this$uiController8, _availableInputTypes$;
+
+            const {
+              credentials,
+              availableInputTypes
+            } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
+
+            this.settings.setAvailableInputTypes(availableInputTypes);
+            this.storeLocalCredentials(credentials); // rerender the tooltip
+
+            (_this$uiController8 = this.uiController) === null || _this$uiController8 === void 0 ? void 0 : _this$uiController8.updateItems(credentials); // If the tooltip is open on an autofill type that's not available, close it
+
+            const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
+
+            if (!((_availableInputTypes$ = availableInputTypes.credentials) !== null && _availableInputTypes$ !== void 0 && _availableInputTypes$[currentInputSubtype])) {
+              this.removeTooltip();
+            } // Redecorate fields according to the new types
+
+
+            this.scanner.forms.forEach(form => form.recategorizeAllInputs());
+          } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+              console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
+            }
+          }
+
+          break;
+        }
 
       case "macos-overlay":
         {
@@ -5737,49 +5658,14 @@ class InterfacePrototype {
         }
 
       case "ios":
-        break;
-
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
-        break;
-
       case "extension":
-        break;
-
       default:
-        assertUnreachable(this.ctx);
-    }
-
-    try {
-      var _this$uiController10, _availableInputTypes$;
-
-      const {
-        credentials,
-        availableInputTypes
-      } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
-
-      this.settings.setAvailableInputTypes(availableInputTypes);
-      this.storeLocalCredentials(credentials); // rerender the tooltip
-
-      (_this$uiController10 = this.uiController) === null || _this$uiController10 === void 0 ? void 0 : _this$uiController10.updateItems(credentials); // If the tooltip is open on an autofill type that's not available, close it
-
-      const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
-
-      if (!((_availableInputTypes$ = availableInputTypes.credentials) !== null && _availableInputTypes$ !== void 0 && _availableInputTypes$[currentInputSubtype])) {
-        this.removeTooltip();
-      } // Redecorate fields according to the new types
-
-
-      this.scanner.forms.forEach(form => form.recategorizeAllInputs());
-    } catch (e) {
-      if (this.globalConfig.isDDGTestMode) {
-        console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
-      }
+        {
+          throw new Error('unreachable');
+        }
     }
   }
   /** @param {() => void} handler */
@@ -5883,6 +5769,9 @@ class InterfacePrototype {
         {
           return this.hasLocalAddresses;
         }
+
+      default:
+        assertUnreachable(this.ctx);
     }
   }
   /**
@@ -5924,6 +5813,9 @@ class InterfacePrototype {
 
       case "extension":
         break;
+
+      default:
+        assertUnreachable(this.ctx);
     }
   }
   /**
