@@ -27,7 +27,7 @@ import {
     GetAutofillDataCall,
     CloseAutofillParentCall,
     SetIncontextSignupPermanentlyDismissedAtCall,
-    SetIncontextSignupInitiallyDismissedAtCall
+    SetIncontextSignupInitiallyDismissedAtCall, SelectedDetailCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
@@ -36,7 +36,6 @@ import {NativeUIController} from "../UI/controllers/NativeUIController";
 import {defaultOptions} from "../UI/HTMLTooltip";
 import {HTMLTooltipUIController} from "../UI/controllers/HTMLTooltipUIController";
 import {OverlayUIController} from "../UI/controllers/OverlayUIController";
-import {overlayApi} from "./overlayApi";
 import {GetAlias} from "../deviceApiCalls/additionalDeviceApiCalls";
 
 /**
@@ -60,8 +59,6 @@ class InterfacePrototype {
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     activeForm = null
-    /** @type {import("../UI/HTMLTooltip.js").default | null} */
-    currentTooltip = null
     /** @type {number} */
     get initialSetupDelayMs () {
         switch (this.ctx) {
@@ -216,7 +213,6 @@ class InterfacePrototype {
     }
 
     addDeviceListeners () {
-        console.log('addDeviceListeners');
         switch (this.ctx) {
             case "macos-legacy":
             case "macos-modern": {
@@ -237,16 +233,40 @@ class InterfacePrototype {
                 }
                 break;
             }
-            case "macos-overlay":
+            case "macos-overlay": {
+                /**
+                 * The native side will send a custom event 'mouseMove' to indicate
+                 * that the HTMLTooltip should fake an element being focused.
+                 *
+                 * Note: There's no cleanup required here since the Overlay has a fresh
+                 * page load every time it's opened.
+                 */
+                window.addEventListener('mouseMove', (event) => {
+                    const activeTooltip = this.uiController?.getActiveTooltip?.()
+                    activeTooltip?.focus(event.detail.x, event.detail.y)
+                })
                 break;
+            }
             case "ios":
                 break;
             case "android":
                 break;
             case "windows":
                 break;
-            case "windows-overlay":
+            case "windows-overlay": {
+                /**
+                 * The native side will send a custom event 'mouseMove' to indicate
+                 * that the HTMLTooltip should fake an element being focused.
+                 *
+                 * Note: There's no cleanup required here since the Overlay has a fresh
+                 * page load every time it's opened.
+                 */
+                window.addEventListener('mouseMove', (event) => {
+                    const activeTooltip = this.uiController?.getActiveTooltip?.()
+                    activeTooltip?.focus(event.detail.x, event.detail.y)
+                })
                 break;
+            }
             case "extension": {
                 // Add contextual menu listeners
                 let activeEl = null
@@ -887,13 +907,6 @@ class InterfacePrototype {
     getTopContextData () {
         return this.#data.topContextData
     }
-    /**
-     * @deprecated use `availableInputTypes.credentials` directly instead
-     * @returns {boolean}
-     */
-    get hasLocalCredentials () {
-        return this.#data.credentials.length > 0
-    }
 
     getLocalCredentials () {
         return this.#data.credentials.map(cred => {
@@ -945,27 +958,13 @@ class InterfacePrototype {
     }
 
     /**
-     * This is a fall-back situation for macOS since it was the only
-     * platform to support anything none-email based in the past.
-     *
-     * Once macOS fully supports 'getAvailableInputTypes' this can be removed
-     *
-     * @returns {Promise<void>}
-     */
-    async refreshSettings () {
-        await this.settings.refresh()
-    }
-
-    /**
      * overlay API helpers
      */
-    overlay = overlayApi(this)
     ready = false;
 
     postInit () {
 
         const defaultPostInit = () => {
-            console.log('defaultPostInit()');
             const cleanup = this.scanner.init()
             this.addLogoutListener(() => {
                 cleanup()
@@ -975,6 +974,27 @@ class InterfacePrototype {
             })
         }
 
+        const showImmediately = () => {
+            const topContextData = this.getTopContextData()
+            if (!topContextData) throw new Error('unreachable, topContextData should be available')
+
+            // Provide dummy values
+            const getPosition = () => {
+                return {
+                    x: 0,
+                    y: 0,
+                    height: 50,
+                    width: 50
+                }
+            }
+
+            // Create the tooltip, and set it as active
+            const tooltip = this.uiController?.createTooltip?.(getPosition, topContextData)
+            if (tooltip) {
+                this.uiController?.setActiveTooltip?.(tooltip)
+            }
+        }
+
         switch (this.ctx) {
             case "macos-legacy":
                 return defaultPostInit();
@@ -982,7 +1002,7 @@ class InterfacePrototype {
                 return defaultPostInit();
             case "macos-overlay":
                 // setup overlay API pieces
-                this.overlay.showImmediately();
+                showImmediately();
                 return;
             case "ios":
                 return defaultPostInit();
@@ -994,7 +1014,8 @@ class InterfacePrototype {
                 return;
             }
             case "windows-overlay": {
-                return this.overlay.showImmediately()
+                showImmediately();
+                return;
             }
             case "extension": {
                 switch (this.getActiveTooltipType()) {
@@ -1066,40 +1087,52 @@ class InterfacePrototype {
      * @param {string} type
      */
     async selectedDetail (data, type) {
+        const defaultSelectedMethod = () => {
+            const form = this.activeForm
+            if (!form) {
+                return
+            }
+            if (data.id === 'privateAddress') {
+                this.refreshAlias().catch(console.error)
+            }
+            if (type === 'email' && 'email' in data) {
+                form.autofillEmail(data.email)
+            } else {
+                form.autofillData(data, type)
+            }
+            this.removeTooltip()
+        }
+
+        const overlaySelected = async () => {
+            let detailsEntries = Object.entries(data).map(([key, value]) => {
+                return [key, String(value)]
+            })
+            const entries = Object.fromEntries(detailsEntries)
+            /** @link {import("../deviceApiCalls/schemas/getAutofillData.result.json")} */
+            await this.deviceApi.notify(new SelectedDetailCall({data: entries, configType: type}))
+        }
+
         switch (this.ctx) {
             case "macos-legacy":
-                break;
+                return defaultSelectedMethod()
             case "macos-modern":
-                break;
+                return defaultSelectedMethod()
             case "macos-overlay": {
-                return this.overlay.selectedDetail(data, type)
+                return overlaySelected();
             }
             case "ios":
-                break;
+                return defaultSelectedMethod()
             case "android":
-                break;
+                return defaultSelectedMethod()
             case "windows":
-                break;
+                return defaultSelectedMethod()
             case "windows-overlay": {
-                return this.overlay.selectedDetail(data, type)
+                return overlaySelected();
             }
             case "extension":
-                break;
+                return defaultSelectedMethod()
             default: assertUnreachable(this.ctx)
         }
-        const form = this.activeForm
-        if (!form) {
-            return
-        }
-        if (data.id === 'privateAddress') {
-            this.refreshAlias().catch(console.error)
-        }
-        if (type === 'email' && 'email' in data) {
-            form.autofillEmail(data.email)
-        } else {
-            form.autofillData(data, type)
-        }
-        this.removeTooltip()
     }
 
     /**
