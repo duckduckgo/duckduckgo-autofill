@@ -18,7 +18,7 @@ export function signupPage (page, server) {
             await page.goto(server.urlForPath(constants.pages['signup']))
         },
         async selectGeneratedPassword () {
-            const input = page.locator('#password')
+            const input = page.locator('#password[data-ddg-inputtype="credentials.password"]')
             await input.click()
 
             const passwordBtn = page.locator('button:has-text("Generated password")')
@@ -218,11 +218,13 @@ export function loginPage (page, server, opts = {}) {
          * @return {Promise<void>}
          */
         async selectFirstCredential (username) {
+            const decoratedEmailField = `#email[data-ddg-inputtype="credentials.username"]`;
             if (clickLabel) {
+                await page.waitForSelector(decoratedEmailField)
                 const label = page.locator('label[for="email"]')
                 await label.click()
             } else {
-                const email = page.locator('#email')
+                const email = page.locator(decoratedEmailField)
                 await email.click()
             }
 
@@ -277,7 +279,7 @@ export function loginPage (page, server, opts = {}) {
          */
         async assertFirstCredential (username, password) {
             await this.assertUsernameFilled(username)
-            await this.assertPasswordFilled((password))
+            await this.assertPasswordFilled(password)
         },
         async assertPasswordEmpty () {
             const passwordField = page.locator('#password')

@@ -62,8 +62,6 @@ async function testLoginPage (page, server, opts = {}) {
     }
 
     await login.navigate()
-    await page.waitForTimeout(200)
-
     await login.selectFirstCredential(personalAddress)
     await login.assertFirstCredential(personalAddress, password)
     return login

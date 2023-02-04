@@ -4,35 +4,29 @@ import {ExtensionTransport} from './extension.transport.js'
 import {WindowsTransport} from './windows.transport.js'
 
 /**
+ * @param {import('../../DeviceInterface/InterfacePrototype.js').Ctx} ctx
  * @param {GlobalConfig} globalConfig
  * @returns {import("../../../packages/device-api").DeviceApiTransport}
  */
 
-export function createTransport (globalConfig) {
-    if (typeof globalConfig.userPreferences?.platform?.name === 'string') {
-        switch (globalConfig.userPreferences?.platform?.name) {
-        case 'ios':
-        case 'macos':
+export function createTransport (ctx, globalConfig) {
+    switch (ctx) {
+        case "macos-legacy":
+        case "macos-modern":
+        case "macos-overlay":
+        case "ios": {
             return new AppleTransport(globalConfig)
-        case 'android':
-            return new AndroidTransport(globalConfig)
-        default:
-            throw new Error('selectSender unimplemented!')
         }
-    }
-
-    if (globalConfig.isWindows) {
-        return new WindowsTransport()
-    }
-
-    // fallback for when `globalConfig.userPreferences.platform.name` is absent
-    if (globalConfig.isDDGApp) {
-        if (globalConfig.isAndroid) {
+        case "android": {
             return new AndroidTransport(globalConfig)
         }
-        throw new Error('unreachable, createTransport')
+        case "windows":
+        case "windows-overlay": {
+            return new WindowsTransport()
+        }
+        case "extension": {
+            return new ExtensionTransport(globalConfig)
+        }
+        default: return new ExtensionTransport(globalConfig)
     }
-
-    // falls back to extension... is this still the best way to determine this?
-    return new ExtensionTransport(globalConfig)
 }

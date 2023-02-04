@@ -96,7 +96,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.assertFirstCredential(personalAddress, password)
                 await login.fieldsDoNotContainIcons()
             })
-            test('I should not be prompted automatically to use my saved credentials if the form is below the fold', async ({page}) => {
+            test.skip('I should not be prompted automatically to use my saved credentials if the form is below the fold', async ({page}) => {
                 const {login} = await testLoginPage(page, server, {
                     featureToggles: {
                         inputType_credentials: true

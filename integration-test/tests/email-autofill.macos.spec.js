@@ -129,6 +129,8 @@ test.describe('macos', () => {
 
             await signup.navigate()
             await signup.assertEmailHasNoDaxIcon()
+            // await page.waitForTimeout(1000);
+            // await page.pause();
             await signup.selectGeneratedPassword()
             await signup.selectLastName(identity.lastName + ' Main identity')
             await signup.assertEmailValue(identity.emailAddress)

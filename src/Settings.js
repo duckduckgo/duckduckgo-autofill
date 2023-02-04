@@ -158,12 +158,6 @@ export class Settings {
     /**
      * To 'refresh' settings means to re-call APIs to determine new state. This may
      * only occur once per page, but it must be done before any page scanning/decorating can happen
-     *
-     * @returns {Promise<{
-     *      availableInputTypes: AvailableInputTypes,
-     *      featureToggles: AutofillFeatureToggles,
-     *      enabled: boolean | null
-     * }>}
      */
     async refresh () {
         this.setEnabled(await this.getEnabled())
@@ -171,19 +165,6 @@ export class Settings {
         this.setAvailableInputTypes(await this.getAvailableInputTypes())
         this.setIncontextSignupInitiallyDismissed(await this.getIncontextSignupInitiallyDismissed())
         this.setIncontextSignupPermanentlyDismissed(await this.getIncontextSignupPermanentlyDismissed())
-
-        // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
-        if (typeof this.enabled === 'boolean') {
-            if (!this.enabled) {
-                return Settings.defaults
-            }
-        }
-
-        return {
-            featureToggles: this.featureToggles,
-            availableInputTypes: this.availableInputTypes,
-            enabled: this.enabled
-        }
     }
 
     /**

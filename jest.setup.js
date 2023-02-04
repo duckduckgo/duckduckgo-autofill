@@ -28,6 +28,12 @@ Object.defineProperty(global.self, 'crypto', {
     }
 })
 
+Object.defineProperty(global.self, 'webkit', {
+    value: {
+        messageHandlers: {}
+    }
+})
+
 /**
  * Utility function that mocks the `IntersectionObserver` API. Necessary for components that rely
  * on it, otherwise the tests will crash. Recommended to execute inside `beforeEach`.

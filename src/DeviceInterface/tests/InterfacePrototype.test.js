@@ -5,6 +5,11 @@ import InterfacePrototype from '../InterfacePrototype.js'
 describe('InterfacePrototype', function () {
     beforeEach(() => {
         require('../../requestIdleCallback.js')
+        // window.webkit = { messageHandlers: {} }
+    })
+    afterEach(() => {
+        require('../../requestIdleCallback.js')
+        // Reflect.deleteProperty(window, 'webkit');
     })
 
     /**
@@ -16,12 +21,14 @@ describe('InterfacePrototype', function () {
         const mockedDoc = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
 
         const device = InterfacePrototype.default()
-        jest.spyOn(device, 'refreshSettings').mockImplementation(() => Promise.resolve())
+        jest.spyOn(device.settings, 'refresh').mockReturnValue(Promise.resolve())
+        jest.spyOn(device, '_getAutofillInitData').mockReturnValue(Promise.resolve())
+        jest.spyOn(device, '_checkDeviceSignedIn').mockReturnValue(Promise.resolve(false))
         await device.init()
 
         const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController)
         jest.spyOn(uiController, 'attach')
-
+        //
         const formEl = attachAndReturnGenericForm()
         const input = /** @type {HTMLInputElement} */ (formEl.querySelector('input'))
         const formInstance = new Form(formEl, input, device)

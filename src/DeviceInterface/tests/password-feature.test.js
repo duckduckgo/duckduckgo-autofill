@@ -1,19 +1,18 @@
 import { DeviceApi } from '../../../packages/device-api/index.js'
 import {createGlobalConfig} from '../../config.js'
 import {AppleTransport} from '../../deviceApiCalls/transports/apple.transport.js'
-import {AppleDeviceInterface} from '../AppleDeviceInterface.js'
 import {Settings} from '../../Settings.js'
 import {Form} from '../../Form/Form.js'
 import {attachAndReturnGenericForm} from '../../test-utils.js'
 import {createScanner} from '../../Scanner.js'
+import InterfacePrototype from "../InterfacePrototype";
 
 function pmHandlerStoreDataSpy () {
     const spy = jest.fn().mockReturnValueOnce(Promise.resolve(null))
-    window.webkit = {
-        messageHandlers: {
-            pmHandlerStoreData: {
-                postMessage: spy
-            }
+    window.webkit.messageHandlers = {
+        ...window.webkit.messageHandlers,
+        pmHandlerStoreData: {
+            postMessage: spy
         }
     }
     return spy
@@ -37,7 +36,7 @@ function createDevice () {
     settings.setFeatureToggles({
         password_generation: true
     })
-    return new AppleDeviceInterface(APPLE_GLOBAL_CONFIG, deviceApi, settings)
+    return new InterfacePrototype('macos-legacy', APPLE_GLOBAL_CONFIG, deviceApi, settings)
 }
 
 describe('AppleDeviceInterface: preAttachTooltip', () => {
@@ -71,7 +70,7 @@ describe('AppleDeviceInterface: preAttachTooltip', () => {
     it('does NOT add a password when Device does **not** support password generation', () => {
         const deviceApi = createDeviceApi()
         const settings = Settings.default(APPLE_GLOBAL_CONFIG, deviceApi)
-        const device = new AppleDeviceInterface(APPLE_GLOBAL_CONFIG, deviceApi, settings)
+        const device = new InterfacePrototype('macos-legacy', APPLE_GLOBAL_CONFIG, deviceApi, settings)
         const input = document.createElement('input')
         /** @type {TopContextData} */
         const inputTopContext = { inputType: 'credentials.password' }
