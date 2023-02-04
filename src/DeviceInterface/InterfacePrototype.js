@@ -1775,15 +1775,14 @@ class InterfacePrototype {
                 return this.deviceApi.notify(createNotification('pmHandlerStoreData', values))
             }
             case "android":
-                break;
             case "windows":
-                break;
-            case "windows-overlay":
-                break;
+            case "windows-overlay": {
+                return this.deviceApi.notify(new StoreFormDataCall(values))
+            }
             case "extension":
                 break;
+            default: assertUnreachable(this.ctx)
         }
-        return this.deviceApi.notify(new StoreFormDataCall(values))
     }
 
     /**

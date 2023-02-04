@@ -5819,39 +5819,6 @@ class InterfacePrototype {
     }
   }
   /**
-   * @param {{username: string, password: string}} credentials
-   */
-
-
-  storeCredentials(credentials) {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.notify((0, _index.createNotification)('pmHandlerStoreCredentials', credentials));
-        }
-
-      case "android":
-        break;
-
-      case "windows":
-        break;
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-  }
-
-  getAccounts() {}
-  /**
    * Gets credentials ready for autofill
    * @param {CredentialsObject['id']} id - the credential id
    * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
@@ -5916,35 +5883,6 @@ class InterfacePrototype {
       success: identity
     });
   }
-
-  openManagePasswords() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManagePasswords'));
-        }
-
-      case "android":
-        break;
-
-      case "windows":
-        break;
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-
-    throw new Error('unreachable');
-  }
   /** @param {StoreFormData} values */
 
 
@@ -5959,19 +5897,18 @@ class InterfacePrototype {
         }
 
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
-        break;
+        {
+          return this.deviceApi.notify(new _deviceApiCalls.StoreFormDataCall(values));
+        }
 
       case "extension":
         break;
-    }
 
-    return this.deviceApi.notify(new _deviceApiCalls.StoreFormDataCall(values));
+      default:
+        assertUnreachable(this.ctx);
+    }
   }
   /**
    * `preAttachTooltip` happens just before a tooltip is show - features may want to append some data
