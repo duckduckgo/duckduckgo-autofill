@@ -4041,8 +4041,56 @@ class InterfacePrototype {
            * If we get here, we're just a controller for an overlay
            */
           return new _OverlayUIController.OverlayUIController({
-            remove: async () => this._closeAutofillParent(),
-            show: async details => this._show(details)
+            remove: async () => this.deviceApi.notify((0, _index.createNotification)('closeAutofillParent', {})),
+            show: async details => {
+              const applePayload = { ...details.triggerContext,
+                serializedInputContext: details.serializedInputContext
+              };
+              this.deviceApi.notify((0, _index.createNotification)('showAutofillParent', applePayload)); // start listening for a result
+
+              const listener = new Promise(resolve => {
+                // Prevent two timeouts from happening
+                // @ts-ignore
+                const poll = async () => {
+                  clearTimeout(this.pollingTimeout);
+                  const response = await this.deviceApi.request((0, _index.createRequest)('getSelectedCredentials'));
+
+                  switch (response.type) {
+                    case 'none':
+                      // Parent hasn't got a selected credential yet
+                      // @ts-ignore
+                      this.pollingTimeout = setTimeout(() => {
+                        poll();
+                      }, 100);
+                      return;
+
+                    case 'ok':
+                      {
+                        return resolve({
+                          data: response.data,
+                          configType: response.configType
+                        });
+                      }
+
+                    case 'stop':
+                      // Parent wants us to stop polling
+                      resolve(null);
+                      break;
+                  }
+                };
+
+                poll();
+              });
+              listener.then(response => {
+                if (!response) {
+                  return;
+                }
+
+                this.selectedDetail(response.data, response.configType);
+              }).catch(e => {
+                console.error('unknown error', e);
+              });
+            }
           });
         }
 
@@ -4073,8 +4121,71 @@ class InterfacePrototype {
            * If we get here, we're just a controller for an overlay
            */
           return new _OverlayUIController.OverlayUIController({
-            remove: async () => this._closeAutofillParent(),
-            show: async details => this._show(details)
+            remove: async () => this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null)),
+            show: async details => {
+              const {
+                mainType
+              } = details; // prevent overlapping listeners
+
+              if (this._abortController && !this._abortController.signal.aborted) {
+                this._abortController.abort();
+              }
+
+              this._abortController = new AbortController();
+              this.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
+                signal: this._abortController.signal
+              }).then(resp => {
+                if (!this.activeForm) {
+                  throw new Error('this.currentAttached was absent');
+                }
+
+                switch (resp.action) {
+                  case 'fill':
+                    {
+                      if (mainType in resp) {
+                        var _this$activeForm;
+
+                        (_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : _this$activeForm.autofillData(resp[mainType], mainType);
+                      } else {
+                        throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
+                      }
+
+                      break;
+                    }
+
+                  case 'focus':
+                    {
+                      var _this$activeForm2, _this$activeForm2$act;
+
+                      (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : (_this$activeForm2$act = _this$activeForm2.activeInput) === null || _this$activeForm2$act === void 0 ? void 0 : _this$activeForm2$act.focus();
+                      break;
+                    }
+
+                  case 'none':
+                    {
+                      // do nothing
+                      break;
+                    }
+
+                  default:
+                    {
+                      if (this.globalConfig.isDDGTestMode) {
+                        console.warn('unhandled response', resp);
+                      }
+                    }
+                }
+
+                return this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
+              }).catch(e => {
+                if (this.globalConfig.isDDGTestMode) {
+                  if (e.name === 'AbortError') {
+                    console.log('Promise Aborted');
+                  } else {
+                    console.error('Promise Rejected', e);
+                  }
+                }
+              });
+            }
           });
         }
 
@@ -4165,270 +4276,6 @@ class InterfacePrototype {
   }
   /** @type {AbortController|null} */
 
-
-  /**
-   * @param {GetAutofillDataRequest} details
-   */
-  async _show(details) {
-    switch (this.ctx) {
-      case "macos-legacy":
-        break;
-
-      case "macos-modern":
-        {
-          await this._showAutofillParent(details);
-
-          this._listenForSelectedCredential().then(response => {
-            if (!response) {
-              return;
-            }
-
-            this.selectedDetail(response.data, response.configType);
-          }).catch(e => {
-            console.error('unknown error', e);
-          });
-
-          break;
-        }
-
-      case "macos-overlay":
-        break;
-
-      case "ios":
-        break;
-
-      case "android":
-        break;
-
-      case "windows":
-        {
-          const {
-            mainType
-          } = details; // prevent overlapping listeners
-
-          if (this._abortController && !this._abortController.signal.aborted) {
-            this._abortController.abort();
-          }
-
-          this._abortController = new AbortController();
-          this.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
-            signal: this._abortController.signal
-          }).then(resp => {
-            if (!this.activeForm) {
-              throw new Error('this.currentAttached was absent');
-            }
-
-            switch (resp.action) {
-              case 'fill':
-                {
-                  if (mainType in resp) {
-                    var _this$activeForm;
-
-                    (_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : _this$activeForm.autofillData(resp[mainType], mainType);
-                  } else {
-                    throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
-                  }
-
-                  break;
-                }
-
-              case 'focus':
-                {
-                  var _this$activeForm2, _this$activeForm2$act;
-
-                  (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : (_this$activeForm2$act = _this$activeForm2.activeInput) === null || _this$activeForm2$act === void 0 ? void 0 : _this$activeForm2$act.focus();
-                  break;
-                }
-
-              case 'none':
-                {
-                  // do nothing
-                  break;
-                }
-
-              default:
-                {
-                  if (this.globalConfig.isDDGTestMode) {
-                    console.warn('unhandled response', resp);
-                  }
-                }
-            }
-
-            return this._closeAutofillParent();
-          }).catch(e => {
-            if (this.globalConfig.isDDGTestMode) {
-              if (e.name === 'AbortError') {
-                console.log('Promise Aborted');
-              } else {
-                console.error('Promise Rejected', e);
-              }
-            }
-          });
-          break;
-        }
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-    }
-  }
-  /**
-   * The data format provided here for `parentArgs` matches Window now.
-   * @param {GetAutofillDataRequest} parentArgs
-   */
-
-
-  async _showAutofillParent(parentArgs) {
-    switch (this.ctx) {
-      case "macos-legacy":
-        break;
-
-      case "macos-modern":
-        {
-          const applePayload = { ...parentArgs.triggerContext,
-            serializedInputContext: parentArgs.serializedInputContext
-          };
-          return this.deviceApi.notify((0, _index.createNotification)('showAutofillParent', applePayload));
-        }
-
-      case "macos-overlay":
-        break;
-
-      case "ios":
-        break;
-
-      case "android":
-        break;
-
-      case "windows":
-        break;
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-    }
-  }
-  /**
-   * @returns {Promise<any>}
-   */
-
-
-  async _closeAutofillParent() {
-    switch (this.ctx) {
-      case "macos-legacy":
-        break;
-
-      case "macos-modern":
-        {
-          return this.deviceApi.notify((0, _index.createNotification)('closeAutofillParent', {}));
-        }
-
-      case "macos-overlay":
-        break;
-
-      case "ios":
-        break;
-
-      case "android":
-        break;
-
-      case "windows":
-        {
-          return this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
-        }
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-  }
-  /** @type {any} */
-
-
-  /**
-   * Poll the native listener until the user has selected a credential.
-   * Message return types are:
-   * - 'stop' is returned whenever the message sent doesn't match the native last opened tooltip.
-   *     - This also is triggered when the close event is called and prevents any edge case continued polling.
-   * - 'ok' is when the user has selected a credential and the value can be injected into the page.
-   * - 'none' is when the tooltip is open in the native window however hasn't been entered.
-   * @returns {Promise<{data:IdentityObject|CreditCardObject|CredentialsObject, configType: string} | null>}
-   */
-  async _listenForSelectedCredential() {
-    switch (this.ctx) {
-      case "macos-legacy":
-        break;
-
-      case "macos-modern":
-        {
-          return new Promise(resolve => {
-            // Prevent two timeouts from happening
-            // @ts-ignore
-            const poll = async () => {
-              clearTimeout(this.pollingTimeout);
-              const response = await this.getSelectedCredentials();
-
-              switch (response.type) {
-                case 'none':
-                  // Parent hasn't got a selected credential yet
-                  // @ts-ignore
-                  this.pollingTimeout = setTimeout(() => {
-                    poll();
-                  }, 100);
-                  return;
-
-                case 'ok':
-                  {
-                    return resolve({
-                      data: response.data,
-                      configType: response.configType
-                    });
-                  }
-
-                case 'stop':
-                  // Parent wants us to stop polling
-                  resolve(null);
-                  break;
-              }
-            };
-
-            poll();
-          });
-        }
-
-      case "macos-overlay":
-        break;
-
-      case "ios":
-        break;
-
-      case "android":
-        break;
-
-      case "windows":
-        break;
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-
-    return null;
-  }
 
   get hasLocalAddresses() {
     var _classPrivateFieldGet2, _classPrivateFieldGet3;
@@ -4836,37 +4683,6 @@ class InterfacePrototype {
       default:
         assertUnreachable(this.ctx);
     }
-  }
-  /**
-   * @deprecated This was a port from the macOS implementation so the API may not be suitable for all
-   * @returns {Promise<any>}
-   */
-
-
-  async getSelectedCredentials() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.request((0, _index.createRequest)('getSelectedCredentials'));
-        }
-
-      case "android":
-        break;
-
-      case "windows":
-        break;
-
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-    }
-
-    throw new Error('unreachable');
   }
 
   isTestMode() {
@@ -11810,14 +11626,14 @@ class HTMLTooltipUIController extends _UIController.UIController {
     } // collect the data for each item to display
 
 
-    const data = this._dataForAutofill(config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
+    const data = this._options.device.dataForAutofill(config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
 
 
     const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
 
     return new _DataHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(config, asRenderers, {
       onSelect: id => {
-        this._onSelect(topContextData.inputType, data, id);
+        this._options.device.onSelect(topContextData.inputType, data, id);
       }
     });
   }
@@ -11832,7 +11648,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     if (activeTooltip instanceof _DataHTMLTooltip.default) {
       activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.render(config, asRenderers, {
         onSelect: id => {
-          this._onSelect(this._activeInputType, data, id);
+          this._options.device.onSelect(this._activeInputType, data, id);
         }
       });
     } // TODO: can we remove this timeout once implemented with real APIs?
@@ -11941,34 +11757,6 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
   setActiveTooltip(value) {
     this._activeTooltip = value;
-  }
-  /**
-   * Collect the data that's needed to populate the Autofill UI.
-   *
-   * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
-   *
-   * @param {InputTypeConfigs} config - This is the selected `InputTypeConfig` based on the type of field
-   * @param {import('../../Form/matching').SupportedTypes} inputType - The input type for the current field
-   * @param {TopContextData} topContextData
-   */
-
-
-  _dataForAutofill(config, inputType, topContextData) {
-    return this._options.device.dataForAutofill(config, inputType, topContextData);
-  }
-  /**
-   * When a field is selected, call the `onSelect` method from the device.
-   *
-   * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
-   *
-   * @param {import('../../Form/matching').SupportedTypes} inputType
-   * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
-   * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
-   */
-
-
-  _onSelect(inputType, data, id) {
-    return this._options.device.onSelect(inputType, data, id);
   }
 
   isActive() {
@@ -12165,7 +11953,9 @@ class OverlayUIController extends _UIController.UIController {
     // whether we have a tooltip currently open or not. This is to ensure
     // we can clear out any existing state before opening a new one.
 
-    window.addEventListener('pointerdown', this, true);
+    window.addEventListener('pointerdown', event => {
+      this.handleEvent(event);
+    }, true);
   }
   /**
    * @param {import('./UIController').AttachArgs} args

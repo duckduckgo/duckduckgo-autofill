@@ -51,7 +51,9 @@ export class OverlayUIController extends UIController {
         // We always register this 'pointerdown' event, regardless of
         // whether we have a tooltip currently open or not. This is to ensure
         // we can clear out any existing state before opening a new one.
-        window.addEventListener('pointerdown', this, true)
+        window.addEventListener('pointerdown', (event) => {
+            this.handleEvent(event)
+        }, true)
     }
 
     /**

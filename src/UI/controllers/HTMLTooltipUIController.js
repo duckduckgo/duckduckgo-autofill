@@ -105,7 +105,7 @@ export class HTMLTooltipUIController extends UIController {
         }
 
         // collect the data for each item to display
-        const data = this._dataForAutofill(config, topContextData.inputType, topContextData)
+        const data = this._options.device.dataForAutofill(config, topContextData.inputType, topContextData)
 
         // convert the data into tool tip item renderers
         const asRenderers = data.map(d => config.tooltipItem(d))
@@ -114,7 +114,7 @@ export class HTMLTooltipUIController extends UIController {
         return new DataHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
             .render(config, asRenderers, {
                 onSelect: (id) => {
-                    this._onSelect(topContextData.inputType, data, id)
+                    this._options.device.onSelect(topContextData.inputType, data, id)
                 }
             })
     }
@@ -131,7 +131,7 @@ export class HTMLTooltipUIController extends UIController {
         if (activeTooltip instanceof DataHTMLTooltip) {
             activeTooltip?.render(config, asRenderers, {
                 onSelect: (id) => {
-                    this._onSelect(this._activeInputType, data, id)
+                    this._options.device.onSelect(this._activeInputType, data, id)
                 }
             })
         }
@@ -226,32 +226,6 @@ export class HTMLTooltipUIController extends UIController {
      */
     setActiveTooltip (value) {
         this._activeTooltip = value
-    }
-
-    /**
-     * Collect the data that's needed to populate the Autofill UI.
-     *
-     * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
-     *
-     * @param {InputTypeConfigs} config - This is the selected `InputTypeConfig` based on the type of field
-     * @param {import('../../Form/matching').SupportedTypes} inputType - The input type for the current field
-     * @param {TopContextData} topContextData
-     */
-    _dataForAutofill (config, inputType, topContextData) {
-        return this._options.device.dataForAutofill(config, inputType, topContextData)
-    }
-
-    /**
-     * When a field is selected, call the `onSelect` method from the device.
-     *
-     * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
-     *
-     * @param {import('../../Form/matching').SupportedTypes} inputType
-     * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
-     * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
-     */
-    _onSelect (inputType, data, id) {
-        return this._options.device.onSelect(inputType, data, id)
     }
 
     isActive () {
