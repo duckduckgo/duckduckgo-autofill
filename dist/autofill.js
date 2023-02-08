@@ -4816,7 +4816,7 @@ class InterfacePrototype {
     var _this$uiController4;
 
     let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
-    console.log('attachTooltip', form, input); // Avoid flashing tooltip from background tabs on macOS
+    console.log('attachTooltip'); // Avoid flashing tooltip from background tabs on macOS
 
     if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return; // Only autoprompt on mobile devices
 
@@ -6429,6 +6429,7 @@ class Form {
       if (shouldOpen) {
         if (this.device.globalConfig.isMobileApp && // Avoid the icon capturing clicks on small fields making it impossible to focus
         input.offsetWidth > 50 && (0, _autofillUtils.isEventWithinDax)(e, input)) {
+          console.log('preventing...');
           e.preventDefault();
           e.stopImmediatePropagation();
         }

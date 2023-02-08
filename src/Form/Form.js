@@ -437,6 +437,7 @@ class Form {
                     input.offsetWidth > 50 &&
                     isEventWithinDax(e, input)
                 ) {
+                    console.log('preventing...');
                     e.preventDefault()
                     e.stopImmediatePropagation()
                 }

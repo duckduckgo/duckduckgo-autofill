@@ -971,7 +971,7 @@ class InterfacePrototype {
      * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
      */
     attachTooltip(form, input, click, trigger = 'userInitiated') {
-        console.log('attachTooltip', form, input)
+        console.log('attachTooltip')
         // Avoid flashing tooltip from background tabs on macOS
         if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return
         // Only autoprompt on mobile devices
