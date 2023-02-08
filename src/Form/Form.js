@@ -186,7 +186,7 @@ class Form {
         ) {
             return
         }
-        this.device.removeTooltip()
+        this.device.removeTooltip('Form.js removeTooltip')
         this.intObs?.disconnect()
     }
 

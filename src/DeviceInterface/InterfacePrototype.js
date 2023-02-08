@@ -623,7 +623,7 @@ class InterfacePrototype {
                 } else {
                     this.settings.setIncontextSignupInitiallyDismissed(true)
                     this.deviceApi.notify(new SetIncontextSignupInitiallyDismissedAtCall({value: new Date().getTime()}))
-                    this.removeTooltip()
+                    this.removeTooltip('onIncontextSignupDismissed')
                     this.firePixel({pixelName: 'incontext_dismiss_initial'})
                 }
             }
@@ -714,7 +714,7 @@ class InterfacePrototype {
                 this.#data.topContextData = JSON.parse(data.serializedInputContext)
             } catch (e) {
                 console.error(e)
-                this.removeTooltip()
+                this.removeTooltip('error caught triyng to deserialize json from serializedInputContext')
             }
         }
     }
@@ -901,7 +901,7 @@ class InterfacePrototype {
             } else {
                 form.autofillData(data, type)
             }
-            this.removeTooltip()
+            this.removeTooltip('defaultSelectedMethod')
         }
 
         const overlaySelected = async () => {
@@ -1093,7 +1093,7 @@ class InterfacePrototype {
             }
         }).catch(e => {
             console.error(e)
-            return this.removeTooltip()
+            return this.removeTooltip('error caught after dataPromise')
         })
     }
 
@@ -1125,7 +1125,12 @@ class InterfacePrototype {
         return this.uiController?.isActive?.() ?? false
     }
 
-    removeTooltip() {
+    /**
+     * @param {string} reason
+     * @returns {*}
+     */
+    removeTooltip(reason) {
+        console.log('InterfacePrototype.removeTooltip', reason);
         return this.uiController?.removeTooltip?.('interface')
     }
 
@@ -1480,7 +1485,7 @@ class InterfacePrototype {
                     // If the tooltip is open on an autofill type that's not available, close it
                     const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
                     if (!availableInputTypes.credentials?.[currentInputSubtype]) {
-                        this.removeTooltip()
+                        this.removeTooltip('providerStatusUpdated')
                     }
                     // Redecorate fields according to the new types
                     this.scanner.forms.forEach(form => form.recategorizeAllInputs())

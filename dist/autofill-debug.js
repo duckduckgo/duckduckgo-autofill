@@ -8064,7 +8064,7 @@ class InterfacePrototype {
             this.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupInitiallyDismissedAtCall({
               value: new Date().getTime()
             }));
-            this.removeTooltip();
+            this.removeTooltip('onIncontextSignupDismissed');
             this.firePixel({
               pixelName: 'incontext_dismiss_initial'
             });
@@ -8161,7 +8161,7 @@ class InterfacePrototype {
         _classPrivateFieldGet(this, _data).topContextData = JSON.parse(data.serializedInputContext);
       } catch (e) {
         console.error(e);
-        this.removeTooltip();
+        this.removeTooltip('error caught triyng to deserialize json from serializedInputContext');
       }
     }
   }
@@ -8398,7 +8398,7 @@ class InterfacePrototype {
         form.autofillData(data, type);
       }
 
-      this.removeTooltip();
+      this.removeTooltip('defaultSelectedMethod');
     };
 
     const overlaySelected = async () => {
@@ -8635,7 +8635,7 @@ class InterfacePrototype {
       }
     }).catch(e => {
       console.error(e);
-      return this.removeTooltip();
+      return this.removeTooltip('error caught after dataPromise');
     });
   }
 
@@ -8675,10 +8675,16 @@ class InterfacePrototype {
 
     return (_this$uiController$is = (_this$uiController5 = this.uiController) === null || _this$uiController5 === void 0 ? void 0 : (_this$uiController5$i = _this$uiController5.isActive) === null || _this$uiController5$i === void 0 ? void 0 : _this$uiController5$i.call(_this$uiController5)) !== null && _this$uiController$is !== void 0 ? _this$uiController$is : false;
   }
+  /**
+   * @param {string} reason
+   * @returns {*}
+   */
 
-  removeTooltip() {
+
+  removeTooltip(reason) {
     var _this$uiController6, _this$uiController6$r;
 
+    console.log('InterfacePrototype.removeTooltip', reason);
     return (_this$uiController6 = this.uiController) === null || _this$uiController6 === void 0 ? void 0 : (_this$uiController6$r = _this$uiController6.removeTooltip) === null || _this$uiController6$r === void 0 ? void 0 : _this$uiController6$r.call(_this$uiController6, 'interface');
   }
 
@@ -9125,7 +9131,7 @@ class InterfacePrototype {
             const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
 
             if (!((_availableInputTypes$ = availableInputTypes.credentials) !== null && _availableInputTypes$ !== void 0 && _availableInputTypes$[currentInputSubtype])) {
-              this.removeTooltip();
+              this.removeTooltip('providerStatusUpdated');
             } // Redecorate fields according to the new types
 
 
@@ -9842,7 +9848,7 @@ class Form {
       return;
     }
 
-    this.device.removeTooltip();
+    this.device.removeTooltip('Form.js removeTooltip');
     (_this$intObs = this.intObs) === null || _this$intObs === void 0 ? void 0 : _this$intObs.disconnect();
   }
 
