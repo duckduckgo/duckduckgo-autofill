@@ -7716,8 +7716,12 @@ class InterfacePrototype {
            * If we get here, we're just a controller for an overlay
            */
           return new _OverlayUIController.OverlayUIController({
-            remove: async () => this.deviceApi.notify((0, _index.createNotification)('closeAutofillParent', {})),
+            remove: async () => {
+              this.deviceApi.notify((0, _index.createNotification)('closeAutofillParent', {}));
+              this._waiting = false;
+            },
             show: async details => {
+              this._waiting = true;
               const applePayload = { ...details.triggerContext,
                 serializedInputContext: details.serializedInputContext
               };
@@ -7802,6 +7806,7 @@ class InterfacePrototype {
               }
 
               this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
+              this._waiting = false;
             },
             show: async details => {
               const {
@@ -7813,6 +7818,7 @@ class InterfacePrototype {
               }
 
               this._abortController = new AbortController();
+              this._waiting = true;
               this.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
                 signal: this._abortController.signal
               }).then(resp => {
@@ -10103,7 +10109,7 @@ class Form {
       const shouldOpen = this.shouldOpenTooltip(e, input);
       console.log({
         shouldOpen,
-        type: e.type
+        waiting: this.device._waiting
       });
 
       if (shouldOpen) {
@@ -14769,16 +14775,17 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
     }).join(''), "\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
-    this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
-    setTimeout(() => {
-      console.log('autoclick ', this.autofillButtons[0].id);
-      callbacks.onSelect(this.autofillButtons[0].id);
-    }, 2000); // this.autofillButtons.forEach((btn) => {
-    //     this.registerClickableButton(btn, () => {
-    //         callbacks.onSelect(btn.id)
-    //     })
-    // })
+    this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button'); // setTimeout(() => {
+    //     console.log('autoclick ', this.autofillButtons[0].id);
+    //     callbacks.onSelect(this.autofillButtons[0].id)
+    // }, 2000);
+    //
 
+    this.autofillButtons.forEach(btn => {
+      this.registerClickableButton(btn, () => {
+        callbacks.onSelect(btn.id);
+      });
+    });
     this.init();
     return this;
   }

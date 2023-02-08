@@ -428,7 +428,7 @@ class Form {
             }
 
             const shouldOpen = this.shouldOpenTooltip(e, input);
-            console.log({shouldOpen, type: e.type});
+            console.log({shouldOpen, waiting: this.device._waiting});
 
             if (shouldOpen) {
                 if (

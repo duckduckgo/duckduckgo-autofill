@@ -349,8 +349,12 @@ class InterfacePrototype {
                  * If we get here, we're just a controller for an overlay
                  */
                 return new OverlayUIController({
-                    remove: async () => this.deviceApi.notify(createNotification('closeAutofillParent', {})),
+                    remove: async () => {
+                        this.deviceApi.notify(createNotification('closeAutofillParent', {}));
+                        this._waiting = false;
+                    },
                     show: async (details) => {
+                        this._waiting = true;
                         const applePayload = {
                             ...details.triggerContext,
                             serializedInputContext: details.serializedInputContext
@@ -419,6 +423,7 @@ class InterfacePrototype {
                             this._abortController.abort()
                         }
                         this.deviceApi.notify(new CloseAutofillParentCall(null))
+                        this._waiting = false;
                     },
                     show: async (details) => {
                         const {mainType} = details
@@ -427,6 +432,7 @@ class InterfacePrototype {
                             this._abortController.abort()
                         }
                         this._abortController = new AbortController()
+                        this._waiting = true;
                         this.deviceApi.request(new GetAutofillDataCall(details), { signal: this._abortController.signal })
                             .then(resp => {
                                 // console.log('got resp', resp.action);
