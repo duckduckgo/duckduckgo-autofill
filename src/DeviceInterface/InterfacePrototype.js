@@ -456,7 +456,7 @@ class InterfacePrototype {
                                         }
                                     }
                                 }
-                                this.removeTooltip('windows test')
+                                // this.removeTooltip('windows test')
                             })
                             .catch(e => {
                                 if (this.globalConfig.isDDGTestMode) {

@@ -4177,9 +4177,8 @@ class InterfacePrototype {
                         console.warn('unhandled response', resp);
                       }
                     }
-                }
+                } // this.removeTooltip('windows test')
 
-                this.removeTooltip('windows test');
               }).catch(e => {
                 if (this.globalConfig.isDDGTestMode) {
                   if (e.name === 'AbortError') {
