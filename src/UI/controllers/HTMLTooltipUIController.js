@@ -72,6 +72,8 @@ export class HTMLTooltipUIController extends UIController {
         this._activeInput = input
         this._activeInputOriginalAutocomplete = input.getAttribute('autocomplete')
         input.setAttribute('autocomplete', 'off')
+
+        setTimeout()
     }
 
     /**

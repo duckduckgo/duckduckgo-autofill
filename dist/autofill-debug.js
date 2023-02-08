@@ -14770,11 +14770,15 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
-    this.autofillButtons.forEach(btn => {
-      this.registerClickableButton(btn, () => {
-        callbacks.onSelect(btn.id);
-      });
-    });
+    setTimeout(() => {
+      console.log('autoclick ', this.autofillButtons[0].id);
+      callbacks.onSelect(this.autofillButtons[0].id);
+    }, 2000); // this.autofillButtons.forEach((btn) => {
+    //     this.registerClickableButton(btn, () => {
+    //         callbacks.onSelect(btn.id)
+    //     })
+    // })
+
     this.init();
     return this;
   }
@@ -15283,6 +15287,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     this._activeInput = input;
     this._activeInputOriginalAutocomplete = input.getAttribute('autocomplete');
     input.setAttribute('autocomplete', 'off');
+    setTimeout();
   }
   /**
    * Actually create the HTML Tooltip

@@ -47,11 +47,16 @@ ${css}
         this.tooltip = this.shadow.querySelector('.tooltip')
         this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button')
 
-        this.autofillButtons.forEach((btn) => {
-            this.registerClickableButton(btn, () => {
-                callbacks.onSelect(btn.id)
-            })
-        })
+        setTimeout(() => {
+            console.log('autoclick ', this.autofillButtons[0].id);
+            callbacks.onSelect(this.autofillButtons[0].id)
+        }, 2000);
+
+        // this.autofillButtons.forEach((btn) => {
+        //     this.registerClickableButton(btn, () => {
+        //         callbacks.onSelect(btn.id)
+        //     })
+        // })
 
         this.init()
         return this
