@@ -429,14 +429,14 @@ class InterfacePrototype {
                         this._abortController = new AbortController()
                         this.deviceApi.request(new GetAutofillDataCall(details), { signal: this._abortController.signal })
                             .then(resp => {
-                                console.log('got resp', resp.action);
+                                // console.log('got resp', resp.action);
                                 if (!this.activeForm) {
                                     throw new Error('this.currentAttached was absent')
                                 }
                                 switch (resp.action) {
                                     case 'fill': {
                                         if (mainType in resp) {
-                                            // this.selectedDetail(resp[mainType], mainType);
+                                            this.selectedDetail(resp[mainType], mainType);
                                         } else {
                                             throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
                                         }
