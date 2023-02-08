@@ -7806,9 +7806,6 @@ class InterfacePrototype {
               }
 
               this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
-              setTimeout(() => {
-                this._waiting = false;
-              }, 100);
             },
             show: async details => {
               const {
