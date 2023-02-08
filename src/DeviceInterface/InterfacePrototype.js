@@ -455,8 +455,6 @@ class InterfacePrototype {
                                         }
                                     }
                                 }
-                                console.log('CloseAutofillParentCall');
-                                return this.deviceApi.notify(new CloseAutofillParentCall(null))
                             })
                             .catch(e => {
                                 if (this.globalConfig.isDDGTestMode) {

@@ -4177,9 +4177,6 @@ class InterfacePrototype {
                       }
                     }
                 }
-
-                console.log('CloseAutofillParentCall');
-                return this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
               }).catch(e => {
                 if (this.globalConfig.isDDGTestMode) {
                   if (e.name === 'AbortError') {
@@ -12154,6 +12151,7 @@ class OverlayUIController extends _UIController.UIController {
 
     if (trigger !== 'pointerdown') {
       if (_classPrivateFieldGet(this, _state) !== 'parentShown') {
+        console.log('not removing');
         return;
       }
     }

@@ -209,6 +209,7 @@ export class OverlayUIController extends UIController {
         // for none pointer events, check to see if the tooltip is open before trying to close it
         if (trigger !== 'pointerdown') {
             if (this.#state !== 'parentShown') {
+                console.log('not removing');
                 return
             }
         }
