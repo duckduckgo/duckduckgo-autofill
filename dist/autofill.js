@@ -7949,6 +7949,9 @@ const canBeAutofilled = async (input, device) => {
   const mainType = (0, _matching.getInputMainType)(input);
   const subtype = (0, _matching.getInputSubtype)(input);
   const canAutofill = await device.settings.canAutofillType(mainType, subtype);
+  console.log({
+    canAutofill
+  });
   return Boolean(canAutofill);
 };
 /**
