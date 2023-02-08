@@ -427,7 +427,10 @@ class Form {
                 storedClick.delete(input)
             }
 
-            if (this.shouldOpenTooltip(e, input)) {
+            const shouldOpen = this.shouldOpenTooltip(e, input);
+            console.log({shouldOpen, type: e.type});
+
+            if (shouldOpen) {
                 if (
                     this.device.globalConfig.isMobileApp &&
                     // Avoid the icon capturing clicks on small fields making it impossible to focus
@@ -458,7 +461,7 @@ class Form {
         if (this.device.globalConfig.isApp) return true
         if (this.device.globalConfig.isWindows) return true
 
-        return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled')) || isEventWithinDax(e, input)
+        return !this.touched.has(input) && !input.classList.contains('ddg-autofilled') || isEventWithinDax(e, input)
     }
 
     autofillInput (input, string, dataType) {

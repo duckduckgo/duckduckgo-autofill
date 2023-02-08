@@ -8,7 +8,6 @@ import {buttonMatchesFormType} from '../autofill-utils.js'
  * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
  */
 export function initFormSubmissionsApi (forms) {
-    console.log('initFormSubmissionsApi()')
     /**
      * Global submit events
      */
@@ -32,7 +31,6 @@ export function initFormSubmissionsApi (forms) {
      * @param {PointerEvent} event
      */
     window.addEventListener('pointerdown', (event) => {
-        console.log('GOT EVENT');
         const matchingForm = [...forms.values()].find(
             (form) => {
                 const btns = [...form.submitButtons]
@@ -43,8 +41,6 @@ export function initFormSubmissionsApi (forms) {
                 if (btns.find((btn) => btn.contains(event.target))) return true
             }
         )
-
-        console.log('matching FOrm?', matchingForm);
 
         matchingForm?.submitHandler('global pointerdown event + matching form')
 

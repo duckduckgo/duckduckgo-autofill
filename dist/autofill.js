@@ -3876,8 +3876,7 @@ class InterfacePrototype {
     await this.setupSettingsPage();
     await this.postInit();
 
-    if (this.settings.featureToggles.credentials_saving) {
-      (0, _initFormSubmissionsApi.initFormSubmissionsApi)(this.scanner.forms);
+    if (this.settings.featureToggles.credentials_saving) {// initFormSubmissionsApi(this.scanner.forms)
     }
   }
 
@@ -4121,7 +4120,13 @@ class InterfacePrototype {
            * If we get here, we're just a controller for an overlay
            */
           return new _OverlayUIController.OverlayUIController({
-            remove: async () => this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null)),
+            remove: async () => {
+              if (this._abortController && !this._abortController.signal.aborted) {
+                this._abortController.abort();
+              }
+
+              this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
+            },
             show: async details => {
               const {
                 mainType
@@ -4811,7 +4816,8 @@ class InterfacePrototype {
     var _this$uiController4;
 
     let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
-    // Avoid flashing tooltip from background tabs on macOS
+    console.log('attachTooltip', form, input); // Avoid flashing tooltip from background tabs on macOS
+
     if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return; // Only autoprompt on mobile devices
 
     if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return; // Only fire autoprompt once
@@ -5866,11 +5872,9 @@ var _autofillUtils = require("../autofill-utils.js");
  * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
  */
 function initFormSubmissionsApi(forms) {
-  console.log('initFormSubmissionsApi()');
   /**
    * Global submit events
    */
-
   window.addEventListener('submit', e => {
     var _forms$get;
 
@@ -5893,7 +5897,6 @@ function initFormSubmissionsApi(forms) {
    */
 
   window.addEventListener('pointerdown', event => {
-    console.log('GOT EVENT');
     const matchingForm = [...forms.values()].find(form => {
       const btns = [...form.submitButtons]; // @ts-ignore
 
@@ -5901,7 +5904,6 @@ function initFormSubmissionsApi(forms) {
 
       if (btns.find(btn => btn.contains(event.target))) return true;
     });
-    console.log('matching FOrm?', matchingForm);
     matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler('global pointerdown event + matching form');
 
     if (!matchingForm) {
@@ -6418,7 +6420,13 @@ class Form {
         storedClick.delete(input);
       }
 
-      if (this.shouldOpenTooltip(e, input)) {
+      const shouldOpen = this.shouldOpenTooltip(e, input);
+      console.log({
+        shouldOpen,
+        type: e.type
+      });
+
+      if (shouldOpen) {
         if (this.device.globalConfig.isMobileApp && // Avoid the icon capturing clicks on small fields making it impossible to focus
         input.offsetWidth > 50 && (0, _autofillUtils.isEventWithinDax)(e, input)) {
           e.preventDefault();
@@ -11928,8 +11936,6 @@ var _state = /*#__PURE__*/new WeakMap();
 class OverlayUIController extends _UIController.UIController {
   /** @type {"idle" | "parentShown"} */
 
-  /** @type {import('../HTMLTooltip.js').HTMLTooltip | null} */
-
   /**
    * @type {OverlayControllerOptions}
    */
@@ -11944,8 +11950,6 @@ class OverlayUIController extends _UIController.UIController {
       writable: true,
       value: 'idle'
     });
-
-    _defineProperty(this, "_activeTooltip", null);
 
     _defineProperty(this, "_options", void 0);
 
@@ -11963,6 +11967,7 @@ class OverlayUIController extends _UIController.UIController {
 
 
   attach(args) {
+    console.log('OverlayUIController:attach...');
     const {
       getPosition,
       topContextData,
@@ -11970,7 +11975,11 @@ class OverlayUIController extends _UIController.UIController {
       input
     } = args; // Do not attach the tooltip if the input is not in the DOM
 
-    if (!input.parentNode) return; // If the input is removed from the DOM while the tooltip is attached, remove it
+    if (!input.parentNode) {
+      console.log('RETURN', '!input.parentNode');
+      return;
+    } // If the input is removed from the DOM while the tooltip is attached, remove it
+
 
     this._mutObs = new MutationObserver(mutationList => {
       for (const mutationRecord of mutationList) {
@@ -12132,7 +12141,8 @@ class OverlayUIController extends _UIController.UIController {
   async removeTooltip(trigger) {
     var _this$_mutObs;
 
-    // for none pointer events, check to see if the tooltip is open before trying to close it
+    console.log('removeTooltip:trigger:', trigger); // for none pointer events, check to see if the tooltip is open before trying to close it
+
     if (trigger !== 'pointerdown') {
       if (_classPrivateFieldGet(this, _state) !== 'parentShown') {
         return;

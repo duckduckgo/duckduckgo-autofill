@@ -33,9 +33,6 @@ export class OverlayUIController extends UIController {
     /** @type {"idle" | "parentShown"} */
     #state = 'idle';
 
-    /** @type {import('../HTMLTooltip.js').HTMLTooltip | null} */
-    _activeTooltip = null
-
     /**
      * @type {OverlayControllerOptions}
      */
@@ -60,10 +57,14 @@ export class OverlayUIController extends UIController {
      * @param {import('./UIController').AttachArgs} args
      */
     attach (args) {
+        console.log('OverlayUIController:attach...')
         const {getPosition, topContextData, click, input} = args
 
         // Do not attach the tooltip if the input is not in the DOM
-        if (!input.parentNode) return
+        if (!input.parentNode) {
+            console.log('RETURN', '!input.parentNode');
+            return
+        }
 
         // If the input is removed from the DOM while the tooltip is attached, remove it
         this._mutObs = new MutationObserver((mutationList) => {
@@ -204,6 +205,7 @@ export class OverlayUIController extends UIController {
      * @returns {Promise<void>}
      */
     async removeTooltip (trigger) {
+        console.log('removeTooltip:trigger:', trigger)
         // for none pointer events, check to see if the tooltip is open before trying to close it
         if (trigger !== 'pointerdown') {
             if (this.#state !== 'parentShown') {
