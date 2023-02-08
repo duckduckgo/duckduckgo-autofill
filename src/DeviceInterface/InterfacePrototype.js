@@ -423,7 +423,9 @@ class InterfacePrototype {
                             this._abortController.abort()
                         }
                         this.deviceApi.notify(new CloseAutofillParentCall(null))
-                        this._waiting = false;
+                        setTimeout(() => {
+                            this._waiting = false;
+                        }, 100)
                     },
                     show: async (details) => {
                         const {mainType} = details
