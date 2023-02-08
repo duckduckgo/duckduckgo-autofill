@@ -436,7 +436,7 @@ class InterfacePrototype {
                                 switch (resp.action) {
                                     case 'fill': {
                                         if (mainType in resp) {
-                                            this.selectedDetail(resp[mainType], mainType);
+                                            // this.selectedDetail(resp[mainType], mainType);
                                         } else {
                                             throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
                                         }
@@ -456,6 +456,7 @@ class InterfacePrototype {
                                         }
                                     }
                                 }
+                                this.removeTooltip('windows test')
                             })
                             .catch(e => {
                                 if (this.globalConfig.isDDGTestMode) {

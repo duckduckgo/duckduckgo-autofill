@@ -7825,8 +7825,7 @@ class InterfacePrototype {
                 switch (resp.action) {
                   case 'fill':
                     {
-                      if (mainType in resp) {
-                        this.selectedDetail(resp[mainType], mainType);
+                      if (mainType in resp) {// this.selectedDetail(resp[mainType], mainType);
                       } else {
                         throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
                       }
@@ -7855,6 +7854,8 @@ class InterfacePrototype {
                       }
                     }
                 }
+
+                this.removeTooltip('windows test');
               }).catch(e => {
                 if (this.globalConfig.isDDGTestMode) {
                   if (e.name === 'AbortError') {
