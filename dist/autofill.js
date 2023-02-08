@@ -4148,9 +4148,7 @@ class InterfacePrototype {
                   case 'fill':
                     {
                       if (mainType in resp) {
-                        var _this$activeForm;
-
-                        (_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : _this$activeForm.autofillData(resp[mainType], mainType);
+                        this.selectedDetail(resp[mainType], mainType);
                       } else {
                         throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
                       }
@@ -4160,9 +4158,9 @@ class InterfacePrototype {
 
                   case 'focus':
                     {
-                      var _this$activeForm2, _this$activeForm2$act;
+                      var _this$activeForm, _this$activeForm$acti;
 
-                      (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : (_this$activeForm2$act = _this$activeForm2.activeInput) === null || _this$activeForm2$act === void 0 ? void 0 : _this$activeForm2$act.focus();
+                      (_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : (_this$activeForm$acti = _this$activeForm.activeInput) === null || _this$activeForm$acti === void 0 ? void 0 : _this$activeForm$acti.focus();
                       break;
                     }
 
@@ -4180,6 +4178,7 @@ class InterfacePrototype {
                     }
                 }
 
+                console.log('CloseAutofillParentCall');
                 return this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
               }).catch(e => {
                 if (this.globalConfig.isDDGTestMode) {
@@ -4408,10 +4407,10 @@ class InterfacePrototype {
       case "macos-overlay":
       case "ios":
         {
-          var _this$activeForm3;
+          var _this$activeForm2;
 
           const topContextData = this.getTopContextData();
-          return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$activeForm3 = this.activeForm) === null || _this$activeForm3 === void 0 ? void 0 : _this$activeForm3.activeInput);
+          return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.activeInput);
         }
 
       case "android":
@@ -4645,7 +4644,7 @@ class InterfacePrototype {
           switch (this.getActiveTooltipType()) {
             case TOOLTIP_TYPES.EmailProtection:
               {
-                var _this$activeForm4;
+                var _this$activeForm3;
 
                 this._scannerCleanup = this.scanner.init();
                 this.addLogoutListener(() => {
@@ -4660,10 +4659,10 @@ class InterfacePrototype {
                   }
                 });
 
-                if ((_this$activeForm4 = this.activeForm) !== null && _this$activeForm4 !== void 0 && _this$activeForm4.activeInput) {
-                  var _this$activeForm5;
+                if ((_this$activeForm3 = this.activeForm) !== null && _this$activeForm3 !== void 0 && _this$activeForm3.activeInput) {
+                  var _this$activeForm4;
 
-                  this.attachTooltip(this.activeForm, (_this$activeForm5 = this.activeForm) === null || _this$activeForm5 === void 0 ? void 0 : _this$activeForm5.activeInput, null, 'postSignup');
+                  this.attachTooltip(this.activeForm, (_this$activeForm4 = this.activeForm) === null || _this$activeForm4 === void 0 ? void 0 : _this$activeForm4.activeInput, null, 'postSignup');
                 }
 
                 break;

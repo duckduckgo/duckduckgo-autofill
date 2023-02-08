@@ -435,7 +435,7 @@ class InterfacePrototype {
                                 switch (resp.action) {
                                     case 'fill': {
                                         if (mainType in resp) {
-                                            this.activeForm?.autofillData(resp[mainType], mainType)
+                                            this.selectedDetail(resp[mainType], mainType);
                                         } else {
                                             throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
                                         }
@@ -455,6 +455,7 @@ class InterfacePrototype {
                                         }
                                     }
                                 }
+                                console.log('CloseAutofillParentCall');
                                 return this.deviceApi.notify(new CloseAutofillParentCall(null))
                             })
                             .catch(e => {
