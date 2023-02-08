@@ -4140,6 +4140,8 @@ class InterfacePrototype {
               this.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
                 signal: this._abortController.signal
               }).then(resp => {
+                console.log('got resp', resp.action);
+
                 if (!this.activeForm) {
                   throw new Error('this.currentAttached was absent');
                 }
