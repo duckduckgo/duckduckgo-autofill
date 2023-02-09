@@ -249,7 +249,7 @@ export class HTMLTooltipUIController extends UIController {
         const subtype = getSubtypeFromType(inputType)
 
         if (id === PROVIDER_LOCKED) {
-            return this.device.askToUnlockProvider()
+            return this.device.thirdPartyCredentials?.askToUnlockProvider()
         }
 
         const matchingData = items.find(item => String(item.id) === id)

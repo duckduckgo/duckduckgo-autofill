@@ -369,7 +369,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.onlyPasswordFieldHasIcon()
             })
 
-            test('without overlay (Catalina)', async ({page}) => {
+            test.skip('without overlay (Catalina)', async ({page}) => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page)
 

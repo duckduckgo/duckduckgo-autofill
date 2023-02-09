@@ -15,26 +15,23 @@ import {createScanner} from '../Scanner.js'
 import {createGlobalConfig} from '../config.js'
 import {createTransport} from '../deviceApiCalls/transports/transports.js'
 import {Settings} from '../Settings.js'
-import {createNotification, createRequest, DeviceApi, validate} from '../../packages/device-api/index.js'
+import {createNotification, createRequest, DeviceApi} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
     StoreFormDataCall,
-    AskToUnlockProviderCall,
     SendJSPixelCall,
-    CheckCredentialsProviderStatusCall,
     GetAutofillInitDataCall,
     SetSizeCall,
-    SetIncontextSignupPermanentlyDismissedAtCall,
-    SetIncontextSignupInitiallyDismissedAtCall, SelectedDetailCall
+    SelectedDetailCall, SetIncontextSignupInitiallyDismissedAtCall, SetIncontextSignupPermanentlyDismissedAtCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
-import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 import {processConfig} from "@duckduckgo/content-scope-scripts/src/apple-utils";
 import {NativeUIController} from "../UI/controllers/NativeUIController";
 import {defaultOptions} from "../UI/HTMLTooltip";
 import {HTMLTooltipUIController} from "../UI/controllers/HTMLTooltipUIController";
 import {OverlayUIController} from "../UI/controllers/OverlayUIController";
 import {GetAlias} from "../deviceApiCalls/additionalDeviceApiCalls";
+import {ThirdPartyCredentials} from "./features/3rd-party-credentials";
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -108,6 +105,9 @@ class InterfacePrototype {
 
     /** @type {Ctx} */
     ctx;
+
+    /** @type {ThirdPartyCredentials | null} */
+    thirdPartyCredentials  = null
 
     /**
      * @param {Ctx} ctx
@@ -216,39 +216,14 @@ class InterfacePrototype {
     addDeviceListeners() {
         switch (this.ctx) {
             case "macos-legacy":
+            case "macos-overlay":
             case "macos-modern": {
-                if (this.settings.featureToggles.third_party_credentials_provider) {
-                    if (this.globalConfig.hasModernWebkitAPI) {
-                        Object.defineProperty(window, 'providerStatusUpdated', {
-                            enumerable: false,
-                            configurable: false,
-                            writable: false,
-                            value: (data) => {
-                                this.providerStatusUpdated(data)
-                            }
-                        })
-                    } else {
-                        // On Catalina we poll the native layer
-                        setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
-                    }
-                }
+                this.thirdPartyCredentials = new ThirdPartyCredentials(this);
+                this.thirdPartyCredentials.init();
                 break;
             }
             case "windows-overlay":
-            case "macos-overlay": {
-                /**
-                 * The native side will send a custom event 'mouseMove' to indicate
-                 * that the HTMLTooltip should fake an element being focused.
-                 *
-                 * Note: There's no cleanup required here since the Overlay has a fresh
-                 * page load every time it's opened.
-                 */
-                window.addEventListener('mouseMove', (event) => {
-                    const activeTooltip = this.uiController?.getActiveTooltip?.()
-                    activeTooltip?.focus(event.detail.x, event.detail.y)
-                })
                 break;
-            }
             case "ios":
                 break;
             case "android":
@@ -921,30 +896,6 @@ class InterfacePrototype {
         }
     }
 
-    async askToUnlockProvider() {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay": {
-                const response = await this.deviceApi.request(new AskToUnlockProviderCall(null))
-                this.providerStatusUpdated(response)
-                return;
-            }
-            case "ios":
-                break;
-            case "android":
-                break;
-            case "windows":
-                break;
-            case "windows-overlay":
-                break;
-            case "extension":
-                break;
-            default:
-                assertUnreachable(this.ctx)
-        }
-    }
-
     isTooltipActive() {
         return this.uiController?.isActive?.() ?? false
     }
@@ -1256,20 +1207,6 @@ class InterfacePrototype {
         }
     }
 
-    async _pollForUpdatesToCredentialsProvider() {
-        try {
-            const response = await this.deviceApi.request(new CheckCredentialsProviderStatusCall(null))
-            if (response.availableInputTypes.credentialsProviderStatus !== this.settings.availableInputTypes.credentialsProviderStatus) {
-                this.providerStatusUpdated(response)
-            }
-            setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
-        } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e)
-            }
-        }
-    }
-
     async resetAutofillUI(callback) {
         this.removeAutofillUIFromPage()
 
@@ -1287,59 +1224,6 @@ class InterfacePrototype {
     removeAutofillUIFromPage() {
         this.uiController?.destroy()
         this._scannerCleanup?.()
-    }
-
-    /**
-     * Called by the native layer on all tabs when the provider status is updated
-     * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
-     */
-    providerStatusUpdated(data) {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern": {
-                try {
-                    const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
-
-                    // Update local settings and data
-                    this.settings.setAvailableInputTypes(availableInputTypes)
-                    this.storeLocalCredentials(credentials)
-
-                    // rerender the tooltip
-                    this.uiController?.updateItems(credentials)
-                    // If the tooltip is open on an autofill type that's not available, close it
-                    const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
-                    if (!availableInputTypes.credentials?.[currentInputSubtype]) {
-                        this.removeTooltip('providerStatusUpdated')
-                    }
-                    // Redecorate fields according to the new types
-                    this.scanner.forms.forEach(form => form.recategorizeAllInputs())
-                } catch (e) {
-                    if (this.globalConfig.isDDGTestMode) {
-                        console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
-                    }
-                }
-                break;
-            }
-            case "macos-overlay": {
-                const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
-
-                // Update local settings and data
-                this.settings.setAvailableInputTypes(availableInputTypes)
-                this.storeLocalCredentials(credentials)
-
-                // rerender the tooltip
-                this.uiController?.updateItems(credentials)
-                break;
-            }
-            case "ios":
-            case "android":
-            case "windows":
-            case "windows-overlay":
-            case "extension":
-            default: {
-                throw new Error('unreachable')
-            }
-        }
     }
 
     /** @param {() => void} handler */
