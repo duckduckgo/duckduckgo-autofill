@@ -6432,13 +6432,12 @@ class Form {
       const shouldOpen = this.shouldOpenTooltip(e, input);
       console.log({
         shouldOpen,
-        waiting: this.device._waiting
+        type: e.type
       });
 
       if (shouldOpen) {
         if (this.device.globalConfig.isMobileApp && // Avoid the icon capturing clicks on small fields making it impossible to focus
         input.offsetWidth > 50 && (0, _autofillUtils.isEventWithinDax)(e, input)) {
-          console.log('preventing...');
           e.preventDefault();
           e.stopImmediatePropagation();
         }

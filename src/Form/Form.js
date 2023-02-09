@@ -428,7 +428,7 @@ class Form {
             }
 
             const shouldOpen = this.shouldOpenTooltip(e, input);
-            console.log({shouldOpen, waiting: this.device._waiting});
+            console.log({shouldOpen, type: e.type});
 
             if (shouldOpen) {
                 if (
@@ -437,7 +437,6 @@ class Form {
                     input.offsetWidth > 50 &&
                     isEventWithinDax(e, input)
                 ) {
-                    console.log('preventing...');
                     e.preventDefault()
                     e.stopImmediatePropagation()
                 }
