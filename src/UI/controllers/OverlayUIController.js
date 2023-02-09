@@ -1,5 +1,10 @@
 import {UIController} from './UIController.js'
 import {getMainTypeFromType, getSubtypeFromType} from '../../Form/matching.js'
+import { createNotification, createRequest } from '../../../packages/device-api/index.js';
+import {
+    CloseAutofillParentCall,
+    GetAutofillDataCall,
+} from "../../deviceApiCalls/__generated__/deviceApiCalls";
 
 /**
  * @typedef {import('../../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
@@ -20,11 +25,7 @@ import {getMainTypeFromType, getSubtypeFromType} from '../../Form/matching.js'
  * @example `show` and `remove` can be implemented to match your native side's messaging needs
  *
  * ```javascript
- * const controller = new OverlayController({
- *     remove: async () => this.closeAutofillParent(),
- *     show: async (details) => this.show(details),
- *     onPointerDown: (e) => this.onPointerDown(e)
- * })
+ * const controller = new OverlayController()
  *
  * controller.attach(...)
  * ```
@@ -34,16 +35,13 @@ export class OverlayUIController extends UIController {
     #state = 'idle';
 
     /**
-     * @type {OverlayControllerOptions}
+     * @param {Extract<import('../../DeviceInterface/InterfacePrototype.js').Ctx, "macos-modern" | "windows">} ctx
+     * @param {import('../../DeviceInterface/InterfacePrototype.js').default} device
      */
-    _options;
-
-    /**
-     * @param {OverlayControllerOptions} options
-     */
-    constructor (options) {
+    constructor (ctx, device) {
         super()
-        this._options = options
+        this.ctx = ctx
+        this.device = device
 
         // We always register this 'pointerdown' event, regardless of
         // whether we have a tooltip currently open or not. This is to ensure
@@ -153,7 +151,98 @@ export class OverlayUIController extends UIController {
         }
 
         try {
-            await this._options.show(details)
+            switch (this.ctx) {
+                case "macos-modern": {
+                    const applePayload = {
+                        ...details.triggerContext,
+                        serializedInputContext: details.serializedInputContext
+                    }
+                    this.device.deviceApi.notify(createNotification('showAutofillParent', applePayload))
+                    // start listening for a result
+                    const listener = new Promise((resolve) => {
+                        // Prevent two timeouts from happening
+                        // @ts-ignore
+                        const poll = async () => {
+                            clearTimeout(this.pollingTimeout)
+                            const response = await this.device.deviceApi.request(createRequest('getSelectedCredentials'))
+                            switch (response.type) {
+                                case 'none':
+                                    // Parent hasn't got a selected credential yet
+                                    // @ts-ignore
+                                    this.pollingTimeout = setTimeout(() => {
+                                        poll()
+                                    }, 100)
+                                    return
+                                case 'ok': {
+                                    return resolve({data: response.data, configType: response.configType})
+                                }
+                                case 'stop':
+                                    // Parent wants us to stop polling
+                                    resolve(null)
+                                    break
+                            }
+                        }
+                        poll()
+                    });
+                    listener.then((response) => {
+                        if (!response) {
+                            return
+                        }
+                        this.device.selectedDetail(response.data, response.configType)
+                    }).catch(e => {
+                        console.error('unknown error', e)
+                    })
+                    break;
+                }
+                case "windows": {
+                    const {mainType} = details
+                    // prevent overlapping listeners
+                    if (this._abortController && !this._abortController.signal.aborted) {
+                        this._abortController.abort()
+                    }
+                    this._abortController = new AbortController()
+                    this.device.deviceApi.request(new GetAutofillDataCall(details), { signal: this._abortController.signal })
+                        .then(resp => {
+                            // console.log('got resp', resp.action);
+                            if (!this.device.activeForm) {
+                                throw new Error('this.currentAttached was absent')
+                            }
+                            switch (resp.action) {
+                                case 'fill': {
+                                    if (mainType in resp) {
+                                        this.device.selectedDetail(resp[mainType], mainType);
+                                    } else {
+                                        throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
+                                    }
+                                    break
+                                }
+                                case 'focus': {
+                                    this.device.activeForm?.activeInput?.focus()
+                                    break
+                                }
+                                case 'none': {
+                                    // do nothing
+                                    break
+                                }
+                                default: {
+                                    if (this.device.globalConfig.isDDGTestMode) {
+                                        console.warn('unhandled response', resp)
+                                    }
+                                }
+                            }
+                        })
+                        .catch(e => {
+                            if (this.device.globalConfig.isDDGTestMode) {
+                                if (e.name === 'AbortError') {
+                                    console.log('Promise Aborted')
+                                } else {
+                                    console.error('Promise Rejected', e)
+                                }
+                            }
+                        })
+                    break;
+                }
+            }
             this.#state = 'parentShown'
             this._attachListeners()
         } catch (e) {
@@ -172,6 +261,10 @@ export class OverlayUIController extends UIController {
         window.removeEventListener('keydown', this, true)
         window.removeEventListener('input', this)
     }
+
+
+    /** @type {AbortController|null} */
+    _abortController = null;
 
     handleEvent (event) {
         switch (event.type) {
@@ -213,8 +306,19 @@ export class OverlayUIController extends UIController {
                 return
             }
         }
-        this._options.remove()
-            .catch(e => console.error('Could not close parent', e))
+        switch (this.ctx) {
+            case "macos-modern": {
+                this.device.deviceApi.notify(createNotification('closeAutofillParent', {}));
+                break;
+            }
+            case "windows": {
+                if (this._abortController && !this._abortController.signal.aborted) {
+                    this._abortController.abort()
+                }
+                this.device.deviceApi.notify(new CloseAutofillParentCall(null))
+                break;
+            }
+        }
         this.#state = 'idle'
         this._removeListeners()
         this._mutObs?.disconnect()
