@@ -47,6 +47,9 @@ class InterfacePrototype {
     /** @type {PasswordGenerator} */
     passwordGenerator = new PasswordGenerator();
 
+    /** @type {import("../InContextSignup.js").InContextSignup | null} */
+    inContextSignup = null
+
     /** @type {{privateAddress: string, personalAddress: string}} */
     #addresses = {
         privateAddress: '',
@@ -67,6 +70,9 @@ class InterfacePrototype {
 
     /** @type {boolean} */
     isInitializationStarted;
+
+    /** @type {(()=>void) | null} */
+    _scannerCleanup = null
 
     /**
      * @param {GlobalConfig} config
@@ -92,6 +98,11 @@ class InterfacePrototype {
      */
     createUIController () {
         return new NativeUIController()
+    }
+
+    removeAutofillUIFromPage () {
+        this.uiController?.destroy()
+        this._scannerCleanup?.()
     }
 
     get hasLocalAddresses () {
@@ -121,10 +132,6 @@ class InterfacePrototype {
         identities: [],
         topContextData: undefined
     }
-
-    onIncontextSignup () {}
-
-    onIncontextSignupDismissed () {}
 
     /**
      * @returns {import('../Form/matching').SupportedTypes}

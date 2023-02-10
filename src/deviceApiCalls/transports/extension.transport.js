@@ -55,7 +55,6 @@ async function extensionSpecificRuntimeConfiguration (deviceApi) {
     const contentScope = await getContentScopeConfig()
     const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope)
     const incontextSignupEnabled = isIncontextSignupEnabledFromProcessedConfig(contentScope)
-    const incontextSignupDismissedAt = await deviceApi.send(new GetIncontextSignupDismissedAtCall(null))
 
     return {
         success: {
@@ -71,12 +70,6 @@ async function extensionSpecificRuntimeConfiguration (deviceApi) {
                                 emailProtection: emailProtectionEnabled,
                                 emailProtection_incontext_signup: incontextSignupEnabled
                             }
-                        }
-                    },
-                    incontextSignup: {
-                        settings: {
-                            initiallyDismissedAt: incontextSignupDismissedAt.success.initiallyDismissedAt,
-                            permanentlyDismissedAt: incontextSignupDismissedAt.success.permanentlyDismissedAt
                         }
                     }
                 }
