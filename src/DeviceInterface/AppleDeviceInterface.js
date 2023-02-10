@@ -10,6 +10,7 @@ import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import { CheckCredentialsProviderStatusCall, CloseEmailProtectionTabCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import { getInputType } from '../Form/matching.js'
 import { InContextSignup } from '../InContextSignup.js'
+import { ThirdPartyProvider } from '../ThirdPartyProvider.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
@@ -20,6 +21,8 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /** @override */
     initialSetupDelayMs = 300
+
+    thirdPartyProvider = new ThirdPartyProvider(this)
 
     async isEnabled () {
         return autofillEnabled(this.globalConfig, processConfig)
@@ -220,20 +223,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * Opens the native UI for managing identities
-     */
-    openManageIdentities () {
-        return this.deviceApi.notify(createNotification('pmHandlerOpenManageIdentities'))
-    }
-
-    /**
-     * Opens the native UI for managing credit cards
-     */
-    openManageCreditCards () {
-        return this.deviceApi.notify(createNotification('pmHandlerOpenManageCreditCards'))
-    }
-
-    /**
      * Gets a single identity obj once the user requests it
      * @param {IdentityObject['id']} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
@@ -283,36 +272,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     async addDeviceListeners () {
-        if (this.settings.featureToggles.third_party_credentials_provider) {
-            if (this.globalConfig.hasModernWebkitAPI) {
-                Object.defineProperty(window, 'providerStatusUpdated', {
-                    enumerable: false,
-                    configurable: false,
-                    writable: false,
-                    value: (data) => {
-                        this.providerStatusUpdated(data)
-                    }
-                })
-            } else {
-                // On Catalina we poll the native layer
-                setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
-            }
-        }
-    }
-
-    // Only used on Catalina
-    async _pollForUpdatesToCredentialsProvider () {
-        try {
-            const response = await this.deviceApi.request(new CheckCredentialsProviderStatusCall(null))
-            if (response.availableInputTypes.credentialsProviderStatus !== this.settings.availableInputTypes.credentialsProviderStatus) {
-                this.providerStatusUpdated(response)
-            }
-            setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
-        } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e)
-            }
-        }
+        this.thirdPartyProvider.init()
     }
 
     /** @type {any} */
