@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "API",
+  "description": "This describes all of the top-level generated types\n@internal",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "getAutofillData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "getAutofillDataResponse"
+        },
+        "paramsValidator": { "$ref":  "./schemas/getAutofillData.params.json" },
+        "resultValidator": { "$ref":  "./schemas/getAutofillData.result.json" }
+      }
+    },
+    "getRuntimeConfiguration": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "const":  "getRuntimeConfigurationResponse"},
+        "resultValidator": { "$ref":  "./schemas/getRuntimeConfiguration.result.json" }
+      }
+    },
+    "storeFormData": {
+      "type": "object",
+      "properties": {
+        "paramsValidator": { "$ref":  "./schemas/storeFormData.params.json" }
+      }
+    },
+    "getAvailableInputTypes": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "const":  "getAvailableInputTypesResponse"},
+        "resultValidator": { "$ref":  "./schemas/getAvailableInputTypes.result.json" }
+      }
+    },
+    "getAutofillInitData": {
+      "type": "object",
+      "description": "This is called inside an overlay (eg: on Windows or soon also on macOS) to retrieve available data",
+      "properties": {
+        "id": { "type": "string", "const":  "getAutofillInitDataResponse"},
+        "resultValidator": { "$ref":  "./schemas/getAutofillInitData.result.json" }
+      }
+    },
+    "getAutofillCredentials": {
+      "type": "object",
+      "description": "Used to retrieve a specific set of credentials",
+      "properties": {
+        "id": { "type": "string", "const":  "getAutofillCredentialsResponse"},
+        "paramsValidator": { "$ref":  "./schemas/getAutofillCredentials.params.json" },
+        "resultValidator": { "$ref":  "./schemas/getAutofillCredentials.result.json" }
+      }
+    },
+    "setSize": {
+      "type": "object",
+      "description": "Used by Windows to communicate the desired size of the overlay to the native side",
+      "properties": {
+        "paramsValidator": { "$ref":  "./schemas/setSize.params.json" }
+      }
+    },
+    "selectedDetail": {
+      "type": "object",
+      "description": "Used by Windows to communicate a selected autofill item to the native side",
+      "properties": {
+        "paramsValidator": { "$ref":  "./schemas/selectedDetail.params.json" }
+      }
+    },
+    "closeAutofillParent": {
+      "type": "object",
+      "description": "Used by Windows to instruct native sides to close any autofill overlays"
+    },
+    "askToUnlockProvider": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "const":  "askToUnlockProviderResponse"},
+        "resultValidator": { "$ref":  "./schemas/askToUnlockProvider.result.json" }
+      }
+    },
+    "checkCredentialsProviderStatus": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "const":  "checkCredentialsProviderStatusResponse"},
+        "resultValidator": { "$ref":  "./schemas/checkCredentialsProviderStatus.result.json" }
+      }
+    },
+    "sendJSPixel": {
+      "type": "object",
+      "properties": {
+        "paramsValidator": { "$ref":  "./schemas/sendJSPixel.params.json" }
+      }
+    },
+    "setIncontextSignupInitiallyDismissedAt": {
+      "type": "object",
+      "properties": {
+        "paramsValidator": { "$ref":  "./schemas/setIncontextSignupInitiallyDismissedAt.params.json" }
+      }
+    },
+    "setIncontextSignupPermanentlyDismissedAt": {
+      "type": "object",
+      "properties": {
+        "paramsValidator": { "$ref":  "./schemas/setIncontextSignupPermanentlyDismissedAt.params.json" }
+      }
+    },
+    "getIncontextSignupDismissedAt": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "const":  "getIncontextSignupDismissedAt"},
+        "resultValidator": { "$ref":  "./schemas/getIncontextSignupDismissedAt.result.json" }
+      }
+    },
+    "autofillSettings": {
+      "type": "object",
+      "properties": {
+        "validatorsOnly": {
+          "type": "boolean",
+          "const": true
+        },
+        "resultValidator": { "$ref": "./schemas/autofill-settings.json" }
+      }
+    },
+    "incontextSignupSettings": {
+      "type": "object",
+      "properties": {
+        "validatorsOnly": {
+          "type": "boolean",
+          "const": true
+        },
+        "resultValidator": { "$ref": "./schemas/incontext-signup-settings.json" }
+      }
+    },
+    "getAlias": {
+      "type": "object",
+      "properties": {
+        "validatorsOnly": {
+          "type": "boolean",
+          "const": true
+        },
+        "paramValidator": { "$ref": "./schemas/getAlias.params.json" },
+        "resultValidator": { "$ref": "./schemas/getAlias.result.json" }
+      }
+    }
+  }
+}
