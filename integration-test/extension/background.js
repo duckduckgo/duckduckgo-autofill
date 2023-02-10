@@ -1,66 +1,35 @@
-// const domain = 'duck.co'
-let random = 0
-const userData = {
-    userName: 'shane-123',
-    nextAlias: random
-}
-// eslint-disable-next-line no-undef
-globalThis.pixels = []
+/* global globalThis */
 
-function getAddresses () {
-    return {
-        personalAddress: `${userData.userName}`,
-        privateAddress: `${userData.nextAlias}`
+let emailProtectionUserData = null
+let privateEmailAliasIndex = 0
+let incontextSignupInitiallyDismissedAt
+let incontextSignupPermanentlyDismissedAt
+
+globalThis.setEmailProtectionUserData = (userName) => {
+    privateEmailAliasIndex = 0
+    emailProtectionUserData = {
+        userName,
+        get nextAlias () { return `${privateEmailAliasIndex}` }
     }
 }
+
+function setNextEmailProtectionAlias () {
+    privateEmailAliasIndex = privateEmailAliasIndex + 1
+}
+
+function getAddresses () {
+    if (!emailProtectionUserData) return null
+
+    return {
+        personalAddress: `${emailProtectionUserData.userName}`,
+        privateAddress: `${emailProtectionUserData.nextAlias}`
+    }
+}
+
+globalThis.pixels = []
 function firePixel ({pixelName}) {
     // eslint-disable-next-line no-undef
     globalThis.pixels.push(pixelName)
-}
-
-async function addUserData (userData, sender) {
-    const { userName, token } = userData
-    // Check the origin. Shouldn't be necessary, but better safe than sorry
-    if (!sender.url.match(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/)) return
-
-    const sendDdgUserReady = async () => {
-        const tabs = await browser.tabs.query({})
-        tabs.forEach((tab) =>
-            // eslint-disable-next-line no-undef
-            utils.sendTabMessage(tab.id, { type: 'ddgUserReady' })
-        )
-    }
-
-    // eslint-disable-next-line no-undef
-    await settings.ready()
-    // eslint-disable-next-line no-undef
-    const { existingToken } = settings.getSetting('userData') || {}
-
-    // If the user is already registered, just notify tabs that we're ready
-    if (existingToken === token) {
-        await sendDdgUserReady()
-        return { success: true }
-    }
-
-    // Check general data validity
-    // eslint-disable-next-line no-undef
-    if (isValidUsername(userName) && isValidToken(token)) {
-        // eslint-disable-next-line no-undef
-        settings.updateSetting('userData', userData)
-        // Once user is set, fetch the alias and notify all tabs
-        // eslint-disable-next-line no-undef
-        const response = await fetchAlias()
-        if (response && response.error) {
-            return { error: response.error.message }
-        }
-
-        sendDdgUserReady()
-        // eslint-disable-next-line no-undef
-        showContextMenuAction()
-        return { success: true }
-    } else {
-        return { error: 'Something seems wrong with the user data' }
-    }
 }
 
 function registeredTempAutofillContentScript () {
@@ -69,7 +38,7 @@ function registeredTempAutofillContentScript () {
         site: {
             isBroken: false,
             allowlisted: false,
-            enabledFeatures: ['autofill']
+            enabledFeatures: ['autofill', 'incontextSignup']
         }
     }
 }
@@ -81,20 +50,27 @@ function init () {
         } else if (message.getAddresses) {
             return sendResponse(getAddresses())
         } else if (message.refreshAlias) {
-            userData.nextAlias = random + 1
+            setNextEmailProtectionAlias()
             return sendResponse(getAddresses())
-        } else if (message.addUserData) {
-            return sendResponse(addUserData(message.addUserData, sender))
         } else if (message.messageType === 'sendJSPixel') {
             return sendResponse(firePixel(message.options))
         } else if (message.messageType === 'getIncontextSignupDismissedAt') {
-            return sendResponse({ success: {} })
-        } else if (message.messageType === 'setIncontextSignupDismissedAt') {
+            return sendResponse({
+                success: {
+                    initiallyDismissedAt: incontextSignupInitiallyDismissedAt,
+                    permanentlyDismissedAt: incontextSignupPermanentlyDismissedAt
+                }
+            })
+        } else if (message.messageType === 'setIncontextSignupInitiallyDismissedAt') {
+            incontextSignupInitiallyDismissedAt = message.value
+            return sendResponse()
+        } else if (message.messageType === 'setIncontextSignupPermanentlyDismissedAt') {
+            incontextSignupPermanentlyDismissedAt = message.value
             return sendResponse()
         }
     })
 
-    // TODO handle logout, contextualAutofill and ddgUserReady messages
+    // TODO handle addUserData, logout, contextualAutofill and ddgUserReady messages
 }
 
 init()
