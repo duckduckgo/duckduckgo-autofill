@@ -76,4 +76,5 @@ export class UIController {
      * @param {CredentialsObject[]} _data
      */
     updateItems (_data) {}
+    destroy () {}
 }

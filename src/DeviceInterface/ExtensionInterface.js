@@ -10,10 +10,7 @@ import {
 } from '../autofill-utils.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
-import {
-    SetIncontextSignupInitiallyDismissedAtCall,
-    SetIncontextSignupPermanentlyDismissedAtCall
-} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {InContextSignup} from '../InContextSignup.js'
 
 const TOOLTIP_TYPES = {
     EmailProtection: 'EmailProtection',
@@ -21,6 +18,11 @@ const TOOLTIP_TYPES = {
 }
 
 class ExtensionInterface extends InterfacePrototype {
+    /**
+     * Adding this here since only the extension currently supports this
+     */
+    inContextSignup = new InContextSignup(this)
+
     /**
      * @override
      */
@@ -45,50 +47,22 @@ class ExtensionInterface extends InterfacePrototype {
             return TOOLTIP_TYPES.EmailProtection
         }
 
-        if (this.settings.featureToggles.emailProtection_incontext_signup && this.settings.incontextSignupPermanentlyDismissed === false) {
+        if (this.settings.featureToggles.emailProtection_incontext_signup && this.inContextSignup?.permanentlyDismissed === false) {
             return TOOLTIP_TYPES.EmailSignup
         }
 
         return null
     }
 
-    onIncontextSignup () {
-        this.firePixel({pixelName: 'incontext_get_email_protection'})
-    }
-
-    onIncontextSignupDismissed () {
-        // Check if the email signup tooltip has previously been dismissed.
-        // If it has, make the dismissal persist and remove it from the page.
-        // If it hasn't, set a flag for next time and just hide the tooltip.
-        if (this.settings.incontextSignupInitiallyDismissed) {
-            this.settings.setIncontextSignupPermanentlyDismissed(true)
-            this.deviceApi.notify(new SetIncontextSignupPermanentlyDismissedAtCall({ value: new Date().getTime() }))
-            this.removeAutofillUIFromPage()
-            this.firePixel({pixelName: 'incontext_dismiss_persisted'})
-        } else {
-            this.settings.setIncontextSignupInitiallyDismissed(true)
-            this.deviceApi.notify(new SetIncontextSignupInitiallyDismissedAtCall({ value: new Date().getTime() }))
-            this.removeTooltip()
-            this.firePixel({pixelName: 'incontext_dismiss_initial'})
-        }
-    }
-
     async resetAutofillUI (callback) {
         this.removeAutofillUIFromPage()
 
-        // Start the setup process again
-        await this.refreshSettings()
         await this.setupAutofill()
 
         if (callback) await callback()
 
         this.uiController = this.createUIController()
         await this.postInit()
-    }
-
-    removeAutofillUIFromPage () {
-        this.uiController?.destroy()
-        this._scannerCleanup?.()
     }
 
     async isEnabled () {
@@ -111,7 +85,12 @@ class ExtensionInterface extends InterfacePrototype {
         return this.hasLocalAddresses
     }
 
-    setupAutofill () {
+    async setupAutofill () {
+        /**
+         * In the extension, we must resolve `inContextSignup` data as part of setup
+         */
+        await this.inContextSignup.init()
+
         return this.getAddresses()
     }
 

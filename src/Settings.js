@@ -1,6 +1,6 @@
 import {validate} from '../packages/device-api/index.js'
 import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
-import {autofillSettingsSchema, incontextSignupSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
+import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
 import {autofillEnabled} from './autofill-utils.js'
 import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
@@ -35,10 +35,6 @@ export class Settings {
     _runtimeConfiguration = null
     /** @type {boolean | null} */
     _enabled = null
-    /** @type {boolean | null} */
-    _incontextSignupInitiallyDismissed = null
-    /** @type {boolean | null} */
-    _incontextSignupPermanentlyDismissed = null
 
     /**
      * @param {GlobalConfig} config
@@ -96,29 +92,6 @@ export class Settings {
     }
 
     /**
-     * @returns {Promise<boolean|null>}
-     */
-    async getIncontextSignupInitiallyDismissed () {
-        try {
-            const runtimeConfig = await this._getRuntimeConfiguration()
-            const incontextSignupSettings = validate(runtimeConfig.userPreferences?.features?.incontextSignup?.settings, incontextSignupSettingsSchema)
-            return Boolean(incontextSignupSettings.initiallyDismissedAt)
-        } catch (e) {
-            return null
-        }
-    }
-
-    async getIncontextSignupPermanentlyDismissed () {
-        try {
-            const runtimeConfig = await this._getRuntimeConfiguration()
-            const incontextSignupSettings = validate(runtimeConfig.userPreferences?.features?.incontextSignup?.settings, incontextSignupSettingsSchema)
-            return Boolean(incontextSignupSettings.permanentlyDismissedAt)
-        } catch (e) {
-            return null
-        }
-    }
-
-    /**
      * Get runtime configuration, but only once.
      *
      * Some platforms may be reading this directly from inlined variables, whilst others
@@ -169,8 +142,6 @@ export class Settings {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
         this.setAvailableInputTypes(await this.getAvailableInputTypes())
-        this.setIncontextSignupInitiallyDismissed(await this.getIncontextSignupInitiallyDismissed())
-        this.setIncontextSignupPermanentlyDismissed(await this.getIncontextSignupPermanentlyDismissed())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -305,29 +276,5 @@ export class Settings {
      */
     setEnabled (enabled) {
         this._enabled = enabled
-    }
-
-    /** @returns {boolean|null} */
-    get incontextSignupInitiallyDismissed () {
-        return this._incontextSignupInitiallyDismissed
-    }
-
-    /**
-     * @param {boolean|null} incontextSignupInitiallyDismissed
-     */
-    setIncontextSignupInitiallyDismissed (incontextSignupInitiallyDismissed) {
-        this._incontextSignupInitiallyDismissed = incontextSignupInitiallyDismissed
-    }
-
-    /** @returns {boolean|null} */
-    get incontextSignupPermanentlyDismissed () {
-        return this._incontextSignupPermanentlyDismissed
-    }
-
-    /**
-     * @param {boolean|null} incontextSignupPermanentlyDismissed
-     */
-    setIncontextSignupPermanentlyDismissed (incontextSignupPermanentlyDismissed) {
-        this._incontextSignupPermanentlyDismissed = incontextSignupPermanentlyDismissed
     }
 }

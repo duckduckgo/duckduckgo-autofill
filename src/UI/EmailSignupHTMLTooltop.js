@@ -23,7 +23,7 @@ ${this.options.css}
                 Get Email Protection
             </a>
             <button class="ghost js-dismiss-email-signup">
-                ${device.settings.incontextSignupInitiallyDismissed ? "Don't Ask Again" : 'Maybe Later'}
+                ${device.inContextSignup?.initiallyDismissed ? "Don't Ask Again" : 'Maybe Later'}
             </button>
         </div>
     </div>
@@ -33,12 +33,12 @@ ${this.options.css}
 
         this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup')
         this.registerClickableButton(this.dismissEmailSignup, () => {
-            device.onIncontextSignupDismissed()
+            device.inContextSignup?.onIncontextSignupDismissed()
         })
 
         this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup')
         this.registerClickableButton(this.getEmailSignup, () => {
-            device.onIncontextSignup()
+            device.inContextSignup?.onIncontextSignup()
         })
 
         this.init()
