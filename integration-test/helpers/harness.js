@@ -92,6 +92,14 @@ export function withChromeExtensionContext (test) {
     })
 }
 
+export async function withEmailProtectionExtensionSignedInAs (page, username) {
+    const [backgroundPage] = await page.context().backgroundPages()
+    await backgroundPage.evaluateHandle((personalAddress) => {
+        // eslint-disable-next-line no-undef
+        globalThis.setEmailProtectionUserData(personalAddress)
+    }, [username])
+}
+
 /**
  * @param {import("playwright").Page} page
  * @param {Record<string, string | boolean>} replacements

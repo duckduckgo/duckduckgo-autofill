@@ -2,6 +2,27 @@ import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
 import {mockedCalls} from './harness.js'
 
+const ATTR_AUTOFILL = 'data-ddg-autofill'
+
+export function incontextSignupPage (page) {
+    const getCallToAction = () => page.locator(`text=Get Email Protection`)
+    return {
+        async assertIsShowing () {
+            expect(await getCallToAction()).toBeVisible()
+        },
+        async assertIsHidden () {
+            expect(await getCallToAction()).toBeHidden()
+        },
+        async getEmailProtection () {
+            (await getCallToAction()).click({timeout: 500})
+        },
+        async dismissTooltipWith (text) {
+            const dismissTooltipButton = await page.locator(`text=${text}`)
+            await dismissTooltipButton.click({timeout: 500})
+        }
+    }
+}
+
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
  *
@@ -598,8 +619,15 @@ export function emailAutofillPage (page, server) {
 
             const pixels = await backgroundPagePixels.jsonValue()
             expect(pixels).toEqual(expectedPixels)
+        },
+        async assertDaxIconIsShowing () {
+            const input = page.locator(selectors.identity)
+            expect(input).toHaveAttribute(ATTR_AUTOFILL, 'true')
+        },
+        async assertDaxIconIsHidden () {
+            const input = page.locator(selectors.identity)
+            expect(input).not.toHaveAttribute(ATTR_AUTOFILL, 'true')
         }
-
     }
 }
 

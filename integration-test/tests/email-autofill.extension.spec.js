@@ -1,7 +1,8 @@
-import {forwardConsoleMessages, setupServer, withChromeExtensionContext} from '../helpers/harness.js'
+import {forwardConsoleMessages, setupServer, withChromeExtensionContext, withEmailProtectionExtensionSignedInAs} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage} from '../helpers/pages.js'
+import { stripDuckExtension } from '../helpers/utils.js'
 
 /**
  *  Tests for email autofill in chrome extension.
@@ -22,6 +23,7 @@ test.describe('chrome extension', () => {
         const {personalAddress, privateAddress0} = constants.fields.email
 
         forwardConsoleMessages(page)
+        await withEmailProtectionExtensionSignedInAs(page, stripDuckExtension(personalAddress))
 
         // page abstraction
         const emailPage = emailAutofillPage(page, server)
