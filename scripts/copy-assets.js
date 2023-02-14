@@ -19,6 +19,7 @@ function copyAutofillCSS () {
     const hostStylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-host-styles.css')
     copyFileSync(hostStylesPath, filepath(distPath, 'autofill-host-styles_chrome.css'))
     copyFirefoxCSSFile(hostStylesPath, filepath(distPath, 'autofill-host-styles_firefox.css'))
+    copyFileSync(hostStylesPath, filepath('integration-test', 'extension', 'public', 'css', 'autofill-host-styles_chrome.css'))
 }
 
 function copyAutofillHTML () {
