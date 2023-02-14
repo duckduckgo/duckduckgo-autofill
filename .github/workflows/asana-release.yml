@@ -14,7 +14,7 @@ jobs:
     outputs:
       asana-output: ${{ needs.create_asana_tasks.outputs.asana-output }}
     steps:
-      # Checkout autofill and set up release scripts
+      # Checkout release scripts and set up
       - uses: actions/checkout@v3
         with:
           path: autofill/
@@ -36,8 +36,7 @@ jobs:
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
         run: |
-          cd autofill
-          JSON_STRING="$(node ./scripts/release/asana-create-tasks.js)"
+          JSON_STRING="$(node ./autofill/scripts/release/asana-create-tasks.js)"
           echo "ASANA_OUTPUT=$JSON_STRING" >> $GITHUB_OUTPUT
 
 # ------------------------------------------------------------------------------
@@ -50,7 +49,23 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: create_asana_tasks
     steps:
-      # Checkout autofill and set up release scripts
+      - name: Checkout Android
+        uses: actions/checkout@v3
+        with:
+          repository: duckduckgo/android
+          path: android/
+          ref: develop
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: current
+      - name: Update Android autofill reference
+        run: |
+          cd android
+          npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
+          cd ..
+
+      # Checkout release scripts and set up
       - uses: actions/checkout@v3
         with:
           path: autofill/
@@ -62,19 +77,6 @@ jobs:
         run: |
           cd autofill
           npm install
-          cd ..
-
-      - name: Checkout Android
-        uses: actions/checkout@v3
-        with:
-          repository: duckduckgo/android
-          path: android/
-          ref: develop
-          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
-      - name: Update Android autofill reference
-        run: |
-          cd android
-          npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
           cd ..
       - name: Create Android PR Body
         env:
@@ -115,7 +117,7 @@ jobs:
       pull-request-head-sha: ${{ steps.create-pr.outputs.pull-request-head-sha }}
     needs: create_asana_tasks
     steps:
-      # Checkout autofill and set up release scripts
+      # Checkout release scripts and set up
       - uses: actions/checkout@v3
         with:
           path: autofill/
@@ -135,7 +137,7 @@ jobs:
           repository: duckduckgo/BrowserServicesKit
           path: bsk/
           ref: main
-          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
+          token: ${{ secrets.DAXMOBILE_q_AUTOMATION }}
       - name: Update BSK autofill reference
         env:
           VERSION: ${{ github.event.release.tag_name }}
@@ -176,7 +178,7 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: [create_asana_tasks, update_bsk]
     steps:
-      # Checkout autofill and set up release scripts
+      # Checkout release scripts and set up
       - uses: actions/checkout@v3
         with:
           path: autofill/
@@ -238,7 +240,7 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: [create_asana_tasks, update_bsk]
     steps:
-      # Checkout autofill and set up release scripts
+      # Checkout release scripts and set up
       - uses: actions/checkout@v3
         with:
           path: autofill/
@@ -300,7 +302,23 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: create_asana_tasks
     steps:
-      # Checkout autofill and set up release scripts
+      - name: Checkout Extensions
+        uses: actions/checkout@v3
+        with:
+          repository: duckduckgo/duckduckgo-privacy-extension
+          path: extensions/
+          ref: develop
+          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'extensions/.nvmrc'
+      - name: Update Extensions autofill reference
+        run: |
+          cd extensions
+          npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
+          cd ..
+
+      # Set up and run release scripts
       - uses: actions/checkout@v3
         with:
           path: autofill/
@@ -312,19 +330,6 @@ jobs:
         run: |
           cd autofill
           npm install
-          cd ..
-
-      - name: Checkout Extensions
-        uses: actions/checkout@v3
-        with:
-          repository: duckduckgo/duckduckgo-privacy-extension
-          path: extensions/
-          ref: develop
-          token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
-      - name: Update Extensions autofill reference
-        run: |
-          cd extensions
-          npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
           cd ..
       - name: Create Extensions PR Body
         env:
@@ -362,7 +367,7 @@ jobs:
     if: ${{ always() }} # Always run this final step, even if any of the updates have failed
     needs: [create_asana_tasks, update_bsk, update_ios, update_macos, update_android, update_extensions]
     steps:
-      # Checkout autofill and set up release scripts
+      # Checkout release scripts and set up
       - uses: actions/checkout@v3
         with:
           path: autofill/
@@ -388,12 +393,12 @@ jobs:
           MACOS_PR_URL: ${{ needs.update_macos.outputs.pull-request-url }}
           ANDROID_PR_URL: ${{ needs.update_android.outputs.pull-request-url }}
           EXTENSIONS_PR_URL: ${{ needs.update_extensions.outputs.pull-request-url }}
-        run:  node ./autofill/scripts/release/asana-update-tasks.js
+        run: node ./autofill/scripts/release/asana-update-tasks.js
 
       - name: Ouput workflow summary
-        if:  ${{ contains(needs.*.result, 'failure') }}
+        if: ${{ contains(needs.*.result, 'failure') }}
         run: echo "### Release process completed but with failures reported\nPlease review the job output to see which steps require manual intervention" >> $GITHUB_STEP_SUMMARY
 
       - name: Ouput workflow summary
-        if:  ${{ !contains(needs.*.result, 'failure') }}
+        if: ${{ !contains(needs.*.result, 'failure') }}
         run: echo "### Success! :rocket:" >> $GITHUB_STEP_SUMMARY
