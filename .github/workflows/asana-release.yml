@@ -5,17 +5,28 @@ on:
     types: [ created ]
 
 jobs:
-  autofill_release: # TODO: rename the file to autofill-release.yml once reviewed to keep a clear diff
-    runs-on: ubuntu-20.04
 
+# ------------------------------------------------------------------------------
+# Create initial Asana subtasks
+# ------------------------------------------------------------------------------
+  create_asana_tasks:
+    runs-on: ubuntu-20.04
+    outputs:
+      asana-output: ${{ needs.create_asana_tasks.outputs.asana-output }}
     steps:
+      # Checkout autofill and set up release scripts
       - uses: actions/checkout@v3
         with:
           path: autofill/
-      - name: Use Node.js 16
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version-file: 'autofill/.nvmrc'
+          cache: 'npm'
+      - name: Setup autofill
+        run: |
+          cd autofill
+          npm install
+          cd ..
 
       - name: Create Asana Tasks
         id: create-asana-tasks
@@ -26,9 +37,31 @@ jobs:
           RELEASE_NOTES: ${{ github.event.release.body }}
         run: |
           cd autofill
-          npm install
           JSON_STRING="$(node ./scripts/release/asana-create-tasks.js)"
           echo "ASANA_OUTPUT=$JSON_STRING" >> $GITHUB_OUTPUT
+
+# ------------------------------------------------------------------------------
+# Create PR with updated autofill on Android
+# ------------------------------------------------------------------------------
+
+  update_android:
+    runs-on: ubuntu-20.04
+    outputs:
+      pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
+    needs: create_asana_tasks
+    steps:
+      # Checkout autofill and set up release scripts
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'autofill/.nvmrc'
+          cache: 'npm'
+      - name: Setup autofill
+        run: |
+          cd autofill
+          npm install
           cd ..
 
       - name: Checkout Android
@@ -48,7 +81,7 @@ jobs:
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
-          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
+          ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js android)"
           # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
@@ -58,7 +91,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for Android
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
-        id: android-pr
+        id: create-pr
         with:
           path: android/
           add-paths: |
@@ -70,6 +103,31 @@ jobs:
           title: Update autofill to ${{ github.event.release.tag_name }}
           body: "${{ env.PR_BODY_ANDROID }}"
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
+
+# ------------------------------------------------------------------------------
+# Create PR with updated autofill on BrowserServicesKit
+# ------------------------------------------------------------------------------
+
+  update_bsk:
+    runs-on: ubuntu-20.04
+    outputs:
+      pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
+      pull-request-head-sha: ${{ steps.create-pr.outputs.pull-request-head-sha }}
+    needs: create_asana_tasks
+    steps:
+      # Checkout autofill and set up release scripts
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'autofill/.nvmrc'
+          cache: 'npm'
+      - name: Setup autofill
+        run: |
+          cd autofill
+          npm install
+          cd ..
 
       - name: Checkout BSK
         uses: actions/checkout@v3
@@ -88,7 +146,7 @@ jobs:
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
-          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
+          ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js bsk)"
           # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
@@ -98,7 +156,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for BSK
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
-        id: bsk-pr
+        id: create-pr
         with:
           path: bsk/
           add-paths: Package.swift,Package.resolved
@@ -107,6 +165,30 @@ jobs:
           title: Update autofill to ${{ github.event.release.tag_name }}
           body: ${{ env.PR_BODY_BSK }}
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
+
+# ------------------------------------------------------------------------------
+# Create PR with updated BrowserServicesKit on iOS
+# ------------------------------------------------------------------------------
+
+  update_ios:
+    runs-on: ubuntu-20.04
+    outputs:
+      pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
+    needs: [create_asana_tasks, update_bsk]
+    steps:
+      # Checkout autofill and set up release scripts
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'autofill/.nvmrc'
+          cache: 'npm'
+      - name: Setup autofill
+        run: |
+          cd autofill
+          npm install
+          cd ..
 
       - name: Checkout iOS
         uses: actions/checkout@v3
@@ -117,7 +199,7 @@ jobs:
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update iOS autofill reference
         env:
-          BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
+          BSK_SHA: ${{ needs.update_bsk.outputs.pull-request-head-sha }}
         run: |
           node ./autofill/scripts/release/update-apple-device-repo.js 'ios'
       - name: Create iOS PR Body
@@ -125,8 +207,8 @@ jobs:
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
-          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
-          BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
+          ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
+          BSK_PR_URL: ${{ needs.update_bsk.outputs.pull-request-url }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js ios)"
           # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
@@ -136,7 +218,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for iOS
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
-        id: ios-pr
+        id: create-pr
         with:
           path: ios/
           add-paths: DuckDuckGo.xcodeproj/project.pbxproj
@@ -145,6 +227,30 @@ jobs:
           title: Update BSK with autofill ${{ github.event.release.tag_name }}
           body: ${{ env.PR_BODY_IOS }}
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
+
+# ------------------------------------------------------------------------------
+# Create PR with updated BrowserServicesKit on macOS
+# ------------------------------------------------------------------------------
+
+  update_macos:
+    runs-on: ubuntu-20.04
+    outputs:
+      pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
+    needs: [create_asana_tasks, update_bsk]
+    steps:
+      # Checkout autofill and set up release scripts
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'autofill/.nvmrc'
+          cache: 'npm'
+      - name: Setup autofill
+        run: |
+          cd autofill
+          npm install
+          cd ..
 
       - name: Checkout macOS
         uses: actions/checkout@v3
@@ -155,7 +261,7 @@ jobs:
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update macOS autofill reference
         env:
-          BSK_SHA: ${{ steps.bsk-pr.outputs.pull-request-head-sha }}
+          BSK_SHA: ${{ needs.update_bsk.outputs.pull-request-head-sha }}
         run: |
           node ./autofill/scripts/release/update-apple-device-repo.js 'macos'
       - name: Create macOS PR Body
@@ -163,8 +269,8 @@ jobs:
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
-          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
-          BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
+          ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
+          BSK_PR_URL: ${{ needs.update_bsk.outputs.pull-request-url }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js macos)"
           # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
@@ -174,7 +280,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for macOS
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
-        id: macos-pr
+        id: create-pr
         with:
           path: macos/
           add-paths: DuckDuckGo.xcodeproj/project.pbxproj
@@ -183,6 +289,30 @@ jobs:
           title: Update BSK with autofill ${{ github.event.release.tag_name }}
           body: ${{ env.PR_BODY_MACOS }}
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
+
+# ------------------------------------------------------------------------------
+# Create PR with updated autofill on Browser extensions
+# ------------------------------------------------------------------------------
+
+  update_extensions:
+    runs-on: ubuntu-20.04
+    outputs:
+      pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
+    needs: create_asana_tasks
+    steps:
+      # Checkout autofill and set up release scripts
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'autofill/.nvmrc'
+          cache: 'npm'
+      - name: Setup autofill
+        run: |
+          cd autofill
+          npm install
+          cd ..
 
       - name: Checkout Extensions
         uses: actions/checkout@v3
@@ -201,7 +331,7 @@ jobs:
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
-          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
+          ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
         run: |
           TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js extensions)"
           # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
@@ -211,7 +341,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       - name: Create PR for Extensions
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
-        id: extensions-pr
+        id: create-pr
         with:
           path: extensions/
           add-paths: |
@@ -223,19 +353,47 @@ jobs:
           body: "${{ env.PR_BODY_EXTENSIONS }}"
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
+# ------------------------------------------------------------------------------
+# Update Asana subtasks with PR URLs
+# ------------------------------------------------------------------------------
+
+  update_asana_tasks:
+    runs-on: ubuntu-20.04
+    if: ${{ always() }} # Always run this final step, even if any of the updates have failed
+    needs: [create_asana_tasks, update_bsk, update_ios, update_macos, update_android, update_extensions]
+    steps:
+      # Checkout autofill and set up release scripts
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'autofill/.nvmrc'
+          cache: 'npm'
+      - name: Setup autofill
+        run: |
+          cd autofill
+          npm install
+          cd ..
+
       - name: Update Asana tasks
         env:
           ASANA_ACCESS_TOKEN: ${{ secrets.NATIVE_APPS_WORKFLOW }}
           VERSION: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_NOTES: ${{ github.event.release.body }}
-          ASANA_OUTPUT: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
-          BSK_PR_URL: ${{ steps.bsk-pr.outputs.pull-request-url }}
-          IOS_PR_URL: ${{ steps.ios-pr.outputs.pull-request-url }}
-          MACOS_PR_URL: ${{ steps.macos-pr.outputs.pull-request-url }}
-          ANDROID_PR_URL: ${{ steps.android-pr.outputs.pull-request-url }}
-          EXTENSIONS_PR_URL: ${{ steps.extensions-pr.outputs.pull-request-url }}
+          ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
+          BSK_PR_URL: ${{ needs.update_bsk.outputs.pull-request-url }}
+          IOS_PR_URL: ${{ needs.update_ios.outputs.pull-request-url }}
+          MACOS_PR_URL: ${{ needs.update_macos.outputs.pull-request-url }}
+          ANDROID_PR_URL: ${{ needs.update_android.outputs.pull-request-url }}
+          EXTENSIONS_PR_URL: ${{ needs.update_extensions.outputs.pull-request-url }}
         run:  node ./autofill/scripts/release/asana-update-tasks.js
 
       - name: Ouput workflow summary
+        if:  ${{ contains(needs.*.result, 'failure') }}
+        run: echo "### Release process completed but with failures reported\nPlease review the job output to see which steps require manual intervention" >> $GITHUB_STEP_SUMMARY
+
+      - name: Ouput workflow summary
+        if:  ${{ !contains(needs.*.result, 'failure') }}
         run: echo "### Success! :rocket:" >> $GITHUB_STEP_SUMMARY
