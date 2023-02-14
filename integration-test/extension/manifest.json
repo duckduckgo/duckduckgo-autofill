@@ -17,13 +17,13 @@
       "matches": ["<all_urls>"],
       "run_at": "document_start",
       "js": ["autofill.js"],
+      "css": ["public/css/autofill-host-styles_chrome.css"],
       "all_frames": true,
       "match_about_blank": true
     }
   ],
   "web_accessible_resources": [
       "public/css/autofill.css",
-      "img/logo-small.svg",
-      "autofill.js"
+      "img/logo-small.svg"
   ]
 }
