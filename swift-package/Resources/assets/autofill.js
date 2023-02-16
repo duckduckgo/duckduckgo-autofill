@@ -3135,6 +3135,9 @@ module.exports={
   "indochino.com": {
     "password-rules": "minlength: 6; maxlength: 15; required: upper; required: digit; allowed: lower, special;"
   },
+  "inntopia.travel": {
+    "password-rules": "minlength: 7; maxlength: 19; required: digit; allowed: upper,lower,[-];"
+  },
   "internationalsos.com": {
     "password-rules": "required: lower; required: upper; required: digit; required: [@#$%^&+=_];"
   },
@@ -13209,67 +13212,71 @@ exports.GetIncontextSignupDismissedAtCall = GetIncontextSignupDismissedAtCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.setIncontextSignupInitiallyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.incontextSignupSettingsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
-const credentialsSchema = null;
-exports.credentialsSchema = credentialsSchema;
-const availableInputTypesSchema = null;
-exports.availableInputTypesSchema = availableInputTypesSchema;
-const genericErrorSchema = null;
-exports.genericErrorSchema = genericErrorSchema;
-const autofillFeatureTogglesSchema = null;
-exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
-const providerStatusUpdatedSchema = null;
-exports.providerStatusUpdatedSchema = providerStatusUpdatedSchema;
-const getAliasParamsSchema = null;
-exports.getAliasParamsSchema = getAliasParamsSchema;
-const getAliasResultSchema = null;
-exports.getAliasResultSchema = getAliasResultSchema;
-const getAutofillCredentialsParamsSchema = null;
-exports.getAutofillCredentialsParamsSchema = getAutofillCredentialsParamsSchema;
-const getAutofillCredentialsResultSchema = null;
-exports.getAutofillCredentialsResultSchema = getAutofillCredentialsResultSchema;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.setIncontextSignupInitiallyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.incontextSignupSettingsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = void 0;
+const sendJSPixelParamsSchema = null;
+exports.sendJSPixelParamsSchema = sendJSPixelParamsSchema;
 const triggerContextSchema = null;
 exports.triggerContextSchema = triggerContextSchema;
-const getAutofillDataResponseSchema = null;
-exports.getAutofillDataResponseSchema = getAutofillDataResponseSchema;
-const getAutofillInitDataResponseSchema = null;
-exports.getAutofillInitDataResponseSchema = getAutofillInitDataResponseSchema;
-const getAvailableInputTypesResultSchema = null;
-exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
-const getIncontextSignupDismissedAtSchema = null;
-exports.getIncontextSignupDismissedAtSchema = getIncontextSignupDismissedAtSchema;
+const credentialsSchema = null;
+exports.credentialsSchema = credentialsSchema;
+const genericErrorSchema = null;
+exports.genericErrorSchema = genericErrorSchema;
 const contentScopeSchema = null;
 exports.contentScopeSchema = contentScopeSchema;
 const userPreferencesSchema = null;
 exports.userPreferencesSchema = userPreferencesSchema;
-const incontextSignupSettingsSchema = null;
-exports.incontextSignupSettingsSchema = incontextSignupSettingsSchema;
-const runtimeConfigurationSchema = null;
-exports.runtimeConfigurationSchema = runtimeConfigurationSchema;
+const outgoingCredentialsSchema = null;
+exports.outgoingCredentialsSchema = outgoingCredentialsSchema;
+const availableInputTypesSchema = null;
+exports.availableInputTypesSchema = availableInputTypesSchema;
+const getAutofillInitDataResponseSchema = null;
+exports.getAutofillInitDataResponseSchema = getAutofillInitDataResponseSchema;
+const getAutofillCredentialsParamsSchema = null;
+exports.getAutofillCredentialsParamsSchema = getAutofillCredentialsParamsSchema;
+const getAutofillCredentialsResultSchema = null;
+exports.getAutofillCredentialsResultSchema = getAutofillCredentialsResultSchema;
+const setSizeParamsSchema = null;
+exports.setSizeParamsSchema = setSizeParamsSchema;
 const selectedDetailParamsSchema = null;
 exports.selectedDetailParamsSchema = selectedDetailParamsSchema;
-const sendJSPixelParamsSchema = null;
-exports.sendJSPixelParamsSchema = sendJSPixelParamsSchema;
+const availableInputTypes1Schema = null;
+exports.availableInputTypes1Schema = availableInputTypes1Schema;
 const setIncontextSignupInitiallyDismissedAtSchema = null;
 exports.setIncontextSignupInitiallyDismissedAtSchema = setIncontextSignupInitiallyDismissedAtSchema;
 const setIncontextSignupPermanentlyDismissedAtSchema = null;
 exports.setIncontextSignupPermanentlyDismissedAtSchema = setIncontextSignupPermanentlyDismissedAtSchema;
-const setSizeParamsSchema = null;
-exports.setSizeParamsSchema = setSizeParamsSchema;
-const outgoingCredentialsSchema = null;
-exports.outgoingCredentialsSchema = outgoingCredentialsSchema;
-const askToUnlockProviderResultSchema = null;
-exports.askToUnlockProviderResultSchema = askToUnlockProviderResultSchema;
-const autofillSettingsSchema = null;
-exports.autofillSettingsSchema = autofillSettingsSchema;
-const checkCredentialsProviderStatusResultSchema = null;
-exports.checkCredentialsProviderStatusResultSchema = checkCredentialsProviderStatusResultSchema;
+const getIncontextSignupDismissedAtSchema = null;
+exports.getIncontextSignupDismissedAtSchema = getIncontextSignupDismissedAtSchema;
+const autofillFeatureTogglesSchema = null;
+exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
+const incontextSignupSettingsSchema = null;
+exports.incontextSignupSettingsSchema = incontextSignupSettingsSchema;
+const getAliasParamsSchema = null;
+exports.getAliasParamsSchema = getAliasParamsSchema;
+const getAliasResultSchema = null;
+exports.getAliasResultSchema = getAliasResultSchema;
 const getAutofillDataRequestSchema = null;
 exports.getAutofillDataRequestSchema = getAutofillDataRequestSchema;
-const getRuntimeConfigurationResponseSchema = null;
-exports.getRuntimeConfigurationResponseSchema = getRuntimeConfigurationResponseSchema;
+const getAutofillDataResponseSchema = null;
+exports.getAutofillDataResponseSchema = getAutofillDataResponseSchema;
+const runtimeConfigurationSchema = null;
+exports.runtimeConfigurationSchema = runtimeConfigurationSchema;
 const storeFormDataSchema = null;
 exports.storeFormDataSchema = storeFormDataSchema;
+const getAvailableInputTypesResultSchema = null;
+exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
+const providerStatusUpdatedSchema = null;
+exports.providerStatusUpdatedSchema = providerStatusUpdatedSchema;
+const checkCredentialsProviderStatusResultSchema = null;
+exports.checkCredentialsProviderStatusResultSchema = checkCredentialsProviderStatusResultSchema;
+const autofillSettingsSchema = null;
+exports.autofillSettingsSchema = autofillSettingsSchema;
+const getRuntimeConfigurationResponseSchema = null;
+exports.getRuntimeConfigurationResponseSchema = getRuntimeConfigurationResponseSchema;
+const askToUnlockProviderResultSchema = null;
+exports.askToUnlockProviderResultSchema = askToUnlockProviderResultSchema;
+const apiSchema = null;
+exports.apiSchema = apiSchema;
 
 },{}],59:[function(require,module,exports){
 "use strict";
