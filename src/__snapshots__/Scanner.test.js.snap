@@ -1,0 +1,200 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`performance should constrain the buffer size 1`] = `
+<body>
+  
+            
+  <form
+    action=""
+  >
+    
+                
+    <label
+      for="input-01"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-01"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-02"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-02"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-03"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-03"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-04"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-04"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-05"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-05"
+        type="text"
+      />
+    </label>
+    
+            
+  </form>
+</body>
+`;
+
+exports[`performance should debounce dom lookups 1`] = `
+<body>
+  
+            
+  <form
+    action=""
+  >
+    
+                
+    <label
+      for="input-01"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-01"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-02"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-02"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-03"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-03"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-04"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-04"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-05"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-05"
+        type="text"
+      />
+    </label>
+    
+            
+  </form>
+</body>
+`;
+
+exports[`performance should not scan if above maximum inputs 1`] = `
+<body>
+  
+            
+  <form
+    action=""
+  >
+    
+                
+    <label
+      for="input-01"
+    >
+      <input
+        id="input-01"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-02"
+    >
+      <input
+        id="input-02"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-03"
+    >
+      <input
+        id="input-03"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-04"
+    >
+      <input
+        id="input-04"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-05"
+    >
+      <input
+        id="input-05"
+        type="text"
+      />
+    </label>
+    
+            
+  </form>
+</body>
+`;
