@@ -27,6 +27,7 @@ describe('performance', () => {
         scanner.enqueue([document])
         jest.advanceTimersByTime(1000)
         expect(spy).toHaveBeenCalledTimes(1)
+        expect(document.body).toMatchSnapshot()
     })
     it('should constrain the buffer size', () => {
         const scanner = createScanner(InterfacePrototype.default(), {
@@ -43,5 +44,16 @@ describe('performance', () => {
 
         jest.advanceTimersByTime(1000)
         expect(spy).toHaveBeenCalledTimes(1)
+        expect(document.body).toMatchSnapshot()
+    })
+    it('should not scan if above maximum inputs', () => {
+        const scanner = createScanner(InterfacePrototype.default(), {
+            maxInputsOnPage: 3
+        })
+
+        scanner.findEligibleInputs(document)
+
+        jest.advanceTimersByTime(1000)
+        expect(document.body).toMatchSnapshot()
     })
 })

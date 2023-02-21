@@ -14114,6 +14114,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
+ *     maxInputsOnPage: number,
  * }} ScannerOptions
  */
 
@@ -14126,7 +14127,11 @@ const defaultScannerOptions = {
   // wait for a 500ms window of event silence before performing the scan
   debounceTimePeriod: 500,
   // how long to wait when performing the initial scan
-  initialDelay: 0
+  initialDelay: 0,
+  // How many inputs is too many on the page. If we detect that there's above
+  // this maximum, then we don't scan the page. This will prevent slowdowns on
+  // large pages which are unlikely to require autofill anyway.
+  maxInputsOnPage: 250
 };
 /**
  * This allows:
@@ -14270,7 +14275,13 @@ class DefaultScanner {
     if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, _selectorsCss.FORM_INPUTS_SELECTOR)) {
       this.addInput(context);
     } else {
-      context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR).forEach(input => this.addInput(input));
+      const inputs = context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
+
+      if (inputs.length > this.options.maxInputsOnPage) {
+        return this;
+      }
+
+      inputs.forEach(input => this.addInput(input));
     }
 
     return this;
