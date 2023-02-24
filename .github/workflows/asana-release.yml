@@ -149,7 +149,7 @@ jobs:
       - name: Checkout macOS
         uses: actions/checkout@v3
         with:
-          repository: more-duckduckgo-org/macos-browser
+          repository: duckduckgo/macos-browser
           path: macos/
           ref: develop
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
