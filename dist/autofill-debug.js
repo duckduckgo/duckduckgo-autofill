@@ -9477,7 +9477,7 @@ exports.initFormSubmissionsApi = initFormSubmissionsApi;
 
 var _selectorsCss = require("../Form/selectors-css.js");
 
-var _matching = require("../Form/matching.js");
+var _matchingUtils = require("../Form/matching-utils.js");
 
 var _autofillUtils = require("../autofill-utils.js");
 
@@ -9530,7 +9530,7 @@ function initFormSubmissionsApi(forms) {
       /** @type HTMLElement */
       (_event$target = event.target) === null || _event$target === void 0 ? void 0 : _event$target.closest(selector);
       if (!button) return;
-      const text = (0, _matching.removeExcessWhitespace)(button === null || button === void 0 ? void 0 : button.textContent);
+      const text = (0, _matchingUtils.removeExcessWhitespace)(button === null || button === void 0 ? void 0 : button.textContent);
       const hasRelevantText = /(log|sign).?(in|up)|continue|next|submit/i.test(text);
 
       if (hasRelevantText && text.length < 25) {
@@ -9561,7 +9561,7 @@ function initFormSubmissionsApi(forms) {
   });
 }
 
-},{"../Form/matching.js":41,"../Form/selectors-css.js":42,"../autofill-utils.js":61}],31:[function(require,module,exports){
+},{"../Form/matching-utils.js":40,"../Form/selectors-css.js":42,"../autofill-utils.js":61}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10278,6 +10278,8 @@ exports.default = void 0;
 
 var _matching = require("./matching.js");
 
+var _matchingUtils = require("./matching-utils.js");
+
 var _constants = require("../constants.js");
 
 var _matchingConfiguration = require("./matching-configuration.js");
@@ -10441,7 +10443,7 @@ class FormAnalyzer {
       let {
         textContent
       } = _ref2;
-      textContent = (0, _matching.removeExcessWhitespace)(textContent || '');
+      textContent = (0, _matchingUtils.removeExcessWhitespace)(textContent || '');
       this.updateSignal({
         string: textContent,
         strength: 0.5,
@@ -10522,7 +10524,7 @@ class FormAnalyzer {
 
       // any other case
       // only consider the el if it's a small text to avoid noisy disclaimers
-      if (((_removeExcessWhitespa = (0, _matching.removeExcessWhitespace)(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < _constants.constants.TEXT_LENGTH_CUTOFF) {
+      if (((_removeExcessWhitespa = (0, _matchingUtils.removeExcessWhitespace)(el.textContent)) === null || _removeExcessWhitespa === void 0 ? void 0 : _removeExcessWhitespa.length) < _constants.constants.TEXT_LENGTH_CUTOFF) {
         this.updateSignal({
           string,
           strength: 1,
@@ -10566,7 +10568,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils.js":61,"../constants.js":64,"./matching-configuration.js":40,"./matching.js":41}],34:[function(require,module,exports){
+},{"../autofill-utils.js":61,"../constants.js":64,"./matching-configuration.js":39,"./matching-utils.js":40,"./matching.js":41}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11780,66 +11782,7 @@ const isFieldDecorated = input => {
 
 exports.isFieldDecorated = isFieldDecorated;
 
-},{"../InputTypes/Credentials.js":45,"../InputTypes/CreditCard.js":46,"../InputTypes/Identity.js":47,"../UI/img/ddgPasswordIcon.js":59,"../constants.js":64,"./logo-svg.js":39,"./matching.js":41}],38:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.extractElementStrings = void 0;
-
-var _matching = require("./matching.js");
-
-const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
-/**
- * Extract all strings of an element's children to an array.
- * "element.textContent" is a string which is merged of all children nodes,
- * which can cause issues with things like script tags etc.
- *
- * @param  {HTMLElement} element
- *         A DOM element to be extracted.
- * @returns {string[]}
- *          All strings in an element.
- */
-
-const extractElementStrings = element => {
-  const strings = [];
-
-  const _extractElementStrings = el => {
-    if (EXCLUDED_TAGS.includes(el.tagName)) {
-      return;
-    } // only take the string when it's an explicit text node
-
-
-    if (el.nodeType === el.TEXT_NODE || !el.childNodes.length) {
-      let trimmedText = (0, _matching.removeExcessWhitespace)(el.textContent);
-
-      if (trimmedText) {
-        strings.push(trimmedText);
-      }
-
-      return;
-    }
-
-    for (let node of el.childNodes) {
-      let nodeType = node.nodeType;
-
-      if (nodeType !== node.ELEMENT_NODE && nodeType !== node.TEXT_NODE) {
-        continue;
-      }
-
-      _extractElementStrings(node);
-    }
-  };
-
-  _extractElementStrings(element);
-
-  return strings;
-};
-
-exports.extractElementStrings = extractElementStrings;
-
-},{"./matching.js":41}],39:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":45,"../InputTypes/CreditCard.js":46,"../InputTypes/Identity.js":47,"../UI/img/ddgPasswordIcon.js":59,"../constants.js":64,"./logo-svg.js":38,"./matching.js":41}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11849,7 +11792,7 @@ exports.daxBase64 = void 0;
 const daxBase64 = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==';
 exports.daxBase64 = daxBase64;
 
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12493,7 +12436,133 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css.js":42}],41:[function(require,module,exports){
+},{"./selectors-css.js":42}],40:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.removeExcessWhitespace = exports.isInputTooSmall = exports.getExplicitLabelsText = exports.extractElementStrings = void 0;
+const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
+/**
+ * Extract all strings of an element's children to an array.
+ * "element.textContent" is a string which is merged of all children nodes,
+ * which can cause issues with things like script tags etc.
+ *
+ * @param  {HTMLElement} element
+ *         A DOM element to be extracted.
+ * @returns {string[]}
+ *          All strings in an element.
+ */
+
+const extractElementStrings = element => {
+  const strings = [];
+
+  const _extractElementStrings = el => {
+    if (EXCLUDED_TAGS.includes(el.tagName)) {
+      return;
+    } // only take the string when it's an explicit text node
+
+
+    if (el.nodeType === el.TEXT_NODE || !el.childNodes.length) {
+      let trimmedText = removeExcessWhitespace(el.textContent);
+
+      if (trimmedText) {
+        strings.push(trimmedText);
+      }
+
+      return;
+    }
+
+    for (let node of el.childNodes) {
+      let nodeType = node.nodeType;
+
+      if (nodeType !== node.ELEMENT_NODE && nodeType !== node.TEXT_NODE) {
+        continue;
+      }
+
+      _extractElementStrings(node);
+    }
+  };
+
+  _extractElementStrings(element);
+
+  return strings;
+};
+/**
+ * Remove whitespace of more than 2 in a row and trim the string
+ * @param {string | null} string
+ * @return {string}
+ */
+
+
+exports.extractElementStrings = extractElementStrings;
+
+const removeExcessWhitespace = function () {
+  let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  return (string || '').replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
+};
+/**
+ * Get text from all explicit labels
+ * @param {HTMLInputElement|HTMLSelectElement} el
+ * @return {string}
+ */
+
+
+exports.removeExcessWhitespace = removeExcessWhitespace;
+
+const getExplicitLabelsText = el => {
+  const labelTextCandidates = [];
+
+  for (let label of el.labels || []) {
+    labelTextCandidates.push(...extractElementStrings(label));
+  }
+
+  if (el.hasAttribute('aria-label')) {
+    labelTextCandidates.push(removeExcessWhitespace(el.getAttribute('aria-label')));
+  } // Try to access another element if it was marked as the label for this input/select
+
+
+  const ariaLabelAttr = removeExcessWhitespace(el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby'));
+
+  if (ariaLabelAttr) {
+    const labelledByElement = document.getElementById(ariaLabelAttr);
+
+    if (labelledByElement) {
+      labelTextCandidates.push(...extractElementStrings(labelledByElement));
+    }
+  } // Labels with long text are likely to be noisy and lead to false positives
+
+
+  const filteredLabels = labelTextCandidates.filter(string => string.length < 65);
+
+  if (filteredLabels.length > 0) {
+    return filteredLabels.join(' ');
+  }
+
+  return '';
+};
+/**
+ * Returns true if the field is visible and too small
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
+
+
+exports.getExplicitLabelsText = getExplicitLabelsText;
+
+const isInputTooSmall = input => {
+  const width = input.offsetWidth;
+  const height = input.offsetHeight; // If dimensions are 0 the field is hidden so we can't know if it's too small
+
+  if (height === 0 && width === 0) return false;
+  if (width <= 40) return true;
+  return false;
+};
+
+exports.isInputTooSmall = isInputTooSmall;
+
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12501,23 +12570,23 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.checkPlaceholderAndLabels = exports.Matching = void 0;
 exports.createMatching = createMatching;
-exports.getInputMainType = exports.getExplicitLabelsText = void 0;
+exports.getInputMainType = void 0;
 exports.getInputSubtype = getInputSubtype;
 exports.getInputType = getInputType;
 exports.getMainTypeFromType = getMainTypeFromType;
 exports.getRelatedText = void 0;
 exports.getSubtypeFromType = getSubtypeFromType;
-exports.safeRegex = exports.removeExcessWhitespace = exports.matchInPlaceholderAndLabels = void 0;
+exports.safeRegex = exports.matchInPlaceholderAndLabels = void 0;
 
 var _vendorRegex = require("./vendor-regex.js");
 
 var _constants = require("../constants.js");
 
-var _labelUtil = require("./label-util.js");
-
 var _selectorsCss = require("./selectors-css.js");
 
 var _matchingConfiguration = require("./matching-configuration.js");
+
+var _matchingUtils = require("./matching-utils.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -13126,7 +13195,7 @@ class Matching {
       return this._elementStringCache.get(el);
     }
 
-    const explicitLabelsText = getExplicitLabelsText(el);
+    const explicitLabelsText = (0, _matchingUtils.getExplicitLabelsText)(el);
     /** @type {Record<MatchableStrings, string>} */
 
     const next = {
@@ -13349,57 +13418,6 @@ function getInputSubtype(input) {
   return getSubtypeFromType(type);
 }
 /**
- * Remove whitespace of more than 2 in a row and trim the string
- * @param {string | null} string
- * @return {string}
- */
-
-
-const removeExcessWhitespace = function () {
-  let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  return (string || '').replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
-};
-/**
- * Get text from all explicit labels
- * @param {HTMLInputElement|HTMLSelectElement} el
- * @return {string}
- */
-
-
-exports.removeExcessWhitespace = removeExcessWhitespace;
-
-const getExplicitLabelsText = el => {
-  const labelTextCandidates = [];
-
-  for (let label of el.labels || []) {
-    labelTextCandidates.push(...(0, _labelUtil.extractElementStrings)(label));
-  }
-
-  if (el.hasAttribute('aria-label')) {
-    labelTextCandidates.push(removeExcessWhitespace(el.getAttribute('aria-label')));
-  } // Try to access another element if it was marked as the label for this input/select
-
-
-  const ariaLabelAttr = removeExcessWhitespace(el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby'));
-
-  if (ariaLabelAttr) {
-    const labelledByElement = document.getElementById(ariaLabelAttr);
-
-    if (labelledByElement) {
-      labelTextCandidates.push(...(0, _labelUtil.extractElementStrings)(labelledByElement));
-    }
-  } // Labels with long text are likely to be noisy and lead to false positives
-
-
-  const filteredLabels = labelTextCandidates.filter(string => string.length < 65);
-
-  if (filteredLabels.length > 0) {
-    return filteredLabels.join(' ');
-  }
-
-  return '';
-};
-/**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @param {HTMLElement} form
@@ -13407,8 +13425,6 @@ const getExplicitLabelsText = el => {
  * @return {string}
  */
 
-
-exports.getExplicitLabelsText = getExplicitLabelsText;
 
 const getRelatedText = (el, form, cssSelector) => {
   let scope = getLargestMeaningfulContainer(el, form, cssSelector); // If we didn't find a container, try looking for an adjacent label
@@ -13422,7 +13438,7 @@ const getRelatedText = (el, form, cssSelector) => {
 
   if (scope === el || scope.nodeName === 'SELECT') return ''; // If the container has a select element, remove its contents to avoid noise
 
-  const text = removeExcessWhitespace((0, _labelUtil.extractElementStrings)(scope).join(' ')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
+  const text = (0, _matchingUtils.removeExcessWhitespace)((0, _matchingUtils.extractElementStrings)(scope).join(' ')); // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
 
   if (text.length < TEXT_LENGTH_CUTOFF) return text;
   return '';
@@ -13464,7 +13480,7 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
 const matchInPlaceholderAndLabels = (input, regex, form, cssSelector) => {
   var _input$placeholder;
 
-  return ((_input$placeholder = input.placeholder) === null || _input$placeholder === void 0 ? void 0 : _input$placeholder.match(regex)) || getExplicitLabelsText(input).match(regex) || getRelatedText(input, form, cssSelector).match(regex);
+  return ((_input$placeholder = input.placeholder) === null || _input$placeholder === void 0 ? void 0 : _input$placeholder.match(regex)) || (0, _matchingUtils.getExplicitLabelsText)(input).match(regex) || getRelatedText(input, form, cssSelector).match(regex);
 };
 /**
  * Check if a given input matches a regex
@@ -13513,14 +13529,14 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants.js":64,"./label-util.js":38,"./matching-configuration.js":40,"./selectors-css.js":42,"./vendor-regex.js":43}],42:[function(require,module,exports){
+},{"../constants.js":64,"./matching-configuration.js":39,"./matching-utils.js":40,"./selectors-css.js":42,"./vendor-regex.js":43}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.__secret_do_not_use = exports.SUBMIT_BUTTON_SELECTOR = exports.FORM_INPUTS_SELECTOR = void 0;
-const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\nselect";
+const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\n[autocomplete=username],\nselect";
 exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
 exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
@@ -16048,6 +16064,8 @@ exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.
 
 var _matching = require("./Form/matching.js");
 
+var _matchingUtils = require("./Form/matching-utils.js");
+
 const SIGN_IN_MSG = {
   signMeIn: true
 }; // Send a message to the web app (only on DDG domains)
@@ -16471,14 +16489,14 @@ exports.buttonMatchesFormType = buttonMatchesFormType;
 const getText = el => {
   // for buttons, we don't care about descendants, just get the whole text as is
   // this is important in order to give proper attribution of the text to the button
-  if (el instanceof HTMLButtonElement) return (0, _matching.removeExcessWhitespace)(el.textContent);
+  if (el instanceof HTMLButtonElement) return (0, _matchingUtils.removeExcessWhitespace)(el.textContent);
   if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value;
-  return (0, _matching.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => child instanceof Text ? text + ' ' + child.textContent : text, ''));
+  return (0, _matchingUtils.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => child instanceof Text ? text + ' ' + child.textContent : text, ''));
 };
 
 exports.getText = getText;
 
-},{"./Form/matching.js":41}],62:[function(require,module,exports){
+},{"./Form/matching-utils.js":40,"./Form/matching.js":41}],62:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");

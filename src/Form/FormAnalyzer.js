@@ -1,4 +1,5 @@
-import { removeExcessWhitespace, Matching } from './matching.js'
+import { Matching } from './matching.js'
+import { removeExcessWhitespace } from './matching-utils.js'
 import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-configuration.js'
 import { getText, isLikelyASubmitButton } from '../autofill-utils.js'

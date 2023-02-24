@@ -1,4 +1,5 @@
-import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
+import {getInputSubtype} from './Form/matching.js'
+import {removeExcessWhitespace} from './Form/matching-utils.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 

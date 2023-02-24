@@ -1,5 +1,5 @@
 import {SUBMIT_BUTTON_SELECTOR} from '../Form/selectors-css.js'
-import {removeExcessWhitespace} from '../Form/matching.js'
+import {removeExcessWhitespace} from '../Form/matching-utils.js'
 import {buttonMatchesFormType} from '../autofill-utils.js'
 
 /**

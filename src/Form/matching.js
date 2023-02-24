@@ -1,8 +1,13 @@
 import { createCacheableVendorRegexes } from './vendor-regex.js'
 import { constants } from '../constants.js'
-import { extractElementStrings } from './label-util.js'
 import { FORM_INPUTS_SELECTOR } from './selectors-css.js'
 import { matchingConfiguration } from './matching-configuration.js'
+import {
+    getExplicitLabelsText,
+    removeExcessWhitespace,
+    extractElementStrings,
+    isInputTooSmall
+} from './matching-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -203,7 +208,7 @@ class Matching {
             }
         }
 
-        if (input instanceof HTMLInputElement) {
+        if (input instanceof HTMLInputElement && !isInputTooSmall(input)) {
             if (this.subtypeFromMatchers('password', input)) {
                 return 'credentials.password'
             }
@@ -688,51 +693,6 @@ function getInputSubtype (input) {
 }
 
 /**
- * Remove whitespace of more than 2 in a row and trim the string
- * @param {string | null} string
- * @return {string}
- */
-const removeExcessWhitespace = (string = '') => {
-    return (string || '')
-        .replace(/\n/g, ' ')
-        .replace(/\s{2,}/g, ' ').trim()
-}
-
-/**
- * Get text from all explicit labels
- * @param {HTMLInputElement|HTMLSelectElement} el
- * @return {string}
- */
-const getExplicitLabelsText = (el) => {
-    const labelTextCandidates = []
-    for (let label of el.labels || []) {
-        labelTextCandidates.push(...extractElementStrings(label))
-    }
-    if (el.hasAttribute('aria-label')) {
-        labelTextCandidates.push(removeExcessWhitespace(el.getAttribute('aria-label')))
-    }
-
-    // Try to access another element if it was marked as the label for this input/select
-    const ariaLabelAttr = removeExcessWhitespace(el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby'))
-
-    if (ariaLabelAttr) {
-        const labelledByElement = document.getElementById(ariaLabelAttr)
-        if (labelledByElement) {
-            labelTextCandidates.push(...extractElementStrings(labelledByElement))
-        }
-    }
-
-    // Labels with long text are likely to be noisy and lead to false positives
-    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65)
-
-    if (filteredLabels.length > 0) {
-        return filteredLabels.join(' ')
-    }
-
-    return ''
-}
-
-/**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @param {HTMLElement} form
@@ -835,10 +795,8 @@ export {
     getInputType,
     getInputSubtype,
     getSubtypeFromType,
-    removeExcessWhitespace,
     getInputMainType,
     getMainTypeFromType,
-    getExplicitLabelsText,
     getRelatedText,
     matchInPlaceholderAndLabels,
     checkPlaceholderAndLabels,
