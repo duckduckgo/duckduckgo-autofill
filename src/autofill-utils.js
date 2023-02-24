@@ -351,6 +351,33 @@ const getText = (el) => {
     )
 }
 
+/**
+ * Check if hostname is a local address
+ * @param {string} [hostname]
+ * @returns {boolean}
+ */
+function isLocalNetwork (hostname = window.location.hostname) {
+    return (
+        ['localhost', '', '::1'].includes(hostname) ||
+        hostname.includes('127.0.0.1') ||
+        hostname.includes('192.168.') ||
+        hostname.startsWith('10.0.') ||
+        hostname.endsWith('.local') ||
+        hostname.endsWith('.internal')
+    )
+}
+
+// Extracted from lib/DDG/Util/Constants.pm
+const tldrs = /\.(?:c(?:o(?:m|op)?|at?|[iykgdmnxruhcfzvl])|o(?:rg|m)|n(?:et?|a(?:me)?|[ucgozrfpil])|e(?:d?u|[gechstr])|i(?:n(?:t|fo)?|[stqldroem])|m(?:o(?:bi)?|u(?:seum)?|i?l|[mcyvtsqhaerngxzfpwkd])|g(?:ov|[glqeriabtshdfmuywnp])|b(?:iz?|[drovfhtaywmzjsgbenl])|t(?:r(?:avel)?|[ncmfzdvkopthjwg]|e?l)|k[iemygznhwrp]|s[jtvberindlucygkhaozm]|u[gymszka]|h[nmutkr]|r[owesu]|d[kmzoej]|a(?:e(?:ro)?|r(?:pa)?|[qofiumsgzlwcnxdt])|p(?:ro?|[sgnthfymakwle])|v[aegiucn]|l[sayuvikcbrt]|j(?:o(?:bs)?|[mep])|w[fs]|z[amw]|f[rijkom]|y[eut]|qa)$/i
+/**
+ * Check if hostname is a valid top-level domain
+ * @param {string} [hostname]
+ * @returns {boolean}
+ */
+function isValidTLD (hostname = window.location.hostname) {
+    return tldrs.test(hostname)
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -370,5 +397,7 @@ export {
     escapeXML,
     isLikelyASubmitButton,
     buttonMatchesFormType,
-    getText
+    getText,
+    isLocalNetwork,
+    isValidTLD
 }

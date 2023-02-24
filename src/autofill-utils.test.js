@@ -1,4 +1,4 @@
-import { setValue, isAutofillEnabledFromProcessedConfig } from './autofill-utils.js'
+import { setValue, isAutofillEnabledFromProcessedConfig, isLocalNetwork, isValidTLD } from './autofill-utils.js'
 
 const renderInputWithEvents = () => {
     const input = document.createElement('input')
@@ -133,5 +133,54 @@ describe('config checking', () => {
                 enabledFeatures: ['autofill']
             }
         })).toBe(false)
+    })
+})
+
+describe('isLocalNetwork', function () {
+    const testCases = [
+        { url: '192.168.0.1', resultText: 'local', result: true },
+        { url: '127.0.0.1', resultText: 'local', result: true },
+        { url: 'www.127.0.0.1.sslip.io', resultText: 'local', result: true },
+        { url: '192.168.0.1.example.com', resultText: 'local', result: true },
+        { url: 'localhost', resultText: 'local', result: true },
+        { url: '', resultText: 'local', result: true },
+        { url: '::1', resultText: 'local', result: true },
+        { url: 'mysite.local', resultText: 'local', result: true },
+        { url: 'mysite.internal', resultText: 'local', result: true },
+        { url: 'example.com', resultText: 'not local', result: false },
+        { url: 'localhost.example.com', resultText: 'not local', result: false },
+        { url: 'internal.example.com', resultText: 'not local', result: false },
+        { url: 'local.example', resultText: 'not local', result: false },
+        { url: 'example', resultText: 'not local', result: false },
+        { url: 'ddg-autofill-test.duckduckgo.com', resultText: 'not local', result: false }
+    ]
+
+    test.each(testCases)('$url is $resultText', ({ url, result }) => {
+        expect(isLocalNetwork(url)).toBe(result)
+    })
+})
+
+describe('isValidTLD', function () {
+    const testCases = [
+        { url: '127.0.0.1', resultText: 'not valid', result: false },
+        { url: 'www.127.0.0.1.sslip.io', resultText: 'valid', result: true },
+        { url: 'localhost', resultText: 'not valid', result: false },
+        { url: '', resultText: 'not valid', result: false },
+        { url: '::1', resultText: 'not valid', result: false },
+        { url: 'example.com', resultText: 'valid', result: true },
+        { url: 'localhost.example.com', resultText: 'valid', result: true },
+        { url: 'local.example', resultText: 'not valid', result: false },
+        { url: 'local.internal', resultText: 'not valid', result: false },
+        { url: 'local.site', resultText: 'not valid', result: false }, // should be valid
+        { url: 'example', resultText: 'not valid', result: false },
+        { url: 'a.b.c', resultText: 'not valid', result: false },
+        { url: 'ουτοπία.δπθ.gr', resultText: 'valid', result: true },
+        { url: 'xn--kxae4bafwg.xn--pxaix.gr', resultText: 'valid', result: true },
+        { url: 'ουτοπία.δπθ', resultText: 'not valid', result: false },
+        { url: 'ddg-autofill-test.duckduckgo.com', resultText: 'valid', result: true }
+    ]
+
+    test.each(testCases)('$url is $resultText', ({ url, result }) => {
+        expect(isValidTLD(url)).toBe(result)
     })
 })

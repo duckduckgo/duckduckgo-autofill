@@ -1,4 +1,4 @@
-import {forwardConsoleMessages, setupServer, withChromeExtensionContext} from '../helpers/harness.js'
+import {forwardConsoleMessages, withChromeExtensionContext, setupMockedDomain} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
 
@@ -10,19 +10,13 @@ import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
 const test = withChromeExtensionContext(base)
 
 test.describe('chrome extension', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test('should allow user to sign up for Email Protection', async ({page, context}) => {
         forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
 
         const incontextSignup = incontextSignupPage(page)
-        const emailPage = emailAutofillPage(page, server)
-        await emailPage.navigate()
+        const emailPage = emailAutofillPage(page)
+        await emailPage.navigate('https://example.com')
         const newPageOpening = new Promise(resolve => context.once('page', resolve))
 
         await emailPage.clickIntoInput()
@@ -40,10 +34,11 @@ test.describe('chrome extension', () => {
 
     test('should allow tooptip to be dismissed', async ({page}) => {
         forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
 
         const incontextSignup = incontextSignupPage(page)
-        const emailPage = emailAutofillPage(page, server)
-        await emailPage.navigate()
+        const emailPage = emailAutofillPage(page)
+        await emailPage.navigate('https://example.com')
 
         // Hide tooltip
         await emailPage.clickIntoInput()

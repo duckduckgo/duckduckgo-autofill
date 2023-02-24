@@ -4392,7 +4392,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
       return TOOLTIP_TYPES.EmailProtection;
     }
 
-    if (this.settings.featureToggles.emailProtection_incontext_signup && ((_this$inContextSignup = this.inContextSignup) === null || _this$inContextSignup === void 0 ? void 0 : _this$inContextSignup.permanentlyDismissed) === false) {
+    if ((_this$inContextSignup = this.inContextSignup) !== null && _this$inContextSignup !== void 0 && _this$inContextSignup.isAvailable()) {
       return TOOLTIP_TYPES.EmailSignup;
     }
 
@@ -9980,24 +9980,45 @@ exports.InContextSignup = void 0;
 
 var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls.js");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var _autofillUtils = require("./autofill-utils.js");
 
 class InContextSignup {
   /**
    * @param {import("./DeviceInterface/InterfacePrototype").default} device
    */
   constructor(device) {
-    _defineProperty(this, "permanentlyDismissed", false);
-
-    _defineProperty(this, "initiallyDismissed", false);
-
     this.device = device;
   }
 
   async init() {
+    await this.refreshData();
+  }
+
+  async refreshData() {
     const incontextSignupDismissedAt = await this.device.deviceApi.request(new _deviceApiCalls.GetIncontextSignupDismissedAtCall(null));
-    this.permanentlyDismissed = Boolean(incontextSignupDismissedAt.permanentlyDismissedAt);
-    this.initiallyDismissed = Boolean(incontextSignupDismissedAt.initiallyDismissedAt);
+    this.permanentlyDismissedAt = incontextSignupDismissedAt.permanentlyDismissedAt;
+    this.initiallyDismissedAt = incontextSignupDismissedAt.initiallyDismissedAt;
+  }
+
+  isPermanentlyDismissed() {
+    return Boolean(this.permanentlyDismissedAt);
+  }
+
+  isInitiallyDismissed() {
+    return Boolean(this.initiallyDismissedAt);
+  }
+
+  isOnValidDomain() {
+    // Only show in-context signup if we've high confidence that the page is
+    // not internally hosted or an intranet
+    return (0, _autofillUtils.isValidTLD)() && !(0, _autofillUtils.isLocalNetwork)();
+  }
+
+  isAvailable() {
+    var _this$device$settings;
+
+    const isEnabled = (_this$device$settings = this.device.settings) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.featureToggles.emailProtection_incontext_signup;
+    return isEnabled && !this.isPermanentlyDismissed() && this.isOnValidDomain();
   }
 
   onIncontextSignup() {
@@ -10010,19 +10031,19 @@ class InContextSignup {
     // Check if the email signup tooltip has previously been dismissed.
     // If it has, make the dismissal persist and remove it from the page.
     // If it hasn't, set a flag for next time and just hide the tooltip.
-    if (this.initiallyDismissed) {
-      this.permanentlyDismissed = true;
+    if (this.isInitiallyDismissed()) {
+      this.permanentlyDismissedAt = new Date().getTime();
       this.device.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall({
-        value: new Date().getTime()
+        value: this.permanentlyDismissedAt
       }));
       this.device.removeAutofillUIFromPage();
       this.device.firePixel({
         pixelName: 'incontext_dismiss_persisted'
       });
     } else {
-      this.initiallyDismissed = true;
+      this.initiallyDismissedAt = new Date().getTime();
       this.device.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupInitiallyDismissedAtCall({
-        value: new Date().getTime()
+        value: this.initiallyDismissedAt
       }));
       this.device.removeTooltip();
       this.device.firePixel({
@@ -10035,7 +10056,7 @@ class InContextSignup {
 
 exports.InContextSignup = InContextSignup;
 
-},{"./deviceApiCalls/__generated__/deviceApiCalls.js":57}],37:[function(require,module,exports){
+},{"./autofill-utils.js":53,"./deviceApiCalls/__generated__/deviceApiCalls.js":57}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11235,7 +11256,7 @@ class EmailSignupHTMLTooltip extends _HTMLTooltip.default {
     var _device$inContextSign;
 
     this.device = device;
-    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email tooltip--email-signup\" hidden>\n        <h1>\n            Protect your inbox \uD83D\uDCAA I've caught trackers hiding in 85% of emails.\n        </h1>\n        <p>\n            Want me to hide your email address and remove hidden trackers before\n            forwarding messages to your inbox?\n        </p>\n        <div class=\"notice-controls\">\n            <a href=\"https://duckduckgo.com/email/start-incontext\" target=\"_blank\" class=\"primary js-get-email-signup\">\n                Get Email Protection\n            </a>\n            <button class=\"ghost js-dismiss-email-signup\">\n                ").concat((_device$inContextSign = device.inContextSignup) !== null && _device$inContextSign !== void 0 && _device$inContextSign.initiallyDismissed ? "Don't Ask Again" : 'Maybe Later', "\n            </button>\n        </div>\n    </div>\n</div>");
+    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email tooltip--email-signup\" hidden>\n        <h1>\n            Protect your inbox \uD83D\uDCAA I've caught trackers hiding in 85% of emails.\n        </h1>\n        <p>\n            Want me to hide your email address and remove hidden trackers before\n            forwarding messages to your inbox?\n        </p>\n        <div class=\"notice-controls\">\n            <a href=\"https://duckduckgo.com/email/start-incontext\" target=\"_blank\" class=\"primary js-get-email-signup\">\n                Get Email Protection\n            </a>\n            <button class=\"ghost js-dismiss-email-signup\">\n                ").concat((_device$inContextSign = device.inContextSignup) !== null && _device$inContextSign !== void 0 && _device$inContextSign.isInitiallyDismissed() ? "Don't Ask Again" : 'Maybe Later', "\n            </button>\n        </div>\n    </div>\n</div>");
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup');
     this.registerClickableButton(this.dismissEmailSignup, () => {
@@ -12368,7 +12389,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
-exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
+exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
+exports.isLocalNetwork = isLocalNetwork;
+exports.isValidTLD = isValidTLD;
+exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = void 0;
 
 var _matching = require("./Form/matching.js");
 
@@ -12799,8 +12823,32 @@ const getText = el => {
   if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value;
   return (0, _matching.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => child instanceof Text ? text + ' ' + child.textContent : text, ''));
 };
+/**
+ * Check if hostname is a local address
+ * @param {string} [hostname]
+ * @returns {boolean}
+ */
+
 
 exports.getText = getText;
+
+function isLocalNetwork() {
+  let hostname = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : window.location.hostname;
+  return ['localhost', '', '::1'].includes(hostname) || hostname.includes('127.0.0.1') || hostname.includes('192.168.') || hostname.startsWith('10.0.') || hostname.endsWith('.local') || hostname.endsWith('.internal');
+} // Extracted from lib/DDG/Util/Constants.pm
+
+
+const tldrs = /\.(?:c(?:o(?:m|op)?|at?|[iykgdmnxruhcfzvl])|o(?:rg|m)|n(?:et?|a(?:me)?|[ucgozrfpil])|e(?:d?u|[gechstr])|i(?:n(?:t|fo)?|[stqldroem])|m(?:o(?:bi)?|u(?:seum)?|i?l|[mcyvtsqhaerngxzfpwkd])|g(?:ov|[glqeriabtshdfmuywnp])|b(?:iz?|[drovfhtaywmzjsgbenl])|t(?:r(?:avel)?|[ncmfzdvkopthjwg]|e?l)|k[iemygznhwrp]|s[jtvberindlucygkhaozm]|u[gymszka]|h[nmutkr]|r[owesu]|d[kmzoej]|a(?:e(?:ro)?|r(?:pa)?|[qofiumsgzlwcnxdt])|p(?:ro?|[sgnthfymakwle])|v[aegiucn]|l[sayuvikcbrt]|j(?:o(?:bs)?|[mep])|w[fs]|z[amw]|f[rijkom]|y[eut]|qa)$/i;
+/**
+ * Check if hostname is a valid top-level domain
+ * @param {string} [hostname]
+ * @returns {boolean}
+ */
+
+function isValidTLD() {
+  let hostname = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : window.location.hostname;
+  return tldrs.test(hostname);
+}
 
 },{"./Form/matching.js":33}],54:[function(require,module,exports){
 "use strict";
