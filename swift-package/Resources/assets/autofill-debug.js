@@ -13520,7 +13520,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.__secret_do_not_use = exports.SUBMIT_BUTTON_SELECTOR = exports.FORM_INPUTS_SELECTOR = void 0;
-const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\nselect";
+const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\n[autocomplete=username],\nselect";
 exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
 exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
@@ -14131,7 +14131,7 @@ const defaultScannerOptions = {
   // How many inputs is too many on the page. If we detect that there's above
   // this maximum, then we don't scan the page. This will prevent slowdowns on
   // large pages which are unlikely to require autofill anyway.
-  maxInputsOnPage: 250
+  maxInputsOnPage: 100
 };
 /**
  * This allows:

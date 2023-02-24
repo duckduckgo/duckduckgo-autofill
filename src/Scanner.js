@@ -31,7 +31,7 @@ const defaultScannerOptions = {
     // How many inputs is too many on the page. If we detect that there's above
     // this maximum, then we don't scan the page. This will prevent slowdowns on
     // large pages which are unlikely to require autofill anyway.
-    maxInputsOnPage: 250
+    maxInputsOnPage: 100
 }
 
 /**

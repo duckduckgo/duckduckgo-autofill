@@ -198,3 +198,80 @@ exports[`performance should not scan if above maximum inputs 1`] = `
   </form>
 </body>
 `;
+
+exports[`performance should stop scanning if page grows above maximum inputs 1`] = `
+<body>
+  
+            
+  <form
+    action=""
+  >
+    
+                
+    <label
+      for="input-01"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-01"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-02"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-02"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-03"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-03"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-04"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-04"
+        type="text"
+      />
+    </label>
+    
+                
+    <label
+      for="input-05"
+    >
+      <input
+        data-ddg-inputtype="unknown"
+        id="input-05"
+        type="text"
+      />
+    </label>
+    
+            
+    <input
+      type="text"
+    />
+    <input
+      type="text"
+    />
+    <input
+      type="text"
+    />
+  </form>
+</body>
+`;
