@@ -12539,6 +12539,13 @@ const {
   TEXT_LENGTH_CUTOFF,
   ATTR_INPUT_TYPE
 } = _constants.constants;
+/** @type {{[K in keyof MatcherLists]?: { minWidth: number }} } */
+
+const dimensionBounds = {
+  email: {
+    minWidth: 40
+  }
+};
 /**
  * An abstraction around the concept of classifying input fields.
  *
@@ -12777,6 +12784,24 @@ class Matching {
     return selectors.join(', ');
   }
   /**
+   * Returns true if the field is visible and large enough
+   * @param {keyof MatcherLists} matchedType
+   * @param {HTMLInputElement} input
+   * @returns {boolean}
+   */
+
+
+  isInputLargeEnough(matchedType, input) {
+    const expectedDimensionBounds = dimensionBounds[matchedType];
+    if (!expectedDimensionBounds) return true;
+    const width = input.offsetWidth;
+    const height = input.offsetHeight; // Ignore hidden elements as we can't determine their dimensions
+
+    const isHidden = height === 0 && width === 0;
+    if (isHidden) return true;
+    return width >= expectedDimensionBounds.minWidth;
+  }
+  /**
    * Tries to infer the input type for an input
    *
    * @param {HTMLInputElement|HTMLSelectElement} input
@@ -12810,7 +12835,7 @@ class Matching {
         return 'credentials.password';
       }
 
-      if (this.subtypeFromMatchers('email', input)) {
+      if (this.subtypeFromMatchers('email', input) && this.isInputLargeEnough('email', input)) {
         if (opts.isLogin || opts.isHybrid) {
           // Show identities when supported and there are no credentials
           if (opts.supportsIdentitiesAutofill && !opts.hasCredentials) {
