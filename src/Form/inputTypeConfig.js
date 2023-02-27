@@ -1,4 +1,4 @@
-import { daxBase64 } from './logo-svg.js'
+import { daxBase64, daxGrayscaleBase64 } from './logo-svg.js'
 import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js'
 import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType} from './matching.js'
 import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
@@ -18,6 +18,14 @@ const getIdentitiesIcon = (input, {device}) => {
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
     const { isDDGApp, isFirefox } = device.globalConfig
     const subtype = getInputSubtype(input)
+
+    if (subtype === 'emailAddress' && device.inContextSignup?.isAvailable()) {
+        if (isDDGApp || isFirefox) {
+            return daxGrayscaleBase64
+        } else if (typeof window.chrome?.runtime !== 'undefined') {
+            return chrome.runtime.getURL('img/logo-small-grayscale.svg')
+        }
+    }
 
     if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
         if (isDDGApp || isFirefox) {
