@@ -19,6 +19,7 @@ export class InContextSignup {
     async refreshData () {
         const incontextSignupDismissedAt = await this.device.deviceApi.request(new GetIncontextSignupDismissedAtCall(null))
         this.permanentlyDismissedAt = incontextSignupDismissedAt.permanentlyDismissedAt
+        this.isInstalledRecently = incontextSignupDismissedAt.isInstalledRecently
     }
 
     isPermanentlyDismissed () {
@@ -34,7 +35,7 @@ export class InContextSignup {
     isAvailable () {
         const isEnabled = this.device.settings?.featureToggles.emailProtection_incontext_signup
         const isLoggedIn = this.device.isDeviceSignedIn()
-        return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain()
+        return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain() && this.isInstalledRecently
     }
 
     onIncontextSignup () {

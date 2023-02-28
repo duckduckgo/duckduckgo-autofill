@@ -13723,6 +13723,7 @@ class InContextSignup {
   async refreshData() {
     const incontextSignupDismissedAt = await this.device.deviceApi.request(new _deviceApiCalls.GetIncontextSignupDismissedAtCall(null));
     this.permanentlyDismissedAt = incontextSignupDismissedAt.permanentlyDismissedAt;
+    this.isInstalledRecently = incontextSignupDismissedAt.isInstalledRecently;
   }
 
   isPermanentlyDismissed() {
@@ -13740,7 +13741,7 @@ class InContextSignup {
 
     const isEnabled = (_this$device$settings = this.device.settings) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.featureToggles.emailProtection_incontext_signup;
     const isLoggedIn = this.device.isDeviceSignedIn();
-    return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain();
+    return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain() && this.isInstalledRecently;
   }
 
   onIncontextSignup() {
@@ -16960,7 +16961,7 @@ exports.GetIncontextSignupDismissedAtCall = GetIncontextSignupDismissedAtCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.incontextSignupSettingsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = void 0;
 
 var _zod = require("zod");
 
@@ -17167,7 +17168,8 @@ exports.setIncontextSignupPermanentlyDismissedAtSchema = setIncontextSignupPerma
 
 const getIncontextSignupDismissedAtSchema = _zod.z.object({
   success: _zod.z.object({
-    permanentlyDismissedAt: _zod.z.number().optional()
+    permanentlyDismissedAt: _zod.z.number().optional(),
+    isInstalledRecently: _zod.z.boolean().optional()
   })
 });
 
@@ -17186,12 +17188,6 @@ const autofillFeatureTogglesSchema = _zod.z.object({
 });
 
 exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
-
-const incontextSignupSettingsSchema = _zod.z.object({
-  permanentlyDismissedAt: _zod.z.number().optional()
-});
-
-exports.incontextSignupSettingsSchema = incontextSignupSettingsSchema;
 
 const getAliasParamsSchema = _zod.z.object({
   requiresUserPermission: _zod.z.boolean(),
@@ -17344,10 +17340,6 @@ const apiSchema = _zod.z.object({
   autofillSettings: _zod.z.record(_zod.z.unknown()).and(_zod.z.object({
     validatorsOnly: _zod.z.literal(true).optional(),
     resultValidator: autofillSettingsSchema.optional()
-  })).optional(),
-  incontextSignupSettings: _zod.z.record(_zod.z.unknown()).and(_zod.z.object({
-    validatorsOnly: _zod.z.literal(true).optional(),
-    resultValidator: incontextSignupSettingsSchema.optional()
   })).optional(),
   getAlias: _zod.z.record(_zod.z.unknown()).and(_zod.z.object({
     validatorsOnly: _zod.z.literal(true).optional(),

@@ -114,16 +114,6 @@
         "resultValidator": { "$ref": "./schemas/autofill-settings.json" }
       }
     },
-    "incontextSignupSettings": {
-      "type": "object",
-      "properties": {
-        "validatorsOnly": {
-          "type": "boolean",
-          "const": true
-        },
-        "resultValidator": { "$ref": "./schemas/incontext-signup-settings.json" }
-      }
-    },
     "getAlias": {
       "type": "object",
       "properties": {

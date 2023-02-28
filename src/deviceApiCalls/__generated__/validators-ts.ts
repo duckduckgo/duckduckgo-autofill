@@ -125,11 +125,6 @@ export interface API {
     resultValidator?: AutofillSettings;
     [k: string]: unknown;
   };
-  incontextSignupSettings?: {
-    validatorsOnly?: true;
-    resultValidator?: IncontextSignupSettings;
-    [k: string]: unknown;
-  };
   getAlias?: {
     validatorsOnly?: true;
     paramValidator?: GetAliasParams;
@@ -467,6 +462,7 @@ export interface SetIncontextSignupPermanentlyDismissedAt {
 export interface GetIncontextSignupDismissedAt {
   success: {
     permanentlyDismissedAt?: number;
+    isInstalledRecently?: boolean;
   };
 }
 /**
@@ -488,12 +484,6 @@ export interface AutofillFeatureToggles {
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
   third_party_credentials_provider?: boolean;
-}
-/**
- * Delivered as part of Runtime Configuration, but needs to live here since Runtime Configuration can contain settings for many features
- */
-export interface IncontextSignupSettings {
-  permanentlyDismissedAt?: number;
 }
 export interface GetAliasParams {
   requiresUserPermission: boolean;
