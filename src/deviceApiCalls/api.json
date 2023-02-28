@@ -91,12 +91,6 @@
         "paramsValidator": { "$ref":  "./schemas/sendJSPixel.params.json" }
       }
     },
-    "setIncontextSignupInitiallyDismissedAt": {
-      "type": "object",
-      "properties": {
-        "paramsValidator": { "$ref":  "./schemas/setIncontextSignupInitiallyDismissedAt.params.json" }
-      }
-    },
     "setIncontextSignupPermanentlyDismissedAt": {
       "type": "object",
       "properties": {

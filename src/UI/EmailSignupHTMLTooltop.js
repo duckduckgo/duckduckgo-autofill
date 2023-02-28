@@ -23,7 +23,7 @@ ${this.options.css}
                 Get Email Protection
             </a>
             <button class="ghost js-dismiss-email-signup">
-                ${device.inContextSignup?.isInitiallyDismissed() ? "Don't Ask Again" : 'Maybe Later'}
+                Don't Ask Again
             </button>
         </div>
     </div>

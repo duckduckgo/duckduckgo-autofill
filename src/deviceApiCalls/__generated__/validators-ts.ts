@@ -111,10 +111,6 @@ export interface API {
     paramsValidator?: SendJSPixelParams;
     [k: string]: unknown;
   };
-  setIncontextSignupInitiallyDismissedAt?: {
-    paramsValidator?: SetIncontextSignupInitiallyDismissedAt;
-    [k: string]: unknown;
-  };
   setIncontextSignupPermanentlyDismissedAt?: {
     paramsValidator?: SetIncontextSignupPermanentlyDismissedAt;
     [k: string]: unknown;
@@ -460,12 +456,6 @@ export interface CheckCredentialsProviderStatusResult {
   error?: GenericError;
 }
 /**
- * Sets the time that the in-context Email Protection sign-up message was initially dismissed
- */
-export interface SetIncontextSignupInitiallyDismissedAt {
-  value?: number;
-}
-/**
  * Sets the time that the in-context Email Protection sign-up message was permanently dismissed
  */
 export interface SetIncontextSignupPermanentlyDismissedAt {
@@ -476,7 +466,6 @@ export interface SetIncontextSignupPermanentlyDismissedAt {
  */
 export interface GetIncontextSignupDismissedAt {
   success: {
-    initiallyDismissedAt?: number;
     permanentlyDismissedAt?: number;
   };
 }
@@ -504,7 +493,6 @@ export interface AutofillFeatureToggles {
  * Delivered as part of Runtime Configuration, but needs to live here since Runtime Configuration can contain settings for many features
  */
 export interface IncontextSignupSettings {
-  initiallyDismissedAt?: number;
   permanentlyDismissedAt?: number;
 }
 export interface GetAliasParams {
