@@ -6466,9 +6466,13 @@ class Form {
   }
 
   shouldOpenTooltip(e, input) {
+    var _this$device$inContex;
+
     if (this.device.globalConfig.isApp) return true;
     if (this.device.globalConfig.isWindows) return true;
-    return !this.touched.has(input) && !input.classList.contains('ddg-autofilled') || (0, _autofillUtils.isEventWithinDax)(e, input);
+    if ((0, _autofillUtils.isEventWithinDax)(e, input)) return true;
+    if ((_this$device$inContex = this.device.inContextSignup) !== null && _this$device$inContex !== void 0 && _this$device$inContex.isAvailable()) return false;
+    return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
   }
 
   autofillInput(input, string, dataType) {
@@ -10043,7 +10047,8 @@ class InContextSignup {
     var _this$device$settings;
 
     const isEnabled = (_this$device$settings = this.device.settings) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.featureToggles.emailProtection_incontext_signup;
-    return isEnabled && !this.isPermanentlyDismissed() && this.isOnValidDomain();
+    const isLoggedIn = this.device.isDeviceSignedIn();
+    return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain();
   }
 
   onIncontextSignup() {

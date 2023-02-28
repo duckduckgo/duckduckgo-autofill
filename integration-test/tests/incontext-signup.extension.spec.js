@@ -19,7 +19,12 @@ test.describe('chrome extension', () => {
         await emailPage.navigate('https://example.com')
         const newPageOpening = new Promise(resolve => context.once('page', resolve))
 
+        // Confirm tooltip hidden after clicking the input
         await emailPage.clickIntoInput()
+        await incontextSignup.assertIsHidden()
+
+        // Confirm tooltip shows after clicking the Dax icon
+        await emailPage.clickDirectlyOnDax()
         await incontextSignup.assertIsShowing()
         await incontextSignup.getEmailProtection()
 
@@ -41,7 +46,7 @@ test.describe('chrome extension', () => {
         await emailPage.navigate('https://example.com')
 
         // Hide tooltip
-        await emailPage.clickIntoInput()
+        await emailPage.clickDirectlyOnDax()
         await incontextSignup.assertIsShowing()
         await incontextSignup.dismissTooltipWith('Maybe Later')
 

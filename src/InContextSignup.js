@@ -39,7 +39,8 @@ export class InContextSignup {
 
     isAvailable () {
         const isEnabled = this.device.settings?.featureToggles.emailProtection_incontext_signup
-        return isEnabled && !this.isPermanentlyDismissed() && this.isOnValidDomain()
+        const isLoggedIn = this.device.isDeviceSignedIn()
+        return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain()
     }
 
     onIncontextSignup () {
