@@ -47,7 +47,7 @@ class ExtensionInterface extends InterfacePrototype {
             return TOOLTIP_TYPES.EmailProtection
         }
 
-        if (this.settings.featureToggles.emailProtection_incontext_signup && this.inContextSignup?.permanentlyDismissed === false) {
+        if (this.inContextSignup?.isAvailable()) {
             return TOOLTIP_TYPES.EmailSignup
         }
 

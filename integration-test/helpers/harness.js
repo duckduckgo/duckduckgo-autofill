@@ -57,6 +57,20 @@ export function setupServer (port) {
 }
 
 /**
+ * @param {import("playwright").Page} page
+ * @param {string} domain
+ */
+export async function setupMockedDomain (page, domain) {
+    await page.route(`${domain}/**/*`, (route, request) => {
+        const { pathname } = new URL(request.url())
+        return route.fulfill({
+            status: 200,
+            body: readFileSync(join('.', pathname), 'utf8')
+        })
+    })
+}
+
+/**
  * Launch a chromium browser with the test extension pre-loaded.
  *
  * @param {typeof import("@playwright/test").test} test

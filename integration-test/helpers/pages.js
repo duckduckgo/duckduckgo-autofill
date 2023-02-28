@@ -578,13 +578,19 @@ export function loginPageMultistep (page, server, opts) {
  * A wrapper around interactions for `integration-test/pages/email-autofill.html`
  *
  * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {ServerWrapper} [server]
  */
 export function emailAutofillPage (page, server) {
     const {selectors} = constants.fields.email
     return {
-        async navigate () {
-            await page.goto(server.urlForPath(constants.pages['email-autofill']))
+        async navigate (domain) {
+            const emailAutofillPageName = constants.pages['email-autofill']
+            if (domain) {
+                const pagePath = `integration-test/pages/${emailAutofillPageName}`
+                await page.goto(new URL(pagePath, domain).href)
+            } else {
+                await page.goto(server.urlForPath(emailAutofillPageName))
+            }
         },
         async clickIntoInput () {
             const input = page.locator(selectors.identity)
