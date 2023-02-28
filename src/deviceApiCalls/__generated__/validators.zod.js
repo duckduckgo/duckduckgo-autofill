@@ -167,17 +167,12 @@ export const availableInputTypes1Schema = z.object({
     credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
 });
 
-export const setIncontextSignupInitiallyDismissedAtSchema = z.object({
-    value: z.number().optional()
-});
-
 export const setIncontextSignupPermanentlyDismissedAtSchema = z.object({
     value: z.number().optional()
 });
 
 export const getIncontextSignupDismissedAtSchema = z.object({
     success: z.object({
-        initiallyDismissedAt: z.number().optional(),
         permanentlyDismissedAt: z.number().optional()
     })
 });
@@ -195,7 +190,6 @@ export const autofillFeatureTogglesSchema = z.object({
 });
 
 export const incontextSignupSettingsSchema = z.object({
-    initiallyDismissedAt: z.number().optional(),
     permanentlyDismissedAt: z.number().optional()
 });
 
@@ -315,9 +309,6 @@ export const apiSchema = z.object({
     })).optional(),
     sendJSPixel: z.record(z.unknown()).and(z.object({
         paramsValidator: sendJSPixelParamsSchema.optional()
-    })).optional(),
-    setIncontextSignupInitiallyDismissedAt: z.record(z.unknown()).and(z.object({
-        paramsValidator: setIncontextSignupInitiallyDismissedAtSchema.optional()
     })).optional(),
     setIncontextSignupPermanentlyDismissedAt: z.record(z.unknown()).and(z.object({
         paramsValidator: setIncontextSignupPermanentlyDismissedAtSchema.optional()

@@ -45,15 +45,6 @@ test.describe('chrome extension', () => {
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 
-        // Hide tooltip
-        await emailPage.clickDirectlyOnDax()
-        await incontextSignup.assertIsShowing()
-        await incontextSignup.dismissTooltipWith('Maybe Later')
-
-        // Confirm only tooltip hidden
-        await incontextSignup.assertIsHidden()
-        await emailPage.assertDaxIconIsShowing()
-
         // Permanently dismiss tooltip
         await emailPage.clickDirectlyOnDax()
         await incontextSignup.assertIsShowing()
@@ -64,6 +55,6 @@ test.describe('chrome extension', () => {
         await emailPage.assertDaxIconIsHidden()
 
         // Confirm pixels triggered
-        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_dismiss_initial', 'incontext_show', 'incontext_dismiss_persisted'])
+        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_dismiss_persisted'])
     })
 })
