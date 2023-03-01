@@ -56,7 +56,8 @@ function init () {
         } else if (message.messageType === 'getIncontextSignupDismissedAt') {
             return sendResponse({
                 success: {
-                    permanentlyDismissedAt: incontextSignupPermanentlyDismissedAt
+                    permanentlyDismissedAt: incontextSignupPermanentlyDismissedAt,
+                    isInstalledRecently: true
                 }
             })
         } else if (message.messageType === 'setIncontextSignupPermanentlyDismissedAt') {

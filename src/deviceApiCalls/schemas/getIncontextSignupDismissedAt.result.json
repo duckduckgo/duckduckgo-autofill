@@ -11,6 +11,9 @@
             "properties": {
                 "permanentlyDismissedAt": {
                     "type": "number"
+                },
+                "isInstalledRecently": {
+                    "type": "boolean"
                 }
             },
             "required": []

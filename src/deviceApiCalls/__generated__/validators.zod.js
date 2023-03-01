@@ -173,7 +173,8 @@ export const setIncontextSignupPermanentlyDismissedAtSchema = z.object({
 
 export const getIncontextSignupDismissedAtSchema = z.object({
     success: z.object({
-        permanentlyDismissedAt: z.number().optional()
+        permanentlyDismissedAt: z.number().optional(),
+        isInstalledRecently: z.boolean().optional()
     })
 });
 
@@ -187,10 +188,6 @@ export const autofillFeatureTogglesSchema = z.object({
     credentials_saving: z.boolean().optional(),
     inlineIcon_credentials: z.boolean().optional(),
     third_party_credentials_provider: z.boolean().optional()
-});
-
-export const incontextSignupSettingsSchema = z.object({
-    permanentlyDismissedAt: z.number().optional()
 });
 
 export const getAliasParamsSchema = z.object({
@@ -320,10 +317,6 @@ export const apiSchema = z.object({
     autofillSettings: z.record(z.unknown()).and(z.object({
         validatorsOnly: z.literal(true).optional(),
         resultValidator: autofillSettingsSchema.optional()
-    })).optional(),
-    incontextSignupSettings: z.record(z.unknown()).and(z.object({
-        validatorsOnly: z.literal(true).optional(),
-        resultValidator: incontextSignupSettingsSchema.optional()
     })).optional(),
     getAlias: z.record(z.unknown()).and(z.object({
         validatorsOnly: z.literal(true).optional(),

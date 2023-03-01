@@ -10047,6 +10047,7 @@ class InContextSignup {
   async refreshData() {
     const incontextSignupDismissedAt = await this.device.deviceApi.request(new _deviceApiCalls.GetIncontextSignupDismissedAtCall(null));
     this.permanentlyDismissedAt = incontextSignupDismissedAt.permanentlyDismissedAt;
+    this.isInstalledRecently = incontextSignupDismissedAt.isInstalledRecently;
   }
 
   isPermanentlyDismissed() {
@@ -10064,7 +10065,7 @@ class InContextSignup {
 
     const isEnabled = (_this$device$settings = this.device.settings) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.featureToggles.emailProtection_incontext_signup;
     const isLoggedIn = this.device.isDeviceSignedIn();
-    return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain();
+    return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain() && this.isInstalledRecently;
   }
 
   onIncontextSignup() {
@@ -13284,7 +13285,7 @@ exports.GetIncontextSignupDismissedAtCall = GetIncontextSignupDismissedAtCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.incontextSignupSettingsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = void 0;
 const sendJSPixelParamsSchema = null;
 exports.sendJSPixelParamsSchema = sendJSPixelParamsSchema;
 const triggerContextSchema = null;
@@ -13319,8 +13320,6 @@ const getIncontextSignupDismissedAtSchema = null;
 exports.getIncontextSignupDismissedAtSchema = getIncontextSignupDismissedAtSchema;
 const autofillFeatureTogglesSchema = null;
 exports.autofillFeatureTogglesSchema = autofillFeatureTogglesSchema;
-const incontextSignupSettingsSchema = null;
-exports.incontextSignupSettingsSchema = incontextSignupSettingsSchema;
 const getAliasParamsSchema = null;
 exports.getAliasParamsSchema = getAliasParamsSchema;
 const getAliasResultSchema = null;
