@@ -65,7 +65,7 @@
       "properties": {
         "pixelName": {
           "type": "string",
-          "const": "incontext_get_email_protection"
+          "const": "incontext_primary_cta"
         }
       },
       "required": [
@@ -89,7 +89,7 @@
       "properties": {
         "pixelName": {
           "type": "string",
-          "const": "incontext_dismiss_initial"
+          "const": "incontext_close_x"
         }
       },
       "required": [
