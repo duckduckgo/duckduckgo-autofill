@@ -26,13 +26,13 @@ export type SendJSPixelParams =
       pixelName: "incontext_show";
     }
   | {
-      pixelName: "incontext_get_email_protection";
+      pixelName: "incontext_primary_cta";
     }
   | {
       pixelName: "incontext_dismiss_persisted";
     }
   | {
-      pixelName: "incontext_dismiss_initial";
+      pixelName: "incontext_close_x";
     };
 
 /**

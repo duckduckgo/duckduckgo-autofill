@@ -39,7 +39,7 @@ export class InContextSignup {
     }
 
     onIncontextSignup () {
-        this.device.firePixel({pixelName: 'incontext_get_email_protection'})
+        this.device.firePixel({pixelName: 'incontext_primary_cta'})
     }
 
     onIncontextSignupDismissed () {
@@ -47,5 +47,10 @@ export class InContextSignup {
         this.permanentlyDismissedAt = new Date().getTime()
         this.device.deviceApi.notify(new SetIncontextSignupPermanentlyDismissedAtCall({ value: this.permanentlyDismissedAt }))
         this.device.firePixel({pixelName: 'incontext_dismiss_persisted'})
+    }
+
+    onIncontextSignupClosed () {
+        this.device.activeForm?.dismissTooltip()
+        this.device.firePixel({pixelName: 'incontext_close_x'})
     }
 }

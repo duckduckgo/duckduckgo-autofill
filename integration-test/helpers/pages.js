@@ -5,7 +5,7 @@ import {mockedCalls} from './harness.js'
 const ATTR_AUTOFILL = 'data-ddg-autofill'
 
 export function incontextSignupPage (page) {
-    const getCallToAction = () => page.locator(`text=Get Email Protection`)
+    const getCallToAction = () => page.locator(`text=Protect My Email`)
     return {
         async assertIsShowing () {
             expect(await getCallToAction()).toBeVisible()
@@ -18,6 +18,10 @@ export function incontextSignupPage (page) {
         },
         async dismissTooltipWith (text) {
             const dismissTooltipButton = await page.locator(`text=${text}`)
+            await dismissTooltipButton.click({timeout: 500})
+        },
+        async closeTooltip () {
+            const dismissTooltipButton = await page.locator(`[aria-label=Close]`)
             await dismissTooltipButton.click({timeout: 500})
         }
     }

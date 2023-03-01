@@ -14,11 +14,11 @@ export const sendJSPixelParamsSchema = z.union([z.object({
     }), z.object({
         pixelName: z.literal("incontext_show")
     }), z.object({
-        pixelName: z.literal("incontext_get_email_protection")
+        pixelName: z.literal("incontext_primary_cta")
     }), z.object({
         pixelName: z.literal("incontext_dismiss_persisted")
     }), z.object({
-        pixelName: z.literal("incontext_dismiss_initial")
+        pixelName: z.literal("incontext_close_x")
     })]);
 
 export const triggerContextSchema = z.object({
