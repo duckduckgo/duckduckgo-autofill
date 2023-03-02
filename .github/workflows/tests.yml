@@ -6,11 +6,10 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js 16
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16.15.1
+          node-version-file: '.nvmrc'
       - uses: actions/cache@v2
         with:
           path: ~/.npm
