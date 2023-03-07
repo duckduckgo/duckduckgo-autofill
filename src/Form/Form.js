@@ -7,7 +7,7 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isVisible, buttonMatchesFormType,
-    safeExecute, getText
+    safeExecute, getText, wasAutofilledByChrome
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
@@ -375,6 +375,8 @@ class Form {
         if (hasIcon) {
             this.addAutofillStyles(input)
             this.addListener(input, 'mousemove', (e) => {
+                if (wasAutofilledByChrome(input)) return
+
                 if (isEventWithinDax(e, e.target)) {
                     addInlineStyles(e.target, {'cursor': 'pointer'})
                 } else {
@@ -418,6 +420,8 @@ class Form {
 
             const input = e.target
             let click = null
+
+            if (wasAutofilledByChrome(input)) return
 
             if (!canBeInteractedWith(input)) return
 
