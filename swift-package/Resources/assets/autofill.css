@@ -264,6 +264,7 @@ hr:first-child {
 
 /* Email Protection signup notice */
 :not(.top-autofill) .tooltip--email-signup {
+    text-align: left;
     color: #222222;
     padding: 16px 20px;
     width: 380px;
@@ -291,6 +292,7 @@ hr:first-child {
     border: 0;
     cursor: pointer;
     display: inline-block;
+    font-family: inherit;
     font-style: normal;
     font-weight: bold;
     padding: 8px 12px;
