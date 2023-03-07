@@ -54,6 +54,7 @@ function createGlobalConfig (overrides) {
     const isMobileApp = ['ios', 'android'].includes(userPreferences?.platform.name) || isAndroid
     const isFirefox = navigator.userAgent.includes('Firefox')
     const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX))
+    const isExtension = Boolean(window.chrome)
 
     const config = {
         isApp,
@@ -61,6 +62,7 @@ function createGlobalConfig (overrides) {
         isAndroid,
         isFirefox,
         isMobileApp,
+        isExtension,
         isTopFrame,
         isWindows,
         secret,

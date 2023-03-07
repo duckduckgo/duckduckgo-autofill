@@ -6204,6 +6204,9 @@ class Form {
 
   removeInputHighlight(input) {
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesAutofilled)(input, this));
+    (0, _autofillUtils.removeInlineStyles)(input, {
+      'cursor': 'pointer'
+    });
     input.classList.remove('ddg-autofilled');
     this.addAutofillStyles(input);
   }
@@ -6395,10 +6398,19 @@ class Form {
       this.addAutofillStyles(input);
       this.addListener(input, 'mousemove', e => {
         if ((0, _autofillUtils.isEventWithinDax)(e, e.target)) {
-          e.target.style.setProperty('cursor', 'pointer', 'important');
+          (0, _autofillUtils.addInlineStyles)(e.target, {
+            'cursor': 'pointer'
+          });
         } else {
-          e.target.style.removeProperty('cursor');
+          (0, _autofillUtils.removeInlineStyles)(e.target, {
+            'cursor': 'pointer'
+          });
         }
+      });
+      this.addListener(input, 'mouseleave', e => {
+        (0, _autofillUtils.removeInlineStyles)(e.target, {
+          'cursor': 'pointer'
+        });
       });
     }
 
@@ -6447,10 +6459,13 @@ class Form {
       }
 
       if (this.shouldOpenTooltip(e, input)) {
-        if (this.device.globalConfig.isMobileApp && // Avoid the icon capturing clicks on small fields making it impossible to focus
+        // On mobile and extensions we don't trigger the focus event to avoid
+        // keyboard flashing and conflicts with browsers' own tooltips
+        if ((this.device.globalConfig.isMobileApp || this.device.globalConfig.isExtension) && // Avoid the icon capturing clicks on small fields making it impossible to focus
         input.offsetWidth > 50 && (0, _autofillUtils.isEventWithinDax)(e, input)) {
           e.preventDefault();
           e.stopImmediatePropagation();
+          input.blur();
         }
 
         this.touched.add(input);
@@ -12988,12 +13003,14 @@ function createGlobalConfig(overrides) {
   const isMobileApp = ['ios', 'android'].includes(userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) || isAndroid;
   const isFirefox = navigator.userAgent.includes('Firefox');
   const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
+  const isExtension = Boolean(window.chrome);
   const config = {
     isApp,
     isDDGApp,
     isAndroid,
     isFirefox,
     isMobileApp,
+    isExtension,
     isTopFrame,
     isWindows,
     secret,

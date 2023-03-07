@@ -428,14 +428,17 @@ class Form {
             }
 
             if (this.shouldOpenTooltip(e, input)) {
+                // On mobile and extensions we don't trigger the focus event to avoid
+                // keyboard flashing and conflicts with browsers' own tooltips
                 if (
-                    this.device.globalConfig.isMobileApp &&
+                    (this.device.globalConfig.isMobileApp || this.device.globalConfig.isExtension) &&
                     // Avoid the icon capturing clicks on small fields making it impossible to focus
                     input.offsetWidth > 50 &&
                     isEventWithinDax(e, input)
                 ) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
+                    input.blur()
                 }
 
                 this.touched.add(input)
