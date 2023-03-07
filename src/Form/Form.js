@@ -196,6 +196,7 @@ class Form {
 
     removeInputHighlight (input) {
         removeInlineStyles(input, getIconStylesAutofilled(input, this))
+        removeInlineStyles(input, {'cursor': 'pointer'})
         input.classList.remove('ddg-autofilled')
         this.addAutofillStyles(input)
     }
@@ -375,10 +376,13 @@ class Form {
             this.addAutofillStyles(input)
             this.addListener(input, 'mousemove', (e) => {
                 if (isEventWithinDax(e, e.target)) {
-                    e.target.style.setProperty('cursor', 'pointer', 'important')
+                    addInlineStyles(e.target, {'cursor': 'pointer'})
                 } else {
-                    e.target.style.removeProperty('cursor')
+                    removeInlineStyles(e.target, {'cursor': 'pointer'})
                 }
+            })
+            this.addListener(input, 'mouseleave', (e) => {
+                removeInlineStyles(e.target, {'cursor': 'pointer'})
             })
         }
 
