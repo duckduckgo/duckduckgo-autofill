@@ -7954,26 +7954,23 @@ const getIdentitiesIcon = (input, _ref) => {
 
   const {
     isDDGApp,
-    isFirefox
+    isFirefox,
+    isExtension
   } = device.globalConfig;
   const subtype = (0, _matching.getInputSubtype)(input);
 
   if (subtype === 'emailAddress' && (_device$inContextSign = device.inContextSignup) !== null && _device$inContextSign !== void 0 && _device$inContextSign.isAvailable()) {
-    var _window$chrome;
-
     if (isDDGApp || isFirefox) {
       return _logoSvg.daxGrayscaleBase64;
-    } else if (typeof ((_window$chrome = window.chrome) === null || _window$chrome === void 0 ? void 0 : _window$chrome.runtime) !== 'undefined') {
+    } else if (isExtension) {
       return chrome.runtime.getURL('img/logo-small-grayscale.svg');
     }
   }
 
   if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
-    var _window$chrome2;
-
     if (isDDGApp || isFirefox) {
       return _logoSvg.daxBase64;
-    } else if (typeof ((_window$chrome2 = window.chrome) === null || _window$chrome2 === void 0 ? void 0 : _window$chrome2.runtime) !== 'undefined') {
+    } else if (device.globalConfig.isExtension) {
       return chrome.runtime.getURL('img/logo-small.svg');
     }
   }
@@ -13022,8 +13019,9 @@ function createGlobalConfig(overrides) {
 
   const isMobileApp = ['ios', 'android'].includes(userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) || isAndroid;
   const isFirefox = navigator.userAgent.includes('Firefox');
-  const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX));
-  const isExtension = Boolean(window.chrome) || isFirefox;
+  const isDDGDomain = Boolean(window.location.href.match(DDG_DOMAIN_REGEX)); // @ts-ignore
+
+  const isExtension = (userPreferences === null || userPreferences === void 0 ? void 0 : userPreferences.platform.name) === 'extension';
   const config = {
     isApp,
     isDDGApp,
@@ -13743,6 +13741,9 @@ async function extensionSpecificRuntimeConfiguration(deviceApi) {
       contentScope: contentScope,
       // @ts-ignore
       userPreferences: {
+        platform: {
+          name: 'extension'
+        },
         features: {
           autofill: {
             settings: {

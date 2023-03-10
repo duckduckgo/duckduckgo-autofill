@@ -57,6 +57,9 @@ async function extensionSpecificRuntimeConfiguration (deviceApi) {
             contentScope: contentScope,
             // @ts-ignore
             userPreferences: {
+                platform: {
+                    name: 'extension'
+                },
                 features: {
                     autofill: {
                         settings: {
