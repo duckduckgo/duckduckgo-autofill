@@ -607,6 +607,14 @@ export function emailAutofillPage (page, server) {
             if (!box) throw new Error('unreachable')
             await input.click({position: {x: box.width - (box.height / 2), y: box.height / 2}})
         },
+        async assertInputHasFocus () {
+            const input = page.locator(selectors.identity)
+            await expect(input).toBeFocused()
+        },
+        async assertInputNotFocused () {
+            const input = page.locator(selectors.identity)
+            await expect(input).not.toBeFocused()
+        },
         async assertEmailValue (emailAddress) {
             const email = page.locator(selectors.identity)
             await expect(email).toHaveValue(emailAddress)
