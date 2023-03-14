@@ -16,13 +16,13 @@ const getIdentitiesIcon = (input, {device}) => {
     if (!canBeInteractedWith(input)) return ''
 
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
-    const { isDDGApp, isFirefox } = device.globalConfig
+    const { isDDGApp, isFirefox, isExtension } = device.globalConfig
     const subtype = getInputSubtype(input)
 
     if (subtype === 'emailAddress' && device.inContextSignup?.isAvailable()) {
         if (isDDGApp || isFirefox) {
             return daxGrayscaleBase64
-        } else if (typeof window.chrome?.runtime !== 'undefined') {
+        } else if (isExtension) {
             return chrome.runtime.getURL('img/logo-small-grayscale.svg')
         }
     }
@@ -30,7 +30,7 @@ const getIdentitiesIcon = (input, {device}) => {
     if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
         if (isDDGApp || isFirefox) {
             return daxBase64
-        } else if (typeof window.chrome?.runtime !== 'undefined') {
+        } else if (device.globalConfig.isExtension) {
             return chrome.runtime.getURL('img/logo-small.svg')
         }
     }

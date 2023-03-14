@@ -22,9 +22,11 @@ test.describe('chrome extension', () => {
         // Confirm tooltip hidden after clicking the input
         await emailPage.clickIntoInput()
         await incontextSignup.assertIsHidden()
+        await emailPage.assertInputHasFocus()
 
         // Confirm tooltip shows after clicking the Dax icon
         await emailPage.clickDirectlyOnDax()
+        await emailPage.assertInputNotFocused()
         await incontextSignup.assertIsShowing()
         await incontextSignup.getEmailProtection()
 
