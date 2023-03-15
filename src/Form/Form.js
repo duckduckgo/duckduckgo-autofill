@@ -7,7 +7,7 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isVisible, buttonMatchesFormType,
-    safeExecute, getText
+    safeExecute, getText, wasAutofilledByChrome
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
@@ -196,6 +196,7 @@ class Form {
 
     removeInputHighlight (input) {
         removeInlineStyles(input, getIconStylesAutofilled(input, this))
+        removeInlineStyles(input, {'cursor': 'pointer'})
         input.classList.remove('ddg-autofilled')
         this.addAutofillStyles(input)
     }
@@ -374,11 +375,16 @@ class Form {
         if (hasIcon) {
             this.addAutofillStyles(input)
             this.addListener(input, 'mousemove', (e) => {
+                if (wasAutofilledByChrome(input)) return
+
                 if (isEventWithinDax(e, e.target)) {
-                    e.target.style.setProperty('cursor', 'pointer', 'important')
+                    addInlineStyles(e.target, {'cursor': 'pointer'})
                 } else {
-                    e.target.style.removeProperty('cursor')
+                    removeInlineStyles(e.target, {'cursor': 'pointer'})
                 }
+            })
+            this.addListener(input, 'mouseleave', (e) => {
+                removeInlineStyles(e.target, {'cursor': 'pointer'})
             })
         }
 
@@ -415,6 +421,8 @@ class Form {
             const input = e.target
             let click = null
 
+            if (wasAutofilledByChrome(input)) return
+
             if (!canBeInteractedWith(input)) return
 
             // Checks for pointerdown event
@@ -428,14 +436,17 @@ class Form {
             }
 
             if (this.shouldOpenTooltip(e, input)) {
+                // On mobile and extensions we don't trigger the focus event to avoid
+                // keyboard flashing and conflicts with browsers' own tooltips
                 if (
-                    this.device.globalConfig.isMobileApp &&
+                    (this.device.globalConfig.isMobileApp || this.device.globalConfig.isExtension) &&
                     // Avoid the icon capturing clicks on small fields making it impossible to focus
                     input.offsetWidth > 50 &&
                     isEventWithinDax(e, input)
                 ) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
+                    input.blur()
                 }
 
                 this.touched.add(input)

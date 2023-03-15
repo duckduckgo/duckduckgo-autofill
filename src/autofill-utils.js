@@ -378,6 +378,20 @@ function isValidTLD (hostname = window.location.hostname) {
     return tldrs.test(hostname)
 }
 
+/**
+ * Chrome's UA adds styles using this selector when using the built-in autofill
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
+const wasAutofilledByChrome = (input) => {
+    try {
+        // Other browsers throw because the selector is invalid
+        return input.matches('input:-internal-autofill-selected')
+    } catch (e) {
+        return false
+    }
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -399,5 +413,6 @@ export {
     buttonMatchesFormType,
     getText,
     isLocalNetwork,
-    isValidTLD
+    isValidTLD,
+    wasAutofilledByChrome
 }
