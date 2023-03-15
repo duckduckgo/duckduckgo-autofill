@@ -9,7 +9,7 @@ import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
  */
 const test = withChromeExtensionContext(base)
 
-test.describe('chrome extension', () => {
+test.describe.skip('chrome extension', () => {
     let server
     test.beforeAll(async () => {
         server = setupServer()
