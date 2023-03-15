@@ -7,16 +7,24 @@ import { CSS_STYLES } from './styles/styles.js'
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
+ * @property {(top: number, left: number) => string} [caretPositionClass]
  * @property {(details: {height: number, width: number}) => void} [setSize] - if this is set, it will be called initially once + every times the size changes
  * @property {() => void} remove
  * @property {string} css
  * @property {boolean} checkVisibility
  */
 
+/**
+ * @typedef {object}  TransformRuleObj
+ * @property {HTMLTooltipOptions['caretPositionClass']} getRuleString
+ * @property {number | null} index
+ */
+
 /** @type {import('./HTMLTooltip.js').HTMLTooltipOptions} */
 export const defaultOptions = {
     wrapperClass: '',
-    tooltipPositionClass: (top, left) => `.wrapper {transform: translate(${left}px, ${top}px);}`,
+    tooltipPositionClass: (top, left) => `.tooltip {transform: translate(${left}px, ${top}px);}`,
+    caretPositionClass: (top, left) => `.tooltip--email__caret {transform: translate(${left}px, ${top}px);}`,
     css: `<style>${CSS_STYLES}</style>`,
     setSize: undefined,
     remove: () => { /** noop */ },
@@ -34,6 +42,7 @@ export class HTMLTooltip {
      * @param {HTMLTooltipOptions} options
      */
     constructor (config, inputType, getPosition, options) {
+        this.name = 'HTMLTooltip'
         this.options = options
         this.shadow = document.createElement('ddg-autofill').attachShadow({
             mode: options.testMode
@@ -53,6 +62,22 @@ export class HTMLTooltip {
         // @ts-ignore how to narrow this.host to HTMLElement?
         addInlineStyles(this.host, forcedVisibilityStyles)
         this.count = 0
+        /**
+         * @type {{
+         *   'tooltip': TransformRuleObj,
+         *   'caret': TransformRuleObj
+         * }}
+         */
+        this.transformRules = {
+            caret: {
+                getRuleString: this.options.caretPositionClass,
+                index: null
+            },
+            tooltip: {
+                getRuleString: this.options.tooltipPositionClass,
+                index: null
+            }
+        }
     }
     append () {
         document.body.appendChild(this.host)
@@ -93,13 +118,22 @@ export class HTMLTooltip {
             const {left, bottom} = this.getPosition()
 
             if (left !== this.left || bottom !== this.top) {
-                this.updatePosition({left, top: bottom})
+                this.updatePositions({left, top: bottom})
             }
 
             this.animationFrame = null
         })
     }
-    updatePosition ({left, top}) {
+
+    /**
+     *
+     * @param {'tooltip' | 'caret'} element
+     * @param {{
+     *     left: number,
+     *     top: number
+     * }} coords
+     */
+    updatePosition (element, {left, top}) {
         const shadow = this.shadow
         // If the stylesheet is not loaded wait for load (Chrome bug)
         if (!shadow.styleSheets.length) {
@@ -110,17 +144,68 @@ export class HTMLTooltip {
         this.left = left
         this.top = top
 
-        if (this.transformRuleIndex && shadow.styleSheets[0].rules[this.transformRuleIndex]) {
-            // If we have already set the rule, remove it…
-            shadow.styleSheets[0].deleteRule(this.transformRuleIndex)
+        const ruleObj = this.transformRules[element]
+
+        if (ruleObj.index) {
+            if (shadow.styleSheets[0].rules[ruleObj.index]) {
+                // If we have already set the rule, remove it…
+                shadow.styleSheets[0].deleteRule(ruleObj.index)
+            }
         } else {
             // …otherwise, set the index as the very last rule
-            this.transformRuleIndex = shadow.styleSheets[0].rules.length
+            ruleObj.index = shadow.styleSheets[0].rules.length
         }
 
-        let cssRule = this.options.tooltipPositionClass?.(top, left)
+        const cssRule = ruleObj.getRuleString?.(top, left)
         if (typeof cssRule === 'string') {
-            shadow.styleSheets[0].insertRule(cssRule, this.transformRuleIndex)
+            shadow.styleSheets[0].insertRule(cssRule, ruleObj.index)
+        }
+
+
+
+        // this.transformRuleIndexes.forEach((ruleIndex) => {
+        //     if (shadow.styleSheets[0].rules[ruleIndex]) {
+        //         // If we have already set the rule, remove it…
+        //         shadow.styleSheets[0].deleteRule(ruleIndex)
+        //     }
+        // })
+        // this.transformRuleIndexes = [shadow.styleSheets[0].rules.length, shadow.styleSheets[0].rules.length + 1]
+        //
+        // // if (this.transformRuleIndex && shadow.styleSheets[0].rules[this.transformRuleIndex]) {
+        // //     // If we have already set the rule, remove it…
+        // //     shadow.styleSheets[0].deleteRule(this.transformRuleIndex)
+        // // } else {
+        // //     // …otherwise, set the index as the very last rule
+        // //     this.transformRuleIndex = shadow.styleSheets[0].rules.length
+        // // }
+        //
+        // const tooltipCssRule = this.options.tooltipPositionClass?.(top, left)
+        // const caretCssRule = this.options.caretPositionClass?.(top, left)
+        // if (typeof caretCssRule === 'string') {
+        //     shadow.styleSheets[0].insertRule(caretCssRule, this.transformRuleIndexes[0])
+        // }
+        // if (typeof tooltipCssRule === 'string') {
+        //     shadow.styleSheets[0].insertRule(tooltipCssRule, this.transformRuleIndexes[1])
+        // }
+
+        if (element === 'tooltip') {
+            const tooltipBoundingBox = this.tooltip.getBoundingClientRect()
+            if (tooltipBoundingBox.left < 0) {
+                const temp = (window.innerWidth - tooltipBoundingBox.width) / 2;
+                const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + temp
+
+                this.updatePosition(element, {left: overriddenLeftPosition, top})
+            }
+        }
+    }
+    /**
+     * Update all relevant positions
+     * @param {{left: number, top: number}} coords
+     */
+    updatePositions (coords) {
+        this.updatePosition('tooltip', coords)
+        if (this.name !== 'HTMLTooltip') {
+            this.updatePosition('caret', coords)
         }
     }
     ensureIsLastInDOM () {

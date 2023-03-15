@@ -1,6 +1,7 @@
 import HTMLTooltip from './HTMLTooltip.js'
 
 class EmailSignupHTMLTooltip extends HTMLTooltip {
+    name = 'EmailSignupHTMLTooltip'
     /**
      * @param {import("../DeviceInterface/InterfacePrototype").default} device
      */
