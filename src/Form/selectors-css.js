@@ -22,6 +22,8 @@ input[type=email],
 input[type=text][aria-label*=email i]:not([aria-label*=search i]),
 input:not([type])[aria-label*=email i]:not([aria-label*=search i]),
 input[name=username][type=email],
+input[autocomplete=username][type=email],
+input[autocomplete=username][placeholder*=email i],
 input[autocomplete=email]`
 
 // We've seen non-standard types like 'user'. This selector should get them, too
