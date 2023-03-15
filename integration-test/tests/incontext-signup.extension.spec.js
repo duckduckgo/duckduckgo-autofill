@@ -1,6 +1,6 @@
 import {forwardConsoleMessages, withChromeExtensionContext, setupMockedDomain} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
-import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
+import {emailAutofillPage, incontextSignupPage, incontextSignupPageWithinIframe} from '../helpers/pages.js'
 
 /**
  *  Tests for email autofill in chrome extension.
@@ -79,5 +79,16 @@ test.describe('chrome extension', () => {
 
         // Confirm pixels triggered
         await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_close_x'])
+    })
+
+    test('should display properly in iframes with small width', async ({page}) => {
+        forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
+
+        const pageWithIframe = incontextSignupPageWithinIframe(page)
+        await pageWithIframe.navigate('https://example.com')
+
+        await pageWithIframe.clickDirectlyOnDax()
+        await pageWithIframe.assertTooltipWithinFrame()
     })
 })

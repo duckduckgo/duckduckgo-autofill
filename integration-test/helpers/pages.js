@@ -27,6 +27,31 @@ export function incontextSignupPage (page) {
     }
 }
 
+export function incontextSignupPageWithinIframe (page, server) {
+    return {
+        async navigate (domain) {
+            const pageName = constants.pages['iframeContainer']
+            if (domain) {
+                const pagePath = `integration-test/pages/${pageName}`
+                await page.goto(new URL(pagePath, domain).href)
+            } else {
+                await page.goto(server.urlForPath(pageName))
+            }
+        },
+        async clickDirectlyOnDax () {
+            const input = await page.frameLocator('iframe').locator('input#email')
+            const box = await input.boundingBox()
+            if (!box) throw new Error('unreachable')
+            await input.click({position: {x: box.width - (box.height / 2), y: box.height / 2}})
+        },
+        async assertTooltipWithinFrame () {
+            const tooltip = await page.frameLocator('iframe').locator('.tooltip--email')
+            await expect(tooltip).toBeVisible()
+            await expect(tooltip).toBeInViewport({ ratio: 1 })
+        }
+    }
+}
+
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
  *
