@@ -49,6 +49,7 @@ export function signupPage (page, server) {
             const [, generatedPassword] = passwordButtonText.split('\n')
 
             if (!generatedPassword.trim()) {
+                console.log(`password text was |${passwordButtonText}|`, passwordButtonText);
                 throw new Error('unreachable - password must not be empty')
             }
 

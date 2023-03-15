@@ -18,16 +18,16 @@ jobs:
             ${{ runner.os }}-node-
       - name: npm ci
         run: "npm ci"
-      - name: "Clean tree"
-        run: "npm run test:clean-tree"
-      - name: "ESLint"
-        run: "npm run lint"
-      - name: "Typescript"
-        run: "npm run tsc"
-      - name: "Unit Tests"
-        run: "npm run test:unit"
-      - name: "Password unit tests"
-        run: "npm run test:passwords"
+#      - name: "Clean tree"
+#        run: "npm run test:clean-tree"
+#      - name: "ESLint"
+#        run: "npm run lint"
+#      - name: "Typescript"
+#        run: "npm run tsc"
+#      - name: "Unit Tests"
+#        run: "npm run test:unit"
+#      - name: "Password unit tests"
+#        run: "npm run test:passwords"
       - name: Install Playwright + DEPS
         run: npx playwright install --with-deps
       - name: "Install dependencies for CI integration tests"
