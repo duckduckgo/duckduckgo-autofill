@@ -49,7 +49,7 @@ export function signupPage (page, server) {
             const [, generatedPassword] = passwordButtonText.split('\n')
 
             if (!generatedPassword.trim()) {
-                console.log(`password text was |${passwordButtonText}|`, passwordButtonText);
+                console.log(`password text was |${passwordButtonText}|`, passwordButtonText)
                 throw new Error('unreachable - password must not be empty')
             }
 
@@ -198,10 +198,12 @@ export function loginPage (page, server, opts = {}) {
             await passwordField.click()
         },
         async fieldsDoNotContainIcons () {
-            const styles1 = await page.locator('#email').getAttribute('style')
-            const styles2 = await page.locator('#password').getAttribute('style')
-            expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
-            expect(styles2 || '').not.toContain('data:image/svg+xml;base64,')
+            await page.waitForFunction(() => {
+                const styles1 = document.querySelector('#email')?.getAttribute('style') || '';
+                const styles2 = document.querySelector('#password')?.getAttribute('style') || '';
+                return styles1.indexOf('data:image/svg+xml;base64,') === -1
+                    && styles2.indexOf('data:image/svg+xml;base64,') === -1
+            })
         },
         async fieldsContainIcons () {
             // don't make assertions until the element is both found + has a none-empty 'style' attribute
@@ -219,14 +221,18 @@ export function loginPage (page, server, opts = {}) {
         },
         async emailHasDaxPasswordNoIcon () {
             await this.emailFieldShowsDax()
-            const passwordStyle = await page.locator('#password').getAttribute('style')
-            expect(passwordStyle || '').not.toContain('data:image/svg+xml;base64,')
+            await page.waitForFunction(() => {
+                const styles2 = document.querySelector('#password')?.getAttribute('style') || '';
+                return styles2.indexOf('data:image/svg+xml;base64,') === -1
+            })
         },
         async onlyPasswordFieldHasIcon () {
-            const styles1 = await page.locator('#email').getAttribute('style')
-            const styles2 = await page.locator('#password').getAttribute('style')
-            expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
-            expect(styles2 || '').toContain(constants.iconMatchers.key)
+            await page.waitForFunction((constants) => {
+                const styles1 = document.querySelector('#email')?.getAttribute('style') || '';
+                const styles2 = document.querySelector('#password')?.getAttribute('style') || '';
+                return styles1.indexOf('data:image/svg+xml;base64,') === -1
+                    && styles2.indexOf(constants.iconMatchers.key) > -1
+            }, constants)
         },
         /**
          * @param {string} username
@@ -614,12 +620,12 @@ export function emailAutofillPage (page, server) {
             expect(firedPixels).toEqual(pixels)
         },
         async assertExtensionPixelsCaptured (expectedPixels) {
-            let [backgroundPage] = await page.context().backgroundPages()
-            const backgroundPagePixels = await backgroundPage.evaluateHandle(() => {
-                // eslint-disable-next-line no-undef
-                return globalThis.pixels
-            })
+            let [backgroundPage] = page.context().backgroundPages()
+            await backgroundPage.waitForFunction((expectedPixels) => {
+                return globalThis.pixels?.length === expectedPixels.length
+            }, expectedPixels)
 
+            const backgroundPagePixels = await backgroundPage.evaluateHandle(() => globalThis.pixels)
             const pixels = await backgroundPagePixels.jsonValue()
             expect(pixels).toEqual(expectedPixels)
         },
