@@ -239,7 +239,7 @@ export function loginPage (page, server, opts = {}) {
          * @return {Promise<void>}
          */
         async selectFirstCredential (username) {
-            const decoratedEmailField = `#email[data-ddg-inputtype="credentials.username"]`;
+            const decoratedEmailField = `#email[data-ddg-inputtype="credentials.username"]`
             if (clickLabel) {
                 await page.waitForSelector(decoratedEmailField)
                 const label = page.locator('label[for="email"]')
