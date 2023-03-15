@@ -1,7 +1,12 @@
-import {forwardConsoleMessages, setupServer, withChromeExtensionContext, withEmailProtectionExtensionSignedInAs} from '../helpers/harness.js'
+import {
+    forwardConsoleMessages, performanceEntries,
+    setupServer,
+    withChromeExtensionContext,
+    withEmailProtectionExtensionSignedInAs
+} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage} from '../helpers/pages.js'
+import {emailAutofillPage, scannerPerf} from '../helpers/pages.js'
 import { stripDuckExtension } from '../helpers/utils.js'
 
 /**
@@ -60,5 +65,23 @@ test.describe('chrome extension', () => {
 
         // assert that the background page received  pixel
         await emailPage.assertExtensionPixelsCaptured(['autofill_personal_address', 'autofill_private_address'])
+    })
+    test('scanner performance', async ({page}) => {
+        await forwardConsoleMessages(page)
+
+        // scanner perf page
+        const scanner = scannerPerf(page, server)
+        await scanner.navigate()
+
+        // grab the performance entries that are wrapped around the scanner
+        const entries = await performanceEntries(page, 'scanner:init')
+        expect(entries).toHaveLength(1)
+
+        // we only care about the first one (for now)
+        const entry = entries[0]
+
+        // note: 500 is too high here, but it ensures it passes on all machines.
+        // The important part is that before this test it took multiple seconds, so this is still valid
+        expect(entry.duration).toBeLessThan(500)
     })
 })

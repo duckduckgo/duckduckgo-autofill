@@ -6348,7 +6348,8 @@ class Form {
       isLogin: this.isLogin,
       isHybrid: this.isHybrid,
       hasCredentials: Boolean((_this$device$settings = this.device.settings.availableInputTypes.credentials) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.username),
-      supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
+      supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities,
+      supportsCreditCardsAutofill: this.device.settings.featureToggles.inputType_creditCards
     };
     this.matching.setInputType(input, this.form, opts);
     const mainInputType = (0, _matching.getInputMainType)(input);
@@ -9143,10 +9144,10 @@ class Matching {
       return presetType;
     }
 
-    this.setActiveElementStrings(input, formEl); // // For CC forms we run aggressive matches, so we want to make sure we only
-    // // run them on actual CC forms to avoid false positives and expensive loops
+    this.setActiveElementStrings(input, formEl); // For CC forms we run aggressive matches, so we want to make sure we only
+    // run them on actual CC forms to avoid false positives and expensive loops
 
-    if (this.isCCForm(formEl)) {
+    if (opts.supportsCreditCardsAutofill && this.isCCForm(formEl)) {
       const subtype = this.subtypeFromMatchers('cc', input);
 
       if (subtype && isValidCreditCardSubtype(subtype)) {
@@ -9190,7 +9191,8 @@ class Matching {
    *   isLogin?: boolean,
    *   isHybrid?: boolean,
    *   hasCredentials?: boolean,
-   *   supportsIdentitiesAutofill?: boolean
+   *   supportsIdentitiesAutofill?: boolean,
+   *   supportsCreditCardsAutofill?: boolean,
    * }} SetInputTypeOpts
    */
 

@@ -294,7 +294,13 @@ describe('Test the form class reading values correctly', () => {
             expValues
         }) => {
         const formEl = attachAndReturnGenericForm(form)
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+        const device = InterfacePrototype.default()
+        jest.spyOn(device.settings, 'featureToggles', 'get')
+            .mockReturnValue({
+                inputType_identities: true,
+                inputType_creditCards: true
+            })
+        const scanner = createScanner(device).findEligibleInputs(document)
         const formClass = scanner.forms.get(formEl)
         const hasValues = formClass?.hasValues()
         const formValues = formClass?.getValues()

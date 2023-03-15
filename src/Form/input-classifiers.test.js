@@ -164,6 +164,10 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const deviceInterface = InterfacePrototype.default()
         const availableInputTypes = createAvailableInputTypes({credentials: {username: true, password: true}})
         deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
+        deviceInterface.settings.setFeatureToggles({
+            inputType_creditCards: true,
+            inputType_identities: true
+        })
         const scanner = createScanner(deviceInterface)
         scanner.findEligibleInputs(document)
 

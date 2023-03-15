@@ -335,7 +335,8 @@ class Form {
             isLogin: this.isLogin,
             isHybrid: this.isHybrid,
             hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
-            supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
+            supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities,
+            supportsCreditCardsAutofill: this.device.settings.featureToggles.inputType_creditCards
         }
         this.matching.setInputType(input, this.form, opts)
 

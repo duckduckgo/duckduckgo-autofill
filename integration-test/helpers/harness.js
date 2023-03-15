@@ -325,6 +325,8 @@ export function withWindowsContext (test) {
  * @return {Promise<PerformanceEntryList>}
  */
 export async function performanceEntries (page, measureName) {
+    // don't measure until the entries exist
+    await page.waitForFunction((measureName) => window.performance.getEntriesByName(measureName).length === 1, `${measureName}:end`)
     const result = await page.evaluate((measureName) => {
         window.performance?.measure?.(measureName, `${measureName}:start`, `${measureName}:end`)
         const entries = window.performance?.getEntriesByName(measureName)

@@ -219,9 +219,9 @@ class Matching {
 
         this.setActiveElementStrings(input, formEl)
 
-        // // For CC forms we run aggressive matches, so we want to make sure we only
-        // // run them on actual CC forms to avoid false positives and expensive loops
-        if (this.isCCForm(formEl)) {
+        // For CC forms we run aggressive matches, so we want to make sure we only
+        // run them on actual CC forms to avoid false positives and expensive loops
+        if (opts.supportsCreditCardsAutofill && this.isCCForm(formEl)) {
             const subtype = this.subtypeFromMatchers('cc', input)
             if (subtype && isValidCreditCardSubtype(subtype)) {
                 return `creditCards.${subtype}`
@@ -265,7 +265,8 @@ class Matching {
      *   isLogin?: boolean,
      *   isHybrid?: boolean,
      *   hasCredentials?: boolean,
-     *   supportsIdentitiesAutofill?: boolean
+     *   supportsIdentitiesAutofill?: boolean,
+     *   supportsCreditCardsAutofill?: boolean,
      * }} SetInputTypeOpts
      */
 

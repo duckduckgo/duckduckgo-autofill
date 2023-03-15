@@ -13,12 +13,16 @@ const mockInterface = {
     settings: {
         availableInputTypes: {
             credentials: true,
-            identities: true
+            identities: false
         },
         featureToggles: {
             inputType_credentials: true,
-            inputType_identities: true,
-            inputType_creditCards: true
+            inputType_identities: false,
+            inputType_creditCards: false
+        },
+        canAutofillType: (type) => {
+            if (type === 'credentials') return true
+            return false
         }
     },
     globalConfig: {

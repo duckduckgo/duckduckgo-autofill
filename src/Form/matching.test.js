@@ -150,7 +150,10 @@ describe('matching', () => {
         const { formElement, inputs } = setFormHtml(html)
 
         const matching = createMatching()
-        const inferred = matching.inferInputType(inputs[0], formElement, opts)
+        const inferred = matching.inferInputType(inputs[0], formElement, {
+            ...opts,
+            supportsCreditCardsAutofill: true
+        })
         expect(inferred).toBe(subtype)
     })
     it('should not continue past a ddg-matcher that has a "not" regex', () => {

@@ -669,6 +669,19 @@ export function overlayPage (page, server) {
         }
     }
 }
+/**
+ * A wrapper around interactions for `integration-test/pages/scanner-perf.html`
+ *
+ * @param {import("playwright").Page} page
+ * @param {ServerWrapper} server
+ */
+export function scannerPerf (page, server) {
+    return /** @type {const} */({
+        async navigate () {
+            await page.goto(server.urlForPath(constants.pages['scanner-perf']), {waitUntil: 'networkidle'})
+        }
+    })
+}
 
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
