@@ -164,9 +164,18 @@ export class HTMLTooltip {
 
         if (this.options.hasCaret) {
             const tooltipBoundingBox = this.tooltip.getBoundingClientRect()
+            // If overflowing from the left, try centering it in the window
             if (tooltipBoundingBox.left < 0) {
-                const temp = (window.innerWidth - tooltipBoundingBox.width) / 2
-                const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + temp
+                const leftPosWhenCentered = (window.innerWidth - tooltipBoundingBox.width) / 2
+                const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + leftPosWhenCentered
+
+                this.updatePosition(element, {left: overriddenLeftPosition, top})
+            }
+
+            // If overflowing from the right, move it slightly to the left
+            if (tooltipBoundingBox.right > window.innerWidth) {
+                const rightOverflow = window.innerWidth - tooltipBoundingBox.right
+                const overriddenLeftPosition = left - Math.abs(rightOverflow) - 5
 
                 this.updatePosition(element, {left: overriddenLeftPosition, top})
             }
