@@ -2,7 +2,6 @@ import { formatDuckAddress, escapeXML } from '../autofill-utils.js'
 import HTMLTooltip from './HTMLTooltip.js'
 
 class EmailHTMLTooltip extends HTMLTooltip {
-    name = 'EmailHTMLTooltip'
     /**
      * @param {import("../DeviceInterface/InterfacePrototype").default} device
      */

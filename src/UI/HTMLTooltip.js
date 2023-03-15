@@ -12,6 +12,7 @@ import { CSS_STYLES } from './styles/styles.js'
  * @property {() => void} remove
  * @property {string} css
  * @property {boolean} checkVisibility
+ * @property {boolean} hasCaret
  */
 
 /**
@@ -20,7 +21,7 @@ import { CSS_STYLES } from './styles/styles.js'
  * @property {number | null} index
  */
 
-/** @type {import('./HTMLTooltip.js').HTMLTooltipOptions} */
+/** @type {HTMLTooltipOptions} */
 export const defaultOptions = {
     wrapperClass: '',
     tooltipPositionClass: (top, left) => `.tooltip {transform: translate(${left}px, ${top}px);}`,
@@ -29,7 +30,8 @@ export const defaultOptions = {
     setSize: undefined,
     remove: () => { /** noop */ },
     testMode: false,
-    checkVisibility: true
+    checkVisibility: true,
+    hasCaret: false
 }
 
 export class HTMLTooltip {
@@ -42,7 +44,6 @@ export class HTMLTooltip {
      * @param {HTMLTooltipOptions} options
      */
     constructor (config, inputType, getPosition, options) {
-        this.name = 'HTMLTooltip'
         this.options = options
         this.shadow = document.createElement('ddg-autofill').attachShadow({
             mode: options.testMode
@@ -161,37 +162,10 @@ export class HTMLTooltip {
             shadow.styleSheets[0].insertRule(cssRule, ruleObj.index)
         }
 
-
-
-        // this.transformRuleIndexes.forEach((ruleIndex) => {
-        //     if (shadow.styleSheets[0].rules[ruleIndex]) {
-        //         // If we have already set the rule, remove it…
-        //         shadow.styleSheets[0].deleteRule(ruleIndex)
-        //     }
-        // })
-        // this.transformRuleIndexes = [shadow.styleSheets[0].rules.length, shadow.styleSheets[0].rules.length + 1]
-        //
-        // // if (this.transformRuleIndex && shadow.styleSheets[0].rules[this.transformRuleIndex]) {
-        // //     // If we have already set the rule, remove it…
-        // //     shadow.styleSheets[0].deleteRule(this.transformRuleIndex)
-        // // } else {
-        // //     // …otherwise, set the index as the very last rule
-        // //     this.transformRuleIndex = shadow.styleSheets[0].rules.length
-        // // }
-        //
-        // const tooltipCssRule = this.options.tooltipPositionClass?.(top, left)
-        // const caretCssRule = this.options.caretPositionClass?.(top, left)
-        // if (typeof caretCssRule === 'string') {
-        //     shadow.styleSheets[0].insertRule(caretCssRule, this.transformRuleIndexes[0])
-        // }
-        // if (typeof tooltipCssRule === 'string') {
-        //     shadow.styleSheets[0].insertRule(tooltipCssRule, this.transformRuleIndexes[1])
-        // }
-
-        if (element === 'tooltip') {
+        if (this.options.hasCaret) {
             const tooltipBoundingBox = this.tooltip.getBoundingClientRect()
             if (tooltipBoundingBox.left < 0) {
-                const temp = (window.innerWidth - tooltipBoundingBox.width) / 2;
+                const temp = (window.innerWidth - tooltipBoundingBox.width) / 2
                 const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + temp
 
                 this.updatePosition(element, {left: overriddenLeftPosition, top})
@@ -204,7 +178,7 @@ export class HTMLTooltip {
      */
     updatePositions (coords) {
         this.updatePosition('tooltip', coords)
-        if (this.name !== 'HTMLTooltip') {
+        if (this.options.hasCaret) {
             this.updatePosition('caret', coords)
         }
     }

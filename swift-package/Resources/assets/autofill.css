@@ -15,7 +15,6 @@
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     /* move it offscreen to avoid flashing */
-    transform: translate(-1000px);
     z-index: 2147483647;
 }
 :not(.top-autofill).wrapper--data {
@@ -69,8 +68,12 @@
     color: #333333;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
-.tooltip--email::before,
-.tooltip--email::after {
+.tooltip--email__caret {
+    position: absolute;
+    z-index: 2147483647;
+}
+.tooltip--email__caret::before,
+.tooltip--email__caret::after {
     content: "";
     width: 0;
     height: 0;
@@ -79,15 +82,15 @@
     display: block;
     border-bottom: 8px solid #D0D0D0;
     position: absolute;
-    right: 20px;
+    right: -27px;
 }
-.tooltip--email::before {
+.tooltip--email__caret::before {
     border-bottom-color: #D0D0D0;
-    top: -9px;
+    top: -1px;
 }
-.tooltip--email::after {
+.tooltip--email__caret::after {
     border-bottom-color: #FFFFFF;
-    top: -8px;
+    top: 0px;
 }
 
 /* Buttons */
