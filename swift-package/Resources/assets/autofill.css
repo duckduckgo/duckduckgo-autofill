@@ -82,7 +82,7 @@
     display: block;
     border-bottom: 8px solid #D0D0D0;
     position: absolute;
-    right: -27px;
+    right: -26px;
 }
 .tooltip--email__caret::before {
     border-bottom-color: #D0D0D0;
