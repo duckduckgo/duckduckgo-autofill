@@ -10220,7 +10220,7 @@ class Form {
 
       if (autofillData) this.autofillInput(input, autofillData, dataType);
     }, dataType);
-    this.isAutofilling = false; // After autofill we check if form values match the data provided
+    this.isAutofilling = false; // After autofill we check if form values match the data provided…
 
     const formValues = this.getValues();
     const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => {
@@ -10230,10 +10230,10 @@ class Form {
     });
 
     if (areAllFormValuesKnown) {
-      // If we know all the values do not prompt to store data
+      // …if we know all the values do not prompt to store data
       this.shouldPromptToStoreData = false;
     } else {
-      // Otherwise we will prompt and do not want to autosubmit because the experience is jarring
+      // …otherwise we will prompt and do not want to autosubmit because the experience is jarring
       this.shouldAutoSubmit = false;
     }
 
