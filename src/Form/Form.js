@@ -66,6 +66,7 @@ class Form {
         this.isAutofilling = false
         this.handlerExecuted = false
         this.shouldPromptToStoreData = true
+        this.shouldAutoSubmit = this.device.globalConfig.isMobileApp
 
         /**
          * @type {IntersectionObserver | null}
@@ -541,13 +542,17 @@ class Form {
 
         this.isAutofilling = false
 
-        // After autofill we check if form values match the data provided. If so we avoid sending the prompting message
+        // After autofill we check if form values match the data provided…
         const formValues = this.getValues()
         const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every((subtype) => {
             return formValues[dataType]?.[subtype] === data[subtype]
         })
         if (areAllFormValuesKnown) {
+            // …if we know all the values do not prompt to store data
             this.shouldPromptToStoreData = false
+        } else {
+            // …otherwise we will prompt and do not want to autosubmit because the experience is jarring
+            this.shouldAutoSubmit = false
         }
 
         this.device.postAutofill?.(data, dataType, this)

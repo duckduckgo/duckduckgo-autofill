@@ -5495,7 +5495,7 @@ class InterfacePrototype {
       }
     }
 
-    if (dataType === 'credentials' && this.settings.globalConfig.isMobileApp) {
+    if (dataType === 'credentials' && formObj.shouldAutoSubmit) {
       formObj.attemptSubmissionIfNeeded();
     }
   }
@@ -6046,6 +6046,7 @@ class Form {
     this.isAutofilling = false;
     this.handlerExecuted = false;
     this.shouldPromptToStoreData = true;
+    this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
     /**
      * @type {IntersectionObserver | null}
      */
@@ -6543,7 +6544,7 @@ class Form {
 
       if (autofillData) this.autofillInput(input, autofillData, dataType);
     }, dataType);
-    this.isAutofilling = false; // After autofill we check if form values match the data provided. If so we avoid sending the prompting message
+    this.isAutofilling = false; // After autofill we check if form values match the data provided
 
     const formValues = this.getValues();
     const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => {
@@ -6553,7 +6554,11 @@ class Form {
     });
 
     if (areAllFormValuesKnown) {
+      // If we know all the values do not prompt to store data
       this.shouldPromptToStoreData = false;
+    } else {
+      // Otherwise we will prompt and do not want to autosubmit because the experience is jarring
+      this.shouldAutoSubmit = false;
     }
 
     (_this$device$postAuto = (_this$device2 = this.device).postAutofill) === null || _this$device$postAuto === void 0 ? void 0 : _this$device$postAuto.call(_this$device2, data, dataType, this);
