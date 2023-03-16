@@ -151,8 +151,11 @@ class Form {
                 formValues.credentials.username = probableField.value
             } else {
                 // If we still don't have a username, try scanning the form's text for an email address
-                this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+                this.form.querySelectorAll('*:not(select):not(option)').forEach((el) => {
                     const elText = getText(el)
+                    // Ignore long texts to avoid false positives
+                    if (elText.length > 70) return
+
                     const emailOrUsername = elText.match(
                         // https://www.emailregex.com/
                         /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/
@@ -204,8 +207,8 @@ class Form {
         // This ensures we are not removing the highlight ourselves when autofilling more than once
         if (e && !e.isTrusted) return
 
-        // If the user has changed the value, we prompt to update the stored creds
-        this.shouldPromptToStoreCredentials = true
+        // If the user has changed the value, we prompt to update the stored data
+        this.shouldPromptToStoreData = true
 
         this.execOnInputs((input) => this.removeInputHighlight(input), dataType)
     }
@@ -515,7 +518,6 @@ class Form {
     }
 
     autofillData (data, dataType) {
-        this.shouldPromptToStoreData = false
         this.isAutofilling = true
 
         this.execOnInputs((input) => {
@@ -538,6 +540,15 @@ class Form {
         }, dataType)
 
         this.isAutofilling = false
+
+        // After autofill we check if form values match the data provided. If so we avoid sending the prompting message
+        const formValues = this.getValues()
+        const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every((subtype) => {
+            return formValues[dataType]?.[subtype] === data[subtype]
+        })
+        if (areAllFormValuesKnown) {
+            this.shouldPromptToStoreData = false
+        }
 
         this.device.postAutofill?.(data, dataType, this)
 
