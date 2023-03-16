@@ -36,7 +36,7 @@ export const iosContentScopeReplacements = (overrides = {}) => {
                 autofill: {
                     settings: {
                         featureToggles: {
-                            inlineIcon_credentials: false,
+                            inlineIcon_credentials: true,
                             ...overrides.featureToggles
                         }
                     }

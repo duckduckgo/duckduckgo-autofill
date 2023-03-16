@@ -191,6 +191,9 @@ export function loginPage (page, server, opts = {}) {
             // click the input field (not within Dax icon)
             await usernameField.click()
         },
+        async typeIntoUsernameInput (username) {
+            await page.type('#email', username)
+        },
         async clickIntoPasswordInput () {
             const passwordField = page.locator('#password').first()
             // click the input field (not within Dax icon)
@@ -351,6 +354,9 @@ export function loginPage (page, server, opts = {}) {
         async submitLoginForm (data) {
             await page.type('#password', data.password)
             await page.type('#email', data.username)
+            await page.click('#login button[type="submit"]')
+        },
+        async submitFormAsIs () {
             await page.click('#login button[type="submit"]')
         },
         /** @param {Platform} platform */

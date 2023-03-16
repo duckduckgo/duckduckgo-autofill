@@ -33,6 +33,7 @@
   [...document.forms].forEach((form) => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
+      setTimeout(() => form.innerHTML = '<h1>Submitted!</h1>', 100)
     })
   })
 </script>

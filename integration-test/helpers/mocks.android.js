@@ -46,7 +46,7 @@ export function androidStringReplacements (overrides = {}) {
                             emailProtection: true,
                             password_generation: false,
                             credentials_saving: true,
-                            inlineIcon_credentials: false,
+                            inlineIcon_credentials: true,
                             ...overrides.featureToggles
                         }
                     }
