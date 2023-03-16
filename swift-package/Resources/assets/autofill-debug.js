@@ -15428,6 +15428,10 @@ class HTMLTooltipUIController extends _UIController.UIController {
     };
 
     if (this._options.tooltipKind === 'legacy') {
+      this._options.device.firePixel({
+        pixelName: 'autofill_show'
+      });
+
       return new _EmailHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
     }
 
@@ -17022,6 +17026,8 @@ const sendJSPixelParamsSchema = _zod.z.union([_zod.z.object({
   params: _zod.z.object({
     fieldType: _zod.z.string().optional()
   }).optional()
+}), _zod.z.object({
+  pixelName: _zod.z.literal("autofill_show")
 }), _zod.z.object({
   pixelName: _zod.z.literal("autofill_personal_address")
 }), _zod.z.object({

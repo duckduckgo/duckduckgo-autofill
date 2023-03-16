@@ -11752,6 +11752,10 @@ class HTMLTooltipUIController extends _UIController.UIController {
     };
 
     if (this._options.tooltipKind === 'legacy') {
+      this._options.device.firePixel({
+        pixelName: 'autofill_show'
+      });
+
       return new _EmailHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
     }
 

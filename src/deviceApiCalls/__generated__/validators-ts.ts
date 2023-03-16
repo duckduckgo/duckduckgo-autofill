@@ -17,6 +17,9 @@ export type SendJSPixelParams =
       };
     }
   | {
+      pixelName: "autofill_show";
+    }
+  | {
       pixelName: "autofill_personal_address";
     }
   | {

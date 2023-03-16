@@ -64,6 +64,7 @@ export class HTMLTooltipUIController extends UIController {
         if (this.getActiveTooltip()) {
             return
         }
+
         const { topContextData, getPosition, input, form } = args
         const tooltip = this.createTooltip(getPosition, topContextData)
         this.setActiveTooltip(tooltip)
@@ -94,6 +95,7 @@ export class HTMLTooltipUIController extends UIController {
         }
 
         if (this._options.tooltipKind === 'legacy') {
+            this._options.device.firePixel({pixelName: 'autofill_show'})
             return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
                 .render(this._options.device)
         }
