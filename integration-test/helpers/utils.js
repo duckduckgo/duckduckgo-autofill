@@ -24,4 +24,15 @@ const stripDuckExtension = (emailAddress) => {
     return emailAddress.replace('@duck.com', '')
 }
 
-export {createAvailableInputTypes, stripDuckExtension}
+/**
+ * Clicks directly on the icon within the input field
+ * @param {import('playwright').Locator} input
+ * @returns {Promise<void>}
+ */
+const clickOnIcon = async (input) => {
+    const box = await input.boundingBox()
+    if (!box) throw new Error('unreachable')
+    await input.click({position: {x: box.width - (box.height / 2), y: box.height / 2}})
+}
+
+export {createAvailableInputTypes, stripDuckExtension, clickOnIcon}

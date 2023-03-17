@@ -119,7 +119,11 @@ export class HTMLTooltip {
             const {left, bottom} = this.getPosition()
 
             if (left !== this.left || bottom !== this.top) {
-                this.updatePositions({left, top: bottom})
+                const coords = {left, top: bottom}
+                this.updatePosition('tooltip', coords)
+                if (this.options.hasCaret) {
+                    this.updatePosition('caret', coords)
+                }
             }
 
             this.animationFrame = null
@@ -174,21 +178,12 @@ export class HTMLTooltip {
 
             // If overflowing from the right, move it slightly to the left
             if (tooltipBoundingBox.right > window.innerWidth) {
-                const rightOverflow = window.innerWidth - tooltipBoundingBox.right
-                const overriddenLeftPosition = left - Math.abs(rightOverflow) - 5
+                const rightOverflow = tooltipBoundingBox.right - window.innerWidth
+                const extraPadding = 5
+                const overriddenLeftPosition = left - rightOverflow - extraPadding
 
                 this.updatePosition(element, {left: overriddenLeftPosition, top})
             }
-        }
-    }
-    /**
-     * Update all relevant positions
-     * @param {{left: number, top: number}} coords
-     */
-    updatePositions (coords) {
-        this.updatePosition('tooltip', coords)
-        if (this.options.hasCaret) {
-            this.updatePosition('caret', coords)
         }
     }
     ensureIsLastInDOM () {
