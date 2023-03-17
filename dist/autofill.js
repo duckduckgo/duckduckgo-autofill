@@ -5495,7 +5495,7 @@ class InterfacePrototype {
       }
     }
 
-    if (dataType === 'credentials' && this.settings.globalConfig.isMobileApp) {
+    if (dataType === 'credentials' && formObj.shouldAutoSubmit) {
       formObj.attemptSubmissionIfNeeded();
     }
   }
@@ -6046,6 +6046,7 @@ class Form {
     this.isAutofilling = false;
     this.handlerExecuted = false;
     this.shouldPromptToStoreData = true;
+    this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
     /**
      * @type {IntersectionObserver | null}
      */
@@ -6147,7 +6148,9 @@ class Form {
         this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
           var _elText$match;
 
-          const elText = (0, _autofillUtils.getText)(el);
+          const elText = (0, _autofillUtils.getText)(el); // Ignore long texts to avoid false positives
+
+          if (elText.length > 70) return;
           const emailOrUsername = (_elText$match = elText.match( // https://www.emailregex.com/
           /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/)) === null || _elText$match === void 0 ? void 0 : _elText$match[0];
 
@@ -6203,9 +6206,9 @@ class Form {
 
   removeAllHighlights(e, dataType) {
     // This ensures we are not removing the highlight ourselves when autofilling more than once
-    if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
+    if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored data
 
-    this.shouldPromptToStoreCredentials = true;
+    this.shouldPromptToStoreData = true;
     this.execOnInputs(input => this.removeInputHighlight(input), dataType);
   }
 
@@ -6522,7 +6525,6 @@ class Form {
   autofillData(data, dataType) {
     var _this$device$postAuto, _this$device2;
 
-    this.shouldPromptToStoreData = false;
     this.isAutofilling = true;
     this.execOnInputs(input => {
       const inputSubtype = (0, _matching.getInputSubtype)(input);
@@ -6542,7 +6544,21 @@ class Form {
 
       if (autofillData) this.autofillInput(input, autofillData, dataType);
     }, dataType);
-    this.isAutofilling = false;
+    this.isAutofilling = false; // After autofill we check if form values match the data provided…
+
+    const formValues = this.getValues();
+    const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => formValues[dataType][subtype] === data[subtype]);
+
+    if (areAllFormValuesKnown) {
+      // …if we know all the values do not prompt to store data
+      this.shouldPromptToStoreData = false; // reset this to its initial value
+
+      this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
+    } else {
+      // …otherwise we will prompt and do not want to autosubmit because the experience is jarring
+      this.shouldAutoSubmit = false;
+    }
+
     (_this$device$postAuto = (_this$device2 = this.device).postAutofill) === null || _this$device$postAuto === void 0 ? void 0 : _this$device$postAuto.call(_this$device2, data, dataType, this);
     this.removeTooltip();
   }

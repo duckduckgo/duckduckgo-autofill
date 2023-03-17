@@ -33,6 +33,9 @@
   [...document.forms].forEach((form) => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
+      const submittedMsg = document.createElement('h1')
+      submittedMsg.innerText = 'Submitted!'
+      setTimeout(() => form.append(submittedMsg), 100)
     })
   })
 </script>

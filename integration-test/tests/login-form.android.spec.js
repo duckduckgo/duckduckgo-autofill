@@ -88,7 +88,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     credentials
                 })
                 await login.promptWasShown()
-                await login.fieldsDoNotContainIcons()
+                await login.fieldsContainIcons()
                 await login.assertFirstCredential(personalAddress, password)
             })
             test('I should be prompted to use my saved credentials when clicking the field even if the form was below the fold', async ({page}) => {
@@ -99,10 +99,10 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     credentials,
                     pageType: 'withExtraText'
                 })
-                await login.fieldsDoNotContainIcons()
+                await login.fieldsContainIcons()
                 await login.clickIntoUsernameInput()
-                await login.promptWasShown()
                 await login.assertFirstCredential(personalAddress, password)
+                await login.promptWasShown()
             })
             test('I should not be prompted automatically to use my saved credentials if the form is below the fold', async ({page}) => {
                 const {login} = await testLoginPage(page, server, {
@@ -112,7 +112,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     credentials,
                     pageType: 'withExtraText'
                 })
-                await login.fieldsDoNotContainIcons()
+                await login.fieldsContainIcons()
                 await login.promptWasNotShown()
                 await login.clickIntoUsernameInput()
                 await login.assertFirstCredential(personalAddress, password)
@@ -128,10 +128,36 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                 await login.promptWasNotShown()
                 await login.assertDialogClose()
                 await login.openDialog()
-                await login.fieldsDoNotContainIcons()
+                await login.fieldsContainIcons()
 
                 await login.clickIntoUsernameInput()
                 await login.assertFormSubmitted()
+            })
+            test('should prompt to store and not autosubmit when the form completes a partial credential stored', async ({page}) => {
+                const {login} = await testLoginPage(page, server, {
+                    featureToggles: {
+                        inputType_credentials: true,
+                        inlineIcon_credentials: true,
+                        credentials_saving: true
+                    },
+                    availableInputTypes: {credentials: {password: true, username: false}},
+                    credentials: {
+                        ...credentials,
+                        username: ''
+                    },
+                    pageType: 'withExtraText'
+                })
+
+                const {username, password} = credentials
+
+                await login.onlyPasswordFieldHasIcon()
+
+                await login.typeIntoUsernameInput(username)
+
+                await login.clickIntoPasswordInput()
+                await login.assertPasswordFilled(password)
+                await login.assertFormNotSubmittedAutomatically()
+                await login.assertWasPromptedToSave({username, password}, 'android')
             })
         })
         test.describe('but I dont have saved credentials', () => {
