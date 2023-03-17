@@ -240,7 +240,13 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                 )
             }
         }
-        expect(failed).toStrictEqual(expectedFailures)
+
+        if (generated) {
+            // Ignore order
+            expect(failed.sort()).toStrictEqual(expectedFailures.sort())
+        } else {
+            expect(failed).toStrictEqual(expectedFailures)
+        }
     })
 })
 
