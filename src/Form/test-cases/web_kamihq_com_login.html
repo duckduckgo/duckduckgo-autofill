@@ -1,0 +1,2857 @@
+<!--
+  https://web.kamihq.com/web/update_app.html
+  testRunId: 66
+  testResultId: 239681
+-->
+
+  <user-access><div id="sign-up-in" class="user-access overlayContainer overlay-common" ng-show="show_prompt">
+      <!-- ngIf: !(microsoft_teams && url_params.seamless_dialog) -->
+      <div class="container ng-scope" ng-if="!(microsoft_teams &amp;&amp; url_params.seamless_dialog)">
+        <nav>
+          <div class="header">
+            <img class="kami-logo" src="/web/notablecompiled/2.0.16704-20230315040549/assets/kami_white.svg" alt="Kami Logo">
+          </div>
+          <div class="menu-items">
+            <a href="/web/viewer.html" target="_blank" class="menu-item">
+              Home
+            </a>
+            <a href="https://kamiapp.com/solutions" target="_blank" class="menu-item">
+              Solutions
+            </a>
+            <a href="https://kamiapp.com/learn" target="_blank" class="menu-item">
+              Learn Kami
+            </a>
+            <a href="https://kamiapp.com/pricing" target="_blank" class="menu-item">
+              Pricing
+            </a>
+            <a href="https://kamiapp.com/library" target="_blank" class="menu-item">
+              Library
+            </a>
+            <a href="https://kamiapp.com/blog" target="_blank" class="menu-item">
+              Blog
+            </a>
+            <a href="https://kamiapp.com/contact" target="_blank" class="menu-item">
+              Contact
+            </a>
+            <a href="/web/viewer.html" target="_blank" class="menu-item">
+              Sign in
+            </a>
+          </div>
+        </nav>
+        <div class="mobile-header">
+          <img class="kami-logo" src="/web/notablecompiled/2.0.16704-20230315040549/assets/kami_white.svg" alt="Kami Logo">
+        </div>
+        <div class="page-top-spacing"></div>
+        <img class="landing_page_arrow" src="/web/notablecompiled/2.0.16704-20230315040549/assets/landing_page_arrow.png" alt="Kami arrow">
+        <img class="landing_page_squiggle" src="/web/notablecompiled/2.0.16704-20230315040549/assets/landing_page_squiggle.png" alt="Kami squiggle">
+        <div class="dialog" ng-hide="onboarding">
+          <div class="close ng-hide" ng-show="show_guest" ng-click="skip_signup()"></div>
+          <div class="form-container" ng-hide="hide_form">
+            <sign-up-in ng-show="(we_are == 'signing_up' || we_are == 'logging_in') &amp;&amp; !microsoft_teams"><div class="forms">
+                <div class="dialog-header">
+                  <h2 class="header-title" ng-show="we_are == 'logging_in'">
+                    Log in or Sign Up
+                  </h2>
+                  <h2 class="header-title ng-hide" ng-show="we_are == 'signing_up' &amp;&amp; we_are != 'logging_in'">
+                    Sign Up
+                  </h2>
+                  <p class="header-description ng-hide" ng-show="we_are == 'signing_up'">
+                    This is the first time we've seen your email.<br>Let's
+                    sign you up.
+                  </p>
+                </div>
+                <div class="dialog-body form-body">
+                  <div class="oauth-container" ng-show="we_are == 'logging_in' &amp;&amp; show_google_login">
+                    <button data-testid="login-google" class="google-oauth overlayButton ua-button-outlined auth-button" ng-class="{disabled: google_disabled}" type="submit" ng-click="google_login_button()">
+                      <span ng-hide="google_disabled">
+                        <div class="google_button_icon">
+                          <div class="icon_wrapper">
+                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48" class="google_button_svg">
+                              <g>
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                                <path fill="none" d="M0 0h48v48H0z"></path>
+                              </g>
+                            </svg>
+                          </div>
+                        </div>
+                        Continue with Google</span>
+                    </button>
+                  </div>
+                  <div class="oauth-container" ng-show="we_are == 'logging_in' &amp;&amp; show_microsoft_login">
+                    <button data-testid="login-microsoft" class="microsoft-oauth overlayButton ua-button-outlined auth-button" ng-class="{disabled: microsoft_button_disabled}" type="submit" ng-click="microsoft_login_button()">
+                      <span ng-hide="microsoft_disabled">
+                        <div class="oauth_button_icon">
+                          <div class="icon_wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23">
+                              <path fill="#f3f3f3" d="M0 0h23v23H0z"></path>
+                              <path fill="#f35325" d="M1 1h10v10H1z"></path>
+                              <path fill="#81bc06" d="M12 1h10v10H12z"></path>
+                              <path fill="#05a6f0" d="M1 12h10v10H1z"></path>
+                              <path fill="#ffba08" d="M12 12h10v10H12z"></path>
+                            </svg>
+                          </div>
+                        </div>
+                        Continue with Microsoft
+                      </span>
+                    </button>
+                  </div>
+                  <div ng-show="we_are == 'logging_in' &amp;&amp; show_email_login" class="or-separater">
+                    <span class="or">or</span>
+                  </div>
+                  <form id="sign-up-in-form" class="authentication_form ng-pristine ng-valid ng-valid-email" ng-submit="login_or_signup()" autocomplete="off" data-ddg-formtype="sign up">
+                    <div class="row ng-hide" ng-show="errors.length || microsoft_popup_error">
+                      <ul class="errors">
+                        <!-- ngRepeat: error in errors -->
+                        <!-- ngIf: microsoft_popup_error -->
+                      </ul>
+                    </div>
+                    <div class="row ng-hide" ng-show="suggestion">
+                      <ul class="errors light-errors">
+                        <!-- ngIf: we_are == 'logging_in' -->
+                        <li class="error ng-binding ng-scope" ng-if="we_are == 'logging_in'">
+                          Looks like you can log in with
+                        </li>
+                        <!-- end ngIf: we_are == 'logging_in' -->
+                        <!-- ngIf: we_are == 'signing_up' -->
+                      </ul>
+                    </div>
+                    <div ng-show="show_email_login">
+                      <div class="row ng-hide" ng-show="we_are == 'signing_up'">
+                        <input type="text" autofocus-upon-signing-up="" class="toolbarField ng-pristine ng-untouched ng-valid ng-empty" placeholder="Full Name *" ng-model="userEntry.name" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Full Name *
+parseable name: 
+section: _0_260
+field signature: 1318412689
+form signature: 13256721218335979040
+form signature in host form: 13256721218335979040
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 4
+field renderer id: 260" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Full Name *
+parseable name: 
+section: _0_260
+field signature: 1318412689
+form signature: 13256721218335979040
+form signature in host form: 13256721218335979040
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 4
+field renderer id: 260" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.fullName" data-ddg-testresultelementid="542268">
+                      </div>
+                      <div class="row ng-hide" ng-show="show_custom_login || we_are !== 'logging_in'">
+                        <input type="email" ng-model-options="{ debounce: 500 }" ng-change="handle_email_change()" autofocus-upon-loading="" class="toolbarField ng-pristine ng-untouched ng-valid ng-empty ng-valid-email" placeholder="email" ng-model="userEntry.email" ng-class="{yellowBorder: suggestions}" title="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: email
+parseable name: 
+section: _0_260
+field signature: 2964261712
+form signature: 13256721218335979040
+form signature in host form: 13256721218335979040
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 4
+field renderer id: 261" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: email
+parseable name: 
+section: _0_260
+field signature: 2964261712
+form signature: 13256721218335979040
+form signature in host form: 13256721218335979040
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 4
+field renderer id: 261" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="542269" style="
+                            background-size: auto 26px !important;
+                            background-position: right center !important;
+                            background-repeat: no-repeat !important;
+                            background-origin: content-box !important;
+                            background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+                            transition: background 0s ease 0s !important;
+                          ">
+                      </div>
+                      <div class="row ng-hide" ng-show="show_custom_login || we_are !== 'logging_in'">
+                        <input type="password" autocomplete="off" class="toolbarField ng-pristine ng-untouched ng-valid ng-empty" placeholder="password" ng-model="userEntry.password" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: password
+parseable name: 
+section: _0_260
+field signature: 475301429
+form signature: 13256721218335979040
+form signature in host form: 13256721218335979040
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 4
+field renderer id: 262
+autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: password
+parseable name: 
+section: _0_260
+field signature: 475301429
+form signature: 13256721218335979040
+form signature in host form: 13256721218335979040
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 4
+field renderer id: 262
+autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542270">
+                      </div>
+                      <div class="row ng-hide" ng-show="show_custom_login || we_are !== 'logging_in'">
+                        <button class="sign-in-up-submit overlayButton ua-button auth-button" ng-disabled="continue_disabled" ng-class="{disabled: continue_disabled}" type="submit">
+                          <span ng-hide="continue_disabled">
+                            <!-- ngIf: we_are != 'logging_in' -->
+                            <!-- ngIf: we_are == 'logging_in' --><span ng-if="we_are == 'logging_in'" class="ng-scope"><i class="icon fa fa-envelope"></i>Continue with
+                              Email</span><!-- end ngIf: we_are == 'logging_in' -->
+                          </span>
+                        </button>
+                      </div>
+                      <div class="row" ng-hide="show_custom_login">
+                        <button ng-click="show_custom_login=true;" type="button" class="overlayButton ua-button-outlined auth-button toggle-custom-login">
+                          <span><i class="icon fa fa-envelope"></i>Continue with
+                            Email</span>
+                        </button>
+                      </div>
+                      <div id="back-to-login" class="row link_right ng-hide" ng-show="we_are == 'signing_up'">
+                        <span class="link" ng-click="back_to_login()" ng-keypress="$event.key === 'Enter' &amp;&amp; back_to_login()" tabindex="0">Back to login</span>
+                      </div>
+                      <div id="forgot-password" class="row link_right ng-hide" ng-show="show_custom_login">
+                        <span class="link" ng-click="show_forgot_password()" ng-keypress="$event.key === 'Enter' &amp;&amp; show_forgot_password()" tabindex="0">Forgot Password?</span>
+                      </div>
+                    </div>
+                  </form>
+                  <div id="tos-notice">
+                    By signing up for a Kami account you are agreeing to our
+                    <a href="https://www.kamiapp.com/terms-of-service/" target="_blank">terms of service</a>
+                    and
+                    <a href="https://www.kamiapp.com/privacy-policy/" target="_blank">data privacy policy</a>.
+                  </div>
+                  <div id="skip-signup" class="row ng-hide" ng-hide="we_are == 'signing_up' || !show_guest">
+                    <span class="link" ng-click="skip_signup()">Skip For Now</span>
+                  </div>
+                  <i id="advanced-cog" ng-show="show_google_login" class="icon-common fa-cog" aria-label="advanced settings" ng-click="show_advanced_dialog()" ng-keypress="$event.key === 'Enter' &amp;&amp; show_advanced_dialog()" tabindex="0"></i>
+                </div>
+              </div>
+            </sign-up-in>
+            <re-auth ng-show="we_are == 're_auth'" class="ng-hide"><div class="forms">
+                <div class="dialog-header">
+                  <h2 class="header-title ng-binding" ng-hide="notable_embedded"></h2>
+                  <h2 class="header-title ng-binding ng-hide" ng-show="notable_embedded"></h2>
+                  <p class="header-description">
+                    Your session has expired.
+                    <span ng-hide="notable_embedded">Please log in again.</span>
+                  </p>
+                  <div ng-hide="notable_embedded || re_auth_props.unsaved_changes == 0" class="header-small-text ng-binding">
+                    <br>You have unsaved changes.<br>These will be
+                    automatically saved when you log back in.
+                  </div>
+                </div>
+                <div class="dialog-body">
+                  <form ng-hide="notable_embedded" id="re-auth-form" class="authentication_form ng-pristine ng-valid" ng-submit="re_auth_submit()" autocomplete="off" data-ddg-formtype="sign in">
+                    <div class="row ng-hide" ng-show="errors.length">
+                      <ul class="errors">
+                        <!-- ngRepeat: error in errors -->
+                      </ul>
+                    </div>
+                    <div ng-show="re_auth_props.source == 'email' &amp;&amp; show_email_login" class="ng-hide">
+                      <div class="row">
+                        <input id="re-auth-password" type="password" autocomplete="off" class="toolbarField ng-pristine ng-untouched ng-valid ng-empty" placeholder="password" ng-model="userEntry.re_auth_password" data-ddg-testresultelementid="542271" data-manual-scoring="password">
+                      </div>
+                      <div class="row">
+                        <button class="sign-in-up-submit overlayButton ua-button auth-button" type="submit">
+                          <span>Login</span>
+                        </button>
+                      </div>
+                    </div>
+                    <div ng-show="re_auth_props.source == 'email' &amp;&amp; show_email_login" class="or-separater ng-hide">
+                      <span class="or">or</span>
+                    </div>
+                    <!-- ngIf: re_auth_props.source != 'microsoft' && re_auth_props.source != 'microsoft_teams' && show_google_login -->
+                    <div class="oauth-container ng-scope" ng-if="re_auth_props.source != 'microsoft' &amp;&amp; re_auth_props.source != 'microsoft_teams' &amp;&amp; show_google_login">
+                      <button class="google-oauth overlayButton ua-button-outlined auth-button" ng-class="{disabled: google_disabled}" type="button" ng-click="google_login_button(re_auth_props.last_google_user_id)">
+                        <span ng-hide="google_disabled">
+                          <div class="google_button_icon">
+                            <div class="icon_wrapper">
+                              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48" class="google_button_svg">
+                                <g>
+                                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                                  <path fill="none" d="M0 0h48v48H0z"></path>
+                                </g>
+                              </svg>
+                            </div>
+                          </div>
+                          Login with Google</span>
+                      </button>
+                    </div>
+                    <!-- end ngIf: re_auth_props.source != 'microsoft' && re_auth_props.source != 'microsoft_teams' && show_google_login -->
+                    <!-- ngIf: re_auth_props.source != 'google' && re_auth_props.source != 'microsoft_teams' && show_microsoft_login -->
+                    <div class="oauth-container ng-scope" ng-if="re_auth_props.source != 'google' &amp;&amp; re_auth_props.source != 'microsoft_teams' &amp;&amp; show_microsoft_login">
+                      <button class="microsoft-oauth overlayButton ua-button-outlined auth-button" ng-class="{disabled: microsoft_button_disabled}" type="button" ng-click="reauth_microsoft_login_button()">
+                        <span ng-hide="microsoft_disabled">
+                          <div class="oauth_button_icon">
+                            <div class="icon_wrapper">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23">
+                                <path fill="#f3f3f3" d="M0 0h23v23H0z"></path>
+                                <path fill="#f35325" d="M1 1h10v10H1z"></path>
+                                <path fill="#81bc06" d="M12 1h10v10H12z"></path>
+                                <path fill="#05a6f0" d="M1 12h10v10H1z"></path>
+                                <path fill="#ffba08" d="M12 12h10v10H12z"></path>
+                              </svg>
+                            </div>
+                          </div>
+                          Login with Microsoft
+                        </span>
+                      </button>
+                    </div>
+                    <!-- end ngIf: re_auth_props.source != 'google' && re_auth_props.source != 'microsoft_teams' && show_microsoft_login -->
+                    <!-- ngIf: re_auth_props.source == 'microsoft_teams' -->
+                    <!-- ngIf: !microsoft_teams -->
+                    <div class="row link_right ng-scope" id="back_to_login" ng-if="!microsoft_teams">
+                      <span class="link" ng-click="logout('user_authentication_failed', true)">logout instead</span>
+                    </div>
+                    <!-- end ngIf: !microsoft_teams -->
+                  </form>
+                </div>
+              </div></re-auth>
+            <forgot-password ng-show="we_are == 'forgot_password'" class="ng-hide"><div class="forms">
+                <div class="dialog-header">
+                  <h2 class="header-title">Password Reset</h2>
+                  <p class="header-description" ng-hide="password_reset_sent">
+                    We'll email you instructions on how to reset your password.
+                  </p>
+                  <p class="header-description ng-hide" ng-show="password_reset_sent">
+                    We have sent an email with reset instructions. If you can't
+                    find it, please check your spam folder. If you did not
+                    receive an email, check that you provided the correct email
+                    address.
+                  </p>
+                </div>
+                <div class="dialog-body">
+                  <form id="forgot-password-form" class="authentication_form ng-pristine ng-valid ng-valid-email" ng-submit="send_password_reset()" autocomplete="off" data-ddg-formtype="sign in">
+                    <div class="row ng-hide" ng-show="errors.length">
+                      <ul class="errors">
+                        <!-- ngRepeat: error in errors -->
+                      </ul>
+                    </div>
+                    <div class="row" ng-hide="password_reset_sent">
+                      <input type="email" autofocus-upon-loading="" class="toolbarField ng-pristine ng-untouched ng-valid ng-empty ng-valid-email" placeholder="email" ng-model="userEntry.email" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: email
+parseable name: 
+section: _0_274
+field signature: 2964261712
+form signature: 12222000225897691318
+form signature in host form: 12222000225897691318
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 8
+field renderer id: 274" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: email
+parseable name: 
+section: _0_274
+field signature: 2964261712
+form signature: 12222000225897691318
+form signature in host form: 12222000225897691318
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 8
+field renderer id: 274" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="542272">
+                    </div>
+                    <div class="row" ng-hide="password_reset_sent">
+                      <button class="sign-in-up-submit overlayButton ua-button auth-button" type="submit" ng-disabled="continue_disabled" ng-class="{disabled: continue_disabled}">
+                        <span ng-hide="continue_disabled">
+                          Password Reset
+                        </span>
+                      </button>
+                    </div>
+                    <div ng-show="password_reset_sent &amp;&amp; show_password_reset_with_another_email" class="row link_right ng-hide" id="back_to_login">
+                      <span class="link" ng-click="password_reset_sent = false">Send instructions to another email</span>
+                    </div>
+                    <div class="row link_right" id="back_to_login">
+                      <span class="link" ng-click="back_to_login()" ng-keypress="$event.key === 'Enter' &amp;&amp; back_to_login()" tabindex="0">Back to login</span>
+                    </div>
+                  </form>
+                </div>
+              </div></forgot-password>
+            <!-- ngIf: microsoft_teams -->
+          </div>
+        </div>
+        <div class="dialog">
+          <welcome-to-kami-dialog ng-show="welcome_dialog_role" class="ng-hide"><div class="welcome-to-kami-dialog-container">
+              <div class="welcome-banner">
+                <img width="100%" src="/web/notablecompiled/2.0.16704-20230315040549/assets/onboarding_banner.png" alt="onboarding banner">
+              </div>
+              <div class="body wide-margin-content">
+                <!-- ngIf: welcome_dialog_role === 'teacher' -->
+                <!-- ngIf: welcome_dialog_role === 'teacher_current_licence' -->
+                <!-- ngIf: welcome_dialog_role === 'student' || welcome_dialog_role === 'non_education' -->
+                <div class="btn-container">
+                  <button class="ua-button ua-action-btn" ng-click="completed()">
+                    Get started
+                  </button>
+                  <button class="link-button" ng-click="completed(false)">
+                    Skip activity
+                  </button>
+                </div>
+              </div>
+            </div>
+          </welcome-to-kami-dialog>
+        </div>
+        <div id="signup-onboarding" ng-show="onboarding" class="ng-hide"></div>
+      </div>
+      <!-- end ngIf: !(microsoft_teams && url_params.seamless_dialog) -->
+      <!-- ngIf: microsoft_teams && url_params.seamless_dialog -->
+    </div>
+  </user-access>
+  <div id="outerContainer" ng-controller="DocumentController" ng-hide="show_prompt" undelete-annotations="" close-dropdowns="" app-rater-opener="" warn-close="" paste-text-annotation="" user-active="" ng-class="{'hide-comments': hideComments, 'kami-grader-active': grader_state.active, ['microsoft-teams-active microsoft-teams-platform-' + microsoft_teams_platform]: microsoft_teams_platform, 'microsoft-teams-copies-active': microsoft_teams_opener.copiesActive, 'undelete-annotations-active': undelete_annotations_active}" class="ng-scope ng-hide">
+    <div id="sidebarContainer">
+      <div id="toolbarSidebar">
+        <div class="splitToolbarButton toggled">
+          <button id="viewPageControlThumbnail" class="toolbarButton group toggled" title="Show Thumbnails" data-l10n-id="thumbs">
+            <span data-l10n-id="thumbs_label">Thumbnails</span>
+          </button>
+          <button id="viewOutline" class="toolbarButton group" title="Show Document Outline" data-l10n-id="outline">
+            <span data-l10n-id="outline_label">Document Outline</span>
+          </button>
+          <button id="viewAttachments" class="toolbarButton group" title="Show Attachments" data-l10n-id="attachments">
+            <span data-l10n-id="attachments_label">Attachments</span>
+          </button>
+          <button id="viewAnnotations" class="toolbarButton group" title="Annotation Summary" data-l10n-id="annotations">
+            <span data-l10n-id="annotations_label">Annotations</span>
+          </button>
+          <button id="viewAnnotationBanks" class="toolbarButton group" title="Annotation Bank" data-l10n-id="annotation_banks">
+            <span data-l10n-id="annotation_banks_label">Annotation Bank</span>
+          </button>
+        </div>
+      </div>
+      <div id="sidebarContent">
+        <div id="pageControlThumbnailView">
+          <div ng-class="{'page-control-enabled': page_control_active}">
+            <div as-sortable-group="sortableOptions" class="thumbnail-viewer-container ng-scope" style="margin-top: 0px">
+              <!-- ngRepeat: row in thumbnail_viewer.pages -->
+              <div ng-repeat="row in thumbnail_viewer.pages" as-sortable="" as-row-number="$index" ng-model="row.items" as-scroll-container="scrollContainer" as-scroll-speed="5" class="ng-pristine ng-untouched ng-valid ng-scope ng-not-empty">
+                <!-- ngRepeat: page in row.items -->
+              </div>
+              <!-- end ngRepeat: row in thumbnail_viewer.pages -->
+            </div>
+            <!-- ngIf: thumbnail_state.changed -->
+          </div>
+        </div>
+        <div id="outlineView" class="hidden"></div>
+        <div id="attachmentsView" class="hidden"></div>
+        <div id="annotationsView" class="hidden ng-scope" ng-controller="AnnotationBookmarksController">
+          <!-- ngRepeat: commentObj in annotations track by commentObj.id -->
+          <div class="no-annotations" ng-hide="annotations.length">
+            This will be where a summary of annotations will be, you don't have
+            any annotations yet.
+          </div>
+        </div>
+        <div id="annotationBanksView" class="hidden ng-scope" ng-controller="AnnotationBankBookmarksController">
+          <!-- ngIf: showAnnotationBankFeature -->
+          <!-- ngIf: !show_copy_paste -->
+          <!-- ngIf: !crdbDocument -->
+          <div class="annotation-banks-title ng-scope" ng-if="!crdbDocument">
+            This document doesn't support annotation bank.
+          </div>
+          <!-- end ngIf: !crdbDocument -->
+          <!-- ngIf: crdbDocument && !showAnnotationBankFeature && show_copy_paste -->
+          <!-- ngIf: showAnnotationBankFeature && empty() && show_copy_paste -->
+          <!-- ngIf: hasRestorableAnnotationBank() && show_copy_paste -->
+          <!-- ngIf: showAnnotationBankFeature && show_copy_paste -->
+          <!-- ngIf: showAnnotationBankFeature && show_copy_paste -->
+        </div>
+      </div>
+    </div>
+    <!-- sidebarContainer -->
+    <div id="mainContainer" ng-class="thumbnail_state.changed === true ? 'container-inactive' : ''" data-ddg-formtype="sign up">
+      <div class="short-containers visibleMediumView ng-scope" ng-controller="PremiumBadgeController">
+        <!-- these containers are used in mobile view -->
+        <!-- ngIf: referral_notify -->
+        <div class="secondaryToolbarButtonContainer ng-scope" profile-dropdown="" hanger="none" short="true">
+          <div id="user-profile" class="secondaryToolbar ng-hide" ng-show="show_dropdown == 'user'">
+            <!-- ngIf: short != 'true' -->
+            <!-- ngIf: short == 'true' -->
+            <div ng-if="short == 'true'" class="short-email ng-binding ng-scope"></div>
+            <!-- end ngIf: short == 'true' -->
+            <div class="horizontalToolbarSeparator"></div>
+            <a id="secondary-buy-premium-link" track-premium-click="" ng-show="!current_user.guest_user &amp;&amp; license_show_upgrade" href="upgrade.html" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button ng-hide" title="Upgrade Kami" tabindex="0" data-l10n-id="get_premium">
+              <i class="icon-common fa-bolt"></i>
+              <span data-l10n-id="get_premium_label">Upgrade</span>
+            </a>
+            <a id="guest-signin" ng-show="current_user.guest_user" guest-login-click="" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button ng-hide" title="Login or Register" tabindex="0" data-l10n-id="login_or_register">
+              <i class="icon-common fa-sign-in"></i>
+              <span data-l10n-id="get_premium_label">Login or Register</span>
+            </a>
+            <button type="button" id="night-mode-switch" ng-show="switch_dark_mode_supported" ng-click="switch_dark_mode()" class="linkButton secondaryToolbarButton notable-nav-button switch-button">
+              <div>
+                <i class="icon-common icomoon-moon"></i>
+                <span data-l10n-id="settings_label">Dark Mode</span>
+              </div>
+              <div class="switch-container">
+                <label ng-class="{'is-checked': is_dark_mode_on}" class="mdl-switch mdl-js-switch is-upgraded" mdl-parse="" data-upgraded=",MaterialSwitch">
+                  <input type="checkbox" class="mdl-switch__input ng-pristine ng-untouched ng-valid ng-empty" ng-model="is_dark_mode_on" tabindex="-1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Dark Mode
+parseable name: 
+section: _0_125
+field signature: 1067852723
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 125" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Dark Mode
+parseable name: 
+section: _0_125
+field signature: 1067852723
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 125" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542273">
+                  <div class="mdl-switch__track"></div>
+                  <div class="mdl-switch__thumb">
+                    <span class="mdl-switch__focus-helper"></span></div></label>
+              </div>
+            </button>
+            <a id="secondary-settings-link" href="options.html" title="Go to Settings" target="_blank" class="secondaryToolbarButton linkButton settings notable-nav-button" tabindex="0" data-l10n-id="settings">
+              <i class="icon-common fa-cog"></i>
+              <span data-l10n-id="settings_label">Settings</span>
+            </a>
+            <button id="license-admin-panel-link" ng-show="current_user.administered_licenses.length" ng-click="open_customer_panel()" title="Go to License Admin Panel" class="secondaryToolbarButton linkButton settings notable-nav-button ng-hide" data-l10n-id="settings">
+              <i class="icon-common fa-users"></i>
+              <span data-l10n-id="settings_label">License Dashboard</span>
+            </button>
+            <a id="guest-signin" ng-show="current_user.customer" href="options.html#billing" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button ng-hide" title="Manage Billing" data-l10n-id="manage_billing">
+              <i class="icon-common fa-sign-in"></i>
+              <span data-l10n-id="manage_billing_label">Manage billing</span>
+            </a>
+            <button title="Log out" ng-hide="disable_logout_button" class="secondaryToolbarButton linkButton notable-nav-button" ng-click="logout()">
+              <i class="mdi mdi-logout"></i> <span>Log out</span>
+            </button>
+            <div class="horizontalToolbarSeparator"></div>
+            <!-- ngIf: can_open_roster_sync_dialog() -->
+            <button id="secondary-settings-link" ng-click="open_window('enter_coupon')" title="Enter coupon" target="_blank" class="secondaryToolbarButton linkButton settings notable-nav-button" data-l10n-id="settings" ng-hide="hidePurchaseOrUpgradeMessaging">
+              <i class="mdi mdi-cash"></i>
+              <span data-l10n-id="settings_label">Enter coupon</span>
+            </button>
+            <div class="horizontalToolbarSeparator"></div>
+            <!-- ngIf: userInEducationNotStudent() && has_flag('referral_system') -->
+            <!-- ngIf: feature_enabled('console_simulator') -->
+            <!-- ngIf: show_release_channel() -->
+          </div>
+        </div>
+        <div class="secondaryToolbarButtonContainer ng-scope" help-dropdown="" hanger="none" short="true">
+          <div class="secondaryToolbar ng-hide" ng-show="show_dropdown == 'help'">
+            <a id="secondary-faq-link" href="https://help.kamiapp.com/en/" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Find answers for most common questions" data-l10n-id="faq">
+              <i class="mdi mdi-help-circle"></i> <span>Help Center</span>
+            </a>
+            <a ng-show="school_role != 'student'" id="secondary-twitter-group-link" href="https://www.kamiapp.com/learn" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Kami Training">
+              <i class="mdi mdi-trophy"></i>
+              <span>Free tutorials &amp; courses</span>
+            </a>
+            <a ng-show="guide_url" id="secondary-faq-link" ng-href="" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button ng-hide" title="How to use Kami with your LMS" data-l10n-id="faq">
+              <i class="mdi mdi-book"></i> <span class="ng-binding"></span>
+            </a>
+            <a ng-click="show_whats_new('help_dropdown')" ng-show="should_show_whats_new()" class="linkButton secondaryToolbarButton notable-nav-button" title="What's new" data-l10n-id="whats-new">
+              <i class="mdi mdi-bell"></i> <span>What's new</span>
+            </a>
+            <div ng-show="school_role != 'student'" class="horizontalToolbarSeparator"></div>
+            <button id="support-email-link" ng-click="mailto.send()" class="linkButton secondaryToolbarButton notable-nav-button" title="Email Support" data-l10n-id="faq">
+              <i class="mdi mdi-email"></i> <span>Email Support</span>
+            </button>
+            <!-- ngIf: debug_screen_capture_video_enabled() -->
+            <a ng-show="school_role != 'student'" id="book-training-link" href="https://www.kamiapp.com/training/" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Book a Training" data-l10n-id="book-training">
+              <i class="mdi mdi-calendar"></i> <span>Book training</span>
+            </a>
+            <a ng-show="school_role != 'student'" id="secondary-twitter-group-link" href="https://twitter.com/KamiApp" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Twitter" data-l10n-id="twitter">
+              <i class="fa fa-twitter"></i> <span>Tweet Kami</span>
+            </a>
+            <a ng-show="school_role != 'student'" id="secondary-fb-group-link" href="https://www.facebook.com/groups/kamieducators" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Facebook" data-l10n-id="faq">
+              <i class="fa fa-facebook"></i>
+              <span>Join our Facebook group</span>
+            </a>
+            <div ng-show="school_role != 'student'" class="horizontalToolbarSeparator"></div>
+            <button id="keyboard-shortcuts" class="linkButton secondaryToolbarButton notable-nav-button" title="Keyboard Shortcuts" ng-click="open_window('keyboard_shortcuts')">
+              <i class="mdi mdi-keyboard"></i> <span>Keyboard Shortcuts</span>
+            </button>
+            <a id="kami-status" href="https://status.kamihq.com" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Kami Status Page">
+              <i class="fa fa-check"></i> <span>Kami Status</span>
+            </a>
+            <div id="help-notifications" ng-show="notifications.length">
+              <div class="horizontalToolbarSeparator"></div>
+              <!-- ngRepeat: notification in notifications --><button ng-repeat="notification in notifications" class="secondaryToolbarButton notable-nav-button ng-scope" title="Install Kami Extension" ng-click="click_notification(notification)">
+                <span class="notification-badge normal" ng-class="notification.importance.class">•</span>
+                <span class="ng-binding">Install Kami Extension</span></button><!-- end ngRepeat: notification in notifications -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="header-notifications-list ng-scope" ng-controller="HeaderNotificationsController" ng-show="headerNotificationsVisible">
+        <app-rater><div class="apprater kami-dialog header-notification ng-hide" ng-show="showDialog">
+            <div class="header">
+              <h1>How would you rate Kami?</h1>
+              <button class="close" aria-label="close" ng-click="cancel()"></button>
+            </div>
+            <div class="body">
+              <div class="rating" ng-class="{compact: options.rating > 0}" ng-init="makeStars(5)">
+                <!-- ngRepeat: star in stars --><span ng-repeat="star in stars" ng-click="star.click()" ng-mouseover="star.hover()" ng-mouseleave="star.hoverEnd()" ng-class="{active: star.active()}" class="fa fa-star-o ng-scope"></span><!-- end ngRepeat: star in stars --><span ng-repeat="star in stars" ng-click="star.click()" ng-mouseover="star.hover()" ng-mouseleave="star.hoverEnd()" ng-class="{active: star.active()}" class="fa fa-star-o ng-scope"></span><!-- end ngRepeat: star in stars --><span ng-repeat="star in stars" ng-click="star.click()" ng-mouseover="star.hover()" ng-mouseleave="star.hoverEnd()" ng-class="{active: star.active()}" class="fa fa-star-o ng-scope"></span><!-- end ngRepeat: star in stars --><span ng-repeat="star in stars" ng-click="star.click()" ng-mouseover="star.hover()" ng-mouseleave="star.hoverEnd()" ng-class="{active: star.active()}" class="fa fa-star-o ng-scope"></span><!-- end ngRepeat: star in stars --><span ng-repeat="star in stars" ng-click="star.click()" ng-mouseover="star.hover()" ng-mouseleave="star.hoverEnd()" ng-class="{active: star.active()}" class="fa fa-star-o ng-scope"></span><!-- end ngRepeat: star in stars -->
+                <p class="message ng-binding"></p>
+              </div>
+              <p ng-show="options.rating == 0" class="ng-hide">Click to rate</p>
+              <p ng-show="options.rating > 3" class="ng-hide">
+                Awesome! Do you want to share your Kami review on the Chrome Web
+                Store?
+              </p>
+              <p ng-show="options.rating > 0 &amp;&amp; options.rating <= 3" class="ng-hide">
+                Tell us how we can make Kami better. We’d like to hear your
+                feedback.
+              </p>
+              <textarea ng-show="options.rating > 0 &amp;&amp; options.rating <= 3" ng-model="options.feedback" placeholder="What can we improve on?" class="ng-pristine ng-untouched ng-valid ng-empty ng-hide" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Tell us how we can make Kami better. We’d like to hear your feedback.
+parseable name: 
+section: _0_125
+field signature: 4290505990
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 136" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Tell us how we can make Kami better. We’d like to hear your feedback.
+parseable name: 
+section: _0_125
+field signature: 4290505990
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 136" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542274"></textarea>
+              <div ng-show="options.rating > 0" class="button-row overflow-padding ng-hide">
+                <button class="button primary" ng-show="options.rating <= 3" ng-click="submit(false)">
+                  Submit
+                </button>
+                <button class="button secondary ng-hide" ng-show="options.rating > 3" ng-click="submit(false)">
+                  Later
+                </button>
+                <button class="button primary ng-hide" ng-show="options.rating > 3" ng-click="submit(true)">
+                  Open Chrome Store
+                </button>
+              </div>
+            </div>
+          </div>
+        </app-rater>
+        <ocr-prompt class="ng-scope"><div class="kami-dialog header-notification align-right ocr-prompt ng-hide" ng-show="show_beta_message &amp;&amp; status === 'normal'">
+            <div class="header">
+              <h1>Recognize Text</h1>
+              <button class="close" aria-label="close" ng-click="close()"></button>
+            </div>
+            <div class="body">
+              <p>
+                This seems like a scanned PDF. Would you like to add the text?
+              </p>
+              <div class="button-column">
+                <button class="button secondary" ng-click="save_dismiss_and_close()">
+                  No thanks
+                </button>
+                <button class="button primary" ng-click="run_ocr()">
+                  Run Text Recognition
+                </button>
+              </div>
+              <a class="link-button secondary" ng-click="never_ask_again()" ng-keypress="$event.key === 'Enter' &amp;&amp; never_ask_again()" tabindex="0">
+                Never ask again
+              </a>
+            </div>
+          </div>
+        </ocr-prompt>
+        <!-- ngIf: state.dialog_visible -->
+        <!-- ngIf: current_user && current_user.id && current_user.email -->
+        <!-- ngIf: current_user -->
+        <license-invites class="ng-scope"><!-- ngIf: userLoaded && !!invitesStatus() -->
+        </license-invites>
+        <tour-reminder><div ng-show="showTourReminder" class="ng-hide">
+            <div class="kami-dialog header-notification">
+              <div class="header">
+                <h1>Kami Tour Reminder</h1>
+                <button class="close" aria-label="close" ng-click="remindLater()"></button>
+              </div>
+              <div class="body">
+                <p>
+                  You've set a reminder to take a quick tour of Kami today.
+                  Would you like to start now?
+                </p>
+                <p>It will take less than five minutes</p>
+                <div class="button-row overflow-padding">
+                  <button class="button secondary" ng-click="remindLater()">
+                    No, Remind me later
+                  </button>
+                  <button class="button primary" ng-click="doTour()">
+                    Yes! Let's go
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div></tour-reminder>
+        <div class="bottom-spacer"></div>
+      </div>
+      <div class="toolbar">
+        <div id="toolbarContainer" data-ddg-formtype="sign up">
+          <div id="toolbarViewer">
+            <div id="toolbarViewerLeft" data-ddg-formtype="sign in">
+              <button class="skip-to-content" ng-click="skip_to_content()">
+                Skip to main content
+              </button>
+              <div id="logo" ng-click="logo_click($event)" ng-keypress="$event.key === 'Enter' &amp;&amp; logo_click($event)" tabindex="0" aria-label="Kami Logo">
+                <div class="large-logo" alt="Kami Logo"></div>
+                <div class="small-logo" alt="Kami Logo"></div>
+                <!-- tooltips: --><tooltip tooltip-template="Kami Dashboard" tooltip-side="right" class="tooltips _right _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-hidden="true"></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Kami Dashboard</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+              </div>
+
+              <div class="header-badges ng-scope" ng-controller="PremiumBadgeController" ng-show="isVisible()">
+                <!-- ngIf: !current_user.premium_subscription_active --><!-- tooltips: --><tooltip tooltip-template="You are using the free version of Kami" tooltip-side="right" class="tooltips _right _steady _ready"><tip-cont><a class="free-badge badge-toolbar ng-scope" href="upgrade.html" target="_blank" ng-if="!current_user.premium_subscription_active" ng-click="clicked_premium()">Upgrade</a></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>You are using the free version of Kami</tip-tip><tip-arrow></tip-arrow></tip></tooltip><!-- end ngIf: !current_user.premium_subscription_active -->
+                <!-- ngIf: !is_trial_license && days_until_trial_ends -->
+                <!-- ngIf: is_trial_license -->
+                <!-- ngIf: showCountdown() -->
+              </div>
+              <div class="login-badge badge-toolbar ng-hide" ng-show="current_user.guest_user" guest-login-click="">
+                Login
+              </div>
+
+              <button id="sidebarToggle" class="toolbarButton ng-hide" data-l10n-id="toggle_sidebar" ng-click="toggle_dropdown(null)" aria-label="Toggle Sidebar" ng-show="page_state.document">
+                <!-- tooltips: --><tooltip tooltip-template="Toggle Sidebar" tooltip-side="bottom" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope"></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Toggle Sidebar</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                <span data-l10n-id="toggle_sidebar_label">Toggle Sidebar</span>
+              </button>
+              <div>
+                <button id="viewFind" class="toolbarButton group hiddenSmallView ng-hide" data-l10n-id="findbar" aria-label="Find in Document" ng-click="toggle_dropdown(null)" ng-show="page_state.document">
+                  <!-- tooltips: --><tooltip tooltip-template="Find in Document" tooltip-side="bottom" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope"></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Find in Document</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                  <span data-l10n-id="findbar_label">Find</span>
+                </button>
+                <div class="findbar hidden doorHanger hiddenSmallView" id="findbar" data-ddg-formtype="sign in">
+                  <label for="findInput" class="toolbarLabel" data-l10n-id="find_label">Find:</label>
+                  <input id="findInput" class="toolbarField" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Find:
+parseable name: findInput
+section: _0_125
+field signature: 2928276632
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 34" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Find:
+parseable name: findInput
+section: _0_125
+field signature: 2928276632
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542275">
+                  <div class="splitToolbarButton">
+                    <button class="toolbarButton findPrevious" title="" id="findPrevious" data-l10n-id="find_previous">
+                      <span data-l10n-id="find_previous_label">Previous</span>
+                    </button>
+                    <div class="splitToolbarButtonSeparator"></div>
+                    <button class="toolbarButton findNext" title="" id="findNext" data-l10n-id="find_next">
+                      <span data-l10n-id="find_next_label">Next</span>
+                    </button>
+                  </div>
+                  <input type="checkbox" id="findHighlightAll" checked="checked" class="toolbarField" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Highlight all
+parseable name: findHighlightAll
+section: _0_125
+field signature: 1360432334
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 37" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Highlight all
+parseable name: findHighlightAll
+section: _0_125
+field signature: 1360432334
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542276">
+                  <label for="findHighlightAll" class="toolbarLabel" data-l10n-id="find_highlight">Highlight all</label>
+                  <input type="checkbox" id="findMatchComments" checked="checked" class="toolbarField" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Comments
+parseable name: findMatchComments
+section: _0_125
+field signature: 3151080806
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 38" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Comments
+parseable name: findMatchComments
+section: _0_125
+field signature: 3151080806
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542277">
+                  <label for="findMatchComments" class="toolbarLabel" data-l10n-id="find_match_case_label">Comments</label>
+                  <input type="checkbox" id="findMatchCase" class="toolbarField" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Match case
+parseable name: findMatchCase
+section: _0_125
+field signature: 4205787637
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 39" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Match case
+parseable name: findMatchCase
+section: _0_125
+field signature: 4205787637
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542278">
+                  <label for="findMatchCase" class="toolbarLabel" data-l10n-id="find_match_case_label">Match case</label>
+                  <span id="findResultsCount" class="toolbarLabel hidden"></span>
+                  <span id="findMsg" class="toolbarLabel"></span>
+                </div>
+                <!-- findbar -->
+              </div>
+
+              <!-- Hidden for minimalism -->
+              <div class="splitToolbarButton hide">
+                <button class="toolbarButton hide pageUp" title="Previous Page" id="previous" data-l10n-id="previous">
+                  <span data-l10n-id="previous_label">Previous</span>
+                </button>
+                <div class="splitToolbarButtonSeparator"></div>
+                <button class="toolbarButton hide pageDown" title="Next Page" id="next" data-l10n-id="next">
+                  <span data-l10n-id="next_label">Next</span>
+                </button>
+              </div>
+
+              <div id="documentTitleBar" class="hiddenSmallView ng-scope ng-hide" ng-controller="DocumentTitleBarController" ng-show="page_state.document">
+                <div class="source fa fa-globe item-tooltip-container" ng-class="page_state.document_state.source">
+                  <!-- tooltips: --><tooltip tooltip-template="{{page_state.document_state.source | translateSource}}" tooltip-side="bottom" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="ng-scope" tooltip-template="Web"></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Web</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                </div>
+                <!-- ngIf: page_state.document_state.source == 'googledrive' -->
+                <div class="documentNameInputWrapper">
+                  <input ng-model="document_name" ng-readonly="readonly()" ng-blur="save_document_name()" ng-keydown="document_name_keydown($event)" class="documentNameInput ng-pristine ng-untouched ng-valid ng-empty" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: ×Web
+parseable name: 
+section: _0_125
+field signature: 1318412689
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 42" readonly="readOnly" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: ×Web
+parseable name: 
+section: _0_125
+field signature: 1318412689
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542279">
+                </div>
+              </div>
+            </div>
+            <div id="toolbarViewerRight">
+              <div id="saving-progress" ng-show="page_state.document" class="ng-hide" ng-controller="SavingProgressController" ng-switch="status()">
+                <!-- ngSwitchWhen: queued_offline -->
+                <!-- ngSwitchWhen: saving -->
+                <!-- ngSwitchWhen: saved -->
+                <div ng-switch-when="saved" disappear-after="20" class="badge-toolbar ng-scope">
+                  <span>Saved</span>
+                </div>
+                <!-- end ngSwitchWhen: -->
+              </div>
+              <!-- ngIf: activity_fields_enabled() && has_activities() -->
+              <div class="scaleSelect ng-hide" id="toolbarViewerMiddle" ng-show="page_state.document" data-ddg-formtype="sign in">
+                <div ng-controller="SavingProgressController" class="ng-scope">
+                  <button id="undo" class="toolbarButton undo" aria-label="Undo" data-l10n-id="undo" ng-click="undo()" ng-disabled="!has_undo() || is_undoing()" disabled="disabled">
+                    <!-- tooltips: --><tooltip tooltip-template="Undo {{undo_key}}" tooltip-side="bottom" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-template="Undo (⌘Z)">
+                          <i class="material-icons">undo</i>
+                        </div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Undo (⌘Z)</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                    <span data-l10n-id="undo_label" class="ng-binding">Undo (⌘Z)</span>
+                  </button>
+                  <button id="redo" class="toolbarButton redo" aria-label="Redo" data-l10n-id="redo" ng-click="redo()" ng-disabled="!has_redo() || is_redoing()" disabled="disabled">
+                    <!-- tooltips: --><tooltip tooltip-template="Redo {{redo_key}}" tooltip-side="bottom" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-template="Redo (⇧⌘Z)">
+                          <i class="material-icons">redo</i>
+                        </div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Redo (⇧⌘Z)</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                    <span data-l10n-id="redo_label" class="ng-binding">Redo (⇧⌘Z)</span>
+                  </button>
+                </div>
+                <div class="splitToolbarButtonSeparator"></div>
+                <div class="splitToolbarButton">
+                  <button id="zoomOut" class="toolbarButton zoomOut" aria-label="Zoom Out" data-l10n-id="zoom_out">
+                    <!-- tooltips: --><tooltip tooltip-template="Zoom Out" tooltip-side="bottom" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope"></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Zoom Out</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                    <span data-l10n-id="zoom_out_label">Zoom Out</span>
+                  </button>
+                  <button id="zoomIn" class="toolbarButton zoomIn" aria-label="Zoom In" data-l10n-id="zoom_in">
+                    <!-- tooltips: --><tooltip tooltip-template="Zoom In" tooltip-side="bottom" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope"></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Zoom In</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                    <span data-l10n-id="zoom_in_label">Zoom In</span>
+                  </button>
+                </div>
+                <span id="scaleSelectContainer" class="dropdownToolbarButton">
+                  <select id="scaleSelect" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Undo (⌘Z)
+parseable name: scaleSelect
+section: _0_125
+field signature: 2623005909
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 52" data-l10n-id="zoom" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Undo (⌘Z)
+parseable name: scaleSelect
+section: _0_125
+field signature: 2623005909
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 52" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542280">
+                    <option id="pageDisabledTitle" title="" value="disabled" disabled="disabled">
+                      Zoom Options
+                    </option>
+                    <option id="pageAutoOption" title="" value="auto" selected="selected" data-l10n-id="page_scale_auto">
+                      Automatic
+                    </option>
+                    <option id="pageActualOption" title="" value="page-actual" data-l10n-id="page_scale_actual">
+                      Actual Size
+                    </option>
+                    <option id="pageFitOption" title="" value="page-fit" data-l10n-id="page_scale_fit">
+                      Fit Page
+                    </option>
+                    <option id="pageWidthOption" title="" value="page-width" data-l10n-id="page_scale_width">
+                      Full Width
+                    </option>
+                    <option id="customScaleOption" title="" value="custom"></option>
+                    <option title="" value="0.5" data-l10n-id="page_scale_percent" data-l10n-args="{ &quot;scale&quot;: 50 }">
+                      50%
+                    </option>
+                    <option title="" value="0.75" data-l10n-id="page_scale_percent" data-l10n-args="{ &quot;scale&quot;: 75 }">
+                      75%
+                    </option>
+                    <option title="" value="1" data-l10n-id="page_scale_percent" data-l10n-args="{ &quot;scale&quot;: 100 }">
+                      100%
+                    </option>
+                    <option title="" value="1.25" data-l10n-id="page_scale_percent" data-l10n-args="{ &quot;scale&quot;: 125 }">
+                      125%
+                    </option>
+                    <option title="" value="1.5" data-l10n-id="page_scale_percent" data-l10n-args="{ &quot;scale&quot;: 150 }">
+                      150%
+                    </option>
+                    <option title="" value="2" data-l10n-id="page_scale_percent" data-l10n-args="{ &quot;scale&quot;: 200 }">
+                      200%
+                    </option>
+                    <option title="" value="3" data-l10n-id="page_scale_percent" data-l10n-args="{ &quot;scale&quot;: 300 }">
+                      300%
+                    </option>
+                    <option title="" value="4" data-l10n-id="page_scale_percent" data-l10n-args="{ &quot;scale&quot;: 400 }">
+                      400%
+                    </option>
+                  </select>
+                </span>
+              </div>
+              <!-- ngIf: !microsoft_teams -->
+              <div id="open-dropdown" secondary-toolbar-toggle-dropdown="open_dropdown" class="toolbarButton notable-nav-button dropdown-common ng-scope" aria-label="Open File" role="button" tabindex="0" data-l10n-id="open_file" ng-controller="OpenDropdownController" ng-if="!microsoft_teams">
+                <!-- tooltips: --><tooltip tooltip-template="Open File" tooltip-side="bottom" tooltip-class="app-toolbar-tooltip" class="tooltips _multiline _bottom _steady _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-append-to-body="true"></div></tip-cont><tip class="app-toolbar-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>Open File</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                <span data-l10n-id="open_file_label">Open file</span>
+                <div class="secondaryToolbarButtonContainer">
+                  <div class="secondaryToolbar doorHangerRight ng-hide" ng-show="show_dropdown == 'open_dropdown'">
+                    <div id="open-from" class="header" title="Open a new file in Kami">
+                      Open file from
+                    </div>
+                    <div class="indent" title="Open a new file in Kami">
+                      <button class="secondaryToolbarButton" ng-click="open_file()" title="Open file from My Computer">
+                        <i class="fa fa-hdd-o"></i>
+                        <span class="name">My Computer</span>
+                      </button>
+                      <button class="secondaryToolbarButton ng-hide" ng-show="show_teacher_features()" ng-click="open_kami_library()" title="Open Kami Library">
+                        <img id="kami-round-icon" class="image-icon" src="./images/icon48 transparent.png">
+                        <span class="name">Kami Library</span>
+                        <img class="svg-badge" src="./images/new-badge.svg">
+                      </button>
+                      <button class="secondaryToolbarButton" ng-click="open_file_browser()" title="Open file from Shared Files">
+                        <i class="fa fa-share-alt"></i>
+                        <span class="name">Shared Files</span>
+                      </button>
+                      <button class="secondaryToolbarButton" ng-show="is_cloud_provider_allowed('google')" ng-click="open_gdrive_picker()" title="Open file from Google Drive">
+                        <i class="fa google"></i>
+                        <span class="name">Google Drive</span>
+                      </button>
+                      <div class="indent">
+                        <button class="secondaryToolbarButton ng-hide" ng-click="open_gdrive_parent_picker()" ng-show="page_state.document.copy_type === 'google' &amp;&amp; page_state.document_state.parent_id" ng-attr-title="Open file from {{get_drive_folder()}} Folder" title="Open file from My Drive Folder">
+                          <i class="fa fa-folder"></i>
+                          <span class="name ng-binding">My Drive</span>
+                        </button>
+                      </div>
+                      <button class="secondaryToolbarButton" ng-show="is_cloud_provider_allowed('microsoft')" ng-click="open_onedrive_picker()" title="Open file from OneDrive">
+                        <i class="mdi mdi-onedrive"></i>
+                        <span class="name">OneDrive</span>
+                      </button>
+                      <button class="secondaryToolbarButton" ng-click="open_dropbox_picker()" title="Open file from Dropbox">
+                        <i class="fa fa-dropbox"></i>
+                        <span class="name">Dropbox</span>
+                      </button>
+                      <button class="secondaryToolbarButton" ng-click="open_box_picker()" title="Open file from Box">
+                        <i class="fa box"></i>
+                        <span class="name">Box</span>
+                      </button>
+                    </div>
+
+                    <div class="horizontalToolbarSeparator"></div>
+
+                    <div id="open-recent-files" class="header" title="Recently opened files">
+                      Recent files
+                    </div>
+                    <div ng-show="recent_files.length" class="indent ng-hide" title="Recently opened files">
+                      <!-- ngRepeat: file in recent_files | limitTo:5 track by file.document_identifier -->
+                    </div>
+
+                    <div ng-show="page_state.document" class="ng-hide">
+                      <div class="horizontalToolbarSeparator"></div>
+                      <div id="copy-header" class="header" title="Tracked copies">
+                        Tracked copies
+                        <!-- <a style='text-align: right' ng-click="switch_copy('new_copy')">Create new</a> -->
+                      </div>
+                      <div id="copy-description" class="description" title="Tracked copies">
+                        Switch between different copies of the same file that
+                        you have previously opened
+                      </div>
+                      <div class="indent ng-hide" ng-show="document_with_copies">
+                        <!-- ngRepeat: copy in document_with_copies.copies | limitTo:5 -->
+                        <button class="secondaryToolbarButton view-all" ng-click="open_all_copies()" title="View All Copies">
+                          View All
+                        </button>
+                      </div>
+                      <div class="indent" ng-hide="document_with_copies">
+                        <i class="fa fa-circle-o-notch fa-spin"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- end ngIf: !microsoft_teams -->
+
+              <button id="openFile" class="hidden">
+                <!-- for pdfjs -->
+                <span data-l10n-id="open_file_label">Open file</span>
+              </button>
+
+              <!-- ngIf: !microsoft_teams --><button id="share-online" ng-show="share_allowed() &amp;&amp; page_state.document" ng-click="show_share()" class="hiddenMediumView toolbarButton notable-nav-button shareOnline ng-scope ng-hide" aria-label="Share Document" data-l10n-id="share" secondary-toolbar-toggle-dropdown="share" ng-if="!microsoft_teams">
+                <!-- tooltips: --><tooltip tooltip-template="Share Document" tooltip-side="bottom" tooltip-class="app-toolbar-tooltip" class="tooltips _multiline _bottom _steady _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-append-to-body="true"></div></tip-cont><tip class="app-toolbar-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>Share Document</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                <span data-l10n-id="share_label">Share Document</span></button><!-- end ngIf: !microsoft_teams -->
+
+              <div id="print" ng-show="page_state.document &amp;&amp; !disable_export_and_print()" class="toolbarButton print hiddenMediumView dropdown-common ng-hide" aria-label="Print" role="button" tabindex="0" data-l10n-id="print" secondary-toolbar-toggle-dropdown="print">
+                <!-- tooltips: --><tooltip tooltip-template="Print" tooltip-side="bottom" tooltip-class="app-toolbar-tooltip" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-append-to-body="true"></div></tip-cont><tip class="app-toolbar-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>Print</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                <span data-l10n-id="print_label">Print</span>
+                <div class="secondaryToolbarButtonContainer">
+                  <div id="print-dropdown" class="secondaryToolbar doorHangerRight ng-hide" ng-show="show_dropdown == 'print'">
+                    <div class="header">Print Document</div>
+                    <button id="print-original" class="secondaryToolbarButton" title="Print original PDF" ng-click="print('original', $event)">
+                      <span>Original</span>
+                    </button>
+                    <button id="print-top" class="secondaryToolbarButton" title="Print with annotations" ng-click="print('annotation', $event)">
+                      <span>With Annotations</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sync-dropdown-button" class="toolbarButton notable-nav-button sync dropdown-common ng-scope ng-hide" ng-show="page_state.document" aria-label="Save" role="button" tabindex="0" data-l10n-id="sync" secondary-toolbar-toggle-dropdown="sync" ng-controller="SyncController">
+                <!-- tooltips: --><tooltip tooltip-template="Save" tooltip-side="bottom" tooltip-class="app-toolbar-tooltip" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-append-to-body="true"></div></tip-cont><tip class="app-toolbar-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>Save</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                <!-- ngIf: coursework().can_be_turned_in() -->
+                <!-- ngIf: coursework().can_be_reclaimed() -->
+                <!-- ngIf: coursework().can_be_returned() -->
+                <!-- ngIf: is_edit_assessment_mode() -->
+                <div class="secondaryToolbarButtonContainer">
+                  <div class="secondaryToolbar doorHangerRight ng-hide" ng-show="show_dropdown == 'sync'">
+                    <sync-dropdown><div id="sync-dropdown" title="" data-ddg-formtype="sign in">
+                        <div class="dropdown-message ng-hide" ng-show="coursework().status.course_data">
+                          <div ng-show="coursework().status.state == 'fetching' || coursework().status.state == 'authorizing'" class="ng-hide">
+                            <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate is-upgraded" mdl-parse="" data-upgraded=",MaterialProgress">
+                              <div class="progressbar bar bar1" style="width: 0%"></div>
+                              <div class="bufferbar bar bar2" style="width: 100%"></div>
+                              <div class="auxbar bar bar3" style="width: 0%"></div>
+                            </div>
+                            <div ng-hide="turning_in_on_load()" class="progress-text">
+                              Loading...
+                            </div>
+                            <div ng-show="turning_in_on_load()" class="progress-text ng-hide">
+                              Preparing to Turn In...
+                            </div>
+                          </div>
+                          <div ng-show="coursework().status.state == 'error'" class="ng-hide">
+                            <div class="error-text">
+                              We couldn't load this assignment. Please refresh
+                              and try again.
+                            </div>
+                          </div>
+                          <div ng-show="coursework().status.state == 'loaded' &amp;&amp; !coursework().status.progress" class="ng-hide">
+                            <div class="top_line">
+                              <div id="classroom-info-tooltip" ng-show="coursework().status.multiple_matches" ng-click="show_multi_match_message()" class="ng-hide">
+                                <!-- tooltips: --><tooltip tooltip-template="<p>Multiple assignments match this file</p><p>Select the one you want to use</p>" tooltip-side="bottom" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="ng-scope"></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>
+                                      <p>
+                                        Multiple assignments match this file
+                                      </p>
+                                      <p>
+                                        Select the one you want to use
+                                      </p></tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                                <span><i class="fa fa-info-circle"></i></span>
+                              </div>
+                              <div ng-hide="coursework().status.multiple_matches" class="name ng-binding"></div>
+                              <div ng-show="coursework().status.multiple_matches" class="name-select input-field mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label ng-hide is-dirty is-upgraded" mdl-parse="" data-upgraded=",MaterialSelectfield">
+                                <select class="mdl-selectfield__select ng-pristine ng-untouched ng-valid ng-empty" ng-model="selected_course_work_item" ng-change="switch_coursework()" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: ×Multiple assignments match this fileSelect the one you want to use
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 159" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: ×Multiple assignments match this fileSelect the one you want to use
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 159" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542281">
+                                  <option value="? undefined:undefined ?" selected="selected"></option>
+                                  <!-- ngRepeat: item in coursework().status.coursework_matches.list -->
+                                </select>
+                                <div class="mdl-selectfield__icon">
+                                  <i class="material-icons">arrow_drop_down</i>
+                                </div>
+                              </div>
+                              <div id="multiple-courseworks-tip">
+                                <!-- tooltips: --><tooltip tooltip-template="There are multiple assignments that match this file. Choose one in the select" tooltip-side="bottom" tooltip-class="multiple-courseworks-tip-tooltip" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="ng-scope"></div></tip-cont><tip class="multiple-courseworks-tip-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>There are multiple assignments that match
+                                      this file. Choose one in the
+                                      select</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                              </div>
+                              <div class="state ng-binding"></div>
+                            </div>
+                            <div class="material">
+                              <div class="material-left">
+                                <div class="material-name ng-binding"></div>
+                                <div class="material-type">Kami PDF</div>
+                              </div>
+                            </div>
+                            <div class="error-text ng-binding ng-hide" style="white-space: pre-line" ng-show="coursework().status.error">
+                              <!-- ngIf: coursework().status.error_button_url -->
+                            </div>
+                            <div class="bottom-buttons">
+                              <!-- ngIf: coursework().can_be_turned_in() -->
+                              <!-- ngIf: coursework().can_be_reclaimed() -->
+                              <!-- ngIf: coursework().can_be_returned() -->
+                              <!-- ngIf: coursework().can_be_returned() -->
+                            </div>
+                          </div>
+                          <div ng-show="coursework().status.state == 'loaded' &amp;&amp; coursework().status.progress" class="progress ng-hide">
+                            <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate is-upgraded" mdl-parse="" data-upgraded=",MaterialProgress">
+                              <div class="progressbar bar bar1" style="width: 0%"></div>
+                              <div class="bufferbar bar bar2" style="width: 100%"></div>
+                              <div class="auxbar bar bar3" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text ng-binding"></div>
+                          </div>
+                          <div class="horizontalToolbarSeparator"></div>
+                        </div>
+                        <div class="dropdown-message">
+                          <div class="error-text ng-hide" ng-show="coursework().status.error_type == 'error_classroom_api_disabled'">
+                            Google Classroom access blocked. Click
+                            <a href="" ng-click="coursework().show_gclassoom_access_blocked_message()">here</a>
+                            for more info
+                          </div>
+                        </div>
+                        <div>
+                          <div id="kami-sync" ng-hide="service_enabled('drive') || service_enabled('onedrive')">
+                            <div class="header" title="Kami Cloud Sync">
+                              <i class="fa fa-refresh"></i>
+                              <span>Kami Cloud Sync</span>
+                              <!-- ngIf: offline() -->
+                            </div>
+                            <div class="body">
+                              <div class="child ng-binding" ng-show="sync_status('kami')">
+                                <i class="fa fa-check" ng-class="{'fa-check': unsync_count('kami') === 0, 'fa-bolt': unsync_count('kami') > 0}"></i>
+                                All changes saved
+                              </div>
+                              <div class="child ng-binding ng-hide" ng-show="last_sync('kami')"></div>
+                            </div>
+                            <div class="horizontalToolbarSeparator"></div>
+                          </div>
+                          <!-- ngIf: service_available('drive') -->
+                          <!-- ngIf: service_available('onedrive') -->
+                          <div class="horizontalToolbarSeparator ng-hide" ng-show="service_enabled('drive')"></div>
+                          <div id="more-export-options">
+                            <div class="header" title="More">
+                              <i class="fa fa-ellipsis-h"></i> More
+                            </div>
+                            <div class="body">
+                              <button class="child secondaryToolbarButton" ng-click="download()">
+                                <i class="fa fa-download"></i>
+                                <span>Download</span>
+                              </button>
+                              <button class="child secondaryToolbarButton" ng-click="show_export()">
+                                <span>Advanced Export</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </sync-dropdown>
+                  </div>
+                </div>
+              </div>
+
+              <!-- element 'download' id required by PDF.js -->
+              <button id="download" class="hide"></button>
+              <!-- tooltips: --><tooltip tooltip-template="Download" tooltip-side="bottom" tooltip-class="app-toolbar-tooltip" class="tooltips _bottom _steady _ready"><tip-cont><button id="show-download-dialog" class="toolbarButton notable-nav-button hiddenMediumView download ng-scope ng-hide" ng-show="page_state.document &amp;&amp; !disable_export_and_print()" data-l10n-id="download" ng-click="open_window('show_download'); toggle_dropdown(null)" tooltip-append-to-body="true">
+                    <span data-l10n-id="download_label">Download</span>
+                  </button></tip-cont><tip class="app-toolbar-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>Download</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+
+              <div id="help-dropdown-button" class="hiddenMediumView toolbarButton notable-nav-button help dropdown-common" aria-label="Help" role="button" data-l10n-id="help" secondary-toolbar-toggle-dropdown="help" tabindex="0">
+                <!-- tooltips: --><tooltip tooltip-template="Help" tooltip-side="bottom" tooltip-class="app-toolbar-tooltip" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-append-to-body="true"></div></tip-cont><tip class="app-toolbar-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>Help</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                <!-- ngIf: has_app_notifications -->
+                <div class="unread-indicator ng-scope normal" ng-class="app_notifications_highest_importance.importance.class" ng-if="has_app_notifications"></div>
+                <!-- end ngIf: has_app_notifications -->
+                <div class="secondaryToolbarButtonContainer ng-scope" hanger="top-right" help-dropdown="">
+                  <div class="secondaryToolbar doorHangerRight ng-hide" ng-show="show_dropdown == 'help'">
+                    <a id="secondary-faq-link" href="https://help.kamiapp.com/en/" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Find answers for most common questions" data-l10n-id="faq">
+                      <i class="mdi mdi-help-circle"></i>
+                      <span>Help Center</span>
+                    </a>
+                    <a ng-show="school_role != 'student'" id="secondary-twitter-group-link" href="https://www.kamiapp.com/learn" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Kami Training">
+                      <i class="mdi mdi-trophy"></i>
+                      <span>Free tutorials &amp; courses</span>
+                    </a>
+                    <a ng-show="guide_url" id="secondary-faq-link" ng-href="" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button ng-hide" title="How to use Kami with your LMS" data-l10n-id="faq">
+                      <i class="mdi mdi-book"></i>
+                      <span class="ng-binding"></span>
+                    </a>
+                    <a ng-click="show_whats_new('help_dropdown')" ng-show="should_show_whats_new()" class="linkButton secondaryToolbarButton notable-nav-button" title="What's new" data-l10n-id="whats-new">
+                      <i class="mdi mdi-bell"></i> <span>What's new</span>
+                    </a>
+                    <div ng-show="school_role != 'student'" class="horizontalToolbarSeparator"></div>
+                    <button id="support-email-link" ng-click="mailto.send()" class="linkButton secondaryToolbarButton notable-nav-button" title="Email Support" data-l10n-id="faq">
+                      <i class="mdi mdi-email"></i> <span>Email Support</span>
+                    </button>
+                    <!-- ngIf: debug_screen_capture_video_enabled() -->
+                    <a ng-show="school_role != 'student'" id="book-training-link" href="https://www.kamiapp.com/training/" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Book a Training" data-l10n-id="book-training">
+                      <i class="mdi mdi-calendar"></i>
+                      <span>Book training</span>
+                    </a>
+                    <a ng-show="school_role != 'student'" id="secondary-twitter-group-link" href="https://twitter.com/KamiApp" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Twitter" data-l10n-id="twitter">
+                      <i class="fa fa-twitter"></i> <span>Tweet Kami</span>
+                    </a>
+                    <a ng-show="school_role != 'student'" id="secondary-fb-group-link" href="https://www.facebook.com/groups/kamieducators" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Facebook" data-l10n-id="faq">
+                      <i class="fa fa-facebook"></i>
+                      <span>Join our Facebook group</span>
+                    </a>
+                    <div ng-show="school_role != 'student'" class="horizontalToolbarSeparator"></div>
+                    <button id="keyboard-shortcuts" class="linkButton secondaryToolbarButton notable-nav-button" title="Keyboard Shortcuts" ng-click="open_window('keyboard_shortcuts')">
+                      <i class="mdi mdi-keyboard"></i>
+                      <span>Keyboard Shortcuts</span>
+                    </button>
+                    <a id="kami-status" href="https://status.kamihq.com" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button" title="Kami Status Page">
+                      <i class="fa fa-check"></i> <span>Kami Status</span>
+                    </a>
+                    <div id="help-notifications" ng-show="notifications.length">
+                      <div class="horizontalToolbarSeparator"></div>
+                      <!-- ngRepeat: notification in notifications --><button ng-repeat="notification in notifications" class="secondaryToolbarButton notable-nav-button ng-scope" title="Install Kami Extension" ng-click="click_notification(notification)">
+                        <span class="notification-badge normal" ng-class="notification.importance.class">•</span>
+                        <span class="ng-binding">Install Kami Extension</span></button><!-- end ngRepeat: notification in notifications -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button id="whats-new" ng-click="show_whats_new('top_bar')" ng-show="is_showing_dashboard()" class="hiddenMediumView toolbarButton notable-nav-button whats-new ng-hide" aria-label="What's New" data-l10n-id="whatsNew">
+                <!-- tooltips: --><tooltip tooltip-template="What's New" tooltip-side="bottom" tooltip-class="app-toolbar-tooltip" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-append-to-body="true"></div></tip-cont><tip class="app-toolbar-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>What's New</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                <span data-l10n-id="whats_new">What's New</span>
+              </button>
+
+              <!-- <div class="toolbarButtonSpacer"></div> -->
+              <a href="#" id="viewBookmark" class="hide toolbarButton bookmark hiddenSmallView" title="Current view (copy or open in new window)" data-l10n-id="bookmark" ng-click="toggle_dropdown(null)">
+                <span data-l10n-id="bookmark_label">Current View</span>
+              </a>
+
+              <button id="presentationMode" class="toolbarButton presentationMode hide" title="Switch to Presentation Mode" data-l10n-id="presentation_mode" ng-click="toggle_dropdown(null)">
+                <span data-l10n-id="presentation_mode_label">Presentation Mode</span>
+              </button>
+
+              <button id="secondaryToolbarToggle" class="toolbarButton notable-nav-button" aria-label="Menu" data-l10n-id="tools" ng-click="toggle_dropdown(null)" ng-keydown="toggle_dropdown(null)">
+                <!-- tooltips: --><tooltip tooltip-template="Menu" tooltip-side="bottom" tooltip-class="app-toolbar-tooltip" class="tooltips _bottom _steady _multiline _ready"><tip-cont><div class="toolbarButtonTooltipAnchor ng-scope" tooltip-append-to-body="true"></div></tip-cont><tip class="app-toolbar-tooltip"><tip-tip><span class="close-button" style="display: none">×</span>Menu</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                <span data-l10n-id="tools_label">Menu</span>
+              </button>
+
+              <div id="secondaryToolbar" class="secondaryToolbar hidden doorHangerRight">
+                <div id="secondaryToolbarButtonContainer" style="max-height: -40px">
+                  <button id="dropdown-toolbar-user" class="secondaryToolbarButton notable-nav-button dropdown-left visibleMediumView ng-scope" secondary-toolbar-toggle-dropdown="user" ng-controller="PremiumBadgeController">
+                    <div class="fa avatar">
+                      <!-- ngIf: referral_notify -->
+                      <a alt="" class="initials ng-binding" colorize-initials="" style="background-color: #28a144"></a>
+                    </div>
+                    <span class="name-label ng-binding" data-l10n-id="secondary-help_label"></span>
+                  </button>
+
+                  <div class="horizontalToolbarSeparator visibleMediumView"></div>
+
+                  <div id="secondary-help" class="secondaryToolbarButton notable-nav-button dropdown-left visibleMediumView" title="Help" data-l10n-id="secondary-help" secondary-toolbar-toggle-dropdown="help" tabindex="0">
+                    <i class="fa fa-question-circle"></i>
+                    <span data-l10n-id="secondary-help_label">Help</span>
+                  </div>
+
+                  <!-- ngIf: !microsoft_teams --><button id="split-merge-button" class="secondaryToolbarButton notable-nav-button linkButton ng-scope" title="Split and Merge PDF document" data-l10n-id="split_merge" ng-click="open_kami_tools('merge')" ng-if="!microsoft_teams">
+                    <i class="icon icomoon-splitmerge"></i>
+                    <span data-l10n-id="split_merge_label">Split &amp; Merge document</span></button><!-- end ngIf: !microsoft_teams -->
+                  <button id="ocr-button" class="secondaryToolbarButton notable-nav-button linkButton" title="Text Recognition" data-l10n-id="ocr" ng-click="trigger_ocr()">
+                    <i class="icon icomoon-ocr"></i>
+                    <span data-l10n-id="ocr_label">Text Recognition</span>
+                  </button>
+                  <!-- ngIf: show_open_in_new_tab() -->
+
+                  <div ng-show="page_state.document" class="ng-hide">
+                    <div class="horizontalToolbarSeparator"></div>
+
+                    <button id="documentProperties" class="secondaryToolbarButton" title="Document properties" data-l10n-id="document_properties" ng-click="word_counting()">
+                      <i class="mdi mdi-information"></i>
+                      <span data-l10n-id="document_properties_label">Document properties</span>
+                    </button>
+
+                    <button id="notificationSettings" class="secondaryToolbarButton" title="Notification settings" data-l10n-id="document_properties" ng-click="open_window('notification_settings')">
+                      <i class="material-icons">insert_comment</i>
+                      <span data-l10n-id="notification_settings_label">Notification settings</span>
+                    </button>
+                  </div>
+
+                  <div class="horizontalToolbarSeparator ng-hide" ng-show="page_state.document || show_create_google_assignment_button() || is_lti_teacher() "></div>
+
+                  <button id="secondaryClassroom" class="secondaryToolbarButton ng-hide" title="Classroom" data-l10n-id="classroom" ng-click="open_assignment_dialog()" ng-show="show_create_google_assignment_button()">
+                    <i class="mdi mdi-google"></i>
+                    <span data-l10n-id="print_label">Create Assignment</span>
+                  </button>
+
+                  <button class="secondaryToolbarButton ng-hide" title="Schoology" data-l10n-id="schoology" ng-click="open_lti_settings()" ng-show="is_lti_teacher() &amp;&amp; get_lti_lms() === 'schoology'">
+                    <i class="icon icomoon-schoology }}" style="font-size: 18px"></i>
+                    <span data-l10n-id="print_label">Schoology settings</span>
+                  </button>
+
+                  <button class="secondaryToolbarButton ng-hide" title="Canvas" data-l10n-id="canvas" ng-click="open_lti_settings()" ng-show="is_lti_teacher() &amp;&amp; (!get_lti_lms() || get_lti_lms() === 'canvas')">
+                    <i class="icon icomoon-canvas" style="font-size: 20px"></i>
+                    <span data-l10n-id="print_label">Canvas settings</span>
+                  </button>
+
+                  <button class="secondaryToolbarButton ng-hide" title="Google Classroom" data-l10n-id="classroom" ng-click="open_classroom_settings()" ng-show="classroom_settings_type() === 'teacher'">
+                    <i class="mdi mdi-google" style="font-size: 20px"></i>
+                    <span data-l10n-id="print_label">Classroom settings</span>
+                  </button>
+
+                  <button class="secondaryToolbarButton ng-hide" title="Google Classroom" data-l10n-id="classroom" ng-click="open_classroom_settings()" ng-show="classroom_settings_type() === 'student'">
+                    <i class="mdi mdi-google" style="font-size: 20px"></i>
+                    <span data-l10n-id="print_label">Classroom documents</span>
+                  </button>
+
+                  <button id="secondaryPrint" ng-show="page_state.document" class="secondaryToolbarButton visibleMediumView ng-hide" title="Print" data-l10n-id="print">
+                    <i class="mdi mdi-printer"></i>
+                    <span data-l10n-id="print_label">Print</span>
+                  </button>
+
+                  <button id="secondary-show-download-dialog" ng-show="page_state.document" class="secondaryToolbarButton notable-nav-button visibleMediumView ng-hide" title="Export File" data-l10n-id="download" ng-click="open_window('show_download')">
+                    <i class="fa fa-download"></i>
+                    <span data-l10n-id="download_label">Export file</span>
+                  </button>
+                  <div id="secondaryDownload" class="hide"></div>
+
+                  <button id="secondary-share-online" ng-show="share_allowed() &amp;&amp; page_state.document" ng-click="show_share()" class="secondaryToolbarButton notable-nav-button shareOnline visibleMediumView ng-hide" title="Share Document" data-l10n-id="share">
+                    <i class="fa fa-share-alt"></i>
+                    <span data-l10n-id="share_label">Share document</span>
+                  </button>
+
+                  <a href="#" id="secondaryViewBookmark" class="hide secondaryToolbarButton bookmark visibleSmallView" title="Current view (copy or open in new window)" data-l10n-id="bookmark">
+                    <span data-l10n-id="bookmark_label">Current View</span>
+                  </a>
+
+                  <div ng-show="page_state.document" class="ng-hide">
+                    <div class="horizontalToolbarSeparator visibleLargeView"></div>
+
+                    <button id="firstPage" class="secondaryToolbarButton" title="Go to first page" data-l10n-id="first_page">
+                      <i class="material-icons">vertical_align_top</i>
+                      <span data-l10n-id="first_page_label">Go to first page</span>
+                    </button>
+                    <button id="lastPage" class="secondaryToolbarButton" title="Go to last page" data-l10n-id="last_page">
+                      <i class="material-icons">vertical_align_bottom</i>
+                      <span data-l10n-id="last_page_label">Go to last page</span>
+                    </button>
+                    <button id="jumpToPage" class="secondaryToolbarButton notable-nav-button" title="Jump to page" data-l10n-id="jump_to_page">
+                      <i class="material-icons">content_copy</i>
+                      <span data-l10n-id="jump_to_page_label">Jump to page</span>
+                    </button>
+
+                    <button id="undeleteAnnotations" class="secondaryToolbarButton notable-nav-button" title="Restore deleted annotations" data-l10n-id="undeleted_annotations" ng-click="undelete_annotations()">
+                      <i class="mdi mdi-file-restore"></i>
+                      <span data-l10n-id="jump_to_page_label">Restore annotations</span>
+                    </button>
+
+                    <button id="deleteAnnotations" class="secondaryToolbarButton notable-nav-button" title="Delete all annotations" data-l10n-id="delete_all_annotations" ng-click="delete_all_annotations()" ng-disabled="undelete_annotations_active">
+                      <i class="mdi mdi-delete"></i>
+                      <span data-l10n-id="jump_to_page_label">Delete all annotations</span>
+                    </button>
+
+                    <div class="horizontalToolbarSeparator"></div>
+
+                    <button id="pageRotateCw" class="secondaryToolbarButton" title="Rotate clockwise" data-l10n-id="page_rotate_cw">
+                      <i class="mdi mdi-rotate-right"></i>
+                      <span data-l10n-id="page_rotate_cw_label">Rotate clockwise</span>
+                    </button>
+                    <button id="pageRotateCcw" class="secondaryToolbarButton" title="Rotate counterclockwise" data-l10n-id="page_rotate_ccw">
+                      <i class="mdi mdi-rotate-left"></i>
+                      <span data-l10n-id="page_rotate_ccw_label">Rotate counterclockwise</span>
+                    </button>
+
+                    <div class="horizontalToolbarSeparator"></div>
+
+                    <button id="onePageView" class="secondaryToolbarButton toggled" title="One-page view" data-l10n-id="one_page_view">
+                      <i class="mdi mdi-file"></i>
+                      <span data-l10n-id="one_page_view_label">One-page view</span>
+                    </button>
+                    <button id="twoPageView" class="secondaryToolbarButton" title="Two-page view" data-l10n-id="two_page_view">
+                      <i class="fa fa-pause"></i>
+                      <span data-l10n-id="two_page_view_label">Two-page view</span>
+                    </button>
+                    <button id="twoPageViewShowCoverPage" class="secondaryToolbarButton toggled hidden" title="Show Cover Page" data-l10n-id="two_page_view_show_cover_page">
+                      <i class="fa fa-building-o"></i>
+                      <span data-l10n-id="two_page_view_show_cover_page_label">Show cover page</span>
+                    </button>
+
+                    <div class="horizontalToolbarSeparator"></div>
+
+                    <button id="secondaryPresentationMode" class="secondaryToolbarButton" title="Switch to Presentation mode" data-l10n-id="presentation_mode">
+                      <i class="material-icons">open_with</i>
+                      <span data-l10n-id="presentation_mode_label">Presentation mode</span>
+                    </button>
+
+                    <button id="toggleComments" class="secondaryToolbarButton" title="Toggle Comments" ng-click="toggle_comments()">
+                      <i class="material-icons">insert_comment</i>
+                      <span class="ng-binding">Hide comments</span>
+                    </button>
+                    <div class="horizontalToolbarSeparator"></div>
+
+                    <button class="secondaryToolbarButton" title="Undo" ng-click="undo_service.undo()" ng-disabled="!undo_service.hasUndo()" disabled="disabled">
+                      <i class="material-icons">undo</i>
+                      <span>Undo</span>
+                    </button>
+
+                    <button class="secondaryToolbarButton" title="Redo" ng-click="undo_service.redo()" ng-disabled="!undo_service.hasRedo()" disabled="disabled">
+                      <i class="material-icons">redo</i>
+                      <span>Redo</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- secondaryToolbar -->
+
+              <div id="secondary-toolbar-user" class="hiddenMediumView dropdown-common ng-scope" secondary-toolbar-toggle-dropdown="user" ng-controller="PremiumBadgeController" aria-label="user menu" role="button" tabindex="0">
+                <div class="avatar">
+                  <!-- ngIf: referral_notify -->
+                  <a alt="" class="initials ng-binding" colorize-initials="" style="background-color: #28a144"></a>
+                </div>
+                <div class="secondaryToolbarButtonContainer ng-scope" profile-dropdown="" hanger="top-right">
+                  <div id="user-profile" class="secondaryToolbar doorHangerRight ng-hide" ng-show="show_dropdown == 'user'">
+                    <!-- ngIf: short != 'true' -->
+                    <div class="profile ng-scope" ng-if="short != 'true'">
+                      <div class="avatar">
+                        <a alt="" class="initials ng-binding" colorize-initials="" style="background-color: #28a144"></a>
+                      </div>
+                      <div id="user-profile-info">
+                        <div class="name ng-binding"></div>
+                        <div class="email ng-binding"></div>
+                        <div class="info-bottom">
+                          <!-- tooltips: --><tooltip tooltip-template="Your account is <br></div> setup as {{current_user.user_profile.school_role | capitalize}}. <br/> Click to modify." tooltip-side="bottom" class="tooltips _bottom _steady _ready"><tip-cont><div class="school-role-badge badge-toolbar important-badge ng-binding ng-scope ng-hide" ng-click="restart_onboarding()" ng-show="current_user.user_profile.school_role == 'teacher' || current_user.user_profile.school_role == 'student'" tooltip-template="Your account is <br></div> setup as . <br/> Click to modify."></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Your account is <br>
+                                setup as . <br>
+                                Click to modify.</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                          <!-- tooltips: --><tooltip tooltip-template="Your account is on <br></div> {{license_type}} license" tooltip-side="bottom" class="tooltips _multiline _bottom _steady _ready"><tip-cont><div class="premium-badge badge-toolbar important-badge ng-binding ng-scope" ng-hide="hidePurchaseOrUpgradeMessaging" tooltip-template="Your account is on <br></div>  license"></div></tip-cont><tip class=""><tip-tip><span class="close-button" style="display: none">×</span>Your account is on <br>
+                                license</tip-tip><tip-arrow></tip-arrow></tip></tooltip>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- end ngIf: short != 'true' -->
+                    <!-- ngIf: short == 'true' -->
+                    <div class="horizontalToolbarSeparator"></div>
+                    <a id="secondary-buy-premium-link" track-premium-click="" ng-show="!current_user.guest_user &amp;&amp; license_show_upgrade" href="upgrade.html" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button ng-hide" title="Upgrade Kami" tabindex="0" data-l10n-id="get_premium">
+                      <i class="icon-common fa-bolt"></i>
+                      <span data-l10n-id="get_premium_label">Upgrade</span>
+                    </a>
+                    <a id="guest-signin" ng-show="current_user.guest_user" guest-login-click="" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button ng-hide" title="Login or Register" tabindex="0" data-l10n-id="login_or_register">
+                      <i class="icon-common fa-sign-in"></i>
+                      <span data-l10n-id="get_premium_label">Login or Register</span>
+                    </a>
+                    <button type="button" id="night-mode-switch" ng-show="switch_dark_mode_supported" ng-click="switch_dark_mode()" class="linkButton secondaryToolbarButton notable-nav-button switch-button">
+                      <div>
+                        <i class="icon-common icomoon-moon"></i>
+                        <span data-l10n-id="settings_label">Dark Mode</span>
+                      </div>
+                      <div class="switch-container">
+                        <label ng-class="{'is-checked': is_dark_mode_on}" class="mdl-switch mdl-js-switch is-upgraded" mdl-parse="" data-upgraded=",MaterialSwitch">
+                          <input type="checkbox" class="mdl-switch__input ng-pristine ng-untouched ng-valid ng-empty" ng-model="is_dark_mode_on" tabindex="-1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Dark Mode
+parseable name: 
+section: _0_125
+field signature: 1067852723
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 173" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Dark Mode
+parseable name: 
+section: _0_125
+field signature: 1067852723
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 173" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542282">
+                          <div class="mdl-switch__track"></div>
+                          <div class="mdl-switch__thumb">
+                            <span class="mdl-switch__focus-helper"></span></div></label>
+                      </div>
+                    </button>
+                    <a id="secondary-settings-link" href="options.html" title="Go to Settings" target="_blank" class="secondaryToolbarButton linkButton settings notable-nav-button" tabindex="0" data-l10n-id="settings">
+                      <i class="icon-common fa-cog"></i>
+                      <span data-l10n-id="settings_label">Settings</span>
+                    </a>
+                    <button id="license-admin-panel-link" ng-show="current_user.administered_licenses.length" ng-click="open_customer_panel()" title="Go to License Admin Panel" class="secondaryToolbarButton linkButton settings notable-nav-button ng-hide" data-l10n-id="settings">
+                      <i class="icon-common fa-users"></i>
+                      <span data-l10n-id="settings_label">License Dashboard</span>
+                    </button>
+                    <a id="guest-signin" ng-show="current_user.customer" href="options.html#billing" target="_blank" class="linkButton secondaryToolbarButton notable-nav-button ng-hide" title="Manage Billing" data-l10n-id="manage_billing">
+                      <i class="icon-common fa-sign-in"></i>
+                      <span data-l10n-id="manage_billing_label">Manage billing</span>
+                    </a>
+                    <button title="Log out" ng-hide="disable_logout_button" class="secondaryToolbarButton linkButton notable-nav-button" ng-click="logout()">
+                      <i class="mdi mdi-logout"></i> <span>Log out</span>
+                    </button>
+                    <div class="horizontalToolbarSeparator"></div>
+                    <!-- ngIf: can_open_roster_sync_dialog() -->
+                    <button id="secondary-settings-link" ng-click="open_window('enter_coupon')" title="Enter coupon" target="_blank" class="secondaryToolbarButton linkButton settings notable-nav-button" data-l10n-id="settings" ng-hide="hidePurchaseOrUpgradeMessaging">
+                      <i class="mdi mdi-cash"></i>
+                      <span data-l10n-id="settings_label">Enter coupon</span>
+                    </button>
+                    <div class="horizontalToolbarSeparator"></div>
+                    <!-- ngIf: userInEducationNotStudent() && has_flag('referral_system') -->
+                    <!-- ngIf: feature_enabled('console_simulator') -->
+                    <!-- ngIf: show_release_channel() -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="loadingBar" class="hidden">
+            <div class="progress">
+              <div class="glimmer"></div>
+            </div>
+            <input type="text" class="loaded-amount hidden" readonly="" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Thumbnails
+parseable name: 
+section: _0_125
+field signature: 1318412689
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 101" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Thumbnails
+parseable name: 
+section: _0_125
+field signature: 1318412689
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 101" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542283">
+          </div>
+        </div>
+      </div>
+
+      <menu type="context" id="viewerContextMenu">
+        <menuitem id="contextFirstPage" label="First Page" data-l10n-id="first_page"></menuitem>
+        <menuitem id="contextLastPage" label="Last Page" data-l10n-id="last_page"></menuitem>
+        <menuitem id="contextPageRotateCw" label="Rotate Clockwise" data-l10n-id="page_rotate_cw"></menuitem>
+        <menuitem id="contextPageRotateCcw" label="Rotate Counter-Clockwise" data-l10n-id="page_rotate_ccw"></menuitem>
+      </menu>
+
+      <div id="annotations-toolbar-container">
+        <!-- ngIf: page_state.is_initialized && annotation_selector_visible -->
+      </div>
+
+      <div id="floating-cards" ng-controller="FloatingCardsController" class="ng-scope">
+        <!-- ngRepeat: card in cards track by card.id -->
+      </div>
+
+      <div id="viewerContainer" ng-controller="CommentsController" update-annotation-count="" position-layer="" pinch-zoom="" ng-class="{'viewer-container-mouse-passthrough-annotations': annotation_state.should_mouse_passthrough_annotations(),
+        'viewer-container-dictionary-mode': (annotation_state.annotation_mode == 'normal' &amp;&amp; annotation_state.selection_submode == 'dictionary') || annotation_state.annotation_mode == 'dictionary',
+        'viewer-container-default-select-mode': annotation_state.is_default_selection_mode(),
+        'viewer-container-select-annotations-mode': annotation_state.is_annotation_selection_mode()}" class="ng-scope viewer-container-default-select-mode">
+        <!-- viewer MUST be the first element -->
+        <div id="viewer" class="pdfViewer" ng-class="{'viewer-loaded': page_state.is_initialized, 'drawing-mode': annotation_state.is_drawing_mode(true), 'shape-creation-mode': annotation_state.is_shape_creation_mode()}"></div>
+        <div ng-show="teacher_to_return_assessment" class="work-returned-container ng-hide">
+          Well done! Your work has been turned in.
+        </div>
+        <div id="loading-screen" ng-show="loading_state.state == 'loading'" class="ng-hide">
+          <span ng-hide="progress" class="spinner mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active is-upgraded" mdl-parse="" data-upgraded=",MaterialSpinner"><div class="mdl-spinner__layer mdl-spinner__layer-1">
+              <div class="mdl-spinner__circle-clipper mdl-spinner__left">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+              <div class="mdl-spinner__gap-patch">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+              <div class="mdl-spinner__circle-clipper mdl-spinner__right">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+            </div>
+            <div class="mdl-spinner__layer mdl-spinner__layer-2">
+              <div class="mdl-spinner__circle-clipper mdl-spinner__left">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+              <div class="mdl-spinner__gap-patch">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+              <div class="mdl-spinner__circle-clipper mdl-spinner__right">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+            </div>
+            <div class="mdl-spinner__layer mdl-spinner__layer-3">
+              <div class="mdl-spinner__circle-clipper mdl-spinner__left">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+              <div class="mdl-spinner__gap-patch">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+              <div class="mdl-spinner__circle-clipper mdl-spinner__right">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+            </div>
+            <div class="mdl-spinner__layer mdl-spinner__layer-4">
+              <div class="mdl-spinner__circle-clipper mdl-spinner__left">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+              <div class="mdl-spinner__gap-patch">
+                <div class="mdl-spinner__circle"></div>
+              </div>
+              <div class="mdl-spinner__circle-clipper mdl-spinner__right">
+                <div class="mdl-spinner__circle"></div>
+              </div></div></span>
+          <div class="messages">
+            <div>
+              <!-- ngIf: showHolidayDecorations && holiday -->
+              <p ng-class="{'text-bottom': showHolidayDecorations &amp;&amp; holiday}" class="text-center ng-binding"></p>
+            </div>
+          </div>
+        </div>
+        <div id="commentsLayer" collision-detection="" ng-show="page_state.document &amp;&amp; page_state.is_initialized" class="ng-scope ng-hide">
+          <!-- Comments -->
+          <!-- ngRepeat: commentObj in comments track by commentObj.id -->
+
+          <!-- Highlights -->
+          <!-- ngRepeat: commentObj in highlights track by commentObj.id -->
+          <!-- Texts -->
+          <!-- ngRepeat: commentObj in texts track by commentObj.id -->
+          <!-- Richtexts -->
+          <!-- ngRepeat: commentObj in richtexts track by commentObj.id -->
+          <!-- Dropdowns -->
+          <!-- ngRepeat: commentObj in dropdowns track by commentObj.id -->
+          <!-- TextInputs -->
+          <!-- ngRepeat: commentObj in textinputs track by commentObj.id -->
+          <!-- Radios -->
+          <!-- ngRepeat: commentObj in radios track by commentObj.id -->
+          <!-- SVG elements -->
+          <!-- ngRepeat: commentObj in drawings track by commentObj.id -->
+          <!-- Autographs -->
+          <!-- ngRepeat: commentObj in autographs track by commentObj.id -->
+          <!-- Form fields -->
+          <!-- ngRepeat: commentObj in form_fields track by commentObj.id -->
+          <!-- Images -->
+          <!-- ngRepeat: commentObj in images track by commentObj.id -->
+          <!-- Stickers -->
+          <!-- ngRepeat: commentObj in stickers track by commentObj.id -->
+          <!-- Equations -->
+          <!-- ngRepeat: commentObj in equations track by commentObj.id -->
+          <!-- Video Annotations -->
+          <!-- ngRepeat: commentObj in video_annotations track by commentObj.id -->
+        </div>
+        <div id="rightToolbarSpacer"></div>
+        <!-- This element is absolute positioned to fill space for right toolbar docking -->
+        <setup-tooltip>
+          <div class="header ng-scope" id="tooltip" ng-controller="TooltipController" tooltip-draggable="">
+            <div class="tooltip-inner ng-scope" annotation-bank-actions="" data-ddg-formtype="sign up">
+              <div class="author">
+                <div class="avatar">
+                  <a alt="" title="" class="initials internalLink ng-binding" colorize-initials="" ng-hide="gravatar_exists" ng-mousedown="clicked_author()" style="background-color: #28a144"></a>
+                </div>
+              </div>
+              <div class="highlight-button move fa-arrows ng-hide" ng-show="can_move() &amp;&amp; can_edit()" title="Move"></div>
+              <div class="highlight-button tts-richtext icomoon-textspeech ng-hide" ng-show="tts_state('can_play')" ng-mousedown="tts_play()" title="Read aloud"></div>
+              <div class="highlight-button tts-richtext fa-play ng-hide" ng-show="tts_state('can_resume')" ng-mousedown="tts_play()" title="Resume read aloud"></div>
+              <div class="highlight-button tts-richtext fa-pause ng-hide" ng-show="tts_state('can_pause')" ng-mousedown="tts_pause()" title="Pause read aloud"></div>
+              <div class="highlight-button tts-richtext fa-stop ng-hide" ng-show="tts_state('can_stop')" ng-mousedown="tts_stop()" title="Stop read aloud"></div>
+              <div class="highlight-button color color-picker ng-hide" ng-show="has_color() &amp;&amp; can_edit()" ng-style="{backgroundColor: commentObj.referring_to.color}" title="Color">
+                <div class="highlight-color-selector position-top">
+                  <div class="color-table">
+                    <!-- ngRepeat: i in [0, 1, 2] -->
+                    <div class="color-row ng-scope" ng-repeat="i in [0, 1, 2]">
+                      <!-- ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(241, 255, 0)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(0, 255, 54)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(255, 0, 156)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                    </div>
+                    <!-- end ngRepeat: i in [0, 1, 2] -->
+                    <div class="color-row ng-scope" ng-repeat="i in [0, 1, 2]">
+                      <!-- ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(255, 0, 0)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(0, 240, 255)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(216, 0, 255)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                    </div>
+                    <!-- end ngRepeat: i in [0, 1, 2] -->
+                    <div class="color-row ng-scope" ng-repeat="i in [0, 1, 2]">
+                      <!-- ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(255, 200, 0)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(255, 255, 255)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                      <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                        <div ng-mousedown="set_referring_to('color', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(0, 0, 0)"></div>
+                      </div>
+                      <!-- end ngRepeat: j in [0, 1, 2] -->
+                    </div>
+                    <!-- end ngRepeat: i in [0, 1, 2] -->
+                  </div>
+                </div>
+              </div>
+              <div class="fill-color color-picker ng-hide" ng-show="has_fill_color() &amp;&amp; can_edit()" title="Fill color">
+                <div class="mdi mdi-format-color-fill fill-color">
+                  <div class="highlight-color-selector">
+                    <div class="transparent-color color-cell">
+                      <div ng-mousedown="set_referring_to('fillColor', undefined)"></div>
+                    </div>
+                    <div class="color-table">
+                      <!-- ngRepeat: i in [0, 1, 2] -->
+                      <div class="color-row ng-scope" ng-repeat="i in [0, 1, 2]">
+                        <!-- ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(241, 255, 0)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(0, 255, 54)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(255, 0, 156)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                      </div>
+                      <!-- end ngRepeat: i in [0, 1, 2] -->
+                      <div class="color-row ng-scope" ng-repeat="i in [0, 1, 2]">
+                        <!-- ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(255, 0, 0)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(0, 240, 255)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(216, 0, 255)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                      </div>
+                      <!-- end ngRepeat: i in [0, 1, 2] -->
+                      <div class="color-row ng-scope" ng-repeat="i in [0, 1, 2]">
+                        <!-- ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(255, 200, 0)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(255, 255, 255)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                        <div class="color-cell ng-scope" ng-repeat="j in [0, 1, 2]" ng-init="index = i * 3 + j">
+                          <div ng-mousedown="set_referring_to('fillColor', get_color(index))" ng-style="{backgroundColor: get_color(index)}" style="background-color: rgb(0, 0, 0)"></div>
+                        </div>
+                        <!-- end ngRepeat: j in [0, 1, 2] -->
+                      </div>
+                      <!-- end ngRepeat: i in [0, 1, 2] -->
+                    </div>
+                  </div>
+                </div>
+                <div class="fill-bar" ng-style="{backgroundColor: commentObj.referring_to.fillColor}"></div>
+              </div>
+              <div class="fill-color color-picker ng-hide" ng-show="has_shape_fill() &amp;&amp; can_edit()" title="Toggle fill">
+                <div ng-class="commentObj.referring_to.font_size === 'fill' ? '' : 'picker-unfilled'" class="mdi mdi-format-color-fill picker-unfilled" ng-mousedown="toggle_shape_fill()"></div>
+                <div class="fill-bar" ng-style="{backgroundColor: commentObj.referring_to.font_size === 'fill' &amp;&amp; commentObj.referring_to.color}"></div>
+              </div>
+              <select ng-show="has_size() &amp;&amp; can_edit()" class="font-size ng-pristine ng-untouched ng-valid ng-empty ng-hide" name="Font Size" ng-model="commentObj.referring_to.font_size" ng-options="size for size in font_sizes()" ng-change="property_updated('font_size')" title="overall type: NUMERIC_QUANTITY
+server type: NO_SERVER_DATA
+heuristic type: NUMERIC_QUANTITY
+label: Well done! Your work has been turned in.
+parseable name: Font Size
+section: _0_125
+field signature: 3221123793
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 180" autofill-information="overall type: NUMERIC_QUANTITY
+server type: NO_SERVER_DATA
+heuristic type: NUMERIC_QUANTITY
+label: Well done! Your work has been turned in.
+parseable name: Font Size
+section: _0_125
+field signature: 3221123793
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 180" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542284">
+                <option value="?" selected="selected"></option>
+                <option label="8px" value="string:8px">8px</option>
+                <option label="10px" value="string:10px">10px</option>
+                <option label="12px" value="string:12px">12px</option>
+                <option label="14px" value="string:14px">14px</option>
+                <option label="16px" value="string:16px">16px</option>
+                <option label="18px" value="string:18px">18px</option>
+                <option label="20px" value="string:20px">20px</option>
+                <option label="24px" value="string:24px">24px</option>
+                <option label="28px" value="string:28px">28px</option>
+                <option label="32px" value="string:32px">32px</option>
+                <option label="36px" value="string:36px">36px</option>
+                <option label="46px" value="string:46px">46px</option>
+                <option label="50px" value="string:50px">50px</option>
+                <option label="55px" value="string:55px">55px</option>
+                <option label="60px" value="string:60px">60px</option>
+                <option label="70px" value="string:70px">70px</option>
+                <option label="80px" value="string:80px">80px</option>
+                <option label="90px" value="string:90px">90px</option>
+                <option label="100px" value="string:100px">100px</option>
+                <option label="110px" value="string:110px">110px</option>
+                <option label="120px" value="string:120px">120px</option>
+                <option label="130px" value="string:130px">130px</option>
+                <option label="140px" value="string:140px">140px</option>
+                <option label="160px" value="string:160px">160px</option>
+                <option label="180px" value="string:180px">180px</option>
+              </select>
+              <select ng-show="has_opacity() &amp;&amp; can_edit()" class="opacity-picker ng-pristine ng-untouched ng-valid ng-empty ng-hide" name="Opacity" ng-model="commentObj.referring_to.opacity" ng-options="to_percentage(opacity) for opacity in opacity_values()" ng-change="property_updated('opacity')" data-ddg-testresultelementid="542285" data-manual-scoring="addressCity">
+                <option value="?" selected="selected"></option>
+                <option label="10%" value="number:0.1">10%</option>
+                <option label="20%" value="number:0.2">20%</option>
+                <option label="30%" value="number:0.3">30%</option>
+                <option label="40%" value="number:0.4">40%</option>
+                <option label="50%" value="number:0.5">50%</option>
+                <option label="60%" value="number:0.6">60%</option>
+                <option label="80%" value="number:0.8">80%</option>
+                <option label="90%" value="number:0.9">90%</option>
+                <option label="100%" value="number:1">100%</option>
+              </select>
+              <div class="highlight-button fa-bars lines ng-hide" ng-show="has_line() &amp;&amp; can_edit()" title="Stroke type">
+                <div>
+                  <ul>
+                    <!-- ngRepeat: line in line_styles() track by $index -->
+                    <li ng-mousedown="select_line_style(line)" ng-repeat="line in line_styles() track by $index" ng-mouseover="hover(line)" ng-mouseleave="hoverOut()" class="ng-scope">
+                      <i class="fa fa-check" ng-attr-style="{{is_selected(line) ? undefined : 'visibility: hidden'}}" style="visibility: hidden"></i>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" viewBox="0 0 80 20">
+                        <defs>
+                          <marker id="TooltipArrowEndHighlight" class="highlight" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2" markerHeight="2" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                          </marker>
+                          <marker id="TooltipArrowStartHighlight" class="highlight" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2" markerHeight="2" orient="auto">
+                            <path d="M 10 10 L 0 5 L 10 0 z"></path>
+                          </marker>
+                          <marker id="TooltipArrowEnd" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2" markerHeight="2" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                          </marker>
+                          <marker id="TooltipArrowStart" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2" markerHeight="2" orient="auto">
+                            <path d="M 10 10 L 0 5 L 10 0 z"></path>
+                          </marker>
+                        </defs>
+                        <line x1="10" y1="10" x2="70" y2="10" ng-attr-stroke-dasharray="{{dash_array(line)}}" stroke-width="8" ng-attr-marker-start="{{marker_start(line)}}" ng-attr-marker-end="{{marker_end(line)}}"></line></svg><!-- ngIf: $index == 1 && !$last -->
+                    </li>
+                    <!-- end ngRepeat: line in line_styles() track by $index -->
+                    <li ng-mousedown="select_line_style(line)" ng-repeat="line in line_styles() track by $index" ng-mouseover="hover(line)" ng-mouseleave="hoverOut()" class="ng-scope">
+                      <i class="fa fa-check" ng-attr-style="{{is_selected(line) ? undefined : 'visibility: hidden'}}" style="visibility: hidden"></i>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" viewBox="0 0 80 20">
+                        <defs>
+                          <marker id="TooltipArrowEndHighlight" class="highlight" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2" markerHeight="2" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                          </marker>
+                          <marker id="TooltipArrowStartHighlight" class="highlight" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2" markerHeight="2" orient="auto">
+                            <path d="M 10 10 L 0 5 L 10 0 z"></path>
+                          </marker>
+                          <marker id="TooltipArrowEnd" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2" markerHeight="2" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                          </marker>
+                          <marker id="TooltipArrowStart" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2" markerHeight="2" orient="auto">
+                            <path d="M 10 10 L 0 5 L 10 0 z"></path>
+                          </marker>
+                        </defs>
+                        <line x1="10" y1="10" x2="70" y2="10" ng-attr-stroke-dasharray="{{dash_array(line)}}" stroke-width="8" ng-attr-marker-start="{{marker_start(line)}}" ng-attr-marker-end="{{marker_end(line)}}" stroke-dasharray="15, 8"></line></svg><!-- ngIf: $index == 1 && !$last -->
+                    </li>
+                    <!-- end ngRepeat: line in line_styles() track by $index -->
+                  </ul>
+                </div>
+              </div>
+              <div ng-show="can_copy()" id="copy" class="highlight-button ng-isolate-scope ng-hide copy" ng-class="tick ? 'tick' : 'copy'" click-to-copy="commentObj.referring_to.selected_text" after-copy="after_copy()" title="Copy">
+                <ng-transclude></ng-transclude>
+              </div>
+              <div ng-show="is_highlight() &amp;&amp; can_edit()" class="comment highlight-button ng-hide" ng-mousedown="convert_to_comment()" title="Convert to Comment"></div>
+              <div ng-show="can_edit() &amp;&amp; has_rotate()" class="rotate highlight-button fa-undo ng-hide" ng-mousedown="rotate_left()" title="Rotate"></div>
+              <div ng-show="can_edit() &amp;&amp; has_crop()" class="highlight-button fa-crop ng-hide" ng-click="crop()" title="Crop"></div>
+              <div ng-show="showAnnotationBankFeature &amp;&amp; canSetAsAnnotationBank()" class="highlight-button fa-archive ng-hide" ng-mousedown="setAsAnnotationBank()" title="Add to annotation bank"></div>
+              <div ng-show="can_delete()" class="highlight-button fa-trash ng-hide" ng-mousedown="destroy()" title="Remove"></div>
+            </div>
+          </div>
+        </setup-tooltip>
+        <div class="styler-palette ng-hide" ng-show="visible">
+          <!-- ngIf: palette_style == 1 -->
+          <div class="action-wrapper center ng-scope" ng-if="palette_style == 1">
+            <div class="annotation-selection-tools-container">
+              <!-- ngIf: contained_properties.hasOwnProperty('color') -->
+              <!-- ngIf: contained_properties.hasOwnProperty('fillColor') -->
+              <!-- ngIf: contained_properties.hasOwnProperty('thickness') -->
+              <!-- ngIf: contained_properties.hasOwnProperty('size') -->
+              <!-- ngIf: contained_properties.hasOwnProperty('font_size') -->
+              <!-- ngIf: contained_properties.hasOwnProperty('opacity') -->
+              <!-- ngIf: contained_properties.hasOwnProperty('rotation') -->
+              <!-- ngIf: show_copy_paste -->
+              <div ng-if="show_copy_paste" class="styler-palette-item copy">
+                <div class="label">copy</div>
+                <div class="action-container" ng-click="copy_selection()">
+                  <span class="fa fa-copy"></span>
+                </div>
+              </div>
+              <!-- end ngIf: show_copy_paste -->
+              <!-- ngIf: show_copy_paste -->
+              <div ng-if="show_copy_paste" class="styler-palette-item paste ng-scope">
+                <div class="label">paste</div>
+                <div class="action-container" ng-click="programmatic_paste()">
+                  <span class="fa fa-paste"></span>
+                </div>
+              </div>
+              <!-- end ngIf: show_copy_paste -->
+              <div class="styler-palette-item delete ng-hide" ng-show="can_delete()">
+                <div class="label">delete</div>
+                <div class="action-container" ng-click="delete_selection()">
+                  <span class="fa fa-trash"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end ngIf: palette_style == 1 -->
+          <div class="action-wrapper center ng-hide" ng-show="palette_style == 2" ng-mousedown="prevent_default($event)" ng-mouseup="prevent_default($event)">
+            <richtext-toolbar class="premium-required-default ng-scope no-fonts no-equation no-stt hide-stt" ng-class="{
+        'no-fonts': !has_feature('font_selection'), 
+        'no-equation': !has_feature('equation'), 
+        'no-stt': !has_feature('voice_typing'), 
+        'hide-stt': !show_voice_typing 
+      }"><div class="kamiRichtextToolbarPositioner">
+                <div id="kamiRichtextToolbarContainer" class="scrollbox">
+                  <span class="ql-formats" id="richtextToggle" title="font type" data-ddg-formtype="sign in">
+                    <select class="ql-font" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 205" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 205" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542286">
+                      <option selected="selected" value="Roboto">Roboto</option>
+                      <option value="timesnewroman">Times New Roman</option>
+                      <option value="arial">Arial</option>
+                      <option value="robotomono">Roboto Mono</option>
+                      <option value="indieflower">Indie Flower</option>
+                      <option value="merriweather">Merriweather</option>
+                      <option value="montserrat">Montserrat</option>
+                      <option value="opensans">Open Sans</option>
+                      <option value="opensanscondensed">
+                        Open Sans Condensed
+                      </option>
+                      <option value="oswald">Oswald</option>
+                      <option value="ptsans">PT Sans</option>
+                      <option value="ptsansnarrow">PT Sans Narrow</option>
+                      <option value="playfairdispay">Playfair Display</option>
+                      <option value="titilliumweb">Titillium Web</option>
+                      <option value="Ubuntu">Ubuntu</option>
+                      <option value="dancingscript">Dancing Script</option>
+                      <option value="kgtruecolors">KG True Colors</option>
+                      <option value="opendyslexic">Open Dyslexic</option>
+                      <option value="lexend">Lexend</option>
+                    </select>
+                    <select class="ql-size" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 206" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 206" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542287">
+                      <option value="8px">8px</option>
+                      <option value="9px">9px</option>
+                      <option value="10px">10px</option>
+                      <option value="11px">11px</option>
+                      <option value="12px">12px</option>
+                      <option selected="selected" value="14px">14px</option>
+                      <option value="16px">16px</option>
+                      <option value="18px">18px</option>
+                      <option value="24px">24px</option>
+                      <option value="30px">30px</option>
+                      <option value="36px">36px</option>
+                      <option value="48px">48px</option>
+                      <option value="60px">60px</option>
+                      <option value="72px">72px</option>
+                      <option value="96px">96px</option>
+                    </select>
+                    <select class="ql-lineheight" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 207" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 207" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542288">
+                      <option value="7">0.7pt</option>
+                      <option value="8">0.8pt</option>
+                      <option value="9">0.9pt</option>
+                      <option value="10">1.0pt</option>
+                      <option selected="selected" value="1.5pt ">1.5pt</option>
+                      <option value="20">2.0pt</option>
+                      <option value="25">2.5pt</option>
+                      <option value="30">3.0pt</option>
+                      <option value="35">3.5pt</option>
+                      <option value="40">4.0pt</option>
+                    </select>
+                    <button class="ql-bold" title="bold"></button>
+                    <button class="ql-italic" title="italic"></button>
+                    <button class="ql-underline" title="underline"></button>
+                    <button class="ql-strike" title="strike through"></button>
+                    <select class="ql-color" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 212" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 212" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542289"></select>
+                    <select class="ql-background" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 213" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 213" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542290"></select>
+                    <select class="ql-box-background" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 214" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 214" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542291"></select>
+                    <button class="ql-script" value="sub" title="subscript"></button>
+                    <button class="ql-script" value="super" title="superscript"></button>
+                    <button class="ql-list" value="ordered" title="numbered list"></button>
+                    <button class="ql-list" value="bullet" title="bullet point list"></button>
+                    <button class="ql-indent" value="-1" title="-1 indent"></button>
+                    <button class="ql-indent" value="+1" title="+1 indent"></button>
+                    <select class="ql-align" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 221" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 221" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542292"></select>
+                    <button class="ql-link" title="link"></button>
+                    <button class="ql-formula" title="formula"></button><span class="paywall-placeholder formula-paywall ng-scope"><button class="mdi mdi-division" title="equation" ng-click="paywall($event, &quot;equation&quot;)"></button><span class="feature-lock-icon fa fa-lock"></span></span>
+                    <span id="emoji-container" class="inline-container opener-container">
+                      <button class="ql-emoji ql-picker-label" title="emoji" align="center"></button>
+                    </span>
+                    <button class="ql-clean" title="reset formatting"></button>
+                    <button class="fa fa-microphone tts-indicator" title="voice typing"></button><span class="paywall-placeholder tts-paywall ng-scope"><button class="fa fa-microphone" title="voice typing" ng-click="paywall($event, &quot;voice_typing&quot;)"></button><span class="feature-lock-icon fa fa-lock"></span></span></span>
+                  <span id="mathToggle" data-ddg-formtype="sign in">
+                    <span class="math-toolbar-label">Math</span>
+                    <select class="ql-color" property="color" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 226" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 226" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542293"></select>
+                    <select class="ql-background" property="background" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 227" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 227" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542294"></select>
+                    <select class="ql-size" property="size" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 228" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Math
+parseable name: 
+section: _0_125
+field signature: 4203909268
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 228" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542295">
+                      <option value="8px">8px</option>
+                      <option value="9px">9px</option>
+                      <option value="10px">10px</option>
+                      <option value="11px">11px</option>
+                      <option value="12px">12px</option>
+                      <option selected="selected" value="14px">14px</option>
+                      <option value="16px">16px</option>
+                      <option value="18px">18px</option>
+                      <option value="24px">24px</option>
+                      <option value="30px">30px</option>
+                      <option value="36px">36px</option>
+                      <option value="48px">48px</option>
+                      <option value="60px">60px</option>
+                      <option value="72px">72px</option>
+                      <option value="96px">96px</option>
+                    </select>
+                    <div class="symbol-palette-container">
+                      <button class="toggle-button ng-scope" ng-click="toggle_symbols_palette()" ng-class="{active: palette_opened}" title="Symbol Palette">
+                        π
+                      </button>
+                    </div></span>
+                </div>
+              </div></richtext-toolbar>
+          </div>
+        </div>
+        <dictionary-popup class="ng-scope"><div class="dictionary-positioner ng-scope" ng-controller="DictionaryPopupController" ng-class="{'popup-above': !popup_below}" style="display: none">
+            <div class="dictionary-popup" ng-class="{'popup-above': !popup_below}" role="dialog">
+              <div class="popup-pointer-up" ng-show="popup_below"></div>
+              <div class="popup-pointer-down ng-hide" ng-hide="popup_below"></div>
+              <div class="mdl-card mdl-shadow--6dp">
+                <div tabindex="-1" id="dictionary-hidden-focus"></div>
+                <div class="close" tabindex="0" aria-label="close" role="button" ng-keypress="close_modal()" id="dictionary-popup-close-button"></div>
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text ng-binding"></h2>
+                  <!-- ngIf: is_tool_enabled('@annotation/tts') --><button ng-if="is_tool_enabled('@annotation/tts')" class="definition-speak-button ng-scope" ng-click="speak_definition('title')" title="Read out the word">
+                    <i class="fa fa-volume-up" ng-class="{'fa-stop': speaking === 'title'}"></i></button><!-- end ngIf: is_tool_enabled('@annotation/tts') -->
+                </div>
+                <div ng-show="definitions == null &amp;&amp; error == false" class="mdl-progress mdl-js-progress mdl-progress__indeterminate is-upgraded" data-upgraded=",MaterialProgress">
+                  <div class="progressbar bar bar1" style="width: 0%"></div>
+                  <div class="bufferbar bar bar2" style="width: 100%"></div>
+                  <div class="auxbar bar bar3" style="width: 0%"></div>
+                </div>
+                <div ng-show="error" class="mdl-card__supporting-text error ng-binding ng-hide">
+                  <br>
+                  false
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div ng-show="definitions != null &amp;&amp; definitions.length == 0 &amp;&amp; error == false" class="ng-hide">
+                    <br>
+                    No definitions found
+                  </div>
+                  <!-- ngRepeat: definition in definitions | limitTo: 3 -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </dictionary-popup>
+        <!-- ngIf: tried_loading_state && page_state.document_load_state.state == 'none' && !is_embed -->
+        <div ng-controller="TTSController" class="ng-scope">
+          <!-- ngRepeat: commentObj in highlights track by commentObj.id -->
+        </div>
+        <!-- ngIf: debug_info -->
+      </div>
+
+      <div id="errorWrapper" hidden="true">
+        <div id="errorMessageLeft">
+          <span id="errorMessage"></span>
+          <button id="errorShowMore" data-l10n-id="error_more_info">
+            More Information
+          </button>
+          <button id="errorShowLess" data-l10n-id="error_less_info" hidden="true">
+            Less Information
+          </button>
+        </div>
+        <div id="errorMessageRight">
+          <button id="errorClose" data-l10n-id="error_close">Close</button>
+        </div>
+        <div class="clearBoth"></div>
+        <textarea id="errorMoreInfo" readonly="readonly" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: More Information Less Information Close
+parseable name: errorMoreInfo
+section: _0_125
+field signature: 1781296021
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 105" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: More Information Less Information Close
+parseable name: errorMoreInfo
+section: _0_125
+field signature: 1781296021
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 105" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542296"></textarea>
+        <textarea id="errorMoreInfo" readonly="readonly" ng-controller="ErrorViewController" class="ng-scope ng-binding" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: More Information Less Information Close
+parseable name: errorMoreInfo
+section: _0_125
+field signature: 1781296021
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 106" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: More Information Less Information Close
+parseable name: errorMoreInfo
+section: _0_125
+field signature: 1781296021
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 106" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542297">User: undefined Browser: chrome 109.0.0.0 mac os 10.15.7
+Page State: {"sync_queue_healthy":true,"document_load_state":{"state":"none"},"document_state":{},"is_initialized":false}</textarea>
+      </div>
+
+      <!-- Notable information bottom overlay -->
+      <div class="page-info-collaborator-icons-wrapper ng-hide" ng-show="page_state.document">
+        <div class="page-info-wrapper ng-scope" ng-controller="PageInfoController">
+          <div id="page-info">
+            Page
+            <input id="pageNumber" class="pageNumber ng-pristine ng-untouched ng-valid ng-empty" type="number" ng-model="page" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Page
+parseable name: pageNumber
+section: _0_125
+field signature: 2575967456
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 107" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Page
+parseable name: pageNumber
+section: _0_125
+field signature: 2575967456
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542298">
+            <span id="numPages"></span>
+          </div>
+        </div>
+        <div class="collaborators-wrapper">
+          <div ng-show="moreThanOneCollaborator()" class="ng-hide">
+            <div class="important-collaborators">
+              <div class="people">
+                <div class="show-all-collaborators ng-hide" ng-show="showAllCollaboratorsToggleButton()" ng-click="toggleAllCollaborators()">
+                  <span class="ng-binding">+-3</span>
+                </div>
+                <!-- ngRepeat: collaborator in importantCollaborators() | collaborator | limitTo: overflowLimit -->
+              </div>
+            </div>
+            <!-- ngIf: showAllCollaborators -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Show offline information -->
+      <div class="bottom-wrapper dont-overlap ng-hide" ng-show="page_state.document">
+        <!-- Keep controller alive as it's a dependency for other services. Todo independent dependencies -->
+        <div id="online-status" ng-controller="OnlineStatusController" ng-show="what === 'Offline'" class="ng-scope">
+          <span id="online-status-short">Offline</span>
+          <span id="online-status-long">Working offline</span>
+          <span id="online-status-expand">. We'll automatically synchronise changes when online</span>
+        </div>
+      </div>
+
+      <div id="snackbar" class="mdl-js-snackbar mdl-snackbar" mdl-snackbar-parse="" data-upgraded=",MaterialSnackbar">
+        <div class="mdl-snackbar__text"></div>
+        <div id="snack-progress" class="mdl-progress mdl-js-progress is-upgraded" mdl-parse="" data-upgraded=",MaterialProgress">
+          <div class="progressbar bar bar1" style="width: 0%"></div>
+          <div class="bufferbar bar bar2" style="width: 100%"></div>
+          <div class="auxbar bar bar3" style="width: 0%"></div>
+        </div>
+        <button class="mdl-snackbar__action" type="button" aria-hidden="true"></button>
+      </div>
+    </div>
+    <!-- mainContainer -->
+
+    <kami-grader class="ng-scope"><div class="kami-grader">
+        <div class="title">Submission Activity</div>
+        <!-- ngIf: kamiGrader.error -->
+        <!-- ngRepeat: submission in kamiGrader.submissions -->
+        <!-- ngIf: !kamiGrader.submissions.length -->
+        <div class="empty ng-scope" ng-if="!kamiGrader.submissions.length">
+          No submissions
+        </div>
+        <!-- end ngIf: !kamiGrader.submissions.length -->
+      </div></kami-grader>
+    <!-- ngIf: microsoft_teams_opener.copiesActive -->
+
+    <div id="overlayContainer" class="hidden">
+      <div id="passwordOverlay" class="container hidden" password-prompt="">
+        <div class="dialog" data-ddg-formtype="sign in">
+          <div class="row">
+            <p id="passwordText" data-l10n-id="password_label">
+              Enter the password to open this PDF file:
+            </p>
+          </div>
+          <div class="row">
+            <!-- The type="password" attribute is set via script, to prevent warnings in Firefox for all http:// documents. -->
+            <input id="password" class="toolbarField" autocomplete="off" data-ddg-testresultelementid="542299" data-manual-scoring="password">
+          </div>
+          <div class="buttonRow">
+            <button id="passwordCancel" class="overlayButton">
+              <span data-l10n-id="password_cancel">Cancel</span>
+            </button>
+            <button id="passwordSubmit" class="overlayButton">
+              <span data-l10n-id="password_ok">OK</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="documentPropertiesOverlay" class="container hidden">
+        <div class="dialog">
+          <div class="row">
+            <span data-l10n-id="document_properties_file_name">File name:</span>
+            <p id="fileNameField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_file_size">File size:</span>
+            <p id="fileSizeField">-</p>
+          </div>
+          <div class="separator"></div>
+          <div class="row">
+            <span data-l10n-id="document_properties_title">Title:</span>
+            <p id="titleField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_author">Author:</span>
+            <p id="authorField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_subject">Subject:</span>
+            <p id="subjectField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_keywords">Keywords:</span>
+            <p id="keywordsField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_creation_date">Creation Date:</span>
+            <p id="creationDateField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_modification_date">Modification Date:</span>
+            <p id="modificationDateField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_creator">Creator:</span>
+            <p id="creatorField">-</p>
+          </div>
+          <div class="separator"></div>
+          <div class="row">
+            <span data-l10n-id="document_properties_producer">PDF Producer:</span>
+            <p id="producerField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_version">PDF Version:</span>
+            <p id="versionField">-</p>
+          </div>
+          <div class="row">
+            <span data-l10n-id="document_properties_page_count">Page Count:</span>
+            <p id="pageCountField">-</p>
+          </div>
+          <div class="row">
+            <span>Annotation Word Count:</span>
+            <p class="ng-binding"></p>
+          </div>
+          <div class="buttonRow">
+            <button id="documentPropertiesClose" class="overlayButton">
+              <span data-l10n-id="document_properties_close">Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- outerContainer -->
+    <div id="guest-user-email-request-window" class="kami-overlay-container ng-scope ng-hide" ng-controller="GuestUserRequestController" ng-show="show_email_request" click-shadow-to-exit="close">
+      <div class="kami-dialog">
+        <div class="header">
+          <h1 ng-hide="ask_for_email_only">Sorry to interrupt</h1>
+          <h1 ng-show="ask_for_email_only" class="ng-hide">Action Required</h1>
+          <button class="close" aria-label="close" ng-click="close()"></button>
+        </div>
+        <div class="body">
+          <p ng-hide="ask_for_email_only">
+            Sign up now so you don't lose access to your work
+          </p>
+          <p ng-show="ask_for_email_only" class="ng-hide">
+            Your work is saved to the Kami Sync Cloud, it's automatic and
+            encrypted. But we need your email address so that you can regain
+            access to your work in the future.
+          </p>
+          <ul class="errors ng-hide" ng-show="errors.length">
+            <!-- ngRepeat: error in errors -->
+          </ul>
+          <div class="fields" spellcheck="false" data-ddg-formtype="sign in">
+            <input class="kami-input ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Name *" ng-model="name" ng-hide="ask_for_email_only" data-ddg-testresultelementid="542300" data-manual-scoring="fullName">
+            <input class="kami-input ng-pristine ng-untouched ng-valid ng-empty ng-valid-email" type="email" placeholder="Email *" ng-model="email" title="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email *
+parseable name: 
+section: _0_125
+field signature: 2964261712
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 115" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email *
+parseable name: 
+section: _0_125
+field signature: 2964261712
+form signature: 16888627925778322468
+form signature in host form: 16888627925778322468
+field frame token: 44917F5015D751CBDADB9AA039B612CE
+form renderer id: 0
+field renderer id: 115" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="542301">
+          </div>
+          <div class="button-row">
+            <button class="button primary" ng-disabled="purchase-disabled" ng-click="change()">
+              Next
+            </button>
+          </div>
+          <p>
+            <a class="link-button secondary" ng-click="show_login()">I already have an account or want to login with Google</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <localstore-disabled-warning class="ng-scope"><div id="localstore-disabled-warning" class="kami-dialog localstore-disabled ng-hide" ng-show="show_localstore_warning">
+        <div class="header">
+          <h1><span class="title-icon"></span>Cookies are disabled</h1>
+          <button class="close" aria-label="close" ng-click="close()"></button>
+        </div>
+        <div ng-switch="integration">
+          <!-- ngSwitchDefault: -->
+          <div ng-switch-default="" class="body ng-scope">
+            <p>
+              Because your browser's cookies are disabled, Kami will experience
+              issues.
+            </p>
+            <button class="button primary" ng-click="open_guide()">
+              How to enable cookies
+            </button>
+          </div>
+          <!-- end ngSwitchWhen: -->
+          <!-- ngSwitchWhen: google_classroom -->
+          <!-- ngSwitchWhen: canvas -->
+          <!-- ngSwitchWhen: schoology -->
+        </div>
+      </div>
+    </localstore-disabled-warning>
+
+    <input id="fileInput" class="fileInput ng-scope" type="file" accept="application/pdf|image/*" ng-controller="FileInputController" ngf-select="open_selected_file($file)" oncontextmenu="noContextMenuHandler">
+    <undelete-annotations-actionbar><!-- ngIf: undelete_annotations_active --></undelete-annotations-actionbar>
+  </div>
+
+  <div id="loading-failed-message" class="kami-overlay-container bg-full-opacity ng-hide" ng-show="false">
+    <div class="kami-dialog">
+      <div class="header">
+        <h1>Whoops... An Unexpected Error Occurred</h1>
+      </div>
+      <div class="body">
+        <p>
+          If this problem persists, please email
+          <a href="mailto:support@kamiapp.com" target="_blank">support@kamiapp.com</a>
+          with a screenshot
+        </p>
+        <p>
+          Check our Twitter
+          <a href="https://twitter.com/kamiapp" target="_blank">@kamiapp</a> for
+          status updates
+        </p>
+        <pre id="loading-failed-debug" class="drive-message debug-message">  User: 
+  Timestamp: 2023-03-16T02:36:27.668Z
+  Version: 2.0.16704-20230315040549  </pre>
+      </div>
+    </div>
+  </div>
+
+  <img class="turnin-animation turnin-animation-left">
+  <img class="turnin-animation turnin-animation-right">
+
+  <div id="printContainer"></div>
+  <script async="" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="yyxq82iiyg93wd8"></script>
+  <script async="" src="https://app.box.com/js/static/select.js"></script>
+  <script async="" src="https://apis.google.com/js/client.js?onload=gapi_loaded" gapi_processed="true"></script>
+  <script src="https://checkout.stripe.com/checkout.js"></script>
+
+  <div id="mozPrintCallback-shim" hidden="">
+    <style>
+      @media print {
+        #printContainer div {
+          page-break-after: always;
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+    <style scoped="">
+      #mozPrintCallback-shim {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 9999999;
+
+        display: block;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      #mozPrintCallback-shim[hidden] {
+        display: none;
+      }
+      @media print {
+        #mozPrintCallback-shim {
+          display: none;
+        }
+      }
+
+      #mozPrintCallback-shim .mozPrintCallback-dialog-box {
+        display: inline-block;
+        margin: -50px auto 0;
+        position: relative;
+        top: 45%;
+        left: 0;
+        min-width: 220px;
+        max-width: 400px;
+
+        padding: 9px;
+
+        border: 1px solid hsla(0, 0%, 0%, 0.5);
+        border-radius: 2px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+
+        background-color: #474747;
+
+        color: hsl(0, 0%, 85%);
+        font-size: 16px;
+        line-height: 20px;
+      }
+      #mozPrintCallback-shim .progress-row {
+        clear: both;
+        padding: 1em 0;
+      }
+      #mozPrintCallback-shim progress {
+        width: 100%;
+      }
+      #mozPrintCallback-shim .relative-progress {
+        clear: both;
+        float: right;
+      }
+      #mozPrintCallback-shim .progress-actions {
+        clear: both;
+      }
+    </style>
+    <div class="mozPrintCallback-dialog-box">
+      <!-- TODO: Localise the following strings -->
+      Preparing document for printing...
+      <div class="progress-row">
+        <progress value="0" max="100"></progress>
+        <span class="relative-progress">0%</span>
+      </div>
+      <div class="progress-actions">
+        <input type="button" value="Cancel" class="mozPrintCallback-cancel">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Compatibility workaround for https://github.com/angular/angular.js/issues/15772 (incompatability between angular and pdf.js on IE 11)
+    if (!!window.MSInputMethodContext && !!document.documentMode) {
+      angular.bootstrap(document.body, ["notable"]);
+    }
+  </script>
+  <script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vaafb692b2aea4879b33c060e79fe94621666317369993" integrity="sha512-0ahDYl866UMhKuYcW078ScMalXqtFJggm7TmlUtp0UlD4eQk0Ixfnm5ykXKvGJNFjLMoortdseTfsRT8oCfgGA==" data-cf-beacon="{&quot;rayId&quot;:&quot;7a899bcccfe1c56d&quot;,&quot;token&quot;:&quot;d9f2acc8d33949fc984a7e54975f1de0&quot;,&quot;version&quot;:&quot;2023.2.0&quot;,&quot;si&quot;:100}" crossorigin="anonymous"></script>
+
+  <iframe name="__privateStripeMetricsController3590" frameborder="0" allowtransparency="true" scrolling="no" role="presentation" allow="payment *" src="https://js.stripe.com/v3/m-outer-93afeeb17bc37e711759584dbfc50d47.html#url=https%3A%2F%2Fweb.kamihq.com%2Fweb%2Fviewer.html&amp;title=Kami&amp;referrer=https%3A%2F%2Fweb.kamihq.com%2Fweb%2Fupdate_app.html&amp;muid=NA&amp;sid=NA&amp;version=6&amp;preview=false" aria-hidden="true" tabindex="-1" style="
+      border: none !important;
+      margin: 0px !important;
+      padding: 0px !important;
+      width: 1px !important;
+      min-width: 100% !important;
+      overflow: hidden !important;
+      display: block !important;
+      visibility: hidden !important;
+      position: fixed !important;
+      height: 1px !important;
+      pointer-events: none !important;
+      user-select: none !important;
+    "></iframe>
+

@@ -1,0 +1,4084 @@
+<!--
+  https://chaffey.ondemandlogin.com
+  testRunId: 66
+  testResultId: 234679
+-->
+
+  <!--
+Â© 2009-2019 PistolStar, Inc. d/b/a PortalGuard. All rights reserved.
+
+NOTE: Licensees are explicitly forbidden from removing Copyright Notices from this file. PortalGuard licenses only grant licensees permission to use the software. This permission is not transferrable and expires with the license term. Licensees do NOT own their copy of the source code and must abide by these restrictions as set forth in the full Software License Agreement.
+ 
+Restricted Rights Legend 
+This software is subject to and made available only pursuant to the terms of the PistolStar End User License Agreement and may be used or copied only in accordance with the terms of that agreement. It is against the law to copy the software except as specifically allowed in the agreement.
+Information in this page is subject to change without notice and does not represent a commitment on the part of PistolStar. THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. FURTHER, PistolStar DOES NOT WARRANT, GUARANTEE, OR MAKE ANY REPRESENTATIONS REGARDING THE USE, OR THE RESULTS OF THE USE, OF THE SOFTWARE OR WRITTEN MATERIAL IN TERMS OF CORRECTNESS, ACCURACY, RELIABILITY, OR OTHERWISE.
+
+Trademarks or Service Marks 
+PortalGuard is a registered trademark of PistolStar.
+//-->
+  <div id="login" class="container vali hali">
+    <div id="outerwrap">
+      <div class="row">
+        <div class="logonbox col-md-8 col-md-offset-2 shadow">
+          <form method="post" action="./login.aspx?ReturnUrl=%2f" id="ctl00" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign in">
+            <div class="aspNetHidden">
+              <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="zmvzubl7EGePJDVDMsvKXH6YnSdiGLvj1M+pBxtW/oxoaHPa9jz3Jul2T4MNCI8hT32w9pI4R6TVh/Tzd0hdo45w1Y0mh4lfke1xRDihx1jXCR6FNdIX1KB6YRxV9yjEc8hJsk9tucv1BSDTBK0ES6mCZ/7TSuu3jLCW5zHx/OyfnB5pxuFc0wILN/ppXC9wtRkjNpGBu3WaGSRtmNUwyTnK9ihYu46754bI+C7Rke6CB55vga5TkZfndRhkgfnPvhHTDxxL2PVX/LzC8NocQyNJk0KKYMBAKZqhOxCbx2a772Mj+Q1uFFlIGKgEQHzQ">
+            </div>
+
+            <div class="aspNetHidden">
+              <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="76093EDD">
+              <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="uQbYoj7L5AOyV+MrIKBNHwemRJENxlbh0dtp+o0NGTZIIbw87FwP6rdwDVANUUdlGDwzfhMpXdW4PAWVDDWJwrNEWZ2oL07IDpZS1VYgAJ5VbsA4H88sLtBokho1z9kpt5YWNQdPDdykbc+dR8XW/27P0p6OrD2cO+djV9P0BGaJKSy0bSV4vNkVLU4xDIX7">
+            </div>
+            <div class="row dlghdr loginHdr">
+              <div class="col-md-12">
+                <div class="text-center">
+                  <h1 id="lblMainFormTitle"></h1>
+                  <div class="col-sm-12">
+                    <img id="LogoImg" class="center-block img-responsive" alt="Home Page Logo" src="/_layouts/images/PG/images/chaffey_logo-type_rgb_c.png">
+                  </div>
+                </div>
+                <span id="LangSel" class="clsLangSelector" style="float: right; display: none">
+                  <label id="lblLangSel" for="listLangSel">Language: </label>
+                  <select name="listLangSel" id="listLangSel" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Language:
+parseable name: listLangSel
+section: listLangSel_0_27
+field signature: 954116300
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 27" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Language:
+parseable name: listLangSel
+section: listLangSel_0_27
+field signature: 954116300
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 27" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512285"></select><input type="button" id="btnChangeLang" onclick="changeLang(document.getElementById('listLangSel'))" value="Change">
+                </span>
+              </div>
+              <!-- Manual Alert Div -->
+              <div id="manualAlert" class="pgHidden">
+                <div class="row">
+                  <a class="col-md-12" id="manualAlertLink" data-toggle="collapse" href="#manualAlertCollapse" role="button" aria-expanded="false" aria-controls="manualAlertCollapse">
+                    <div id="manualAlertHeader">
+                      <span id="manualAlertNoticeText" class="boldred">[NOTICE] Verizon &amp; US Cellular Users</span>
+                      (details)
+                    </div>
+                    <span id="manualAlertCaret" class="caret caret-up"></span>
+                  </a>
+                </div>
+                <div class="errordiv col-md-12 collapse" id="manualAlertCollapse">
+                  <div class="card card-body">
+                    Due to carrier maintenance, SMS delivery may be delayed for
+                    <span class="boldred">Verizon and US Cellular</span> devices
+                    during the following times:
+                    <ul>
+                      <li>US Pacific: Jun 21, 22:00 - Jun 22, 03:00</li>
+                      <li>US Pacific: Jun 22, 23:00 - Jun 23, 02:00</li>
+                      <li>US Pacific: Jun 23, 22:00 - Jun 24, 03:00</li>
+                    </ul>
+                    To avoid any login delays, enroll a personal email address
+                    through the Account Management page.
+                  </div>
+                </div>
+              </div>
+              <!-- End Manual Alert Div -->
+            </div>
+            <div id="infoLogin" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgLogin" role="status"></div>
+            <span id="Msg"></span>
+
+            <div id="divLoginNamePW">
+              <div class="row">
+                <div class="col-sm-12">
+                  <table id="frmLogin" style="border-collapse: collapse">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="form-group" style="margin-bottom: 0">
+                            <div class="col-md-12">
+                              <label id="lblUNameMain" for="frmLogin_UserName" class="pgHidden">Username</label>
+                              <input name="frmLogin$UserName" type="text" maxlength="256" id="frmLogin_UserName" class="form-control" placeholder="Username" title="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: frmLogin$UserName
+section: listLangSel_0_27
+field signature: 16763881
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 29" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: frmLogin$UserName
+section: listLangSel_0_27
+field signature: 16763881
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 29" autofill-prediction="USERNAME" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512286">
+                              <div style="font-size: 75%; margin-top: 5px">
+                                1st letter of first &amp; last name + ChaffeyID
+                                (cc0323232)
+                              </div>
+                              <span id="spnRememberUsername" style="display: none">
+                                <input type="checkbox" id="RememberUsername" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember username
+parseable name: RememberUsername
+section: listLangSel_0_27
+field signature: 3160497498
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember username
+parseable name: RememberUsername
+section: listLangSel_0_27
+field signature: 3160497498
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512287">
+                                <label id="lblRememberUsername" for="RememberUsername" class="lblCheck">Remember username</label>
+                              </span>
+                            </div>
+                          </div>
+                          <div id="fldStaticPWLogin" style="" class="form-group">
+                            <div class="col-md-12">
+                              <label id="lblPWMain" for="frmLogin_Password" class="pgHidden">Password</label>
+                              <input name="frmLogin$Password" type="password" maxlength="256" id="frmLogin_Password" class="form-control" placeholder="Password" onkeypress="handleKeyPress(this, event)" data-ddg-testresultelementid="512288" data-manual-scoring="password">
+                              <span id="spanShowPWs1" style="">
+                                <input name="showpws" id="showpwsMain" type="checkbox" value="1" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: listLangSel_0_27
+field signature: 1923511841
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 32" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: listLangSel_0_27
+field signature: 1923511841
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512289">
+                                <label id="lblShowPWs1" for="showpwsMain" class="lblCheck">Show password</label>
+                              </span>
+                            </div>
+                          </div>
+                          <div id="divRememberMe" style="display: none">
+                            <input id="frmLogin_RememberMe" type="checkbox" name="frmLogin$RememberMe" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember me on this browser
+parseable name: frmLogin$RememberMe
+section: listLangSel_0_27
+field signature: 3408939404
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 33" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember me on this browser
+parseable name: frmLogin$RememberMe
+section: listLangSel_0_27
+field signature: 3408939404
+form signature: 3737211370267826532
+form signature in host form: 3737211370267826532
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 3
+field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512290">
+                            <label id="lblRememberMe" for="frmLogin_RememberMe" class="lblCheck">Remember me on this browser</label>
+                          </div>
+                          <span style="display: none"><input type="submit" name="frmLogin$Login" value="Login" id="frmLogin_Login"></span>
+
+                          <div id="spnCaptchaLogin" style="display: none" class="form-group">
+                            <div class="col-md-12">
+                              <span id="lblCaptchaLogin" class="lblSpan">Please answer the CAPTCHA below</span>
+                              <div id="divCaptchaLogin"></div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="row">
+                  <div id="btnFirstContinue" class="row containerPGButton" style="display: none">
+                    <div class="col-md-6 col-md-offset-3">
+                      <button class="PGButton btn" id="btnLoginContinue" onclick="submitGetOptions(); return false;">
+                        Continue
+                      </button>
+                    </div>
+                  </div>
+                  <div id="btnStaticPWLogin" class="row containerPGButton" style="">
+                    <div class="col-md-12 col-sm-12">
+                      <button class="PGButton btn" id="btnLogin" onclick="loginClickHandler(); return false;">
+                        Login
+                      </button>
+                    </div>
+                    <div class="col-md-4 col-sm-12 pgHidden">
+                      <button class="PGButton btn" id="btnSetPW" onclick="showSetPWPopup(true); return false;" style="">
+                        Set Password
+                      </button>
+                    </div>
+                    <div class="col-md-4 col-sm-12 pgHidden">
+                      <button class="PGButton btn" id="btnSelfServe" onclick="showSSPopup(); return false;" style="">
+                        Forgot Password?
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12 pgHidden">
+                  <p>
+                    Your Username is your first initial, last initial and your 7
+                    digit Student ID. (ex. js0012345)
+                  </p>
+                </div>
+                <div class="col-md-12 mainFlex pgHidden">
+                  <div class="linkForgotUsername pgHidden">
+                    <a href="https://pwms.quicklaunchsso.com/api/open/showOpenChangePassword?tenantDomain=chaffey.edu&amp;forgotUserName=true&amp;returnUrl=http:%2F%2Fmy.chaffey.edu" target="_blank" id="linkForgotUname">Forgot Username?</a>
+                  </div>
+                </div>
+                <div class="col-md-12 chaffeyLinks">
+                  <div class="col-md-12">
+                    <a href="/faqs/Chaffey_College_FirstTimeUser.pdf" target="_blank">First Time User</a>
+                  </div>
+                  <div class="col-md-12" style="display: none">
+                    <a href="https://webadv-prod.ec.chaffey.edu/WAPROD/WAPROD?type=P&amp;PID=CORE-WBCOS005" target="_blank">What is my Username?</a>
+                  </div>
+                  <div class="col-md-12 linkSetPassword">
+                    <a href="" onclick="showSetPWPopup(true); return false;" id="linkSetPW">Change Password</a>
+                  </div>
+                  <div class="col-md-12 linkForgotPW">
+                    <a href="" onclick="showSSPopup(); return false;" id="linkSelfServe">Forgot Password/Unlock Account?</a>
+                  </div>
+                </div>
+              </div>
+              <div id="divLanyardLoginButton" class="col-md-12" style="display: none">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6 col-md-offset-3 col-sm-12">
+                      <button class="PGButton PGAltButton btn" id="btnLanyardLogin" onclick="showLanyardLogin(); return false;">
+                        <span style="display: none">Lanyard</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="divSmartCardLoginButton" class="col-md-12" style="display: none">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6 col-md-offset-3 col-sm-12">
+                      <button class="PGButton PGAltButton btn" id="btnSmartCardLogin" onclick="doSmartCardLogin('https://scard.acme.org'); return false;">
+                        <span id="spnSmartCardLogin">Login Using Smart Card</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <input id="DisableEnrollmentReminders" type="hidden" name="DisableEnrollmentReminders" value="0">
+            <input id="pgclient" type="hidden" name="pgclient">
+            <input id="OTPLogin" type="hidden" name="OTP" value="">
+            <input id="LoginAnswerMain1" type="hidden" name="LoginAnswer1" value="">
+            <input id="LoginAnswerMain2" type="hidden" name="LoginAnswer2" value="">
+            <input id="LoginAnswerMain3" type="hidden" name="LoginAnswer3" value="">
+            <input id="LoginAnswerMain4" type="hidden" name="LoginAnswer4" value="">
+            <input id="LoginAnswerMain5" type="hidden" name="LoginAnswer5" value="">
+            <input id="lanyardlogin" type="hidden" name="lanyardlogin" value="0">
+            <input id="anchorReturnUrl" type="hidden" name="anchorReturnUrl" value="">
+            <input id="PGTokenLogin" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+            <input type="hidden" value="" name="TOUAction" id="TOUAction"><img src="/_layouts/images/PG/images/bklogo.png" style="max-width: 100px; float: right; margin: 0 0 10px 0">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: none">
+    <div id="blockUI" class="translucent" style="display: none" onfocus="return false;"></div>
+  </div>
+
+  <!-- Set Password div -->
+  <div id="popup_SetPW" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="lblSetPWTitle" style="display: none">
+    <form id="SetPWForm" name="SetPWForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="lblSetPWTitle">Set Password</h2>
+            </div>
+            <div id="infoSetPW" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgSetPW" role="status"></div>
+
+            <div class="col-md-12">
+              <div class="row">
+                <div id="fldsSetPW" class="popFieldsContainer">
+                  <div class="form-group">
+                    <label id="lblUNameSetPW" for="UsernameSetPW" class="control-label col-sm-4">Username</label>
+                    <div class="col-sm-6">
+                      <input id="UsernameSetPW" type="text" name="Username" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_52
+field signature: 2408420769
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 52" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_52
+field signature: 2408420769
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 52" autofill-prediction="USERNAME" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512291">
+                    </div>
+                  </div>
+                  <div id="fldsSetPWCurPW" class="form-group">
+                    <label id="lblPWSetPW" for="PasswordSetPW" class="control-label col-sm-4">Password</label>
+                    <div class="col-sm-6">
+                      <input id="PasswordSetPW" type="password" name="Password" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_52
+field signature: 3935904101
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 53" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_52
+field signature: 3935904101
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 53" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512292">
+                    </div>
+                    <div id="spanShowPWs2" style="">
+                      <div class="col-sm-8 col-sm-offset-4">
+                        <input name="showpwsSetPW1" id="showpwsSetPW1" type="checkbox" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpwsSetPW1
+section: Username_0_52
+field signature: 1616829318
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 54" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpwsSetPW1
+section: Username_0_52
+field signature: 1616829318
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 54" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512293">
+                        <label id="lblShowPWs2" for="showpwsSetPW1" class="lblCheck">Show password</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="fldsSetPWChalA">
+                    <div id="divSetPWCA1" class="form-group">
+                      <div class="col-sm-10 col-sm-offset-1">
+                        <label id="lblSetPWCA1" for="SetPWAnswer1" class="chal_q">Question 1</label>
+                        <input id="SetPWAnswer1" type="password" name="LoginAnswer1" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 1
+parseable name: LoginAnswer1
+section: Username_0_52
+field signature: 1539330833
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 55" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 1
+parseable name: LoginAnswer1
+section: Username_0_52
+field signature: 1539330833
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 55" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512294">
+                      </div>
+                    </div>
+                    <div id="divSetPWCA2" class="form-group" style="display: none">
+                      <div class="col-sm-10 col-sm-offset-1">
+                        <label id="lblSetPWCA2" for="SetPWAnswer2" class="chal_q">Question 2</label>
+                        <input id="SetPWAnswer2" type="password" name="LoginAnswer2" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 2
+parseable name: LoginAnswer2
+section: Username_0_52
+field signature: 949764391
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 56" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 2
+parseable name: LoginAnswer2
+section: Username_0_52
+field signature: 949764391
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512295">
+                      </div>
+                    </div>
+                    <div id="divSetPWCA3" class="form-group" style="display: none">
+                      <div class="col-sm-10 col-sm-offset-1">
+                        <label id="lblSetPWCA3" for="SetPWAnswer3" class="chal_q">Question 3</label>
+                        <input id="SetPWAnswer3" type="password" name="LoginAnswer3" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 3
+parseable name: LoginAnswer3
+section: Username_0_52
+field signature: 3526677039
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 57" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 3
+parseable name: LoginAnswer3
+section: Username_0_52
+field signature: 3526677039
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512296">
+                      </div>
+                    </div>
+                    <div id="divSetPWCA4" class="form-group" style="display: none">
+                      <div class="col-sm-10 col-sm-offset-1">
+                        <label id="lblSetPWCA4" for="SetPWAnswer4" class="chal_q">Question 4</label>
+                        <input id="SetPWAnswer4" type="password" name="LoginAnswer4" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 4
+parseable name: LoginAnswer4
+section: Username_0_52
+field signature: 1938521409
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 58" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 4
+parseable name: LoginAnswer4
+section: Username_0_52
+field signature: 1938521409
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 58" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512297">
+                      </div>
+                    </div>
+                    <div id="divSetPWCA5" class="form-group" style="display: none">
+                      <div class="col-sm-10 col-sm-offset-1">
+                        <label id="lblSetPWCA5" for="SetPWAnswer5" class="chal_q">Question 5</label>
+                        <input id="SetPWAnswer5" type="password" name="LoginAnswer5" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 5
+parseable name: LoginAnswer5
+section: Username_0_52
+field signature: 1087186713
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 59" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 5
+parseable name: LoginAnswer5
+section: Username_0_52
+field signature: 1087186713
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 59" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512298">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="fldsSetPWOTP" class="form-group">
+                    <div class="col-sm-8 col-sm-offset-4">
+                      <div id="divSetPWExtAuth" style="display: none">
+                        <div id="SetPWExtAuth"></div>
+                        <input type="checkbox" id="chkSetPWExtAuth" onchange="toggleExtAuthDisplay()" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show Pattern While Drawing
+parseable name: chkSetPWExtAuth
+section: Username_0_52
+field signature: 3614678358
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 60" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show Pattern While Drawing
+parseable name: chkSetPWExtAuth
+section: Username_0_52
+field signature: 3614678358
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512299">
+                        <label id="lblchkSetPWExtAuth" for="chkSetPWExtAuth" class="lblCheck">Show Pattern While Drawing</label>
+                      </div>
+                    </div>
+                    <div id="fldSetPWOTP">
+                      <label id="lblOTPSetPW" for="OTPSetPW" class="control-label col-sm-4">One Time Passcode</label>
+                      <div class="col-sm-6">
+                        <input id="OTPSetPW" type="text" name="OTP" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: Username_0_52
+field signature: 4201319145
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 61" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: Username_0_52
+field signature: 4201319145
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 61" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512300">
+                      </div>
+                    </div>
+                    <div class="col-sm-8 col-sm-offset-4">
+                      <span id="spnResendSetPW" class="resendLink"></span>
+                    </div>
+                  </div>
+
+                  <div id="fldsSetPWNewPW">
+                    <div class="form-group">
+                      <label id="lblNewPWSetPW" for="NewPassword" class="control-label col-sm-4">New Password</label>
+                      <div class="col-sm-6">
+                        <input id="NewPassword" type="password" name="NewPassword" maxlength="256" onkeypress="handleKeyPress(this, event)" autocomplete="new-password" class="form-control" data-ddg-testresultelementid="512301" data-manual-scoring="password">
+                      </div>
+                      <span id="spanShowPWs3" style="">
+                        <div class="col-sm-8 col-sm-offset-4">
+                          <input name="showpwsSetPW2" id="showpwsSetPW2" type="checkbox" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpwsSetPW2
+section: Username_0_52
+field signature: 3695424693
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 63" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpwsSetPW2
+section: Username_0_52
+field signature: 3695424693
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 63" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512302">
+                          <label id="lblShowPWs3" for="showpwsSetPW2" class="lblCheck">Show password</label>
+                        </div>
+                      </span>
+                      <span id="pwmeter1" style="display: none">
+                        <!--<span id="imgHolderSetPW">
+													<img id="pwdLockImg1" src="/_layouts/images/pg/images/spec0.jpg" alt="Password Quality Meter" />
+												</span>-->
+                        <span id="pwdLockString1">Password Strength</span>
+                      </span>
+                    </div>
+                    <div id="fldConfPWSetPW" class="form-group">
+                      <label id="lblConfPWSetPW" for="ConfirmPasswordSetPW" class="control-label col-sm-4">Confirm Password</label>
+                      <div class="col-sm-6">
+                        <input id="ConfirmPasswordSetPW" type="password" name="ConfirmPassword" maxlength="256" onkeypress="handleKeyPress(this, event)" autocomplete="new-password" class="form-control" data-ddg-testresultelementid="512303" data-manual-scoring="password">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="spnCaptchaSetPW" style="display: none" class="form-group">
+                    <span id="lblCaptchaSetPW" class="lblSpan col-sm-8 col-sm-offset-4">Please answer the CAPTCHA below</span>
+                    <div id="divCaptchaSetPW" class="col-sm-8 col-sm-offset-4"></div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="row">
+                      <div class="row containerPGButton">
+                        <div class="col-md-6">
+                          <button class="PGButton btn" id="btnSetPWContinue" onclick="submitSetPW(); return false;">
+                            Continue
+                          </button>
+                        </div>
+                        <div class="col-md-6">
+                          <button class="PGButton btn" id="btnSetPWCancel" onclick="closeSetPW(false); return false;">
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <input type="hidden" name="OTPResendType" id="OTPResendSetPW" value="0">
+            <input type="hidden" name="OTPResendIdx" id="OTPResendIdxSetPW" value="0">
+            <input id="PWChangeStep" type="hidden" name="PWChangeStep" value="">
+            <input id="PGTokenSetPW" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+            <span id="spanSetPWshowpws" style="display: none"><input name="showpws" id="showpwsSetPW" type="checkbox" value="1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Never shown!
+parseable name: showpws
+section: Username_0_52
+field signature: 1923511841
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 71" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Never shown!
+parseable name: showpws
+section: Username_0_52
+field signature: 1923511841
+form signature: 14184472280129450225
+form signature in host form: 14184472280129450225
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 4
+field renderer id: 71" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512304"><label for="showpwsSetPW" class="lblCheck">Never shown!</label></span>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Challenge Login Question div -->
+  <div id="popup_LoginCA" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="lblLoginCATitle" style="display: none">
+    <form id="LoginCAForm" name="LoginCAForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign in">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="lblLoginCATitle">Knowledge-based Login Required</h2>
+            </div>
+            <div id="infoLoginCA" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgCA" role="status"></div>
+
+            <div class="col-md-12">
+              <div class="row">
+                <div id="fldsLoginCA" class="popFieldsContainer">
+                  <div class="form-group">
+                    <label id="lblUNameLoginCA" for="UsernameLoginCA" class="control-label col-sm-4">Username</label>
+                    <div class="col-sm-6">
+                      <input id="UsernameLoginCA" type="text" name="Username" maxlength="256" disabled="true" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_72
+field signature: 2408420769
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 72" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_72
+field signature: 2408420769
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512305">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label id="lblPWLoginCA" for="PasswordLoginCA" class="control-label col-sm-4">Password</label>
+                    <div class="col-sm-6">
+                      <input id="PasswordLoginCA" type="password" name="Password" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_72
+field signature: 3935904101
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 73" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_72
+field signature: 3935904101
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 73" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512306">
+                    </div>
+                    <span id="spanShowPWs7" style="">
+                      <div class="col-sm-8 col-sm-offset-4">
+                        <input name="showpws" id="showpws7" type="checkbox" value="1" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_72
+field signature: 1923511841
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 74" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_72
+field signature: 1923511841
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 74" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512307">
+                        <label id="lblShowPWs7" for="showpws7" class="lblCheck">Show password</label>
+                      </div>
+                    </span>
+                  </div>
+                  <div id="divLoginCA1" class="form-group">
+                    <div class="col-sm-10 col-sm-offset-1">
+                      <label id="lblLoginCA1" for="LoginAnswer1" class="chal_q">Question 1</label>
+                      <input id="LoginAnswer1" type="password" name="LoginAnswer1" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 1
+parseable name: LoginAnswer1
+section: Username_0_72
+field signature: 1539330833
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 75" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 1
+parseable name: LoginAnswer1
+section: Username_0_72
+field signature: 1539330833
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 75" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512308">
+                    </div>
+                  </div>
+                  <div id="divLoginCA2" class="form-group" style="display: none">
+                    <div class="col-sm-10 col-sm-offset-1">
+                      <label id="lblLoginCA2" for="LoginAnswer2" class="chal_q">Question 2</label>
+                      <input id="LoginAnswer2" type="password" name="LoginAnswer2" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 2
+parseable name: LoginAnswer2
+section: Username_0_72
+field signature: 949764391
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 76" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 2
+parseable name: LoginAnswer2
+section: Username_0_72
+field signature: 949764391
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 76" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512309">
+                    </div>
+                  </div>
+                  <div id="divLoginCA3" class="form-group" style="display: none">
+                    <div class="col-sm-10 col-sm-offset-1">
+                      <label id="lblLoginCA3" for="LoginAnswer3" class="chal_q">Question 3</label>
+                      <input id="LoginAnswer3" type="password" name="LoginAnswer3" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 3
+parseable name: LoginAnswer3
+section: Username_0_72
+field signature: 3526677039
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 77" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 3
+parseable name: LoginAnswer3
+section: Username_0_72
+field signature: 3526677039
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 77" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512310">
+                    </div>
+                  </div>
+                  <div id="divLoginCA4" class="form-group" style="display: none">
+                    <div class="col-sm-10 col-sm-offset-1">
+                      <label id="lblLoginCA4" for="LoginAnswer4" class="chal_q">Question 4</label>
+                      <input id="LoginAnswer4" type="password" name="LoginAnswer4" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 4
+parseable name: LoginAnswer4
+section: Username_0_72
+field signature: 1938521409
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 78" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 4
+parseable name: LoginAnswer4
+section: Username_0_72
+field signature: 1938521409
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 78" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512311">
+                    </div>
+                  </div>
+                  <div id="divLoginCA5" class="form-group" style="display: none">
+                    <div class="col-sm-10 col-sm-offset-1">
+                      <label id="lblLoginCA5" for="LoginAnswer5" class="chal_q">Question 5</label>
+                      <input id="LoginAnswer5" type="password" name="LoginAnswer5" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 5
+parseable name: LoginAnswer5
+section: Username_0_72
+field signature: 1087186713
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 79" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Question 5
+parseable name: LoginAnswer5
+section: Username_0_72
+field signature: 1087186713
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 79" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512312">
+                    </div>
+                  </div>
+
+                  <div id="spnSaveUAKBA" style="display: none">
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div class="pull-right">
+                          <input name="SaveUA" id="SaveUAKBA" type="checkbox" value="1" onclick="rememberDeviceClicked(this, false)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember this device?
+parseable name: SaveUA
+section: Username_0_72
+field signature: 1862327051
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 80" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember this device?
+parseable name: SaveUA
+section: Username_0_72
+field signature: 1862327051
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 80" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512313">
+                          <label id="lblSaveUAKBA" for="SaveUAKBA" class="lblCheck"><span class="boldgreen">Remember this device?</span></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="spnSaveUADescKBA" style="display: none">
+                      <div class="form-group">
+                        <label id="lblSaveUADescKBA" for="SaveUADescKBA" class="control-label col-sm-4">Browser Description</label>
+                        <div class="col-sm-6">
+                          <input id="SaveUADescKBA" name="SaveUADesc" type="text" maxlength="60" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Browser Description
+parseable name: SaveUADesc
+section: Username_0_72
+field signature: 794873326
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 81" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Browser Description
+parseable name: SaveUADesc
+section: Username_0_72
+field signature: 794873326
+form signature: 2860676586806425526
+form signature in host form: 2860676586806425526
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 5
+field renderer id: 81" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512314">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <div id="lblSaveUAInstrKBA" class="saveUAInstr">
+                            Remembering this browser prevents extra login
+                            prompts. You should
+                            <span class="bold">NOT</span> enable this on
+                            public/shared computers.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="row">
+                      <div class="row containerPGButton">
+                        <div class="col-md-6">
+                          <button class="PGButton btn" id="btnKBALogin" onclick="submitLoginCA(); return false;">
+                            Login
+                          </button>
+                        </div>
+                        <div class="col-md-6">
+                          <button class="PGButton btn" id="btnKBACancel" onclick="closePopup('popup_LoginCA', false, g_bSideCar); return false;">
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input id="OTPLoginCA" type="hidden" name="OTP" value="">
+      <input id="PGTokenLoginCA" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+    </form>
+  </div>
+
+  <!-- Terms Of Use div -->
+  <div id="popup_TOU" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="lblTOUTitle" style="display: none">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 shadow">
+          <div class="row dlghdr text-center">
+            <h2 id="lblTOUTitle">Terms Of Use</h2>
+          </div>
+
+          <div class="col-md-12">
+            <div class="row">
+              <div id="customTOUHTML">
+                <div><span class="bold">Terms &amp; Conditions</span></div>
+                <p>Unlawful use of company resources is strictly prohibited</p>
+                <p>
+                  By logging into this site, you agree to these terms and
+                  conditions.
+                </p>
+                <hr>
+                <p>
+                  Click 'Accept' to close this window and continue logging in.
+                </p>
+              </div>
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnTOUAccept" onclick="submitTermsOfUse(true); return false;">
+                        Accept
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnTOUDecline" onclick="submitTermsOfUse(false); return false;">
+                        Decline
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTP Enrollment div -->
+  <div id="popup_OTPEnroll" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="lblOTPEnrollTitle" style="display: none">
+    <form id="OTPEnrollForm" name="OTPEnrollForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="lblOTPEnrollTitle">Multi-Factor Enrollment</h2>
+            </div>
+
+            <div id="infoOTPEnroll" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgOTPEnroll" role="status"></div>
+
+            <div id="fldsOTPEnroll" class="popFieldsContainer">
+              <div class="form-group">
+                <label id="lblUNameOTPEnroll" for="UsernameOTPEnroll" class="control-label col-sm-4">Username</label>
+                <div class="col-sm-6">
+                  <input id="UsernameOTPEnroll" type="text" name="Username" maxlength="256" disabled="true" title="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_88
+field signature: 2408420769
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 88" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_88
+field signature: 2408420769
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 88" autofill-prediction="USERNAME" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512315">
+                </div>
+              </div>
+              <div class="form-group">
+                <label id="lblPWOTPEnroll" for="PasswordOTPEnroll" class="control-label col-sm-4">Password</label>
+                <div class="col-sm-6">
+                  <input id="PasswordOTPEnroll" type="password" name="Password" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_88
+field signature: 3935904101
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 89" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_88
+field signature: 3935904101
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 89" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512316">
+                </div>
+                <span id="spanShowPWs5" style="">
+                  <div class="col-sm-8 col-sm-offset-4">
+                    <input name="showpws" id="showpws5" type="checkbox" value="1" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_88
+field signature: 1923511841
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 90" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_88
+field signature: 1923511841
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 90" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512317">
+                    <label id="lblShowPWs5" for="showpws5" class="lblCheck">Show password</label>
+                  </div>
+                </span>
+              </div>
+
+              <div id="spanOTPEnrollEmail" class="form-group">
+                <label id="lblOTPEnrollEmailAddr" for="EmailOTPEnroll" class="control-label col-sm-4">Email Address</label>
+                <div class="col-sm-6">
+                  <input id="EmailOTPEnroll" type="text" name="Email" maxlength="256" title="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: Email
+section: Username_0_88
+field signature: 2687998122
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 91" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: Email
+section: Username_0_88
+field signature: 2687998122
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 91" autofill-prediction="EMAIL_ADDRESS" class="form-control" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="512318" style="
+                      background-size: auto 26px !important;
+                      background-position: right center !important;
+                      background-repeat: no-repeat !important;
+                      background-origin: content-box !important;
+                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+                      transition: background 0s ease 0s !important;
+                    ">
+                </div>
+              </div>
+
+              <div id="spanOTPEnrollPhone">
+                <div class="form-group">
+                  <label id="lblPhoneCOTPEnroll" for="PhoneCOTPEnroll" class="control-label col-sm-4">Country</label>
+                  <div class="col-sm-6">
+                    <select id="PhoneCOTPEnroll" name="PhoneC" class="form-control" data-ddg-testresultelementid="512319" data-manual-scoring="addressCountryCode"></select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label id="lblPhoneNumOTPEnroll" for="PhoneOTPEnroll" class="control-label col-sm-4">Phone Number</label>
+                  <div class="col-sm-6">
+                    <input id="PhoneOTPEnroll" type="text" name="Phone" size="20" class="form-control" data-ddg-testresultelementid="512320" data-manual-scoring="phone">
+                  </div>
+                </div>
+                <div id="OTPEnrollPhoneTypeRadioBtns" class="form-group" style="display: none">
+                  <div class="col-sm-8 col-sm-offset-4">
+                    <fieldset>
+                      <legend id="phoneTypeOTPEnroll">Phone Type</legend>
+                      <input type="radio" name="EnrolledPhoneCanSMS" id="OTPEnrollPhoneCanSMSYes" value="1" onclick="radioCanSMSSelected('OTPEnrollPhoneCanSMSYes')" checked="" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone can receive SMS/text messages
+parseable name: EnrolledPhoneCanSMS
+section: Username_0_88
+field signature: 2874945643
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 95" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone can receive SMS/text messages
+parseable name: EnrolledPhoneCanSMS
+section: Username_0_88
+field signature: 2874945643
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 95" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512321">
+                      <label id="lblPhoneCanSMSYesOTPEnroll" for="OTPEnrollPhoneCanSMSYes" class="lblRadio">Phone can receive SMS/text messages</label>
+                      <br>
+                      <input type="radio" name="EnrolledPhoneCanSMS" id="OTPEnrollPhoneCanSMSNo" value="0" onclick="radioCanSMSSelected('OTPEnrollPhoneCanSMSNo')" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone cannot receive SMS/text messages
+parseable name: EnrolledPhoneCanSMS
+section: Username_0_88
+field signature: 2874945643
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 96" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone cannot receive SMS/text messages
+parseable name: EnrolledPhoneCanSMS
+section: Username_0_88
+field signature: 2874945643
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 96" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512322">
+                      <label id="lblPhoneCanSMSNoOTPEnroll" for="OTPEnrollPhoneCanSMSNo" class="lblRadio">Phone <span class="bold">cannot</span> receive SMS/text
+                        messages</label>
+                    </fieldset>
+                  </div>
+                </div>
+
+                <div id="divPhoneProvOTPEnroll" class="form-group">
+                  <label id="lblPhoneProvOTPEnroll" for="SMSProviderOTPEnroll" class="control-label col-sm-4">Phone Provider</label>
+                  <div class="col-sm-6">
+                    <select name="SMSProvider" id="SMSProviderOTPEnroll" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone Provider
+parseable name: SMSProvider
+section: Username_0_88
+field signature: 1885970669
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 97" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone Provider
+parseable name: SMSProvider
+section: Username_0_88
+field signature: 1885970669
+form signature: 339642166711980918
+form signature in host form: 339642166711980918
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 6
+field renderer id: 97" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="identities.phone" data-ddg-testresultelementid="512323">
+                      <option value="@sms.alltelwireless.com">Alltel</option>
+                      <option value="@txt.att.net">AT&amp;T</option>
+                      <option value="@txt.bell.ca">Bell (Canada)</option>
+                      <option value="@myboostmobile.com">Boost Mobile</option>
+                      <option value="@msg.fi.google.com">Project Fi</option>
+                      <option value="@pcs.rogers.com">Rogers (Canada)</option>
+                      <option value="@messaging.sprintpcs.com">
+                        Sprint Nextel
+                      </option>
+                      <option value="@tmomail.net">T-Mobile</option>
+                      <option value="@msg.telus.com">Telus Canada</option>
+                      <option value="@email.uscc.net">US Cellular</option>
+                      <option value="@vtext.com" selected="">Verizon</option>
+                      <option value="@vmobl.com">Virgin Mobile USA</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="spnCaptchaOTPEnroll" class="form-group" style="display: none">
+                <span id="lblCaptchaOTPEnroll" class="lblSpan col-sm-8 col-sm-offset-4">Please answer the CAPTCHA below</span>
+                <div id="divCaptchaOTPEnroll" class="col-sm-8 col-sm-offset-4"></div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnOTPEnrollContinue" onclick="submitOTPEnroll(); return false;">
+                        Continue
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnOTPEnrollCancel" onclick="closePopup('popup_OTPEnroll', false, g_bSideCar); return false;">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" name="OTPEnrollType" id="OTPEnrollType" value="410">
+      <input id="PGTokenOTPEnroll" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+    </form>
+  </div>
+
+  <!-- OTP Entry div -->
+  <div id="popup_OTPEntry" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="lblOTPEntryTitle" style="display: none">
+    <form id="OTPEntryForm" name="OTPEntryForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign in">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="lblOTPEntryTitle">One Time Passcode Required</h2>
+            </div>
+
+            <div id="infoOTPEntry" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgOTPEntry" role="status"></div>
+
+            <div id="fldsOTPEntry" class="popFieldsContainer">
+              <div class="form-group">
+                <label id="lblUNameOTPEntry" for="UsernameOTPEntry" class="control-label col-sm-4">Username</label>
+                <div class="col-sm-6">
+                  <input id="UsernameOTPEntry" type="text" name="Username" maxlength="256" disabled="true" title="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_102
+field signature: 2408420769
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 102" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_102
+field signature: 2408420769
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 102" autofill-prediction="USERNAME" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512324">
+                </div>
+              </div>
+              <div id="otpEntryStaticPW" class="form-group">
+                <label id="lblPWOTPEntry" for="PasswordOTPEntry" class="control-label col-sm-4">Password</label>
+                <div class="col-sm-6">
+                  <input id="PasswordOTPEntry" type="password" name="Password" maxlength="256" onkeypress="handleKeyPress(this, event)" class="form-control" data-ddg-testresultelementid="512325" data-manual-scoring="password">
+                </div>
+                <span id="spanShowPWs6" style="">
+                  <div class="col-sm-8 col-sm-offset-4">
+                    <input name="showpws" id="showpws6" type="checkbox" value="1" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_102
+field signature: 1923511841
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 104" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_102
+field signature: 1923511841
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 104" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512326">
+                    <label id="lblShowPWs6" for="showpws6" class="lblCheck">Show password</label>
+                  </div>
+                </span>
+              </div>
+
+              <div id="fldsOTPEntryOTP" class="form-group">
+                <div class="col-sm-8 col-sm-offset-4">
+                  <div id="divOTPEntryExtAuth" style="display: none">
+                    <div id="OTPEntryExtAuth"></div>
+                    <input type="checkbox" id="chkOTPEntryExtAuth" onchange="toggleExtAuthDisplay()" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show Pattern While Drawing
+parseable name: chkOTPEntryExtAuth
+section: Username_0_102
+field signature: 3782399516
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 105" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show Pattern While Drawing
+parseable name: chkOTPEntryExtAuth
+section: Username_0_102
+field signature: 3782399516
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 105" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512327">
+                    <label id="lblchkOTPEntryExtAuth" for="chkOTPEntryExtAuth" class="lblCheck">Show Pattern While Drawing</label>
+                  </div>
+                </div>
+                <div id="fldOTPEntryOTP">
+                  <label id="lblOTPOTPEntry" for="OTPOTPEntry" class="control-label col-sm-4">One Time Passcode</label>
+                  <div class="col-sm-6">
+                    <input id="OTPOTPEntry" type="text" name="OTP" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: Username_0_102
+field signature: 4201319145
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 106" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: Username_0_102
+field signature: 4201319145
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 106" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512328">
+                  </div>
+                </div>
+                <div id="fldOTPEntryVoice">
+                  <div class="col-sm-4"></div>
+                  <div class="col-sm-6">
+                    <button class="PGButton btn" id="btnOTPVoiceRecord" onclick="submitVoiceVerify(); return false;">
+                      Record
+                    </button>
+                  </div>
+                </div>
+                <div class="col-sm-8 col-sm-offset-4">
+                  <span id="spnResendOTPEntry" class="resendLink"></span>
+                </div>
+              </div>
+
+              <div id="fldsOTPEntryDefMethod" class="form-group" style="display: none">
+                <div class="col-sm-8 col-sm-offset-4">
+                  <span>
+                    <input type="checkbox" name="MakeMFADefault" id="MakeMFADefaultOTPEntry" value="1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Make this my default OTP method
+parseable name: MakeMFADefault
+section: Username_0_102
+field signature: 2264426276
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 108" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Make this my default OTP method
+parseable name: MakeMFADefault
+section: Username_0_102
+field signature: 2264426276
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 108" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512329">
+                    <label id="lblMakeMFADefaultOTPEntry" for="MakeMFADefaultOTPEntry" class="lblCheck">Make this my default OTP method</label>
+                  </span>
+                </div>
+              </div>
+
+              <div id="spnSaveUA2FA" style="display: none">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="pull-right">
+                      <input name="SaveUA" id="SaveUA2FA" type="checkbox" value="1" onclick="rememberDeviceClicked(this, false)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember this device?
+parseable name: SaveUA
+section: Username_0_102
+field signature: 1862327051
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 109" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember this device?
+parseable name: SaveUA
+section: Username_0_102
+field signature: 1862327051
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 109" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512330">
+                      <label id="lblSaveUA2FA" for="SaveUA2FA" class="lblCheck"><span class="boldgreen">Remember this device?</span></label>
+                    </div>
+                  </div>
+                </div>
+                <div id="spnSaveUADesc2FA" style="display: none">
+                  <div class="form-group">
+                    <label id="lblSaveUADesc2FA" for="SaveUADesc2FA" class="control-label col-sm-4">Browser Description</label>
+                    <div class="col-sm-6">
+                      <input id="SaveUADesc2FA" type="text" name="SaveUADesc" maxlength="60" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Browser Description
+parseable name: SaveUADesc
+section: Username_0_102
+field signature: 794873326
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 110" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Browser Description
+parseable name: SaveUADesc
+section: Username_0_102
+field signature: 794873326
+form signature: 13570978832693462887
+form signature in host form: 13570978832693462887
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 7
+field renderer id: 110" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512331">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-10 col-sm-offset-1">
+                      <div id="lblSaveUAInstr2FA" class="saveUAInstr">
+                        Remembering this browser prevents extra login prompts.
+                        You should <span class="bold">NOT</span> enable this on
+                        public/shared computers.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="spnCaptchaOTPEntry" class="form-group" style="display: none">
+                <span id="lblCaptchaOTPEntry" class="lblSpan col-sm-8 col-sm-offset-4">Please answer the CAPTCHA below</span>
+                <div id="divCaptchaOTPEntry" class="col-sm-8 col-sm-offset-4"></div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnOTPEntryLogin" onclick="submitOTPEntry(); return false;">
+                        Login
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnOTPEntryCancel" onclick="closeOTPEntry(); return false;">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" name="OTPResendType" id="OTPResendOTPEntry" value="0">
+      <input type="hidden" name="OTPResendIdx" id="OTPResendIdxOTPEntry" value="0">
+      <input type="hidden" name="OTPEntryType" id="OTPEntryType" value="410">
+      <input type="hidden" id="VoicePhrase" name="VoicePhrase" value="">
+      <input type="hidden" id="VoiceContentLanguage" name="VoiceContentLanguage" value="en-US">
+      <input id="PGTokenOTPEntry" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+    </form>
+  </div>
+
+  <!-- OTP resend div -->
+  <div id="popup_OTPResend" class="otpresendPopup vcenter hcenter col-md-6 col-md-offset-3 shadow" role="dialog" aria-labelledby="lblOTPResendTitle" style="display: none">
+    <div id="lblOTPResendTitle">You have the following OTP options</div>
+  </div>
+
+  <!-- Self Service div -->
+  <div id="popup_SS" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="SSTitle" style="display: none">
+    <form id="SSForm" name="SSForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="SSTitle">End-User Self Service</h2>
+            </div>
+
+            <div id="infoSS" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgSS" role="status"></div>
+
+            <div class="col-md-12">
+              <div class="row">
+                <div id="fldsSS" class="popFieldsContainer">
+                  <div id="SSUsername" class="form-group">
+                    <label id="lblUNameSS" for="UsernameSS" class="control-label col-sm-4">Username</label>
+                    <div class="col-sm-6">
+                      <input id="UsernameSS" type="text" name="Username" maxlength="256" disabled="true" title="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_119
+field signature: 2408420769
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 119" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_119
+field signature: 2408420769
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 119" autofill-prediction="USERNAME" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512332">
+                    </div>
+                  </div>
+                  <div id="SSStaticPWEntry" class="form-group" style="display: none">
+                    <label id="lblPWSS" for="PasswordSS" class="control-label col-sm-4">Password</label>
+                    <div class="col-sm-6">
+                      <input id="PasswordSS" type="password" name="Password" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_119
+field signature: 3935904101
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 120" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_119
+field signature: 3935904101
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 120" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512333">
+                    </div>
+                    <span id="spanShowPWs8" style="">
+                      <div class="col-sm-8 col-sm-offset-4">
+                        <input name="showpwsSS1" id="showpwsSS1" type="checkbox" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpwsSS1
+section: Username_0_119
+field signature: 1624056129
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 121" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpwsSS1
+section: Username_0_119
+field signature: 1624056129
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 121" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512334">
+                        <label id="lblShowPWs8" for="showpwsSS1" class="lblCheck">Show password</label>
+                      </div>
+                    </span>
+                  </div>
+                  <div id="SSGroupChooser" class="form-group" style="display: none">
+                    <div class="col-sm-8 col-sm-offset-4">
+                      <fieldset>
+                        <legend id="lblSSGroupTypes"></legend>
+                        <div id="divSSGroupTypes"></div>
+                      </fieldset>
+                    </div>
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <div class="containerPGButton">
+                          <div class="col-md-6">
+                            <span><button class="PGButton btn" id="btnSSGroupContinue" onclick="submitSSGroup(); return false;">
+                                Continue
+                              </button></span>
+                          </div>
+                          <div class="col-md-6">
+                            <span id="spanGroupSSCancelBtn"><button class="PGButton btn" id="btnSSGroupCancel" onclick="closeSSGroup(false); return false;">
+                                Cancel
+                              </button></span>
+                            <span id="spanGroupSSSkipBtn" style="display: none"><button class="PGButton btn" id="btnSSGroupSkip" onclick="closeSSGroup(true); return false;">
+                                Skip
+                              </button></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="SSChooseAction" class="form-group" style="display: none">
+                    <div class="col-sm-8 col-sm-offset-4">
+                      <fieldset>
+                        <legend id="lblSSRecoveryOptions">
+                          Recovery Actions Available
+                        </legend>
+                        <div id="SSRecoveryActions"></div>
+                      </fieldset>
+                    </div>
+                  </div>
+                  <div id="SSActionChosen" class="form-group" style="display: none">
+                    <span id="lblSSReqAction" class="lblSpan col-sm-4 align_right">Requested Action</span>
+                    <div class="col-sm-6">
+                      <span id="SSActionChosen_Desc"></span>
+                    </div>
+                  </div>
+                  <div id="SSChooseAuth" class="form-group" style="display: none">
+                    <div class="col-sm-8 col-sm-offset-4">
+                      <fieldset>
+                        <legend id="lblSSAuthTypes">
+                          Authentication Types Available
+                        </legend>
+                        <div id="SSEnrollmentAuth"></div>
+                      </fieldset>
+                    </div>
+                  </div>
+                  <div id="SSPhoneOTPEnrollment" style="display: none">
+                    <div class="form-group">
+                      <label id="lblPhoneCSS" for="PhoneCSS" class="control-label col-sm-4">Country</label>
+                      <div class="col-sm-6">
+                        <select name="PhoneC" id="PhoneCSS" class="form-control" data-ddg-testresultelementid="512335" data-manual-scoring="addressCountryCode"></select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label id="lblPhoneNumSS" for="PhoneSS" class="control-label col-sm-4">Phone Number</label>
+                      <div class="col-sm-6">
+                        <input id="PhoneSS" type="text" name="Phone" size="20" class="form-control" data-ddg-testresultelementid="512336" data-manual-scoring="phone">
+                      </div>
+                      <div class="col-sm-8 col-sm-offset-4">
+                        <span id="spanLogin2FAOptIn" style="display: none">
+                          <input name="Login2FAOptIn" id="Login2FAOptIn" type="checkbox" value="1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Enable Multi-Factor Login
+parseable name: Login2FAOptIn
+section: Username_0_119
+field signature: 2447058947
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 130" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Enable Multi-Factor Login
+parseable name: Login2FAOptIn
+section: Username_0_119
+field signature: 2447058947
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 130" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512337">
+                          <label id="lblLogin2FAOptIn" for="Login2FAOptIn" class="lblCheck">Enable Multi-Factor Login</label>
+                        </span>
+                      </div>
+                    </div>
+                    <div id="SSPhoneTypeRadioBtns" class="form-group" style="display: none">
+                      <div class="col-sm-8 col-sm-offset-4">
+                        <fieldset>
+                          <legend id="phoneTypeSS">Phone Type</legend>
+                          <input type="radio" name="EnrolledPhoneCanSMS" id="SSPhoneCanSMSYes" value="1" onclick="setElemVisibility(['divPhoneProvSS'], true);" checked="" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone can receive SMS/text messages
+parseable name: EnrolledPhoneCanSMS
+section: Username_0_119
+field signature: 2874945643
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 132" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone can receive SMS/text messages
+parseable name: EnrolledPhoneCanSMS
+section: Username_0_119
+field signature: 2874945643
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 132" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512338">
+                          <label id="lblPhoneCanSMSYesSS" for="SSPhoneCanSMSYes" class="lblRadio">Phone can receive SMS/text messages</label>
+                          <br>
+                          <input type="radio" name="EnrolledPhoneCanSMS" id="SSPhoneCanSMSNo" value="0" onclick="setElemVisibility(['divPhoneProvSS'], false);" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone cannot receive SMS/text messages
+parseable name: EnrolledPhoneCanSMS
+section: Username_0_119
+field signature: 2874945643
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 133" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone cannot receive SMS/text messages
+parseable name: EnrolledPhoneCanSMS
+section: Username_0_119
+field signature: 2874945643
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 133" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512339">
+                          <label id="lblPhoneCanSMSNoSS" for="SSPhoneCanSMSNo" class="lblRadio">Phone <span class="bold">cannot</span> receive
+                            SMS/text messages</label>
+                        </fieldset>
+                      </div>
+                    </div>
+
+                    <div id="divPhoneProvSS" class="form-group">
+                      <label id="lblPhoneProvSS" for="SMSProviderSS" class="control-label col-sm-4">Phone Provider</label>
+                      <div class="col-sm-6">
+                        <select name="SMSProvider" id="SMSProviderSS" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone Provider
+parseable name: SMSProvider
+section: Username_0_119
+field signature: 1885970669
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 134" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone Provider
+parseable name: SMSProvider
+section: Username_0_119
+field signature: 1885970669
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 134" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="identities.phone" data-ddg-testresultelementid="512340">
+                          <option value="@sms.alltelwireless.com">
+                            Alltel
+                          </option>
+                          <option value="@txt.att.net">AT&amp;T</option>
+                          <option value="@txt.bell.ca">Bell (Canada)</option>
+                          <option value="@myboostmobile.com">
+                            Boost Mobile
+                          </option>
+                          <option value="@msg.fi.google.com">Project Fi</option>
+                          <option value="@pcs.rogers.com">
+                            Rogers (Canada)
+                          </option>
+                          <option value="@messaging.sprintpcs.com">
+                            Sprint Nextel
+                          </option>
+                          <option value="@tmomail.net">T-Mobile</option>
+                          <option value="@msg.telus.com">Telus Canada</option>
+                          <option value="@email.uscc.net">US Cellular</option>
+                          <option value="@vtext.com" selected="">
+                            Verizon
+                          </option>
+                          <option value="@vmobl.com">Virgin Mobile USA</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="SSEmailOTPEnrollment" class="form-group" style="display: none">
+                    <label id="lblSSEmailAddr" for="EmailSS" class="control-label col-sm-4">Email Address</label>
+                    <div class="col-sm-6">
+                      <input id="EmailSS" type="text" name="Email" maxlength="256" title="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: Email
+section: Username_0_119
+field signature: 2687998122
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 135" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: Email
+section: Username_0_119
+field signature: 2687998122
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 135" autofill-prediction="EMAIL_ADDRESS" class="form-control" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="512341" style="
+                          background-size: auto 26px !important;
+                          background-position: right center !important;
+                          background-repeat: no-repeat !important;
+                          background-origin: content-box !important;
+                          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+                          transition: background 0s ease 0s !important;
+                        ">
+                    </div>
+                  </div>
+
+                  <div id="SSSuppressReminders" class="row" style="display: none">
+                    <div class="col-sm-12">
+                      <div class="pull-right">
+                        <input name="chkDisableReminders" id="chkDisableRemindersSS" type="checkbox" value="1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Permanently Suppress Reminders
+parseable name: chkDisableReminders
+section: Username_0_119
+field signature: 1262394480
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 136" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Permanently Suppress Reminders
+parseable name: chkDisableReminders
+section: Username_0_119
+field signature: 1262394480
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 136" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512342">
+                        <label id="lblSSPermSuppress" for="chkDisableRemindersSS" class="lblCheck"><span class="boldred">Permanently Suppress Reminders</span></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="SSOTPEntry" class="form-group" style="display: none">
+                    <div id="divSSExtAuth" class="col-sm-8 col-sm-offset-4" style="display: none">
+                      <div id="SSExtAuth"></div>
+                      <input type="checkbox" id="chkSSExtAuth" onclick="toggleExtAuthDisplay()" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show Pattern While Drawing
+parseable name: chkSSExtAuth
+section: Username_0_119
+field signature: 2493389057
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 137" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show Pattern While Drawing
+parseable name: chkSSExtAuth
+section: Username_0_119
+field signature: 2493389057
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 137" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512343">
+                      <label id="lblchkSSExtAuth" for="chkSSExtAuth" class="lblCheck">Show Pattern While Drawing</label>
+                    </div>
+                    <div id="fldSSOTP">
+                      <label id="lblOTPSS" for="OTPSS" class="control-label col-sm-4">One Time Passcode</label>
+                      <div class="col-sm-6">
+                        <input id="OTPSS" type="text" name="OTP" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: Username_0_119
+field signature: 4201319145
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 138" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: Username_0_119
+field signature: 4201319145
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 138" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512344">
+                      </div>
+                    </div>
+                    <div class="col-sm-8 col-sm-offset-4">
+                      <span id="spnResendSS" class="resendLink"></span>
+                    </div>
+                  </div>
+                  <div id="SSChalEntry" style="display: none">
+                    <div id="fldsChal_MandQs">
+                      <div id="divChalMandQ1" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblMandQ1" for="MandAns1" class="chal_q">MQ1</label>
+                          <input name="MandAns1" type="password" id="MandAns1" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ1
+parseable name: MandAns1
+section: Username_0_119
+field signature: 2116762550
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 139" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ1
+parseable name: MandAns1
+section: Username_0_119
+field signature: 2116762550
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 139" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512345">
+                        </div>
+                      </div>
+                      <div id="divChalMandQ2" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblMandQ2" for="MandAns2" class="chal_q">MQ2</label>
+                          <input name="MandAns2" type="password" id="MandAns2" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ2
+parseable name: MandAns2
+section: Username_0_119
+field signature: 2018837691
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 140" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ2
+parseable name: MandAns2
+section: Username_0_119
+field signature: 2018837691
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 140" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512346">
+                        </div>
+                      </div>
+                      <div id="divChalMandQ3" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblMandQ3" for="MandAns3" class="chal_q">MQ3</label>
+                          <input name="MandAns3" type="password" id="MandAns3" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ3
+parseable name: MandAns3
+section: Username_0_119
+field signature: 1805980032
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 141" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ3
+parseable name: MandAns3
+section: Username_0_119
+field signature: 1805980032
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 141" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512347">
+                        </div>
+                      </div>
+                      <div id="divChalMandQ4" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblMandQ4" for="MandAns4" class="chal_q">MQ4</label>
+                          <input name="MandAns4" type="password" id="MandAns4" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ4
+parseable name: MandAns4
+section: Username_0_119
+field signature: 437793057
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 142" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ4
+parseable name: MandAns4
+section: Username_0_119
+field signature: 437793057
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 142" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512348">
+                        </div>
+                      </div>
+                      <div id="divChalMandQ5" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblMandQ5" for="MandAns5" class="chal_q">MQ5</label>
+                          <input name="MandAns5" type="password" id="MandAns5" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ5
+parseable name: MandAns5
+section: Username_0_119
+field signature: 3577615172
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 143" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: MQ5
+parseable name: MandAns5
+section: Username_0_119
+field signature: 3577615172
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 143" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512349">
+                        </div>
+                      </div>
+                    </div>
+                    <div id="fldsChal_OptQs1">
+                      <div id="divChalOptQ1" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ1" for="OQ1" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ1
+section: Username_0_119
+field signature: 276395811
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 144" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ1
+section: Username_0_119
+field signature: 276395811
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 144" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512350"></select>
+                          <label id="lblOptQ1" for="OptAns1" class="chal_q">OQ1</label>
+                          <input name="OptAns1" type="password" id="OptAns1" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ1
+parseable name: OptAns1
+section: Username_0_119
+field signature: 3893322682
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 145" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ1
+parseable name: OptAns1
+section: Username_0_119
+field signature: 3893322682
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 145" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512351">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ2" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ2" for="OQ2" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ2" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ2
+section: Username_0_119
+field signature: 2413177292
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 146" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ2
+section: Username_0_119
+field signature: 2413177292
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 146" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512352"></select>
+                          <label id="lblOptQ2" for="OptAns2" class="chal_q">OQ2</label>
+                          <input name="OptAns2" type="password" id="OptAns2" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ2
+parseable name: OptAns2
+section: Username_0_119
+field signature: 1678912836
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 147" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ2
+parseable name: OptAns2
+section: Username_0_119
+field signature: 1678912836
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 147" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512353">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ3" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ3" for="OQ3" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ3" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ3
+section: Username_0_119
+field signature: 4174648137
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 148" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ3
+section: Username_0_119
+field signature: 4174648137
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 148" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512354"></select>
+                          <label id="lblOptQ3" for="OptAns3" class="chal_q">OQ3</label>
+                          <input name="OptAns3" type="password" id="OptAns3" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ3
+parseable name: OptAns3
+section: Username_0_119
+field signature: 2351753527
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 149" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ3
+parseable name: OptAns3
+section: Username_0_119
+field signature: 2351753527
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 149" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512355">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ4" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ4" for="OQ4" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ4" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ4
+section: Username_0_119
+field signature: 2454310983
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 150" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ4
+section: Username_0_119
+field signature: 2454310983
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 150" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512356"></select>
+                          <label id="lblOptQ4" for="OptAns4" class="chal_q">OQ4</label>
+                          <input name="OptAns4" type="password" id="OptAns4" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ4
+parseable name: OptAns4
+section: Username_0_119
+field signature: 4073319607
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 151" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ4
+parseable name: OptAns4
+section: Username_0_119
+field signature: 4073319607
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 151" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512357">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ5" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ5" for="OQ5" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ5" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ5
+section: Username_0_119
+field signature: 1034186108
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 152" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ5
+section: Username_0_119
+field signature: 1034186108
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 152" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512358"></select>
+                          <label id="lblOptQ5" for="OptAns5" class="chal_q">OQ5</label>
+                          <input name="OptAns5" type="password" id="OptAns5" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ5
+parseable name: OptAns5
+section: Username_0_119
+field signature: 4151237248
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 153" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ5
+parseable name: OptAns5
+section: Username_0_119
+field signature: 4151237248
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 153" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512359">
+                        </div>
+                      </div>
+                    </div>
+                    <div id="fldsChal_OptQs2">
+                      <div id="divChalOptQ6" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ6" for="OQ6" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ6" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ6
+section: Username_0_119
+field signature: 1455739968
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 154" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ6
+section: Username_0_119
+field signature: 1455739968
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 154" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512360"></select>
+                          <label id="lblOptQ6" for="OptAns6" class="chal_q">OQ6</label>
+                          <input name="OptAns6" type="password" id="OptAns6" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ6
+parseable name: OptAns6
+section: Username_0_119
+field signature: 3106101263
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 155" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ6
+parseable name: OptAns6
+section: Username_0_119
+field signature: 3106101263
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 155" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512361">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ7" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ7" for="OQ7" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ7" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ7
+section: Username_0_119
+field signature: 116258331
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 156" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ7
+section: Username_0_119
+field signature: 116258331
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 156" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512362"></select>
+                          <label id="lblOptQ7" for="OptAns7" class="chal_q">OQ7</label>
+                          <input name="OptAns7" type="password" id="OptAns7" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ7
+parseable name: OptAns7
+section: Username_0_119
+field signature: 2955016526
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 157" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ7
+parseable name: OptAns7
+section: Username_0_119
+field signature: 2955016526
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 157" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512363">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ8" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ8" for="OQ8" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ8" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ8
+section: Username_0_119
+field signature: 1120825252
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 158" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ8
+section: Username_0_119
+field signature: 1120825252
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 158" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512364"></select>
+                          <label id="lblOptQ8" for="OptAns8" class="chal_q">OQ8</label>
+                          <input name="OptAns8" type="password" id="OptAns8" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ8
+parseable name: OptAns8
+section: Username_0_119
+field signature: 1765171538
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 159" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ8
+parseable name: OptAns8
+section: Username_0_119
+field signature: 1765171538
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 159" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512365">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ9" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ9" for="OQ9" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ9" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ9
+section: Username_0_119
+field signature: 1439790832
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 160" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ9
+section: Username_0_119
+field signature: 1439790832
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 160" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512366"></select>
+                          <label id="lblOptQ9" for="OptAns9" class="chal_q">OQ9</label>
+                          <input name="OptAns9" type="password" id="OptAns9" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ9
+parseable name: OptAns9
+section: Username_0_119
+field signature: 1821862801
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 161" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ9
+parseable name: OptAns9
+section: Username_0_119
+field signature: 1821862801
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 161" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512367">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ10" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ10" for="OQ10" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ10" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ10
+section: Username_0_119
+field signature: 2133600954
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 162" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ10
+section: Username_0_119
+field signature: 2133600954
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 162" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512368"></select>
+                          <label id="lblOptQ10" for="OptAns10" class="chal_q">OQ10</label>
+                          <input name="OptAns10" type="password" id="OptAns10" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ10
+parseable name: OptAns10
+section: Username_0_119
+field signature: 3543219782
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 163" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ10
+parseable name: OptAns10
+section: Username_0_119
+field signature: 3543219782
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 163" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512369">
+                        </div>
+                      </div>
+                    </div>
+                    <div id="fldsChal_OptQs3">
+                      <div id="divChalOptQ11" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ11" for="OQ11" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ11" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ11
+section: Username_0_119
+field signature: 213820140
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 164" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ11
+section: Username_0_119
+field signature: 213820140
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 164" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512370"></select>
+                          <label id="lblOptQ11" for="OptAns11" class="chal_q">OQ11</label>
+                          <input name="OptAns11" type="password" id="OptAns11" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ11
+parseable name: OptAns11
+section: Username_0_119
+field signature: 2847661934
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 165" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ11
+parseable name: OptAns11
+section: Username_0_119
+field signature: 2847661934
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 165" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512371">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ12" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ12" for="OQ12" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ12" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ12
+section: Username_0_119
+field signature: 827917911
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 166" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ12
+section: Username_0_119
+field signature: 827917911
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 166" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512372"></select>
+                          <label id="lblOptQ12" for="OptAns12" class="chal_q">OQ12</label>
+                          <input name="OptAns12" type="password" id="OptAns12" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ12
+parseable name: OptAns12
+section: Username_0_119
+field signature: 1347855889
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 167" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ12
+parseable name: OptAns12
+section: Username_0_119
+field signature: 1347855889
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 167" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512373">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ13" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ13" for="OQ13" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ13" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ13
+section: Username_0_119
+field signature: 592168189
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 168" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ13
+section: Username_0_119
+field signature: 592168189
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 168" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512374"></select>
+                          <label id="lblOptQ13" for="OptAns13" class="chal_q">OQ13</label>
+                          <input name="OptAns13" type="password" id="OptAns13" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ13
+parseable name: OptAns13
+section: Username_0_119
+field signature: 712132447
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 169" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ13
+parseable name: OptAns13
+section: Username_0_119
+field signature: 712132447
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 169" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512375">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ14" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ14" for="OQ14" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ14" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ14
+section: Username_0_119
+field signature: 304417729
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 170" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ14
+section: Username_0_119
+field signature: 304417729
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 170" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512376"></select>
+                          <label id="lblOptQ14" for="OptAns14" class="chal_q">OQ14</label>
+                          <input name="OptAns14" type="password" id="OptAns14" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ14
+parseable name: OptAns14
+section: Username_0_119
+field signature: 20408539
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 171" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ14
+parseable name: OptAns14
+section: Username_0_119
+field signature: 20408539
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 171" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512377">
+                        </div>
+                      </div>
+                      <div id="divChalOptQ15" class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <label id="lblOQ15" for="OQ15" class="visuallyhidden">Choose a challenge answer</label>
+                          <select id="OQ15" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ15
+section: Username_0_119
+field signature: 4160032332
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 172" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose a challenge answer
+parseable name: OQ15
+section: Username_0_119
+field signature: 4160032332
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 172" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512378"></select>
+                          <label id="lblOptQ15" for="OptAns15" class="chal_q">OQ15</label>
+                          <input name="OptAns15" type="password" id="OptAns15" maxlength="256" onkeyup="handleKeyPress(this, event, true)" onblur="changeType(this)" onfocus="changeType(this)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ15
+parseable name: OptAns15
+section: Username_0_119
+field signature: 1535831934
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 173" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: OQ15
+parseable name: OptAns15
+section: Username_0_119
+field signature: 1535831934
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 173" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512379">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="SS_NewPW" style="display: none">
+                    <div class="form-group">
+                      <label id="NewPasswordLabel" for="SSNewPassword" class="control-label col-sm-4">New Password</label>
+                      <div class="col-sm-6">
+                        <input name="NewPassword" type="password" id="SSNewPassword" maxlength="256" onkeypress="handleKeyPress(this, event)" autocomplete="new-password" class="form-control" data-ddg-testresultelementid="512380" data-manual-scoring="password">
+                      </div>
+                      <span id="spanShowPWs4" style="">
+                        <div class="col-sm-8 col-sm-offset-4">
+                          <input name="showpwsSS2" id="showpwsSS2" type="checkbox" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpwsSS2
+section: Username_0_119
+field signature: 522393977
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 175" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpwsSS2
+section: Username_0_119
+field signature: 522393977
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 175" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512381">
+                          <label id="lblShowPWs4" for="showpwsSS2" class="lblCheck">Show password</label>
+                        </div>
+                      </span>
+                      <span id="pwmeter2" style="display: none">
+                        <!--<span id="imgHolderSS">
+													<img id="pwdLockImg2" src="/_layouts/images/pg/images/spec0.jpg" alt="Password Quality Meter">
+												</span>-->
+                        <span id="pwdLockString2">Password Strength</span>
+                      </span>
+                    </div>
+                    <div id="fldConfPWChal" class="form-group">
+                      <label id="ConfirmPasswordLabel" for="ConfirmPasswordSS" class="control-label col-sm-4">Confirm Password</label>
+                      <div class="col-sm-6">
+                        <input id="ConfirmPasswordSS" type="password" name="ConfirmPassword" maxlength="256" onkeypress="handleKeyPress(this, event)" class="form-control" data-ddg-testresultelementid="512382" data-manual-scoring="password">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="spnCaptchaSS" class="form-group" style="display: none">
+                    <span id="lblCaptchaSS" class="lblSpan col-sm-8 col-sm-offset-4">Please answer the CAPTCHA below</span>
+                    <div id="divCaptchaSS" class="col-sm-8 col-sm-offset-4"></div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div id="btnSS" class="row">
+                      <div id="btnsSSChalPrevNext" class="row" style="display: none">
+                        <div class="col-md-6">
+                          <span id="SetChalPrevDis"><button class="PGButtonDisabled disabled btn" id="btnSetChalPrevDis" onclick="return false">
+                              &lt;&lt; Previous
+                            </button></span>
+                          <span id="SetChalPrev"><button class="PGButton btn" id="btnSetChalPrev" onclick="AdvSetAns(-1); return false;">
+                              &lt;&lt; Previous
+                            </button></span>
+                        </div>
+                        <div class="col-md-6">
+                          <span id="SetChalNextDis"><button class="PGButtonDisabled disabled btn" id="btnSetChalNextDis" onclick="return false">
+                              Next &gt;&gt;
+                            </button></span>
+                          <span id="SetChalNext"><button class="PGButton btn" id="btnSetChalNext" onclick="AdvSetAns(1); return false;">
+                              Next &gt;&gt;
+                            </button></span>
+                        </div>
+                      </div>
+                      <div class="row containerPGButton">
+                        <div class="col-md-6">
+                          <span id="spanBtnContinueDis" style="display: none"><button class="PGButtonDisabled disabled btn" id="btnSSContinueDis" onclick="return false">
+                              Continue
+                            </button></span>
+                          <span id="spanContinueBtn"><button class="PGButton btn" id="btnSSContinue" onclick="submitSS(); return false;">
+                              Continue
+                            </button></span>
+                        </div>
+                        <div class="col-md-6">
+                          <!-- 2018-06-27 - FYI: This onclick handler is overridden in displaySSStep() so it doesn't always call closeSS!! -->
+                          <span id="spanCancelBtn"><button class="PGButton btn" id="btnSSCancel" onclick="closeSS(false); return false;">
+                              Cancel
+                            </button></span>
+                          <span id="spanSkipBtn" style="display: none"><button class="PGButton btn" id="btnSSSkip" onclick="closeSS(true); return false;">
+                              Skip
+                            </button></span>
+                        </div>
+                      </div>
+                      <div id="spanAnsRemain" style="display: none">
+                        <span id="lblSSAnsRemain" class="CAStatic">Answers remaining: </span><span id="spanAnsRemainText" class="CARunning"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input id="SSStep" type="hidden" name="SSStep">
+      <input id="pgclientSS" type="hidden" name="pgclient">
+      <input type="hidden" name="OTPResendType" id="OTPResendTypeSS" value="0">
+      <input type="hidden" name="OTPResendIdx" id="OTPResendIdxSS" value="0">
+      <input id="PGTokenSS" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+      <span id="spanSSshowpws" style="display: none"><input name="showpws" id="showpwsSS" type="checkbox" value="1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Never shown!
+parseable name: showpws
+section: Username_0_119
+field signature: 1923511841
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 190" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Never shown!
+parseable name: showpws
+section: Username_0_119
+field signature: 1923511841
+form signature: 8238607772005645397
+form signature in host form: 8238607772005645397
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 8
+field renderer id: 190" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512383"><label for="showpwsSS" class="lblCheck">Never shown!</label></span>
+    </form>
+  </div>
+
+  <!-- Account linking div -->
+  <div id="popup_AcctLink" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="AcctLinkTitle" style="display: none">
+    <form id="AcctLinkForm" name="AcctLinkForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="AcctLinkTitle">User Account Linking</h2>
+            </div>
+
+            <div id="infoAcctLink" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgAcctLink" role="status"></div>
+
+            <div id="fldsAcctLink" class="popFieldsContainer">
+              <div id="AcctLinkUsername">
+                <div id="AcctLinkUsernameEntry" class="form-group" style="display: none">
+                  <label id="lblUNameAcctLink" for="UsernameAcctLink" class="control-label col-sm-4">Username</label>
+                  <div class="col-sm-6">
+                    <input id="UsernameAcctLink" type="text" name="Username" maxlength="256" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_191
+field signature: 2408420769
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 191" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: Username
+section: Username_0_191
+field signature: 2408420769
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 191" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512384">
+                  </div>
+                </div>
+                <div id="AcctLinkUsernameDisplay" class="form-group">
+                  <span id="lblMainUNameAcctLink" class="lblSpan col-sm-4 align_right">Main Username</span>
+                  <div class="col-sm-6">
+                    <span id="AcctLink_MainUser" class="boldred"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div id="AcctLinkStaticPWEntry" class="form-group" style="display: none">
+                <label id="lblPWAcctLink" for="PasswordAcctLink" class="control-label col-sm-4">Password</label>
+                <div class="col-sm-6">
+                  <input id="PasswordAcctLink" type="password" name="Password" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_191
+field signature: 3935904101
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 192" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: Username_0_191
+field signature: 3935904101
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 192" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512385">
+                </div>
+                <span id="spanShowPWs9" style="">
+                  <div class="col-sm-8 col-sm-offset-4">
+                    <input name="showpws" id="showpws9" type="checkbox" value="1" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_191
+field signature: 1923511841
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 193" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_191
+field signature: 1923511841
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 193" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512386">
+                    <label id="lblShowPWs9" for="showpws9" class="lblCheck">Show password</label>
+                  </div>
+                </span>
+              </div>
+
+              <div id="AcctLinkSystemEntry">
+                <div class="form-group">
+                  <span id="lblAcctLinkRepoSys" class="lblSpan col-sm-4 align_right">Repository/System</span>
+                  <div class="col-sm-6">
+                    <span id="AcctLink_DisplayName" class="boldred"></span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label id="lblAcctLinkLinkedName" for="linkUsername" class="control-label col-sm-4">Secondary Username</label>
+                  <div class="col-sm-6">
+                    <input id="linkUsername" type="text" name="linkUsername" maxlength="256" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Secondary Username
+parseable name: linkUsername
+section: Username_0_191
+field signature: 129054645
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 194" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Secondary Username
+parseable name: linkUsername
+section: Username_0_191
+field signature: 129054645
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 194" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512387">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label id="lblAcctLinkLinkedPW" for="linkPassword" class="control-label col-sm-4">Secondary Password</label>
+                  <div class="col-sm-6">
+                    <input id="linkPassword" type="password" name="linkPassword" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Secondary Password
+parseable name: linkPassword
+section: Username_0_191
+field signature: 3920281892
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 195" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Secondary Password
+parseable name: linkPassword
+section: Username_0_191
+field signature: 3920281892
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 195" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="512388">
+                  </div>
+                  <span id="spanShowPWs10" style="">
+                    <div class="col-sm-8 col-sm-offset-4">
+                      <input name="showpws" id="showpws10" type="checkbox" value="1" onclick="togglePwFields(this.form, this.checked)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_191
+field signature: 1923511841
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 196" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Show password
+parseable name: showpws
+section: Username_0_191
+field signature: 1923511841
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 196" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512389">
+                      <label id="lblShowPWs10" for="showpws10" class="lblCheck">Show password</label>
+                    </div>
+                  </span>
+                </div>
+
+                <div id="AcctLinkSuppressReminders" style="display: none">
+                  <input name="chkDisableReminders" id="chkDisableRemindersAcctLink" type="checkbox" value="1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Permanently Suppress Reminders
+parseable name: chkDisableReminders
+section: Username_0_191
+field signature: 1262394480
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 197" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Permanently Suppress Reminders
+parseable name: chkDisableReminders
+section: Username_0_191
+field signature: 1262394480
+form signature: 17908740728199532002
+form signature in host form: 17908740728199532002
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 9
+field renderer id: 197" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512390">
+                  <label id="lblAcctLinkPermSuppress" for="chkDisableRemindersAcctLink" class="lblCheck"><span class="boldred">Permanently Suppress Reminders</span></label>
+                </div>
+              </div>
+
+              <div id="spnCaptchaAcctLink" class="form-group" style="display: none">
+                <span id="lblCaptchaAcctLink" class="lblSpan col-sm-8 col-sm-offset-4">Please answer the CAPTCHA below</span>
+                <div id="divCaptchaAcctLink" class="col-sm-8 col-sm-offset-4"></div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton" id="btnAcctLink">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnAcctLinkContinue" onclick="submitAcctLink(); return false;">
+                        Continue
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnAcctLinkCancel" onclick="closeAcctLink(false); return false;">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input id="linkGUID" type="hidden" name="linkGUID">
+      <input id="AcctLinkStep" type="hidden" name="AcctLinkStep">
+      <input id="pgclientAcctLink" type="hidden" name="pgclient">
+      <input id="PGTokenAcctLink" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+    </form>
+  </div>
+
+  <!-- Username Change div -->
+  <div id="popup_ChngUsr" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="ChngUsrTitle" style="display: none">
+    <form id="ChngUsrForm" name="ChngUsrForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="ChngUsrTitle">Change Username</h2>
+            </div>
+
+            <div id="infoChngUsr" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgChngUsr" role="status"></div>
+
+            <div id="fldsChngUsr" class="popFieldsContainer">
+              <div class="form-group">
+                <label id="lblNewUNameChngUsr" for="NewUsername" class="control-label col-sm-4">New Username</label>
+                <div class="col-sm-6">
+                  <input id="NewUsername" type="text" name="NewUsername" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: New Username
+parseable name: NewUsername
+section: NewUsername_0_204
+field signature: 1976646298
+form signature: 5587371455862622933
+form signature in host form: 5587371455862622933
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 10
+field renderer id: 204" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: New Username
+parseable name: NewUsername
+section: NewUsername_0_204
+field signature: 1976646298
+form signature: 5587371455862622933
+form signature in host form: 5587371455862622933
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 10
+field renderer id: 204" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512391">
+                </div>
+              </div>
+              <div id="ChngUsrOTPEntry" class="form-group" style="display: none">
+                <label id="lblOTPChngUsr" for="OTPChngUsr" class="control-label col-sm-4">One Time Passcode</label>
+                <div class="col-sm-6">
+                  <input id="OTPChngUsr" type="text" name="OTP" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: NewUsername_0_204
+field signature: 4201319145
+form signature: 5587371455862622933
+form signature in host form: 5587371455862622933
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 10
+field renderer id: 205" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: NewUsername_0_204
+field signature: 4201319145
+form signature: 5587371455862622933
+form signature in host form: 5587371455862622933
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 10
+field renderer id: 205" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512392">
+                </div>
+                <div class="col-sm-8 col-sm-offset-4">
+                  <span id="spnResendChngUsr" class="resendLink"></span>
+                </div>
+              </div>
+
+              <div id="spnCaptchaChngUsr" class="form-group" style="display: none">
+                <span id="lblCaptchaChngUsr" class="lblSpan col-sm-8 col-sm-offset-4">Please answer the CAPTCHA below</span>
+                <div id="divCaptchaChngUsr" class="col-sm-8 col-sm-offset-4"></div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnChngUsrContinue" onclick="submitChngUsr(); return false;">
+                        Continue
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnChngUsrCancel" onclick="closeChngUsr(false); return false;">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input id="UsernameChngUsr" type="hidden" name="Username">
+      <input id="PasswordChngUsr" type="hidden" name="Password">
+      <input id="ChngUsrStep" type="hidden" name="ChngUsrStep">
+      <input id="PGTokenChngUsr" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+      <input type="hidden" name="OTPResendType" id="OTPResendTypeChngUsr" value="0">
+      <input type="hidden" name="OTPResendIdx" id="OTPResendIdxChngUsr" value="0">
+    </form>
+  </div>
+
+  <!-- Mobile App div -->
+  <div id="popup_MobileApp" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="lblMobileAppTitle" style="display: none">
+    <form id="MobileAppForm" name="MobileAppForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="lblMobileAppTitle">Mobile Authenticator Enrollment</h2>
+            </div>
+
+            <div id="infoMobileApp1" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgMobileApp" role="status"></div>
+
+            <div id="fldsMobileAppInit" class="popFieldsContainer">
+              <div class="form-group">
+                <label id="lblMobileAppPhoneType" for="PhoneType" class="control-label col-sm-4">Phone Type</label>
+                <div class="col-sm-6">
+                  <select id="PhoneType" name="PhoneType" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone Type
+parseable name: PhoneType
+section: PhoneType_0_214
+field signature: 1821732158
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 214" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Phone Type
+parseable name: PhoneType
+section: PhoneType_0_214
+field signature: 1821732158
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 214" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512393">
+                    <option value="1" selected="">iPhone</option>
+                    <option value="2">Android</option>
+                    <option value="3">BlackBerry</option>
+                    <option value="4">Windows</option>
+                  </select>
+                </div>
+              </div>
+              <div id="fldMobileAppDesc" class="form-group">
+                <label id="lblMobileAppDesc" for="EntryDesc" class="control-label col-sm-4">Entry Description</label>
+                <div class="col-sm-6">
+                  <input id="EntryDesc" type="text" name="EntryDesc" maxlength="100" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Entry Description
+parseable name: EntryDesc
+section: PhoneType_0_214
+field signature: 593590683
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 215" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Entry Description
+parseable name: EntryDesc
+section: PhoneType_0_214
+field signature: 593590683
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 215" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="unknown" data-ddg-testresultelementid="512394">
+                </div>
+              </div>
+              <div id="MobileAppSuppressReminders" class="row" style="display: none">
+                <div class="col-sm-12">
+                  <div class="pull-right">
+                    <input name="chkDisableReminders" id="chkDisableRemindersMobileApp" type="checkbox" value="1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Permanently Suppress Reminders
+parseable name: chkDisableReminders
+section: PhoneType_0_214
+field signature: 1262394480
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 216" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Permanently Suppress Reminders
+parseable name: chkDisableReminders
+section: PhoneType_0_214
+field signature: 1262394480
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 216" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512395">
+                    <label id="lblMobileAppPermSuppress" for="chkDisableRemindersMobileApp" class="lblCheck"><span class="boldred">Permanently Suppress Reminders</span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="imgMobileAppQRCode" class="qrstyle form-group" style="display: none">
+              <div class="col-sm-8 col-sm-offset-2">
+                <img id="qrcode" src="/_layouts/images/pg/images/qr_placeholder.png" alt="Q R Code for Mobile Authenticator Enrollment">
+              </div>
+            </div>
+            <div id="dspMobileAppSecret" class="mobileapp_secret form-group"></div>
+            <div id="infoMobileApp2" class="popupInstructions" role="status">
+              2) Now enter the OTP it generates in the field below to finish
+              enrollment.
+            </div>
+            <div id="fldsMobileAppOTP" class="popFieldsContainer">
+              <div class="form-group">
+                <label id="lblMobileAppOTP" for="OTPMobileApp" class="control-label col-sm-4">One Time Passcode</label>
+                <div class="col-sm-6">
+                  <input id="OTPMobileApp" type="text" name="OTP" maxlength="50" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: PhoneType_0_214
+field signature: 4201319145
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 217" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: PhoneType_0_214
+field signature: 4201319145
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 217" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="identities.phone" data-ddg-testresultelementid="512396">
+                </div>
+              </div>
+              <div id="fldsMobileAppDefMethod" class="form-group" style="display: none">
+                <div class="col-sm-8 col-sm-offset-4">
+                  <span>
+                    <input type="checkbox" name="MakeMFADefault" id="MakeMFADefaultMobileApp" value="1" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Make this my default OTP method
+parseable name: MakeMFADefault
+section: PhoneType_0_214
+field signature: 2264426276
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 218" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Make this my default OTP method
+parseable name: MakeMFADefault
+section: PhoneType_0_214
+field signature: 2264426276
+form signature: 8315348396177346451
+form signature in host form: 8315348396177346451
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 11
+field renderer id: 218" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512397">
+                    <label id="lblMakeMFADefaultMobileApp" for="MakeMFADefaultMobileApp" class="lblCheck">Make this my default OTP method</label>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="row">
+                <div id="btnsMobileApp" class="row containerPGButton">
+                  <div class="col-md-6">
+                    <span id="spanMobileContinueBtn">
+                      <button class="PGButton btn" id="btnMobileContinue" onclick="submitMobileAppEnable(); return false;">
+                        Continue
+                      </button>
+                    </span>
+                  </div>
+                  <div class="col-md-6">
+                    <span id="spanMobileAppSkipBtn" style="display: none">
+                      <button class="PGButton btn" id="btnMobileAppSkip" onclick="closeMobileApp(true); return false;">
+                        Skip
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" id="AcctStep" name="AcctStep" value="1">
+      <input id="UsernameMobileApp" type="hidden" name="Username">
+      <input id="PasswordMobileApp" type="hidden" name="Password">
+      <input id="PGTokenMobileApp" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+    </form>
+  </div>
+
+  <!-- Phone Confirmation div -->
+  <div id="popup_PhoneConf" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="PhoneConfTitle" style="display: none">
+    <form id="PhoneConfForm" name="PhoneConfForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="PhoneConfTitle">Confirm Phone Number</h2>
+            </div>
+
+            <div id="infoPhoneConf" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgPhoneConf" role="status"></div>
+
+            <div id="fldsPhoneConf" class="popFieldsContainer">
+              <div class="form-group">
+                <label id="lblOTPPhoneConf" for="OTPPhoneConf" class="control-label col-sm-4">One Time Passcode</label>
+                <div class="col-sm-6">
+                  <input id="OTPPhoneConf" type="text" name="OTP" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: OTP_0_225
+field signature: 4201319145
+form signature: 13594656739572159325
+form signature in host form: 13594656739572159325
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 12
+field renderer id: 225" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: OTP_0_225
+field signature: 4201319145
+form signature: 13594656739572159325
+form signature in host form: 13594656739572159325
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 12
+field renderer id: 225" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="identities.phone" data-ddg-testresultelementid="512398">
+                </div>
+                <div class="col-sm-8 col-sm-offset-4" style="display: none">
+                  <!-- Resend not currently supported -->
+                  <span id="spnResendPhoneConf" class="resendLink"></span>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnConfPhoneContinue" onclick="submitPhoneConf(false); return false;">
+                        Continue
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <span id="btnPhoneConfCancel" style="display: none">
+                        <button class="PGButton btn" id="btnConfPhoneCancel" onclick="submitPhoneConf(true); return false;">
+                          Cancel
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input id="UsernamePhoneConf" type="hidden" name="Username">
+      <input id="PasswordPhoneConf" type="hidden" name="Password">
+      <input type="hidden" name="Cancel" id="CancelPhoneConf" value="0">
+      <input type="hidden" name="OTPResendType" id="OTPResendTypePhoneConf" value="0">
+      <input type="hidden" name="OTPResendIdx" id="OTPResendIdxPhoneConf" value="0">
+      <input id="PGTokenPhoneConf" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+    </form>
+  </div>
+
+  <!-- Email Confirmation div -->
+  <div id="popup_EmailConf" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="EmailConfTitle" style="display: none">
+    <form id="EmailConfForm" name="EmailConfForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="EmailConfTitle">Confirm Email Address</h2>
+            </div>
+
+            <div id="infoEmailConf" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgEmailConf" role="status"></div>
+
+            <div id="fldsEmailConf" class="popFieldsContainer">
+              <div class="form-group">
+                <label id="lblOTPEmailConf" for="OTPEmailConf" class="control-label col-sm-4">One Time Passcode</label>
+                <div class="col-sm-6">
+                  <input id="OTPEmailConf" type="text" name="OTP" maxlength="256" onkeypress="handleKeyPress(this, event)" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: OTP_0_234
+field signature: 4201319145
+form signature: 13496321934905490639
+form signature in host form: 13496321934905490639
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 13
+field renderer id: 234" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: One Time Passcode
+parseable name: OTP
+section: OTP_0_234
+field signature: 4201319145
+form signature: 13496321934905490639
+form signature in host form: 13496321934905490639
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 13
+field renderer id: 234" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="512399" style="
+                      background-size: auto 26px !important;
+                      background-position: right center !important;
+                      background-repeat: no-repeat !important;
+                      background-origin: content-box !important;
+                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+                      transition: background 0s ease 0s !important;
+                    ">
+                </div>
+                <div class="col-sm-8 col-sm-offset-4" style="display: none">
+                  <!-- Resend not currently supported -->
+                  <span id="spnResendEmailConf" class="resendLink"></span>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnEmailConfContinue" onclick="submitEmailConf(false); return false;">
+                        Continue
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <span id="btnEmailConfCancel" style="display: none">
+                        <button class="PGButton btn" id="btnEmailConfCancelLabel" onclick="submitEmailConf(true); return false;">
+                          Cancel
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input id="UsernameEmailConf" type="hidden" name="Username">
+      <input id="PasswordEmailConf" type="hidden" name="Password">
+      <input type="hidden" name="Cancel" id="CancelEmailConf" value="0">
+      <input type="hidden" name="OTPResendType" id="OTPResendTypeEmailConf" value="0">
+      <input type="hidden" name="OTPResendIdx" id="OTPResendIdxEmailConf" value="0">
+      <input id="PGTokenEmailConf" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+    </form>
+  </div>
+
+  <!-- Grouped 2FA Enrollment div -->
+  <div id="popup_2FAGrp" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="2FAGrpTitle" style="display: none">
+    <form id="2FAGrpForm" name="2FAGrpForm" method="post" autocomplete="off" class="form-horizontal" data-ddg-formtype="sign up">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="2FAGrpTitle">Grouped Two Factor Enrollment</h2>
+            </div>
+
+            <div id="info2FAGrp" class="popupInstructions" role="status"></div>
+            <div id="ErrMsg2FAGrp" role="status"></div>
+
+            <div id="flds2FAGrp" class="popFieldsContainer">
+              <div class="form-group">
+                <label id="lblUName2FAGrp" for="Username2FAGrp" class="control-label col-sm-4"></label>
+                <div class="col-sm-6">
+                  <input id="Username2FAGrp" type="text" name="Username" maxlength="256" disabled="true" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Grouped Two Factor Enrollment
+parseable name: Username
+section: Username_0_243
+field signature: 2408420769
+form signature: 16095891065443964669
+form signature in host form: 16095891065443964669
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 14
+field renderer id: 243" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Grouped Two Factor Enrollment
+parseable name: Username
+section: Username_0_243
+field signature: 2408420769
+form signature: 16095891065443964669
+form signature in host form: 16095891065443964669
+field frame token: B77156843005FD6B2AEB480EC83FA762
+form renderer id: 14
+field renderer id: 243" autofill-prediction="UNKNOWN_TYPE" class="form-control" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="512400">
+                </div>
+              </div>
+              <div class="col-sm-8 col-sm-offset-4">
+                <fieldset>
+                  <legend id="lbl2FAGroupTypes"></legend>
+                  <div id="div2FAGrpTypes"></div>
+                </fieldset>
+              </div>
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btn2FAGrpContinue" onclick="submit2FAGroup(); return false;">
+                        Continue
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btn2FAGrpCancel" onclick="close2FAGroup(true); return false;">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Network Terms Acceptance div -->
+  <div id="popup_NetAUP" class="popupWin vcenter hcenter" role="dialog" aria-labelledby="NetAUPTitle" style="display: none">
+    <form id="NetAUPForm" name="NetAUPForm" method="post" autocomplete="off" class="form-horizontal" action="/_layouts/PG/NetworkAUP.ashx">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 shadow">
+            <div class="row dlghdr text-center">
+              <h2 id="NetAUPTitle">Network Acceptable Use Policy</h2>
+            </div>
+
+            <div id="infoNetAUP" class="popupInstructions" role="status"></div>
+            <div id="ErrMsgNetAUP" role="status"></div>
+
+            <div id="fldsNetAUP" class="popFieldsContainer">
+              <div id="NetAUPBody" class="col-md-12 AUPcontainer"></div>
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="row containerPGButton">
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnNetAUPAccept" onclick="submitNetAUP(); return false;">
+                        Accept
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button class="PGButton btn" id="btnNetAUPReject" onclick="closeNetAUP(true); return false;">
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input id="UsernameNetAUP" type="hidden" name="username">
+      <input id="PasswordNetAUP" type="hidden" name="password">
+      <input id="OTPNetAUP" type="hidden" name="OTP">
+      <input id="PGTokenNetAUP" type="hidden" name="PGToken" value="LmuovKyTGtNoiJ7TyhjHU6Y8M0PpXPZVdV5kxSwYW90qqRY2upZQ">
+      <input id="AcceptNetAUP" type="hidden" name="Accept" value="0">
+      <input type="hidden" name="Auth" value="31">
+      <input type="hidden" name="_PG_Login_Field_Username_" value="username">
+      <input type="hidden" name="_PG_Login_Field_Password_" value="password">
+      <input type="hidden" name="switch_url" value="">
+      <input type="hidden" name="redirect_url" value="">
+      <input type="hidden" name="network_name" value="">
+      <input type="hidden" name="ap_mac" value="">
+      <input type="hidden" name="client_mac" value="">
+      <input type="hidden" name="buttonClicked" value="4">
+      <input type="hidden" name="err_flag" value="0">
+      <input type="hidden" name="err_msg" value="">
+      <input type="hidden" name="info_flag" value="0">
+      <input type="hidden" name="info_msg" value="">
+    </form>
+  </div>
+
+  <!-- Debug scoring div -->
+  <div id="popup_Scoring" class="popupWin vcenter hcenter" role="dialog" aria-label="Risk Scoring Debugging" style="display: none"></div>
+
+  <!-- NOTE: Licensees are explicitly forbidden from removing Copyright Notices from this file. PortalGuard licenses only grant licensees permission to use the software. This permission is not transferrable and expires with the license term. Licensees do NOT own their copy of the source code and must abide by these restrictions as set forth in the full Software License Agreement. //-->
+  <div style="display: none">
+    Â© 2009-2019 PistolStar, Inc. d/b/a PortalGuard. All rights reserved.
+    <a href="https://portalguard.happyfox.com/kb/">Please see our FAQs!</a>
+  </div>
+

@@ -1,0 +1,150 @@
+<!--
+  https://awesome.gameinformer.com/SubscriberIdentification
+  testRunId: 66
+  testResultId: 238518
+-->
+<form data-bind="submit: SubmitStep" data-ddg-formtype="sign up">
+  <div id="step1" class="" data-bind="visible: CurrentStep() == 1">
+    <h5>
+      In order to get you to the next step, we just need to verify your
+      subscription. Please fill out the information below to get going.
+    </h5>
+    <p>
+      <label>Zip Code:</label>
+      <input type="text" class="ats-enter_zip_field" data-bind="value: zipCode, valueUpdate: 'afterkeydown'" placeholder="Zip Code" data-ddg-testresultelementid="533445" data-manual-scoring="addressPostalCode">
+    </p>
+  </div>
+
+  <div id="step2" class="" data-bind="visible: CurrentStep() == 2" style="display: none">
+    <h5>
+      Next step is to fill out one of the fields below so we can locate your
+      subscription.
+    </h5>
+    <p>
+      <label>Email Address:</label>
+      <input type="email" class="ats-enter_email_field" data-bind="value: emailAddress, valueUpdate: 'afterkeydown'" placeholder="Email Address" title="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email Address:
+parseable name: 
+section: _0_10
+field signature: 2964261712
+form signature: 11941712397465268908
+form signature in host form: 11941712397465268908
+field frame token: 452247FA6621267B22EE974567312DD8
+form renderer id: 2
+field renderer id: 11" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email Address:
+parseable name: 
+section: _0_10
+field signature: 2964261712
+form signature: 11941712397465268908
+form signature in host form: 11941712397465268908
+field frame token: 452247FA6621267B22EE974567312DD8
+form renderer id: 2
+field renderer id: 11" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="533446" style="
+          background-size: auto 26px !important;
+          background-position: right center !important;
+          background-repeat: no-repeat !important;
+          background-origin: content-box !important;
+          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+          transition: background 0s ease 0s !important;
+        ">
+      <span class="invalidEmail" style="display: none; color: #e00">
+        This email address is not valid.</span>
+
+      <a class="ToolTip" data-toggle="tooltip" data-placement="right" data-original-title="Enter the same email address that you provided when you first signed up for your digital magazine subscription via the PowerUp Rewards Pro program at GameStop.">
+        <img src="/Content/images/info.png" alt="info">
+      </a>
+    </p>
+    <p>OR</p>
+    <p>
+      <label>Subscriber Number:</label>
+      <input type="text" class="NumericOnly ats-enter_subscriber_number_field" data-bind="value: subscriberNumber, valueUpdate: 'afterkeydown'" placeholder="Subscriber Number" data-ddg-testresultelementid="533447" data-manual-scoring="addressPostalCode">
+
+      <a class="ToolTip" data-toggle="tooltip" data-placement="right" data-original-title="<img  src='/Content/images/subscriberId.png' alt='SubscriberId' width='330px' /> 8-digit subscriber number found on the back cover of your printed magazine.">
+        <img src="/Content/images/info.png" alt="info">
+      </a>
+    </p>
+    <p>OR</p>
+    <p>
+      <label>PowerUp Rewards Number:</label>
+      <input type="text" class="NumericOnly ats-enter_loyalty_number_field" data-bind="value: loyaltyNumber, valueUpdate: 'afterkeydown'" placeholder="PowerUp Rewards Number" data-ddg-testresultelementid="533448" data-manual-scoring="addressPostalCode">
+
+      <a class="ToolTip" data-toggle="tooltip" data-placement="right" data-original-title="<img  src='/Content/images/purNumber.png' alt='PUR Number' /> Found on the back of your PowerUp Rewards card.">
+        <img src="/Content/images/info.png" alt="info">
+      </a>
+    </p>
+  </div>
+
+  <div id="step3" class="" data-bind="visible: CurrentStep() == 3" style="display: none">
+    <p>
+      We were unable to locate your account. Please contact customer service at
+      1-866-844-GAME
+    </p>
+  </div>
+
+  <div id="step4" class="" data-bind="visible: CurrentStep() == 4" style="display: none">
+    <fieldset>
+      <legend>Confirm Subscriber Information</legend>
+      <div>
+        We were able to find a subscriber matching the information you provided.
+        Please confirm whether the information below is correct:
+      </div>
+      <div class="addressInfo">
+        <b>Address Information</b>
+        <div data-bind="text: AddressLine1"></div>
+        <div data-bind="text: AddressLine2">
+          undefined, undefined, undefined
+        </div>
+        <div data-bind="text: AddressLine3"></div>
+      </div>
+    </fieldset>
+
+    <fieldset id="Subscriptions">
+      <legend>Subscriptions</legend>
+      <section class="subscriptionsTable">
+        <table>
+          <thead>
+            <tr>
+              <th class="startDate">Start Date</th>
+              <th class="endDate">End Date</th>
+              <th class="title">Title</th>
+              <th class="mediaType">Print / Digital</th>
+              <th class="transDate">Date of Purchase</th>
+            </tr>
+          </thead>
+          <tbody data-bind="foreach: Subscriptions"></tbody>
+        </table>
+      </section>
+      <section class="confirmationCopy">
+        <strong>
+          Not seeing your subscription above? Click the "Start Over" button and
+          try re-linking your subscription with a different piece of
+          information. If you are trying to link your Digital subscription, try
+          linking with your email address.
+        </strong>
+      </section>
+    </fieldset>
+  </div>
+
+  <div id="Buttons">
+    <button type="button" data-bind="click: StartOver, visible: CurrentStep() > 2" class="btn startOver ats-start_over_button" style="display: none">
+      Start Over
+    </button>
+    <button type="button" data-bind="click: Back, visible: CurrentStep() > 1" class="btn back ats-back_button" style="display: none">
+      Back
+    </button>
+    <button type="submit" data-bind="disable: !StepVerified(), click: SubmitStep, visible: CurrentStep() == 1" class="btn search ats-search_button" disabled="">
+      Next
+    </button>
+    <button type="submit" data-bind="disable: !StepVerified(), click: SubmitStep, visible: CurrentStep() == 2" class="btn search ats-search_button" id="btnFind" disabled="" style="display: none">
+      Find
+    </button>
+    <button type="submit" data-bind="click: Confirm, visible: CurrentStep() == 4" class="btn confirm ats-confirm_button" id="btnSubmit" style="display: none">
+      Confirm
+    </button>
+  </div>
+</form>

@@ -1,935 +1,453 @@
 [
-  {
-    "html": "poor-markup-form.html"
-  },
-  {
-    "html": "wikipedia_login.html"
-  },
-  {
-    "html": "wikipedia_signup.html"
-  },
-  {
-    "html": "wikipedia_donation.html"
-  },
-  {
-    "html": "amazon_login.html"
-  },
-  {
-    "html": "amazon_signup.html"
-  },
-  {
-    "html": "amazon_business_signup.html"
-  },
-  {
-    "html": "amazon_address.html"
-  },
-  {
-    "html": "facebook_login.html"
-  },
-  {
-    "html": "facebook_signup.html"
-  },
-  {
-    "html": "twitter_login.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "twitter_signup.html",
-    "expectedFailures": [
-      "birthdayMonth",
-      "birthdayDay",
-      "birthdayYear"
-    ],
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "fandom_login.html"
-  },
-  {
-    "html": "fandom_signup.html",
-    "expectedFailures": [
-      "birthday"
-    ]
-  },
-  {
-    "html": "pinterest_login.html",
-    "title": "Pinterest Login"
-  },
-  {
-    "html": "pinterest_signup.html"
-  },
-  {
-    "html": "reddit_login.html"
-  },
-  {
-    "html": "reddit_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "yelp_login.html"
-  },
-  {
-    "html": "yelp_signup.html"
-  },
-  {
-    "html": "instagram_login.html"
-  },
-  {
-    "html": "instagram_signup.html"
-  },
-  {
-    "html": "ebay_login.html"
-  },
-  {
-    "html": "ebay_signup.html"
-  },
-  {
-    "html": "ebay_checkout.html",
-    "expectedFailures": [
-      "unknown",
-      "unknown"
-    ]
-  },
-  {
-    "html": "walmart_login.html"
-  },
-  {
-    "html": "walmart_signup.html"
-  },
-  {
-    "html": "walmart_checkout.html"
-  },
-  {
-    "html": "craigslist_account.html"
-  },
-  {
-    "html": "healthline_newsletter.html"
-  },
-  {
-    "html": "tripadvisor_login.html"
-  },
-  {
-    "html": "tripadvisor_signup.html"
-  },
-  {
-    "html": "linkedin_login.html"
-  },
-  {
-    "html": "linkedin_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "webmd_login.html"
-  },
-  {
-    "html": "webmd_signup.html",
-    "expectedFailures": [
-      "birthday"
-    ]
-  },
-  {
-    "html": "netflix_login.html"
-  },
-  {
-    "html": "netflix_signup.html"
-  },
-  {
-    "html": "apple_login.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "apple_signup.html",
-    "expectedFailures": [
-      "birthday",
-      "unknown"
-    ],
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "apple_checkout.html",
-    "expectedSubmitFalseNegatives": 2
-  },
-  {
-    "html": "homedepot_login.html"
-  },
-  {
-    "html": "homedepot_signup.html"
-  },
-  {
-    "html": "yahoo_login.html",
-    "expectedFailures": [
-      "unknown"
-    ]
-  },
-  {
-    "html": "yahoo_signup.html"
-  },
-  {
-    "html": "cnn_newsletter.html"
-  },
-  {
-    "html": "etsy_login.html"
-  },
-  {
-    "html": "etsy_signup.html"
-  },
-  {
-    "html": "etsy_checkout.html"
-  },
-  {
-    "html": "google_login.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "google_signup.html",
-    "expectedFailures": [
-      "username"
-    ],
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "google_store_checkout.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "indeed_login_signup.html"
-  },
-  {
-    "html": "target_login.html"
-  },
-  {
-    "html": "target_signup.html"
-  },
-  {
-    "html": "target_checkout.html"
-  },
-  {
-    "html": "microsoft_login.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "microsoft_signup.html",
-    "expectedFailures": [
-      "username"
-    ],
-    "expectedSubmitFalsePositives": 1
-  },
-  {
-    "html": "nytimes_login_signup.html"
-  },
-  {
-    "html": "mayoclinic_login.html"
-  },
-  {
-    "html": "mayoclinic_signup.html",
-    "expectedFailures": [
-      "birthdayMonth",
-      "birthdayDay",
-      "birthdayYear"
-    ]
-  },
-  {
-    "html": "espn_login.html"
-  },
-  {
-    "html": "espn_signup.html"
-  },
-  {
-    "html": "usps_login.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "usps_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "usps_checkout.html",
-    "expectedSubmitFalsePositives": 1
-  },
-  {
-    "html": "quizlet_login.html"
-  },
-  {
-    "html": "quizlet_signup.html"
-  },
-  {
-    "html": "quizlet_checkout.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "lowes_login.html"
-  },
-  {
-    "html": "lowes_signup.html"
-  },
-  {
-    "html": "lowes_checkout.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "idme_login.html"
-  },
-  {
-    "html": "idme_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "merriamwebster_login.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "merriamwebster_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "steam_login.html",
-    "expectedSubmitFalseNegatives": 1,
-    "expectedSubmitFalsePositives": 1
-  },
-  {
-    "html": "steam_signup.html"
-  },
-  {
-    "html": "steam_checkout.html",
-    "expectedFailures": [
-      "unknown"
-    ],
-    "expectedSubmitFalseNegatives": 2
-  },
-  {
-    "html": "mapquest_login.html"
-  },
-  {
-    "html": "mapquest_signup.html"
-  },
-  {
-    "html": "fox_login.html",
-    "expectedSubmitFalsePositives": 1
-  },
-  {
-    "html": "fox_signup.html",
-    "expectedFailures": [
-      "birthdayMonth",
-      "birthdayDay",
-      "birthdayYear"
-    ]
-  },
-  {
-    "html": "allrecipes_login_signup.html"
-  },
-  {
-    "html": "quora_login.html"
-  },
-  {
-    "html": "quora_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "britannica_login.html"
-  },
-  {
-    "html": "britannica_signup.html"
-  },
-  {
-    "html": "bestbuy_login.html"
-  },
-  {
-    "html": "bestbuy_signup.html"
-  },
-  {
-    "html": "bestbuy_checkout.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "rottentomatoes_login.html"
-  },
-  {
-    "html": "rottentomatoes_signup.html"
-  },
-  {
-    "html": "costco_login.html"
-  },
-  {
-    "html": "costco_signup.html"
-  },
-  {
-    "html": "costco_checkout.html",
-    "expectedSubmitFalseNegatives": 1,
-    "expectedSubmitFalsePositives": 2
-  },
-  {
-    "html": "kroger_login.html"
-  },
-  {
-    "html": "kroger_signup.html"
-  },
-  {
-    "html": "kroger_checkout.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "wayfair_login_signup.html"
-  },
-  {
-    "html": "wayfair_checkout.html"
-  },
-  {
-    "html": "chewy_login.html"
-  },
-  {
-    "html": "chewy_signup.html"
-  },
-  {
-    "html": "chewy_checkout.html",
-    "expectedSubmitFalseNegatives": 2
-  },
-  {
-    "html": "everydayoil_checkout.html",
-    "expectedSubmitFalseNegatives": 2,
-    "expectedSubmitFalsePositives": 4
-  },
-  {
-    "html": "stripeelements_checkout.html",
-    "expectedSubmitFalseNegatives": 3
-  },
-  {
-    "html": "litmus_home_search.html"
-  },
-  {
-    "html": "litmus_home_new.html"
-  },
-  {
-    "html": "asana_tasklist.html"
-  },
-  {
-    "html": "asana_search.html"
-  },
-  {
-    "html": "aa_login.html"
-  },
-  {
-    "html": "hackernews_login_signup.html"
-  },
-  {
-    "html": "mkelectricalcontracting_contact.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "mbank_login.html",
-    "expectedSubmitFalsePositives": 3
-  },
-  {
-    "html": "samash_checkout.html",
-    "expectedFailures": [
-      "emailAddress"
-    ]
-  },
-  {
-    "html": "samash_checkout_international.html"
-  },
-  {
-    "html": "samash_login.html"
-  },
-  {
-    "html": "samash_signup.html"
-  },
-  {
-    "html": "financialtimes_login.html",
-    "title": "Login"
-  },
-  {
-    "html": "containerstore_login_signup.html"
-  },
-  {
-    "html": "containerstore_forgot_password.html",
-    "expectedFailures": [
-      "username"
-    ]
-  },
-  {
-    "html": "containerstore_newsletter.html"
-  },
-  {
-    "html": "containerstore_checkout.html",
-    "expectedSubmitFalsePositives": 1,
-    "expectedSubmitFalseNegatives": 2
-  },
-  {
-    "html": "containerstore_hidden_contact.html"
-  },
-  {
-    "html": "stackoverflow_login.html"
-  },
-  {
-    "html": "stackoverflow_signup.html"
-  },
-  {
-    "html": "stackoverflow_talent_login.html"
-  },
-  {
-    "html": "stackoverflow_talent_contact.html"
-  },
-  {
-    "html": "techradar_newsletter.html",
-    "title": "AccessSubscription"
-  },
-  {
-    "html": "github_login.html"
-  },
-  {
-    "html": "github_signup.html",
-    "expectedSubmitFalsePositives": 4
-  },
-  {
-    "html": "imdb_login.html"
-  },
-  {
-    "html": "imdb_signup.html"
-  },
-  {
-    "html": "kleinanzeigen_login.html"
-  },
-  {
-    "html": "kleinanzeigen_signup.html"
-  },
-  {
-    "html": "ign_login.html",
-    "expectedSubmitFalsePositives": 2
-  },
-  {
-    "html": "ign_signup.html"
-  },
-  {
-    "html": "cnbc_login.html"
-  },
-  {
-    "html": "cnbc_signup.html"
-  },
-  {
-    "html": "cnbc_newsletter.html"
-  },
-  {
-    "html": "researchgate_login.html"
-  },
-  {
-    "html": "researchgate_signup.html"
-  },
-  {
-    "html": "wordreference_newsletter.html"
-  },
-  {
-    "html": "rightmove_login.html"
-  },
-  {
-    "html": "rightmove_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "infowarsstore_login.html"
-  },
-  {
-    "html": "infowarsstore_signup.html"
-  },
-  {
-    "html": "infowars_newsletter.html"
-  },
-  {
-    "html": "kijiji_login.html"
-  },
-  {
-    "html": "kijiji_signup.html"
-  },
-  {
-    "html": "leo_login.html"
-  },
-  {
-    "html": "leo_signup.html"
-  },
-  {
-    "html": "mylo_login.html"
-  },
-  {
-    "html": "mylo_signup.html",
-    "expectedFailures": [
-      "emailAddress"
-    ]
-  },
-  {
-    "html": "esquire_newsletter.html"
-  },
-  {
-    "html": "wired_login.html"
-  },
-  {
-    "html": "wired_signup.html"
-  },
-  {
-    "html": "wired_checkout.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "wired_newsletter.html"
-  },
-  {
-    "html": "tinypass_login.html"
-  },
-  {
-    "html": "tinypass_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "apartments_login.html",
-    "expectedSubmitFalsePositives": 1
-  },
-  {
-    "html": "apartments_signup.html"
-  },
-  {
-    "html": "opticsplanet_login.html"
-  },
-  {
-    "html": "opticsplanet_signup.html"
-  },
-  {
-    "html": "opticsplanet_checkout.html",
-    "expectedSubmitFalsePositives": 5,
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "opticsplanet_newsletter.html"
-  },
-  {
-    "html": "ifixit_login.html"
-  },
-  {
-    "html": "ifixit_signup.html"
-  },
-  {
-    "html": "blazetv_login.html"
-  },
-  {
-    "html": "blazetv_signup.html"
-  },
-  {
-    "html": "blazetv_newsletter.html"
-  },
-  {
-    "html": "surly_login.html"
-  },
-  {
-    "html": "surly_signup.html"
-  },
-  {
-    "html": "surly_contact.html"
-  },
-  {
-    "html": "coinmarketcap_login.html",
-    "expectedSubmitFalsePositives": 1
-  },
-  {
-    "html": "coinmarketcap_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "coinmarketcap_newsletter.html"
-  },
-  {
-    "html": "1337x_signup.html"
-  },
-  {
-    "html": "1337x_login.html"
-  },
-  {
-    "html": "reverso_login.html"
-  },
-  {
-    "html": "reverso_signup.html"
-  },
-  {
-    "html": "usnews_login.html"
-  },
-  {
-    "html": "usnews_signup.html"
-  },
-  {
-    "html": "usnews_contact.html"
-  },
-  {
-    "html": "usnews_newsletter.html"
-  },
-  {
-    "html": "babycenter_login.html"
-  },
-  {
-    "html": "babycenter_signup.html"
-  },
-  {
-    "html": "yourtango_login.html"
-  },
-  {
-    "html": "yourtango_signup.html"
-  },
-  {
-    "html": "newgrounds_login.html"
-  },
-  {
-    "html": "newgrounds_signup.html",
-    "expectedFailures": [
-      "birthday"
-    ]
-  },
-  {
-    "html": "itemfix_login.html"
-  },
-  {
-    "html": "itemfix_signup.html",
-    "expectedFailures": [
-      "birthday"
-    ],
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "cookpad_login.html"
-  },
-  {
-    "html": "cookpad_signup.html"
-  },
-  {
-    "html": "mein_schoener_garten_newsletter.html"
-  },
-  {
-    "html": "tripsavvy_newsletter.html"
-  },
-  {
-    "html": "fanfiction_login.html"
-  },
-  {
-    "html": "fanfiction_signup.html"
-  },
-  {
-    "html": "selfcom_newsletter.html"
-  },
-  {
-    "html": "gunscom_login.html"
-  },
-  {
-    "html": "gunscom_signup.html"
-  },
-  {
-    "html": "gunscom_newsletter.html"
-  },
-  {
-    "html": "gunscom_newsletter_2.html"
-  },
-  {
-    "html": "gartenforum_login.html"
-  },
-  {
-    "html": "gartenjournal_newsletter.html"
-  },
-  {
-    "html": "dropbox_login.html"
-  },
-  {
-    "html": "dropbox_signup.html"
-  },
-  {
-    "html": "carmax_login.html"
-  },
-  {
-    "html": "carmax_signup.html"
-  },
-  {
-    "html": "vulture_login.html"
-  },
-  {
-    "html": "vulture_signup.html",
-    "expectedSubmitFalseNegatives": 1
-  },
-  {
-    "html": "sydneymorningherald_login.html"
-  },
-  {
-    "html": "sydneymorningherald_signup.html"
-  },
-  {
-    "html": "123rf_login.html"
-  },
-  {
-    "html": "123rf_signup.html"
-  },
-  {
-    "html": "thermoworks_login.html"
-  },
-  {
-    "html": "thermoworks_signup.html"
-  },
-  {
-    "html": "thermoworks_checkout.html"
-  },
-  {
-    "html": "thermoworks_newsletter.html"
-  },
-  {
-    "html": "wikihow_login.html"
-  },
-  {
-    "html": "wikihow_signup.html"
-  },
-  {
-    "html": "airbnb_login_signup.html"
-  },
-  {
-    "html": "iqgunder_guest.html",
-    "expectedFailures": [
-      "fullName",
-      "fullName",
-      "fullName",
-      "fullName",
-      "fullName",
-      "fullName",
-      "fullName",
-      "fullName",
-      "fullName",
-      "fullName"
-    ]
-  },
-  {
-    "html": "iqgunder_guest_entry.html",
-    "title": "Fund Formation Portal Login",
-    "expectedFailures": [
-      "emailAddress"
-    ]
-  },
-  {
-    "html": "iqgunder_login.html"
-  },
-  {
-    "html": "iqgunder_signup.html"
-  },
-  {
-    "html": "gunderassociates_contacts.html"
-  },
-  {
-    "html": "websitecarbon.html"
-  },
-  {
-    "html": "schwab.html"
-  },
-  {
-    "html": "quicksight_login.html"
-  },
-  {
-    "html": "godaddy_login.html"
-  },
-  {
-    "html": "godaddy_signup.html",
-    "expectedSubmitFalsePositives": 1
-  },
-  {
-    "html": "disneyworld_help.html"
-  },
-  {
-    "html": "disneyworld_signup.html",
-    "expectedFailures": [
-      "birthday"
-    ]
-  },
-  {
-    "html": "irsgov_refund.html"
-  },
-  {
-    "html": "googlecalendar_eventnotification.html"
-  },
-  {
-    "html": "givesmart_login.html"
-  },
-  {
-    "html": "vancity_login.html"
-  },
-  {
-    "html": "expensify.html"
-  },
-  {
-    "html": "candidguidestar_checkout_signup.html"
-  },
-  {
-    "html": "hulu_account-pin.html"
-  },
-  {
-    "html": "poconospa_contact.html"
-  },
-  {
-    "html": "statista_login.html"
-  },
-  {
-    "html": "statista_signup.html",
-    "expectedFailures": [
-      "unknown"
-    ]
-  },
-  {
-    "html": "sunlife_login.html"
-  },
-  {
-    "html": "sunlife_signup.html",
-    "expectedFailures": [
-      "birthday"
-    ]
-  },
-  {
-    "html": "netid_login.html",
-    "expectedSubmitFalsePositives": 2
-  },
-  {
-    "html": "evite_checkout-login.html"
-  },
-  {
-    "html": "evite_checkout-signup.html"
-  },
-  {
-    "html": "boardgamearena_signup.html",
-    "expectedFailures": [
-      "birthday"
-    ],
-    "expectedSubmitFalsePositives": 2,
-    "expectedSubmitFalseNegatives": 5,
-    "comment": "Issues with buttons here is due to lots of hidden forms and weird markup, they don't affect the actual UX"
-  },
-  {
-    "html": "eventbrite_checkout-signup.html"
-  },
-  {
-    "html": "eventbrite_fake-signup.html"
-  },
-  {
-    "html": "ryanair_cc-card-name.html"
-  },
-  {
-    "html": "paypal_otp.html"
-  },
-  {
-    "html": "postnews_login.html"
-  },
-  {
-    "html": "airbnb_signup.html"
-  },
-  {
-    "html": "cookpad_email-confirmation-code.html",
-    "expectedFailures": [
-      "unknown"
-    ]
-  },
-  {
-    "html": "instagram_email-confirmation-code.html"
-  },
-  {
-    "html": "cookpad_signup-second-step.html"
-  },
-  {
-    "html": "samash_credit-card.html"
-  },
-  {
-    "html": "substack_login.html"
-  }
+  { "html": "poor-markup-form.html" },
+  { "html": "wikipedia_login.html" },
+  { "html": "wikipedia_signup.html" },
+  { "html": "wikipedia_donation.html" },
+  { "html": "amazon_login.html" },
+  { "html": "amazon_signup.html" },
+  { "html": "amazon_business_signup.html" },
+  { "html": "amazon_address.html" },
+  { "html": "facebook_login.html" },
+  { "html": "facebook_signup.html" },
+  { "html": "twitter_login.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "twitter_signup.html", "expectedFailures": ["birthdayMonth", "birthdayDay", "birthdayYear"], "expectedSubmitFalseNegatives": 1 },
+  { "html": "fandom_login.html" },
+  { "html": "fandom_signup.html", "expectedFailures": ["birthday"] },
+  { "html": "pinterest_login.html", "title": "Pinterest Login" },
+  { "html": "pinterest_signup.html" },
+  { "html": "reddit_login.html" },
+  { "html": "reddit_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "yelp_login.html" },
+  { "html": "yelp_signup.html" },
+  { "html": "instagram_login.html" },
+  { "html": "instagram_signup.html" },
+  { "html": "ebay_login.html" },
+  { "html": "ebay_signup.html" },
+  { "html": "ebay_checkout.html", "expectedFailures": ["unknown", "unknown"] },
+  { "html": "walmart_login.html" },
+  { "html": "walmart_signup.html" },
+  { "html": "walmart_checkout.html" },
+  { "html": "craigslist_account.html" },
+  { "html": "healthline_newsletter.html" },
+  { "html": "tripadvisor_login.html" },
+  { "html": "tripadvisor_signup.html" },
+  { "html": "linkedin_login.html" },
+  { "html": "linkedin_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "webmd_login.html" },
+  { "html": "webmd_signup.html", "expectedFailures": ["birthday"] },
+  { "html": "netflix_login.html" },
+  { "html": "netflix_signup.html" },
+  { "html": "apple_login.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "apple_signup.html", "expectedFailures": ["birthday", "unknown"], "expectedSubmitFalseNegatives": 1 },
+  { "html": "apple_checkout.html", "expectedSubmitFalseNegatives": 2 },
+  { "html": "homedepot_login.html" },
+  { "html": "homedepot_signup.html" },
+  { "html": "yahoo_login.html", "expectedFailures": ["unknown"] },
+  { "html": "yahoo_signup.html" },
+  { "html": "cnn_newsletter.html" },
+  { "html": "etsy_login.html" },
+  { "html": "etsy_signup.html" },
+  { "html": "etsy_checkout.html" },
+  { "html": "google_login.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "google_signup.html", "expectedFailures": ["username"], "expectedSubmitFalseNegatives": 1 },
+  { "html": "google_store_checkout.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "indeed_login_signup.html" },
+  { "html": "target_login.html" },
+  { "html": "target_signup.html" },
+  { "html": "target_checkout.html" },
+  { "html": "microsoft_login.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "microsoft_signup.html", "expectedFailures": ["username"], "expectedSubmitFalsePositives": 1 },
+  { "html": "nytimes_login_signup.html" },
+  { "html": "mayoclinic_login.html" },
+  { "html": "mayoclinic_signup.html", "expectedFailures": ["birthdayMonth", "birthdayDay", "birthdayYear"] },
+  { "html": "espn_login.html" },
+  { "html": "espn_signup.html" },
+  { "html": "usps_login.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "usps_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "usps_checkout.html", "expectedSubmitFalsePositives": 1 },
+  { "html": "quizlet_login.html" },
+  { "html": "quizlet_signup.html" },
+  { "html": "quizlet_checkout.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "lowes_login.html" },
+  { "html": "lowes_signup.html" },
+  { "html": "lowes_checkout.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "idme_login.html" },
+  { "html": "idme_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "merriamwebster_login.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "merriamwebster_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "steam_login.html", "expectedSubmitFalseNegatives": 1, "expectedSubmitFalsePositives": 1 },
+  { "html": "steam_signup.html" },
+  { "html": "steam_checkout.html", "expectedFailures": ["unknown"], "expectedSubmitFalseNegatives": 2 },
+  { "html": "mapquest_login.html" },
+  { "html": "mapquest_signup.html" },
+  { "html": "fox_login.html", "expectedSubmitFalsePositives": 1 },
+  { "html": "fox_signup.html", "expectedFailures": ["birthdayMonth", "birthdayDay", "birthdayYear"] },
+  { "html": "allrecipes_login_signup.html" },
+  { "html": "quora_login.html" },
+  { "html": "quora_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "britannica_login.html" },
+  { "html": "britannica_signup.html" },
+  { "html": "bestbuy_login.html" },
+  { "html": "bestbuy_signup.html" },
+  { "html": "bestbuy_checkout.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "rottentomatoes_login.html" },
+  { "html": "rottentomatoes_signup.html" },
+  { "html": "costco_login.html" },
+  { "html": "costco_signup.html" },
+  { "html": "costco_checkout.html", "expectedSubmitFalseNegatives": 1, "expectedSubmitFalsePositives": 2 },
+  { "html": "kroger_login.html" },
+  { "html": "kroger_signup.html" },
+  { "html": "kroger_checkout.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "wayfair_login_signup.html" },
+  { "html": "wayfair_checkout.html" },
+  { "html": "chewy_login.html" },
+  { "html": "chewy_signup.html" },
+  { "html": "chewy_checkout.html", "expectedSubmitFalseNegatives": 2 },
+  { "html": "everydayoil_checkout.html", "expectedSubmitFalseNegatives": 2, "expectedSubmitFalsePositives": 4 },
+  { "html": "stripeelements_checkout.html", "expectedSubmitFalseNegatives": 3 },
+  { "html": "litmus_home_search.html" },
+  { "html": "litmus_home_new.html" },
+  { "html": "asana_tasklist.html" },
+  { "html": "asana_search.html" },
+  { "html": "aa_login.html" },
+  { "html": "hackernews_login_signup.html" },
+  { "html": "mkelectricalcontracting_contact.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "mbank_login.html", "expectedSubmitFalsePositives": 3 },
+  { "html": "samash_checkout.html", "expectedFailures": ["emailAddress"] },
+  { "html": "samash_checkout_international.html" },
+  { "html": "samash_login.html" },
+  { "html": "samash_signup.html" },
+  { "html": "financialtimes_login.html", "title": "Login" },
+  { "html": "containerstore_login_signup.html" },
+  { "html": "containerstore_forgot_password.html", "expectedFailures": ["username"] },
+  { "html": "containerstore_newsletter.html" },
+  { "html": "containerstore_checkout.html", "expectedSubmitFalsePositives": 1, "expectedSubmitFalseNegatives": 2 },
+  { "html": "containerstore_hidden_contact.html" },
+  { "html": "stackoverflow_login.html" },
+  { "html": "stackoverflow_signup.html" },
+  { "html": "stackoverflow_talent_login.html" },
+  { "html": "stackoverflow_talent_contact.html" },
+  { "html": "techradar_newsletter.html", "title": "AccessSubscription" },
+  { "html": "github_login.html" },
+  { "html": "github_signup.html", "expectedSubmitFalsePositives": 4 },
+  { "html": "imdb_login.html" },
+  { "html": "imdb_signup.html" },
+  { "html": "kleinanzeigen_login.html" },
+  { "html": "kleinanzeigen_signup.html" },
+  { "html": "ign_login.html", "expectedSubmitFalsePositives": 2 },
+  { "html": "ign_signup.html" },
+  { "html": "cnbc_login.html" },
+  { "html": "cnbc_signup.html" },
+  { "html": "cnbc_newsletter.html" },
+  { "html": "researchgate_login.html" },
+  { "html": "researchgate_signup.html" },
+  { "html": "wordreference_newsletter.html" },
+  { "html": "rightmove_login.html" },
+  { "html": "rightmove_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "infowarsstore_login.html" },
+  { "html": "infowarsstore_signup.html" },
+  { "html": "infowars_newsletter.html" },
+  { "html": "kijiji_login.html" },
+  { "html": "kijiji_signup.html" },
+  { "html": "leo_login.html" },
+  { "html": "leo_signup.html" },
+  { "html": "mylo_login.html" },
+  { "html": "mylo_signup.html", "expectedFailures": ["emailAddress"] },
+  { "html": "esquire_newsletter.html" },
+  { "html": "wired_login.html" },
+  { "html": "wired_signup.html" },
+  { "html": "wired_checkout.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "wired_newsletter.html" },
+  { "html": "tinypass_login.html" },
+  { "html": "tinypass_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "apartments_login.html", "expectedSubmitFalsePositives": 1 },
+  { "html": "apartments_signup.html" },
+  { "html": "opticsplanet_login.html" },
+  { "html": "opticsplanet_signup.html" },
+  { "html": "opticsplanet_checkout.html", "expectedSubmitFalsePositives": 5, "expectedSubmitFalseNegatives": 1 },
+  { "html": "opticsplanet_newsletter.html" },
+  { "html": "ifixit_login.html" },
+  { "html": "ifixit_signup.html" },
+  { "html": "blazetv_login.html" },
+  { "html": "blazetv_signup.html" },
+  { "html": "blazetv_newsletter.html" },
+  { "html": "surly_login.html" },
+  { "html": "surly_signup.html" },
+  { "html": "surly_contact.html" },
+  { "html": "coinmarketcap_login.html", "expectedSubmitFalsePositives": 1 },
+  { "html": "coinmarketcap_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "coinmarketcap_newsletter.html" },
+  { "html": "1337x_signup.html" },
+  { "html": "1337x_login.html" },
+  { "html": "reverso_login.html" },
+  { "html": "reverso_signup.html" },
+  { "html": "usnews_login.html" },
+  { "html": "usnews_signup.html" },
+  { "html": "usnews_contact.html" },
+  { "html": "usnews_newsletter.html" },
+  { "html": "babycenter_login.html" },
+  { "html": "babycenter_signup.html" },
+  { "html": "yourtango_login.html" },
+  { "html": "yourtango_signup.html" },
+  { "html": "newgrounds_login.html" },
+  { "html": "newgrounds_signup.html", "expectedFailures": ["birthday"] },
+  { "html": "itemfix_login.html" },
+  { "html": "itemfix_signup.html", "expectedFailures": ["birthday"], "expectedSubmitFalseNegatives": 1 },
+  { "html": "cookpad_login.html" },
+  { "html": "cookpad_signup.html" },
+  { "html": "mein_schoener_garten_newsletter.html" },
+  { "html": "tripsavvy_newsletter.html" },
+  { "html": "fanfiction_login.html" },
+  { "html": "fanfiction_signup.html" },
+  { "html": "selfcom_newsletter.html" },
+  { "html": "gunscom_login.html" },
+  { "html": "gunscom_signup.html" },
+  { "html": "gunscom_newsletter.html" },
+  { "html": "gunscom_newsletter_2.html" },
+  { "html": "gartenforum_login.html" },
+  { "html": "gartenjournal_newsletter.html" },
+  { "html": "dropbox_login.html" },
+  { "html": "dropbox_signup.html" },
+  { "html": "carmax_login.html" },
+  { "html": "carmax_signup.html" },
+  { "html": "vulture_login.html" },
+  { "html": "vulture_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "sydneymorningherald_login.html" },
+  { "html": "sydneymorningherald_signup.html" },
+  { "html": "123rf_login.html" },
+  { "html": "123rf_signup.html" },
+  { "html": "thermoworks_login.html" },
+  { "html": "thermoworks_signup.html" },
+  { "html": "thermoworks_checkout.html" },
+  { "html": "thermoworks_newsletter.html" },
+  { "html": "wikihow_login.html" },
+  { "html": "wikihow_signup.html" },
+  { "html": "airbnb_login_signup.html" },
+  { "html": "iqgunder_guest.html", "expectedFailures": ["fullName", "fullName", "fullName", "fullName", "fullName", "fullName", "fullName", "fullName", "fullName", "fullName"] },
+  { "html": "iqgunder_guest_entry.html", "title": "Fund Formation Portal Login", "expectedFailures": ["emailAddress"] },
+  { "html": "iqgunder_login.html" },
+  { "html": "iqgunder_signup.html" },
+  { "html": "gunderassociates_contacts.html" },
+  { "html": "websitecarbon.html" },
+  { "html": "schwab.html" },
+  { "html": "quicksight_login.html" },
+  { "html": "godaddy_login.html" },
+  { "html": "godaddy_signup.html", "expectedSubmitFalsePositives": 1 },
+  { "html": "disneyworld_help.html" },
+  { "html": "disneyworld_signup.html", "expectedFailures": ["birthday"] },
+  { "html": "irsgov_refund.html" },
+  { "html": "googlecalendar_eventnotification.html" },
+  { "html": "givesmart_login.html" },
+  { "html": "vancity_login.html" },
+  { "html": "expensify.html" },
+  { "html": "candidguidestar_checkout_signup.html" },
+  { "html": "hulu_account-pin.html" },
+  { "html": "poconospa_contact.html" },
+  { "html": "statista_login.html" },
+  { "html": "statista_signup.html", "expectedFailures": ["unknown"] },
+  { "html": "sunlife_login.html" },
+  { "html": "sunlife_signup.html", "expectedFailures": ["birthday"] },
+  { "html": "netid_login.html", "expectedSubmitFalsePositives": 2 },
+  { "html": "evite_checkout-login.html" },
+  { "html": "evite_checkout-signup.html" },
+  { "html": "boardgamearena_signup.html", "expectedFailures": ["birthday"], "expectedSubmitFalsePositives": 2, "expectedSubmitFalseNegatives": 5, "comment": "Issues with buttons here is due to lots of hidden forms and weird markup, they don't affect the actual UX" },
+  { "html": "eventbrite_checkout-signup.html" },
+  { "html": "eventbrite_fake-signup.html" },
+  { "html": "ryanair_cc-card-name.html" },
+  { "html": "paypal_otp.html" },
+  { "html": "postnews_login.html" },
+  { "html": "airbnb_signup.html" },
+  { "html": "cookpad_email-confirmation-code.html", "expectedFailures": ["unknown"] },
+  { "html": "instagram_email-confirmation-code.html" },
+  { "html": "cookpad_signup-second-step.html" },
+  { "html": "samash_credit-card.html" },
+  { "html": "substack_login.html" },
+  { "html": "activate_apple_com_signup.html", "generated": true, "expectedFailures": ["addressCountryCode"] },
+  { "html": "e_mail_ru_signup.html", "generated": true, "title": "Registration", "expectedFailures": ["phone"] },
+  { "html": "mail_163_com_signup.html", "generated": true, "title": "注册网易免费邮箱 - 你的专业电子邮局", "expectedFailures": [] },
+  { "html": "www_nic_ru_login.html", "generated": true, "title": "Войти", "expectedFailures": [] },
+  { "html": "spankbang_com_signup.html", "generated": true, "title": "Free Porn Videos and Movies-SpankBang: The Front Page of Porn", "expectedFailures": ["fullName"] },
+  { "html": "login_oracle_com_login.html", "generated": true, "title": "Oracle Login - Single Sign On", "expectedFailures": [] },
+  { "html": "tceols_cdc_gov_signup.html", "generated": true, "title": "Create Account", "expectedFailures": ["middleName"] },
+  { "html": "signup_opendns_com_signup.html", "generated": true, "title": "Home Free by OpenDNS", "expectedFailures": ["addressCountryCode"] },
+  { "html": "www_ibm_com_signup.html", "generated": true, "title": "Sign up for My IBM account", "expectedFailures": ["addressProvince"] },
+  { "html": "guest_nasa_gov_login.html", "generated": true, "title": "Guest", "expectedFailures": ["addressCountryCode"] },
+  { "html": "urs_earthdata_nasa_gov_signup.html", "generated": true, "title": "Earthdata Login User Registration", "expectedFailures": ["middleName"] },
+  { "html": "store_cpanel_net_signup.html", "generated": true, "title": "cPanel Store", "expectedFailures": ["addressStreet2"] },
+  { "html": "ecr_clerkofcourt_maricopa_gov_signup.html", "generated": true, "title": "Registration", "expectedFailures": ["addressStreet"] },
+  { "html": "uniportal_huawei_com_signup.html", "generated": true, "title": "Create a new account", "expectedFailures": ["phone"] },
+  { "html": "myspace_com_login.html", "generated": true, "title": "Featured Content on Myspace", "expectedFailures": ["addressPostalCode"] },
+  { "html": "brand_ups_com_signup.html", "generated": true, "title": "Registration Page", "expectedFailures": ["fullName", "fullName"] },
+  { "html": "www_reddit_com_signup.html", "generated": true, "title": "reddit.com: Join the worldwide conversation", "expectedFailures": ["password"] },
+  { "html": "www_buzzfeed_com_signup.html", "generated": true, "title": "BuzzFeed", "expectedFailures": ["password"] },
+  { "html": "secure_bankofamerica_com_signup.html", "generated": true, "title": "Bank of America | Online Banking | Enroll in Online & Mobile Banking", "expectedFailures": ["fullName", "fullName"] },
+  { "html": "chaffey_ondemandlogin_com_login.html", "generated": true, "title": "PortalGuard - Portal Access", "expectedFailures": ["addressCountryCode", "addressCountryCode"] },
+  { "html": "reg_usps_com_signup.html", "generated": true, "title": "USPS.com® - Register for an online account", "expectedFailures": ["middleName", "addressCountryCode"] },
+  { "html": "passport_lenovo_com_signup.html", "generated": true, "title": "Lenovo ID sign up", "expectedFailures": ["phone", "phone"] },
+  { "html": "account_asus_com_signup.html", "generated": true, "title": "Signup ASUS", "expectedFailures": ["addressCountryCode"] },
+  { "html": "help_uber_com_login.html", "generated": true, "title": "I can't sign in to my account | Rider - Uber Help", "expectedFailures": ["fullName", "phone"] },
+  { "html": "9gag_com_signup.html", "generated": true, "title": "club9", "expectedFailures": ["addressProvince"] },
+  { "html": "adp_com_login.html", "generated": true, "title": "Payroll, HR and Tax Services | ADP Official Site", "expectedFailures": ["addressCountryCode"] },
+  { "html": "signup_geocities_ws_signup.html", "generated": true, "title": "Free Web Hosting - Sign Up .:: GEOCITIES.ws ::.", "expectedFailures": ["fullName"] },
+  { "html": "www_fleet_ford_com_signup.html", "generated": true, "title": "Create Account", "expectedFailures": ["middleName"] },
+  { "html": "secure_gofile_co_uk_signup.html", "generated": true, "title": "Register here | #GoFile", "expectedFailures": ["firstName"] },
+  { "html": "www_flsenate_gov_signup.html", "generated": true, "title": "Create a New Tracker Account - The Florida Senate", "expectedFailures": ["firstName"] },
+  { "html": "rumble_com_signup.html", "generated": true, "title": "Registration", "expectedFailures": ["addressStreet2"] },
+  { "html": "perfectdomain_com_signup.html", "generated": true, "title": "Sign Up A New Account To Sell Domains - PerfectDomain.com", "expectedFailures": ["addressProvince"] },
+  { "html": "airport_mastercard_com_signup.html", "generated": true, "title": "Sign Up | Register | Mastercard Airport Experiences", "expectedFailures": ["expirationMonth", "expirationYear"] },
+  { "html": "www_pwc_com_signup.html", "generated": true, "title": "User Registration", "expectedFailures": ["addressProvince", "addressCountryCode"] },
+  { "html": "amd_com_login.html", "generated": true, "title": "AMD ׀ together we advance_", "expectedFailures": ["addressCountryCode"] },
+  { "html": "www_aa_com_signup.html", "generated": true, "title": "Your Information – Join AAdvantage – American Airlines", "expectedFailures": ["phone", "phone"] },
+  { "html": "www_indiamart_com_login.html", "generated": true, "title": "IndiaMART - Indian Manufacturers Suppliers Exporters Directory, India Exporter Manufacturer", "expectedFailures": ["phone"] },
+  { "html": "www_ihg_com_signup.html", "generated": true, "title": "Join IHG® Rewards Club Hotel Rewards Program | Enroll to earn free nights with IHG's Hotel Points Program", "expectedFailures": ["addressStreet2"] },
+  { "html": "manage_bostonglobe_com_signup.html", "generated": true, "title": "The Boston Globe: My Account", "expectedFailures": ["fullName"] },
+  { "html": "www_lg_com_signup.html", "generated": true, "title": "LG Product Registration | Register Your Product | LG USA", "expectedFailures": ["expirationYear", "addressProvince"] },
+  { "html": "nj_myaccount_pseg_com_login.html", "generated": true, "title": "Login", "expectedFailures": ["addressPostalCode", "addressPostalCode"] },
+  { "html": "lawyeriq_esquirebank_com_signup.html", "generated": true, "title": "Register — Lawyer IQ | Esquire", "expectedFailures": ["expirationMonth"] },
+  { "html": "opensource_org_login.html", "generated": true, "title": "Become a Member of OSI – OSI Members Site", "expectedFailures": ["addressCountryCode"] },
+  { "html": "pastas_serveriai_lt_login.html", "generated": true, "title": "Paštas per naršyklę - Serveriai.lt", "expectedFailures": ["addressCountryCode"] },
+  { "html": "accounts_moneycontrol_com_login.html", "generated": true, "expectedFailures": ["phone", "password"] },
+  { "html": "accounts_moneycontrol_com_signup.html", "generated": true, "expectedFailures": ["phone", "password"] },
+  { "html": "4shared_com_login.html", "generated": true, "title": "4shared.com - free file sharing and storage", "expectedFailures": ["fullName"] },
+  { "html": "4shared_com_signup.html", "generated": true, "title": "4shared.com - free file sharing and storage", "expectedFailures": ["fullName"] },
+  { "html": "top_up_orange_com_signup.html", "generated": true, "title": "Register - Top Up", "expectedFailures": ["phone"] },
+  { "html": "nicic_gov_signup.html", "generated": true, "title": "Create new account | National Institute of Corrections", "expectedFailures": ["addressStreet2"] },
+  { "html": "freedns_afraid_org_login.html", "generated": true, "title": "Create your account", "expectedFailures": ["firstName"] },
+  { "html": "freedns_afraid_org_signup.html", "generated": true, "title": "Create your account", "expectedFailures": ["firstName"] },
+  { "html": "safeway_com_signup.html", "generated": true, "title": "Grocery Delivery Near You | Order Groceries Online | Safeway", "expectedFailures": ["phone", "phone"] },
+  { "html": "account_acer_com_signup.html", "generated": true, "title": "Create your Acer ID", "expectedFailures": ["addressCountryCode"] },
+  { "html": "entp_hud_gov_signup.html", "generated": true, "title": "Standard User Registration", "expectedFailures": ["middleName"] },
+  { "html": "lk_bookmyshow_com_login.html", "generated": true, "title": "User Log In - BookMyShow", "expectedFailures": ["addressProvince", "addressCountryCode"] },
+  { "html": "journals_aps_org_signup.html", "generated": true, "title": "Physical Review Journals", "expectedFailures": ["fullName"] },
+  { "html": "ml_com_login.html", "generated": true, "title": "Wealth Management and Financial Services from Merrill Lynch", "expectedFailures": ["fullName", "fullName", "fullName", "fullName", "fullName", "fullName"] },
+  { "html": "ml_com_signup.html", "generated": true, "title": "Wealth Management and Financial Services from Merrill Lynch", "expectedFailures": ["fullName", "fullName", "fullName", "fullName", "fullName", "fullName"] },
+  { "html": "selezionionline_cnr_it_login.html", "generated": true, "title": "E-Recruitment of the National Research Council of Italy - Login", "expectedFailures": ["fullName"] },
+  { "html": "www_ba_ic_cnr_it_signup.html", "generated": true, "title": "Register – Software Ic", "expectedFailures": ["fullName"] },
+  { "html": "my_firstvds_ru_signup.html", "generated": true, "title": "Registration", "expectedFailures": ["addressProvince"] },
+  { "html": "mobile_emirates_com_signup.html", "generated": true, "title": "Join Emirates Skywards", "expectedFailures": ["phone"] },
+  { "html": "secure_motherjones_com_login.html", "generated": true, "title": "Mother Jones Magazine and Digital Subscriptions", "expectedFailures": ["addressStreet2", "expirationMonth"] },
+  { "html": "acast_com_login.html", "generated": true, "title": "Podcasting For Creators & Advertisers | Acast Podcasts", "expectedFailures": ["addressCountryCode"] },
+  { "html": "secure_tesco_com_signup.html", "generated": true, "title": "Register", "expectedFailures": ["addressStreet"] },
+  { "html": "signup_snowflake_com_login.html", "generated": true, "title": "Snowflake Trial", "expectedFailures": ["addressCountryCode", "addressCountryCode"] },
+  { "html": "www_ifixit_com_login.html", "generated": true, "title": "Log In - iFixit", "expectedFailures": ["fullName"] },
+  { "html": "www_ifixit_com_signup.html", "generated": true, "title": "Create Account - iFixit", "expectedFailures": ["fullName"] },
+  { "html": "m_haberturk_com_login.html", "generated": true, "title": "Habertürk - Güncel Haberler, Son Dakika Haberleri ve Günün Haber Başlıkları", "expectedFailures": ["firstName"] },
+  { "html": "haberturk_com_signup.html", "generated": true, "title": "Habertürk - Güncel Haberler, Son Dakika Haberleri ve Günün Haber Başlıkları", "expectedFailures": ["firstName"] },
+  { "html": "www_familysearch_org_signup.html", "generated": true, "title": "FamilySearch.org", "expectedFailures": ["addressCountryCode"] },
+  { "html": "senderscore_com_login.html", "generated": true, "title": "Sender Score - Email Marketing Education and Free Tools", "expectedFailures": ["addressStreet", "addressStreet2"] },
+  { "html": "www_uvic_ca_login.html", "generated": true, "title": "University of Victoria - Sign in Service", "expectedFailures": ["fullName"] },
+  {
+    "html": "program_seagate_com_signup.html",
+    "generated": true,
+    "title": "InsiderRegistration",
+    "expectedFailures": ["addressStreet", "addressCountryCode", "addressCountryCode", "addressCountryCode", "addressCountryCode", "addressCountryCode", "addressCountryCode", "addressCountryCode", "phone"]
+  },
+  { "html": "lssf_cas_cn_signup.html", "generated": true, "title": "用户注册", "expectedFailures": ["fullName", "addressStreet", "addressCountryCode"] },
+  { "html": "members_myactivesg_com_signup.html", "generated": true, "title": "Register - ActiveSG", "expectedFailures": ["phone"] },
+  { "html": "reg_ilogin_illinois_gov_login.html", "generated": true, "title": "Create Your ILogin Identity Account", "expectedFailures": ["middleName"] },
+  { "html": "www_ccbg_com_login.html", "generated": true, "title": "Online & Mobile Banking - Capital City Bank", "expectedFailures": ["fullName", "password", "phone"] },
+  { "html": "www_c_span_org_signup.html", "generated": true, "title": "MyC-SPAN Create Account | C-SPAN.org", "expectedFailures": ["password"] },
+  { "html": "www_getresponse_com_signup.html", "generated": true, "title": "Create online marketing account for free.", "expectedFailures": ["fullName"] },
+  { "html": "www_findagrave_com_login.html", "generated": true, "title": "Find A Grave", "expectedFailures": ["fullName"] },
+  { "html": "myaccounts_wizards_com_signup.html", "generated": true, "title": "Wizards of the Coast - Wizards Account", "expectedFailures": ["addressCountryCode", "addressProvince"] },
+  { "html": "subscriptions_newrepublic_com_login.html", "generated": true, "title": "New Republic Customer Service", "expectedFailures": ["addressStreet", "fullName", "fullName", "fullName"] },
+  { "html": "secure_runescape_com_signup.html", "generated": true, "title": "Create Your Account - RuneScape | Old School RuneScape", "expectedFailures": ["birthdayDay", "birthdayMonth", "birthdayYear"] },
+  { "html": "clients_netafraz_com_signup.html", "generated": true, "title": "ثبت نام کنید - نت افراز", "expectedFailures": ["fullName"] },
+  { "html": "crypto_com_signup.html", "generated": true, "title": "Crypto.com OAuth", "expectedFailures": ["addressCountryCode"] },
+  { "html": "www_dyson_com_login.html", "generated": true, "title": "Dyson Product Registration | Dyson", "expectedFailures": ["addressCountryCode", "addressCountryCode"] },
+  { "html": "www_dyson_com_signup.html", "generated": true, "title": "Dyson Product Registration | Dyson", "expectedFailures": ["addressCountryCode", "addressCountryCode"] },
+  { "html": "www_eyny_com_login.html", "generated": true, "title": "登錄 - 伊莉討論區", "expectedFailures": ["password"] },
+  { "html": "customer_ontarioca_gov_signup.html", "generated": true, "title": "User Registration", "expectedFailures": ["phone"] },
+  { "html": "storify_me_signup.html", "generated": true, "title": "Sign up - Storify", "expectedFailures": ["addressCountryCode", "addressCountryCode"] },
+  { "html": "ewg_org_login.html", "generated": true, "title": "Environmental Working Group – Know your choices | Environmental Working Group", "expectedFailures": ["addressCountryCode"] },
+  { "html": "account_wdc_com_signup.html", "generated": true, "title": "WesternDigital - External Account Management Portal", "expectedFailures": ["firstName", "lastName"] },
+  { "html": "account_ghost_org_login.html", "generated": true, "title": "Sign up for Ghost(Pro)", "expectedFailures": ["cardName"] },
+  { "html": "account_ghost_org_signup.html", "generated": true, "title": "Sign up for Ghost(Pro)", "expectedFailures": ["cardName"] },
+  { "html": "www_plurk_com_signup.html", "generated": true, "title": "Sign up for Plurk - Plurk", "expectedFailures": ["birthdayDay", "birthdayMonth", "birthdayYear"] },
+  { "html": "reg_informationweek_com_login.html", "generated": true, "title": "Newsletter Sign-Up | InformationWeek", "expectedFailures": ["addressStreet"] },
+  { "html": "segmento_ru_login.html", "generated": true, "title": "Рекламная платформа Segmento - ведение медийной и таргетированной рекламы", "expectedFailures": ["firstName"] },
+  { "html": "prequal_wsp_com_signup.html", "generated": true, "title": "Register - Supplier Registration", "expectedFailures": ["fullName", "phone"] },
+  { "html": "egihosting_com_login.html", "generated": true, "title": "Best dedicated server for hosting in Silicon Valley | EGI", "expectedFailures": ["addressStreet", "addressStreet"] },
+  { "html": "deseretbook_com_login.html", "generated": true, "title": "Login - Deseret Book", "expectedFailures": ["password"] },
+  { "html": "www_qvcuk_com_signup.html", "generated": true, "title": "Create Account", "expectedFailures": ["addressStreet2", "addressStreet2"] },
+  { "html": "www_victoriassecret_com_signup.html", "generated": true, "title": "Create Account -- Victoria's Secret", "expectedFailures": ["addressCountryCode"] },
+  { "html": "mexicard_com_login.html", "generated": true, "title": "Mexicard", "expectedFailures": ["addressStreet", "addressStreet", "firstName", "addressProvince", "addressProvince"] },
+  { "html": "ege_sdamgia_ru_login.html", "generated": true, "title": "ЕГЭ–2023: задания, ответы, решения", "expectedFailures": ["firstName"] },
+  { "html": "oge_sdamgia_ru_signup.html", "generated": true, "title": "OГЭ–2023: задания, ответы, решения", "expectedFailures": ["firstName"] },
+  { "html": "www_filmweb_pl_signup.html", "generated": true, "title": "Filmweb - filmy takie jak Ty!", "expectedFailures": ["firstName"] },
+  { "html": "www_foodcity_com_login.html", "generated": true, "title": "Food City", "expectedFailures": ["addressProvince", "lastName"] },
+  { "html": "www_foodcity_com_signup.html", "generated": true, "title": "Registration | Food City", "expectedFailures": ["addressProvince", "lastName"] },
+  { "html": "www_airtel_in_login.html", "generated": true, "title": "Airtel Login : Pay Airtel Bill Online - Login Airtel My Account", "expectedFailures": ["phone"] },
+  { "html": "partners_camsoda_com_login.html", "generated": true, "title": "Signup- Camsoda.com", "expectedFailures": ["fullName"] },
+  { "html": "www_meted_ucar_edu_signup.html", "generated": true, "title": "MetEd » Registration", "expectedFailures": ["addressProvince"] },
+  { "html": "community_toppr_com_login.html", "generated": true, "title": "Toppr", "expectedFailures": ["phone"] },
+  { "html": "community_toppr_com_signup.html", "generated": true, "title": "Toppr", "expectedFailures": ["phone"] },
+  { "html": "www_bestwestern_com_signup.html", "generated": true, "title": "Best Western Rewards - Earn Free Nights - Free to Join", "expectedFailures": ["addressProvince"] },
+  { "html": "www_city_data_com_signup.html", "generated": true, "title": "City-Data Forum - Registration", "expectedFailures": ["addressPostalCode"] },
+  { "html": "nest_bangmod_cloud_login.html", "generated": true, "title": "Bangmod.Cloud Login", "expectedFailures": ["firstName"] },
+  { "html": "shop_just_eat_com_login.html", "generated": true, "title": "Login | Just Eat", "expectedFailures": ["password"] },
+  { "html": "gskpro_com_signup.html", "generated": true, "title": "Register for GSKPro | GSKPro for Healthcare Professionals", "expectedFailures": ["addressStreet2", "addressProvince", "addressProvince"] },
+  { "html": "megaphone_fm_login.html", "generated": true, "title": "Megaphone by Spotify", "expectedFailures": ["addressCountryCode"] },
+  { "html": "sports_williamhill_com_signup.html", "generated": true, "title": "Open an Account", "expectedFailures": ["addressStreet2"] },
+  { "html": "smobilebotch3_sears_com_login.html", "generated": true, "title": "Login", "expectedFailures": ["addressStreet2"] },
+  { "html": "www_1cbit_ru_login.html", "generated": true, "title": "Личный кабинет клиента компании Первый Бит", "expectedFailures": ["firstName", "phone"] },
+  { "html": "ojs_uv_es_signup.html", "generated": true, "title": "Register", "expectedFailures": ["addressStreet"] },
+  { "html": "awesome_gameinformer_com_login.html", "generated": true, "title": "Identify Subscriber", "expectedFailures": ["addressPostalCode", "addressPostalCode"] },
+  { "html": "www_superbet_gy_signup.html", "generated": true, "expectedFailures": ["phone", "phone"] },
+  { "html": "lesta_ru_signup.html", "generated": true, "title": "Создание аккаунта | Lesta", "expectedFailures": ["addressCountryCode"] },
+  { "html": "my_dpss_lacounty_gov_signup.html", "generated": true, "title": "Los Angeles County Department of Public Social Services", "expectedFailures": ["addressProvince"] },
+  { "html": "www_delltechnologies_dpm_com_signup.html", "generated": true, "title": "Dell", "expectedFailures": ["addressStreet2"] },
+  { "html": "mynewsdesk_com_login.html", "generated": true, "title": "Market leading solution for PR & communication platform | Mynewsdesk", "expectedFailures": ["addressCountryCode"] },
+  { "html": "mynewsdesk_com_signup.html", "generated": true, "title": "Market leading solution for PR & communication platform | Mynewsdesk", "expectedFailures": ["addressCountryCode"] },
+  { "html": "mypurecloud_com_login.html", "generated": true, "title": "Genesys Cloud CX Platform - Experience as a Service | Genesys", "expectedFailures": ["addressProvince"] },
+  { "html": "www_credit_suisse_com_signup.html", "generated": true, "title": "Registration for My Credit Suisse - My Credit Suisse", "expectedFailures": ["addressCountryCode"] },
+  { "html": "zadarma_com_signup.html", "generated": true, "title": "Registration in Zadarma cloud telephony service", "expectedFailures": ["addressStreet"] },
+  { "html": "cams_xnxx_com_signup.html", "generated": true, "title": "Create Free Account |", "expectedFailures": ["cardSecurityCode"] },
+  { "html": "xscb2_escapefromtarkov_com_signup.html", "generated": true, "title": "Registration - Escape from Tarkov", "expectedFailures": ["addressProvince", "addressProvince"] },
+  { "html": "www_qantas_com_signup.html", "generated": true, "title": "Join Qantas Frequent Flyer | Qantas", "expectedFailures": ["expirationYear"] },
+  { "html": "www_petco_com_signup.html", "generated": true, "title": "Register", "expectedFailures": ["addressStreet2"] },
+  { "html": "id_manoramaonline_com_login.html", "generated": true, "title": "Login : Manoramaonline ID", "expectedFailures": ["addressCountryCode"] },
+  { "html": "app_metunic_com_tr_signup.html", "generated": true, "title": "Kullanıcı Kayıt | METUnic", "expectedFailures": ["addressStreet2"] },
+  { "html": "www_potterybarn_com_login.html", "generated": true, "title": "The Key Rewards | Pottery Barn", "expectedFailures": ["addressPostalCode"] },
+  { "html": "www_potterybarn_com_signup.html", "generated": true, "title": "The Key Rewards | Pottery Barn", "expectedFailures": ["addressPostalCode"] },
+  { "html": "www_help_townnews_com_login.html", "generated": true, "title": "How to log into BLOX CMS | FAQ | help.bloxdigital.com", "expectedFailures": ["fullName"] },
+  { "html": "roll20_net_login.html", "generated": true, "title": "Roll20: Online virtual tabletop for pen and paper RPGs and board games", "expectedFailures": ["password"] },
+  { "html": "app_roll20_net_signup.html", "generated": true, "title": "Roll20: Online virtual tabletop for pen and paper RPGs and board games", "expectedFailures": ["fullName", "firstName", "lastName", "password", "password"] },
+  { "html": "www_passportindia_gov_in_signup.html", "generated": true, "title": "User Registration | Passport Seva", "expectedFailures": ["addressCountryCode"] },
+  { "html": "interestingengineering_com_login.html", "generated": true, "title": "Interesting Engineering | Login", "expectedFailures": ["firstName"] },
+  { "html": "www_letpub_com_signup.html", "generated": true, "title": "Registration | LetPub", "expectedFailures": ["firstName"] },
+  { "html": "secure_ucsusa_org_login.html", "generated": true, "title": "Renew Your Membership", "expectedFailures": ["expirationYear", "addressCountryCode"] },
+  { "html": "cognizant_com_login.html", "generated": true, "title": "Intuition engineered—human insight, superhuman speed | Cognizant", "expectedFailures": ["fullName", "fullName", "addressCountryCode", "addressCountryCode"] },
+  { "html": "www_networksolutions_com_login.html", "generated": true, "title": "Network Solutions | My Account", "expectedFailures": ["password"] },
+  { "html": "sso_kuaidi100_com_login.html", "generated": true, "title": "欢迎您登录快递100", "expectedFailures": ["phone"] },
+  { "html": "inventos_ru_login.html", "generated": true, "title": "Инвентос", "expectedFailures": ["addressCity"] },
+  { "html": "www_servicenow_com_login.html", "generated": true, "title": "Sign in", "expectedFailures": ["password"] },
+  { "html": "business_currys_co_uk_signup.html", "generated": true, "title": "Create your Currys Business account - Currys Business", "expectedFailures": ["addressStreet", "addressPostalCode"] },
+  { "html": "admission_uoguelph_ca_signup.html", "generated": true, "title": "Sign Up | Undergraduate Admission | University of Guelph", "expectedFailures": ["addressStreet", "addressStreet", "addressStreet2"] },
+  { "html": "tradedirect_lpl_com_signup.html", "generated": true, "title": "Register", "expectedFailures": ["middleName"] },
+  { "html": "econsultancy_com_login.html", "generated": true, "title": "Econsultancy - digital marketing and ecommerce intel", "expectedFailures": ["fullName"] },
+  { "html": "mybanner_bannerhealth_com_signup.html", "generated": true, "title": "Banner Health", "expectedFailures": ["firstName"] },
+  { "html": "ef_ic3_gov_login.html", "generated": true, "title": "IC3 Complaint Referral Form", "expectedFailures": ["fullName", "addressStreet2", "addressStreet", "addressStreet2", "fullName", "addressStreet2", "addressStreet2", "fullName"] },
+  { "html": "blog_nubank_com_br_login.html", "generated": true, "title": "Nubank login: passo a passo para entrar no app e no site", "expectedFailures": ["fullName", "fullName"] },
+  { "html": "eup_register_wmich_edu_signup.html", "generated": true, "title": "Sign in to your account", "expectedFailures": ["fullName"] },
+  { "html": "login_du_edu_login.html", "generated": true, "title": "DU Portal Access", "expectedFailures": ["addressCountryCode", "addressCountryCode"] },
+  { "html": "login_du_edu_signup.html", "generated": true, "title": "DU Portal Access", "expectedFailures": ["addressCountryCode", "addressCountryCode"] },
+  { "html": "mobion_bg_ac_rs_signup.html", "generated": true, "title": "MobiON - Register", "expectedFailures": ["firstName"] },
+  { "html": "forms_infineon_com_signup.html", "generated": true, "title": "Register a new account - Forms", "expectedFailures": ["phone"] },
+  { "html": "www_dyson_co_uk_signup.html", "generated": true, "title": "Machine Registration", "expectedFailures": ["addressCountryCode", "addressCountryCode"] },
+  { "html": "access_thisoldhouse_com_signup.html", "generated": true, "title": "This Old House Insider", "expectedFailures": ["addressProvince"] },
+  { "html": "www_hostelworld_com_signup.html", "generated": true, "title": "Hostels Worldwide - Online Hostel Bookings, Ratings and Reviews", "expectedFailures": ["addressCountryCode"] },
+  { "html": "abc_anthem_com_signup.html", "generated": true, "title": "Registration | Anthem Blue Cross", "expectedFailures": ["middleName", "firstName"] },
+  { "html": "www_webstaurantstore_com_signup.html", "generated": true, "title": "WebstaurantStore: Account Registration", "expectedFailures": ["addressStreet", "addressStreet2", "addressStreet", "addressStreet"] },
+  { "html": "web_kamihq_com_login.html", "generated": true, "title": "Kami", "expectedFailures": ["password"] },
+  { "html": "www_tiffany_com_login.html", "generated": true, "title": "Sign In | Tiffany & Co.", "expectedFailures": ["addressCity"] },
+  { "html": "positivepsychology_com_login.html", "generated": true, "title": "PositivePsychology.com - Helping You Help Others", "expectedFailures": ["fullName", "fullName"] },
+  { "html": "www_latamairlines_com_signup.html", "generated": true, "title": "Register | LATAM Airlines", "expectedFailures": ["firstName"] },
+  { "html": "ecampus_uni_goettingen_de_login.html", "generated": true, "title": "Startseite - eCampus Universität Göttingen", "expectedFailures": ["fullName"] },
+  { "html": "ufiler_pro_login.html", "generated": true, "title": "uFiler - free file and download manager for your Windows computer", "expectedFailures": ["firstName"] },
+  { "html": "reg_darkreading_com_login.html", "generated": true, "title": "Dark Reading | Request Sponsorship Information", "expectedFailures": ["addressStreet"] },
+  { "html": "affiliate_phoenixnap_com_signup.html", "generated": true, "title": "PhoenixNAP - Affiliate Program", "expectedFailures": ["addressStreet2", "addressStreet"] },
+  { "html": "monitoring_solaredge_com_signup.html", "generated": true, "title": "SolarEdge Registration", "expectedFailures": ["addressCountryCode", "addressProvince"] },
+  { "html": "ordertracker_corning_com_signup.html", "generated": true, "title": "Register an Account", "expectedFailures": ["addressStreet"] },
+  { "html": "www_totaljobs_com_signup.html", "generated": true, "title": "New jobseeker registration", "expectedFailures": ["addressCity", "addressCountryCode", "addressCountryCode"] }
 ]

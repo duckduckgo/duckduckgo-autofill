@@ -1,0 +1,731 @@
+<!--
+  https://ecr.clerkofcourt.maricopa.gov/Registration.aspx
+  testRunId: 66
+  testResultId: 234445
+-->
+<form name="Form1" method="get" action="./Registration.aspx" id="Form1" class="no_action_tile" data-ddg-formtype="sign up">
+  <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+  <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+  <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTMzMDUxMjQ2OWQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgEFD2NieEFjY2VwdGVkRXVsYZxmm5488+zfaSHizNqk7McO/NQX">
+
+  <script type="text/javascript">
+    <!--
+    var theForm = document.forms["Form1"];
+    if (!theForm) {
+      theForm = document.Form1;
+    }
+    function __doPostBack(eventTarget, eventArgument) {
+      if (!theForm.onsubmit || theForm.onsubmit() != false) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+      }
+    }
+    // -->
+  </script>
+
+  <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="0E6B69E9">
+  <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABb7LdyjjCl5L8gR9YkpPucsOU4XF2Nq4hqYYhQNMdbrKW2vSTaGxiqDCOxexf4B/tjw9J90t2ymnN8VWS6Ewprh3Zr1ilDpOfJFsy7XHzGY6+NB8TF6dyi8caAnucUtZvXKS/icmi+Zp8b7RYEcbMOqgPFMU4XxurpXTfLzm4Gew/O3NBzsHUXYI2zSAC4bQvBxlLMkNzRTgDMxUUaQqtntkdPWYr4rHT20v67DcoM5Gqg9OGC1cmgjgEzGC09Y/khCRuykJ+ty9dBdFYwRstQFCpHaYqc+qfYeMMumxAbWDBduytor5yHBPv/Ig8hxCkpnqmvnvZEofW0JjcAgx3Ol/IHrxzp/WHrjFKVkzZfY0w0JQ2VHXVYi3ZPfIxZoxH+otzJ1H4lkhWmT5F0RjtHOcSSsnooFDvWI81e6yG+XEducDfsgY+MdXonKCsl8Wq8C/jQMcVxD80Tu0lScAF7JgllbuakYutAmz64Rhh3LWODjpoA=">
+
+  <!-----------------   Confidential and Proprietary   -------------------------
+--  Filename: ucHeader.ascx
+--
+--  Date: 05/21/07
+--
+--
+--  Copyright (c) Hyland Software
+--
+--  Description: This user control displays the information common to top 
+--	of each page
+--
+--
+----------------   Copyright (c) Hyland Software 2007   --------------------->
+  <link href="RemotePartyAccess.css" rel="stylesheet" rev="stylesheet">
+  <script language="javascript" src="/Scripts/Navigator.js" type="text/javascript"></script>
+  <div class="header_container">
+    <div class="header_top">
+      <div class="home_link_container">
+        <a id="home_link" href="javascript:DisableBack('http://clerkofcourt.maricopa.gov');" title="Clerk of Court Website" alt="Clerk of Court Website">
+          <img src="/Images/transparent.png" width="538" height="126">
+        </a>
+      </div>
+      <div class="header_links_container">
+        <div class="header_links_right">
+          <img src="/Images/login_icon.png" alt="ECR Online Login"><a class="linkDefault" href="javascript:DisableBack('/Login.aspx');">Login</a>
+          &nbsp;&nbsp;&nbsp;
+          <img src="images/help.gif"><a class="linkDefault" href="Help.aspx" target="_top">Help</a>
+        </div>
+      </div>
+    </div>
+    <div class="header_bottom"></div>
+  </div>
+  <div class="header_baseline">
+    <div class="page_links_container">
+      <span class="textDefault header_links"></span>
+    </div>
+    <div class="action_link_container">
+      <span class="textDefault linkbar-button"></span>
+    </div>
+  </div>
+  <div class="full-width-block">
+    <div class="content-wrapper">
+      <div class="page_title_container">
+        <p class="title">Registration Information</p>
+        <p class="description">
+          Welcome to the Maricopa County Clerk of Court's ECR Online program.
+          Please complete the information requested below to set up your ECR
+          account.<br><br><b>Important Note:</b> A user who is registering
+          and authenticated must be either a party to the case or the attorney
+          representing the party in order to add cases for viewing. Legal
+          Support staff with an eFiling user account to eFile on behalf of an
+          attorney will not be able to add cases for viewing.
+        </p>
+      </div>
+      <div class="main_content_container">
+        <div class="page_message_container">
+          <span class="messageClass"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="full-width">
+    <div class="content-wrapper">
+      <div class="main_content_container">
+        <div class="main_content padding-top">
+          <table class="body">
+            <tbody>
+              <tr>
+                <td class="textDefault">
+                  <div class="justified-flex-container">
+                    <div class="registration-content">
+                      <table class="registrationBody">
+                        <tbody>
+                          <tr>
+                            <td colspan="2" class="description center-text">
+                              <span>* denotes required fields.</span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" class="table-header-row">
+                              Personal Information
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label" style="width: 175px">
+                              Username:
+                            </td>
+                            <td class="backGroundDark" width="475px">
+                              <input name="txtValidateUserName" type="text" id="txtValidateUserName" class="inputDefault" onkeyup="Validate(true);" maxlength="15" style="width: 165px" title="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username:
+parseable name: txtValidateUserName
+section: txtValidateUserName_0_6
+field signature: 4068746133
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 6" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username:
+parseable name: txtValidateUserName
+section: txtValidateUserName_0_6
+field signature: 4068746133
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 6" autofill-prediction="USERNAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510842">
+                              * (Used to log in; up to 15 characters)
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Password:
+                            </td>
+                            <td class="backGroundDark">
+                              <input class="inputDefault" id="txtValidatePassword" onkeyup="Validate(true);" type="password" maxlength="15" style="width: 165px" value="" name="txtValidatePassword" data-ddg-testresultelementid="510843" data-manual-scoring="password">
+                              *
+                              <img class="helpBubble" onclick="javascript:OpenHelpBubbleWindow('http://efiling.clerkofcourt.maricopa.gov/helptopic.aspx', '8');" src="images/help.gif" alt="help">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Confirm Password:
+                            </td>
+                            <td class="backGroundDark">
+                              <input class="inputDefault" id="txtValidateConfirmPassword" onkeyup="Validate(true);" type="password" maxlength="15" style="width: 165px" value="" name="txtValidateConfirmPassword" data-ddg-testresultelementid="510844" data-manual-scoring="password">
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              First Name:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateFirstName" type="text" id="txtValidateFirstName" class="inputDefault" onkeyup="Validate(true);" maxlength="25" style="width: 265px" data-ddg-testresultelementid="510845" data-manual-scoring="firstName">
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Middle Name:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateMiddleName" type="text" id="txtValidateMiddleName" class="inputDefault" onkeyup="Validate(true);" maxlength="25" style="width: 265px" data-ddg-testresultelementid="510846" data-manual-scoring="middleName">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Last Name:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateLastName" type="text" id="txtValidateLastName" class="inputDefault" onkeyup="Validate(true);" maxlength="25" style="width: 265px" data-ddg-testresultelementid="510847" data-manual-scoring="lastName">
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Personal/Home Address as it appears on your
+                              Driver’s License:
+                            </td>
+                            <td class="backGroundDark" style="padding-left: 5px">
+                              <textarea name="txtValidateAddress" id="txtValidateAddress" class="inputDefault" onkeyup="Validate(true);" rows="3" wrap="VIRTUAL" style="width: 300px" data-ddg-testresultelementid="510848" data-manual-scoring="addressStreet"></textarea>
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight">&nbsp;</td>
+                            <td class="backGroundDark">(Max 300 characters)</td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              City:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateCity" type="text" id="txtValidateCity" class="inputDefault" onkeyup="Validate(true);" maxlength="25" style="width: 265px" data-ddg-testresultelementid="510849" data-manual-scoring="addressCity">
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              State:
+                            </td>
+                            <td class="backGroundDark" style="padding-left: 5px">
+                              <select name="selValidateState" id="selValidateState" class="inputDefault" onchange="Validate(true);" data-ddg-testresultelementid="510850" data-manual-scoring="addressProvince">
+                                <option selected="selected" value="0">
+                                  Select State
+                                </option>
+                                <option value="AK">Alaska</option>
+                                <option value="AL">Alabama</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DC">DC</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                                <option value="IA">Iowa</option>
+                                <option value="ID">Idaho</option>
+                                <option value="IL">Illinois</option>
+                                <option value="IN">Indiana</option>
+                                <option value="KS">Kansas</option>
+                                <option value="KY">Kentucky</option>
+                                <option value="LA">Louisanna</option>
+                                <option value="MA">Massachusetts</option>
+                                <option value="MD">Maryland</option>
+                                <option value="ME">Maine</option>
+                                <option value="MI">Michigan</option>
+                                <option value="MN">Minnesota</option>
+                                <option value="MO">Missouri</option>
+                                <option value="MS">Mississippi</option>
+                                <option value="MT">Montana</option>
+                                <option value="NC">North Carolina</option>
+                                <option value="ND">North Dakota</option>
+                                <option value="NE">Nebraska</option>
+                                <option value="NH">New Hampshire</option>
+                                <option value="NJ">New Jersey</option>
+                                <option value="NM">New Mexico</option>
+                                <option value="NV">Nevada</option>
+                                <option value="NY">New York</option>
+                                <option value="OH">Ohio</option>
+                                <option value="OK">Oklahoma</option>
+                                <option value="OR">Oregon</option>
+                                <option value="PA">Pennsylvania</option>
+                                <option value="RI">Rhode Island</option>
+                                <option value="SC">South Carolina</option>
+                                <option value="SD">South Dakota</option>
+                                <option value="TN">Tennessee</option>
+                                <option value="TX">Texas</option>
+                                <option value="UT">Utah</option>
+                                <option value="VA">Virginia</option>
+                                <option value="VT">Vermont</option>
+                                <option value="WA">Washington</option>
+                                <option value="WI">Wisconsin</option>
+                                <option value="WV">West Virginia</option>
+                                <option value="WY">Wyoming</option>
+                              </select>
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Zip Code:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateZip" type="text" id="txtValidateZip" class="inputDefault" onkeyup="Validate(true);" maxlength="10" style="width: 130px" data-ddg-testresultelementid="510851" data-manual-scoring="addressPostalCode">
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Phone Number:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidatePhone" type="text" id="txtValidatePhone" class="inputDefault" onkeyup="Validate(true);" maxlength="12" style="width: 165px" data-ddg-testresultelementid="510852" data-manual-scoring="phone">
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Email Address:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateEmail" type="text" id="txtValidateEmail" class="inputDefault" onkeyup="Validate(true);" maxlength="40" style="
+                                  width: 365px;
+                                  background-size: auto 100% !important;
+                                  background-position: right center !important;
+                                  background-repeat: no-repeat !important;
+                                  background-origin: content-box !important;
+                                  background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+                                  transition: background 0s ease 0s !important;
+                                " title="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email Address:
+parseable name: txtValidateEmail
+section: txtValidateUserName_0_6
+field signature: 970996011
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 17" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email Address:
+parseable name: txtValidateEmail
+section: txtValidateUserName_0_6
+field signature: 970996011
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 17" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="510853">
+                              *
+                              <input name="txtOriginalEmail" type="hidden" id="txtOriginalEmail">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Confirm Email Address:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateConfirmEmail" type="text" id="txtValidateConfirmEmail" class="inputDefault" onkeyup="Validate(true);" maxlength="40" style="
+                                  width: 365px;
+                                  background-size: auto 100% !important;
+                                  background-position: right center !important;
+                                  background-repeat: no-repeat !important;
+                                  background-origin: content-box !important;
+                                  background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+                                  transition: background 0s ease 0s !important;
+                                " title="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Confirm Email 
+									                    Address:
+parseable name: txtValidateConfirmEmail
+section: txtValidateUserName_0_6
+field signature: 2037888128
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 19" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Confirm Email 
+									                    Address:
+parseable name: txtValidateConfirmEmail
+section: txtValidateUserName_0_6
+field signature: 2037888128
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 19" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="510854">
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              AZ Driver's License:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateDriversLicense" type="text" id="txtValidateDriversLicense" class="inputDefault" onkeyup="Validate(true);" maxlength="12" style="width: 165px" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: AZ Driver's 
+									                    License:
+parseable name: txtValidateDriversLicense
+section: txtValidateUserName_0_6
+field signature: 894192048
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 20" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: AZ Driver's 
+									                    License:
+parseable name: txtValidateDriversLicense
+section: txtValidateUserName_0_6
+field signature: 894192048
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510855">
+                              *
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundDark" style="text-align: center" colspan="2">
+                              Click Here for instructions to register with a
+                              non-Arizona Driver’s License.&nbsp;&nbsp;
+                              <img class="helpBubble" onclick="javascript:OpenHelpBubbleWindow('http://efiling.clerkofcourt.maricopa.gov/helptopic.aspx', '13');" src="images/help.gif" alt="help">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Date Of Birth:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="txtValidateDateOfBirth" type="text" id="txtValidateDateOfBirth" class="inputDefault" onkeyup="Validate(true);" maxlength="10" style="width: 135px" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Date Of Birth:
+parseable name: txtValidateDateOfBirth
+section: txtValidateUserName_0_6
+field signature: 3769615613
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Date Of Birth:
+parseable name: txtValidateDateOfBirth
+section: txtValidateUserName_0_6
+field signature: 3769615613
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510856">
+                              *&nbsp;(mm/dd/yyyy)
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" class="table-header-row">
+                              Attorney Information
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundDark" style="text-align: center" colspan="2">
+                              If you are not an attorney, you may skip this
+                              portion of the registration process and proceed to
+                              the user agreement. Bar ID and State is required
+                              for attorneys attempting to access cases where
+                              they are the attorney of record.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Bar Number:
+                            </td>
+                            <td class="backGroundDark" id="divBarNumber">
+                              <input name="txtBarNumber" type="text" id="txtBarNumber" class="inputDefault" onkeyup="Validate(true);ShowRoleInfo();" maxlength="15" style="width: 165px" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Bar Number:
+parseable name: txtBarNumber
+section: txtValidateUserName_0_6
+field signature: 3182648374
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 22" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Bar Number:
+parseable name: txtBarNumber
+section: txtValidateUserName_0_6
+field signature: 3182648374
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510857">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Bar Number State:
+                            </td>
+                            <td class="backGroundDark" id="divBarState" style="padding-left: 5px">
+                              <select name="selBarState" id="selBarState" class="inputDefault" onchange="Validate(true);" data-ddg-testresultelementid="510858" data-manual-scoring="addressProvince">
+                                <option selected="selected" value="0">
+                                  Select State
+                                </option>
+                                <option value="AK">Alaska</option>
+                                <option value="AL">Alabama</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DC">DC</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                                <option value="IA">Iowa</option>
+                                <option value="ID">Idaho</option>
+                                <option value="IL">Illinois</option>
+                                <option value="IN">Indiana</option>
+                                <option value="KS">Kansas</option>
+                                <option value="KY">Kentucky</option>
+                                <option value="LA">Louisanna</option>
+                                <option value="MA">Massachusetts</option>
+                                <option value="MD">Maryland</option>
+                                <option value="ME">Maine</option>
+                                <option value="MI">Michigan</option>
+                                <option value="MN">Minnesota</option>
+                                <option value="MO">Missouri</option>
+                                <option value="MS">Mississippi</option>
+                                <option value="MT">Montana</option>
+                                <option value="NC">North Carolina</option>
+                                <option value="ND">North Dakota</option>
+                                <option value="NE">Nebraska</option>
+                                <option value="NH">New Hampshire</option>
+                                <option value="NJ">New Jersey</option>
+                                <option value="NM">New Mexico</option>
+                                <option value="NV">Nevada</option>
+                                <option value="NY">New York</option>
+                                <option value="OH">Ohio</option>
+                                <option value="OK">Oklahoma</option>
+                                <option value="OR">Oregon</option>
+                                <option value="PA">Pennsylvania</option>
+                                <option value="RI">Rhode Island</option>
+                                <option value="SC">South Carolina</option>
+                                <option value="SD">South Dakota</option>
+                                <option value="TN">Tennessee</option>
+                                <option value="TX">Texas</option>
+                                <option value="UT">Utah</option>
+                                <option value="VA">Virginia</option>
+                                <option value="VT">Vermont</option>
+                                <option value="WA">Washington</option>
+                                <option value="WI">Wisconsin</option>
+                                <option value="WV">West Virginia</option>
+                                <option value="WY">Wyoming</option>
+                              </select>
+                              &nbsp;
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Firm/Agency Name:
+                            </td>
+                            <td class="backGroundDark" id="divFirmName">
+                              <input name="txtFirmName" type="text" id="txtFirmName" class="inputDefault" onkeyup="Validate(true);" maxlength="255" style="width: 365px" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Firm/Agency 
+									                    Name:
+parseable name: txtFirmName
+section: selBarState_0_23
+field signature: 758313477
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 24" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Firm/Agency 
+									                    Name:
+parseable name: txtFirmName
+section: selBarState_0_23
+field signature: 758313477
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.middleName" data-ddg-testresultelementid="510859">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundDark" style="text-align: center" colspan="2">
+                              Attorneys may also access cases where other
+                              attorneys in your firm are the attorney of record.
+                              To do so, the Court’s Firm ID is required. Click
+                              Get Firm to retrieve your Firm ID.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              Firm/Agency Number:
+                            </td>
+                            <td class="backGroundDark" id="divFirmNumber">
+                              <input name="txtFirmNumber" type="text" id="txtFirmNumber" class="inputDefault" onkeyup="Validate(true);" maxlength="12" style="width: 165px" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Firm/Agency Number:
+parseable name: txtFirmNumber
+section: selBarState_0_23
+field signature: 253753253
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 25" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Firm/Agency Number:
+parseable name: txtFirmNumber
+section: selBarState_0_23
+field signature: 253753253
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510860">
+                              <input type="submit" name="btnGetFirmNumber" value="Get Firm" id="btnGetFirmNumber" class="inputDefault" disabled="">&nbsp;<img class="helpBubble" onclick="javascript:OpenHelpBubbleWindow('http://efiling.clerkofcourt.maricopa.gov/helptopic.aspx', '10');" src="images/help.gif">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" class="table-header-row">
+                              User Agreement/Acceptance
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight" colspan="2">
+                              <iframe class="eulaFrame" src="EULA.htm"></iframe>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight" colspan="2">
+                              <div class="full-width">
+                                <div class="center-button">
+                                  <input class="inputDefault" id="btnPrintFriendly" type="button" value="Print Friendly User Agreement" onclick="OpenPrintFriendlyEula();" name="btnPrintFriendly">
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight table-form-label">
+                              User Agreement:
+                            </td>
+                            <td class="backGroundDark">
+                              <input name="cbxAcceptedEula" type="checkbox" id="cbxAcceptedEula" class="inputDefault" onclick="Validate(true);" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Accept
+parseable name: cbxAcceptedEula
+section: selBarState_0_23
+field signature: 2927175196
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Accept
+parseable name: cbxAcceptedEula
+section: selBarState_0_23
+field signature: 2927175196
+form signature: 13180327787722175584
+form signature in host form: 13180327787722175584
+field frame token: 3B679FDDF0E81F96544961AD7515762B
+form renderer id: 1
+field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510861">&nbsp;Accept
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLight">&nbsp;</td>
+                            <td class="backGroundLight">
+                              <div class="warningYellow" id="divWarning" style="text-align: left"></div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="backGroundLightSmall" colspan="2">
+                              <input name="btnRegister" type="submit" id="btnRegister" class="inputDefault" value="Register Me" disabled="disabled">
+                              <br>
+                              This button will be available when all necessary
+                              information has been completed.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="full-width">
+    <!-----------------   Confidential and Proprietary   -------------------------
+--  Filename: ucFooter.ascx
+--
+--  Date: 05/21/07
+--
+--
+--  Copyright (c) Hyland Software
+--
+--  Description: This user control displays the information common to bottom 
+--	of each page
+--
+--
+----------------   Copyright (c) Hyland Software 2007   --------------------->
+    <link href="RemotePartyAccess.css" rel="stylesheet">
+    <div class="full-width">
+      <div class="footer_container">
+        <table>
+          <tbody>
+            <tr>
+              <td class="copyright">
+                Version : 2.0.2.8, (c) Copyright 2007-2023 by Maricopa County
+                Clerk of Superior Court. Created by Hyland Software, Inc.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</form>

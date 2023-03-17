@@ -1,0 +1,70 @@
+<!--
+  https://www.nic.ru/en/auth/login/
+  testRunId: 66
+  testResultId: 234253
+-->
+<form id="loginFm" role="form" vld-validate="" class="form-vertical bc-form-passwordMethod" action="/auth-v2/login/methods/password?bo=%2Fauth-v2%2Foauth%2Fae%3Faccess_type%3Donline%26client_id%3Dauth_login%26prompt%3Dlogin%26redirect_uri%3Dhttps%253A%252F%252Fwww.nic.ru%252Fen%252Fauth%252Flogin%252F%26response_type%3Dcode%26scope%3Dopenid" method="POST" onkeydown="if (event.keyCode == 13) {event.preventDefault(); $('#bind').click(); false;}" novalidate="" data-ddg-formtype="sign in">
+  <input type="hidden" name="isDelayed" value="false">
+
+  <div id="other-user"><div class="profile-name mus-no-acc"></div></div>
+
+  <div class="rc-tabs" data-id="5">
+    <div class="rc-tab rc-tab_selected" data-id="3">Клиент</div>
+    <div class="rc-tab" data-id="4">Партнёр</div>
+  </div>
+  <div id="loginDv" class="auth-login">
+    <div class="form-group">
+      <label for="login" class="control-label"> Логин </label>
+      <div class="form-input">
+        <input class="" data-id="6" type="hidden" name="login"><input id="login" name="raw_login" type="text" tabindex="2" autofocus="" class="form-control" value="" placeholder="Номер договора NIC-D" data-parsley-required="true" data-parsley-maxlength="64" data-parsley-trim-value="true" data-parsley-required-message="Введите логин" maxlength="100" title="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Логин
+parseable name: raw_login
+section: raw_login_0_14
+field signature: 1199413621
+form signature: 611558794322339043
+form signature in host form: 611558794322339043
+field frame token: A6F8187DB879014AA96347B67922C352
+form renderer id: 1
+field renderer id: 14" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Логин
+parseable name: raw_login
+section: raw_login_0_14
+field signature: 1199413621
+form signature: 611558794322339043
+form signature in host form: 611558794322339043
+field frame token: A6F8187DB879014AA96347B67922C352
+form renderer id: 1
+field renderer id: 14" autofill-prediction="USERNAME" data-parsley-id="4" data-ddg-inputtype="unknown" data-ddg-testresultelementid="509923">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="password" class="control-label"> Пароль </label>
+    <div class="form-input posr rc-forced-password-border">
+      <span class="append-icon right">
+        <i id="show_password" class="fa fa-eye"></i>
+      </span>
+      <input id="password" name="password" type="password" tabindex="3" class="form-control" value="" placeholder="Пароль" data-parsley-required="true" data-parsley-required-message="Введите пароль" maxlength="100" data-parsley-id="6" data-ddg-testresultelementid="509924" data-manual-scoring="password">
+
+      <div class="rc-dropdown" data-id="7">
+        Административный
+        <svg class="rc-dropdown__arrow" version="1.1" viewBox="0 0 11.9 6.5" fill="none" stroke="#14295e">
+          <polyline points="0.7,0.7 5.9,5.7 11.1,0.7 "></polyline>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group pb15">
+    <div class="col-sm-6"></div>
+  </div>
+
+  <button id="bind" type="button" tabindex="5" class="btn btn-lg btn-primary btn-block bc-form-btn">
+    Войти</button><a class="rc-recover" data-id="8" href="/auth/recovery/">Напомнить номер договора и пароль</a>
+  <div class="rc-divider methods-divider" data-id="10"><span>или</span></div>
+</form>

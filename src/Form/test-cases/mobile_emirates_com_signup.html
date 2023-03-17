@@ -1,0 +1,355 @@
+<!--
+  https://mobile.emirates.com/english/skywardsEnrollmentLoad.xhtml
+  testRunId: 66
+  testResultId: 236747
+-->
+<form id="SkywardsEnrollmentForm" name="SkywardsEnrollmentForm" method="post" onsubmit="submitForm(event)" data-ddg-formtype="sign up">
+  <!-- Creating the hidden variables -->
+  <!-- Container -->
+  <div class="container mt-24">
+    <p class="text mb-32">
+      It costs nothing to join Emirates Skywards. Just complete this simple
+      application form and you can start enjoying the benefits and privileges of
+      membership straight away. You’ll be surprised how easy it is to earn
+      Skywards Miles and how rewarding it is to spend them with Emirates and our
+      global partners.
+    </p>
+
+    <div class="cf">
+      <label for="">Do you have a membership number?</label>
+
+      <div class="switch-module buttons-2 mb-32">
+        <a data-tab="type-tab-1" id="buttonYes" data-tab-close="type-tab" href="#" title="#" onclick="validateYesNoTab(this)" class="switch-button fs-28 left-button">
+          <span>Yes</span>
+        </a>
+
+        <a data-tab-default="true" id="buttonNo" data-tab="type-tab-2" data-tab-close="type-tab" href="#" title="#" onclick="validateYesNoTab(this)" class="switch-button fs-28 right-button active">
+          <span>No</span>
+        </a>
+      </div>
+    </div>
+
+    <div data-switch-tab="" data-input-reset="true" class="type-tab type-tab-1 book-tab-switcher" style="display: none">
+      <div class="cf">
+        <label class="bold" for="memb-num">Membership number</label>
+        <div class="number-holder">
+          <input type="tel" id="memb-num" name="membershipNumber" placeholder="Membership number" data-validation="required, regExp" data-max-length="16" data-validate-expression="[ekEK0-9 ]" data-validate-condition="containOnly" data-restrict="true" data-errors="empty:membershipNumberRequired,regExp:membershipNumberInvalid" value="" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Membership number
+parseable name: membershipNumber
+section: membershipNumber_0_2
+field signature: 389768908
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 2" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Membership number
+parseable name: membershipNumber
+section: membershipNumber_0_2
+field signature: 389768908
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 2" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="523494">
+        </div>
+        <p class="error-message mb-24 mt-8"></p>
+      </div>
+    </div>
+
+    <div class="cf">
+      <label for="">Title</label>
+
+      <div data-custom-select="" class="ff-custom-select small-height custom-select mb-32" style="position: relative">
+        <label class="bold" for="select-title" style="position: absolute; z-index: 1; height: 40px"><span>Choose Title</span></label>
+        <span class="dropdown-arrow small"></span>
+        <!--changes for title  -->
+        <select name="title" data-validation="required, select" data-errors="" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose Title
+parseable name: title
+section: membershipNumber_0_2
+field signature: 3155588667
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 3" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose Title
+parseable name: title
+section: membershipNumber_0_2
+field signature: 3155588667
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 3" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="523495" style="
+            display: inline-block;
+            position: relative;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+            opacity: 0;
+            width: 100%;
+            height: 40px;
+          ">
+          <option selected="selected" value="">Choose Title</option>
+          <option value="Mr">Mr</option>
+          <option value="Ms">Ms</option>
+          <option value="Mrs">Mrs</option>
+          <option value="Miss">Miss</option>
+        </select>
+      </div>
+
+      <p class="error-message mb-24 mt-min-16">Please enter title</p>
+    </div>
+
+    <div class="cf">
+      <label for="firstName">First name as it appears on your passport</label>
+      <input type="text" id="firstName" name="firstName" placeholder="First name" data-vertical-scroll="true" data-validation="required, regExp" data-validate-expression="^[A-z ]+$" data-min-length="2" data-max-length="24" data-restrict="true" data-errors="empty:firstNameRequired,regExp:firstNameInvalid" value="" data-ddg-testresultelementid="523496" data-manual-scoring="firstName">
+      <p class="error-message mb-24 mt-min-16"></p>
+    </div>
+    <div class="cf">
+      <label for="lastName">Last name as it appears on your passport</label>
+      <input type="text" id="lastName" name="lastName" placeholder="Last name" data-vertical-scroll="true" data-validation="required, regExp" data-validate-expression="^[A-z ]+$" data-min-length="2" data-max-length="24" data-restrict="true" data-errors="empty:lastNameRequired,regExp:lastNameInvalid" value="" data-ddg-testresultelementid="523497" data-manual-scoring="lastName">
+      <p class="error-message mb-24 mt-min-16">Please enter last name</p>
+    </div>
+  </div>
+  <!-- / Container -->
+
+  <!-- Container -->
+  <div class="container pb-32 bd-bottom">
+    <label for="birth-date" class="mt-0">Date of Birth</label>
+
+    <div id="dateOfBirthDiv" data-custom-datepicker="" data-display-type="date" class="calendar book-selector-wrapper cf" style="position: relative; z-index: 10">
+      <input type="text" name="birthDate" id="birthDate" class="pd-16 mobiscroll-datepicker" readonly="" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Date of Birth
+parseable name: birthDate
+section: membershipNumber_0_2
+field signature: 3014859931
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 6" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Date of Birth
+parseable name: birthDate
+section: membershipNumber_0_2
+field signature: 3014859931
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="523498">
+      <input type="hidden" id="dayOfDob" name="dayOfDob" class="day">
+      <input type="hidden" id="monthOfDob" name="monthOfDob" class="month">
+      <input type="hidden" id="yearOfDob" name="yearOfDob" class="year">
+    </div>
+    <p id="datepickerErr" class="error-message">
+      Emirates Skywards members must be over the age of 18.
+    </p>
+
+    <label for="countryOfResidenceAuto">Country/Region of Residence</label>
+    <div data-autocomplete="CountriesData" class="autocomplete-container cf" data-search-priority="_settings" style="position: relative">
+      <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" id="countryOfResidenceAuto" placeholder="Country/Region of Residence" data-vertical-scroll="true" data-validation="text,required" data-errors="" autocomplete="off" autocorrect="off" class="ui-autocomplete-input" data-ddg-testresultelementid="523499" data-manual-scoring="addressCountryCode">
+      <input type="hidden" id="countryOfResidence" name="countryOfResidence" onchange="getPreferredLanguage($(this))">
+
+      <p class="error-message mb-24 mt-min-16">
+        Please select your country/region of residence.
+      </p>
+      <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content ui-corner-all" id="ui-id-1" tabindex="0" style="display: none"></ul>
+    </div>
+
+    <label class="bold" for="contactNumber">Mobile Number</label>
+    <div data-autocomplete="MobileCountriesData" class="autocomplete-container cf" data-search-priority="_settings" style="position: relative">
+      <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" id="mobileCountryCodeAuto" data-vertical-scroll="true" data-validation="text,required" placeholder="Country Code" data-errors="" autocomplete="off" autocorrect="off" class="ui-autocomplete-input" data-ddg-testresultelementid="523500" data-manual-scoring="phone">
+      <input type="hidden" id="isdCode" name="isdCode">
+
+      <p class="error-message mb-24 mt-min-16">Country Code Required</p>
+      <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content ui-corner-all" id="ui-id-2" tabindex="0" style="display: none"></ul>
+    </div>
+    <div class="cf">
+      <div class="number-holder">
+        <input type="tel" id="contactNumber" name="contactNumber" data-validation="required, regExp" data-min-length="1" data-max-length="20" data-validate-expression="[E0-9]" data-validate-condition="containOnly" data-restrict="true" data-errors="empty:contactNumberRequired,regExp:contactNumberInvalid" placeholder="Mobile Number" value="" data-ddg-testresultelementid="523501" data-manual-scoring="phone">
+      </div>
+      <p class="error-message mt-16"></p>
+    </div>
+
+    <div class="cf mt-16">
+      <label for="emailAddress">Email Address</label>
+      <input type="email" class="mb-32" id="emailAddress" name="emailAddress" placeholder="Email Address" data-vertical-scroll="true" data-validation="required,email" data-restrict="true" data-errors="required:emailRequired,email:emailInvalid" value="" title="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: emailAddress
+section: membershipNumber_0_2
+field signature: 4103469401
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 15" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: emailAddress
+section: membershipNumber_0_2
+field signature: 4103469401
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 15" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="523502" style="
+          background-size: auto 26px !important;
+          background-position: right center !important;
+          background-repeat: no-repeat !important;
+          background-origin: content-box !important;
+          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+          transition: background 0s ease 0s !important;
+        ">
+      <p class="error-message mb-24 mt-min-16"></p>
+    </div>
+    <div class="cf">
+      <label for="">Language Selection</label>
+      <div data-custom-select="" class="ff-custom-select small-height custom-select mb-32" style="position: relative">
+        <label class="bold" for="preferredLanguage" style="position: absolute; z-index: 1; height: 40px"><span>Select a language</span></label>
+        <span class="dropdown-arrow small"></span>
+        <input type="hidden" id="selectedText" name="selectedText" value="Select a language">
+        <select name="preferredLanguage" id="preferredLanguage" data-validation="required, select" data-errors="" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Select a language
+parseable name: preferredLanguage
+section: membershipNumber_0_2
+field signature: 3585014319
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 17" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Select a language
+parseable name: preferredLanguage
+section: membershipNumber_0_2
+field signature: 3585014319
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="523503" style="
+            display: inline-block;
+            position: relative;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+            opacity: 0;
+            width: 100%;
+            height: 40px;
+          ">
+          <option selected="selected" value="-1">Select a language</option>
+          <option value="21">English</option>
+        </select>
+      </div>
+      <p class="error-message mb-24 mt-min-16">
+        Please select your preferred language.
+      </p>
+    </div>
+    <div class="cf">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Password" data-vertical-scroll="true" data-validation="required,regExp" data-min-length="7" data-max-length="50" data-restrict="true" data-validate-expression="((?=.*\d)(?=.*[a-z]).{7,50})" data-errors="required:passwordRequired,regExp:passwordInvalid" data-ddg-testresultelementid="523504" data-manual-scoring="password">
+      <p class="error-message mb-24 mt-min-16">Please enter a password</p>
+    </div>
+    <div class="cf">
+      <label for="confirm-password">Confirm Password</label>
+      <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Confirm Password" data-min-length="7" data-max-length="50" data-restrict="true" onblur="validateForm();" data-ddg-testresultelementid="523505" data-manual-scoring="password">
+      <p id="passwordConfirmError" class="error-message mb-24 mt-min-16">
+        Your passwords should match. Please check and try again.
+      </p>
+    </div>
+  </div>
+  <!-- / Container -->
+  <div class="container mt-48">
+    <div class="book-checkbox-row chackbox-row cf mt-24">
+      <input type="checkbox" name="termsAndConditions" data-validation="required,checkbox" id="terms-conditions-accept" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: I accept the terms &amp; conditions .
+parseable name: termsAndConditions
+section: membershipNumber_0_2
+field signature: 1562149944
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 20" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: I accept the terms &amp; conditions .
+parseable name: termsAndConditions
+section: membershipNumber_0_2
+field signature: 1562149944
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="523506">
+      <label for="terms-conditions-accept" class="chekbox-label cf pt-6 pb-0">
+        <span class="d-table-cell h-76 v-middle">
+          I accept the
+          <a href="#" class="no-underline color-dark-red" onclick="goToTermsConditionFromSkywardsEnrollmentFlow();$('#SkywardsEnrollmentForm').submit();">
+            terms &amp; conditions </a>.</span>
+      </label>
+    </div>
+
+    <div class="book-checkbox-row chackbox-row cf mt-24">
+      <input type="checkbox" name="newsLetters" id="offers-sign" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Sign up to receive our newsletters and special offer emails. Please see our Privacy Policy .
+parseable name: newsLetters
+section: membershipNumber_0_2
+field signature: 1796422236
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Sign up to receive our newsletters and special offer emails. Please see our Privacy Policy .
+parseable name: newsLetters
+section: membershipNumber_0_2
+field signature: 1796422236
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 8C02C08F2FDBF06922BF2500B6DE2424
+form renderer id: 1
+field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="523507">
+      <label for="offers-sign" class="chekbox-label cf pt-6 pb-0">
+        <span class="d-table-cell h-76 v-middle">Sign up to receive our newsletters and special offer emails. Please
+          see our
+          <a href="#" class="no-underline color-dark-red" onclick="goToPrivacyPolicyFromSkywardsEnrollmentFlow();$('#SkywardsEnrollmentForm').submit();">
+            Privacy Policy </a>.</span>
+      </label>
+    </div>
+    <input type="hidden" id="loginPageIdentifier" name="loginPageIdentifier" value="">
+    <div class="flight-button cf">
+      <input id="myAc_enroll_Button" type="submit" onclick="skywardsAction='formSubmit';" class="red-button" value="Join">
+    </div>
+  </div>
+  <input type="hidden" id="paxserlNo" name="paxserlNo" value="">
+  <!-- / Container -->
+  <input type="hidden" name="javaEnabled" value="false"><input type="hidden" name="colorDepth" value="24"><input type="hidden" name="screenHeight" value="1080"><input type="hidden" name="screenWidth" value="1920"><input type="hidden" name="timezoneOffsetUtcMinutes" value="420">
+</form>

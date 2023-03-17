@@ -1,0 +1,176 @@
+<!--
+  https://www.buzzfeed.com/auth/signup
+  testRunId: 66
+  testResultId: 234632
+-->
+
+  <div class="xs-col-12 sm-col-6 lg-col-4 sm-offset-3 lg-offset-4 card xs-my4 xs-p3">
+    <div class="xs-text-center">
+      <h1 class="bold xs-mb1 xs-text-2">Sign Up To BuzzFeed</h1>
+      <div id="signup_success" class="fill-green-lighter xs-border rounded xs-p2 xs-my3 xs-flex-align-center xs-hide">
+        <div class="xs-pr2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38" class="svg-green svg-4">
+            <title>Success</title>
+            <path d="M19 0C8.5 0 0 8.5 0 19s8.5 19 19 19 19-8.5 19-19S29.5 0 19 0zm0 24.8c-1.6 1.6-4.2 1.6-5.8 0l-5.4-5.4 2.9-2.9 5.4 5.4 11-11 2.9 2.9-11 11z"></path>
+          </svg>
+        </div>
+        <p class="text-green">
+          We've sent a verification link to <span id="success_email"></span>.
+          Click it to activate your account!
+        </p>
+      </div>
+      <div id="social_form">
+        <p class="xs-mb2">
+          Or <a href="/auth/signin?redirect=">sign in</a> to your account
+        </p>
+        <a href="/auth/csrf?provider=facebook&amp;redirect=" class="button button--social button--icon button--facebook xs-col-12 xs-mb1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38" aria-hidden="true">
+            <title>Facebook</title>
+            <path d="M36.5 0h-35C.3 0 0 .3 0 1.5v34.9C0 37.7.3 38 1.5 38h18.9V23.4h-5.8v-5.8h5.8v-4.4c0-5.1 2.8-7.8 7.4-7.8 2.2 0 4.3.2 4.3.2v4.7h-2.8c-2.5 0-3.1 1.8-3.1 3.5v3.8h6l-.8 5.8h-5.3V38h10.2c1.2 0 1.5-.3 1.5-1.5v-35C38 .3 37.7 0 36.5 0z"></path>
+          </svg>
+          Sign in with Facebook
+        </a>
+        <a href="/auth/csrf?provider=google&amp;redirect=" class="button button--social button--icon button--google xs-col-12 xs-mb1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38" aria-hidden="true">
+            <title>Google</title>
+            <path d="M23.5 17.3c.1.6.2 1.2.2 2 0 6.8-4.6 11.6-11.6 11.6C5.4 30.9 0 25.6 0 19 0 12.4 5.4 7.1 12.1 7.1c3.3 0 6 1.2 8.1 3.1l-3.3 3.1c-.9-.8-2.5-1.8-4.8-1.8-4.1 0-7.5 3.4-7.5 7.5s3.4 7.5 7.5 7.5c4.8 0 6.6-3.4 6.9-5.1h-6.9v-4.1h11.4zm11 0v-3.4H31v3.4h-3.5v3.4H31v3.4h3.5v-3.4H38v-3.4h-3.5z"></path>
+          </svg>
+          Sign in with Google
+        </a>
+
+        <a href="/auth/csrf?provider=apple&amp;redirect=" class="button button--social button--icon button--apple-news xs-col-12 xs-mb3">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38">
+            <title>Apple</title>
+            <path d="M35.3 27.9c-.9 2-1.3 2.9-2.5 4.6-1.5 2.4-3.8 5.5-6.6 5.5-2.5 0-3.1-1.6-6.5-1.6S15.6 38 13.1 38c-2.8 0-4.9-2.8-6.5-5.2C2.1 26 1.6 18 4.4 13.7c2-3 5.1-4.8 8-4.8 3 0 4.8 1.6 7.3 1.6 2.4 0 3.8-1.6 7.3-1.6 2.6 0 5.3 1.4 7.3 3.9-6.5 3.5-5.5 12.6 1 15.1zm-11-21.7c1.2-1.6 2.2-3.9 1.9-6.2-2 .1-4.4 1.4-5.8 3.1-1.3 1.5-2.3 3.8-1.9 6 2.2.1 4.5-1.2 5.8-2.9z"></path>
+          </svg>
+          Sign in with Apple
+        </a>
+
+        <div class="xs-mb3" id="hide_after_signup">
+          <div class="xs-col-4 xs-border-bottom xs-inline-block xs-mr1"></div>
+          <div class="xs-text-4 xs-align-middle text-gray-lightest xs-inline-block">
+            or
+          </div>
+          <div class="xs-col-4 xs-border-bottom xs-inline-block xs-ml1"></div>
+        </div>
+      </div>
+    </div>
+    <div id="signup_error" class="fill-red-lighter xs-border rounded xs-p2 xs-my3 xs-flex-align-center xs-hide">
+      <div class="xs-pr2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38" class="svg-red svg-4">
+          <path d="M19 0C8.5 0 0 8.5 0 19s8.5 19 19 19 19-8.5 19-19S29.5 0 19 0zm-2 7h4v14h-4V7zm2 24c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z"></path>
+        </svg>
+      </div>
+      <p class="text-red error-new-line" id="signup_error_message">
+        There has been a problem.
+      </p>
+    </div>
+    <form id="signup_form" method="post" data-ddg-formtype="sign up">
+      <input type="hidden" name="_xsrf" value="2|ebe0f6ae|7c12674535b8a60e2302e087fe258ce7|1678930080">
+      <input type="hidden" name="recaptcha_token" id="recaptcha_token" value="03AFY_a8WzkdOWcH5nRHdD2nO3qodZHkAkQLwAbhOWyMf-_O6QGzJn3lPqcUa0EfIzJLn6wMamj4XjOc5sw5xl5Jlik9avjNgkceKsfAysysqEgaTqbl5NzTzfHzKgqohpIaFLxpBWFQa-Xme3HCZCVu12kl8IEcfYkZPCO464mWV8E5CGMSvf4hFA2PKka2X29ta1d1NWVowxXfyOG_niTP49O-Q-RcJoY1_oagVRIVktelcyKYeyWAbyfAVcwvFfL3mXnZfRlBSICWBEjWcRN_d-oQi4AW9GNuvo4fK3IYhtUGPSpJR_kVxdxJNTbXUB1nqE0f1UITDdgOLoo2V9saDlNv79XOtogETflVHaL1gmJgCQ1e4E6NSMuIBvisa7b9ezYdDP7W3nTvQCk-Z7I2KdV_rivtan5FhJ_VJRa1fRXWxqdvL91g2hncblN2oTmk9sqRHo2yGAHmLbEf1rZeHUN97mJQ-wTt7pKCkDTEKbH_0Eh3ixEOzHKSsLPsK_nCcAMHx5Aa8Z">
+      <label class="form-label">Email</label>
+      <input class="text-input xs-col-12 xs-mb2" type="email" name="email" id="email" autocorrect="off" autocapitalize="off" title="overall type: USERNAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: email
+section: email_0_3
+field signature: 1029417091
+form signature: 10289224486994181929
+form signature in host form: 10289224486994181929
+field frame token: BFE70B6DC3AD8C0D4C515D76EB686606
+form renderer id: 1
+field renderer id: 3" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: email
+section: email_0_3
+field signature: 1029417091
+form signature: 10289224486994181929
+form signature in host form: 10289224486994181929
+field frame token: BFE70B6DC3AD8C0D4C515D76EB686606
+form renderer id: 1
+field renderer id: 3" autofill-prediction="USERNAME" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="512003" style="
+          background-size: auto 26px !important;
+          background-position: right center !important;
+          background-repeat: no-repeat !important;
+          background-origin: content-box !important;
+          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+          transition: background 0s ease 0s !important;
+        ">
+      <fieldset class="fieldset" id="password_fieldset">
+        <label class="form-label" for="pass">Pick a Password</label>
+        <input class="text-input xs-col-12 xs-mb2" type="password" name="pass" id="pass" data-ddg-testresultelementid="512004" data-manual-scoring="password">
+        <label class="form-label" for="re_enter_pass">Enter Your Password Again</label>
+        <input class="text-input xs-col-12 xs-mb2" type="password" name="re_enter_pass" id="re_enter_pass" data-ddg-testresultelementid="512005" data-manual-scoring="password">
+        <span class="form-feedback" id="password_feedback"></span>
+      </fieldset>
+      <label class="form-label">Pick a Username</label>
+      <input class="text-input xs-col-12 xs-mb3" type="text" name="user" id="username" autocorrect="off" autocapitalize="off" data-ddg-testresultelementid="512006" data-manual-scoring="password">
+      <input class="button xs-col-12 xs-mb2" type="submit" id="signup" value="Sign up">
+      <label class="form-helper">
+        By signing up, you are agreeing to our
+        <a href="/about/useragreement">User Agreement</a> and
+        <a href="/about/privacy">Privacy Policy</a>.
+      </label>
+      <label class="form-helper">
+        This site is protected by reCAPTCHA and the Google
+        <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+        <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+      </label>
+    </form>
+  </div>
+
+  <div>
+    <div class="grecaptcha-badge" data-style="bottomright" style="
+        width: 256px;
+        height: 60px;
+        display: block;
+        transition: right 0.3s ease 0s;
+        position: fixed;
+        bottom: 14px;
+        right: -186px;
+        box-shadow: gray 0px 0px 5px;
+        border-radius: 2px;
+        overflow: hidden;
+      ">
+      <div class="grecaptcha-logo">
+        <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LeMqMAUAAAAADLgrLKQrapEkPvnj4NbeqIllU6H&amp;co=aHR0cHM6Ly93d3cuYnV6emZlZWQuY29tOjQ0Mw..&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=invisible&amp;cb=61w9c78y0cf9" width="256" height="60" role="presentation" name="a-dqxpv74if1gf" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+      </div>
+      <div class="grecaptcha-error"></div>
+      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: g-recaptcha-response
+section: g-recaptcha-response_0_9
+field signature: 3309787731
+form signature: 3951895612954172659
+form signature in host form: 3951895612954172659
+field frame token: BFE70B6DC3AD8C0D4C515D76EB686606
+form renderer id: 0
+field renderer id: 9" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: g-recaptcha-response
+section: g-recaptcha-response_0_9
+field signature: 3309787731
+form signature: 3951895612954172659
+form signature in host form: 3951895612954172659
+field frame token: BFE70B6DC3AD8C0D4C515D76EB686606
+form renderer id: 0
+field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="512007" style="
+          width: 250px;
+          height: 40px;
+          border: 1px solid rgb(193, 193, 193);
+          margin: 10px 25px;
+          padding: 0px;
+          resize: none;
+          display: none;
+        "></textarea>
+    </div>
+    <iframe style="display: none"></iframe>
+  </div>
+

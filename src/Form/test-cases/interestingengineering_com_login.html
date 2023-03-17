@@ -1,0 +1,613 @@
+<!--
+  https://interestingengineering.com/login
+  testRunId: 66
+  testResultId: 238998
+-->
+
+  <div>
+    <noscript><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-WKW2TKP"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-WKW2TKP");
+    </script>
+  </div>
+  <div id="__next" data-reactroot="">
+    <script>
+      !(function () {
+        try {
+          var d = document.documentElement,
+            n = "data-theme",
+            s = "setAttribute";
+          var e = localStorage.getItem("theme");
+          if ("system" === e || (!e && true)) {
+            var t = "(prefers-color-scheme: dark)",
+              m = window.matchMedia(t);
+            if (m.media !== t || m.matches) {
+              d.style.colorScheme = "dark";
+              d[s](n, "dark");
+            } else {
+              d.style.colorScheme = "light";
+              d[s](n, "light");
+            }
+          } else if (e) {
+            d[s](n, e || "");
+          }
+          if (e === "light" || e === "dark") d.style.colorScheme = e;
+        } catch (e) {}
+      })();
+    </script>
+    <script id="sub-funnel-id-undefined" title="subs-funnel">
+      console.log(window.dataLayer);
+    </script>
+    <header>
+      <nav class="Navigation_navbar__4fELH navbar navbar-expand navbar-light">
+        <div class="container-fluid">
+          <button class="menu">
+            <span></span><span></span><span></span><span></span><span></span><span></span></button><a href="/" class="navbar-brand"><img class="Navigation_ieLogo__qCIig" src="/img/logo.svg" alt="Logo" width="107.08" height="32.66"></a>
+          <div class="mr-auto"></div>
+          <div class="Navigation_rightNav__Hi_PP text-right">
+            <div class="Navigation_themeButton__tFdc0">
+              <input type="checkbox" class="Navigation_checkbox__W8Bqg" id="checkbox"><label for="checkbox" class="Navigation_label__Dbl0g"><img src="/img/icons/moon.png" width="12" height="12"><img src="/img/icons/sun.png" width="12" height="12">
+                <div class="Navigation_ball__VNyuM"></div></label>
+            </div>
+            <a href="javascript:void(0);" class="Navigation_subscribeBtn__c1P3m">Subscribe</a><a href="javascript:void(0);" class="Navigation_loginIcon__qMiLK"><i class="icon-user-alt"></i></a><a href="javascript:void(0);" class="Navigation_loginBtn__CKCMc">Log In</a><a href="/search" class="Navigation_searchLink__uG13R"><i class="icon-search"></i></a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div class="Login_loginBlock__B83TI">
+        <div class="Login_logoBlock__qok_1">
+          <i class="icon icon-logo-blue"></i>
+        </div>
+        <div class="Toastify"></div>
+        <div class="Login_navTabs__sVojm nav" style="display: none" role="tablist">
+          <a href="#" role="tab" data-rb-event-key="signin" aria-selected="true" class="nav-link active">Sign In</a><a href="#" role="tab" data-rb-event-key="signup" aria-selected="false" class="nav-link">Sign Up</a>
+        </div>
+        <div class="tab-content">
+          <div role="tabpanel" aria-hidden="false" class="fade tab-pane active show">
+            <div>
+              <h2 class="Login_title__Glinj">Log into your account</h2>
+              <p class="Login_description__HvUVz">
+                Enter your email address and password to continue
+              </p>
+            </div>
+            <form method="post" class="" data-ddg-formtype="sign in">
+              <div class="Login_formInner__ruhdZ">
+                <div class="form-group">
+                  <label class="form-label" for="emailSignIn">Email</label><input type="email" name="email" value="" placeholder="Enter your email" id="emailSignIn" class="form-control" title="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: UNKNOWN_TYPE
+label: Email
+parseable name: email
+section: email_0_3
+field signature: 1029417091
+form signature: 9569960180237069229
+form signature in host form: 9569960180237069229
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 1
+field renderer id: 3" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: UNKNOWN_TYPE
+label: Email
+parseable name: email
+section: email_0_3
+field signature: 1029417091
+form signature: 9569960180237069229
+form signature in host form: 9569960180237069229
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 1
+field renderer id: 3" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="537139">
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-4">
+                      <label class="form-label" for="passwordSignIn">Password</label>
+                    </div>
+                    <div class="text-right Login_forgotLink__uLOkn col-8">
+                      <a href="/forgot-password"><i class="icon icon-question"></i> Forgot Password</a>
+                    </div>
+                  </div>
+                  <input type="password" placeholder="Enter your password" name="password" value="" id="passwordSignIn" class="form-control" data-ddg-testresultelementid="537140" data-manual-scoring="password">
+                </div>
+                <div class="form-group">
+                  <div class="form-css-checkbox Login_checkboxRemember__CfbNC">
+                    <input type="checkbox" class="css-checkbox css-checkbox-sm" id="rememberCheckbox" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember meSave my login details for next time.
+parseable name: rememberCheckbox
+section: email_0_3
+field signature: 2380977635
+form signature: 9569960180237069229
+form signature in host form: 9569960180237069229
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 1
+field renderer id: 5" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember meSave my login details for next time.
+parseable name: rememberCheckbox
+section: email_0_3
+field signature: 2380977635
+form signature: 9569960180237069229
+form signature in host form: 9569960180237069229
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 1
+field renderer id: 5" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="537141"><label class="form-label" for="rememberCheckbox"><strong>Remember me</strong>Save my login details for
+                      next time.</label>
+                  </div>
+                </div>
+                <button type="submit" class="Login_submitBtn__mQdM6 btn btn-primary">
+                  Sign In
+                </button>
+                <div class="mt-3 Login_registerText__BEYvU">
+                  Don’t have an account?<a href="javascript:void(0)" id="registerNow" tabindex="0">Register now</a>
+                </div>
+              </div>
+              <div class="Login_socialBtns__hkZQZ"></div>
+            </form>
+          </div>
+          <div role="tabpanel" aria-hidden="true" class="fade tab-pane">
+            <div>
+              <h2 class="Login_title__Glinj">Create your account</h2>
+              <p class="Login_description__HvUVz">
+                Access <i>InterestingEngineering</i> on any device and receive
+                our weekly newsletter.
+              </p>
+            </div>
+            <form autocomplete="off" method="post" class="" data-ddg-formtype="sign up">
+              <div class="Login_formInner__ruhdZ">
+                <div class="row">
+                  <div class="col-6 form-group">
+                    <label class="form-label" for="nameSurname">Name</label><input type="text" autocomplete="off" name="regname" placeholder="Enter your name" id="regname" class="form-control" data-ddg-testresultelementid="537142" data-manual-scoring="firstName">
+                  </div>
+                  <div class="col-6 form-group">
+                    <label class="form-label" for="nameSurname">Surname</label><input type="text" name="regsurname" placeholder="Enter your surname" id="regsurname" class="form-control" data-ddg-testresultelementid="537143" data-manual-scoring="lastName">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="emailSignUp">Email</label><input type="email" name="regemail" placeholder="Enter your email" id="emailSignUp" class="form-control" title="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: regemail
+section: regname_0_7
+field signature: 4010418338
+form signature: 11418241248038062943
+form signature in host form: 11418241248038062943
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 2
+field renderer id: 9" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: regemail
+section: regname_0_7
+field signature: 4010418338
+form signature: 11418241248038062943
+form signature in host form: 11418241248038062943
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 2
+field renderer id: 9" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="537144" style="
+                      background-size: auto 26px !important;
+                      background-position: right center !important;
+                      background-repeat: no-repeat !important;
+                      background-origin: content-box !important;
+                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+                      transition: background 0s ease 0s !important;
+                    ">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="passwordSignUp">Password</label><input type="password" name="regpassword" placeholder="Enter your password" id="passwordSignUp" class="form-control" data-ddg-testresultelementid="537145" data-manual-scoring="password">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="passwordSignUp2">Retype Password</label><input type="password" name="regpassword2" placeholder="Retype your password" id="passwordSignUp2" class="form-control" data-ddg-testresultelementid="537146" data-manual-scoring="password">
+                </div>
+                <div class="form-group">
+                  <div class="form-css-checkbox Login_checkboxRemember__CfbNC">
+                    <input type="checkbox" class="css-checkbox css-checkbox-sm" id="regrememberCheckbox" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: By creating an account, you agree to our Terms &amp; Conditions and acknowledge our Policies
+parseable name: regrememberCheckbox
+section: regname_0_7
+field signature: 3038820170
+form signature: 11418241248038062943
+form signature in host form: 11418241248038062943
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 2
+field renderer id: 12" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: By creating an account, you agree to our Terms &amp; Conditions and acknowledge our Policies
+parseable name: regrememberCheckbox
+section: regname_0_7
+field signature: 3038820170
+form signature: 11418241248038062943
+form signature in host form: 11418241248038062943
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 2
+field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="537147"><label class="form-label" for="regrememberCheckbox">By creating an account, you agree to our
+                      <a href="/tos">Terms &amp; Conditions</a> and acknowledge
+                      our <a href="/policies">Policies</a></label>
+                  </div>
+                </div>
+                <button type="submit" class="Login_submitBtn__mQdM6 btn btn-primary">
+                  Sign Up
+                </button>
+                <div class="mt-3 Login_registerText__BEYvU">
+                  Already have an account?<a href="javascript:void(0)" id="registerNow" tabindex="0">Log In</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div>
+      <div class="clearfix"></div>
+      <footer class="NewCustomFooter_footer__dtO2m">
+        <div>
+          <div class="NewCustomFooter_flexContainer__jaD4B">
+            <div class="NewCustomFooter_footerMainLinksBlock__hn0Ts">
+              <div class="NewCustomFooter_joinCommunitySocialBlock__gn29q">
+                <div class="NewCustomFooter_joinCommunityBlock__WwcHD">
+                  <div class="NewCustomFooter_joinCommunityTitle__Fzf8P">
+                    Join the community today
+                  </div>
+                  <form method="post" action="https://api.interestingengineering.com/site/newsletter/subscribe" data-ddg-formtype="sign up">
+                    <div class="NewCustomFooter_joinInputGroup__Z2qfE input-group">
+                      <input required="" placeholder="Email Address" name="email" type="email" class="NewCustomFooter_joinCommunityFormInput__xX0yu form-control" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Email Address
+parseable name: email
+section: email_0_14
+field signature: 1029417091
+form signature: 7906133448381067193
+form signature in host form: 7906133448381067193
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 3
+field renderer id: 14" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Email Address
+parseable name: email
+section: email_0_14
+field signature: 1029417091
+form signature: 7906133448381067193
+form signature in host form: 7906133448381067193
+field frame token: C7FF32CFC15A5EE501D4E7D88EA05FE6
+form renderer id: 3
+field renderer id: 14" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="537148" style="
+                          background-size: auto 26px !important;
+                          background-position: right center !important;
+                          background-repeat: no-repeat !important;
+                          background-origin: content-box !important;
+                          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
+                          transition: background 0s ease 0s !important;
+                        "><input type="hidden" name="group_id" value="2"><button type="submit" class="NewCustomFooter_joinCommunityFormSubmitBtn__IfJei btn btn-primary">
+                        Join
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                <div class="NewCustomFooter_followUsBlock__GuZ_A">
+                  <div class="NewCustomFooter_socialSection2__g7lW0">
+                    <div>
+                      <div class="NewCustomFooter_socialSection2Content__HsZLR">
+                        <div class="NewCustomFooter_follow__KMrr_">
+                          Follow us on
+                        </div>
+                        <div class="NewCustomFooter_social2Left__OEbS3">
+                          <div class="NewCustomFooter_social2Icon___sckW">
+                            <a href="https://facebook.com/interestingengineering" rel="noopener noreferrer" target="_blank"><i class="icon-facebook"></i></a>
+                          </div>
+                          <div class="NewCustomFooter_social2Icon___sckW">
+                            <a href="https://instagram.com/interestingengineering" rel="noopener noreferrer" target="_blank"><i class="icon-instagram"></i></a>
+                          </div>
+                          <div class="NewCustomFooter_social2Icon___sckW">
+                            <a href="https://www.youtube.com/c/Interestingengineeringofficial" rel="noopener noreferrer" target="_blank"><i class="icon-youtube"></i></a>
+                          </div>
+                          <div class="NewCustomFooter_social2Icon___sckW">
+                            <a href="https://twitter.com/IntEngineering" rel="noopener noreferrer" target="_blank"><i class="icon-twitter"></i></a>
+                          </div>
+                          <div class="NewCustomFooter_social2Icon___sckW">
+                            <a href="https://www.linkedin.com/company/interestingengineering/" rel="noopener noreferrer" target="_blank"><i class="icon-linkedin"></i></a>
+                          </div>
+                          <div class="NewCustomFooter_social2Icon___sckW">
+                            <a href="https://flipboard.com/@intengineering" rel="noopener noreferrer" target="_blank"><i class="icon-flipboardd"></i></a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="NewCustomFooter_descSection__4UG7i">
+                <div><a href="/about-us">About Us</a></div>
+                <div><a href="/about-us#career">Career</a></div>
+                <div><a href="/contact-us">Contact Us</a></div>
+                <div><a href="/faqs">Faq</a></div>
+                <div><a href="/advertise">Advertise with us</a></div>
+                <div><a href="/newsletter">Newsletter</a></div>
+                <div><a href="javascript:void(0);">Subscription</a></div>
+              </div>
+            </div>
+            <div class="NewCustomFooter_footerRightBlock__5NiYk">
+              <div class="NewCustomFooter_followUsBlock__GuZ_A">
+                <div class="NewCustomFooter_socialSection2__g7lW0">
+                  <div class="NewCustomFooter_socialSection2Content__HsZLR">
+                    <div class="NewCustomFooter_follow__KMrr_">
+                      Follow us on
+                    </div>
+                    <div class="NewCustomFooter_social2Left__OEbS3">
+                      <div class="NewCustomFooter_social2Icon___sckW">
+                        <a href="https://facebook.com/interestingengineering" rel="noopener noreferrer" target="_blank"><i class="icon-facebook"></i></a>
+                      </div>
+                      <div class="NewCustomFooter_social2Icon___sckW">
+                        <a href="https://instagram.com/interestingengineering" rel="noopener noreferrer" target="_blank"><i class="icon-instagram"></i></a>
+                      </div>
+                      <div class="NewCustomFooter_social2Icon___sckW">
+                        <a href="https://www.youtube.com/c/Interestingengineeringofficial" rel="noopener noreferrer" target="_blank"><i class="icon-youtube"></i></a>
+                      </div>
+                      <div class="NewCustomFooter_social2Icon___sckW">
+                        <a href="https://twitter.com/IntEngineering" rel="noopener noreferrer" target="_blank"><i class="icon-twitter"></i></a>
+                      </div>
+                      <div class="NewCustomFooter_social2Icon___sckW">
+                        <a href="https://www.linkedin.com/company/interestingengineering/" rel="noopener noreferrer" target="_blank"><i class="icon-linkedin"></i></a>
+                      </div>
+                      <div class="NewCustomFooter_social2Icon___sckW">
+                        <a href="https://flipboard.com/@intengineering" rel="noopener noreferrer" target="_blank"><i class="icon-flipboardd"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="NewCustomFooter_logoRight__o6DMF">
+                <a href="/"><span style="
+                      box-sizing: border-box;
+                      display: inline-block;
+                      overflow: hidden;
+                      width: initial;
+                      height: initial;
+                      background: none;
+                      opacity: 1;
+                      border: 0;
+                      margin: 0;
+                      padding: 0;
+                      position: relative;
+                      max-width: 100%;
+                    "><span style="
+                        box-sizing: border-box;
+                        display: block;
+                        width: initial;
+                        height: initial;
+                        background: none;
+                        opacity: 1;
+                        border: 0;
+                        margin: 0;
+                        padding: 0;
+                        max-width: 100%;
+                      "><img style="
+                          display: block;
+                          max-width: 100%;
+                          width: initial;
+                          height: initial;
+                          background: none;
+                          opacity: 1;
+                          border: 0;
+                          margin: 0;
+                          padding: 0;
+                        " alt="" aria-hidden="true" src="data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27168%27%20height=%2750%27/%3e"></span><img alt="ie-logo" src="/img/logo.svg" decoding="async" data-nimg="intrinsic" style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        right: 0;
+                        box-sizing: border-box;
+                        padding: 0;
+                        border: none;
+                        margin: auto;
+                        display: block;
+                        width: 0;
+                        height: 0;
+                        min-width: 100%;
+                        max-width: 100%;
+                        min-height: 100%;
+                        max-height: 100%;
+                      " srcset="/img/logo.svg 1x, /img/logo.svg 2x"><noscript><img
+                        alt="ie-logo"
+                        srcset="/img/logo.svg 1x, /img/logo.svg 2x"
+                        src="/img/logo.svg"
+                        decoding="async"
+                        data-nimg="intrinsic"
+                        style="
+                          position: absolute;
+                          top: 0;
+                          left: 0;
+                          bottom: 0;
+                          right: 0;
+                          box-sizing: border-box;
+                          padding: 0;
+                          border: none;
+                          margin: auto;
+                          display: block;
+                          width: 0;
+                          height: 0;
+                          min-width: 100%;
+                          max-width: 100%;
+                          min-height: 100%;
+                          max-height: 100%;
+                        "
+                        loading="lazy" /></noscript></span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="NewCustomFooter_footerBottomBlock__HILG7">
+          <div class="NewCustomFooter_footerBottomContainer__Tmrqg">
+            <div class="NewCustomFooter_footerBottomSection__1X7YY">
+              <div class="NewCustomFooter_footerBottomSectionRight__uLxE7">
+                <div>
+                  <a href="/"><span style="
+                        box-sizing: border-box;
+                        display: inline-block;
+                        overflow: hidden;
+                        width: initial;
+                        height: initial;
+                        background: none;
+                        opacity: 1;
+                        border: 0;
+                        margin: 0;
+                        padding: 0;
+                        position: relative;
+                        max-width: 100%;
+                      "><span style="
+                          box-sizing: border-box;
+                          display: block;
+                          width: initial;
+                          height: initial;
+                          background: none;
+                          opacity: 1;
+                          border: 0;
+                          margin: 0;
+                          padding: 0;
+                          max-width: 100%;
+                        "><img style="
+                            display: block;
+                            max-width: 100%;
+                            width: initial;
+                            height: initial;
+                            background: none;
+                            opacity: 1;
+                            border: 0;
+                            margin: 0;
+                            padding: 0;
+                          " alt="" aria-hidden="true" src="data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27134%27%20height=%2740%27/%3e"></span><img alt="ie-logo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" decoding="async" data-nimg="intrinsic" style="
+                          position: absolute;
+                          top: 0;
+                          left: 0;
+                          bottom: 0;
+                          right: 0;
+                          box-sizing: border-box;
+                          padding: 0;
+                          border: none;
+                          margin: auto;
+                          display: block;
+                          width: 0;
+                          height: 0;
+                          min-width: 100%;
+                          max-width: 100%;
+                          min-height: 100%;
+                          max-height: 100%;
+                        "><noscript><img
+                          alt="ie-logo"
+                          srcset="
+                            /_next/image?url=%2Fimg%2Fie.png&amp;w=256&amp;q=75 1x,
+                            /_next/image?url=%2Fimg%2Fie.png&amp;w=384&amp;q=75 2x
+                          "
+                          src="/_next/image?url=%2Fimg%2Fie.png&amp;w=384&amp;q=75"
+                          decoding="async"
+                          data-nimg="intrinsic"
+                          style="
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            bottom: 0;
+                            right: 0;
+                            box-sizing: border-box;
+                            padding: 0;
+                            border: none;
+                            margin: auto;
+                            display: block;
+                            width: 0;
+                            height: 0;
+                            min-width: 100%;
+                            max-width: 100%;
+                            min-height: 100%;
+                            max-height: 100%;
+                          "
+                          loading="lazy" /></noscript></span></a>
+                </div>
+              </div>
+              <div class="NewCustomFooter_footerBottomSectionLeft__97RXX">
+                <div class="NewCustomFooter_infoSection__wJ_pY">
+                  <ul>
+                    <li><a href="/policies">Policies</a></li>
+                    <li><a href="/tos">Terms of Service</a></li>
+                    <li>
+                      <a href="/donotsell">Do Not Sell My Personal Information</a>
+                    </li>
+                    <li><a href="/sitemap">Site Map</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="NewCustomFooter_copyrightSection__q4qUt">
+              <ul>
+                <li><a href="/">© Copyright 2022</a></li>
+                <li><a href="/">Interesting Engineering, Inc.</a></li>
+                <li><a href="/">All Rights Reserved</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <script id="__NEXT_DATA__" type="application/json">
+    {
+      "props": {
+        "serialUserData": null,
+        "__N_SSP": true,
+        "pageProps": { "isVerified": null }
+      },
+      "page": "/login",
+      "query": {},
+      "buildId": "W36Q5YEuCBGb6LNJncRBD",
+      "assetPrefix": "https://interestingengineering.com",
+      "isFallback": false,
+      "gssp": true,
+      "appGip": true,
+      "scriptLoader": []
+    }
+  </script>
+  <script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vaafb692b2aea4879b33c060e79fe94621666317369993" integrity="sha512-0ahDYl866UMhKuYcW078ScMalXqtFJggm7TmlUtp0UlD4eQk0Ixfnm5ykXKvGJNFjLMoortdseTfsRT8oCfgGA==" data-cf-beacon="{&quot;rayId&quot;:&quot;7a898faf7a80284c&quot;,&quot;token&quot;:&quot;9e8f8db825144d2b9bd57539d3c51810&quot;,&quot;version&quot;:&quot;2023.2.0&quot;,&quot;si&quot;:100}" crossorigin="anonymous"></script>
+  <next-route-announcer><p aria-live="assertive" id="__next-route-announcer__" role="alert" style="
+        border: 0px;
+        clip: rect(0px, 0px, 0px, 0px);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0px;
+        position: absolute;
+        width: 1px;
+        white-space: nowrap;
+        overflow-wrap: normal;
+      "></p></next-route-announcer><iframe scrolling="no" frameborder="0" allowtransparency="true" src="https://platform.twitter.com/widgets/widget_iframe.2b2d73daf636805223fb11d48f3e94f7.html?origin=https%3A%2F%2Finterestingengineering.com" title="Twitter settings iframe" style="display: none"></iframe><iframe id="rufous-sandbox" scrolling="no" frameborder="0" allowtransparency="true" allowfullscreen="true" style="
+      position: absolute;
+      visibility: hidden;
+      display: none;
+      width: 0px;
+      height: 0px;
+      padding: 0px;
+      border: none;
+    " title="Twitter analytics iframe"></iframe>
+

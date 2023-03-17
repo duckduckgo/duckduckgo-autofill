@@ -1,0 +1,220 @@
+<!--
+  https://sso.kuaidi100.com/sso/v2/authorize.do
+  testRunId: 66
+  testResultId: 239162
+-->
+
+  <div class="log-head">
+    <a href="https://www.kuaidi100.com">
+      <img src="https://cdn.kuaidi100.com/images/sso/login_logo_v5.png" alt="">
+    </a>
+    <h1>一个账号，畅享所有服务！</h1>
+  </div>
+  <div class="form-container">
+    <h3 id="title">账号密码登录</h3>
+    <form action="/pcweb/login/accountlogin" method="POST" id="account" data-ddg-formtype="sign in">
+      <input name="directlogin" type="hidden" value="1">
+      <input name="data" type="hidden" value="">
+      <input name="sign" type="hidden" value="">
+      <input name="referer" type="hidden" value="">
+      <input name="force" type="hidden" value="">
+      <input name="identifytype" type="hidden" value="">
+      <input name="isvalid" id="isvalid" type="hidden" value="">
+      <input name="redirectUri" id="redirectUri" type="hidden" value="">
+      <div class="form-ctrl">
+        <input type="text" placeholder="手机号/邮箱/用户名" name="name" id="name" autocomplete="name" value="" title="overall type: HTML_TYPE_NAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: 手机号/邮箱/用户名
+parseable name: name
+section: name_0_9
+field signature: 3489289364
+form signature: 16179956099065919508
+form signature in host form: 16179956099065919508
+field frame token: 928D676016E2AD9DFC63BD8381463A31
+form renderer id: 1
+field renderer id: 9
+autocomplete: name" autofill-information="overall type: HTML_TYPE_NAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: 手机号/邮箱/用户名
+parseable name: name
+section: name_0_9
+field signature: 3489289364
+form signature: 16179956099065919508
+form signature in host form: 16179956099065919508
+field frame token: 928D676016E2AD9DFC63BD8381463A31
+form renderer id: 1
+field renderer id: 9
+autocomplete: name" autofill-prediction="HTML_TYPE_NAME" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="538250">
+      </div>
+      <div class="form-ctrl">
+        <input type="password" placeholder="请输入密码" name="password" id="password" autocomplete="current-password" value="" data-ddg-testresultelementid="538251" data-manual-scoring="password">
+        <a href="/pcweb/view/findpwdpage" id="find">忘记密码？</a>
+        <!--<a href="https://sso.kuaidi100.com/sso/findpwd.jsp" id="find">忘记密码？</a>-->
+      </div>
+      <div class="form-ctrl hidden" id="validcode">
+        <input type="text" placeholder="请输入图片验证码" autocomplete="off" name="validcode" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 请输入图片验证码
+parseable name: validcode
+section: name_0_9
+field signature: 2677825598
+form signature: 16179956099065919508
+form signature in host form: 16179956099065919508
+field frame token: 928D676016E2AD9DFC63BD8381463A31
+form renderer id: 1
+field renderer id: 11
+autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 请输入图片验证码
+parseable name: validcode
+section: name_0_9
+field signature: 2677825598
+form signature: 16179956099065919508
+form signature in host form: 16179956099065919508
+field frame token: 928D676016E2AD9DFC63BD8381463A31
+form renderer id: 1
+field renderer id: 11
+autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="538252">
+        <img height="30" alt="验证码" title="点击刷新验证码">
+      </div>
+    </form>
+    <form action="/pcweb/login/mobilelogin" method="POST" style="display: none" id="phone" data-ddg-formtype="sign in">
+      <input name="directlogin" type="hidden" value="1">
+      <input name="data" type="hidden" value="">
+      <input name="sign" type="hidden" value="">
+      <input name="referer" type="hidden" value="">
+      <input name="force" type="hidden" value="">
+      <input name="identifytype" type="hidden" value="">
+      <input name="redirectUri" id="redirectUri" type="hidden" value="">
+      <div class="form-ctrl">
+        <input type="text" placeholder="请输入手机号" name="name" id="mobile" value="" data-ddg-testresultelementid="538253" data-manual-scoring="phone">
+      </div>
+      <div class="form-ctrl hidden" id="phoneValidcode">
+        <input type="text" placeholder="请输入图片验证码" autocomplete="code" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 请输入图片验证码
+parseable name: 
+section: name_0_19
+field signature: 1318412689
+form signature: 18422028176516833774
+form signature in host form: 18422028176516833774
+field frame token: 928D676016E2AD9DFC63BD8381463A31
+form renderer id: 2
+field renderer id: 20
+autocomplete: code" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 请输入图片验证码
+parseable name: 
+section: name_0_19
+field signature: 1318412689
+form signature: 18422028176516833774
+form signature in host form: 18422028176516833774
+field frame token: 928D676016E2AD9DFC63BD8381463A31
+form renderer id: 2
+field renderer id: 20
+autocomplete: code" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="538254">
+        <img height="30" alt="验证码" title="点击刷新验证码">
+      </div>
+      <div class="form-ctrl">
+        <input type="text" placeholder="请输入短信验证码" name="dpassword" id="dpassword" title="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 请输入短信验证码
+parseable name: dpassword
+section: name_0_19
+field signature: 3665432988
+form signature: 18422028176516833774
+form signature in host form: 18422028176516833774
+field frame token: 928D676016E2AD9DFC63BD8381463A31
+form renderer id: 2
+field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 请输入短信验证码
+parseable name: dpassword
+section: name_0_19
+field signature: 3665432988
+form signature: 18422028176516833774
+form signature in host form: 18422028176516833774
+field frame token: 928D676016E2AD9DFC63BD8381463A31
+form renderer id: 2
+field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="538255">
+        <a id="send">获取手机验证码</a>
+      </div>
+    </form>
+    <form style="display: none" method="POST" id="thirdLogin">
+      <input name="data" type="hidden" value="">
+      <input name="sign" type="hidden" value="">
+    </form>
+    <div id="voice" class="voice" style="display: none">
+      <a>收不到？试试语音验证码</a>
+    </div>
+
+    <!--<div class="text-warn" id="warn" style="display:none" th:text="${errMessage}"></div>-->
+
+    <button class="btn-submit" id="submit" role="account">登录</button>
+
+    <div class="qr-code-tab" id="qrtab">
+      <span role="app">快递100</span>
+      <span role="mini">微信</span>
+    </div>
+    <!-- app code -->
+    <div class="code-wrap" style="display: none" id="code">
+      <div class="qr-code">
+        <img>
+        <div class="img-mask">
+          <span id="refreshCode">刷新</span>
+          <p id="codeErr">二维码失效，请刷新</p>
+        </div>
+      </div>
+      <div class="code-txt">打开快递100APP，扫一扫登录</div>
+    </div>
+    <!-- miniprogram code -->
+    <div class="code-wrap" style="display: none" id="minicode">
+      <div class="qr-code">
+        <img>
+        <div class="img-mask">
+          <span id="refreshMiniCode">刷新</span>
+          <p id="minicodeErr">二维码失效，请刷新</p>
+        </div>
+      </div>
+      <div class="code-txt">请使用微信扫二维码登录</div>
+    </div>
+    <div class="type" id="type">
+      <a class="bd" role="phone">手机短信登录</a>
+      <a role="account" style="display: none">账号密码登录</a>
+      <a role="code">扫码登录</a>
+      <a role="reg" class="fr" id="goReg">立即注册</a>
+    </div>
+    <div class="divide">
+      <span>快捷登录</span>
+    </div>
+    <div class="oauth" id="oauth">
+      <div class="fl">
+        <a title="使用QQ登录" class="qq" role="qq" id="qq"></a>
+        <!-- <a title="使用微信登录" class="wx" role="weixin" id="wx"></a> -->
+        <a title="使用微信登录" class="wx" role="miniprogram" id="miniprogram"></a>
+      </div>
+      <div class="fr" role="buyer">
+        卖家用户：
+        <a href="https://b.kuaidi100.com/open/mai/quickLogin.do?type=JINGDONG" class="jd" title="使用京东账号登录"></a>
+        <a href="https://b.kuaidi100.com/open/mai/quickLogin.do?type=TAOBAO" class="tb" title="使用淘宝账号登录"></a>
+        <a href="https://b.kuaidi100.com/open/mai/quickLogin.do?type=PINDUODUO" class="pdd" title="使用拼多多账号登录"></a>
+      </div>
+    </div>
+  </div>
+  <script src="https://hm.baidu.com/hm.js?22ea01af58ba2be0fec7c11b25e88e6c"></script>
+  <script src="https://cdn.kuaidi100.com/js/util/jquery-1.12.1.min.js"></script>
+  <script src="https://cdn.kuaidi100.com/js/util/jquery-migrate-1.4.1.min.js"></script>
+  <script src="https://cdn.kuaidi100.com/js/share/base_v4.js?version=201802011630"></script>
+  <script src="https://cdn.kuaidi100.com/js/share/count.js?version=201707271620"></script>
+
+  <script src="https://cdn.kuaidi100.com/js/user/login_new.js?version=202207121517"></script>
+  <!--<script th:src="@{~/static/js/user/login_new.js}"></script>-->
+
