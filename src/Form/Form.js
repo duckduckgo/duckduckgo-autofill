@@ -390,12 +390,18 @@ class Form {
                     })
                 } else {
                     removeInlineStyles(e.target, {'cursor': 'pointer'})
-                    addInlineStyles(e.target, { ...onMouseLeave })
+                    // Only overwrite active icon styles if tooltip is closed
+                    if (!this.device.isTooltipActive()) {
+                        addInlineStyles(e.target, { ...onMouseLeave })
+                    }
                 }
             })
             this.addListener(input, 'mouseleave', (e) => {
                 removeInlineStyles(e.target, {'cursor': 'pointer'})
-                addInlineStyles(e.target, { ...onMouseLeave })
+                // Only overwrite active icon styles if tooltip is closed
+                if (!this.device.isTooltipActive()) {
+                    addInlineStyles(e.target, { ...onMouseLeave })
+                }
             })
         }
 
@@ -462,6 +468,9 @@ class Form {
 
                 this.touched.add(input)
                 this.device.attachTooltip(this, input, click)
+
+                const activeStyles = getIconStylesAlternate(input, this)
+                addInlineStyles(input, activeStyles)
             }
         }
 

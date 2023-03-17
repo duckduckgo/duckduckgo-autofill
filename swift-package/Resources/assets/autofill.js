@@ -6417,17 +6417,23 @@ class Form {
         } else {
           (0, _autofillUtils.removeInlineStyles)(e.target, {
             'cursor': 'pointer'
-          });
-          (0, _autofillUtils.addInlineStyles)(e.target, { ...onMouseLeave
-          });
+          }); // Only overwrite active icon styles if tooltip is closed
+
+          if (!this.device.isTooltipActive()) {
+            (0, _autofillUtils.addInlineStyles)(e.target, { ...onMouseLeave
+            });
+          }
         }
       });
       this.addListener(input, 'mouseleave', e => {
         (0, _autofillUtils.removeInlineStyles)(e.target, {
           'cursor': 'pointer'
-        });
-        (0, _autofillUtils.addInlineStyles)(e.target, { ...onMouseLeave
-        });
+        }); // Only overwrite active icon styles if tooltip is closed
+
+        if (!this.device.isTooltipActive()) {
+          (0, _autofillUtils.addInlineStyles)(e.target, { ...onMouseLeave
+          });
+        }
       });
     }
 
@@ -6488,6 +6494,8 @@ class Form {
 
         this.touched.add(input);
         this.device.attachTooltip(this, input, click);
+        const activeStyles = (0, _inputStyles.getIconStylesAlternate)(input, this);
+        (0, _autofillUtils.addInlineStyles)(input, activeStyles);
       }
     };
 
@@ -11425,6 +11433,8 @@ exports.defaultOptions = exports.default = exports.HTMLTooltip = void 0;
 
 var _autofillUtils = require("../autofill-utils.js");
 
+var _inputStyles = require("../Form/inputStyles.js");
+
 var _matching = require("../Form/matching.js");
 
 var _styles = require("./styles/styles.js");
@@ -11513,6 +11523,7 @@ class HTMLTooltip {
 
     (0, _autofillUtils.addInlineStyles)(this.host, forcedVisibilityStyles);
     this.count = 0;
+    this.device = null;
     /**
      * @type {{
      *   'tooltip': TransformRuleObj,
@@ -11537,6 +11548,17 @@ class HTMLTooltip {
   }
 
   remove() {
+    var _this$device;
+
+    // Reset input icon styles back to initial
+    const form = (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.activeForm;
+    const input = form === null || form === void 0 ? void 0 : form.activeInput;
+
+    if (input) {
+      const initialStyles = (0, _inputStyles.getIconStylesBase)(input, form);
+      (0, _autofillUtils.addInlineStyles)(input, initialStyles);
+    }
+
     window.removeEventListener('scroll', this, {
       capture: true
     });
@@ -11767,7 +11789,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching.js":33,"../autofill-utils.js":53,"./styles/styles.js":52}],47:[function(require,module,exports){
+},{"../Form/inputStyles.js":28,"../Form/matching.js":33,"../autofill-utils.js":53,"./styles/styles.js":52}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
