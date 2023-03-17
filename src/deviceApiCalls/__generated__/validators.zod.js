@@ -8,6 +8,8 @@ export const sendJSPixelParamsSchema = z.union([z.object({
             fieldType: z.string().optional()
         }).optional()
     }), z.object({
+        pixelName: z.literal("autofill_show")
+    }), z.object({
         pixelName: z.literal("autofill_personal_address")
     }), z.object({
         pixelName: z.literal("autofill_private_address")
