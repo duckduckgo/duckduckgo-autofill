@@ -6547,15 +6547,13 @@ class Form {
     this.isAutofilling = false; // After autofill we check if form values match the data provided…
 
     const formValues = this.getValues();
-    const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => {
-      var _formValues$dataType;
-
-      return ((_formValues$dataType = formValues[dataType]) === null || _formValues$dataType === void 0 ? void 0 : _formValues$dataType[subtype]) === data[subtype];
-    });
+    const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => formValues[dataType][subtype] === data[subtype]);
 
     if (areAllFormValuesKnown) {
       // …if we know all the values do not prompt to store data
-      this.shouldPromptToStoreData = false;
+      this.shouldPromptToStoreData = false; // reset this to its initial value
+
+      this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
     } else {
       // …otherwise we will prompt and do not want to autosubmit because the experience is jarring
       this.shouldAutoSubmit = false;
