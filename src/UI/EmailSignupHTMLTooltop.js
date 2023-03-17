@@ -27,6 +27,7 @@ ${this.options.css}
             </button>
         </div>
     </div>
+    <div class="tooltip--email__caret"></div>
 </div>`
 
         this.tooltip = this.shadow.querySelector('.tooltip')

@@ -1,6 +1,7 @@
 import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
 import {mockedCalls} from './harness.js'
+import {clickOnIcon} from './utils.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
 
@@ -23,6 +24,29 @@ export function incontextSignupPage (page) {
         async closeTooltip () {
             const dismissTooltipButton = await page.locator(`[aria-label=Close]`)
             await dismissTooltipButton.click({timeout: 500})
+        }
+    }
+}
+
+export function incontextSignupPageWithinIframe (page, server) {
+    return {
+        async navigate (domain) {
+            const pageName = constants.pages['iframeContainer']
+            if (domain) {
+                const pagePath = `integration-test/pages/${pageName}`
+                await page.goto(new URL(pagePath, domain).href)
+            } else {
+                await page.goto(server.urlForPath(pageName))
+            }
+        },
+        async clickDirectlyOnDax () {
+            const input = await page.frameLocator('iframe').locator('input#email')
+            await clickOnIcon(input)
+        },
+        async assertTooltipWithinFrame () {
+            const tooltip = await page.frameLocator('iframe').locator('.tooltip--email')
+            await expect(tooltip).toBeVisible()
+            await expect(tooltip).toBeInViewport({ ratio: 1 })
         }
     }
 }
@@ -603,9 +627,7 @@ export function emailAutofillPage (page, server) {
         },
         async clickDirectlyOnDax () {
             const input = page.locator(selectors.identity)
-            const box = await input.boundingBox()
-            if (!box) throw new Error('unreachable')
-            await input.click({position: {x: box.width - (box.height / 2), y: box.height / 2}})
+            await clickOnIcon(input)
         },
         async assertInputHasFocus () {
             const input = page.locator(selectors.identity)

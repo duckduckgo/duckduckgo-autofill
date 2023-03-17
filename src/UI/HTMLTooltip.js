@@ -7,21 +7,31 @@ import { CSS_STYLES } from './styles/styles.js'
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
+ * @property {(top: number, left: number) => string} [caretPositionClass]
  * @property {(details: {height: number, width: number}) => void} [setSize] - if this is set, it will be called initially once + every times the size changes
  * @property {() => void} remove
  * @property {string} css
  * @property {boolean} checkVisibility
+ * @property {boolean} hasCaret
  */
 
-/** @type {import('./HTMLTooltip.js').HTMLTooltipOptions} */
+/**
+ * @typedef {object}  TransformRuleObj
+ * @property {HTMLTooltipOptions['caretPositionClass']} getRuleString
+ * @property {number | null} index
+ */
+
+/** @type {HTMLTooltipOptions} */
 export const defaultOptions = {
     wrapperClass: '',
-    tooltipPositionClass: (top, left) => `.wrapper {transform: translate(${left}px, ${top}px);}`,
+    tooltipPositionClass: (top, left) => `.tooltip {transform: translate(${left}px, ${top}px);}`,
+    caretPositionClass: (top, left) => `.tooltip--email__caret {transform: translate(${left}px, ${top}px);}`,
     css: `<style>${CSS_STYLES}</style>`,
     setSize: undefined,
     remove: () => { /** noop */ },
     testMode: false,
-    checkVisibility: true
+    checkVisibility: true,
+    hasCaret: false
 }
 
 export class HTMLTooltip {
@@ -53,6 +63,22 @@ export class HTMLTooltip {
         // @ts-ignore how to narrow this.host to HTMLElement?
         addInlineStyles(this.host, forcedVisibilityStyles)
         this.count = 0
+        /**
+         * @type {{
+         *   'tooltip': TransformRuleObj,
+         *   'caret': TransformRuleObj
+         * }}
+         */
+        this.transformRules = {
+            caret: {
+                getRuleString: this.options.caretPositionClass,
+                index: null
+            },
+            tooltip: {
+                getRuleString: this.options.tooltipPositionClass,
+                index: null
+            }
+        }
     }
     append () {
         document.body.appendChild(this.host)
@@ -93,13 +119,26 @@ export class HTMLTooltip {
             const {left, bottom} = this.getPosition()
 
             if (left !== this.left || bottom !== this.top) {
-                this.updatePosition({left, top: bottom})
+                const coords = {left, top: bottom}
+                this.updatePosition('tooltip', coords)
+                if (this.options.hasCaret) {
+                    this.updatePosition('caret', coords)
+                }
             }
 
             this.animationFrame = null
         })
     }
-    updatePosition ({left, top}) {
+
+    /**
+     *
+     * @param {'tooltip' | 'caret'} element
+     * @param {{
+     *     left: number,
+     *     top: number
+     * }} coords
+     */
+    updatePosition (element, {left, top}) {
         const shadow = this.shadow
         // If the stylesheet is not loaded wait for load (Chrome bug)
         if (!shadow.styleSheets.length) {
@@ -110,17 +149,41 @@ export class HTMLTooltip {
         this.left = left
         this.top = top
 
-        if (this.transformRuleIndex && shadow.styleSheets[0].rules[this.transformRuleIndex]) {
-            // If we have already set the rule, remove it…
-            shadow.styleSheets[0].deleteRule(this.transformRuleIndex)
+        const ruleObj = this.transformRules[element]
+
+        if (ruleObj.index) {
+            if (shadow.styleSheets[0].rules[ruleObj.index]) {
+                // If we have already set the rule, remove it…
+                shadow.styleSheets[0].deleteRule(ruleObj.index)
+            }
         } else {
             // …otherwise, set the index as the very last rule
-            this.transformRuleIndex = shadow.styleSheets[0].rules.length
+            ruleObj.index = shadow.styleSheets[0].rules.length
         }
 
-        let cssRule = this.options.tooltipPositionClass?.(top, left)
+        const cssRule = ruleObj.getRuleString?.(top, left)
         if (typeof cssRule === 'string') {
-            shadow.styleSheets[0].insertRule(cssRule, this.transformRuleIndex)
+            shadow.styleSheets[0].insertRule(cssRule, ruleObj.index)
+        }
+
+        if (this.options.hasCaret) {
+            const tooltipBoundingBox = this.tooltip.getBoundingClientRect()
+            // If overflowing from the left, try centering it in the window
+            if (tooltipBoundingBox.left < 0) {
+                const leftPosWhenCentered = (window.innerWidth - tooltipBoundingBox.width) / 2
+                const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + leftPosWhenCentered
+
+                this.updatePosition(element, {left: overriddenLeftPosition, top})
+            }
+
+            // If overflowing from the right, move it slightly to the left
+            if (tooltipBoundingBox.right > window.innerWidth) {
+                const rightOverflow = tooltipBoundingBox.right - window.innerWidth
+                const extraPadding = 5
+                const overriddenLeftPosition = left - rightOverflow - extraPadding
+
+                this.updatePosition(element, {left: overriddenLeftPosition, top})
+            }
         }
     }
     ensureIsLastInDOM () {

@@ -31,7 +31,8 @@ class ExtensionInterface extends InterfacePrototype {
         const htmlTooltipOptions = {
             ...defaultOptions,
             css: `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossOrigin="anonymous">`,
-            testMode: this.isTestMode()
+            testMode: this.isTestMode(),
+            hasCaret: true
         }
         const tooltipKinds = {
             [TOOLTIP_TYPES.EmailProtection]: 'legacy',
