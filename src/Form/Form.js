@@ -11,7 +11,7 @@ import {
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
-import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
+import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js'
 import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
 import {
@@ -354,8 +354,14 @@ class Form {
     }
 
     addAutofillStyles (input) {
-        const styles = getIconStylesBase(input, this)
-        addInlineStyles(input, styles)
+        const initialStyles = getIconStylesBase(input, this)
+        const activeStyles = getIconStylesAlternate(input, this)
+
+        addInlineStyles(input, initialStyles)
+        return {
+            onMouseMove: activeStyles,
+            onMouseLeave: initialStyles
+        }
     }
 
     /**
@@ -373,18 +379,23 @@ class Form {
 
         const hasIcon = !!config.getIconBase(input, this)
         if (hasIcon) {
-            this.addAutofillStyles(input)
+            const { onMouseMove, onMouseLeave } = this.addAutofillStyles(input)
             this.addListener(input, 'mousemove', (e) => {
                 if (wasAutofilledByChrome(input)) return
 
                 if (isEventWithinDax(e, e.target)) {
-                    addInlineStyles(e.target, {'cursor': 'pointer'})
+                    addInlineStyles(e.target, {
+                        'cursor': 'pointer',
+                        ...onMouseMove
+                    })
                 } else {
                     removeInlineStyles(e.target, {'cursor': 'pointer'})
+                    addInlineStyles(e.target, { ...onMouseLeave })
                 }
             })
             this.addListener(input, 'mouseleave', (e) => {
                 removeInlineStyles(e.target, {'cursor': 'pointer'})
+                addInlineStyles(e.target, { ...onMouseLeave })
             })
         }
 

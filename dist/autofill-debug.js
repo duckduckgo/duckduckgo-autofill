@@ -10055,8 +10055,13 @@ class Form {
   }
 
   addAutofillStyles(input) {
-    const styles = (0, _inputStyles.getIconStylesBase)(input, this);
-    (0, _autofillUtils.addInlineStyles)(input, styles);
+    const initialStyles = (0, _inputStyles.getIconStylesBase)(input, this);
+    const activeStyles = (0, _inputStyles.getIconStylesAlternate)(input, this);
+    (0, _autofillUtils.addInlineStyles)(input, initialStyles);
+    return {
+      onMouseMove: activeStyles,
+      onMouseLeave: initialStyles
+    };
   }
   /**
    * Decorate here means adding listeners and an optional icon
@@ -10073,23 +10078,31 @@ class Form {
     const hasIcon = !!config.getIconBase(input, this);
 
     if (hasIcon) {
-      this.addAutofillStyles(input);
+      const {
+        onMouseMove,
+        onMouseLeave
+      } = this.addAutofillStyles(input);
       this.addListener(input, 'mousemove', e => {
         if ((0, _autofillUtils.wasAutofilledByChrome)(input)) return;
 
         if ((0, _autofillUtils.isEventWithinDax)(e, e.target)) {
           (0, _autofillUtils.addInlineStyles)(e.target, {
-            'cursor': 'pointer'
+            'cursor': 'pointer',
+            ...onMouseMove
           });
         } else {
           (0, _autofillUtils.removeInlineStyles)(e.target, {
             'cursor': 'pointer'
+          });
+          (0, _autofillUtils.addInlineStyles)(e.target, { ...onMouseLeave
           });
         }
       });
       this.addListener(input, 'mouseleave', e => {
         (0, _autofillUtils.removeInlineStyles)(e.target, {
           'cursor': 'pointer'
+        });
+        (0, _autofillUtils.addInlineStyles)(e.target, { ...onMouseLeave
         });
       });
     }
@@ -11514,7 +11527,7 @@ exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getIconStylesBase = exports.getIconStylesAutofilled = void 0;
+exports.getIconStylesBase = exports.getIconStylesAutofilled = exports.getIconStylesAlternate = void 0;
 
 var _inputTypeConfig = require("./inputTypeConfig.js");
 
@@ -11522,7 +11535,7 @@ var _inputTypeConfig = require("./inputTypeConfig.js");
  * Returns the css-ready base64 encoding of the icon for the given input
  * @param {HTMLInputElement} input
  * @param {import("./Form").Form} form
- * @param {'base' | 'filled'} type
+ * @param {'base' | 'filled' | 'alternate'} type
  * @return {string}
  */
 const getIcon = function (input, form) {
@@ -11535,6 +11548,10 @@ const getIcon = function (input, form) {
 
   if (type === 'filled') {
     return config.getIconFilled(input, form);
+  }
+
+  if (type === 'alternate') {
+    return config.getIconAlternate(input, form);
   }
 
   return '';
@@ -11570,7 +11587,7 @@ const getIconStylesBase = (input, form) => {
   return getBasicStyles(input, icon);
 };
 /**
- * Get inline styles for the injected icon, autofilled state
+ * Get inline styles for the injected icon, alternate state
  * @param {HTMLInputElement} input
  * @param {import("./Form").Form} form
  * @return {Object<string, string>}
@@ -11578,6 +11595,23 @@ const getIconStylesBase = (input, form) => {
 
 
 exports.getIconStylesBase = getIconStylesBase;
+
+const getIconStylesAlternate = (input, form) => {
+  const icon = getIcon(input, form, 'alternate');
+  if (!icon) return {};
+  return { ...getBasicStyles(input, icon),
+    'transition': 'background 0.5s'
+  };
+};
+/**
+ * Get inline styles for the injected icon, autofilled state
+ * @param {HTMLInputElement} input
+ * @param {import("./Form").Form} form
+ * @return {Object<string, string>}
+ */
+
+
+exports.getIconStylesAlternate = getIconStylesAlternate;
 
 const getIconStylesAutofilled = (input, form) => {
   const icon = getIcon(input, form, 'filled');
@@ -11648,7 +11682,42 @@ const getIdentitiesIcon = (input, _ref) => {
   if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
     if (isDDGApp || isFirefox) {
       return _logoSvg.daxBase64;
-    } else if (device.globalConfig.isExtension) {
+    } else if (isExtension) {
+      return chrome.runtime.getURL('img/logo-small.svg');
+    }
+  }
+
+  return '';
+};
+/**
+ * Get the alternate icon for the identities (currently only Dax for emails)
+ * @param {HTMLInputElement} input
+ * @param {import("./Form").Form} form
+ * @return {string}
+ */
+
+
+const getIdentitiesAlternateIcon = (input, _ref2) => {
+  var _device$inContextSign2;
+
+  let {
+    device
+  } = _ref2;
+  if (!canBeInteractedWith(input)) return ''; // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+
+  const {
+    isDDGApp,
+    isFirefox,
+    isExtension
+  } = device.globalConfig;
+  const subtype = (0, _matching.getInputSubtype)(input);
+  const isIncontext = subtype === 'emailAddress' && ((_device$inContextSign2 = device.inContextSignup) === null || _device$inContextSign2 === void 0 ? void 0 : _device$inContextSign2.isAvailable());
+  const isEmailProtection = subtype === 'emailAddress' && device.isDeviceSignedIn();
+
+  if (isIncontext || isEmailProtection) {
+    if (isDDGApp || isFirefox) {
+      return _logoSvg.daxBase64;
+    } else if (isExtension) {
       return chrome.runtime.getURL('img/logo-small.svg');
     }
   }
@@ -11690,10 +11759,10 @@ const inputTypeConfig = {
   /** @type {CredentialsInputTypeConfig} */
   credentials: {
     type: 'credentials',
-    getIconBase: (input, _ref2) => {
+    getIconBase: (input, _ref3) => {
       let {
         device
-      } = _ref2;
+      } = _ref3;
       if (!canBeInteractedWith(input)) return '';
 
       if (device.settings.featureToggles.inlineIcon_credentials) {
@@ -11702,10 +11771,10 @@ const inputTypeConfig = {
 
       return '';
     },
-    getIconFilled: (_input, _ref3) => {
+    getIconFilled: (_input, _ref4) => {
       let {
         device
-      } = _ref3;
+      } = _ref4;
 
       if (device.settings.featureToggles.inlineIcon_credentials) {
         return ddgPasswordIcons.ddgPasswordIconFilled;
@@ -11713,12 +11782,13 @@ const inputTypeConfig = {
 
       return '';
     },
-    shouldDecorate: async (input, _ref4) => {
+    getIconAlternate: () => '',
+    shouldDecorate: async (input, _ref5) => {
       let {
         isLogin,
         isHybrid,
         device
-      } = _ref4;
+      } = _ref5;
 
       // if we are on a 'login' page, check if we have data to autofill the field
       if (isLogin || isHybrid) {
@@ -11745,10 +11815,11 @@ const inputTypeConfig = {
     type: 'creditCards',
     getIconBase: () => '',
     getIconFilled: () => '',
-    shouldDecorate: async (input, _ref5) => {
+    getIconAlternate: () => '',
+    shouldDecorate: async (input, _ref6) => {
       let {
         device
-      } = _ref5;
+      } = _ref6;
       return canBeAutofilled(input, device);
     },
     dataType: 'CreditCards',
@@ -11760,10 +11831,11 @@ const inputTypeConfig = {
     type: 'identities',
     getIconBase: getIdentitiesIcon,
     getIconFilled: getIdentitiesIcon,
-    shouldDecorate: async (input, _ref6) => {
+    getIconAlternate: getIdentitiesAlternateIcon,
+    shouldDecorate: async (input, _ref7) => {
       let {
         device
-      } = _ref6;
+      } = _ref7;
       return canBeAutofilled(input, device);
     },
     dataType: 'Identities',
@@ -11775,6 +11847,7 @@ const inputTypeConfig = {
     type: 'unknown',
     getIconBase: () => '',
     getIconFilled: () => '',
+    getIconAlternate: () => '',
     shouldDecorate: async () => false,
     dataType: '',
     tooltipItem: _data => {

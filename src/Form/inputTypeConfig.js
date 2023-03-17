@@ -30,7 +30,33 @@ const getIdentitiesIcon = (input, {device}) => {
     if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
         if (isDDGApp || isFirefox) {
             return daxBase64
-        } else if (device.globalConfig.isExtension) {
+        } else if (isExtension) {
+            return chrome.runtime.getURL('img/logo-small.svg')
+        }
+    }
+
+    return ''
+}
+
+/**
+ * Get the alternate icon for the identities (currently only Dax for emails)
+ * @param {HTMLInputElement} input
+ * @param {import("./Form").Form} form
+ * @return {string}
+ */
+const getIdentitiesAlternateIcon = (input, {device}) => {
+    if (!canBeInteractedWith(input)) return ''
+
+    // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+    const { isDDGApp, isFirefox, isExtension } = device.globalConfig
+    const subtype = getInputSubtype(input)
+
+    const isIncontext = subtype === 'emailAddress' && device.inContextSignup?.isAvailable()
+    const isEmailProtection = subtype === 'emailAddress' && device.isDeviceSignedIn()
+    if (isIncontext || isEmailProtection) {
+        if (isDDGApp || isFirefox) {
+            return daxBase64
+        } else if (isExtension) {
             return chrome.runtime.getURL('img/logo-small.svg')
         }
     }
@@ -82,6 +108,7 @@ const inputTypeConfig = {
             }
             return ''
         },
+        getIconAlternate: () => '',
         shouldDecorate: async (input, {isLogin, isHybrid, device}) => {
             // if we are on a 'login' page, check if we have data to autofill the field
             if (isLogin || isHybrid) {
@@ -106,6 +133,7 @@ const inputTypeConfig = {
         type: 'creditCards',
         getIconBase: () => '',
         getIconFilled: () => '',
+        getIconAlternate: () => '',
         shouldDecorate: async (input, {device}) => {
             return canBeAutofilled(input, device)
         },
@@ -117,6 +145,7 @@ const inputTypeConfig = {
         type: 'identities',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
+        getIconAlternate: getIdentitiesAlternateIcon,
         shouldDecorate: async (input, {device}) => {
             return canBeAutofilled(input, device)
         },
@@ -128,6 +157,7 @@ const inputTypeConfig = {
         type: 'unknown',
         getIconBase: () => '',
         getIconFilled: () => '',
+        getIconAlternate: () => '',
         shouldDecorate: async () => false,
         dataType: '',
         tooltipItem: (_data) => {
