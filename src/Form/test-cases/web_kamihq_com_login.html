@@ -145,36 +145,14 @@ form renderer id: 4
 field renderer id: 260" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.fullName" data-ddg-testresultelementid="542268">
                       </div>
                       <div class="row ng-hide" ng-show="show_custom_login || we_are !== 'logging_in'">
-                        <input type="email" ng-model-options="{ debounce: 500 }" ng-change="handle_email_change()" autofocus-upon-loading="" class="toolbarField ng-pristine ng-untouched ng-valid ng-empty ng-valid-email" placeholder="email" ng-model="userEntry.email" ng-class="{yellowBorder: suggestions}" title="overall type: EMAIL_ADDRESS
-server type: NO_SERVER_DATA
-heuristic type: EMAIL_ADDRESS
-label: email
-parseable name: 
-section: _0_260
-field signature: 2964261712
-form signature: 13256721218335979040
-form signature in host form: 13256721218335979040
-field frame token: 44917F5015D751CBDADB9AA039B612CE
-form renderer id: 4
-field renderer id: 261" autofill-information="overall type: EMAIL_ADDRESS
-server type: NO_SERVER_DATA
-heuristic type: EMAIL_ADDRESS
-label: email
-parseable name: 
-section: _0_260
-field signature: 2964261712
-form signature: 13256721218335979040
-form signature in host form: 13256721218335979040
-field frame token: 44917F5015D751CBDADB9AA039B612CE
-form renderer id: 4
-field renderer id: 261" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="542269" style="
+                        <input type="email" ng-model-options="{ debounce: 500 }" ng-change="handle_email_change()" autofocus-upon-loading="" class="toolbarField ng-pristine ng-untouched ng-valid ng-empty ng-valid-email" placeholder="email" ng-model="userEntry.email" ng-class="{yellowBorder: suggestions}" data-ddg-autofill="true" data-ddg-testresultelementid="542269" style="
                             background-size: auto 26px !important;
                             background-position: right center !important;
                             background-repeat: no-repeat !important;
                             background-origin: content-box !important;
                             background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
                             transition: background 0s ease 0s !important;
-                          ">
+                          " data-manual-scoring="emailAddress">
                       </div>
                       <div class="row ng-hide" ng-show="show_custom_login || we_are !== 'logging_in'">
                         <input type="password" autocomplete="off" class="toolbarField ng-pristine ng-untouched ng-valid ng-empty" placeholder="password" ng-model="userEntry.password" title="overall type: UNKNOWN_TYPE
@@ -2657,29 +2635,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
           </ul>
           <div class="fields" spellcheck="false" data-ddg-formtype="sign in">
             <input class="kami-input ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Name *" ng-model="name" ng-hide="ask_for_email_only" data-ddg-testresultelementid="542300" data-manual-scoring="fullName">
-            <input class="kami-input ng-pristine ng-untouched ng-valid ng-empty ng-valid-email" type="email" placeholder="Email *" ng-model="email" title="overall type: EMAIL_ADDRESS
-server type: NO_SERVER_DATA
-heuristic type: EMAIL_ADDRESS
-label: Email *
-parseable name: 
-section: _0_125
-field signature: 2964261712
-form signature: 16888627925778322468
-form signature in host form: 16888627925778322468
-field frame token: 44917F5015D751CBDADB9AA039B612CE
-form renderer id: 0
-field renderer id: 115" autofill-information="overall type: EMAIL_ADDRESS
-server type: NO_SERVER_DATA
-heuristic type: EMAIL_ADDRESS
-label: Email *
-parseable name: 
-section: _0_125
-field signature: 2964261712
-form signature: 16888627925778322468
-form signature in host form: 16888627925778322468
-field frame token: 44917F5015D751CBDADB9AA039B612CE
-form renderer id: 0
-field renderer id: 115" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="542301">
+            <input class="kami-input ng-pristine ng-untouched ng-valid ng-empty ng-valid-email" type="email" placeholder="Email *" ng-model="email" data-ddg-testresultelementid="542301" data-manual-scoring="username">
           </div>
           <div class="button-row">
             <button class="button primary" ng-disabled="purchase-disabled" ng-click="change()">
