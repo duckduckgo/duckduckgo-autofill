@@ -201,6 +201,14 @@ class Form {
         this.addAutofillStyles(input)
     }
 
+    resetIconStylesToInitial () {
+        const input = this.activeInput
+        if (input) {
+            const initialStyles = getIconStylesBase(input, this)
+            addInlineStyles(input, initialStyles)
+        }
+    }
+
     removeAllHighlights (e, dataType) {
         // This ensures we are not removing the highlight ourselves when autofilling more than once
         if (e && !e.isTrusted) return

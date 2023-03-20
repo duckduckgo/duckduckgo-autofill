@@ -1,5 +1,4 @@
 import { safeExecute, addInlineStyles } from '../autofill-utils.js'
-import { getIconStylesBase } from '../Form/inputStyles.js'
 import { getSubtypeFromType } from '../Form/matching.js'
 import { CSS_STYLES } from './styles/styles.js'
 
@@ -86,14 +85,7 @@ export class HTMLTooltip {
         document.body.appendChild(this.host)
     }
     remove () {
-        // Reset input icon styles back to initial
-        const form = this.device?.activeForm
-        const input = form?.activeInput
-        if (input) {
-            const initialStyles = getIconStylesBase(input, form)
-            addInlineStyles(input, initialStyles)
-        }
-
+        this.device?.activeForm.resetIconStylesToInitial()
         window.removeEventListener('scroll', this, {capture: true})
         this.resObs.disconnect()
         this.mutObs.disconnect()

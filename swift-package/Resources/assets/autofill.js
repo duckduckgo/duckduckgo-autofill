@@ -6213,6 +6213,15 @@ class Form {
     this.addAutofillStyles(input);
   }
 
+  resetIconStylesToInitial() {
+    const input = this.activeInput;
+
+    if (input) {
+      const initialStyles = (0, _inputStyles.getIconStylesBase)(input, this);
+      (0, _autofillUtils.addInlineStyles)(input, initialStyles);
+    }
+  }
+
   removeAllHighlights(e, dataType) {
     // This ensures we are not removing the highlight ourselves when autofilling more than once
     if (e && !e.isTrusted) return; // If the user has changed the value, we prompt to update the stored creds
@@ -11433,8 +11442,6 @@ exports.defaultOptions = exports.default = exports.HTMLTooltip = void 0;
 
 var _autofillUtils = require("../autofill-utils.js");
 
-var _inputStyles = require("../Form/inputStyles.js");
-
 var _matching = require("../Form/matching.js");
 
 var _styles = require("./styles/styles.js");
@@ -11550,15 +11557,7 @@ class HTMLTooltip {
   remove() {
     var _this$device;
 
-    // Reset input icon styles back to initial
-    const form = (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.activeForm;
-    const input = form === null || form === void 0 ? void 0 : form.activeInput;
-
-    if (input) {
-      const initialStyles = (0, _inputStyles.getIconStylesBase)(input, form);
-      (0, _autofillUtils.addInlineStyles)(input, initialStyles);
-    }
-
+    (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.activeForm.resetIconStylesToInitial();
     window.removeEventListener('scroll', this, {
       capture: true
     });
@@ -11789,7 +11788,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/inputStyles.js":28,"../Form/matching.js":33,"../autofill-utils.js":53,"./styles/styles.js":52}],47:[function(require,module,exports){
+},{"../Form/matching.js":33,"../autofill-utils.js":53,"./styles/styles.js":52}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
