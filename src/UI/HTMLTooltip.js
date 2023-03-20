@@ -63,6 +63,7 @@ export class HTMLTooltip {
         // @ts-ignore how to narrow this.host to HTMLElement?
         addInlineStyles(this.host, forcedVisibilityStyles)
         this.count = 0
+        this.device = null
         /**
          * @type {{
          *   'tooltip': TransformRuleObj,
@@ -84,6 +85,7 @@ export class HTMLTooltip {
         document.body.appendChild(this.host)
     }
     remove () {
+        this.device?.activeForm.resetIconStylesToInitial()
         window.removeEventListener('scroll', this, {capture: true})
         this.resObs.disconnect()
         this.mutObs.disconnect()

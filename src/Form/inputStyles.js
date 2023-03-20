@@ -4,7 +4,7 @@ import { getInputConfig } from './inputTypeConfig.js'
  * Returns the css-ready base64 encoding of the icon for the given input
  * @param {HTMLInputElement} input
  * @param {import("./Form").Form} form
- * @param {'base' | 'filled'} type
+ * @param {'base' | 'filled' | 'alternate'} type
  * @return {string}
  */
 const getIcon = (input, form, type = 'base') => {
@@ -14,6 +14,9 @@ const getIcon = (input, form, type = 'base') => {
     }
     if (type === 'filled') {
         return config.getIconFilled(input, form)
+    }
+    if (type === 'alternate') {
+        return config.getIconAlternate(input, form)
     }
     return ''
 }
@@ -49,6 +52,23 @@ const getIconStylesBase = (input, form) => {
 }
 
 /**
+ * Get inline styles for the injected icon, alternate state
+ * @param {HTMLInputElement} input
+ * @param {import("./Form").Form} form
+ * @return {Object<string, string>}
+ */
+const getIconStylesAlternate = (input, form) => {
+    const icon = getIcon(input, form, 'alternate')
+
+    if (!icon) return {}
+
+    return {
+        ...getBasicStyles(input, icon),
+        'transition': 'background 0.5s'
+    }
+}
+
+/**
  * Get inline styles for the injected icon, autofilled state
  * @param {HTMLInputElement} input
  * @param {import("./Form").Form} form
@@ -66,4 +86,4 @@ const getIconStylesAutofilled = (input, form) => {
     }
 }
 
-export {getIconStylesBase, getIconStylesAutofilled}
+export {getIconStylesBase, getIconStylesAutofilled, getIconStylesAlternate}

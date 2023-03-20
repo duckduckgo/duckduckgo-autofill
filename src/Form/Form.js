@@ -11,7 +11,7 @@ import {
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
-import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
+import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js'
 import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
 import {
@@ -201,6 +201,14 @@ class Form {
         this.addAutofillStyles(input)
     }
 
+    resetIconStylesToInitial () {
+        const input = this.activeInput
+        if (input) {
+            const initialStyles = getIconStylesBase(input, this)
+            addInlineStyles(input, initialStyles)
+        }
+    }
+
     removeAllHighlights (e, dataType) {
         // This ensures we are not removing the highlight ourselves when autofilling more than once
         if (e && !e.isTrusted) return
@@ -354,8 +362,14 @@ class Form {
     }
 
     addAutofillStyles (input) {
-        const styles = getIconStylesBase(input, this)
-        addInlineStyles(input, styles)
+        const initialStyles = getIconStylesBase(input, this)
+        const activeStyles = getIconStylesAlternate(input, this)
+
+        addInlineStyles(input, initialStyles)
+        return {
+            onMouseMove: activeStyles,
+            onMouseLeave: initialStyles
+        }
     }
 
     /**
@@ -373,18 +387,29 @@ class Form {
 
         const hasIcon = !!config.getIconBase(input, this)
         if (hasIcon) {
-            this.addAutofillStyles(input)
+            const { onMouseMove, onMouseLeave } = this.addAutofillStyles(input)
             this.addListener(input, 'mousemove', (e) => {
                 if (wasAutofilledByChrome(input)) return
 
                 if (isEventWithinDax(e, e.target)) {
-                    addInlineStyles(e.target, {'cursor': 'pointer'})
+                    addInlineStyles(e.target, {
+                        'cursor': 'pointer',
+                        ...onMouseMove
+                    })
                 } else {
                     removeInlineStyles(e.target, {'cursor': 'pointer'})
+                    // Only overwrite active icon styles if tooltip is closed
+                    if (!this.device.isTooltipActive()) {
+                        addInlineStyles(e.target, { ...onMouseLeave })
+                    }
                 }
             })
             this.addListener(input, 'mouseleave', (e) => {
                 removeInlineStyles(e.target, {'cursor': 'pointer'})
+                // Only overwrite active icon styles if tooltip is closed
+                if (!this.device.isTooltipActive()) {
+                    addInlineStyles(e.target, { ...onMouseLeave })
+                }
             })
         }
 
@@ -451,6 +476,9 @@ class Form {
 
                 this.touched.add(input)
                 this.device.attachTooltip(this, input, click)
+
+                const activeStyles = getIconStylesAlternate(input, this)
+                addInlineStyles(input, activeStyles)
             }
         }
 

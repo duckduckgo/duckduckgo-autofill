@@ -1,3 +1,4 @@
+import { isEventWithinDax } from '../../autofill-utils.js'
 import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
 import DataHTMLTooltip from '../DataHTMLTooltip.js'
 import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
@@ -178,6 +179,8 @@ export class HTMLTooltipUIController extends UIController {
     // Global listener for event delegation
     _pointerDownListener (e) {
         if (!e.isTrusted) return
+        // Ignore events on the Dax icon, we handle those elsewhere
+        if (isEventWithinDax(e, e.target)) return
 
         // @ts-ignore
         if (e.target.nodeName === 'DDG-AUTOFILL') {
