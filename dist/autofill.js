@@ -11797,6 +11797,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.HTMLTooltipUIController = void 0;
 
+var _autofillUtils = require("../../autofill-utils.js");
+
 var _inputTypeConfig = require("../../Form/inputTypeConfig.js");
 
 var _DataHTMLTooltip = _interopRequireDefault(require("../DataHTMLTooltip.js"));
@@ -12007,7 +12009,9 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 
   _pointerDownListener(e) {
-    if (!e.isTrusted) return; // @ts-ignore
+    if (!e.isTrusted) return; // Ignore events on the Dax icon, we handle those elsewhere
+
+    if ((0, _autofillUtils.isEventWithinDax)(e, e.target)) return; // @ts-ignore
 
     if (e.target.nodeName === 'DDG-AUTOFILL') {
       e.preventDefault();
@@ -12101,7 +12105,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":29,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../EmailSignupHTMLTooltop.js":45,"../HTMLTooltip.js":46,"./UIController.js":50}],48:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":29,"../../autofill-utils.js":53,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../EmailSignupHTMLTooltop.js":45,"../HTMLTooltip.js":46,"./UIController.js":50}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
