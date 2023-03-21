@@ -9,6 +9,9 @@ import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 import {SUBMIT_BUTTON_SELECTOR} from './selectors-css.js'
 import {createAvailableInputTypes} from '../../integration-test/helpers/utils.js'
 
+/**
+ * @type {object[]}
+ */
 const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, 'test-cases/index.json')).toString('utf-8'))
 
 /**
