@@ -11,7 +11,6 @@ import {createAvailableInputTypes} from '../../integration-test/helpers/utils.js
 
 const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, 'test-cases/index.json')).toString('utf-8'))
 
-
 /**
  * @param {HTMLInputElement} el
  * @param {HTMLFormElement} form
