@@ -11453,7 +11453,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
- * @property {(top: number, left: number) => string} [caretPositionClass]
+ * @property {(top: number, left: number, isAboveInput: boolean) => string} [caretPositionClass]
  * @property {(details: {height: number, width: number}) => void} [setSize] - if this is set, it will be called initially once + every times the size changes
  * @property {() => void} remove
  * @property {string} css
@@ -11470,8 +11470,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /** @type {HTMLTooltipOptions} */
 const defaultOptions = {
   wrapperClass: '',
-  tooltipPositionClass: (top, left) => ".tooltip {transform: translate(".concat(left, "px, ").concat(top, "px);}"),
-  caretPositionClass: (top, left) => ".tooltip--email__caret {transform: translate(".concat(left, "px, ").concat(top, "px);}"),
+  tooltipPositionClass: (top, left) => "\n        .tooltip {\n            transform: translate(".concat(left, "px, ").concat(top, "px);\n        }\n    "),
+  caretPositionClass: (top, left, isAboveInput) => "\n        .tooltip--email__caret {\n            ".concat(isAboveInput ? "transform: translate(".concat(left, "px, ").concat(top, "px) rotate(180deg); transform-origin: 16px;") : "transform: translate(".concat(left, "px, ").concat(top, "px);"), "\n        }"),
   css: "<style>".concat(_styles.CSS_STYLES, "</style>"),
   setSize: undefined,
   remove: () => {
@@ -11493,6 +11493,8 @@ class HTMLTooltip {
    * @param {HTMLTooltipOptions} options
    */
   constructor(config, inputType, getPosition, options) {
+    _defineProperty(this, "isAboveInput", false);
+
     _defineProperty(this, "options", void 0);
 
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
@@ -11600,7 +11602,8 @@ class HTMLTooltip {
     this.animationFrame = window.requestAnimationFrame(() => {
       const {
         left,
-        bottom
+        bottom,
+        height
       } = this.getPosition();
 
       if (left !== this.left || bottom !== this.top) {
@@ -11611,12 +11614,56 @@ class HTMLTooltip {
         this.updatePosition('tooltip', coords);
 
         if (this.options.hasCaret) {
-          this.updatePosition('caret', coords);
+          this.isAboveInput = this.getPosition().top > this.tooltip.getBoundingClientRect().top;
+          const borderWidth = 2;
+          const caretTop = this.isAboveInput ? coords.top - height - borderWidth : coords.top;
+          this.updatePosition('caret', { ...coords,
+            top: caretTop
+          });
         }
       }
 
       this.animationFrame = null;
     });
+  }
+
+  getOverridePosition(_ref) {
+    let {
+      left,
+      top
+    } = _ref;
+    const tooltipBoundingBox = this.tooltip.getBoundingClientRect(); // If overflowing from the bottom, try moving to the top
+
+    if (tooltipBoundingBox.bottom > window.innerHeight) {
+      const inputPosition = this.getPosition();
+      const caretHeight = 14;
+      const overriddenTopPosition = top - tooltipBoundingBox.height - inputPosition.height - caretHeight;
+      if (overriddenTopPosition >= 0) return {
+        left,
+        top: overriddenTopPosition
+      };
+    } // If overflowing from the left, try centering it in the window
+
+
+    if (tooltipBoundingBox.left < 0) {
+      const leftPosWhenCentered = (window.innerWidth - tooltipBoundingBox.width) / 2;
+      const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + leftPosWhenCentered;
+      return {
+        left: overriddenLeftPosition,
+        top
+      };
+    } // If overflowing from the right, move it slightly to the left
+
+
+    if (tooltipBoundingBox.right > window.innerWidth) {
+      const rightOverflow = tooltipBoundingBox.right - window.innerWidth;
+      const extraPadding = 5;
+      const overriddenLeftPosition = left - rightOverflow - extraPadding;
+      return {
+        left: overriddenLeftPosition,
+        top
+      };
+    }
   }
   /**
    *
@@ -11628,13 +11675,13 @@ class HTMLTooltip {
    */
 
 
-  updatePosition(element, _ref) {
+  updatePosition(element, _ref2) {
     var _ruleObj$getRuleStrin;
 
     let {
       left,
       top
-    } = _ref;
+    } = _ref2;
     const shadow = this.shadow; // If the stylesheet is not loaded wait for load (Chrome bug)
 
     if (!shadow.styleSheets.length) {
@@ -11658,34 +11705,18 @@ class HTMLTooltip {
       ruleObj.index = shadow.styleSheets[0].rules.length;
     }
 
-    const cssRule = (_ruleObj$getRuleStrin = ruleObj.getRuleString) === null || _ruleObj$getRuleStrin === void 0 ? void 0 : _ruleObj$getRuleStrin.call(ruleObj, top, left);
+    const cssRule = (_ruleObj$getRuleStrin = ruleObj.getRuleString) === null || _ruleObj$getRuleStrin === void 0 ? void 0 : _ruleObj$getRuleStrin.call(ruleObj, top, left, this.isAboveInput);
 
     if (typeof cssRule === 'string') {
       shadow.styleSheets[0].insertRule(cssRule, ruleObj.index);
     }
 
     if (this.options.hasCaret) {
-      const tooltipBoundingBox = this.tooltip.getBoundingClientRect(); // If overflowing from the left, try centering it in the window
-
-      if (tooltipBoundingBox.left < 0) {
-        const leftPosWhenCentered = (window.innerWidth - tooltipBoundingBox.width) / 2;
-        const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + leftPosWhenCentered;
-        this.updatePosition(element, {
-          left: overriddenLeftPosition,
-          top
-        });
-      } // If overflowing from the right, move it slightly to the left
-
-
-      if (tooltipBoundingBox.right > window.innerWidth) {
-        const rightOverflow = tooltipBoundingBox.right - window.innerWidth;
-        const extraPadding = 5;
-        const overriddenLeftPosition = left - rightOverflow - extraPadding;
-        this.updatePosition(element, {
-          left: overriddenLeftPosition,
-          top
-        });
-      }
+      const overridePosition = this.getOverridePosition({
+        left,
+        top
+      });
+      if (overridePosition) this.updatePosition(element, overridePosition);
     }
   }
 
