@@ -129,6 +129,9 @@ export class HTMLTooltip {
         }
 
         this.animationFrame = window.requestAnimationFrame(() => {
+            const { width: tooltipWidth } = this.tooltip.getBoundingClientRect()
+            if (tooltipWidth === 0) return
+
             const {left, bottom, height} = this.getPosition()
 
             if (left !== this.left || bottom !== this.top) {
@@ -295,6 +298,7 @@ export class HTMLTooltip {
                 document.fonts.load("bold 13px 'DDG_ProximaNova'")
             ]).then(() => {
                 this.tooltip.removeAttribute('hidden')
+                this.checkPosition()
             })
         })
 

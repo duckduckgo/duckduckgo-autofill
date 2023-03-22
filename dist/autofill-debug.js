@@ -15277,6 +15277,10 @@ class HTMLTooltip {
 
     this.animationFrame = window.requestAnimationFrame(() => {
       const {
+        width: tooltipWidth
+      } = this.tooltip.getBoundingClientRect();
+      if (tooltipWidth === 0) return;
+      const {
         left,
         bottom,
         height
@@ -15475,6 +15479,7 @@ class HTMLTooltip {
     (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => {
       Promise.allSettled([document.fonts.load("normal 13px 'DDG_ProximaNova'"), document.fonts.load("bold 13px 'DDG_ProximaNova'")]).then(() => {
         this.tooltip.removeAttribute('hidden');
+        this.checkPosition();
       });
     });
     this.append();
