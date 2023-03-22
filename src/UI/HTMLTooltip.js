@@ -287,9 +287,16 @@ export class HTMLTooltip {
         this.transformRuleIndex = null
 
         this.stylesheet = this.shadow.querySelector('link, style')
-        // Un-hide once the style is loaded, to avoid flashing unstyled content
-        this.stylesheet?.addEventListener('load', () =>
-            this.tooltip.removeAttribute('hidden'))
+        // Un-hide once the style and web fonts have loaded, to avoid flashing
+        // unstyled content and layout shifts
+        this.stylesheet?.addEventListener('load', () => {
+            Promise.allSettled([
+                document.fonts.load("normal 13px 'DDG_ProximaNova'"),
+                document.fonts.load("bold 13px 'DDG_ProximaNova'")
+            ]).then(() => {
+                this.tooltip.removeAttribute('hidden')
+            })
+        })
 
         this.append()
         this.resObs.observe(document.body)

@@ -15469,9 +15469,14 @@ class HTMLTooltip {
     this.top = 0;
     this.left = 0;
     this.transformRuleIndex = null;
-    this.stylesheet = this.shadow.querySelector('link, style'); // Un-hide once the style is loaded, to avoid flashing unstyled content
+    this.stylesheet = this.shadow.querySelector('link, style'); // Un-hide once the style and web fonts have loaded, to avoid flashing
+    // unstyled content and layout shifts
 
-    (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => this.tooltip.removeAttribute('hidden'));
+    (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => {
+      Promise.allSettled([document.fonts.load("normal 13px 'DDG_ProximaNova'"), document.fonts.load("bold 13px 'DDG_ProximaNova'")]).then(() => {
+        this.tooltip.removeAttribute('hidden');
+      });
+    });
     this.append();
     this.resObs.observe(document.body);
     this.mutObs.observe(document.body, {
