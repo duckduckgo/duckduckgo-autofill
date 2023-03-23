@@ -9,8 +9,8 @@ class EmailSignupHTMLTooltip extends HTMLTooltip {
 
         this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--email">
-    <div class="tooltip tooltip--email tooltip--email-signup" hidden>
+<div class="wrapper wrapper--email" hidden>
+    <div class="tooltip tooltip--email tooltip--email-signup">
         <button class="close-tooltip js-close-email-signup" aria-label="Close"></button>
         <h1>
             Hide your email and block trackers

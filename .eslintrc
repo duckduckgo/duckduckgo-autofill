@@ -29,6 +29,7 @@
         "swift-package/Resources/assets/*",
         "integration-test/extension/autofill.js",
         "integration-test/extension/autofill-debug.js",
-        "src/deviceApiCalls/__generated__/*"
+        "src/deviceApiCalls/__generated__/*",
+        "playwright-report/*"
     ]
 }

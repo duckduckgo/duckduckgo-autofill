@@ -7,7 +7,7 @@ import { CSS_STYLES } from './styles/styles.js'
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
- * @property {(top: number, left: number) => string} [caretPositionClass]
+ * @property {(top: number, left: number, isAboveInput: boolean) => string} [caretPositionClass]
  * @property {(details: {height: number, width: number}) => void} [setSize] - if this is set, it will be called initially once + every times the size changes
  * @property {() => void} remove
  * @property {string} css
@@ -24,8 +24,18 @@ import { CSS_STYLES } from './styles/styles.js'
 /** @type {HTMLTooltipOptions} */
 export const defaultOptions = {
     wrapperClass: '',
-    tooltipPositionClass: (top, left) => `.tooltip {transform: translate(${left}px, ${top}px);}`,
-    caretPositionClass: (top, left) => `.tooltip--email__caret {transform: translate(${left}px, ${top}px);}`,
+    tooltipPositionClass: (top, left) => `
+        .tooltip {
+            transform: translate(${left}px, ${top}px);
+        }
+    `,
+    caretPositionClass: (top, left, isAboveInput) => `
+        .tooltip--email__caret {
+            ${isAboveInput
+        ? `transform: translate(${left}px, ${top}px) rotate(180deg); transform-origin: 16px;`
+        : `transform: translate(${left}px, ${top}px);`
+}
+        }`,
     css: `<style>${CSS_STYLES}</style>`,
     setSize: undefined,
     remove: () => { /** noop */ },
@@ -35,6 +45,7 @@ export const defaultOptions = {
 }
 
 export class HTMLTooltip {
+    isAboveInput = false;
     /** @type {HTMLTooltipOptions} */
     options;
     /**
@@ -81,6 +92,9 @@ export class HTMLTooltip {
             }
         }
     }
+    get isHidden () {
+        return this.tooltip.parentNode.hidden
+    }
     append () {
         document.body.appendChild(this.host)
     }
@@ -118,18 +132,52 @@ export class HTMLTooltip {
         }
 
         this.animationFrame = window.requestAnimationFrame(() => {
-            const {left, bottom} = this.getPosition()
+            if (this.isHidden) return
+
+            const {left, bottom, height, top} = this.getPosition()
 
             if (left !== this.left || bottom !== this.top) {
                 const coords = {left, top: bottom}
                 this.updatePosition('tooltip', coords)
                 if (this.options.hasCaret) {
-                    this.updatePosition('caret', coords)
+                    // Recalculate tooltip top as it may have changed after update potition above
+                    const { top: tooltipTop } = this.tooltip.getBoundingClientRect()
+                    this.isAboveInput = top > tooltipTop
+                    const borderWidth = 2
+                    const caretTop = this.isAboveInput ? coords.top - height - borderWidth : coords.top
+                    this.updatePosition('caret', { ...coords, top: caretTop })
                 }
             }
 
             this.animationFrame = null
         })
+    }
+
+    getOverridePosition ({left, top}) {
+        const tooltipBoundingBox = this.tooltip.getBoundingClientRect()
+
+        // If overflowing from the bottom, try moving to the top
+        if (tooltipBoundingBox.bottom > window.innerHeight) {
+            const inputPosition = this.getPosition()
+            const caretHeight = 14
+            const overriddenTopPosition = top - tooltipBoundingBox.height - inputPosition.height - caretHeight
+            if (overriddenTopPosition >= 0) return {left, top: overriddenTopPosition}
+        }
+
+        // If overflowing from the left, try centering it in the window
+        if (tooltipBoundingBox.left < 0) {
+            const leftPosWhenCentered = (window.innerWidth - tooltipBoundingBox.width) / 2
+            const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + leftPosWhenCentered
+            return {left: overriddenLeftPosition, top}
+        }
+
+        // If overflowing from the right, move it slightly to the left
+        if (tooltipBoundingBox.right > window.innerWidth) {
+            const rightOverflow = tooltipBoundingBox.right - window.innerWidth
+            const extraPadding = 5
+            const overriddenLeftPosition = left - rightOverflow - extraPadding
+            return {left: overriddenLeftPosition, top}
+        }
     }
 
     /**
@@ -163,29 +211,14 @@ export class HTMLTooltip {
             ruleObj.index = shadow.styleSheets[0].rules.length
         }
 
-        const cssRule = ruleObj.getRuleString?.(top, left)
+        const cssRule = ruleObj.getRuleString?.(top, left, this.isAboveInput)
         if (typeof cssRule === 'string') {
             shadow.styleSheets[0].insertRule(cssRule, ruleObj.index)
         }
 
         if (this.options.hasCaret) {
-            const tooltipBoundingBox = this.tooltip.getBoundingClientRect()
-            // If overflowing from the left, try centering it in the window
-            if (tooltipBoundingBox.left < 0) {
-                const leftPosWhenCentered = (window.innerWidth - tooltipBoundingBox.width) / 2
-                const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + leftPosWhenCentered
-
-                this.updatePosition(element, {left: overriddenLeftPosition, top})
-            }
-
-            // If overflowing from the right, move it slightly to the left
-            if (tooltipBoundingBox.right > window.innerWidth) {
-                const rightOverflow = tooltipBoundingBox.right - window.innerWidth
-                const extraPadding = 5
-                const overriddenLeftPosition = left - rightOverflow - extraPadding
-
-                this.updatePosition(element, {left: overriddenLeftPosition, top})
-            }
+            const overridePosition = this.getOverridePosition({left, top})
+            if (overridePosition) this.updatePosition(element, overridePosition)
         }
     }
     ensureIsLastInDOM () {
@@ -261,9 +294,17 @@ export class HTMLTooltip {
         this.transformRuleIndex = null
 
         this.stylesheet = this.shadow.querySelector('link, style')
-        // Un-hide once the style is loaded, to avoid flashing unstyled content
-        this.stylesheet?.addEventListener('load', () =>
-            this.tooltip.removeAttribute('hidden'))
+        // Un-hide once the style and web fonts have loaded, to avoid flashing
+        // unstyled content and layout shifts
+        this.stylesheet?.addEventListener('load', () => {
+            Promise.allSettled([
+                document.fonts.load("normal 13px 'DDG_ProximaNova'"),
+                document.fonts.load("bold 13px 'DDG_ProximaNova'")
+            ]).then(() => {
+                this.tooltip.parentNode.removeAttribute('hidden')
+                this.checkPosition()
+            })
+        })
 
         this.append()
         this.resObs.observe(document.body)

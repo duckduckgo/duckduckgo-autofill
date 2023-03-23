@@ -21,8 +21,8 @@ class DataHTMLTooltip extends HTMLTooltip {
         const dataTypeClass = `tooltip__button--data--${config.type}`
         this.shadow.innerHTML = `
 ${css}
-<div class="wrapper wrapper--data ${topClass}">
-    <div class="tooltip tooltip--data" hidden>
+<div class="wrapper wrapper--data ${topClass}" hidden>
+    <div class="tooltip tooltip--data">
         ${items.map((item) => {
         const credentialsProvider = item.credentialsProvider?.()
         const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''

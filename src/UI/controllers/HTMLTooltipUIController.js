@@ -2,7 +2,7 @@ import { isEventWithinDax } from '../../autofill-utils.js'
 import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
 import DataHTMLTooltip from '../DataHTMLTooltip.js'
 import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
-import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltop.js'
+import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltip.js'
 import {defaultOptions} from '../HTMLTooltip.js'
 import {UIController} from './UIController.js'
 

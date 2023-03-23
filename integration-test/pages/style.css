@@ -26,6 +26,21 @@ iframe {
     left: 1em;
 }
 
+.subscribe-newsletter {
+    padding: 1rem;
+    position: fixed;
+    left: 0;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.subscribe-newsletter fieldset {
+    display: flex;
+    margin: 0 auto;
+}
+
 hr {
     margin: 2em auto;
 }

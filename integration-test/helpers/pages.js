@@ -7,9 +7,11 @@ const ATTR_AUTOFILL = 'data-ddg-autofill'
 
 export function incontextSignupPage (page) {
     const getCallToAction = () => page.locator(`text=Protect My Email`)
+    const getTooltip = () => page.locator('.tooltip--email')
     return {
         async assertIsShowing () {
             expect(await getCallToAction()).toBeVisible()
+            expect(await getTooltip()).toBeInViewport({ ratio: 1 })
         },
         async assertIsHidden () {
             expect(await getCallToAction()).toBeHidden()
@@ -28,16 +30,12 @@ export function incontextSignupPage (page) {
     }
 }
 
-export function incontextSignupPageWithinIframe (page, server) {
+export function incontextSignupPageWithinIframe (page) {
     return {
         async navigate (domain) {
             const pageName = constants.pages['iframeContainer']
-            if (domain) {
-                const pagePath = `integration-test/pages/${pageName}`
-                await page.goto(new URL(pagePath, domain).href)
-            } else {
-                await page.goto(server.urlForPath(pageName))
-            }
+            const pagePath = `integration-test/pages/${pageName}`
+            await page.goto(new URL(pagePath, domain).href)
         },
         async clickDirectlyOnDax () {
             const input = await page.frameLocator('iframe').locator('input#email')
@@ -47,6 +45,21 @@ export function incontextSignupPageWithinIframe (page, server) {
             const tooltip = await page.frameLocator('iframe').locator('.tooltip--email')
             await expect(tooltip).toBeVisible()
             await expect(tooltip).toBeInViewport({ ratio: 1 })
+        }
+    }
+}
+
+export function incontextSignupPageEmailBottomPage (page) {
+    const {selectors} = constants.fields.email
+    return {
+        async navigate (domain) {
+            const pageName = constants.pages['emailAtBottom']
+            const pagePath = `integration-test/pages/${pageName}`
+            await page.goto(new URL(pagePath, domain).href)
+        },
+        async clickDirectlyOnDax () {
+            const input = page.locator(selectors.identity)
+            await clickOnIcon(input)
         }
     }
 }
